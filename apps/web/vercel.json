@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "//": "Vercel project: the main site. Root Directory = apps/web. Migrations are NEVER run from a build — the committed Prisma client is engine-free and the build has no database. Apply them out of band with `pnpm db:migrate:sql` before promoting a deployment. See LAUNCH.md step 4.",
+  "buildCommand": "cd ../.. && pnpm --filter @tycoonhood/web build",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "regions": ["bom1"],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
+      ]
+    }
+  ]
+}

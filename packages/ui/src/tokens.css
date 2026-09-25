@@ -1,0 +1,107 @@
+/* ============================================================
+   TYCOONHOOD DESIGN TOKENS — the single source of visual truth.
+   Direction: "the ledger" — a vault interior. Warm espresso-black
+   (not blue-black), engraved serif display, brass/gold accents,
+   mono tabular figures for anything counted.
+   Consumed two ways:
+     1. CSS custom properties (any consumer)
+     2. Tailwind v4 @theme (utility classes across the apps)
+   ============================================================ */
+
+@theme {
+  /* Surfaces — warm dark, ascending elevation */
+  --color-bg-0: #0d0b08;
+  --color-bg-1: #14110c;
+  --color-bg-2: #1b1712;
+  --color-line: #2a241b;
+  --color-line-strong: #3a3226;
+
+  /* Ink — bone on espresso */
+  --color-ink-1: #ede8dd;
+  --color-ink-2: #a69f8f;
+  --color-ink-3: #6b655a;
+
+  /* Brass & gold — the metal of the house */
+  --color-gold: #c9a227;
+  --color-gold-bright: #e3be4a;
+  --color-gold-deep: #8c6f1a;
+
+  /* The four pillars */
+  --color-warrior: #b5443a;
+  --color-builder: #5b87a6;
+  --color-tycoon: #c9a227;
+  --color-mind: #6fa08b;
+
+  /* Semantics */
+  --color-success: #58a279;
+  --color-danger: #c75548;
+  --color-warning: #d9a441;
+
+  /* Type roles: engraved display / quiet UI / ledger figures */
+  --font-display: Georgia, "Times New Roman", "Noto Serif", serif;
+  --font-ui: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  --font-mono: Consolas, "SF Mono", Menlo, "Liberation Mono", monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-raise: inset 0 1px 0 rgb(255 255 255 / 0.03), 0 8px 24px rgb(0 0 0 / 0.45);
+  --shadow-gold: 0 0 0 1px #8c6f1a, 0 6px 20px rgb(201 162 39 / 0.15);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+/* Base plate */
+body {
+  background: var(--color-bg-0);
+  color: var(--color-ink-1);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Anything counted is set in ledger figures. */
+.figures {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Engraved display */
+.display {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+  color: var(--color-ink-1);
+}
+
+/* Wide-tracked small caps — the eyebrow of every section */
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+/* Visible focus, everywhere, no exceptions */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: rgb(201 162 39 / 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

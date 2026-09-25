@@ -1,0 +1,51 @@
+# ── Dependencies ────────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+
+# ── Build output ────────────────────────────────────────────────────────────
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# ── Environment: secrets never go in the repository ─────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Generated Prisma client ─────────────────────────────────────────────────
+# Committed on purpose: the client is engine-free, so a fresh clone builds
+# without downloading a binary. Regenerate with `pnpm --filter @tycoonhood/db
+# exec prisma generate` after any schema change.
+!packages/db/src/generated/
+
+# ── Local tooling ───────────────────────────────────────────────────────────
+.vercel/
+.turbo/
+coverage/
+playwright-report/
+test-results/
+/opt/
+
+# ── OS and editor noise ─────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+
+# ── Archives and scratch ────────────────────────────────────────────────────
+*.zip
+*.log
+.rw-probe
+
+# ── Working folders, not source ─────────────────────────────────────────────
+# Reports and scratch produced during sessions; kept on disk, out of history.
+Claude outputs/
+_to_delete/

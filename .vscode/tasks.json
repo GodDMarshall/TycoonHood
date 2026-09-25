@@ -1,0 +1,73 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "0 · First-time setup (install + database + seed)",
+      "type": "shell",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./setup-windows.ps1",
+      "windows": { "command": "powershell -NoProfile -ExecutionPolicy Bypass -File ./setup-windows.ps1" },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "group": "build"
+    },
+    {
+      "label": "1 · Run TycoonHood (web + miner)",
+      "dependsOrder": "parallel",
+      "dependsOn": ["web: dev server", "miner: dev server"],
+      "problemMatcher": [],
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "web: dev server",
+      "type": "shell",
+      "command": "pnpm --filter @tycoonhood/web dev",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" }
+    },
+    {
+      "label": "miner: dev server",
+      "type": "shell",
+      "command": "pnpm --filter @tycoonhood/miner dev",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" }
+    },
+    {
+      "label": "2 · Verify everything (typecheck + lint + test + build)",
+      "type": "shell",
+      "command": "pnpm verify",
+      "problemMatcher": ["$tsc"],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "3 · Platform verification (26 end-to-end checks)",
+      "type": "shell",
+      "command": "pnpm --filter @tycoonhood/core exec tsx scripts/verify-platform.ts",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "DB · Re-seed (base → academy → content)",
+      "type": "shell",
+      "command": "pnpm db:seed; pnpm db:seed:academy; pnpm db:seed:content",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "DB · Open Prisma Studio",
+      "type": "shell",
+      "command": "pnpm --filter @tycoonhood/db studio",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "DB · Start Postgres (Docker)",
+      "type": "shell",
+      "command": "docker compose up -d",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    }
+  ]
+}

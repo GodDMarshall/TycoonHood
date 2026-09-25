@@ -1,0 +1,35 @@
+{
+  "name": "@tycoonhood/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/client.ts",
+  "types": "src/client.ts",
+  "scripts": {
+    "migrate": "dotenv -e ../../.env -- prisma migrate dev",
+    "generate": "prisma generate",
+    "seed": "dotenv -e ../../.env -- tsx src/seed.ts",
+    "studio": "dotenv -e ../../.env -- prisma studio",
+    "seed:content": "dotenv -e ../../.env -- tsx src/seed-content.ts",
+    "seed:academy": "dotenv -e ../../.env -- tsx src/seed-academy.ts",
+    "typecheck": "tsc --noEmit",
+    "migrate:deploy": "dotenv -e ../../.env -- prisma migrate deploy",
+    "migrate:sql": "dotenv -e ../../.env -- tsx scripts/migrate-sql.ts",
+    "migrate:status": "dotenv -e ../../.env -- tsx scripts/migrate-sql.ts --status",
+    "seed:merch": "dotenv -e ../../.env -- tsx src/seed-merch.ts"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.0.2",
+    "@prisma/adapter-pg": "^6.12.0",
+    "@prisma/client": "^6.12.0",
+    "@tycoonhood/config": "workspace:*",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.10",
+    "dotenv-cli": "^7.4.4",
+    "prisma": "^6.12.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

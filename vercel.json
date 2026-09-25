@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "//": "ROOT CONFIG — DO NOT DEPLOY FROM HERE. This monorepo ships TWO apps: the site (apps/web) and the Miner (apps/miner). Each is its own Vercel project with its own Root Directory and its own vercel.json. A single root deployment would silently publish only the site and leave the Miner behind. See LAUNCH.md.",
+  "buildCommand": "echo 'Deploy apps/web and apps/miner as separate Vercel projects. See LAUNCH.md.' && exit 1",
+  "installCommand": "echo skipped",
+  "framework": null
+}

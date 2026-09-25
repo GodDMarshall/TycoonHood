@@ -1,0 +1,24 @@
+# One-command PostgreSQL for local development.
+#   docker compose up -d
+# Matches the DATABASE_URL written by setup-windows.ps1.
+services:
+  postgres:
+    image: postgres:16
+    container_name: tycoonhood-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tycoon
+      POSTGRES_PASSWORD: tycoon_dev
+      POSTGRES_DB: tycoonhood_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - tycoonhood_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tycoon -d tycoonhood_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  tycoonhood_pgdata:

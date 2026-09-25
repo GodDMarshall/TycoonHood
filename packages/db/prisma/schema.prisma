@@ -1,0 +1,891 @@
+// ============================================================
+// TYCOONHOOD — Master Schema (Phase 1)
+// Every domain module from the spec lives here. Modules are
+// decoupled by convention (section headers) and wired only
+// through explicit relations.
+// ============================================================
+
+generator client {
+  provider   = "prisma-client"
+  output     = "../src/generated"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// 1. IDENTITY & ACCOUNTS  (spec §8–§10)
+// Auth.js v5 compatible: User / Account / Session / VerificationToken
+// ============================================================
+
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  role          UserRole  @default(MEMBER)
+
+  // Gamification cache (source of truth = XpEvent ledger below)
+  xp    Int @default(0)
+  level Int @default(1)
+
+  rankId String?
+  rank   RankDefinition? @relation(fields: [rankId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  credential          PasswordCredential?
+  profile             Profile?
+  accounts            Account[]
+  sessions            Session[]
+  ledgerAccount       LedgerAccount?
+  enrollments         Enrollment[]
+  lessonProgress      LessonProgress[]
+  certificates        Certificate[]
+  xpEvents            XpEvent[]
+  achievements        UserAchievement[]
+  participations      ChallengeParticipation[]
+  missionCompletions  MissionCompletion[]
+  streak              Streak?
+  notifications       Notification[]
+  orders              Order[]
+  discordLink         DiscordLink?
+  telegramLink        TelegramLink?
+  quizAttempts        QuizAttempt[]
+  minerState         MinerState?
+
+  @@index([rankId])
+  referralsMade     Referral[]        @relation("ReferralReferrer")
+  referralReceived  Referral?         @relation("ReferralReferred")
+  watchCompletions  WatchCompletion[]
+}
+
+/// Password auth lives separately from User so social-only accounts
+/// simply have no row here. Hash = Argon2id (Phase 3).
+model PasswordCredential {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hash      String
+  updatedAt DateTime @updatedAt
+}
+
+/// Auth.js OAuth account linkage (social login, later)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  // Device management (spec §8): populated at login, Phase 3
+  userAgent    String?
+  ipHash       String?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+/// Member-facing identity, separate from auth identity. (spec §10)
+model Profile {
+  userId      String  @id
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username    String  @unique
+  displayName String
+  bio         String? @db.Text
+  avatarUrl   String?
+  timezone    String?
+
+  // Onboarding answers (spec §9)
+  goals            String[] @default([])
+  interests        String[] @default([])
+  experienceLevel  String?
+  onboardedAt      DateTime?
+
+  /// Privacy controls (spec §10): which profile facets are public.
+  /// Shape: { "achievements": true, "level": true, "streak": false, ... }
+  privacy Json @default("{\"level\": true, \"rank\": true, \"achievements\": true, \"streak\": true, \"courses\": false, \"thc\": false}")
+
+  /// Their invite code. Minted on onboarding, stable for life.
+  referralCode String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// 2. LEARNING MANAGEMENT SYSTEM  (spec §12–§13)
+// Courses are DATA. The four launch programs are seed rows,
+// never frontend components.
+// ============================================================
+
+enum Pillar {
+  WARRIOR
+  BUILDER
+  TYCOON
+  MIND
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum LessonType {
+  VIDEO
+  READING
+  QUIZ
+  ASSIGNMENT
+}
+
+model Course {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  subtitle    String?
+  description String        @db.Text
+  pillar      Pillar
+  status      ContentStatus @default(DRAFT)
+  coverImage  String?
+  sortOrder   Int           @default(0)
+
+  /// Instructor display info (spec §12) — richer instructor model in Phase 5 if needed
+  instructorName  String?
+  instructorBio   String?
+
+  /// Prerequisite course (nullable chain)
+  prerequisiteId String?
+  prerequisite   Course?  @relation("CoursePrereq", fields: [prerequisiteId], references: [id])
+  unlocks        Course[] @relation("CoursePrereq")
+
+  xpOnCompletion Int @default(500)
+
+  modules     CourseModule[]
+  enrollments Enrollment[]
+  resources   Resource[]
+  certificates Certificate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pillar, status])
+}
+
+model CourseModule {
+  id          String  @id @default(cuid())
+  courseId    String
+  course      Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  sortOrder   Int     @default(0)
+
+  lessons Lesson[]
+
+  @@index([courseId, sortOrder])
+}
+
+model Lesson {
+  id        String       @id @default(cuid())
+  moduleId  String
+  module    CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title     String
+  type      LessonType
+  sortOrder Int          @default(0)
+
+  contentMd   String? @db.Text /// READING lessons + notes under videos
+  videoUrl    String? /// external/CDN URL — media hosting decided at content time
+  durationSec Int?
+  isPreview   Boolean @default(false) /// visible before enrollment
+  xpReward    Int     @default(50)
+
+  quiz      Quiz?
+  resources Resource[]
+  progress  LessonProgress[]
+
+  @@index([moduleId, sortOrder])
+}
+
+model Resource {
+  id       String  @id @default(cuid())
+  title    String
+  url      String
+  kind     String  @default("link") /// link | file | template
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonId String?
+  lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([lessonId])
+}
+
+model Quiz {
+  id        String @id @default(cuid())
+  lessonId  String @unique
+  lesson    Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  passScore Int    @default(70) /// percent
+
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+}
+
+model QuizQuestion {
+  id           String @id @default(cuid())
+  quizId       String
+  quiz         Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  sortOrder    Int    @default(0)
+  prompt       String @db.Text
+  options      Json   /// ["option a", "option b", ...]
+  correctIndex Int
+  explanation  String? @db.Text
+
+  @@index([quizId, sortOrder])
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scorePct  Int
+  passed    Boolean
+  answers   Json
+  createdAt DateTime @default(now())
+
+  @@index([userId, quizId])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+}
+
+model Enrollment {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status      EnrollmentStatus @default(ACTIVE)
+  progressPct Int              @default(0) /// cache; truth = LessonProgress rows
+  enrolledAt  DateTime         @default(now())
+  completedAt DateTime?
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model LessonProgress {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId         String
+  lesson           Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  videoPositionSec Int?
+  completedAt      DateTime?
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([lessonId])
+}
+
+model Certificate {
+  id       String   @id @default(cuid())
+  serial   String   @unique
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id])
+  issuedAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+}
+
+// ============================================================
+// 3. GAMIFICATION ENGINE  (spec §14–§19)
+// XP is an append-only event log; User.xp/level are caches
+// recomputed inside the same transaction that appends events.
+// ============================================================
+
+enum XpSource {
+  LESSON_COMPLETED
+  COURSE_COMPLETED
+  QUIZ_PASSED
+  CHALLENGE_COMPLETED
+  MISSION_COMPLETED
+  ACHIEVEMENT_UNLOCKED
+  STREAK_BONUS
+  ADMIN_GRANT
+  WATCH_TASK
+  REFERRAL
+}
+
+model XpEvent {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount         Int
+  source         XpSource
+  sourceId       String?  /// e.g. lessonId, challengeId
+  note           String?
+  idempotencyKey String   @unique
+  createdAt      DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+/// Cumulative XP thresholds. Seeded from config curve; editable in admin later.
+model LevelDefinition {
+  level      Int    @id
+  xpRequired Int    /// cumulative XP to REACH this level
+  title      String?
+}
+
+/// Community ranks (spec §15): Initiate → Legend, extensible.
+model RankDefinition {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  name          String
+  sortOrder     Int     @unique
+  minLevel      Int
+  description   String?
+  discordRoleId String? /// wired in Phase 9
+
+  users User[]
+}
+
+model Achievement {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String
+  icon        String?
+  xpReward    Int     @default(0)
+  thcReward   BigInt  @default(0)
+  /// Rule evaluated server-side by the achievement engine (Phase 6).
+  /// Shape: { "event": "COURSE_COMPLETED", "count": 1, ... }
+  criteria    Json
+  isSecret    Boolean @default(false) /// hidden until unlocked (spec §18)
+  active      Boolean @default(true)
+
+  unlocks UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+enum ChallengeLifecycle {
+  DRAFT
+  UPCOMING
+  ACTIVE
+  ENDED
+  ARCHIVED
+}
+
+model Challenge {
+  id          String             @id @default(cuid())
+  slug        String             @unique
+  name        String
+  description String             @db.Text
+  pillar      Pillar?
+  lifecycle   ChallengeLifecycle @default(DRAFT)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  /// Recurrence descriptor for recurring challenges (spec §16), engine in Phase 6
+  recurrence  Json?
+  /// Completion criteria evaluated server-side
+  criteria    Json
+  xpReward    Int                @default(0)
+  thcReward   BigInt             @default(0)
+
+  participations ChallengeParticipation[]
+
+  @@index([lifecycle, startsAt])
+}
+
+enum ParticipationStatus {
+  JOINED
+  COMPLETED
+  FAILED
+  WITHDRAWN
+}
+
+model ChallengeParticipation {
+  id          String              @id @default(cuid())
+  userId      String
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeId String
+  challenge   Challenge           @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  status      ParticipationStatus @default(JOINED)
+  progress    Json?
+  joinedAt    DateTime            @default(now())
+  completedAt DateTime?
+
+  @@unique([userId, challengeId])
+  @@index([challengeId, status])
+}
+
+model Mission {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  name          String
+  description   String
+  criteria      Json
+  xpReward      Int     @default(0)
+  thcReward     BigInt  @default(0)
+  repeatable    Boolean @default(false)
+  cooldownHours Int?    /// for repeatable missions
+  active        Boolean @default(true)
+
+  completions MissionCompletion[]
+}
+
+model MissionCompletion {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missionId      String
+  mission        Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  idempotencyKey String   @unique
+  completedAt    DateTime @default(now())
+
+  @@index([userId, missionId, completedAt])
+}
+
+model Streak {
+  userId       String   @id
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  current      Int      @default(0)
+  longest      Int      @default(0)
+  lastActiveOn DateTime? @db.Date
+  updatedAt    DateTime @updatedAt
+}
+
+enum NotificationType {
+  XP_AWARDED
+  LEVEL_UP
+  RANK_UP
+  ACHIEVEMENT
+  CHALLENGE
+  MISSION
+  THC
+  SYSTEM
+  ORDER
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String?
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt, createdAt])
+}
+
+// ============================================================
+// 4. THC INTERNAL ECONOMY  (spec §25–§32)
+// Double-entry ledger. Balances are NEVER mutated arbitrarily:
+// every movement is a transaction with entries summing to zero,
+// enforced by BOTH the service layer and a deferred DB trigger.
+// ============================================================
+
+enum LedgerAccountType {
+  SYSTEM_MINT   /// counter-account for genesis; goes deeply negative by design
+  TREASURY
+  REWARDS_POOL
+  MINING_POOL /// ring-fenced budget the Miner app distributes from
+  REVENUE       /// receives THC spent on Tycoonhood products
+  ESCROW
+  USER
+}
+
+model LedgerAccount {
+  id      String            @id @default(cuid())
+  type    LedgerAccountType
+  name    String?
+  /// USER accounts link to exactly one user; system accounts have null
+  userId  String?           @unique
+  user    User?             @relation(fields: [userId], references: [id])
+  /// Cached balance, updated atomically inside the posting transaction.
+  /// Auditable truth = SUM(entries.amount). DB CHECK forbids negative USER balances.
+  balance BigInt            @default(0)
+
+  entries   LedgerEntry[]
+  createdAt DateTime      @default(now())
+
+  @@index([type])
+}
+
+enum TxStatus {
+  POSTED
+  REVERSED /// original stands; a compensating transaction points back via reversesId
+}
+
+enum TxReason {
+  GENESIS_MINT
+  POOL_FUNDING
+  REWARD_MISSION
+  REWARD_CHALLENGE
+  REWARD_ACHIEVEMENT
+  REWARD_MINING
+  REWARD_ADMIN
+  PURCHASE
+  REFUND
+  TRANSFER
+  ADJUSTMENT
+}
+
+model LedgerTransaction {
+  id             String   @id @default(cuid())
+  reason         TxReason
+  status         TxStatus @default(POSTED)
+  idempotencyKey String   @unique
+  sourceType     String?  /// e.g. "mission", "order"
+  sourceId       String?
+  memo           String?
+  createdById    String?  /// admin userId for manual ops — audited (spec §27)
+  createdAt      DateTime @default(now())
+
+  /// Reversal linkage: the compensating tx points at the original
+  reversesId String?             @unique
+  reverses   LedgerTransaction?  @relation("Reversal", fields: [reversesId], references: [id])
+  reversedBy LedgerTransaction?  @relation("Reversal")
+
+  entries LedgerEntry[]
+
+  @@index([reason, createdAt])
+  @@index([sourceType, sourceId])
+}
+
+model LedgerEntry {
+  id            String            @id @default(cuid())
+  transactionId String
+  transaction   LedgerTransaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  accountId     String
+  account       LedgerAccount     @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  /// Signed amount. Per-transaction sum MUST equal 0 (DB-enforced).
+  amount        BigInt
+
+  @@index([accountId])
+  @@index([transactionId])
+}
+
+// ============================================================
+// 5. MARKETPLACE  (spec §23–§24) — schema now, flows in Phase 8
+// ============================================================
+
+enum ProductKind {
+  DIGITAL
+  PHYSICAL
+  COURSE
+  MEMBERSHIP
+}
+
+model Product {
+  id             String      @id @default(cuid())
+  slug           String      @unique
+  kind           ProductKind
+  name           String
+  description    String      @db.Text
+  image          String?
+  active         Boolean     @default(false)
+  /// Dual rails: either or both may be set (spec §23/§26)
+  priceThc       BigInt?
+  priceFiatCents Int?
+  fiatCurrency   String      @default("USD")
+  /// null = unlimited (digital); integer = physical stock
+  inventory      Int?
+  /// For kind=COURSE: which course access is granted on fulfillment
+  grantsCourseId String?
+  /// For kind=DIGITAL: the deliverable itself, rendered at /library/[slug]
+  contentMd      String?     @db.Text
+  /// Landed cost per unit. The economy model says fulfilment cost, not the
+  /// THC pool, is the binding constraint — so it has to be recorded.
+  costCents      Int?
+
+  variants   ProductVariant[]
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([kind, active])
+}
+
+/// One buyable size/colour of a product. Stock lives here when variants
+/// exist; Product.inventory stays authoritative for variant-less items.
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku       String  @unique
+  label     String
+  /// null = inherit the product's price. An override exists because XXL
+  /// genuinely costs more to make than S.
+  priceThc       BigInt?
+  priceFiatCents Int?
+  costCents      Int?
+  inventory      Int     @default(0)
+  sortOrder      Int     @default(0)
+  active         Boolean @default(true)
+
+  orderItems OrderItem[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([productId, sortOrder])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FULFILLED
+  CANCELLED
+  REFUNDED
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id])
+  status         OrderStatus @default(PENDING)
+  totalThc       BigInt      @default(0)
+  totalFiatCents Int         @default(0)
+  fiatCurrency   String      @default("USD")
+  /// THC purchases link to their ledger transaction — atomic pay+record (spec §28)
+  ledgerTxId     String?     @unique
+  /// Fiat provider linkage (Phase 8): provider name + external ids
+  paymentProvider String?
+  paymentRef      String?
+  /// Physical fulfilment
+  shippedAt       DateTime?
+  trackingCarrier String?
+  trackingNumber  String?
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  items   OrderItem[]
+  address ShippingAddress?
+
+  @@index([userId, createdAt])
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product @relation(fields: [productId], references: [id])
+  variantId      String?
+  variant        ProductVariant? @relation(fields: [variantId], references: [id])
+  /// Snapshot, not a join: renaming "M" to "Medium" next year must not
+  /// rewrite what someone bought last year.
+  variantLabel   String?
+  qty            Int     @default(1)
+  unitPriceThc   BigInt?
+  unitPriceFiatC Int?
+
+  @@index([orderId])
+  @@index([variantId])
+}
+
+/// Snapshotted per order rather than read from the profile, so changing
+/// your address never alters where a past parcel was sent.
+model ShippingAddress {
+  id         String   @id @default(cuid())
+  orderId    String   @unique
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fullName   String
+  line1      String
+  line2      String?
+  city       String
+  region     String?
+  postalCode String
+  country    String
+  phone      String?
+  createdAt  DateTime @default(now())
+}
+
+// ============================================================
+// 6. COMMUNITY INTEGRATIONS  (spec §21–§22) — link tables now,
+// bots in Phase 9
+// ============================================================
+
+model DiscordLink {
+  userId        String   @id
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discordUserId String   @unique
+  linkedAt      DateTime @default(now())
+  lastSyncAt    DateTime?
+}
+
+model TelegramLink {
+  userId         String   @id
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  telegramUserId String   @unique
+  linkedAt       DateTime @default(now())
+}
+
+// ============================================================
+// 7. PUBLIC CONTENT  (spec §5 — blog)
+// ============================================================
+
+model Post {
+  id         String    @id @default(cuid())
+  slug       String    @unique
+  title      String
+  excerpt    String
+  contentMd  String    @db.Text
+  coverImage String?
+  authorName String    @default("Tycoonhood")
+  publishedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([publishedAt])
+}
+
+// ============================================================
+// 8. THE MINER  (separate app: apps/miner)
+// Server-authoritative idle rig. Accrual is computed from
+// lastClaimAt on the server; claims pay from MINING_POOL via the
+// standard ledger; upgrades burn THC back through spend().
+// ============================================================
+
+model MinerState {
+  userId      String   @id
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rigLevel    Int      @default(1)
+  lastClaimAt DateTime @default(now())
+  totalMined  BigInt   @default(0)
+  updatedAt   DateTime @updatedAt
+
+  @@index([totalMined])
+}
+
+// ============================================================
+// 9. GROWTH & ATTENTION  (spec §17 referrals, watch-to-earn)
+// ============================================================
+
+enum ReferralStatus {
+  PENDING
+  QUALIFIED
+  REJECTED
+}
+
+/// One row per referred member, ever. The unique key on referredId is the
+/// structural defence against referral farming — not a rule in code that a
+/// later refactor can drop.
+model Referral {
+  id         String         @id @default(cuid())
+  referrerId String
+  referrer   User           @relation("ReferralReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredId String         @unique
+  referred   User           @relation("ReferralReferred", fields: [referredId], references: [id], onDelete: Cascade)
+  code       String
+  status     ReferralStatus @default(PENDING)
+  /// Signup pays nothing. The reward lands only when the referred member does
+  /// real work, which is what this timestamp records.
+  qualifiedAt DateTime?
+  rewardTxId  String?
+  signupIp    String?
+  createdAt   DateTime      @default(now())
+
+  @@index([referrerId, status])
+}
+
+/// A Tycoonhood video that pays THC for being genuinely watched.
+model WatchTask {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  title          String
+  description    String?
+  /// Our own channel only — storing the id, not a URL, keeps a third party
+  /// from being paid for our members' attention.
+  youtubeVideoId String
+  durationSec    Int
+  /// How much must actually be watched before it pays.
+  requiredSec    Int
+  rewardThc      BigInt    @default(0)
+  rewardXp       Int       @default(0)
+  active         Boolean   @default(false)
+  sortOrder      Int       @default(0)
+  publishedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  completions WatchCompletion[]
+
+  @@index([active, sortOrder])
+}
+
+model WatchCompletion {
+  id     String    @id @default(cuid())
+  userId String
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId String
+  task   WatchTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  /// The server stamps this and refuses to settle earlier than requiredSec of
+  /// real wall-clock later. A script cannot outrun a clock.
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  secondsWatched Int       @default(0)
+  /// Member-local day, so a daily cap means their day, not UTC's.
+  dayKey     String
+  rewardTxId String?
+
+  @@unique([userId, taskId])
+  @@index([userId, dayKey])
+}

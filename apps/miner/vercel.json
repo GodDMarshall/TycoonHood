@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "//": "Vercel project: the Miner PWA. Root Directory = apps/miner. Shares the database and the session cookie with the main site, so COOKIE_DOMAIN must be set on BOTH projects to the same parent domain.",
+  "buildCommand": "cd ../.. && pnpm --filter @tycoonhood/miner build",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "regions": ["bom1"],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
+      ]
+    }
+  ]
+}

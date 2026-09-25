@@ -1,0 +1,17 @@
+# Normalise line endings. Windows is the primary development platform and CI
+# runs on Linux; without this, migration checksums and the .env parser can
+# disagree between the two (see DR-9).
+* text=auto eol=lf
+
+# These must stay CRLF to run correctly on Windows.
+*.ps1   text eol=crlf
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
+# Never touched by line-ending normalisation.
+*.png   binary
+*.jpg   binary
+*.ico   binary
+*.zip   binary
+*.woff  binary
+*.woff2 binary

@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@source "../../../packages/ui/src";
+@import "@tycoonhood/ui/tokens.css";
+
+/* Journal essay typography — server-rendered markdown */
+.md-content { color: var(--color-ink-2); font-size: 15px; line-height: 1.75; }
+.md-content h2 { font-family: var(--font-display); color: var(--color-ink-1); font-size: 24px; margin: 2.2em 0 0.6em; letter-spacing: -0.01em; }
+.md-content p { margin: 1em 0; }
+.md-content strong { color: var(--color-ink-1); }
+.md-content a { color: var(--color-gold); text-underline-offset: 4px; }
+.md-content a:hover { text-decoration: underline; }
+.md-content ul, .md-content ol { margin: 1em 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 0.4em; }
+.md-content li::marker { color: var(--color-gold-deep); }
+.md-content blockquote { border-left: 2px solid var(--color-gold-deep); padding-left: 1em; color: var(--color-ink-1); font-family: var(--font-display); }
+.md-content code { font-family: var(--font-mono); font-size: 0.9em; color: var(--color-gold-bright); }

@@ -1,0 +1,80 @@
+name: verify
+
+# Every push and PR proves the same four gates that run locally, plus a
+# from-zero database build. If this is green, the platform assembles cleanly
+# on a machine that has never seen it before.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: tycoon
+          POSTGRES_PASSWORD: tycoon_ci
+          POSTGRES_DB: tycoonhood_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://tycoon:tycoon_ci@localhost:5432/tycoonhood_test
+      # Deliberately unset: STRIPE_SECRET_KEY, RESEND_API_KEY, DISCORD_*.
+      # CI must prove the platform runs correctly with integrations absent.
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply migrations
+        run: pnpm --filter @tycoonhood/db migrate:deploy
+
+      - name: Seed (base → academy → content)
+        run: |
+          pnpm --filter @tycoonhood/db seed
+          pnpm --filter @tycoonhood/db seed:academy
+          pnpm --filter @tycoonhood/db seed:content
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build (web + miner)
+        run: pnpm build
+
+      - name: Platform verification (26 end-to-end checks)
+        working-directory: packages/core
+        run: npx tsx scripts/verify-platform.ts
+
+      - name: Assert no placeholder content reached the seeded academy
+        run: |
+          COUNT=$(psql "$DATABASE_URL" -t -A -c \
+            "select count(*) from \"Lesson\" where \"contentMd\" like '%Content pending%';")
+          echo "placeholder lessons: $COUNT"
+          test "$COUNT" -eq 0

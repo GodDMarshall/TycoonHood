@@ -1,0 +1,41 @@
+{
+  "name": "tycoonhood",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @tycoonhood/web dev",
+    "build": "pnpm --filter @tycoonhood/web build && pnpm --filter @tycoonhood/miner build",
+    "db:migrate": "pnpm --filter @tycoonhood/db migrate",
+    "db:seed": "pnpm --filter @tycoonhood/db seed",
+    "db:studio": "pnpm --filter @tycoonhood/db studio",
+    "test": "pnpm --filter @tycoonhood/core test",
+    "db:seed:content": "pnpm --filter @tycoonhood/db seed:content",
+    "db:seed:academy": "pnpm --filter @tycoonhood/db seed:academy",
+    "dev:miner": "pnpm --filter @tycoonhood/miner dev",
+    "build:miner": "pnpm --filter @tycoonhood/miner build",
+    "typecheck": "pnpm -r --parallel typecheck",
+    "lint": "eslint .",
+    "build:web": "pnpm --filter @tycoonhood/web build",
+    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "db:deploy": "pnpm --filter @tycoonhood/db migrate:deploy",
+    "db:migrate:sql": "pnpm --filter @tycoonhood/db migrate:sql",
+    "db:migrate:status": "pnpm --filter @tycoonhood/db migrate:status",
+    "deploy:db": "node scripts/deploy-db.mjs",
+    "db:seed:merch": "pnpm --filter @tycoonhood/db seed:merch",
+    "e2e": "node scripts/e2e/full-loop.mjs",
+    "preflight": "pnpm --filter @tycoonhood/core exec tsx scripts/preflight.ts"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.6",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.6",
+    "pg": "^8.23.0",
+    "playwright": "^1.63.0",
+    "typescript-eslint": "^8"
+  },
+  "packageManager": "pnpm@9.15.9"
+}
