@@ -104,7 +104,7 @@ export default function PrivacyPage() {
       <Clause n="5" heading="What is public, and what is not">
         <p>
           Your profile is yours to control. In{" "}
-          <Link href="/settings" className="text-gold underline-offset-4 hover:underline">Settings</Link>{" "}
+          <Link href="/settings" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Settings</Link>{" "}
           you decide, item by item, whether your level, rank, achievements, streak, courses
           and THC balance are visible to anyone else.
         </p>

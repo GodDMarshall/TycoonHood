@@ -60,7 +60,7 @@ export function RegisterForm({
           </Button>
           <p className="text-center text-[13px] text-ink-3">
             Already a member?{" "}
-            <Link className="text-gold underline-offset-4 hover:underline" href="/login">
+            <Link className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold" href="/login">
               Sign in
             </Link>
           </p>
@@ -85,13 +85,13 @@ export function LoginForm({ action }: { action: Action }) {
             Sign in
           </Button>
           <p className="text-right text-[12px]">
-            <Link className="text-ink-3 hover:text-gold hover:underline underline-offset-4" href="/forgot-password">
+            <Link className="text-ink-3 hover:text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold" href="/forgot-password">
               Forgot password?
             </Link>
           </p>
           <p className="text-center text-[13px] text-ink-3">
             New here?{" "}
-            <Link className="text-gold underline-offset-4 hover:underline" href="/register">
+            <Link className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold" href="/register">
               Create an account
             </Link>
           </p>

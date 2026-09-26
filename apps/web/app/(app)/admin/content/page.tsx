@@ -39,7 +39,7 @@ export default async function AdminContent() {
         ))}
       </div>
       <SectionRule label="Journal" className="mb-4 mt-10" />
-      <Link href="/admin/content/post/new" className="text-[13px] font-semibold text-gold hover:underline underline-offset-4">
+      <Link href="/admin/content/post/new" className="text-[13px] font-semibold text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
         + New essay
       </Link>
       <div className="mt-3 flex flex-col gap-2">
@@ -51,7 +51,7 @@ export default async function AdminContent() {
               </p>
               <span className="flex items-center gap-2">
                 <Badge tone={p.publishedAt ? "success" : "neutral"}>{p.publishedAt ? "Published" : "Draft"}</Badge>
-                <Link href={`/admin/content/post/${p.id}`} className="text-[13px] text-gold hover:underline underline-offset-4">Edit</Link>
+                <Link href={`/admin/content/post/${p.id}`} className="text-[13px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Edit</Link>
               </span>
             </CardContent>
           </Card>

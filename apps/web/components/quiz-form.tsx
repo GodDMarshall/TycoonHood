@@ -72,7 +72,7 @@ export function QuizForm({ action, questions, completed = false }: Props) {
     return (
       <Notice tone="success" title="Knowledge check passed">
         This lesson is complete.{" "}
-        <button type="button" onClick={() => setRetaking(true)} className="text-gold underline-offset-4 hover:underline">
+        <button type="button" onClick={() => setRetaking(true)} className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
           Retake it
         </button>{" "}
         — the recorded pass stands.

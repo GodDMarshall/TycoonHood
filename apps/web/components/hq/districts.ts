@@ -84,7 +84,7 @@ export const DISTRICTS: District[] = [
     name: "Network",
     note: "Members, ranked in the open.",
     form: "lattice",
-    at: [-1.2, -6.6],
+    at: [1.4, -6.8],
     anchor: 3.6,
     guestHref: "/register",
     memberHref: "/leaderboard",

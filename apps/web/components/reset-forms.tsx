@@ -31,7 +31,7 @@ export function ForgotPasswordForm({
                 <p className="mt-1 text-[11px] text-ink-3">In production this link only ever travels by email.</p>
               </div>
             )}
-            <Link href="/login" className="text-[13px] text-gold hover:underline underline-offset-4">← Back to sign in</Link>
+            <Link href="/login" className="text-[13px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">← Back to sign in</Link>
           </div>
         ) : (
           <form action={formAction} className="flex flex-col gap-4">
@@ -44,7 +44,7 @@ export function ForgotPasswordForm({
             <Button type="submit" loading={pending}>Send reset link</Button>
             <p className="text-center text-[12px] text-ink-3">
               Remembered it?{" "}
-              <Link href="/login" className="text-gold hover:underline underline-offset-4">Sign in</Link>
+              <Link href="/login" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Sign in</Link>
             </p>
           </form>
         )}
@@ -67,7 +67,7 @@ export function ResetPasswordForm({
           <p className="text-[13px] text-ink-2">
             Every device was signed out — including whoever wasn't you. Sign back in with the new password.
           </p>
-          <Link href="/login" className="text-[14px] font-semibold text-gold hover:underline underline-offset-4">
+          <Link href="/login" className="text-[14px] font-semibold text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
             Sign in →
           </Link>
         </CardContent>

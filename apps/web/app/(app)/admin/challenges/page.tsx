@@ -43,7 +43,7 @@ export default async function AdminChallenges() {
                 </div>
                 <p className="whitespace-pre-wrap rounded-md border border-line bg-bg-1 px-3 py-2 text-[13px] text-ink-2">{q.text}</p>
                 {q.url && (
-                  <a href={q.url} target="_blank" rel="noreferrer" className="figures break-all text-[12px] text-gold hover:underline underline-offset-4">
+                  <a href={q.url} target="_blank" rel="noreferrer" className="figures break-all text-[12px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
                     {q.url}
                   </a>
                 )}

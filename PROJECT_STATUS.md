@@ -1,7 +1,7 @@
 # TYCOONHOOD — PROJECT STATUS
 
-**Last verified:** 24 September 2026, by a full run in a Linux sandbox
-(PostgreSQL 16, Node 22, pnpm 9.15.9).
+**Last verified:** 26 September 2026, by a full run in a Linux sandbox
+(PostgreSQL 16, Node 22, pnpm 9.15.9), after the HQ visual rebuild (DR-17/18).
 **Not deployed.** Nothing here has served a real member.
 
 Every line below is the recorded output of a command, not a claim.
@@ -14,11 +14,12 @@ Every line below is the recorded output of a command, not a claim.
 |---|---|---|
 | Types | `pnpm typecheck` | clean · 6 projects |
 | Lint | `pnpm lint` | clean |
-| Tests | `pnpm test` | **95 / 95** |
-| Web build | `pnpm build:web` | 30 routes |
+| Tests | `pnpm test` | **101 / 101** |
+| Web build | `pnpm build:web` | 47 routes |
 | Miner build | `pnpm build:miner` | 5 routes |
 | Deployment harness | `pnpm --filter @tycoonhood/core exec tsx scripts/verify-platform.ts` | **28 / 28** |
-| Browser end-to-end | `pnpm e2e` | **37 / 37** |
+| Browser end-to-end | `pnpm e2e` | **39 / 39** |
+| Responsive + accessibility | 29 page/audience pairs × 1440·1280·1024·768·390·360, axe WCAG 2.1 AA | 0 overflow · 0 violations |
 
 The browser run is the one worth reading. It opens a real Chromium against
 both production builds and, as an admin and then as a member:
@@ -55,6 +56,12 @@ It then deletes what it created and checks that it left nothing behind.
   server rather than the browser.
 - **Admin** — overview, members, economy, content, missions, products, videos,
   challenges, orders.
+- **The HQ visual system** — dark/gold design system, self-hosted type, one
+  icon family, context-aware navigation with a phone tab bar, the 3D
+  headquarters on the homepage (with a static drawing for every device that
+  should not run it), the Command Center, pillar atmospheres, mission-style
+  challenges, the Network map, identity-card profiles. See
+  `docs/DESIGN_SYSTEM.md` and `docs/AUDIT-2026-09-26.md`.
 
 ## What does not exist
 
@@ -66,7 +73,6 @@ Stated plainly, because a status file that overstates is worse than none:
 - Analytics beyond the economy overview.
 - The AI layer.
 - Telegram (cut, D18).
-- Mobile navigation on the main site (the Miner is mobile-first and fine).
 
 ## What is blocking, and on whom
 

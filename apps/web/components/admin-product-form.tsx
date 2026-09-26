@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useMemo, useState } from "react";
-import { Button, Field, Input, Label, Textarea } from "@tycoonhood/ui";
+import { Button, Field, Icon, Input, Label, Textarea } from "@tycoonhood/ui";
 import { saveProductAction, type ProductFormState } from "../app/(app)/admin/products/actions";
 
 export interface CourseOption { id: string; title: string }
@@ -204,7 +204,7 @@ export function ProductForm({ courses, economics }: { courses: CourseOption[]; e
           <>
             <div className="flex flex-col gap-2">
               {rows.map((row, i) => (
-                <div key={i} className="grid grid-cols-[70px_1fr_80px_100px_32px] items-center gap-2">
+                <div key={i} className="grid grid-cols-[52px_minmax(0,1fr)_60px_minmax(0,88px)_28px] items-center gap-1.5 sm:grid-cols-[70px_1fr_80px_100px_32px] sm:gap-2">
                   <input type="hidden" name="variantId" value="" />
                   <Input name="variantLabel" value={row.label} aria-label={`Size ${i + 1} label`}
                     onChange={(e) => setRow(i, { label: e.target.value })} placeholder="M" />
@@ -219,7 +219,9 @@ export function ProductForm({ courses, economics }: { courses: CourseOption[]; e
                     onChange={(e) => setRow(i, { price: e.target.value })} placeholder="same" />
                   <button type="button" aria-label={`Remove size ${i + 1}`}
                     onClick={() => setRows((r) => r.filter((_, idx) => idx !== i))}
-                    className="text-[16px] text-ink-3 hover:text-danger">×</button>
+                    className="flex size-7 items-center justify-center rounded-sm text-ink-3 hover:bg-danger/10 hover:text-danger">
+                    <Icon name="x" size={14} />
+                  </button>
                 </div>
               ))}
             </div>

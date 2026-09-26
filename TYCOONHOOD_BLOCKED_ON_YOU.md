@@ -59,7 +59,13 @@ reward, tick Live. Takes about thirty seconds per video.
 ---
 
 ## 3. DR-1 — the WebGL lattice, the Ascent homepage, and the exact red
-**Status: still open since 15 September. Not blocking anything.**
+**Status: CLOSED 26 September by your takeover directive — see DR-17/DR-18.**
+The 3D direction is built (the HQ). No lattice and no red were invented. Six
+smaller calls the rebuild surfaced — rank ladder, three vs four pillars, free
+enrollment, draft programs, the hero line, photography — are listed as
+OQ-A…OQ-F at the end of `TYCOONHOOD_DECISIONS.md`. None blocks anything.
+
+*Original entry, kept for the record:*
 
 Your original directive told me to preserve decision history around "the
 headline, the runtime WebGL lattice, and the exact red / visual red

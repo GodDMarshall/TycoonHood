@@ -26,7 +26,8 @@ export function detectTier(): { tier: Tier; reason: string } {
     const nav = navigator as Nav;
     if (nav.connection?.saveData) return { tier: "static", reason: "save-data" };
     if (/(^|-)2g$/.test(nav.connection?.effectiveType ?? "")) return { tier: "static", reason: "slow-network" };
-    if (window.innerWidth < 1024) return { tier: "static", reason: "small-viewport" };
+    // The live scene shares the hero with the headline only from 1280px up.
+    if (window.innerWidth < 1280) return { tier: "static", reason: "small-viewport" };
   }
 
   const probe = document.createElement("canvas");

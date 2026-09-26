@@ -21,7 +21,7 @@ export function createCameraRig() {
 
   function resize(width: number, height: number) {
     camera.aspect = width / Math.max(1, height);
-    state.shift = width >= 1280 ? 0.22 : width >= 1024 ? 0.18 : 0;
+    state.shift = width >= 1280 ? 0.22 : 0;
     if (state.shift) camera.setViewOffset(width, height, -width * state.shift, 0, width, height);
     else camera.clearViewOffset();
     camera.updateProjectionMatrix();

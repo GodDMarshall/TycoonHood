@@ -99,7 +99,7 @@ export default async function NetworkPage() {
             <p className="mt-3 text-[13.5px] leading-relaxed text-ink-2">
               Link your Discord account and your rank follows you there as a role, synced on every rank-up.
             </p>
-            <Link href="/settings" className="mt-4 inline-flex items-center gap-2 text-[13px] text-gold underline-offset-4 hover:underline">
+            <Link href="/settings" className="mt-4 inline-flex items-center gap-2 text-[13px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
               Link Discord in settings <Icon name="arrow-right" size={14} />
             </Link>
           </section>

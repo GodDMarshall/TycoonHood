@@ -37,7 +37,7 @@ export default function TermsPage() {
           and your personal details. It does not remove ledger entries, because the ledger is
           append-only by design — those rows are anonymised rather than deleted, so the books
           still balance. This is explained again in the{" "}
-          <Link href="/privacy" className="text-gold underline-offset-4 hover:underline">Privacy Policy</Link>.
+          <Link href="/privacy" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Privacy Policy</Link>.
         </p>
       </Clause>
 
@@ -46,7 +46,7 @@ export default function TermsPage() {
           THC are internal utility credits. They exist only inside Tycoonhood, on our own
           ledger. The total supply is fixed at one quadrillion and is publicly auditable on
           the{" "}
-          <Link href="/status" className="text-gold underline-offset-4 hover:underline">open books</Link>.
+          <Link href="/status" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">open books</Link>.
         </p>
         <p>
           THC is <strong className="text-ink-1">not</strong> currency, a security, an

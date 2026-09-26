@@ -47,10 +47,7 @@ export function CoinMark({ size = 28, className }: { size?: number; className?: 
 
 export function Wordmark({ className }: { className?: string }) {
   return (
-    <span
-      className={cn("font-sans font-semibold uppercase text-ink-1", className)}
-      style={{ letterSpacing: "0.3em" }}
-    >
+    <span className={cn("font-sans font-semibold uppercase tracking-[0.3em] text-ink-1 max-[400px]:tracking-[0.2em]", className)}>
       Tycoonhood
     </span>
   );

@@ -73,7 +73,7 @@ export default async function ThcPage() {
             <h2 id="books" className="eyebrow flex items-center gap-2">
               <span className="size-1.5 rounded-full bg-success" aria-hidden /> The open books — live
             </h2>
-            <Link href="/status" className="text-[13px] text-gold underline-offset-4 hover:underline">
+            <Link href="/status" className="text-[13px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
               Every figure, audited
             </Link>
           </div>

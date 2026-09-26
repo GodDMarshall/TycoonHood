@@ -92,7 +92,7 @@ money, not redeemable, no transfers between members.
 | `apps/miner` | the Miner PWA |
 | `packages/core` | ledger, auth, LMS, gamification, mining, commerce, catalog, growth, rules engine |
 | `packages/db` | Prisma schema, SQL migrations, seeds, committed engine-free client |
-| `packages/ui` | the design system — tokens plus 20 components |
+| `packages/ui` | the design system ("HQ") — tokens, fonts, icons, primitives. See `docs/DESIGN_SYSTEM.md` |
 | `packages/config` | every economy constant, in one place |
 | `docs/` | BLUEPRINT · DECISIONS · RUNBOOK |
 
@@ -111,5 +111,4 @@ money, not redeemable, no transfers between members.
 
 Course and challenge authoring in the admin — content is still seeded by
 script. Membership tiers and subscriptions, which is the business model.
-Analytics beyond the economy overview. Mobile navigation on the main site.
-Telegram, which was cut. The roadmap has all of it, in priority order.
+Analytics beyond the economy overview. Telegram, which was cut. The roadmap has all of it, in priority order.

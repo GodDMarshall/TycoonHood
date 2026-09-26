@@ -31,7 +31,7 @@ export default function RoadmapPage() {
       <p className="mt-4 max-w-xl text-ink-2">
         Each phase ships working and tested before the next begins. &ldquo;Shipped&rdquo; means built and
         verified — the house has not opened its doors yet. Live figures are on the{" "}
-        <Link href="/status" className="text-gold hover:underline underline-offset-4">
+        <Link href="/status" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
           open books
         </Link>{" "}
         page.

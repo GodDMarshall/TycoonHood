@@ -51,7 +51,7 @@ export function LegalPage({
       <SectionRule className="my-10" />
       <p className="text-[13px] text-ink-3">
         Questions about this page:{" "}
-        <Link href="/faq" className="text-gold underline-offset-4 hover:underline">the FAQ</Link>{" "}
+        <Link href="/faq" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">the FAQ</Link>{" "}
         answers most of them, and anything it does not, ask in the community.
       </p>
     </main>

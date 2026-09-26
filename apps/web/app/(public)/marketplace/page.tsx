@@ -171,7 +171,7 @@ function ProductCard({
           />
         ) : (
           <p className="border-t border-line pt-3 text-[12.5px] text-ink-3">
-            <Link href="/login" className="text-gold underline-offset-4 hover:underline">
+            <Link href="/login" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
               Sign in
             </Link>{" "}
             to purchase.

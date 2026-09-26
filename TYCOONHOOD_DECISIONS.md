@@ -21,7 +21,7 @@ These carry their original IDs. Status is **ADOPTED** unless noted; do not overt
 Each needs a product-level judgment. I have not made these for you; I state the recommendation and mark status **OPEN** until you decide. Where I already had to act to keep the audit moving, I say so and mark it **PROVISIONAL**.
 
 ### DR-1 — Where does the WebGL lattice / "exact red" / "Ascent" homepage live? *(the Directive §4/§8 decisions)*
-- **Date:** 2026-09-15 · **Status:** **OPEN — blocking a full answer to Directive §4 and §8.**
+- **Date:** 2026-09-15 · **Status:** **CLOSED 2026-09-26 by DR-17** — the owner's takeover directive chose (b): build a 3D direction. No lattice and no red were ever found; neither was invented.
 - **Context:** the Master Directive names a "runtime WebGL lattice", an "exact red / visual red specification", and a "headline" as historical decisions to preserve. **None exist in `D:\TycoonHood`:** no Three.js/GSAP/WebGL/canvas anywhere, no red in the token palette, and the homepage hero is plain text. The repository's recorded brand is "the ledger" (A9, above). `PROJECT_STATUS.md:82`'s "code-drawn 3D/SVG hero art" is a stale/false claim (verified — no such asset exists).
 - **Alternatives:** (a) these decisions belong to a **different TycoonHood artifact** not in this repo (an earlier "Ascent" homepage, a chat-exported zip, another folder); (b) they are **intended future direction** not yet built; (c) they were superseded by the "ledger" direction and the Directive text is out of date.
 - **Reason a decision is needed:** the Directive forbids inventing implementation and forbids silently choosing between conflicting decisions. I cannot preserve, audit, or reconcile what is not present.
@@ -132,6 +132,39 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **Consequences:** a SKU that belongs to a *different* product is now refused with a message naming that product, instead of a constraint error nobody can act on. Three regression tests cover re-saving, cross-product collision, and size retirement.
 
 ---
+
+### DR-17 — The visual layer is "HQ", superseding the A9 "ledger" visual contract
+- **Date:** 2026-09-26 · **Status:** **ADOPTED — owner directive ("Claude Code master takeover"), implemented and verified.**
+- **Context:** A9 recorded a warm espresso "vault" palette, an engraved serif hero, **"no WebGL; the hero is typographic"**. DR-1 had been waiting since 15 September on whether a 3D direction existed. The owner's takeover directive now resolves it as option **(b): build it** — a premium dark/gold ecosystem with sophisticated, purposeful 3D, a spatial "headquarters" metaphor, and the same language across every room of the product. It names no red, so none was introduced.
+- **What changed:** colour, geometry, type, motion, iconography and page composition only. **Token names were kept** (`bg-0…`, `ink-1…`, `gold…`, pillar names), so every page re-skinned from one file (D14 still holds). Data contracts, the ledger, the economy, routes, authorization (DR-3) and the honest-state rule (§1) are untouched.
+- **The system:** five graphite surface levels; gold `#cfa95e` as a material used for one thing per view; every text colour ≥ 4.5:1 on every surface it sits on (measured, and verified with axe on every page at 1440 and 390); control boundaries at 3.3:1; architectural radii (2–6px); Instrument Sans (display + UI) with Instrument Serif italic for a single accent phrase and IBM Plex Mono for figures — self-hosted, SIL OFL, licences beside the files; one geometric icon family (emoji removed everywhere); motion tokens 160/240/400/700ms. Reference: `docs/DESIGN_SYSTEM.md` and `/styleguide`.
+- **Alternatives rejected:** polishing the ledger system (the owner judged it weak, and the audit agreed: system fonts, template cards, text-only hero, emoji icons); a light theme (dark-first is the brand; a light theme would be a deliberate alternate, not an inversion); React Three Fiber (a second rendering model and ~2× the bundle for a scene that needs none of its reconciliation).
+- **Consequences:** A9's *brand* content survives — the reeded-coin mark (redrawn as solid metal), the pillar identities (muted to threads), the open-books signature band. A9's visual rules ("no WebGL", "typographic hero", espresso palette) are superseded. DR-1 is **closed**.
+
+### DR-18 — The HQ: districts are real rooms, and 3D is tiered, lazy and optional
+- **Date:** 2026-09-26 · **Status:** **ADOPTED.**
+- **Decision:** the product's spatial language is six districts — **Command Center** (`/dashboard`), **Academy** (`/programs`, `/academy`), **Arena** (`/challenges`), **Vault** (`/marketplace`), **Treasury** (`/thc`, `/status`), **Network** (`/leaderboard`). No route was renamed; the district is the name, the route is unchanged. A district with no route is not shown (there is no "Exchange" or "War Room": nothing exists behind them).
+- **3D policy:** the homepage HQ is a framework-free three.js scene (`apps/web/components/hq/scene/*`: scene, camera, lighting, materials, objects, interaction, performance). It is fetched **on idle**, only for viewports ≥1280px with a real GPU, no reduced-motion, no Save-Data, not 2G. Everyone else — and anyone whose GPU cannot hold ~25fps, or whose context is lost — gets an isometric SVG drawing of the **same plan**, server-rendered, which is also the poster the scene fades in over. District labels are DOM links in both, so the hero is crawlable and keyboard-navigable with or without WebGL. `?hq=3d` / `?hq=static` override detection for QA only.
+- **Cost:** homepage first-load JS 107 kB → 115 kB; three.js (~141 kB gzip) never loads on phones or constrained devices.
+- **Rejected:** a video hero (heavy, not interactive, dated the moment the product changes); 3D on every page (the Command Center's signature visual — the Monument — is SVG on purpose: it must be cheap and always present).
+
+### DR-19 — Member profiles are not indexed
+- **Date:** 2026-09-26 · **Status:** **PROVISIONAL — mine, confirm or overrule.**
+- **Context:** `/u/[username]` is public by design (D24) and honours per-facet privacy, but it is personal. Search engines indexing member pages is a decision about members, not a design default.
+- **Decision:** `noindex, nofollow` on profiles; they remain reachable by link. Sitemap unchanged (profiles were never in it).
+
+### DR-20 — The e2e sign-in waits for the outcome, not for idle
+- **Date:** 2026-09-26 · **Status:** **ADOPTED — test bug, not a weakened test.**
+- **Context:** `full-loop.mjs` clicked "Sign in" then called `waitForLoadState("networkidle")`, which resolves **immediately** when the page was already idle. It raced the server action's redirect and only passed while the dashboard rendered fast. The richer Command Center lost the race.
+- **Decision:** wait for either leaving `/login` or a **non-empty** `role=alert` (Next's route announcer is an always-present empty alert). Same assertions, now deterministic: 39/39.
+
+### Open — decisions only the owner can make (surfaced by the takeover, not invented)
+- **OQ-A · The progression ladder.** The directive sketches START → DISCIPLINE → KNOWLEDGE → EXECUTION → BUILDING → LEADERSHIP → TYCOON (seven stages). The live system has five seeded ranks, *Tycoon Initiate → Apprentice → Mastermind → Elite → Legend*, wired to level thresholds and Discord roles. I kept the five and drew them as the Ascent and the Monument's tiers. Renaming or re-cutting ranks is a data migration plus a Discord role change — your call.
+- **OQ-B · Three pillars or four.** The directive names Warrior, Business Mastery and Mindfulness. The academy has a fourth published program, *Financial Planning and Investment Advisory* (Tycoon pillar), whose name already carries the legal flag in §3. I kept all four; the "Investment Advisory" wording still needs counsel or a rename.
+- **OQ-C · "Enroll — free" on every program.** Enrollment is free for every published course in code (DR-6 is still open), while a paid *Warrior Program* product exists in the Vault. The UI states what the code does. Decide DR-6 and the copy follows.
+- **OQ-D · Draft programs on the public Academy.** `/programs` lists DRAFT courses with an "In production" tag (pre-existing behaviour, kept). Hide them until published?
+- **OQ-E · Hero line.** "Build yourself. / The rest compounds." — chosen by me from §55 of the directive (wealth as the compounding outcome of capability). Overrule freely; it is one string.
+- **OQ-F · Photography.** Every visual in the product is drawn in code (3D, SVG, CSS). There is no photography because none exists that is ours. If you commission a shoot, the grade to match is: near-black ground, one warm key light, no faces required.
 
 ## How to use this file going forward
 Add a Part B entry (or a new `D##` if it's architectural and adopted) for any decision that changes architecture, product scope, the economy, the design contract, or a security posture. Never edit a preserved entry to change its meaning — supersede it with a dated new entry that references the old ID. When an OPEN item is decided, change its status to ADOPTED/REJECTED with the date and a one-line outcome; leave the reasoning intact.

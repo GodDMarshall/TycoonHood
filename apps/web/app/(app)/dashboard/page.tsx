@@ -153,7 +153,7 @@ export default async function CommandCenter() {
             </p>
           )}
         </div>
-        <dl className="grid grid-cols-2 overflow-hidden rounded-lg border border-line bg-bg-1 sm:grid-cols-4 lg:min-w-[560px]">
+        <div role="group" aria-label="Your status" className="grid grid-cols-2 overflow-hidden rounded-lg border border-line bg-bg-1 sm:grid-cols-4 lg:min-w-[560px]">
           <Readout label="Rank" icon="ascent">
             <span className="flex items-center gap-2">
               <RankPips filled={rankIndex + 1} />
@@ -170,7 +170,7 @@ export default async function CommandCenter() {
           <Readout label="Wallet" icon="wallet" href="/wallet">
             <ThcAmount amount={wallet.balance} size="sm" />
           </Readout>
-        </dl>
+        </div>
       </header>
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
@@ -287,7 +287,7 @@ export default async function CommandCenter() {
             <h2 id="record" className="eyebrow">
               The record
             </h2>
-            <Link href="/wallet" className="text-[12.5px] text-gold underline-offset-4 hover:underline">
+            <Link href="/wallet" className="text-[12.5px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
               Full ledger
             </Link>
           </div>
@@ -393,7 +393,7 @@ export default async function CommandCenter() {
             <h2 id="academy" className="eyebrow">
               Academy
             </h2>
-            <Link href="/academy" className="text-[12.5px] text-gold underline-offset-4 hover:underline">
+            <Link href="/academy" className="text-[12.5px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
               All programs
             </Link>
           </div>
@@ -435,7 +435,7 @@ export default async function CommandCenter() {
             <h2 id="arena" className="eyebrow">
               Arena
             </h2>
-            <Link href="/challenges" className="text-[12.5px] text-gold underline-offset-4 hover:underline">
+            <Link href="/challenges" className="text-[12.5px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
               All challenges
             </Link>
           </div>
@@ -476,11 +476,11 @@ export default async function CommandCenter() {
 function Readout({ label, icon, href, children }: { label: string; icon: IconName; href?: string; children: ReactNode }) {
   const body = (
     <>
-      <dt className="flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-ink-3">
+      <span className="flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-ink-3">
         <Icon name={icon} size={12} className="text-gold" />
         {label}
-      </dt>
-      <dd className="figures mt-2 text-[15px] leading-none text-ink-1">{children}</dd>
+      </span>
+      <span className="figures mt-2 text-[15px] leading-none text-ink-1">{children}</span>
     </>
   );
   const cls = "flex flex-col border-line px-4 py-4 max-sm:[&:nth-child(-n+2)]:border-b [&:not(:last-child)]:border-r max-sm:[&:nth-child(2)]:border-r-0";

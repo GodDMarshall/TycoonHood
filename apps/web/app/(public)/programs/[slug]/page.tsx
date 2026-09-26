@@ -82,7 +82,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
           {course.prerequisite && (
             <p className="mt-6 text-[13px] text-ink-3">
               Recommended first:{" "}
-              <Link href={`/programs/${course.prerequisite.slug}`} className="text-gold underline-offset-4 hover:underline">
+              <Link href={`/programs/${course.prerequisite.slug}`} className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
                 {course.prerequisite.title}
               </Link>
             </p>

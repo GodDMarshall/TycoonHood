@@ -153,17 +153,17 @@ export function HQStage({ poster, member, className }: { poster: ReactNode; memb
   };
 
   return (
-    <div ref={root} className={cn("relative lg:h-full", className)}>
+    <div ref={root} className={cn("relative xl:h-full", className)}>
       {/* The drawing: poster for 3D, complete rendering for everyone else. */}
       <div
         className={cn(
-          "relative transition-opacity duration-[var(--dur-4)] ease-[var(--ease-premium)] lg:absolute lg:inset-0 lg:flex lg:items-center lg:justify-end",
+          "relative transition-opacity duration-[var(--dur-4)] ease-[var(--ease-premium)] xl:absolute xl:inset-0 xl:flex xl:items-center xl:justify-end",
           live && "pointer-events-none opacity-0"
         )}
         aria-hidden={live || undefined}
       >
         <div
-          className="relative mx-auto w-full max-w-[620px] lg:mx-0 lg:mr-[2%] lg:w-[60%] lg:max-w-none"
+          className="relative mx-auto w-full max-w-[620px] xl:mx-0 xl:mr-[2%] xl:w-[60%] xl:max-w-none"
           style={{ aspectRatio: DRAWING_ASPECT }}
         >
           {poster}
@@ -178,7 +178,7 @@ export function HQStage({ poster, member, className }: { poster: ReactNode; memb
       {(tier === "full" || tier === "lite") && (
         <div
           className={cn(
-            "absolute inset-0 hidden transition-opacity duration-[1200ms] ease-[var(--ease-premium)] lg:block",
+            "absolute inset-0 hidden transition-opacity duration-[1200ms] ease-[var(--ease-premium)] xl:block",
             live ? "opacity-100" : "opacity-0"
           )}
         >

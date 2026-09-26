@@ -27,7 +27,7 @@ export default async function VerifyCertificate({ params }: { params: Promise<{ 
           <p className="text-[15px] text-ink-1">
             Completed by{" "}
             {cert.user.profile ? (
-              <Link href={`/u/${cert.user.profile.username}`} className="font-semibold text-gold hover:underline underline-offset-4">
+              <Link href={`/u/${cert.user.profile.username}`} className="font-semibold text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
                 {cert.user.profile.displayName}
               </Link>
             ) : (

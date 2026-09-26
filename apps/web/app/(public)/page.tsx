@@ -112,24 +112,24 @@ export default async function HomePage() {
       {/* ─── 01 ENTER ───────────────────────────────────────────── */}
       <section
         aria-labelledby="hero-title"
-        className="relative isolate flex flex-col overflow-hidden border-b border-line lg:block lg:min-h-[max(720px,calc(100svh-4rem))]"
+        className="relative isolate flex flex-col overflow-hidden border-b border-line xl:block xl:min-h-[max(720px,calc(100svh-4rem))]"
       >
         <div className="grid-plane pointer-events-none absolute inset-0 -z-10 opacity-70" aria-hidden />
         <div
           aria-hidden
-          className="pointer-events-none absolute right-[-10%] top-[20%] -z-10 hidden size-[900px] rounded-full bg-[radial-gradient(closest-side,rgb(207_169_94/0.10),transparent)] lg:block"
+          className="pointer-events-none absolute right-[-10%] top-[20%] -z-10 hidden size-[900px] rounded-full bg-[radial-gradient(closest-side,rgb(207_169_94/0.10),transparent)] xl:block"
         />
-        <div className="lg:absolute lg:inset-0">
+        <div className="xl:absolute xl:inset-0">
           <div className="mx-auto h-full max-w-[88rem]">
-            <HQStage poster={<HQDrawing className="h-full w-full" />} member={member} className="order-2 px-[var(--gutter)] pb-10 lg:px-0 lg:pb-0" />
+            <HQStage poster={<HQDrawing className="h-full w-full" />} member={member} className="order-2 px-[var(--gutter)] pb-10 xl:px-0 xl:pb-0" />
           </div>
         </div>
         {/* Scrim so the headline always reads over the scene. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 hidden w-[58%] bg-[linear-gradient(90deg,var(--color-bg-0)_30%,transparent)] lg:block"
+          className="pointer-events-none absolute inset-y-0 left-0 hidden w-[58%] bg-[linear-gradient(90deg,var(--color-bg-0)_30%,transparent)] xl:block"
         />
-        <div className="pointer-events-none relative mx-auto flex max-w-[88rem] flex-col px-[var(--gutter)] pb-12 pt-14 max-lg:-order-1 md:pt-20 lg:min-h-[max(720px,calc(100svh-4rem))] lg:justify-center lg:pb-24">
+        <div className="pointer-events-none relative mx-auto flex w-full max-w-[88rem] flex-col px-[var(--gutter)] pb-12 pt-14 max-xl:-order-1 md:pt-20 xl:min-h-[max(720px,calc(100svh-4rem))] xl:justify-center xl:pb-24">
           <div className="pointer-events-auto max-w-[44rem] animate-rise">
             <p className="mb-7 flex items-center gap-3">
               <span className="index">01 — Enter</span>
@@ -189,7 +189,7 @@ export default async function HomePage() {
           <p className="flex flex-wrap items-center gap-x-2 text-[12px] text-ink-3">
             <span className="size-1.5 rounded-full bg-success" aria-hidden />
             Live from the double-entry ledger — every figure above is a database fact.
-            <Link href="/status" className="text-gold underline-offset-4 hover:underline">
+            <Link href="/status" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
               See all the books
             </Link>
           </p>
@@ -291,7 +291,7 @@ export default async function HomePage() {
               Four disciplines. <span className="accent">Each its own world.</span>
             </h2>
           </div>
-          <Link href="/programs" className="flex items-center gap-2 text-[14px] text-gold underline-offset-4 hover:underline">
+          <Link href="/programs" className="flex items-center gap-2 text-[14px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
             All programs <Icon name="arrow-right" size={15} />
           </Link>
         </div>
