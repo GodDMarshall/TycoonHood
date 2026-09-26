@@ -1,25 +1,41 @@
 import { cn } from "../cn";
 
+/**
+ * A precise instrument, not a candy bar: 4px, square ends, a metal fill
+ * with a lit leading edge. `label` names the bar for assistive tech.
+ */
 export function Progress({
   value,
   max = 100,
+  label,
+  tone = "gold",
   className,
 }: {
   value: number;
   max?: number;
+  label?: string;
+  tone?: "gold" | "warrior" | "builder" | "mind" | "tycoon";
   className?: string;
 }) {
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  const pct = Math.min(100, Math.max(0, (value / Math.max(1, max)) * 100));
+  const fills = {
+    gold: "bg-[linear-gradient(90deg,var(--color-gold-shadow),var(--color-gold)_70%,var(--color-gold-bright))]",
+    tycoon: "bg-[linear-gradient(90deg,var(--color-gold-shadow),var(--color-gold)_70%,var(--color-gold-bright))]",
+    warrior: "bg-warrior",
+    builder: "bg-builder",
+    mind: "bg-mind",
+  } as const;
   return (
     <div
       role="progressbar"
+      aria-label={label}
       aria-valuenow={Math.round(value)}
       aria-valuemin={0}
       aria-valuemax={max}
-      className={cn("h-2 w-full overflow-hidden rounded-full bg-bg-2 border border-line", className)}
+      className={cn("relative h-1 w-full overflow-hidden rounded-[1px] bg-line", className)}
     >
       <div
-        className="h-full rounded-full bg-gradient-to-r from-gold-deep via-gold to-gold-bright transition-[width] duration-300"
+        className={cn("h-full transition-[width] duration-[var(--dur-4)] ease-[var(--ease-premium)]", fills[tone])}
         style={{ width: pct + "%" }}
       />
     </div>
@@ -43,16 +59,16 @@ export function XpBar({
   const span = Math.max(1, nextLevelXp - levelFloorXp);
   const into = currentXp - levelFloorXp;
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
+    <div className={cn("flex flex-col gap-2.5", className)}>
       <div className="flex items-baseline justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+        <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-ink-3">
           Level <span className="figures text-gold">{level}</span>
         </span>
         <span className="figures text-[12px] text-ink-2">
-          {into.toLocaleString()} / {span.toLocaleString()} XP
+          {into.toLocaleString("en-US")} / {span.toLocaleString("en-US")} XP
         </span>
       </div>
-      <Progress value={into} max={span} />
+      <Progress value={into} max={span} label={`Progress to level ${level + 1}`} />
     </div>
   );
 }

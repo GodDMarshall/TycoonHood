@@ -20,7 +20,7 @@ export function Avatar({
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center overflow-hidden rounded-full border border-line-strong bg-bg-2 text-ink-2",
+        "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-line-strong bg-[linear-gradient(145deg,var(--color-bg-3),var(--color-bg-1))] text-ink-2",
         className
       )}
       style={{ width: size, height: size, fontSize: size * 0.36 }}
@@ -30,7 +30,7 @@ export function Avatar({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={name} width={size} height={size} className="size-full object-cover" />
       ) : (
-        <span className="font-semibold tracking-wide">{initials}</span>
+        <span className="font-mono font-medium tracking-[0.06em]">{initials}</span>
       )}
     </span>
   );

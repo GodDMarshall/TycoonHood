@@ -1,20 +1,34 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../cn";
 
-type CardVariant = "default" | "raised" | "gold";
+/**
+ * Surfaces. Four variants, one per level of the depth system:
+ *   default     L3 content — a hairline, no lift
+ *   raised      L3 lifted — a second structural edge and a shadow
+ *   interactive L4 — reacts to hover and focus-within; wrap in a link
+ *   gold        L5 — the ONE premium object in a view. Use sparingly.
+ * Corners are architectural (4px). No blur, no glass.
+ */
+type CardVariant = "default" | "raised" | "interactive" | "gold";
 
 export function Card({
   variant = "default",
+  ticks = false,
   className,
   ...props
-}: HTMLAttributes<HTMLDivElement> & { variant?: CardVariant }) {
+}: HTMLAttributes<HTMLDivElement> & { variant?: CardVariant; ticks?: boolean }) {
   return (
     <div
       className={cn(
-        "rounded-lg border bg-bg-1",
+        "relative rounded-lg border bg-bg-2/70",
         variant === "default" && "border-line",
-        variant === "raised" && "border-line shadow-[var(--shadow-raise)]",
-        variant === "gold" && "border-gold-deep shadow-[var(--shadow-gold)]",
+        variant === "raised" && "border-line-strong bg-bg-2 shadow-[var(--shadow-2)]",
+        variant === "interactive" &&
+          "border-line transition-[border-color,background-color,transform,box-shadow] duration-[var(--dur-2)] ease-[var(--ease-premium)] " +
+            "hover:border-gold-deep hover:bg-bg-3 hover:shadow-[var(--shadow-2)] focus-within:border-gold-deep",
+        variant === "gold" &&
+          "border-gold-deep/70 bg-[linear-gradient(180deg,rgb(207_169_94/0.07),transparent_55%),var(--color-bg-2)] shadow-[var(--shadow-gold)]",
+        ticks && "frame-ticks",
         className
       )}
       {...props}
@@ -27,11 +41,11 @@ export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElemen
 }
 
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn("display text-[17px] font-semibold", className)} {...props} />;
+  return <h3 className={cn("display text-[17px] leading-snug tracking-[-0.02em]", className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-[13px] text-ink-2", className)} {...props} />;
+  return <p className={cn("text-[13px] leading-relaxed text-ink-2", className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -47,22 +61,54 @@ export function Stat({
   label,
   value,
   delta,
+  hint,
   className,
 }: {
   label: string;
   value: ReactNode;
   delta?: { value: string; positive?: boolean };
+  hint?: ReactNode;
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
-      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-3">{label}</span>
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-ink-3">{label}</span>
       <span className="figures text-[24px] leading-none text-ink-1">{value}</span>
       {delta && (
         <span className={cn("figures text-[12px]", delta.positive ? "text-success" : "text-danger")}>
-          {delta.positive ? "▲" : "▼"} {delta.value}
+          {delta.positive ? "+" : "−"} {delta.value}
         </span>
       )}
+      {hint && <span className="text-[12px] leading-snug text-ink-3">{hint}</span>}
+    </div>
+  );
+}
+
+/**
+ * A readout: the instrument-panel version of Stat, for hero-level numbers.
+ * The unit is set small and quiet so the figure carries the weight.
+ */
+export function Metric({
+  label,
+  value,
+  unit,
+  hint,
+  className,
+}: {
+  label: string;
+  value: ReactNode;
+  unit?: ReactNode;
+  hint?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex flex-col gap-2", className)}>
+      <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-ink-3">{label}</span>
+      <span className="flex items-baseline gap-2">
+        <span className="figures text-[clamp(1.5rem,1.1rem+1.4vw,2.25rem)] leading-none text-ink-1">{value}</span>
+        {unit && <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">{unit}</span>}
+      </span>
+      {hint && <span className="text-[12px] leading-snug text-ink-3">{hint}</span>}
     </div>
   );
 }

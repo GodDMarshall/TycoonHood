@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useActionState } from "react";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Field, Input } from "@tycoonhood/ui";
+import { Button, Card, CardContent, CardDescription, CardHeader, Field, Input } from "@tycoonhood/ui";
 import type { ForgotState, ResetState } from "../app/(auth)/actions";
 
 export function ForgotPasswordForm({
@@ -13,7 +13,7 @@ export function ForgotPasswordForm({
   return (
     <Card variant="raised" className="w-full">
       <CardHeader>
-        <CardTitle>Reset your password</CardTitle>
+        <h1 className="display text-h2">Reset your password</h1>
         <CardDescription>We'll email a single-use link, good for 30 minutes.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -77,7 +77,7 @@ export function ResetPasswordForm({
   return (
     <Card variant="raised" className="w-full">
       <CardHeader>
-        <CardTitle>Choose a new password</CardTitle>
+        <h1 className="display text-h2">Choose a new password</h1>
         <CardDescription>At least 10 characters. This signs you out everywhere.</CardDescription>
       </CardHeader>
       <CardContent>

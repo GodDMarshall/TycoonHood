@@ -13,3 +13,25 @@
 .md-content li::marker { color: var(--color-gold-deep); }
 .md-content blockquote { border-left: 2px solid var(--color-gold-deep); padding-left: 1em; color: var(--color-ink-1); font-family: var(--font-display); }
 .md-content code { font-family: var(--font-mono); font-size: 0.9em; color: var(--color-gold-bright); }
+
+/* ── HQ drawing: light travelling along the paths toward the core ── */
+.hq-paths line {
+  animation: hq-flow 2.8s linear infinite;
+}
+@keyframes hq-flow {
+  to { stroke-dashoffset: -24; }
+}
+
+/* ── Mind: the rings breathe (6s in, 6s out) ── */
+.th-breathe {
+  animation: th-breathe 12s var(--ease-settle) infinite;
+}
+@keyframes th-breathe {
+  0%, 100% { transform: scale(0.94); opacity: 0.8; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+/* ── The build ladder: one line lit at a time ── */
+.ladder > li { transition: color var(--dur-3) var(--ease-premium); }
+.ladder:hover > li { color: var(--color-ink-3); }
+.ladder > li:hover { color: var(--color-ink-1); }
