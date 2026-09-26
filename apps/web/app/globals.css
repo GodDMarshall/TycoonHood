@@ -2,17 +2,27 @@
 @source "../../../packages/ui/src";
 @import "@tycoonhood/ui/tokens.css";
 
-/* Journal essay typography — server-rendered markdown */
-.md-content { color: var(--color-ink-2); font-size: 15px; line-height: 1.75; }
-.md-content h2 { font-family: var(--font-display); color: var(--color-ink-1); font-size: 24px; margin: 2.2em 0 0.6em; letter-spacing: -0.01em; }
-.md-content p { margin: 1em 0; }
-.md-content strong { color: var(--color-ink-1); }
-.md-content a { color: var(--color-gold); text-underline-offset: 4px; }
-.md-content a:hover { text-decoration: underline; }
-.md-content ul, .md-content ol { margin: 1em 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 0.4em; }
-.md-content li::marker { color: var(--color-gold-deep); }
-.md-content blockquote { border-left: 2px solid var(--color-gold-deep); padding-left: 1em; color: var(--color-ink-1); font-family: var(--font-display); }
-.md-content code { font-family: var(--font-mono); font-size: 0.9em; color: var(--color-gold-bright); }
+/* Reading typography — lessons and Journal essays, server-rendered markdown.
+   One measure (--measure, 68ch), a body size tuned for long reading. */
+.md-content { color: var(--color-ink-2); font-size: 16.5px; line-height: 1.78; }
+.md-content > :first-child { margin-top: 0; }
+.md-content h2 { font-family: var(--font-display); font-weight: 600; color: var(--color-ink-1); font-size: 26px; line-height: 1.2; margin: 2.2em 0 0.7em; letter-spacing: -0.025em; }
+.md-content h3 { font-weight: 600; color: var(--color-ink-1); font-size: 19px; margin: 1.8em 0 0.5em; letter-spacing: -0.015em; }
+.md-content p { margin: 1.05em 0; }
+.md-content strong { color: var(--color-ink-1); font-weight: 600; }
+.md-content em { font-family: var(--font-serif); font-size: 1.12em; color: var(--color-ink-1); }
+.md-content a { color: var(--color-gold); text-decoration: underline; text-decoration-color: var(--color-gold-shadow); text-underline-offset: 4px; }
+.md-content a:hover { text-decoration-color: var(--color-gold); }
+.md-content ul, .md-content ol { margin: 1.1em 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 0.5em; }
+.md-content ul { list-style: square; }
+.md-content ol { list-style: decimal; }
+.md-content li::marker { color: var(--color-gold-deep); font-family: var(--font-mono); font-size: 0.85em; }
+.md-content blockquote { margin: 1.8em 0; border-left: 1px solid var(--color-gold); padding: 0.2em 0 0.2em 1.4em; color: var(--color-ink-1); font-family: var(--font-serif); font-style: italic; font-size: 1.3em; line-height: 1.45; }
+.md-content code { font-family: var(--font-mono); font-size: 0.86em; color: var(--color-gold-bright); background: var(--color-bg-2); padding: 0.1em 0.35em; border-radius: var(--radius-sm); }
+.md-content hr { border: 0; height: 1px; background: var(--color-line-strong); margin: 2.5em 0; }
+.md-content table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 1.5em 0; }
+.md-content th, .md-content td { border-bottom: 1px solid var(--color-line); padding: 0.6em 0.5em; text-align: left; }
+.md-content th { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-3); font-weight: 500; }
 
 /* ── HQ drawing: light travelling along the paths toward the core ── */
 .hq-paths line {
@@ -35,3 +45,9 @@
 .ladder > li { transition: color var(--dur-3) var(--ease-premium); }
 .ladder:hover > li { color: var(--color-ink-3); }
 .ladder > li:hover { color: var(--color-ink-1); }
+
+/* ── The monument: columns are built from the ground up ── */
+@keyframes th-build {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}

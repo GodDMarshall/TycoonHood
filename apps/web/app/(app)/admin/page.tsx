@@ -28,7 +28,7 @@ export default async function AdminOverview() {
 
   return (
     <main>
-      <h1 className="display text-[30px]">The house sees everything.</h1>
+      <h1 className="display text-h2">The house sees everything.</h1>
       <SectionRule label="Economy" className="mb-4 mt-8" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card variant="gold"><CardContent className="py-4"><Stat label="Provable supply" value={<ThcAmount amount={-mint.balance} size="sm" />} /></CardContent></Card>

@@ -27,9 +27,9 @@ export function LegalPage({
   reviewed?: boolean;
 }) {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-3xl px-[var(--gutter)] py-16 md:py-24">
       <p className="eyebrow mb-3">{eyebrow}</p>
-      <h1 className="display text-[40px] leading-tight">{title}</h1>
+      <h1 className="display text-h1">{title}</h1>
       <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-2">{intro}</p>
       <p className="figures mt-4 text-[12px] text-ink-3">Last updated {updated}</p>
 

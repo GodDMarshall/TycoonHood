@@ -28,7 +28,7 @@ export default async function AdminMembers({ searchParams }: { searchParams: Pro
 
   return (
     <main>
-      <h1 className="display text-[30px]">Members</h1>
+      <h1 className="display text-h2">Members</h1>
       <form className="mt-4 max-w-sm">
         <Input name="q" defaultValue={q ?? ""} placeholder="Search email, username, name…" />
       </form>

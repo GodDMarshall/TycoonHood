@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
 import { priceInTime } from "@tycoonhood/core";
-import { Badge, Card, CardContent, SectionRule, ThcAmount } from "@tycoonhood/ui";
+import { Badge, CoinMark, EmptyState, Icon, ThcAmount, type IconName } from "@tycoonhood/ui";
+import { RoomHeader } from "../../../components/room-header";
 import { getCurrentUser } from "../../../lib/auth";
 import { activeFiatProvider } from "../../../lib/payments";
 import { buyWithThcAction, buyWithCardAction } from "./actions";
 import { BuyPanel } from "../../../components/buy-panel";
 
-export const metadata: Metadata = { title: "Marketplace" };
+export const metadata: Metadata = {
+  title: "The Vault — gear and library",
+  description: "Program access, working tools and gear, priced in THC earned by doing — and translated into the months of work each price represents.",
+  alternates: { canonical: "/marketplace" },
+};
 export const dynamic = "force-dynamic";
 
 const kindLabel = { DIGITAL: "Digital", PHYSICAL: "Gear", COURSE: "Program access", MEMBERSHIP: "Membership" } as const;
@@ -27,42 +32,63 @@ export default async function MarketplacePage() {
   const rest = products.filter((p) => p.kind !== "PHYSICAL");
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
-      <p className="eyebrow mb-3">Marketplace</p>
-      <h1 className="display text-[40px] leading-tight">Spend it on something real.</h1>
-      <p className="mt-3 max-w-xl text-ink-2">
-        Program access, working tools, and gear — priced in THC, in currency, or
-        both. Gear is made in small runs, so every size has a real count behind
-        it and nothing is oversold.
-      </p>
-
-      {gear.length > 0 && (
-        <>
-          <SectionRule label="Gear" className="mb-6 mt-12" />
-          <div className="grid gap-4 md:grid-cols-3">
-            {gear.map((p) => <ProductCard key={p.id} p={p} user={user} fiatProvider={fiatProvider} />)}
+    <main>
+      <RoomHeader
+        icon="vault"
+        room="The Vault"
+        title="Spend it on"
+        accent="something real."
+        lead="Program access, working tools and gear — priced in THC you earned, in currency, or both. Gear is made in small runs: every size has a real count behind it, and nothing is oversold."
+        aside={
+          <div className="flex items-start gap-4 rounded-lg border border-line bg-bg-1/80 p-5">
+            <Icon name="clock" size={20} className="mt-0.5 text-gold" />
+            <p className="text-[13.5px] leading-relaxed text-ink-2">
+              Every gear price is also shown as <span className="text-ink-1">time</span> — how long a member mining steadily takes to earn it. The house rule: two to three months per item.
+            </p>
           </div>
-        </>
-      )}
+        }
+      />
 
-      {rest.length > 0 && (
-        <>
-          <SectionRule label={gear.length ? "Everything else" : "At launch"} className="mb-6 mt-12" />
-          <div className="grid gap-4 md:grid-cols-3">
-            {rest.map((p) => <ProductCard key={p.id} p={p} user={user} fiatProvider={fiatProvider} />)}
-          </div>
-        </>
-      )}
+      <div className="mx-auto max-w-[88rem] px-[var(--gutter)] py-14">
+        {gear.length > 0 && (
+          <section aria-labelledby="gear" className="mb-16">
+            <h2 id="gear" className="eyebrow mb-6">
+              Gear
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {gear.map((p) => (
+                <ProductCard key={p.id} p={p} user={user} fiatProvider={fiatProvider} />
+              ))}
+            </div>
+          </section>
+        )}
 
-      {products.length === 0 && (
-        <div className="mt-12 rounded-md border border-dashed border-line px-6 py-12 text-center">
-          <p className="text-[15px] text-ink-2">Nothing is on sale yet.</p>
-          <p className="mt-1 text-[13px] text-ink-3">The first drop lands here.</p>
-        </div>
-      )}
+        {rest.length > 0 && (
+          <section aria-labelledby="library">
+            <h2 id="library" className="eyebrow mb-6">
+              {gear.length ? "Library and access" : "At launch"}
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {rest.map((p) => (
+                <ProductCard key={p.id} p={p} user={user} fiatProvider={fiatProvider} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {products.length === 0 && (
+          <EmptyState
+            icon="vault"
+            title="The Vault is being stocked"
+            body="Nothing is listed yet. Gear goes live only once its real landed cost is on the books, so every price is honest the day it appears."
+          />
+        )}
+      </div>
     </main>
   );
 }
+
+const kindIcon: Record<string, IconName> = { DIGITAL: "book", PHYSICAL: "orders", COURSE: "academy", MEMBERSHIP: "seal" };
 
 type ProductRow = Awaited<ReturnType<typeof prisma.product.findMany>>[number] & {
   variants: { id: string; label: string; inventory: number; priceThc: bigint | null; active: boolean }[];
@@ -84,21 +110,28 @@ function ProductCard({
   const time = physical && p.priceThc != null ? priceInTime(p.priceThc) : null;
 
   return (
-    <Card className="flex flex-col">
-      <CardContent className="flex flex-1 flex-col gap-3 py-5">
-        <div className="flex items-center justify-between">
-          <Badge>{kindLabel[p.kind]}</Badge>
-          {inStock === 0 && <Badge tone="neutral">Sold out</Badge>}
-        </div>
-
-        {p.image && (
+    <article className="flex flex-col overflow-hidden rounded-lg border border-line bg-bg-1 transition-colors duration-[var(--dur-3)] hover:border-line-strong">
+      <div className="relative aspect-[4/3] overflow-hidden border-b border-line bg-[radial-gradient(ellipse_at_50%_60%,var(--color-bg-3),var(--color-bg-1)_70%)]">
+        {p.image ? (
           /* eslint-disable-next-line @next/next/no-img-element -- the image URL is
              typed by an admin and can point anywhere, so next/image cannot
              allowlist it ahead of time. */
-          <img src={p.image} alt="" className="aspect-square w-full rounded-md border border-line object-cover" />
+          <img src={p.image} alt="" className="size-full object-cover" />
+        ) : (
+          // No photograph yet: a vault plate, not a stock image.
+          <div className="grid-plane flex size-full items-center justify-center" aria-hidden>
+            <div className="frame-ticks flex size-28 items-center justify-center rounded-md border border-line-strong bg-bg-1/80">
+              {p.kind === "PHYSICAL" ? <CoinMark size={58} /> : <Icon name={kindIcon[p.kind] ?? "vault"} size={40} className="text-gold" />}
+            </div>
+          </div>
         )}
-
-        <h2 className="display text-[19px]">{p.name}</h2>
+        <span className="absolute left-4 top-4 flex gap-2">
+          <Badge>{kindLabel[p.kind]}</Badge>
+          {inStock === 0 && <Badge tone="danger">Sold out</Badge>}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col gap-3 p-5">
+        <h3 className="display text-[20px]">{p.name}</h3>
         <p className="flex-1 text-[13px] leading-relaxed text-ink-2">{p.description}</p>
 
         <div className="flex items-baseline gap-3 border-t border-line pt-3">
@@ -114,7 +147,9 @@ function ProductCard({
 
         {/* The honest translation: what this price costs in someone's time. */}
         {time && (
-          <p className="-mt-1 text-[11px] text-ink-3">{time.summary}</p>
+          <p className="-mt-1 flex items-center gap-1.5 text-[11.5px] text-ink-3">
+            <Icon name="clock" size={12} /> {time.summary}
+          </p>
         )}
 
         {user ? (
@@ -135,11 +170,14 @@ function ProductCard({
             devPayments={fiatProvider?.name === "dev"}
           />
         ) : (
-          <p className="border-t border-line pt-3 text-[12px] text-ink-3">
-            <Link href="/login" className="text-gold underline-offset-4 hover:underline">Sign in</Link> to purchase.
+          <p className="border-t border-line pt-3 text-[12.5px] text-ink-3">
+            <Link href="/login" className="text-gold underline-offset-4 hover:underline">
+              Sign in
+            </Link>{" "}
+            to purchase.
           </p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   );
 }

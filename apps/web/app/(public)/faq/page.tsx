@@ -18,9 +18,9 @@ const faqs: [string, string][] = [
 
 export default function FaqPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-3xl px-[var(--gutter)] py-16 md:py-24">
       <p className="eyebrow mb-3">FAQ</p>
-      <h1 className="display text-[40px] leading-tight">Straight answers.</h1>
+      <h1 className="display text-h1">Straight answers.</h1>
       <SectionRule className="my-10" />
       <dl className="flex flex-col">
         {faqs.map(([q, a]) => (

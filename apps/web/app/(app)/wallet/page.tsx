@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { RoomHeader } from "../../../components/room-header";
 import { requireUser } from "../../../lib/guard";
 import { LedgerService } from "@tycoonhood/core";
 import { prisma } from "@tycoonhood/db";
-import { Card, CardContent, SectionRule, Stat, ThcAmount } from "@tycoonhood/ui";
+import { Card, CardContent, Icon, SectionRule, Stat, ThcAmount } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../../lib/auth";
 
 export const metadata: Metadata = { title: "Wallet" };
@@ -30,9 +31,15 @@ export default async function WalletPage() {
 
   return (
     <main>
-      <p className="eyebrow mb-2">Wallet</p>
-      <h1 className="display text-[34px]">Your ledger.</h1>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <RoomHeader
+        compact
+        icon="wallet"
+        room="Wallet"
+        title="Your ledger,"
+        accent="audited live."
+        lead="Every THC you hold is the sum of real entries. The balance below is recomputed from all of them on every visit."
+      />
+      <div className="grid gap-4 sm:grid-cols-2">
         <Card variant="gold">
           <CardContent className="py-5">
             <Stat label="Balance" value={<ThcAmount amount={account.balance} size="lg" />} />
@@ -40,7 +47,15 @@ export default async function WalletPage() {
         </Card>
         <Card>
           <CardContent className="py-5">
-            <Stat label="Audit" value={<span className="figures text-[15px] text-success">{audit.consistent ? "cache = Σ entries ✓" : "INCONSISTENT"}</span>} />
+            <Stat
+              label="Audit"
+              value={
+                <span className={`figures flex items-center gap-2 text-[15px] ${audit.consistent ? "text-success" : "text-danger"}`}>
+                  <Icon name={audit.consistent ? "check" : "alert"} size={16} />
+                  {audit.consistent ? "cache = Σ entries" : "INCONSISTENT"}
+                </span>
+              }
+            />
             <p className="mt-1 text-[11px] text-ink-3">Your cached balance, recomputed from every entry, live.</p>
           </CardContent>
         </Card>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RoomHeader } from "../../../components/room-header";
 import { requireUser } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
 import { activeDiscordTransport, discord, sessions } from "@tycoonhood/core";
@@ -24,10 +25,9 @@ export default async function SettingsPage() {
 
   return (
     <main className="max-w-2xl">
-      <p className="eyebrow mb-2">Settings</p>
-      <h1 className="display text-[34px]">Your house rules.</h1>
+      <RoomHeader compact icon="settings" room="Settings" title="Your" accent="house rules." lead="Devices, Discord and exactly what the rest of the house can see about you." />
 
-      <SectionRule label="Devices" className="mb-4 mt-10" />
+      <SectionRule label="Devices" className="mb-4" />
       <Card>
         <CardContent className="flex flex-col py-2">
           {deviceSessions.map((s) => (

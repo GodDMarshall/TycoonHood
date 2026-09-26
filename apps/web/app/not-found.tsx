@@ -1,14 +1,19 @@
 import Link from "next/link";
-import { CoinMark } from "@tycoonhood/ui";
+import { CoinMark, Icon, buttonStyles } from "@tycoonhood/ui";
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-5 px-6 text-center">
-      <CoinMark size={64} />
-      <p className="figures text-[13px] text-gold-deep">404 — not on the books</p>
-      <h1 className="display text-[32px]">This page doesn't exist.</h1>
-      <p className="max-w-sm text-[14px] text-ink-2">Whatever you were promised, it wasn't ledgered here.</p>
-      <Link href="/" className="text-[14px] font-semibold text-gold hover:underline underline-offset-4">← Back to the house</Link>
+    <main id="content" className="relative flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden px-[var(--gutter)] text-center">
+      <div className="grid-plane pointer-events-none absolute inset-0" aria-hidden />
+      <CoinMark size={72} className="relative" />
+      <p className="index relative">404 — not on the books</p>
+      <h1 className="display relative max-w-[16ch] text-h1">
+        This room <span className="accent">doesn&apos;t exist.</span>
+      </h1>
+      <p className="relative max-w-sm text-[15px] text-ink-2">Whatever you were promised, it wasn&apos;t ledgered here.</p>
+      <Link href="/" className={buttonStyles({ variant: "secondary", className: "relative" })}>
+        <Icon name="arrow-left" size={15} /> Back to the HQ
+      </Link>
     </main>
   );
 }

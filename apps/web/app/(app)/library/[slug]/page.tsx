@@ -29,7 +29,7 @@ export default async function LibraryItem({ params }: { params: Promise<{ slug: 
   return (
     <main className="max-w-2xl">
       <Badge tone="gold">In your library</Badge>
-      <h1 className="display mt-3 text-[34px]">{product.name}</h1>
+      <h1 className="display mt-3 text-h1">{product.name}</h1>
       <SectionRule className="my-6" />
       <article className="md-content" dangerouslySetInnerHTML={{ __html: html }} />
     </main>

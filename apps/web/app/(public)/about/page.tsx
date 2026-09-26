@@ -15,9 +15,9 @@ const principles = [
 export default async function AboutPage() {
   const ranks = await prisma.rankDefinition.findMany({ orderBy: { sortOrder: "asc" } });
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-3xl px-[var(--gutter)] py-16 md:py-24">
       <p className="eyebrow mb-3">About</p>
-      <h1 className="display text-[40px] leading-tight">A house with standards.</h1>
+      <h1 className="display text-h1">A house with standards.</h1>
       <p className="mt-4 leading-relaxed text-ink-2">
         Tycoonhood is a membership for people building all four things at once:
         a capable body, a working business, growing capital, and a mind that

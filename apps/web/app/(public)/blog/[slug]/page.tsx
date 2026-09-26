@@ -22,9 +22,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   const html = await marked.parse(post.contentMd);
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16">
+    <main className="mx-auto max-w-[var(--measure)] px-[var(--gutter)] py-16 md:py-24">
       <p className="eyebrow mb-3">Journal</p>
-      <h1 className="display text-[38px] leading-[1.15]">{post.title}</h1>
+      <h1 className="display text-h1">{post.title}</h1>
       <p className="figures mt-3 text-[12px] text-ink-3">
         {dateFmt.format(post.publishedAt)} · {post.authorName}
       </p>

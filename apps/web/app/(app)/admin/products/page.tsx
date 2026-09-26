@@ -31,7 +31,7 @@ export default async function AdminProducts() {
 
   return (
     <main>
-      <h1 className="display text-[30px]">Products</h1>
+      <h1 className="display text-h2">Products</h1>
       <p className="mt-2 max-w-2xl text-[14px] text-ink-2">
         Everything a member can spend on. A THC price here is not a number — it
         is an amount of someone&rsquo;s time, so the form tells you how many

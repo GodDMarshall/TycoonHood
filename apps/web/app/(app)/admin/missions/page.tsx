@@ -19,7 +19,7 @@ export default async function AdminMissions() {
 
   return (
     <main>
-      <h1 className="display text-[30px]">Missions</h1>
+      <h1 className="display text-h2">Missions</h1>
       <p className="mt-2 max-w-2xl text-[14px] text-ink-2">
         A mission is a rule, not code. Write one here and the engine starts paying it on the next
         qualifying action — no deploy. The rule is checked against real records every time, so a

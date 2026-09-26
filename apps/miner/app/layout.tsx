@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "TH Miner" },
 };
 export const viewport: Viewport = {
-  themeColor: "#0d0b08",
+  themeColor: "#0a0908",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // No maximumScale: pinch-zoom stays available (WCAG 1.4.4).
   viewportFit: "cover",
 };
 

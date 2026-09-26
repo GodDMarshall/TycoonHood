@@ -20,3 +20,4 @@ export { Avatar } from "./components/Avatar";
 export { SectionRule, SectionHeading } from "./components/Divider";
 export { Icon, iconNames, type IconName } from "./components/Icon";
 export { EmptyState, Notice, Skeleton } from "./components/State";
+export { Dialog } from "./components/Dialog";

@@ -46,6 +46,15 @@ async function signIn(ctx, email, password) {
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await page.getByRole("button", { name: /sign in/i }).click();
+  // Wait for the OUTCOME, not for idle: waitForLoadState resolves at once when
+  // the page was already idle, which raced the server action's redirect. The
+  // sign-in either leaves /login or puts an error on screen — wait for either.
+  await Promise.race([
+    page.waitForURL((u) => !u.pathname.startsWith("/login"), { timeout: 20000 }),
+    // Next's route announcer is an always-present, empty role=alert — only an
+    // alert with text in it is an answer.
+    page.getByRole("alert").filter({ hasText: /\S/ }).first().waitFor({ timeout: 20000 }),
+  ]).catch(() => {});
   await page.waitForLoadState("networkidle");
 
   if (page.url().includes("/login")) {

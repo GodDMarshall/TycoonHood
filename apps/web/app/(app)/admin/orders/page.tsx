@@ -62,7 +62,7 @@ export default async function AdminOrders({
 
   return (
     <main>
-      <h1 className="display text-[30px]">Orders</h1>
+      <h1 className="display text-h2">Orders</h1>
       <p className="mt-2 max-w-2xl text-[14px] text-ink-2">
         {toPack.length === 0
           ? "Nothing waiting to be packed."

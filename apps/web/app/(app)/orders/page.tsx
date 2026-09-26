@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { RoomHeader } from "../../../components/room-header";
 import { requireUser } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
-import { Badge, Card, CardContent, SectionRule, ThcAmount } from "@tycoonhood/ui";
+import { Badge, Card, CardContent, Icon, SectionRule, ThcAmount } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../../lib/auth";
 import Link from "next/link";
 
@@ -23,8 +24,7 @@ export default async function OrdersPage() {
 
   return (
     <main>
-      <p className="eyebrow mb-2">Orders</p>
-      <h1 className="display text-[34px]">Bought and on the books.</h1>
+      <RoomHeader compact icon="orders" room="Orders" title="Bought and" accent="on the books." lead="Every purchase, every parcel and every tracking number — the same record the house works from." />
 
       {library.length > 0 && (
         <>
@@ -36,7 +36,7 @@ export default async function OrdersPage() {
                 href={i.product.kind === "COURSE" ? "/academy" : `/library/${i.product.slug}`}
               >
                 <Badge tone="gold">
-                  {i.product.kind === "COURSE" ? "🎓" : "📖"} {i.product.name} →
+                  <Icon name={i.product.kind === "COURSE" ? "academy" : "book"} size={12} /> {i.product.name}
                 </Badge>
               </Link>
             )))}

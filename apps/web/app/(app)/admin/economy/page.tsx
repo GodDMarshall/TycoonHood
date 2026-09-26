@@ -22,7 +22,7 @@ export default async function AdminEconomy() {
 
   return (
     <main>
-      <h1 className="display text-[30px]">The books.</h1>
+      <h1 className="display text-h2">The books.</h1>
       <SectionRule label="System accounts" className="mb-4 mt-8" />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {accounts.map((a) => (

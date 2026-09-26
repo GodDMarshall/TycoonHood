@@ -16,7 +16,7 @@ export default async function AdminContent() {
   ]);
   return (
     <main>
-      <h1 className="display text-[30px]">Content</h1>
+      <h1 className="display text-h2">Content</h1>
       <SectionRule label="Programs" className="mb-4 mt-8" />
       <div className="flex flex-col gap-2">
         {courses.map((c) => (

@@ -20,7 +20,7 @@ export default async function AdminChallenges() {
   });
   return (
     <main>
-      <h1 className="display text-[30px]">Challenges</h1>
+      <h1 className="display text-h2">Challenges</h1>
       <p className="mt-2 text-[13px] text-ink-2">
         Lifecycles advance automatically by date; these controls override. Evidence submissions queue below —
         approvals pay through the same idempotent reward path as check-ins.
