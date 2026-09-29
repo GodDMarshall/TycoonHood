@@ -4,7 +4,7 @@ import { CoinMark } from "@tycoonhood/ui";
 const columns: [string, [string, string][]][] = [
   ["The HQ", [["/programs", "Academy"], ["/challenges", "Arena"], ["/marketplace", "Vault"], ["/thc", "Treasury"]]],
   ["Open books", [["/status", "Live figures"], ["/thc", "How THC works"], ["/roadmap", "Roadmap"]]],
-  ["The house", [["/about", "About"], ["/blog", "Journal"], ["/faq", "FAQ"]]],
+  ["The house", [["/about", "About"], ["/blog", "Journal"], ["/faq", "FAQ"], ["/credits", "Credits"]]],
   ["Legal", [["/terms", "Terms"], ["/privacy", "Privacy"], ["/thc#disclosure", "THC disclosure"]]],
 ];
 

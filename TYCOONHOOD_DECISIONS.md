@@ -158,6 +158,33 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **Context:** `full-loop.mjs` clicked "Sign in" then called `waitForLoadState("networkidle")`, which resolves **immediately** when the page was already idle. It raced the server action's redirect and only passed while the dashboard rendered fast. The richer Command Center lost the race.
 - **Decision:** wait for either leaving `/login` or a **non-empty** `role=alert` (Next's route announcer is an always-present empty alert). Same assertions, now deterministic: 39/39.
 
+### DR-21 — Members live in the HQ: a walkable 3D campus is the signed-in home (extends DR-18)
+- **Date:** 2026-09-29 · **Status:** **ADOPTED — owner direction ("explorable 3D world", "cinematic, near-photoreal", "the whole experience").**
+- **Context:** The owner rejected the DR-17/18 result as "just info". DR-18 made 3D a tiered, optional hero. The owner asked for the world to be *the* interface.
+- **Decision:**
+  - Sign-in, register and onboarding land on `/world`: a campus at dusk with six enterable buildings (Command, Academy, Arena, Vault, Treasury, Network). Each room shows the member's live state and real actions: check-in, continue lesson, open in Vault, Treasury figures.
+  - The 2D pages remain the source of truth and the fallback. Every room links to its page, and the world never holds logic the pages do not.
+  - Quality is tiered before three.js loads: cinematic, balanced or performance, plus the 2D view for reduced motion, no WebGL2 or software GPUs. A frame governor steps down on sustained slow frames.
+  - The homepage flies over the same campus (`tour` mode, no models) on capable desktops only. Phones and everything else keep the architectural drawing.
+  - `/world` is `noindex` and disallowed in `robots.ts`. It is behind `requireUser()` (DR-3).
+- **Consequence:** DR-18's "3D is optional" still holds for guests. For members it is the default, with "2D view" one click away.
+
+### DR-22 — Presence in the world is counts, never people
+- **Date:** 2026-09-29 · **Status:** **ADOPTED.**
+- **Decision:**
+  - The world shows activity as 24-hour **counts** per district: lessons completed, challenges joined, orders, mining payouts, rank-ups and missions completed. They are drawn as anonymous figures, capped.
+  - The Network room shows members per rank (`groupBy rankId`). No name, avatar, username or location of another member reaches the world payload.
+  - The member's own data (balance, streak, lessons) is the only personal data it carries.
+- **Why:** DR-19 already keeps profiles out of search. A world that shows "who is here" would publish exactly what DR-19 hides. Real-time, named presence is a product and privacy decision for the owner (OQ-G).
+
+### DR-23 — World assets are ours, or credited
+- **Date:** 2026-09-29 · **Status:** **ADOPTED.**
+- **Decision:**
+  - Every stone, brass, oak, concrete and hedge texture and every facade is generated in code: `scripts/world/generate-textures.mjs` and `components/world/architecture/facades.ts`.
+  - Third-party assets are limited to two CC BY 4.0 Wayfair models from the Khronos glTF sample set and two CC0 Poly Haven HDRIs.
+  - CC BY attribution is on `/credits` (linked in the footer), copied from each file's embedded `asset.copyright`, and mirrored in `public/world/CREDITS.md`.
+- **Constraint recorded:** the build sandbox cannot reach Poly Haven, ambientCG or most CDNs. Scanned PBR sets would raise realism further; adding any means adding its licence line to both places.
+
 ### Open — decisions only the owner can make (surfaced by the takeover, not invented)
 - **OQ-A · The progression ladder.** The directive sketches START → DISCIPLINE → KNOWLEDGE → EXECUTION → BUILDING → LEADERSHIP → TYCOON (seven stages). The live system has five seeded ranks, *Tycoon Initiate → Apprentice → Mastermind → Elite → Legend*, wired to level thresholds and Discord roles. I kept the five and drew them as the Ascent and the Monument's tiers. Renaming or re-cutting ranks is a data migration plus a Discord role change — your call.
 - **OQ-B · Three pillars or four.** The directive names Warrior, Business Mastery and Mindfulness. The academy has a fourth published program, *Financial Planning and Investment Advisory* (Tycoon pillar), whose name already carries the legal flag in §3. I kept all four; the "Investment Advisory" wording still needs counsel or a rename.
@@ -165,6 +192,8 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **OQ-D · Draft programs on the public Academy.** `/programs` lists DRAFT courses with an "In production" tag (pre-existing behaviour, kept). Hide them until published?
 - **OQ-E · Hero line.** "Build yourself. / The rest compounds." — chosen by me from §55 of the directive (wealth as the compounding outcome of capability). Overrule freely; it is one string.
 - **OQ-F · Photography.** Every visual in the product is drawn in code (3D, SVG, CSS). There is no photography because none exists that is ours. If you commission a shoot, the grade to match is: near-black ground, one warm key light, no faces required.
+- **OQ-G · Named, live presence.** Should members see *who* is in a room right now (names, avatars), not just counts? It needs realtime infrastructure (the stack has none), a per-member visibility setting, and a moderation posture. DR-22 ships counts until you decide.
+- **OQ-H · Where members land.** Sign-in now lands in the HQ (DR-21). If you would rather members land on the 2D Command Center and *choose* to enter the world, it is a one-line change in `app/(auth)/actions.ts`.
 
 ## How to use this file going forward
 Add a Part B entry (or a new `D##` if it's architectural and adopted) for any decision that changes architecture, product scope, the economy, the design contract, or a security posture. Never edit a preserved entry to change its meaning — supersede it with a dated new entry that references the old ID. When an OPEN item is decided, change its status to ADOPTED/REJECTED with the date and a one-line outcome; leave the reasoning intact.

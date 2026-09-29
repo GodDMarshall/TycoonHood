@@ -23,5 +23,5 @@ export async function onboardingAction(_prev: AuthFormState, formData: FormData)
     if (e instanceof UsernameTakenError) return { fieldErrors: { username: [e.message] } };
     throw e;
   }
-  redirect("/dashboard");
+  redirect("/world");
 }

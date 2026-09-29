@@ -27,6 +27,7 @@ export const GUEST_NAV: NavItem[] = [
 ];
 
 export const MEMBER_NAV: NavItem[] = [
+  { href: "/world", label: "HQ", note: "Walk the headquarters", icon: "vault" },
   { href: "/dashboard", label: "Command", note: "Your command center", icon: "command" },
   { href: "/academy", label: "Academy", note: "Your programs and lessons", icon: "academy", match: ["/programs"] },
   { href: "/challenges", label: "Arena", note: "Challenges and check-ins", icon: "arena" },
@@ -36,7 +37,7 @@ export const MEMBER_NAV: NavItem[] = [
 ];
 
 /** Five slots for the phone tab bar. Everything else lives behind "More". */
-export const MEMBER_TABS: NavItem[] = [MEMBER_NAV[0], MEMBER_NAV[1], MEMBER_NAV[2], MEMBER_NAV[5]];
+export const MEMBER_TABS: NavItem[] = [MEMBER_NAV[0], MEMBER_NAV[1], MEMBER_NAV[2], MEMBER_NAV[3]];
 
 export const ACCOUNT_LINKS: NavItem[] = [
   { href: "/orders", label: "Orders", note: "Parcels and purchases", icon: "orders" },
