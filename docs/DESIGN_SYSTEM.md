@@ -93,33 +93,65 @@ reference when a server component imports it). That is why `buttonStyles` is in 
 
 ## 5. The HQ (3D)
 
+Members live in it (DR-21); guests see it from the air on the homepage.
+
 ```
-components/hq/
-  districts.ts         the plan — one source for scene, drawing and links
-  drawing-frame.ts     isometric frame shared by server drawing + client labels
-  hq-drawing.tsx       the static architectural drawing (server, zero JS)
-  hq-stage.tsx         the host: tier detection, idle loading, DOM link overlay
-  scene/
-    create-scene.ts    renderer, loop, visibility, disposal, controller
-    camera.ts          long lens, drift + pointer parallax + scroll dolly
-    lighting.ts        warm key, cool rim, gold core
-    materials.ts       stone · gold · light — nothing else
-    objects.ts         the six districts, pathways, light pulses, dust
-    performance.ts     tiering (full/lite/static) + FrameGovernor
+components/world/
+  world-host.tsx         React host: tier detection, loader, HUD, labels, dock, minimap, fallback
+  return-to-hq.tsx       "Walk back into the …" on member pages (only where the world can run)
+  engine/
+    quality.ts           tiers (cinematic/balanced/performance/none) + FrameGovernor
+    assets.ts            textures, HDRIs, models — loaded once, with progress
+    materials.ts         the material library (plaza paving shader lives here)
+    navigation.ts        first-person walker: keys, drag-look, click-to-walk, colliders
+    world.ts             renderer, post chain, spaces, deep links, tour mode, disposal
+  architecture/
+    geo.ts               metre-scale UV helpers — every texture reads at real size
+    facades.ts           curtain walls, lobby and library glass, drawn into canvases
+    campus.ts            plaza, the six buildings, pathways, pool, skyline
+    landscape.ts         promenade, parterres, clipped trees, lanterns, benches
+  interiors/rooms.ts     the six rooms and their stations
+  hud/panels.tsx         station panels: live data and real actions
+lib/world-state.ts       everything the world shows, from the database (server-only)
+scripts/world/generate-textures.mjs   the PBR sets in public/world/tex
+components/hq/hq-stage.tsx            the homepage: drawing first, the same world in `tour` mode after
 ```
 
-Forms carry meaning: monolith (Command Center), colonnade (Academy), tiered ring (Arena), wheel-door cube
-(Vault), coin stack (Treasury), connected pylons (Network). Light travels along each pathway toward the core:
-every room feeds one ledger.
+Forms carry meaning: tower (Command Center), colonnade + library (Academy), open arena (Arena), wheel-door
+vault (Vault), rotunda with a coin stack (Treasury), linked pavilions (Network). Every building faces the
+medallion, and every room's data comes from `getWorldState()`, never from the scene.
+
+**Deep links:**
+- `/world?room=academy` enters a room.
+- `/world?cam=x,z,yawDeg,pitchDeg` places the camera.
+- `/world?world=balanced` forces a tier (QA).
+- `/?hq=3d&tourt=18` starts the homepage tour at a given second (QA).
+
+### Engine traps (each one cost a debugging session — read before touching materials)
+
+- **three r186 ignores `envMapIntensity` on any material that inherits `scene.environment`.** The renderer
+  overwrites it with `scene.environmentIntensity`. `bindEnvironment()` in `world.ts` binds each space's
+  environment to its materials explicitly, and scales the authored intensity by the space's level.
+  Remove it and every per-material reflection level silently goes flat.
+- **`roughness` multiplies the roughness map.** The marble map is authored polished (mean ≈ 0.09), so
+  `roughness: 0.6` makes it *glossier*, not honed. The plaza remaps the map in its shader instead.
+- **Coplanar faces z-fight across the whole plaza.** `boxGeo` sits on its base, so a 0.6m box at y=0 has its
+  top at exactly floor height. Keep decals ≥ 1cm clear of what they sit on, and the tour camera's near
+  plane is 1.5m for depth precision at 150m.
+- **Polished metal reflects the sky through its own tint.** Polished brass at grazing angles mirrors the dusk
+  sky and reads as a strip of green ice. Use brushed brass (`m.brass`) for anything flat on the ground.
+- **Outdoor paving is honed, never polished.** A polished plaza mirrors the sky at grazing angles and reads
+  as open water. Interiors keep the polish.
 
 ## 6. Asset strategy
 
 | Kind | Used for | Why |
 |---|---|---|
-| Real-time 3D | the HQ hero only | the one place spatial understanding is the point |
+| Real-time 3D | the members' HQ (`/world`) and the homepage fly-over | the product is a place; you walk into the room you need |
 | Code-drawn SVG | HQ drawing, pillar atmospheres, Monument, rank map, coin mark, icons | crisp at any size, themable, zero requests, honest data |
 | CSS | grain, blueprint plane, glows | free |
 | Photography | none yet | there is no photography that is ours; see OQ-F |
+| Third-party 3D | two CC BY 4.0 models, two CC0 HDRIs | credited on `/credits`; nothing else is borrowed (DR-23) |
 
 No stock photography, no AI people, no cartoon illustration. If photography arrives, it is graded to the room:
 near-black ground, one warm key light.

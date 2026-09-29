@@ -19,7 +19,9 @@ export function buildLandscape(m: Materials, hedge: MeshStandardMaterial, lights
 
   // Promenade: a paler honed-stone runner from the south gate to the medallion.
   g.add(mesh(planeGeo(9, 56, 3), m.concrete, 0, 0.612, 46, { cast: false }));
-  for (const x of [-4.6, 4.6]) g.add(box(0.2, 0.02, 56, m.brassPolished, x, 0.6, 46, 1, { cast: false }));
+  // Brushed, not polished: a mirror-polished edge reflects the teal sky
+  // through brass's gold tint and reads as a strip of green ice.
+  for (const x of [-4.55, 4.55]) g.add(box(0.1, 0.02, 56, m.brass, x, 0.6, 46, 1, { cast: false }));
 
   // Parterres: planters flanking the promenade and ringing the medallion.
   const planters: [number, number, number, number][] = [];

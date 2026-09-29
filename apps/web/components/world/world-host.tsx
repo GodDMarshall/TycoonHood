@@ -56,6 +56,8 @@ export function WorldHost({ state }: { state: WorldState }) {
   const [dark, setDark] = useState(false);
   const [quality, setQuality] = useState<Quality | null>(null);
   const [help, setHelp] = useState(true);
+  const [touch, setTouch] = useState(false);
+  useEffect(() => setTouch(window.matchMedia("(pointer: coarse)").matches), []);
   const [keys, setKeys] = useState<string[]>([]);
   const host = useRef<HTMLDivElement>(null);
   const world = useRef<World | null>(null);
@@ -218,22 +220,23 @@ export function WorldHost({ state }: { state: WorldState }) {
       </div>
 
       {/* Top bar. */}
-      <header className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-4 p-4 md:p-6">
-        <div className="pointer-events-auto flex items-center gap-3">
+      <header className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3 sm:gap-4 sm:p-4 md:p-6">
+        <div className="pointer-events-auto flex min-w-0 items-center gap-2 sm:gap-3">
           <Link href="/" aria-label="Tycoonhood home" className="rounded-md border border-line-strong bg-bg-0/70 p-2 backdrop-blur-md">
             <CoinMark size={26} />
           </Link>
-          <div className="rounded-md border border-line-strong bg-bg-0/70 px-3.5 py-2 backdrop-blur-md">
-            <p className="font-mono text-[9.5px] uppercase tracking-[0.22em] text-ink-3">Tycoonhood HQ</p>
-            <p className="text-[14px] font-medium leading-tight">{NAME[space]}</p>
+          {/* On a phone inside a room the dock already marks where you are. */}
+          <div className={cn("rounded-md border border-line-strong bg-bg-0/70 px-3.5 py-2 backdrop-blur-md", inside && "max-sm:hidden")}>
+            <p className="whitespace-nowrap font-mono text-[9.5px] uppercase tracking-[0.22em] text-ink-3 max-sm:hidden">Tycoonhood HQ</p>
+            <p className="whitespace-nowrap text-[14px] font-medium leading-tight">{NAME[space]}</p>
           </div>
           {inside && (
             <button type="button" onClick={() => world.current?.exit()} className={buttonStyles({ variant: "secondary", size: "sm", className: "bg-bg-0/70 backdrop-blur-md" })}>
-              <Icon name="arrow-left" size={14} /> Leave <kbd className="ml-1 font-mono text-[10px] text-ink-3">Esc</kbd>
+              <Icon name="arrow-left" size={14} /> Leave <kbd className="ml-1 font-mono text-[10px] text-ink-3 max-sm:hidden">Esc</kbd>
             </button>
           )}
         </div>
-        <div className="pointer-events-auto flex items-center gap-2">
+        <div className="pointer-events-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <Link href="/wallet" className="hidden items-center gap-2 rounded-md border border-line-strong bg-bg-0/70 px-3 py-2 backdrop-blur-md sm:flex">
             <span className="figures text-[13px]">{BigInt(m.wallet).toLocaleString("en-US")}</span>
             <span className="font-mono text-[10px] text-ink-3">THC</span>
@@ -247,10 +250,10 @@ export function WorldHost({ state }: { state: WorldState }) {
             <Icon name="streak" size={14} className="text-gold" />
             <span className="figures text-[13px]">{m.streak.current}</span>
           </span>
-          <Link href="/dashboard" className="rounded-md border border-line-strong bg-bg-0/70 px-3 py-2 text-[12.5px] text-ink-2 backdrop-blur-md hover:text-ink-1">
-            2D view
+          <Link href="/dashboard" className="whitespace-nowrap rounded-md border border-line-strong bg-bg-0/70 px-3 py-2 text-[12.5px] text-ink-2 backdrop-blur-md hover:text-ink-1">
+            2D<span className="max-sm:hidden"> view</span>
           </Link>
-          <button type="button" onClick={() => setHelp((v) => !v)} aria-expanded={help} className="rounded-md border border-line-strong bg-bg-0/70 px-3 py-2 text-[12.5px] text-ink-2 backdrop-blur-md hover:text-ink-1">
+          <button type="button" onClick={() => setHelp((v) => !v)} aria-expanded={help} aria-label="How to move" className="rounded-md border border-line-strong bg-bg-0/70 px-3 py-2 text-[12.5px] text-ink-2 backdrop-blur-md hover:text-ink-1">
             ?
           </button>
         </div>
@@ -273,7 +276,7 @@ export function WorldHost({ state }: { state: WorldState }) {
 
       {/* Dock: quick travel for everyone, and the keyboard route through the world. */}
       <nav aria-label="Travel" className="absolute inset-x-0 bottom-0 flex justify-center p-4 md:p-6">
-        <ul className="flex max-w-full gap-1 overflow-x-auto rounded-lg border border-line-strong bg-bg-0/75 p-1.5 backdrop-blur-md">
+        <ul className="flex max-w-full gap-0.5 overflow-x-auto rounded-lg border border-line-strong bg-bg-0/75 p-1 backdrop-blur-md sm:gap-1 sm:p-1.5">
           {DISTRICTS.map((d) => (
             <li key={d.id}>
               <button
@@ -281,7 +284,7 @@ export function WorldHost({ state }: { state: WorldState }) {
                 onClick={() => world.current?.travelTo(d.id)}
                 aria-current={space === d.id ? "location" : undefined}
                 className={cn(
-                  "flex w-[76px] flex-col items-center gap-1 rounded-md px-2 py-2 text-[10.5px] transition-colors md:w-[92px]",
+                  "flex w-[54px] flex-col items-center gap-1 rounded-md px-1 py-2 text-[9.5px] transition-colors sm:w-[76px] sm:px-2 sm:text-[10.5px] md:w-[92px]",
                   space === d.id ? "bg-gold/[0.12] text-gold-bright" : "text-ink-2 hover:bg-bg-3 hover:text-ink-1"
                 )}
               >
@@ -316,16 +319,25 @@ export function WorldHost({ state }: { state: WorldState }) {
 
       {/* Controls. */}
       {help && ready && (
-        <div className="absolute right-4 top-20 w-[280px] rounded-lg border border-line-strong bg-bg-0/85 p-5 text-[13px] text-ink-2 backdrop-blur-md md:right-6 animate-fade">
+        <div className="absolute right-3 top-[4.25rem] w-[min(280px,calc(100vw-1.5rem))] rounded-lg sm:right-4 sm:top-20 border border-line-strong bg-bg-0/85 p-5 text-[13px] text-ink-2 backdrop-blur-md md:right-6 animate-fade">
           <p className="eyebrow mb-3">Moving through the HQ</p>
-          <ul className="flex flex-col gap-2">
-            <li><kbd className="font-mono text-ink-1">W A S D</kbd> walk · <kbd className="font-mono text-ink-1">Shift</kbd> stride</li>
-            <li><span className="text-ink-1">Drag</span> to look around</li>
-            <li><span className="text-ink-1">Click the ground</span> to walk there</li>
-            <li><span className="text-ink-1">Click a building</span> to walk to its door</li>
-            <li><kbd className="font-mono text-ink-1">F</kbd> enter · <kbd className="font-mono text-ink-1">Esc</kbd> leave</li>
-            <li>On a phone: drag to look, tap to walk</li>
-          </ul>
+          {touch ? (
+            <ul className="flex flex-col gap-2">
+              <li><span className="text-ink-1">Drag</span> to look around</li>
+              <li><span className="text-ink-1">Tap the ground</span> to walk there</li>
+              <li><span className="text-ink-1">Tap a building</span> to walk to its door</li>
+              <li><span className="text-ink-1">Two fingers</span>: slide up to walk, down to step back</li>
+              <li>The bar below travels anywhere</li>
+            </ul>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              <li><kbd className="font-mono text-ink-1">W A S D</kbd> walk · <kbd className="font-mono text-ink-1">Shift</kbd> stride</li>
+              <li><span className="text-ink-1">Drag</span> to look around</li>
+              <li><span className="text-ink-1">Click the ground</span> to walk there</li>
+              <li><span className="text-ink-1">Click a building</span> to walk to its door</li>
+              <li><kbd className="font-mono text-ink-1">F</kbd> enter · <kbd className="font-mono text-ink-1">Esc</kbd> leave</li>
+            </ul>
+          )}
           {quality && <p className="mt-4 border-t border-line pt-3 font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-3">Quality: {quality}</p>}
         </div>
       )}

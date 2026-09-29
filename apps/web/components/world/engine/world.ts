@@ -19,6 +19,7 @@ import {
   Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
+  type MeshStandardMaterial,
   NoToneMapping,
   Object3D,
   MathUtils,
@@ -159,6 +160,7 @@ export class World {
     this.nav = new Navigator(1);
     this.m = createMaterials(assets);
     this.buildExterior(q);
+    bindEnvironment(this.exterior);
 
     this.composer = new EffectComposer(this.renderer, { frameBufferType: HalfFloatType });
     this.renderPass = new RenderPass(this.exterior, this.nav.camera);
@@ -243,7 +245,7 @@ export class World {
     s.add(sky);
     s.environment = this.skyEnv;
     s.environmentIntensity = 1.0;
-    s.fog = new FogExp2(new Color("#4a3a42"), 0.0017);
+    s.fog = new FogExp2(new Color("#3a2f38"), 0.00115);
 
     const sun = new DirectionalLight("#ffb67a", 2.6);
     sun.position.copy(sunDir).multiplyScalar(260);
@@ -463,6 +465,7 @@ export class World {
   }
 
   private useScene(scene: Scene) {
+    bindEnvironment(scene);
     this.renderPass.mainScene = scene;
     if (this.aoPass) this.aoPass.scene = scene;
     this.renderer.shadowMap.needsUpdate = true;
@@ -604,8 +607,8 @@ export class World {
       // The homepage fly-around: a slow pendulum over the south lawns, so the
       // tower always stands against the western dusk and the promenade leads
       // the eye in. It never swings behind a building.
-      const a = Math.PI / 2 - 0.85 * Math.sin(this.t * 0.045);
-      const r = 138 + Math.sin(this.t * 0.07) * 10;
+      const a = Math.PI / 2 - 0.5 * Math.sin(this.t * 0.045);
+      const r = 146 + Math.sin(this.t * 0.07) * 8;
       cam.position.set(Math.cos(a) * r, 34 + Math.sin(this.t * 0.11) * 4, -12 + Math.sin(a) * r);
       cam.lookAt(Math.cos(a) * 12, 14, -30);
       for (const b of this.buildings) b.update?.(this.t, dt);
@@ -724,5 +727,40 @@ function disposeScene(scene: Scene) {
     const mat = m.material;
     if (Array.isArray(mat)) mat.forEach((x) => x.dispose());
     else if (mat) mat.dispose();
+  });
+}
+
+/**
+ * Bind a space's environment to its materials explicitly.
+ *
+ * three r186 overwrites `envMapIntensity` with `scene.environmentIntensity`
+ * for every material that inherits `scene.environment` (WebGLRenderer, the
+ * `material.envMap === null` branch). Without this, every per-material
+ * reflection level in materials.ts is silently ignored. Materials are
+ * shared between spaces, so this runs on every switch: each material keeps
+ * its authored level, scaled by the space's own (`environmentIntensity`).
+ * Both environments are PMREMs of the same size, so a switch never
+ * recompiles a program.
+ */
+function bindEnvironment(scene: Scene) {
+  const env = scene.environment;
+  if (!env) return;
+  const level = scene.environmentIntensity;
+  scene.traverse((o) => {
+    const own = (o as Mesh).material;
+    if (!own) return;
+    for (const mat of Array.isArray(own) ? own : [own]) {
+      const m = mat as MeshStandardMaterial;
+      if (!m.isMeshStandardMaterial) continue;
+      if (m.userData.envBase === undefined) {
+        m.userData.envBase = m.envMapIntensity;
+        // A material that brought its own envMap keeps it.
+        m.userData.envInherits = m.envMap === null;
+      }
+      if (!m.userData.envInherits) continue;
+      if (m.envMap === null) m.needsUpdate = true;
+      m.envMap = env;
+      m.envMapIntensity = m.userData.envBase * level;
+    }
   });
 }

@@ -61,7 +61,7 @@ export function buildPlaza(m: Materials) {
   // Raised platform: 0.6m above the surrounding ground.
   const W = 180;
   const D = 180;
-  const floor = mesh(planeGeo(W, D, 3.2), m.marbleFloor, 0, 0.6, -8, { cast: false });
+  const floor = mesh(planeGeo(W, D, 3.2), m.plazaFloor, 0, 0.6, -8, { cast: false });
   g.add(floor);
   // Skirt and steps down to the ground on every side. The skirt stops 2cm
   // short of the floor: a face coplanar with it z-fights across the plaza.
@@ -530,6 +530,7 @@ export function buildSkyline(count: number, seed = 7) {
     return s / 2147483647;
   };
   // One canvas of windows; towers sample different slices of it via scale.
+  // The canvas spans 96m × 448m of facade: 128 floors of 3.5m, windows ~2.25m wide.
   const cv = document.createElement("canvas");
   cv.width = 256;
   cv.height = 1024;
@@ -553,12 +554,13 @@ export function buildSkyline(count: number, seed = 7) {
   tex.colorSpace = SRGBColorSpace;
   tex.wrapS = tex.wrapT = RepeatWrapping;
   const mat = new MeshStandardMaterial({
-    color: "#0a0b0d",
-    metalness: 0.85,
-    roughness: 0.25,
+    color: "#07080a",
+    metalness: 0.6,
+    roughness: 0.45,
+    envMapIntensity: 0.35,
     emissive: new Color("#ffffff"),
     emissiveMap: tex,
-    emissiveIntensity: 0.9,
+    emissiveIntensity: 1.6,
   });
   const geo = new BoxGeometry(1, 1, 1);
   geo.translate(0, 0.5, 0);
@@ -588,7 +590,7 @@ export function buildSkyline(count: number, seed = 7) {
         vec3 sc = vec3(length(instanceMatrix[0].xyz), length(instanceMatrix[1].xyz), length(instanceMatrix[2].xyz));
         vec3 ap = abs(normal);
         vec2 f = ap.x > 0.5 ? vec2(position.z * sc.z, position.y * sc.y) : vec2(position.x * sc.x, position.y * sc.y);
-        vCity = f / vec2(48.0, 192.0) + vec2(instanceMatrix[3].x, instanceMatrix[3].z) * 0.013;`
+        vCity = f / vec2(96.0, 448.0) + vec2(instanceMatrix[3].x, instanceMatrix[3].z) * 0.013;`
       );
     shader.fragmentShader = shader.fragmentShader
       .replace("#include <uv_pars_fragment>", "#include <uv_pars_fragment>\nvarying vec2 vCity;")

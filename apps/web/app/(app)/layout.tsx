@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../../lib/auth";
 import { SiteHeader } from "../../components/shell/site-header";
+import { ReturnToHQ } from "../../components/world/return-to-hq";
 
 /**
  * The member shell. The redirects here are convenience, not security —
@@ -16,6 +17,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <div className="min-h-dvh pb-24 lg:pb-0">
       <SiteHeader />
       <div id="content" tabIndex={-1} className="mx-auto max-w-[88rem] px-[var(--gutter)] py-8 outline-none md:py-12">
+        <ReturnToHQ />
         {children}
       </div>
     </div>

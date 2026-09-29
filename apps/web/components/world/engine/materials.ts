@@ -18,6 +18,35 @@ function tiled(set: PBRSet, repeat: number) {
   return { map: c(set.map), roughnessMap: c(set.roughnessMap), normalMap: c(set.normalMap) };
 }
 
+/** Paving bands every `field` metres (world XZ, offset to the plaza centre). */
+function banded(mat: MeshPhysicalMaterial, field = 12, band = 0.55, origin = new Vector2(0, -8)) {
+  mat.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader
+      .replace("#include <common>", "#include <common>\nvarying vec2 vPave;")
+      .replace("#include <worldpos_vertex>", "#include <worldpos_vertex>\nvPave = (modelMatrix * vec4(transformed, 1.0)).xz;");
+    sh.fragmentShader = sh.fragmentShader
+      .replace(
+        "#include <common>",
+        `#include <common>
+        varying vec2 vPave;
+        float paveBand() {
+          vec2 p = vPave - vec2(${origin.x.toFixed(1)}, ${origin.y.toFixed(1)}) + ${(field / 2).toFixed(2)};
+          vec2 d = abs(mod(p, ${field.toFixed(1)}) - ${(field / 2).toFixed(2)});
+          vec2 w = fwidth(p) * 1.2;
+          vec2 m = smoothstep(vec2(${(field / 2 - band / 2).toFixed(3)}) - w, vec2(${(field / 2 - band / 2).toFixed(3)}) + w, d);
+          return max(m.x, m.y);
+        }`
+      )
+      .replace("#include <map_fragment>", "#include <map_fragment>\nfloat pave = paveBand();\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.018, 0.016, 0.014), pave);")
+      // The stone's roughness map is authored for a polish (mean ~0.09); remap
+      // it into a honed range, keeping its variation, before the bands.
+      .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = mix(0.42 + roughnessFactor * 0.5, 0.82, pave);")
+      .replace("#include <lights_physical_fragment>", "#include <lights_physical_fragment>\n#ifdef USE_CLEARCOAT\nmaterial.clearcoat *= 1.0 - pave;\n#endif");
+  };
+  mat.customProgramCacheKey = () => `pave-${field}-${band}`;
+  return mat;
+}
+
 export function createMaterials(a: WorldAssets) {
   const s = a.sets;
   const glow = (hex: string, strength: number) => {
@@ -36,6 +65,26 @@ export function createMaterials(a: WorldAssets) {
       normalScale: new Vector2(0.06, 0.06),
       envMapIntensity: 1.1,
     }),
+    /**
+     * The plaza's own floor: the same stone, honed rather than polished —
+     * outdoor paving is never mirror-finished (it would be lethal in rain),
+     * and a polished floor mirrors the dusk sky at grazing angles until it
+     * reads as ice. Laid in 12m fields divided by basalt bands, which give
+     * the eye a scale from the air. Drawn in the shader from world
+     * position, so no strip can z-fight. The planar mirror (cinematic)
+     * still adds the lanterns' reflections.
+     */
+    plazaFloor: banded(
+      new MeshPhysicalMaterial({
+        ...tiled(s.marble, 1),
+        color: new Color("#5c5c5c"),
+        roughness: 1, // the map, unscaled; banded() remaps it to a hone
+        clearcoat: 0.12,
+        clearcoatRoughness: 0.32,
+        normalScale: new Vector2(0.08, 0.08),
+        envMapIntensity: 0.5,
+      })
+    ),
     marbleWall: new MeshPhysicalMaterial({ ...tiled(s.marble, 1), roughness: 1, clearcoat: 0.6, clearcoatRoughness: 0.12 }),
     basalt: new MeshStandardMaterial({ ...tiled(s.basalt, 1), roughness: 1, normalScale: new Vector2(1, 1) }),
     concrete: new MeshStandardMaterial({ ...tiled(s.concrete, 1), roughness: 1 }),

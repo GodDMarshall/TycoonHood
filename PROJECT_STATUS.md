@@ -1,7 +1,8 @@
 # TYCOONHOOD — PROJECT STATUS
 
-**Last verified:** 26 September 2026, by a full run in a Linux sandbox
-(PostgreSQL 16, Node 22, pnpm 9.15.9), after the HQ visual rebuild (DR-17/18).
+**Last verified:** 29 September 2026, by a full run in a Linux sandbox
+(PostgreSQL 16, Node 22, pnpm 9.15.9), after members moved into the walkable
+HQ (DR-21..23).
 **Not deployed.** Nothing here has served a real member.
 
 Every line below is the recorded output of a command, not a claim.
@@ -15,11 +16,12 @@ Every line below is the recorded output of a command, not a claim.
 | Types | `pnpm typecheck` | clean · 6 projects |
 | Lint | `pnpm lint` | clean |
 | Tests | `pnpm test` | **101 / 101** |
-| Web build | `pnpm build:web` | 47 routes |
-| Miner build | `pnpm build:miner` | 5 routes |
+| Web build | `pnpm build:web` | 49 entries (adds `/world`, `/credits`) |
+| Miner build | `pnpm build:miner` | 5 pages |
 | Deployment harness | `pnpm --filter @tycoonhood/core exec tsx scripts/verify-platform.ts` | **28 / 28** |
 | Browser end-to-end | `pnpm e2e` | **39 / 39** |
-| Responsive + accessibility | 29 page/audience pairs × 1440·1280·1024·768·390·360, axe WCAG 2.1 AA | 0 overflow · 0 violations |
+| Responsive + accessibility | 31 page/audience pairs × 1440·1280·1024·768·390·360, axe WCAG 2.1 AA | 0 overflow · 0 violations |
+| The live 3D world | `/world` on the plaza and inside a room, 1440 and 390 (touch), axe WCAG 2.1 AA | 0 overflow · 0 violations |
 
 The browser run is the one worth reading. It opens a real Chromium against
 both production builds and, as an admin and then as a member:
@@ -56,6 +58,12 @@ It then deletes what it created and checks that it left nothing behind.
   server rather than the browser.
 - **Admin** — overview, members, economy, content, missions, products, videos,
   challenges, orders.
+- **The HQ you walk through** — sign-in lands members in `/world`: a campus
+  at dusk with six enterable buildings. Each room carries the member's live
+  state and real actions. Quality is tiered per device, and reduced motion,
+  no WebGL2 and software GPUs get the 2D app. Member pages link back into
+  their building. The homepage flies over the same campus. See DR-21..23 and
+  `docs/DESIGN_SYSTEM.md` §5.
 - **The HQ visual system** — dark/gold design system, self-hosted type, one
   icon family, context-aware navigation with a phone tab bar, the 3D
   headquarters on the homepage (with a static drawing for every device that
