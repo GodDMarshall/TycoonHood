@@ -751,6 +751,26 @@ async function main() {
     }
     await prisma.course.update({ where: { id: course.id }, data: { status: "PUBLISHED" } });
     console.log(`✓ ${slug}: ${modules.length} modules, ${modules.reduce((n, m) => n + m.lessons.length, 0)} lessons — PUBLISHED`);
+    await programChannels(course.id, slug);
+  }
+}
+
+/**
+ * A published program gets its two community channels. Mirrors
+ * CommunityService.ensureProgramChannels (core cannot be imported from db)
+ * and the 20261001000000_academy_community migration. Idempotent.
+ */
+async function programChannels(courseId: string, slug: string) {
+  const rows = [
+    { suffix: "discussion", name: "Discussion", kind: "CHAT" as const, sortOrder: 0, topic: "Talk about the work of this program with the people doing it." },
+    { suffix: "questions", name: "Questions", kind: "QUESTIONS" as const, sortOrder: 1, topic: "Stuck on a lesson? Ask here. Questions from the lesson page land here with the lesson attached." },
+  ];
+  for (const r of rows) {
+    await prisma.channel.upsert({
+      where: { slug: `${slug}-${r.suffix}` },
+      update: {},
+      create: { slug: `${slug}-${r.suffix}`, name: r.name, kind: r.kind, topic: r.topic, courseId, slowModeSec: 10, sortOrder: r.sortOrder },
+    });
   }
 }
 

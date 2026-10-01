@@ -101,7 +101,8 @@ export const NotificationType = {
   MISSION: 'MISSION',
   THC: 'THC',
   SYSTEM: 'SYSTEM',
-  ORDER: 'ORDER'
+  ORDER: 'ORDER',
+  COMMUNITY: 'COMMUNITY'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -173,3 +174,13 @@ export const ReferralStatus = {
 } as const
 
 export type ReferralStatus = (typeof ReferralStatus)[keyof typeof ReferralStatus]
+
+
+export const ChannelKind = {
+  CHAT: 'CHAT',
+  ANNOUNCEMENTS: 'ANNOUNCEMENTS',
+  WINS: 'WINS',
+  QUESTIONS: 'QUESTIONS'
+} as const
+
+export type ChannelKind = (typeof ChannelKind)[keyof typeof ChannelKind]

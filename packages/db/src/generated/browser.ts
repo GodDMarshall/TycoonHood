@@ -232,3 +232,43 @@ export type WatchTask = Prisma.WatchTaskModel
  * 
  */
 export type WatchCompletion = Prisma.WatchCompletionModel
+/**
+ * Model Channel
+ * 
+ */
+export type Channel = Prisma.ChannelModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
+/**
+ * Model ChannelRead
+ * Where a member stopped reading a channel — the source of unread counts.
+ */
+export type ChannelRead = Prisma.ChannelReadModel
+/**
+ * Model MessageReport
+ * 
+ */
+export type MessageReport = Prisma.MessageReportModel
+/**
+ * Model CommunityMute
+ * A member who may read but not post. until = null means until lifted.
+ */
+export type CommunityMute = Prisma.CommunityMuteModel
+/**
+ * Model StandardItem
+ * 
+ */
+export type StandardItem = Prisma.StandardItemModel
+/**
+ * Model StandardTick
+ * 
+ */
+export type StandardTick = Prisma.StandardTickModel
+/**
+ * Model StandardDay
+ * The record: one row per day the member met the whole standard.
+ */
+export type StandardDay = Prisma.StandardDayModel

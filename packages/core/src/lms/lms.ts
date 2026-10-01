@@ -8,8 +8,13 @@ import type { PrismaClient } from "@tycoonhood/db";
 import { XpService } from "../gamification/xp";
 import { StreakService } from "../gamification/streaks";
 import { randomBytes } from "node:crypto";
+import { gateLessons } from "./gating";
 
 export class NotEnrolledError extends Error {}
+/** The lesson is behind one the member has not finished. */
+export class LessonLockedError extends Error {}
+/** A lesson with a knowledge check completes only by passing it. */
+export class QuizRequiredError extends Error {}
 
 export class LmsService {
   private xp: XpService;
@@ -29,12 +34,42 @@ export class LmsService {
     });
   }
 
+  /**
+   * The gate for one lesson: done, open, or locked behind an earlier one.
+   * The same rule the course page draws, so the server and the screen
+   * cannot disagree about what is open.
+   */
+  async lessonGate(userId: string, courseId: string, lessonId: string) {
+    const lessons = await this.db.lesson.findMany({
+      where: { module: { courseId } },
+      select: {
+        id: true,
+        title: true,
+        sortOrder: true,
+        module: { select: { sortOrder: true } },
+        progress: { where: { userId }, select: { completedAt: true } },
+      },
+    });
+    const gates = gateLessons(
+      lessons.map((l) => ({
+        id: l.id,
+        title: l.title,
+        sortOrder: l.sortOrder,
+        moduleSortOrder: l.module.sortOrder,
+        completed: !!l.progress[0]?.completedAt,
+      }))
+    );
+    return gates.get(lessonId) ?? { state: "locked" as const };
+  }
+
   /** Marks a lesson complete; first completion pays XP, touches the streak,
-   *  fires the first-lesson mission, and may complete the course. */
-  async completeLesson(userId: string, lessonId: string) {
+   *  fires the first-lesson mission, and may complete the course.
+   *  Lessons complete in order, and a lesson with a knowledge check completes
+   *  only through `submitQuiz` (`viaQuiz`). */
+  async completeLesson(userId: string, lessonId: string, opts: { viaQuiz?: boolean } = {}) {
     const lesson = await this.db.lesson.findUniqueOrThrow({
       where: { id: lessonId },
-      include: { module: { include: { course: true } } },
+      include: { module: { include: { course: true } }, quiz: { select: { id: true } } },
     });
     const course = lesson.module.course;
 
@@ -43,10 +78,23 @@ export class LmsService {
     });
     if (!enrollment) throw new NotEnrolledError("Enroll in the program before completing lessons.");
 
+    if (lesson.quiz && !opts.viaQuiz) {
+      throw new QuizRequiredError("Pass the knowledge check to complete this lesson.");
+    }
+
     const existing = await this.db.lessonProgress.findUnique({
       where: { userId_lessonId: { userId, lessonId } },
     });
     const firstCompletion = !existing?.completedAt;
+
+    if (firstCompletion) {
+      const gate = await this.lessonGate(userId, course.id, lessonId);
+      if (gate.state === "locked") {
+        throw new LessonLockedError(
+          gate.blockedBy ? `Finish “${gate.blockedBy.title}” first.` : "This lesson is not open yet."
+        );
+      }
+    }
 
     await this.db.lessonProgress.upsert({
       where: { userId_lessonId: { userId, lessonId } },
@@ -84,6 +132,15 @@ export class LmsService {
         await new ReferralService(this.db).qualify(userId);
       } catch {
         // The member finished their lesson; that is what matters here.
+      }
+
+      // "Study" on the daily standard ticks itself from the real thing.
+      // Fail-soft for the same reason.
+      try {
+        const { StandardService } = await import("../standard/standard");
+        await new StandardService(this.db).autoTick(userId, "LESSON_COMPLETED");
+      } catch {
+        // The lesson is complete regardless.
       }
     }
 
@@ -159,12 +216,24 @@ export class LmsService {
     await bus.emit({ type: "COURSE_COMPLETED", userId, courseId });
   }
 
-  /** Scores a quiz attempt; passing completes the quiz's lesson. */
+  /** Scores a quiz attempt; passing completes the quiz's lesson. A quiz
+   *  behind an unfinished lesson is not scored at all. */
   async submitQuiz(userId: string, quizId: string, answers: number[]) {
     const quiz = await this.db.quiz.findUniqueOrThrow({
       where: { id: quizId },
-      include: { questions: { orderBy: { sortOrder: "asc" } }, lesson: true },
+      include: { questions: { orderBy: { sortOrder: "asc" } }, lesson: { include: { module: true } } },
     });
+
+    const enrolled = await this.db.enrollment.findUnique({
+      where: { userId_courseId: { userId, courseId: quiz.lesson.module.courseId } },
+    });
+    if (!enrolled) throw new NotEnrolledError("Enroll in the program before taking its knowledge checks.");
+    const gate = await this.lessonGate(userId, quiz.lesson.module.courseId, quiz.lessonId);
+    if (gate.state === "locked") {
+      throw new LessonLockedError(
+        gate.blockedBy ? `Finish “${gate.blockedBy.title}” first.` : "This lesson is not open yet."
+      );
+    }
 
     let correct = 0;
     quiz.questions.forEach((q, i) => {
@@ -179,7 +248,7 @@ export class LmsService {
 
     let lessonResult = null;
     if (passed) {
-      lessonResult = await this.completeLesson(userId, quiz.lessonId);
+      lessonResult = await this.completeLesson(userId, quiz.lessonId, { viaQuiz: true });
     }
 
     return {

@@ -291,6 +291,13 @@ export type UserWhereInput = {
   referralsMade?: Prisma.ReferralListRelationFilter
   referralReceived?: Prisma.XOR<Prisma.ReferralNullableScalarRelationFilter, Prisma.ReferralWhereInput> | null
   watchCompletions?: Prisma.WatchCompletionListRelationFilter
+  messages?: Prisma.MessageListRelationFilter
+  messageReports?: Prisma.MessageReportListRelationFilter
+  channelReads?: Prisma.ChannelReadListRelationFilter
+  communityMute?: Prisma.XOR<Prisma.CommunityMuteNullableScalarRelationFilter, Prisma.CommunityMuteWhereInput> | null
+  standardItems?: Prisma.StandardItemListRelationFilter
+  standardTicks?: Prisma.StandardTickListRelationFilter
+  standardDays?: Prisma.StandardDayListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -328,6 +335,13 @@ export type UserOrderByWithRelationInput = {
   referralsMade?: Prisma.ReferralOrderByRelationAggregateInput
   referralReceived?: Prisma.ReferralOrderByWithRelationInput
   watchCompletions?: Prisma.WatchCompletionOrderByRelationAggregateInput
+  messages?: Prisma.MessageOrderByRelationAggregateInput
+  messageReports?: Prisma.MessageReportOrderByRelationAggregateInput
+  channelReads?: Prisma.ChannelReadOrderByRelationAggregateInput
+  communityMute?: Prisma.CommunityMuteOrderByWithRelationInput
+  standardItems?: Prisma.StandardItemOrderByRelationAggregateInput
+  standardTicks?: Prisma.StandardTickOrderByRelationAggregateInput
+  standardDays?: Prisma.StandardDayOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -368,6 +382,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   referralsMade?: Prisma.ReferralListRelationFilter
   referralReceived?: Prisma.XOR<Prisma.ReferralNullableScalarRelationFilter, Prisma.ReferralWhereInput> | null
   watchCompletions?: Prisma.WatchCompletionListRelationFilter
+  messages?: Prisma.MessageListRelationFilter
+  messageReports?: Prisma.MessageReportListRelationFilter
+  channelReads?: Prisma.ChannelReadListRelationFilter
+  communityMute?: Prisma.XOR<Prisma.CommunityMuteNullableScalarRelationFilter, Prisma.CommunityMuteWhereInput> | null
+  standardItems?: Prisma.StandardItemListRelationFilter
+  standardTicks?: Prisma.StandardTickListRelationFilter
+  standardDays?: Prisma.StandardDayListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -440,6 +461,13 @@ export type UserCreateInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -476,6 +504,13 @@ export type UserUncheckedCreateInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -512,6 +547,13 @@ export type UserUpdateInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -548,6 +590,13 @@ export type UserUncheckedUpdateInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1043,6 +1092,106 @@ export type UserUpdateOneRequiredWithoutWatchCompletionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWatchCompletionsInput, Prisma.UserUpdateWithoutWatchCompletionsInput>, Prisma.UserUncheckedUpdateWithoutWatchCompletionsInput>
 }
 
+export type UserCreateNestedOneWithoutMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessagesInput
+  upsert?: Prisma.UserUpsertWithoutMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMessagesInput, Prisma.UserUpdateWithoutMessagesInput>, Prisma.UserUncheckedUpdateWithoutMessagesInput>
+}
+
+export type UserCreateNestedOneWithoutChannelReadsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutChannelReadsInput, Prisma.UserUncheckedCreateWithoutChannelReadsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutChannelReadsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutChannelReadsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutChannelReadsInput, Prisma.UserUncheckedCreateWithoutChannelReadsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutChannelReadsInput
+  upsert?: Prisma.UserUpsertWithoutChannelReadsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutChannelReadsInput, Prisma.UserUpdateWithoutChannelReadsInput>, Prisma.UserUncheckedUpdateWithoutChannelReadsInput>
+}
+
+export type UserCreateNestedOneWithoutMessageReportsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessageReportsInput, Prisma.UserUncheckedCreateWithoutMessageReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessageReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMessageReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessageReportsInput, Prisma.UserUncheckedCreateWithoutMessageReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessageReportsInput
+  upsert?: Prisma.UserUpsertWithoutMessageReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMessageReportsInput, Prisma.UserUpdateWithoutMessageReportsInput>, Prisma.UserUncheckedUpdateWithoutMessageReportsInput>
+}
+
+export type UserCreateNestedOneWithoutCommunityMuteInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommunityMuteInput, Prisma.UserUncheckedCreateWithoutCommunityMuteInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommunityMuteInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCommunityMuteNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommunityMuteInput, Prisma.UserUncheckedCreateWithoutCommunityMuteInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommunityMuteInput
+  upsert?: Prisma.UserUpsertWithoutCommunityMuteInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommunityMuteInput, Prisma.UserUpdateWithoutCommunityMuteInput>, Prisma.UserUncheckedUpdateWithoutCommunityMuteInput>
+}
+
+export type UserCreateNestedOneWithoutStandardItemsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStandardItemsInput, Prisma.UserUncheckedCreateWithoutStandardItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStandardItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutStandardItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStandardItemsInput, Prisma.UserUncheckedCreateWithoutStandardItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStandardItemsInput
+  upsert?: Prisma.UserUpsertWithoutStandardItemsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStandardItemsInput, Prisma.UserUpdateWithoutStandardItemsInput>, Prisma.UserUncheckedUpdateWithoutStandardItemsInput>
+}
+
+export type UserCreateNestedOneWithoutStandardTicksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStandardTicksInput, Prisma.UserUncheckedCreateWithoutStandardTicksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStandardTicksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutStandardTicksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStandardTicksInput, Prisma.UserUncheckedCreateWithoutStandardTicksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStandardTicksInput
+  upsert?: Prisma.UserUpsertWithoutStandardTicksInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStandardTicksInput, Prisma.UserUpdateWithoutStandardTicksInput>, Prisma.UserUncheckedUpdateWithoutStandardTicksInput>
+}
+
+export type UserCreateNestedOneWithoutStandardDaysInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStandardDaysInput, Prisma.UserUncheckedCreateWithoutStandardDaysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStandardDaysInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutStandardDaysNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStandardDaysInput, Prisma.UserUncheckedCreateWithoutStandardDaysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStandardDaysInput
+  upsert?: Prisma.UserUpsertWithoutStandardDaysInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStandardDaysInput, Prisma.UserUpdateWithoutStandardDaysInput>, Prisma.UserUncheckedUpdateWithoutStandardDaysInput>
+}
+
 export type UserCreateWithoutCredentialInput = {
   id?: string
   email: string
@@ -1076,6 +1225,13 @@ export type UserCreateWithoutCredentialInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCredentialInput = {
@@ -1111,6 +1267,13 @@ export type UserUncheckedCreateWithoutCredentialInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCredentialInput = {
@@ -1162,6 +1325,13 @@ export type UserUpdateWithoutCredentialInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCredentialInput = {
@@ -1197,6 +1367,13 @@ export type UserUncheckedUpdateWithoutCredentialInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1232,6 +1409,13 @@ export type UserCreateWithoutAccountsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1267,6 +1451,13 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1318,6 +1509,13 @@ export type UserUpdateWithoutAccountsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1353,6 +1551,13 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1388,6 +1593,13 @@ export type UserCreateWithoutSessionsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1423,6 +1635,13 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1474,6 +1693,13 @@ export type UserUpdateWithoutSessionsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1509,6 +1735,13 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -1544,6 +1777,13 @@ export type UserCreateWithoutProfileInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -1579,6 +1819,13 @@ export type UserUncheckedCreateWithoutProfileInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -1630,6 +1877,13 @@ export type UserUpdateWithoutProfileInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -1665,6 +1919,13 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutQuizAttemptsInput = {
@@ -1700,6 +1961,13 @@ export type UserCreateWithoutQuizAttemptsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -1735,6 +2003,13 @@ export type UserUncheckedCreateWithoutQuizAttemptsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -1786,6 +2061,13 @@ export type UserUpdateWithoutQuizAttemptsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -1821,6 +2103,13 @@ export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEnrollmentsInput = {
@@ -1856,6 +2145,13 @@ export type UserCreateWithoutEnrollmentsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -1891,6 +2187,13 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -1942,6 +2245,13 @@ export type UserUpdateWithoutEnrollmentsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -1977,6 +2287,13 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLessonProgressInput = {
@@ -2012,6 +2329,13 @@ export type UserCreateWithoutLessonProgressInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -2047,6 +2371,13 @@ export type UserUncheckedCreateWithoutLessonProgressInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -2098,6 +2429,13 @@ export type UserUpdateWithoutLessonProgressInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -2133,6 +2471,13 @@ export type UserUncheckedUpdateWithoutLessonProgressInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCertificatesInput = {
@@ -2168,6 +2513,13 @@ export type UserCreateWithoutCertificatesInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCertificatesInput = {
@@ -2203,6 +2555,13 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCertificatesInput = {
@@ -2254,6 +2613,13 @@ export type UserUpdateWithoutCertificatesInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCertificatesInput = {
@@ -2289,6 +2655,13 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutXpEventsInput = {
@@ -2324,6 +2697,13 @@ export type UserCreateWithoutXpEventsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutXpEventsInput = {
@@ -2359,6 +2739,13 @@ export type UserUncheckedCreateWithoutXpEventsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutXpEventsInput = {
@@ -2410,6 +2797,13 @@ export type UserUpdateWithoutXpEventsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutXpEventsInput = {
@@ -2445,6 +2839,13 @@ export type UserUncheckedUpdateWithoutXpEventsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRankInput = {
@@ -2480,6 +2881,13 @@ export type UserCreateWithoutRankInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRankInput = {
@@ -2515,6 +2923,13 @@ export type UserUncheckedCreateWithoutRankInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRankInput = {
@@ -2593,6 +3008,13 @@ export type UserCreateWithoutAchievementsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAchievementsInput = {
@@ -2628,6 +3050,13 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAchievementsInput = {
@@ -2679,6 +3108,13 @@ export type UserUpdateWithoutAchievementsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAchievementsInput = {
@@ -2714,6 +3150,13 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutParticipationsInput = {
@@ -2749,6 +3192,13 @@ export type UserCreateWithoutParticipationsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutParticipationsInput = {
@@ -2784,6 +3234,13 @@ export type UserUncheckedCreateWithoutParticipationsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutParticipationsInput = {
@@ -2835,6 +3292,13 @@ export type UserUpdateWithoutParticipationsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParticipationsInput = {
@@ -2870,6 +3334,13 @@ export type UserUncheckedUpdateWithoutParticipationsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMissionCompletionsInput = {
@@ -2905,6 +3376,13 @@ export type UserCreateWithoutMissionCompletionsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMissionCompletionsInput = {
@@ -2940,6 +3418,13 @@ export type UserUncheckedCreateWithoutMissionCompletionsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMissionCompletionsInput = {
@@ -2991,6 +3476,13 @@ export type UserUpdateWithoutMissionCompletionsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
@@ -3026,6 +3518,13 @@ export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStreakInput = {
@@ -3061,6 +3560,13 @@ export type UserCreateWithoutStreakInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStreakInput = {
@@ -3096,6 +3602,13 @@ export type UserUncheckedCreateWithoutStreakInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStreakInput = {
@@ -3147,6 +3660,13 @@ export type UserUpdateWithoutStreakInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStreakInput = {
@@ -3182,6 +3702,13 @@ export type UserUncheckedUpdateWithoutStreakInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -3217,6 +3744,13 @@ export type UserCreateWithoutNotificationsInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -3252,6 +3786,13 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -3303,6 +3844,13 @@ export type UserUpdateWithoutNotificationsInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -3338,6 +3886,13 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLedgerAccountInput = {
@@ -3373,6 +3928,13 @@ export type UserCreateWithoutLedgerAccountInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLedgerAccountInput = {
@@ -3408,6 +3970,13 @@ export type UserUncheckedCreateWithoutLedgerAccountInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLedgerAccountInput = {
@@ -3459,6 +4028,13 @@ export type UserUpdateWithoutLedgerAccountInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLedgerAccountInput = {
@@ -3494,6 +4070,13 @@ export type UserUncheckedUpdateWithoutLedgerAccountInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -3529,6 +4112,13 @@ export type UserCreateWithoutOrdersInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -3564,6 +4154,13 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -3615,6 +4212,13 @@ export type UserUpdateWithoutOrdersInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -3650,6 +4254,13 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDiscordLinkInput = {
@@ -3685,6 +4296,13 @@ export type UserCreateWithoutDiscordLinkInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDiscordLinkInput = {
@@ -3720,6 +4338,13 @@ export type UserUncheckedCreateWithoutDiscordLinkInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDiscordLinkInput = {
@@ -3771,6 +4396,13 @@ export type UserUpdateWithoutDiscordLinkInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDiscordLinkInput = {
@@ -3806,6 +4438,13 @@ export type UserUncheckedUpdateWithoutDiscordLinkInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTelegramLinkInput = {
@@ -3841,6 +4480,13 @@ export type UserCreateWithoutTelegramLinkInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTelegramLinkInput = {
@@ -3876,6 +4522,13 @@ export type UserUncheckedCreateWithoutTelegramLinkInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTelegramLinkInput = {
@@ -3927,6 +4580,13 @@ export type UserUpdateWithoutTelegramLinkInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTelegramLinkInput = {
@@ -3962,6 +4622,13 @@ export type UserUncheckedUpdateWithoutTelegramLinkInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMinerStateInput = {
@@ -3997,6 +4664,13 @@ export type UserCreateWithoutMinerStateInput = {
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMinerStateInput = {
@@ -4032,6 +4706,13 @@ export type UserUncheckedCreateWithoutMinerStateInput = {
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMinerStateInput = {
@@ -4083,6 +4764,13 @@ export type UserUpdateWithoutMinerStateInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMinerStateInput = {
@@ -4118,6 +4806,13 @@ export type UserUncheckedUpdateWithoutMinerStateInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReferralsMadeInput = {
@@ -4153,6 +4848,13 @@ export type UserCreateWithoutReferralsMadeInput = {
   minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReferralsMadeInput = {
@@ -4188,6 +4890,13 @@ export type UserUncheckedCreateWithoutReferralsMadeInput = {
   minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReferralsMadeInput = {
@@ -4228,6 +4937,13 @@ export type UserCreateWithoutReferralReceivedInput = {
   minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReferralReceivedInput = {
@@ -4263,6 +4979,13 @@ export type UserUncheckedCreateWithoutReferralReceivedInput = {
   minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReferralReceivedInput = {
@@ -4314,6 +5037,13 @@ export type UserUpdateWithoutReferralsMadeInput = {
   minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralsMadeInput = {
@@ -4349,6 +5079,13 @@ export type UserUncheckedUpdateWithoutReferralsMadeInput = {
   minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutReferralReceivedInput = {
@@ -4395,6 +5132,13 @@ export type UserUpdateWithoutReferralReceivedInput = {
   minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralReceivedInput = {
@@ -4430,6 +5174,13 @@ export type UserUncheckedUpdateWithoutReferralReceivedInput = {
   minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWatchCompletionsInput = {
@@ -4465,6 +5216,13 @@ export type UserCreateWithoutWatchCompletionsInput = {
   minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
   referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWatchCompletionsInput = {
@@ -4500,6 +5258,13 @@ export type UserUncheckedCreateWithoutWatchCompletionsInput = {
   minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
   referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWatchCompletionsInput = {
@@ -4551,6 +5316,13 @@ export type UserUpdateWithoutWatchCompletionsInput = {
   minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
@@ -4586,6 +5358,1301 @@ export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
   minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutMessagesInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutMessagesInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
+}
+
+export type UserUpsertWithoutMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMessagesInput, Prisma.UserUncheckedUpdateWithoutMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMessagesInput, Prisma.UserUncheckedUpdateWithoutMessagesInput>
+}
+
+export type UserUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutChannelReadsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutChannelReadsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutChannelReadsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutChannelReadsInput, Prisma.UserUncheckedCreateWithoutChannelReadsInput>
+}
+
+export type UserUpsertWithoutChannelReadsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutChannelReadsInput, Prisma.UserUncheckedUpdateWithoutChannelReadsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutChannelReadsInput, Prisma.UserUncheckedCreateWithoutChannelReadsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutChannelReadsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutChannelReadsInput, Prisma.UserUncheckedUpdateWithoutChannelReadsInput>
+}
+
+export type UserUpdateWithoutChannelReadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutChannelReadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutMessageReportsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutMessageReportsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutMessageReportsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessageReportsInput, Prisma.UserUncheckedCreateWithoutMessageReportsInput>
+}
+
+export type UserUpsertWithoutMessageReportsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMessageReportsInput, Prisma.UserUncheckedUpdateWithoutMessageReportsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessageReportsInput, Prisma.UserUncheckedCreateWithoutMessageReportsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMessageReportsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMessageReportsInput, Prisma.UserUncheckedUpdateWithoutMessageReportsInput>
+}
+
+export type UserUpdateWithoutMessageReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMessageReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCommunityMuteInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCommunityMuteInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCommunityMuteInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommunityMuteInput, Prisma.UserUncheckedCreateWithoutCommunityMuteInput>
+}
+
+export type UserUpsertWithoutCommunityMuteInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommunityMuteInput, Prisma.UserUncheckedUpdateWithoutCommunityMuteInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommunityMuteInput, Prisma.UserUncheckedCreateWithoutCommunityMuteInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommunityMuteInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommunityMuteInput, Prisma.UserUncheckedUpdateWithoutCommunityMuteInput>
+}
+
+export type UserUpdateWithoutCommunityMuteInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommunityMuteInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutStandardItemsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutStandardItemsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutStandardItemsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutStandardItemsInput, Prisma.UserUncheckedCreateWithoutStandardItemsInput>
+}
+
+export type UserUpsertWithoutStandardItemsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutStandardItemsInput, Prisma.UserUncheckedUpdateWithoutStandardItemsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutStandardItemsInput, Prisma.UserUncheckedCreateWithoutStandardItemsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutStandardItemsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutStandardItemsInput, Prisma.UserUncheckedUpdateWithoutStandardItemsInput>
+}
+
+export type UserUpdateWithoutStandardItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutStandardItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutStandardTicksInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutStandardTicksInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutStandardTicksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutStandardTicksInput, Prisma.UserUncheckedCreateWithoutStandardTicksInput>
+}
+
+export type UserUpsertWithoutStandardTicksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutStandardTicksInput, Prisma.UserUncheckedUpdateWithoutStandardTicksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutStandardTicksInput, Prisma.UserUncheckedCreateWithoutStandardTicksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutStandardTicksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutStandardTicksInput, Prisma.UserUncheckedUpdateWithoutStandardTicksInput>
+}
+
+export type UserUpdateWithoutStandardTicksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutStandardTicksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutStandardDaysInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutStandardDaysInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutStandardDaysInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutStandardDaysInput, Prisma.UserUncheckedCreateWithoutStandardDaysInput>
+}
+
+export type UserUpsertWithoutStandardDaysInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutStandardDaysInput, Prisma.UserUncheckedUpdateWithoutStandardDaysInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutStandardDaysInput, Prisma.UserUncheckedCreateWithoutStandardDaysInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutStandardDaysInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutStandardDaysInput, Prisma.UserUncheckedUpdateWithoutStandardDaysInput>
+}
+
+export type UserUpdateWithoutStandardDaysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutStandardDaysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyRankInput = {
@@ -4634,6 +6701,13 @@ export type UserUpdateWithoutRankInput = {
   referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRankInput = {
@@ -4669,6 +6743,13 @@ export type UserUncheckedUpdateWithoutRankInput = {
   referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
   watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutRankInput = {
@@ -4704,6 +6785,12 @@ export type UserCountOutputType = {
   quizAttempts: number
   referralsMade: number
   watchCompletions: number
+  messages: number
+  messageReports: number
+  channelReads: number
+  standardItems: number
+  standardTicks: number
+  standardDays: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4721,6 +6808,12 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   quizAttempts?: boolean | UserCountOutputTypeCountQuizAttemptsArgs
   referralsMade?: boolean | UserCountOutputTypeCountReferralsMadeArgs
   watchCompletions?: boolean | UserCountOutputTypeCountWatchCompletionsArgs
+  messages?: boolean | UserCountOutputTypeCountMessagesArgs
+  messageReports?: boolean | UserCountOutputTypeCountMessageReportsArgs
+  channelReads?: boolean | UserCountOutputTypeCountChannelReadsArgs
+  standardItems?: boolean | UserCountOutputTypeCountStandardItemsArgs
+  standardTicks?: boolean | UserCountOutputTypeCountStandardTicksArgs
+  standardDays?: boolean | UserCountOutputTypeCountStandardDaysArgs
 }
 
 /**
@@ -4831,6 +6924,48 @@ export type UserCountOutputTypeCountWatchCompletionsArgs<ExtArgs extends runtime
   where?: Prisma.WatchCompletionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MessageWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMessageReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MessageReportWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountChannelReadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChannelReadWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountStandardItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StandardItemWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountStandardTicksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StandardTickWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountStandardDaysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StandardDayWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4867,6 +7002,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   referralsMade?: boolean | Prisma.User$referralsMadeArgs<ExtArgs>
   referralReceived?: boolean | Prisma.User$referralReceivedArgs<ExtArgs>
   watchCompletions?: boolean | Prisma.User$watchCompletionsArgs<ExtArgs>
+  messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
+  messageReports?: boolean | Prisma.User$messageReportsArgs<ExtArgs>
+  channelReads?: boolean | Prisma.User$channelReadsArgs<ExtArgs>
+  communityMute?: boolean | Prisma.User$communityMuteArgs<ExtArgs>
+  standardItems?: boolean | Prisma.User$standardItemsArgs<ExtArgs>
+  standardTicks?: boolean | Prisma.User$standardTicksArgs<ExtArgs>
+  standardDays?: boolean | Prisma.User$standardDaysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -4939,6 +7081,13 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   referralsMade?: boolean | Prisma.User$referralsMadeArgs<ExtArgs>
   referralReceived?: boolean | Prisma.User$referralReceivedArgs<ExtArgs>
   watchCompletions?: boolean | Prisma.User$watchCompletionsArgs<ExtArgs>
+  messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
+  messageReports?: boolean | Prisma.User$messageReportsArgs<ExtArgs>
+  channelReads?: boolean | Prisma.User$channelReadsArgs<ExtArgs>
+  communityMute?: boolean | Prisma.User$communityMuteArgs<ExtArgs>
+  standardItems?: boolean | Prisma.User$standardItemsArgs<ExtArgs>
+  standardTicks?: boolean | Prisma.User$standardTicksArgs<ExtArgs>
+  standardDays?: boolean | Prisma.User$standardDaysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4974,6 +7123,13 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     referralsMade: Prisma.$ReferralPayload<ExtArgs>[]
     referralReceived: Prisma.$ReferralPayload<ExtArgs> | null
     watchCompletions: Prisma.$WatchCompletionPayload<ExtArgs>[]
+    messages: Prisma.$MessagePayload<ExtArgs>[]
+    messageReports: Prisma.$MessageReportPayload<ExtArgs>[]
+    channelReads: Prisma.$ChannelReadPayload<ExtArgs>[]
+    communityMute: Prisma.$CommunityMutePayload<ExtArgs> | null
+    standardItems: Prisma.$StandardItemPayload<ExtArgs>[]
+    standardTicks: Prisma.$StandardTickPayload<ExtArgs>[]
+    standardDays: Prisma.$StandardDayPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5404,6 +7560,13 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   referralsMade<T extends Prisma.User$referralsMadeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$referralsMadeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   referralReceived<T extends Prisma.User$referralReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$referralReceivedArgs<ExtArgs>>): Prisma.Prisma__ReferralClient<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   watchCompletions<T extends Prisma.User$watchCompletionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$watchCompletionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WatchCompletionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  messageReports<T extends Prisma.User$messageReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messageReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  channelReads<T extends Prisma.User$channelReadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$channelReadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChannelReadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  communityMute<T extends Prisma.User$communityMuteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$communityMuteArgs<ExtArgs>>): Prisma.Prisma__CommunityMuteClient<runtime.Types.Result.GetResult<Prisma.$CommunityMutePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  standardItems<T extends Prisma.User$standardItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$standardItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StandardItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  standardTicks<T extends Prisma.User$standardTicksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$standardTicksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StandardTickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  standardDays<T extends Prisma.User$standardDaysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$standardDaysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StandardDayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6344,6 +8507,169 @@ export type User$watchCompletionsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.WatchCompletionScalarFieldEnum | Prisma.WatchCompletionScalarFieldEnum[]
+}
+
+/**
+ * User.messages
+ */
+export type User$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Message
+   */
+  select?: Prisma.MessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Message
+   */
+  omit?: Prisma.MessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MessageInclude<ExtArgs> | null
+  where?: Prisma.MessageWhereInput
+  orderBy?: Prisma.MessageOrderByWithRelationInput | Prisma.MessageOrderByWithRelationInput[]
+  cursor?: Prisma.MessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MessageScalarFieldEnum | Prisma.MessageScalarFieldEnum[]
+}
+
+/**
+ * User.messageReports
+ */
+export type User$messageReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MessageReport
+   */
+  select?: Prisma.MessageReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MessageReport
+   */
+  omit?: Prisma.MessageReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MessageReportInclude<ExtArgs> | null
+  where?: Prisma.MessageReportWhereInput
+  orderBy?: Prisma.MessageReportOrderByWithRelationInput | Prisma.MessageReportOrderByWithRelationInput[]
+  cursor?: Prisma.MessageReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MessageReportScalarFieldEnum | Prisma.MessageReportScalarFieldEnum[]
+}
+
+/**
+ * User.channelReads
+ */
+export type User$channelReadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChannelRead
+   */
+  select?: Prisma.ChannelReadSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChannelRead
+   */
+  omit?: Prisma.ChannelReadOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChannelReadInclude<ExtArgs> | null
+  where?: Prisma.ChannelReadWhereInput
+  orderBy?: Prisma.ChannelReadOrderByWithRelationInput | Prisma.ChannelReadOrderByWithRelationInput[]
+  cursor?: Prisma.ChannelReadWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChannelReadScalarFieldEnum | Prisma.ChannelReadScalarFieldEnum[]
+}
+
+/**
+ * User.communityMute
+ */
+export type User$communityMuteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommunityMute
+   */
+  select?: Prisma.CommunityMuteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommunityMute
+   */
+  omit?: Prisma.CommunityMuteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityMuteInclude<ExtArgs> | null
+  where?: Prisma.CommunityMuteWhereInput
+}
+
+/**
+ * User.standardItems
+ */
+export type User$standardItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StandardItem
+   */
+  select?: Prisma.StandardItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StandardItem
+   */
+  omit?: Prisma.StandardItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StandardItemInclude<ExtArgs> | null
+  where?: Prisma.StandardItemWhereInput
+  orderBy?: Prisma.StandardItemOrderByWithRelationInput | Prisma.StandardItemOrderByWithRelationInput[]
+  cursor?: Prisma.StandardItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StandardItemScalarFieldEnum | Prisma.StandardItemScalarFieldEnum[]
+}
+
+/**
+ * User.standardTicks
+ */
+export type User$standardTicksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StandardTick
+   */
+  select?: Prisma.StandardTickSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StandardTick
+   */
+  omit?: Prisma.StandardTickOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StandardTickInclude<ExtArgs> | null
+  where?: Prisma.StandardTickWhereInput
+  orderBy?: Prisma.StandardTickOrderByWithRelationInput | Prisma.StandardTickOrderByWithRelationInput[]
+  cursor?: Prisma.StandardTickWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StandardTickScalarFieldEnum | Prisma.StandardTickScalarFieldEnum[]
+}
+
+/**
+ * User.standardDays
+ */
+export type User$standardDaysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StandardDay
+   */
+  select?: Prisma.StandardDaySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StandardDay
+   */
+  omit?: Prisma.StandardDayOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StandardDayInclude<ExtArgs> | null
+  where?: Prisma.StandardDayWhereInput
+  orderBy?: Prisma.StandardDayOrderByWithRelationInput | Prisma.StandardDayOrderByWithRelationInput[]
+  cursor?: Prisma.StandardDayWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StandardDayScalarFieldEnum | Prisma.StandardDayScalarFieldEnum[]
 }
 
 /**

@@ -23,7 +23,19 @@ export {
   type LoginInput,
   type OnboardingInput,
 } from "./auth/schemas";
-export { LmsService, lms, NotEnrolledError } from "./lms/lms";
+export { LmsService, lms, NotEnrolledError, LessonLockedError, QuizRequiredError } from "./lms/lms";
+export { gateLessons, nextLesson, orderLessons } from "./lms/gating";
+export type { Gate, GateLesson, LessonState } from "./lms/gating";
+export {
+  CommunityService, community, CommunityError, cleanUrl,
+  MESSAGE_MAX, PROOF_URL_MAX, REPORT_REASON_MAX, PAGE_SIZE,
+} from "./community/community";
+export type { Viewer, ChannelSummary, MessageView } from "./community/community";
+export {
+  StandardService, standard, StandardError, AUTO_EVENTS,
+  MAX_OWN_STANDARD_ITEMS, STANDARD_TITLE_MAX, STANDARD_DETAIL_MAX,
+} from "./standard/standard";
+export type { StandardToday, StandardItemView, StandardHistoryDay, AutoEvent } from "./standard/standard";
 export { StreakService, streaks } from "./gamification/streaks";
 export { AchievementService, achievements } from "./gamification/achievements";
 export { ChallengeService, challenges, ChallengeError } from "./gamification/challenges";

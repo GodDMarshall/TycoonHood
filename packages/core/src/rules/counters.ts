@@ -113,8 +113,11 @@ export async function countEvidence(
       });
 
     case "COMMUNITY_CONTRIBUTION":
-      // No trustworthy source; Discord gives us no verifiable contribution feed.
-      return null;
+      // Volume is never a signal (it is the first thing farmed). The one
+      // trustworthy source: messages staff chose to pin, still standing.
+      return db.message.count({
+        where: { authorId: userId, pinnedAt: when ? when : { not: null }, deletedAt: null },
+      });
   }
 }
 

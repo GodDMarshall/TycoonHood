@@ -45,30 +45,39 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  credential          PasswordCredential?
-  profile             Profile?
-  accounts            Account[]
-  sessions            Session[]
-  ledgerAccount       LedgerAccount?
-  enrollments         Enrollment[]
-  lessonProgress      LessonProgress[]
-  certificates        Certificate[]
-  xpEvents            XpEvent[]
-  achievements        UserAchievement[]
-  participations      ChallengeParticipation[]
-  missionCompletions  MissionCompletion[]
-  streak              Streak?
-  notifications       Notification[]
-  orders              Order[]
-  discordLink         DiscordLink?
-  telegramLink        TelegramLink?
-  quizAttempts        QuizAttempt[]
+  credential         PasswordCredential?
+  profile            Profile?
+  accounts           Account[]
+  sessions           Session[]
+  ledgerAccount      LedgerAccount?
+  enrollments        Enrollment[]
+  lessonProgress     LessonProgress[]
+  certificates       Certificate[]
+  xpEvents           XpEvent[]
+  achievements       UserAchievement[]
+  participations     ChallengeParticipation[]
+  missionCompletions MissionCompletion[]
+  streak             Streak?
+  notifications      Notification[]
+  orders             Order[]
+  discordLink        DiscordLink?
+  telegramLink       TelegramLink?
+  quizAttempts       QuizAttempt[]
   minerState         MinerState?
+  referralsMade      Referral[]               @relation("ReferralReferrer")
+  referralReceived   Referral?                @relation("ReferralReferred")
+  watchCompletions   WatchCompletion[]
+
+  // Community and the daily standard
+  messages       Message[]
+  messageReports MessageReport[]
+  channelReads   ChannelRead[]
+  communityMute  CommunityMute?
+  standardItems  StandardItem[]
+  standardTicks  StandardTick[]
+  standardDays   StandardDay[]
 
   @@index([rankId])
-  referralsMade     Referral[]        @relation("ReferralReferrer")
-  referralReceived  Referral?         @relation("ReferralReferred")
-  watchCompletions  WatchCompletion[]
 }
 
 /// Password auth lives separately from User so social-only accounts
@@ -133,10 +142,10 @@ model Profile {
   timezone    String?
 
   // Onboarding answers (spec §9)
-  goals            String[] @default([])
-  interests        String[] @default([])
-  experienceLevel  String?
-  onboardedAt      DateTime?
+  goals           String[]  @default([])
+  interests       String[]  @default([])
+  experienceLevel String?
+  onboardedAt     DateTime?
 
   /// Privacy controls (spec §10): which profile facets are public.
   /// Shape: { "achievements": true, "level": true, "streak": false, ... }
@@ -187,8 +196,8 @@ model Course {
   sortOrder   Int           @default(0)
 
   /// Instructor display info (spec §12) — richer instructor model in Phase 5 if needed
-  instructorName  String?
-  instructorBio   String?
+  instructorName String?
+  instructorBio  String?
 
   /// Prerequisite course (nullable chain)
   prerequisiteId String?
@@ -197,10 +206,11 @@ model Course {
 
   xpOnCompletion Int @default(500)
 
-  modules     CourseModule[]
-  enrollments Enrollment[]
-  resources   Resource[]
+  modules      CourseModule[]
+  enrollments  Enrollment[]
+  resources    Resource[]
   certificates Certificate[]
+  channels     Channel[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -238,6 +248,7 @@ model Lesson {
   quiz      Quiz?
   resources Resource[]
   progress  LessonProgress[]
+  messages  Message[]
 
   @@index([moduleId, sortOrder])
 }
@@ -267,12 +278,12 @@ model Quiz {
 }
 
 model QuizQuestion {
-  id           String @id @default(cuid())
+  id           String  @id @default(cuid())
   quizId       String
-  quiz         Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  sortOrder    Int    @default(0)
-  prompt       String @db.Text
-  options      Json   /// ["option a", "option b", ...]
+  quiz         Quiz    @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  sortOrder    Int     @default(0)
+  prompt       String  @db.Text
+  options      Json /// ["option a", "option b", ...]
   correctIndex Int
   explanation  String? @db.Text
 
@@ -365,7 +376,7 @@ model XpEvent {
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   amount         Int
   source         XpSource
-  sourceId       String?  /// e.g. lessonId, challengeId
+  sourceId       String? /// e.g. lessonId, challengeId
   note           String?
   idempotencyKey String   @unique
   createdAt      DateTime @default(now())
@@ -375,8 +386,8 @@ model XpEvent {
 
 /// Cumulative XP thresholds. Seeded from config curve; editable in admin later.
 model LevelDefinition {
-  level      Int    @id
-  xpRequired Int    /// cumulative XP to REACH this level
+  level      Int     @id
+  xpRequired Int /// cumulative XP to REACH this level
   title      String?
 }
 
@@ -481,7 +492,7 @@ model Mission {
   xpReward      Int     @default(0)
   thcReward     BigInt  @default(0)
   repeatable    Boolean @default(false)
-  cooldownHours Int?    /// for repeatable missions
+  cooldownHours Int? /// for repeatable missions
   active        Boolean @default(true)
 
   completions MissionCompletion[]
@@ -500,12 +511,12 @@ model MissionCompletion {
 }
 
 model Streak {
-  userId       String   @id
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  current      Int      @default(0)
-  longest      Int      @default(0)
+  userId       String    @id
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  current      Int       @default(0)
+  longest      Int       @default(0)
   lastActiveOn DateTime? @db.Date
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime  @updatedAt
 }
 
 enum NotificationType {
@@ -518,6 +529,7 @@ enum NotificationType {
   THC
   SYSTEM
   ORDER
+  COMMUNITY
 }
 
 model Notification {
@@ -542,11 +554,11 @@ model Notification {
 // ============================================================
 
 enum LedgerAccountType {
-  SYSTEM_MINT   /// counter-account for genesis; goes deeply negative by design
+  SYSTEM_MINT /// counter-account for genesis; goes deeply negative by design
   TREASURY
   REWARDS_POOL
   MINING_POOL /// ring-fenced budget the Miner app distributes from
-  REVENUE       /// receives THC spent on Tycoonhood products
+  REVENUE /// receives THC spent on Tycoonhood products
   ESCROW
   USER
 }
@@ -592,16 +604,16 @@ model LedgerTransaction {
   reason         TxReason
   status         TxStatus @default(POSTED)
   idempotencyKey String   @unique
-  sourceType     String?  /// e.g. "mission", "order"
+  sourceType     String? /// e.g. "mission", "order"
   sourceId       String?
   memo           String?
-  createdById    String?  /// admin userId for manual ops — audited (spec §27)
+  createdById    String? /// admin userId for manual ops — audited (spec §27)
   createdAt      DateTime @default(now())
 
   /// Reversal linkage: the compensating tx points at the original
-  reversesId String?             @unique
-  reverses   LedgerTransaction?  @relation("Reversal", fields: [reversesId], references: [id])
-  reversedBy LedgerTransaction?  @relation("Reversal")
+  reversesId String?            @unique
+  reverses   LedgerTransaction? @relation("Reversal", fields: [reversesId], references: [id])
+  reversedBy LedgerTransaction? @relation("Reversal")
 
   entries LedgerEntry[]
 
@@ -657,8 +669,8 @@ model Product {
 
   variants   ProductVariant[]
   orderItems OrderItem[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 
   @@index([kind, active])
 }
@@ -666,11 +678,11 @@ model Product {
 /// One buyable size/colour of a product. Stock lives here when variants
 /// exist; Product.inventory stays authoritative for variant-less items.
 model ProductVariant {
-  id        String  @id @default(cuid())
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  sku       String  @unique
-  label     String
+  id             String  @id @default(cuid())
+  productId      String
+  product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku            String  @unique
+  label          String
   /// null = inherit the product's price. An override exists because XXL
   /// genuinely costs more to make than S.
   priceThc       BigInt?
@@ -681,8 +693,8 @@ model ProductVariant {
   active         Boolean @default(true)
 
   orderItems OrderItem[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
   @@index([productId, sortOrder])
 }
@@ -696,15 +708,15 @@ enum OrderStatus {
 }
 
 model Order {
-  id             String      @id @default(cuid())
-  userId         String
-  user           User        @relation(fields: [userId], references: [id])
-  status         OrderStatus @default(PENDING)
-  totalThc       BigInt      @default(0)
-  totalFiatCents Int         @default(0)
-  fiatCurrency   String      @default("USD")
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  status          OrderStatus @default(PENDING)
+  totalThc        BigInt      @default(0)
+  totalFiatCents  Int         @default(0)
+  fiatCurrency    String      @default("USD")
   /// THC purchases link to their ledger transaction — atomic pay+record (spec §28)
-  ledgerTxId     String?     @unique
+  ledgerTxId      String?     @unique
   /// Fiat provider linkage (Phase 8): provider name + external ids
   paymentProvider String?
   paymentRef      String?
@@ -713,8 +725,8 @@ model Order {
   trackingCarrier String?
   trackingNumber  String?
 
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   items   OrderItem[]
   address ShippingAddress?
@@ -723,17 +735,17 @@ model Order {
 }
 
 model OrderItem {
-  id             String  @id @default(cuid())
+  id             String          @id @default(cuid())
   orderId        String
-  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId      String
-  product        Product @relation(fields: [productId], references: [id])
+  product        Product         @relation(fields: [productId], references: [id])
   variantId      String?
   variant        ProductVariant? @relation(fields: [variantId], references: [id])
   /// Snapshot, not a join: renaming "M" to "Medium" next year must not
   /// rewrite what someone bought last year.
   variantLabel   String?
-  qty            Int     @default(1)
+  qty            Int             @default(1)
   unitPriceThc   BigInt?
   unitPriceFiatC Int?
 
@@ -764,10 +776,10 @@ model ShippingAddress {
 // ============================================================
 
 model DiscordLink {
-  userId        String   @id
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  discordUserId String   @unique
-  linkedAt      DateTime @default(now())
+  userId        String    @id
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discordUserId String    @unique
+  linkedAt      DateTime  @default(now())
   lastSyncAt    DateTime?
 }
 
@@ -783,16 +795,16 @@ model TelegramLink {
 // ============================================================
 
 model Post {
-  id         String    @id @default(cuid())
-  slug       String    @unique
-  title      String
-  excerpt    String
-  contentMd  String    @db.Text
-  coverImage String?
-  authorName String    @default("Tycoonhood")
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String
+  contentMd   String    @db.Text
+  coverImage  String?
+  authorName  String    @default("Tycoonhood")
   publishedAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([publishedAt])
 }
@@ -829,19 +841,19 @@ enum ReferralStatus {
 /// structural defence against referral farming — not a rule in code that a
 /// later refactor can drop.
 model Referral {
-  id         String         @id @default(cuid())
-  referrerId String
-  referrer   User           @relation("ReferralReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
-  referredId String         @unique
-  referred   User           @relation("ReferralReferred", fields: [referredId], references: [id], onDelete: Cascade)
-  code       String
-  status     ReferralStatus @default(PENDING)
+  id          String         @id @default(cuid())
+  referrerId  String
+  referrer    User           @relation("ReferralReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredId  String         @unique
+  referred    User           @relation("ReferralReferred", fields: [referredId], references: [id], onDelete: Cascade)
+  code        String
+  status      ReferralStatus @default(PENDING)
   /// Signup pays nothing. The reward lands only when the referred member does
   /// real work, which is what this timestamp records.
   qualifiedAt DateTime?
   rewardTxId  String?
   signupIp    String?
-  createdAt   DateTime      @default(now())
+  createdAt   DateTime       @default(now())
 
   @@index([referrerId, status])
 }
@@ -872,20 +884,176 @@ model WatchTask {
 }
 
 model WatchCompletion {
-  id     String    @id @default(cuid())
-  userId String
-  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  taskId String
-  task   WatchTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId         String
+  task           WatchTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
   /// The server stamps this and refuses to settle earlier than requiredSec of
   /// real wall-clock later. A script cannot outrun a clock.
   startedAt      DateTime  @default(now())
   completedAt    DateTime?
   secondsWatched Int       @default(0)
   /// Member-local day, so a daily cap means their day, not UTC's.
-  dayKey     String
-  rewardTxId String?
+  dayKey         String
+  rewardTxId     String?
 
   @@unique([userId, taskId])
   @@index([userId, dayKey])
+}
+
+// ============================================================
+// 10. COMMUNITY
+// Channels live house-wide (courseId null) or inside one program,
+// where only members enrolled in it can read and post. Learning is
+// the product; the community serves it — so questions carry the
+// lesson they are about, and wins carry their proof.
+// ============================================================
+
+enum ChannelKind {
+  CHAT
+  ANNOUNCEMENTS
+  WINS
+  QUESTIONS
+}
+
+model Channel {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  topic       String?
+  kind        ChannelKind @default(CHAT)
+  /// null = house-wide; set = this program's members only
+  courseId    String?
+  course      Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  /// Only admins post here (announcements). Members read.
+  adminOnly   Boolean     @default(false)
+  /// Seconds a member waits between messages in this channel. 0 = off.
+  slowModeSec Int         @default(0)
+  sortOrder   Int         @default(0)
+  archivedAt  DateTime?
+  createdAt   DateTime    @default(now())
+
+  messages Message[]
+  reads    ChannelRead[]
+
+  @@index([courseId, sortOrder])
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  channelId   String
+  channel     Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body        String    @db.Text
+  /// A win's proof: a link to the result (http/https only).
+  proofUrl    String?
+  /// The lesson a question is about, when asked from the lesson player.
+  lessonId    String?
+  lesson      Lesson?   @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  replyToId   String?
+  replyTo     Message?  @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies     Message[] @relation("MessageReplies")
+  /// Set by a moderator: the message is worth everyone's attention.
+  pinnedAt    DateTime?
+  /// Soft delete: the row stays for moderation history; the body is never served.
+  deletedAt   DateTime?
+  deletedById String?
+  createdAt   DateTime  @default(now())
+
+  reports MessageReport[]
+
+  @@index([channelId, createdAt])
+  @@index([authorId, createdAt])
+  @@index([lessonId, createdAt])
+}
+
+/// Where a member stopped reading a channel — the source of unread counts.
+model ChannelRead {
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channelId  String
+  channel    Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  lastReadAt DateTime
+
+  @@id([userId, channelId])
+}
+
+model MessageReport {
+  id           String    @id @default(cuid())
+  messageId    String
+  message      Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  reporterId   String
+  reporter     User      @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  reason       String
+  createdAt    DateTime  @default(now())
+  resolvedAt   DateTime?
+  resolvedById String?
+  /// "removed" | "dismissed"
+  resolution   String?
+
+  @@unique([messageId, reporterId])
+  @@index([resolvedAt, createdAt])
+}
+
+/// A member who may read but not post. until = null means until lifted.
+model CommunityMute {
+  userId    String    @id
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  until     DateTime?
+  reason    String?
+  mutedById String
+  createdAt DateTime  @default(now())
+}
+
+// ============================================================
+// 11. THE DAILY STANDARD
+// The house sets the standard (userId null); a member may add a
+// few items of their own. A day is met when every item in force
+// is ticked. Items with an autoEvent tick themselves from real
+// activity and cannot be ticked by hand.
+// ============================================================
+
+model StandardItem {
+  id        String   @id @default(cuid())
+  /// null = the house standard every member holds; set = this member's own item
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  detail    String?
+  /// A domain event that ticks this item (e.g. "LESSON_COMPLETED").
+  autoEvent String?
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  ticks StandardTick[]
+
+  @@index([userId, active])
+}
+
+model StandardTick {
+  userId   String
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId   String
+  item     StandardItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  /// The member's local day (timezone from Profile), stored at UTC midnight.
+  day      DateTime     @db.Date
+  tickedAt DateTime     @default(now())
+
+  @@id([userId, itemId, day])
+  @@index([userId, day])
+}
+
+/// The record: one row per day the member met the whole standard.
+model StandardDay {
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day    DateTime @db.Date
+  /// How many items were in force when it was met.
+  items  Int
+  metAt  DateTime @default(now())
+
+  @@id([userId, day])
 }

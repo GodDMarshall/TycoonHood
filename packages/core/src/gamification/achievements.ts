@@ -36,7 +36,9 @@ export class AchievementService {
         const s = await this.db.streak.findUnique({ where: { userId } });
         met = (s?.current ?? 0) >= (c.days ?? 1);
       } else if (event === "COMMUNITY_CONTRIBUTION") {
-        met = false; // wired when community events exist (Phase 9+)
+        // Pinned by staff and still standing — see rules/counters.ts.
+        const n = await this.db.message.count({ where: { authorId: userId, pinnedAt: { not: null }, deletedAt: null } });
+        met = n >= (c.count ?? 1);
       }
       if (!met) continue;
 

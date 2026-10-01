@@ -90,7 +90,15 @@ export const ModelName = {
   MinerState: 'MinerState',
   Referral: 'Referral',
   WatchTask: 'WatchTask',
-  WatchCompletion: 'WatchCompletion'
+  WatchCompletion: 'WatchCompletion',
+  Channel: 'Channel',
+  Message: 'Message',
+  ChannelRead: 'ChannelRead',
+  MessageReport: 'MessageReport',
+  CommunityMute: 'CommunityMute',
+  StandardItem: 'StandardItem',
+  StandardTick: 'StandardTick',
+  StandardDay: 'StandardDay'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -693,6 +701,108 @@ export const WatchCompletionScalarFieldEnum = {
 } as const
 
 export type WatchCompletionScalarFieldEnum = (typeof WatchCompletionScalarFieldEnum)[keyof typeof WatchCompletionScalarFieldEnum]
+
+
+export const ChannelScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  name: 'name',
+  topic: 'topic',
+  kind: 'kind',
+  courseId: 'courseId',
+  adminOnly: 'adminOnly',
+  slowModeSec: 'slowModeSec',
+  sortOrder: 'sortOrder',
+  archivedAt: 'archivedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ChannelScalarFieldEnum = (typeof ChannelScalarFieldEnum)[keyof typeof ChannelScalarFieldEnum]
+
+
+export const MessageScalarFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  authorId: 'authorId',
+  body: 'body',
+  proofUrl: 'proofUrl',
+  lessonId: 'lessonId',
+  replyToId: 'replyToId',
+  pinnedAt: 'pinnedAt',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
+  createdAt: 'createdAt'
+} as const
+
+export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const ChannelReadScalarFieldEnum = {
+  userId: 'userId',
+  channelId: 'channelId',
+  lastReadAt: 'lastReadAt'
+} as const
+
+export type ChannelReadScalarFieldEnum = (typeof ChannelReadScalarFieldEnum)[keyof typeof ChannelReadScalarFieldEnum]
+
+
+export const MessageReportScalarFieldEnum = {
+  id: 'id',
+  messageId: 'messageId',
+  reporterId: 'reporterId',
+  reason: 'reason',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt',
+  resolvedById: 'resolvedById',
+  resolution: 'resolution'
+} as const
+
+export type MessageReportScalarFieldEnum = (typeof MessageReportScalarFieldEnum)[keyof typeof MessageReportScalarFieldEnum]
+
+
+export const CommunityMuteScalarFieldEnum = {
+  userId: 'userId',
+  until: 'until',
+  reason: 'reason',
+  mutedById: 'mutedById',
+  createdAt: 'createdAt'
+} as const
+
+export type CommunityMuteScalarFieldEnum = (typeof CommunityMuteScalarFieldEnum)[keyof typeof CommunityMuteScalarFieldEnum]
+
+
+export const StandardItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  detail: 'detail',
+  autoEvent: 'autoEvent',
+  sortOrder: 'sortOrder',
+  active: 'active',
+  createdAt: 'createdAt'
+} as const
+
+export type StandardItemScalarFieldEnum = (typeof StandardItemScalarFieldEnum)[keyof typeof StandardItemScalarFieldEnum]
+
+
+export const StandardTickScalarFieldEnum = {
+  userId: 'userId',
+  itemId: 'itemId',
+  day: 'day',
+  tickedAt: 'tickedAt'
+} as const
+
+export type StandardTickScalarFieldEnum = (typeof StandardTickScalarFieldEnum)[keyof typeof StandardTickScalarFieldEnum]
+
+
+export const StandardDayScalarFieldEnum = {
+  userId: 'userId',
+  day: 'day',
+  items: 'items',
+  metAt: 'metAt'
+} as const
+
+export type StandardDayScalarFieldEnum = (typeof StandardDayScalarFieldEnum)[keyof typeof StandardDayScalarFieldEnum]
 
 
 export const SortOrder = {

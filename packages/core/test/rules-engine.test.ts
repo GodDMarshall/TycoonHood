@@ -87,19 +87,30 @@ describe("rules engine — a mission defined as DATA pays out, with no code chan
     expect(b.missions).toContain(m.slug);
   });
 
-  it("never pays for an event with no source of truth yet", async () => {
-    // VIDEO_WATCHED used to be the example here. Watch-to-earn shipped, so it
-    // now has a real store and pays. COMMUNITY_CONTRIBUTION still has none:
-    // Discord gives us no verifiable contribution feed.
+  it("pays community contribution only from its source of truth: staff pins, never volume", async () => {
+    // This test used to show an event with NO source (first VIDEO_WATCHED,
+    // then COMMUNITY_CONTRIBUTION). The in-app community gave contribution a
+    // source that cannot be farmed: messages staff chose to pin. Every domain
+    // event now has a source, so the property worth pinning down is that the
+    // event alone — or a pile of unpinned messages — pays nothing.
     const user = await createTestUser();
     const m = await makeMission({ event: "COMMUNITY_CONTRIBUTION" });
     const wallet = await ledger.ensureUserAccount(user.id);
+    const channel = await prisma.channel.create({ data: { slug: `test-rules-${uid().slice(0, 8)}`, name: "Test" } });
+    try {
+      for (let i = 0; i < 5; i++) {
+        await prisma.message.create({ data: { channelId: channel.id, authorId: user.id, body: `volume ${i}` } });
+      }
+      const r = await events.emitOrThrow({ type: "COMMUNITY_CONTRIBUTION", userId: user.id });
+      expect(r.missions).not.toContain(m.slug);
+      expect(await ledger.getBalance(wallet.id)).toBe(0n); // nothing at all was paid
 
-    const r = await events.emitOrThrow({ type: "COMMUNITY_CONTRIBUTION", userId: user.id });
-
-    expect(r.missions).not.toContain(m.slug);
-    expect(r.skipped.some((s) => s.slug === m.slug)).toBe(true);
-    expect(await ledger.getBalance(wallet.id)).toBe(0n); // nothing at all was paid
+      await prisma.message.create({ data: { channelId: channel.id, authorId: user.id, body: "worth pinning", pinnedAt: new Date() } });
+      const paid = await events.emitOrThrow({ type: "COMMUNITY_CONTRIBUTION", userId: user.id });
+      expect(paid.missions).toContain(m.slug);
+    } finally {
+      await prisma.channel.delete({ where: { id: channel.id } });
+    }
   });
 
   it("now DOES pay for a watched video, because that store exists", async () => {
