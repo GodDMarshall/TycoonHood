@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Photo } from "../../../components/art/photo";
+import { CHALLENGE_PHOTO } from "../../../lib/photos";
 import { prisma } from "@tycoonhood/db";
 import { challenges as challengeService, ChallengeService, type Submission } from "@tycoonhood/core";
 import { Badge, Button, EmptyState, Icon, PillarBadge, ThcAmount, cn } from "@tycoonhood/ui";
@@ -92,18 +94,21 @@ export default async function ChallengesPage() {
                   key={c.id}
                   id={c.slug}
                   className={cn(
-                    "flex scroll-mt-6 flex-col rounded-lg border bg-bg-1",
-                    done ? "border-success/40" : c.lifecycle === "ACTIVE" ? "border-line-strong" : "border-line"
+                    "flex scroll-mt-6 flex-col overflow-hidden rounded-lg border bg-bg-1",
+                    done ? "border-success/40" : c.lifecycle === "ACTIVE" ? "border-line-strong" : "border-line",
                   )}
                 >
+                  {CHALLENGE_PHOTO[c.slug] && (
+                    <div className="relative h-32 border-b border-line sm:h-36" aria-hidden>
+                      <Photo name={CHALLENGE_PHOTO[c.slug]} sizes="(min-width: 1024px) 40vw, 100vw" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-bg-1 via-bg-1/20 to-transparent" />
+                    </div>
+                  )}
                   <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
                     <span className="flex items-center gap-2 text-[13px] font-medium">
                       <span
                         aria-hidden
-                        className={cn(
-                          "size-1.5 rounded-full",
-                          c.lifecycle === "ACTIVE" ? "bg-success" : c.lifecycle === "UPCOMING" ? "bg-gold" : "bg-ink-3"
-                        )}
+                        className={cn("size-1.5 rounded-full", c.lifecycle === "ACTIVE" ? "bg-success" : c.lifecycle === "UPCOMING" ? "bg-gold" : "bg-ink-3")}
                       />
                       <span className={c.lifecycle === "ACTIVE" ? "text-success" : c.lifecycle === "UPCOMING" ? "text-gold" : "text-ink-3"}>
                         {c.lifecycle === "ACTIVE" ? "Live" : c.lifecycle === "UPCOMING" ? "Upcoming" : "Ended"}
@@ -115,8 +120,17 @@ export default async function ChallengesPage() {
                   <div className="flex flex-1 flex-col gap-5 p-5">
                     <div className="flex items-start justify-between gap-5">
                       <h2 className="text-[20px] font-semibold leading-snug tracking-[-0.01em]">{c.name}</h2>
-                      {p && isCheckin && <ProgressRing value={Math.min(checkins, requiredDays)} max={requiredDays} label={`${checkins} of ${requiredDays} days checked in`} caption="days" />}
-                      {p && required != null && <ProgressRing value={approvedSubs} max={required} label={`${approvedSubs} of ${required} approved`} caption="approved" />}
+                      {p && isCheckin && (
+                        <ProgressRing
+                          value={Math.min(checkins, requiredDays)}
+                          max={requiredDays}
+                          label={`${checkins} of ${requiredDays} days checked in`}
+                          caption="days"
+                        />
+                      )}
+                      {p && required != null && (
+                        <ProgressRing value={approvedSubs} max={required} label={`${approvedSubs} of ${required} approved`} caption="approved" />
+                      )}
                     </div>
                     <p className="text-[14px] leading-relaxed text-ink-2">{c.description}</p>
 
@@ -150,28 +164,33 @@ export default async function ChallengesPage() {
 
                     <div className="mt-auto">
                       {p ? (
-                          <div className="flex flex-col gap-4">
-                            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
-                              <Badge tone={done ? "success" : p.status === "FAILED" ? "danger" : "gold"}>
-                                {p.status === "JOINED" ? "You're in" : p.status === "COMPLETED" ? "Completed" : p.status === "FAILED" ? "Failed" : "Withdrawn"}
-                              </Badge>
-                              <span className="flex items-center gap-2">
-                                {p.status === "JOINED" && c.lifecycle === "ACTIVE" && isCheckin && (
-                                  <CheckInButton action={checkInChallengeAction.bind(null, c.slug)} label="Check in today" />
-                                )}
-                                {p.status === "JOINED" && (
-                                  <form action={withdrawChallengeAction.bind(null, c.slug)}>
-                                    <Button variant="ghost" size="sm" type="submit">
-                                      Withdraw
-                                    </Button>
-                                  </form>
-                                )}
-                              </span>
-                            </div>
-                            {p.status === "JOINED" && c.lifecycle === "ACTIVE" && required != null && (
-                              <SubmitEvidence action={submitEvidenceAction.bind(null, c.slug)} approved={approvedSubs} required={required} pending={pendingSubs} />
-                            )}
+                        <div className="flex flex-col gap-4">
+                          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+                            <Badge tone={done ? "success" : p.status === "FAILED" ? "danger" : "gold"}>
+                              {p.status === "JOINED" ? "You're in" : p.status === "COMPLETED" ? "Completed" : p.status === "FAILED" ? "Failed" : "Withdrawn"}
+                            </Badge>
+                            <span className="flex items-center gap-2">
+                              {p.status === "JOINED" && c.lifecycle === "ACTIVE" && isCheckin && (
+                                <CheckInButton action={checkInChallengeAction.bind(null, c.slug)} label="Check in today" />
+                              )}
+                              {p.status === "JOINED" && (
+                                <form action={withdrawChallengeAction.bind(null, c.slug)}>
+                                  <Button variant="ghost" size="sm" type="submit">
+                                    Withdraw
+                                  </Button>
+                                </form>
+                              )}
+                            </span>
                           </div>
+                          {p.status === "JOINED" && c.lifecycle === "ACTIVE" && required != null && (
+                            <SubmitEvidence
+                              action={submitEvidenceAction.bind(null, c.slug)}
+                              approved={approvedSubs}
+                              required={required}
+                              pending={pendingSubs}
+                            />
+                          )}
+                        </div>
                       ) : (
                         open && (
                           <form action={joinChallengeAction.bind(null, c.slug)} className="flex items-center justify-between gap-3 border-t border-line pt-4">

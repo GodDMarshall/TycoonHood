@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CoinMark, Logo } from "@tycoonhood/ui";
+import { Photo } from "../../components/art/photo";
 
 /**
  * The threshold. A split room: the house on one side, the door on the other.
@@ -10,11 +11,8 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <main id="content" tabIndex={-1} className="grid min-h-dvh outline-none lg:grid-cols-[1.1fr_1fr]">
       <aside className="relative hidden overflow-hidden border-r border-line bg-bg-1 lg:flex lg:flex-col lg:justify-between lg:p-14">
-        <div className="grid-plane absolute inset-0" aria-hidden />
-        <div
-          aria-hidden
-          className="absolute -bottom-40 left-1/2 size-[640px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(207_169_94/0.16),transparent)]"
-        />
+        <Photo name="dawn" sizes="55vw" priority />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-bg-0/85 via-bg-0/45 to-bg-0/90" />
         <Link href="/" className="relative">
           <Logo size={28} />
         </Link>
@@ -35,9 +33,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             </li>
           </ul>
         </div>
-        <p className="relative text-[12px] text-ink-3">
-          THC are internal utility credits — not currency, not an investment, not redeemable for money.
-        </p>
+        <p className="relative text-[12px] text-ink-3">THC are internal utility credits — not currency, not an investment, not redeemable for money.</p>
       </aside>
       <div className="flex flex-col items-center justify-center px-[var(--gutter)] py-12">
         <Link href="/" className="mb-10 lg:hidden">

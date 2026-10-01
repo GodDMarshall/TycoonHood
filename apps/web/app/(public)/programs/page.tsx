@@ -6,7 +6,7 @@ import { prisma } from "@tycoonhood/db";
 import { Badge, Icon, PillarBadge } from "@tycoonhood/ui";
 import { RoomHeader } from "../../../components/room-header";
 import { PILLAR_WORLD } from "../../../components/pillar-art";
-import { CoverFill } from "../../../components/art/program-art";
+import { CoverFill } from "../../../components/art/photo";
 
 export const metadata: Metadata = {
   title: "The Academy — four programs",

@@ -7,7 +7,7 @@ import { Badge, Icon, PILLAR_LABEL, Progress, buttonStyles, cn } from "@tycoonho
 import type { CatalogCourse } from "../../lib/learning";
 import { enrollAction } from "../../app/(app)/courses/actions";
 import { SubmitButton } from "../submit-button";
-import { CoverFill } from "../art/program-art";
+import { CoverFill } from "../art/photo";
 
 const PILLAR_TEXT: Record<CatalogCourse["pillar"], string> = {
   WARRIOR: "text-warrior",
@@ -25,7 +25,7 @@ export function duration(minutes: number) {
 
 /**
  * The program's picture: its cover photo when an admin has set one, otherwise
- * the pillar's drawn scene. Decorative — the title next to it is the label.
+ * the pillar's house photograph. Decorative — the title next to it is the label.
  */
 export function CourseCover({
   pillar,

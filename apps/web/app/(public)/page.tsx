@@ -23,6 +23,7 @@ import { lessonMinutes } from "../../lib/learning";
 import { AppPreview } from "../../components/art/app-preview";
 import { RankEmblem } from "../../components/art/emblems";
 import { CourseCover } from "../../components/learning/course-card";
+import { Photo } from "../../components/art/photo";
 import { RigVisual } from "../../components/mining/rig-visual";
 
 export const metadata: Metadata = {
@@ -299,8 +300,10 @@ export default async function HomePage() {
       </section>
 
       {/* ─── JOIN ───────────────────────────────────────────── */}
-      <section aria-labelledby="join-title">
-        <div className="mx-auto max-w-[88rem] px-[var(--gutter)] py-24 text-center md:py-32">
+      <section aria-labelledby="join-title" className="relative overflow-hidden">
+        <Photo name="standard" sizes="100vw" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-bg-0 via-bg-0/55 to-bg-0" />
+        <div className="relative mx-auto max-w-[88rem] px-[var(--gutter)] py-24 text-center md:py-36">
           <h2 id="join-title" className="display mx-auto max-w-[18ch] text-h1">
             Start today. <span className="accent">Not Monday.</span>
           </h2>

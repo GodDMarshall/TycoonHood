@@ -1,6 +1,6 @@
 /**
  * Each pillar's name and one-line promise, as the public program pages show
- * them. (The drawn scenes live in components/art/program-art.tsx.)
+ * them. (Program pictures: components/art/photo.tsx.)
  */
 type Pillar = "WARRIOR" | "BUILDER" | "TYCOON" | "MIND";
 

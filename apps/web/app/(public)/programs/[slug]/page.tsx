@@ -5,7 +5,7 @@ import { prisma } from "@tycoonhood/db";
 import { Badge, Icon, PillarBadge, buttonStyles } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../../../lib/auth";
 import { PILLAR_WORLD } from "../../../../components/pillar-art";
-import { CoverFill } from "../../../../components/art/program-art";
+import { CoverFill } from "../../../../components/art/photo";
 
 export const dynamic = "force-dynamic";
 

@@ -75,7 +75,7 @@ export async function toggleCoursePublishAction(courseId: string) {
 }
 
 /**
- * A program's cover photo. Empty clears it (the drawn pillar scene shows
+ * A program's cover photo. Empty clears it (the pillar's house photo shows
  * instead). Only https URLs or paths under /public are accepted.
  */
 export async function setCourseCoverAction(courseId: string, _p: { ok?: string; error?: string }, fd: FormData): Promise<{ ok?: string; error?: string }> {
@@ -87,7 +87,7 @@ export async function setCourseCoverAction(courseId: string, _p: { ok?: string; 
   if (raw.length > 1000) return { error: "That address is too long." };
   await prisma.course.update({ where: { id: courseId }, data: { coverImage: raw || null } });
   for (const path of ["/admin/content", "/courses", "/programs", "/today", "/"]) revalidatePath(path);
-  return { ok: raw ? "Cover saved." : "Cover cleared — the drawn scene shows." };
+  return { ok: raw ? "Cover saved." : "Cover cleared — the house photo shows." };
 }
 
 export async function savePostAction(postId: string | null, _p: AdminActionState, fd: FormData): Promise<AdminActionState> {

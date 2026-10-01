@@ -5,7 +5,7 @@ import { prisma } from "@tycoonhood/db";
 import { Badge, Button, Card, CardContent, Input, Label, SectionRule } from "@tycoonhood/ui";
 import { setCourseCoverAction, toggleCoursePublishAction } from "../actions";
 import { ActionForm } from "../../../../components/admin/action-form";
-import { CoverFill } from "../../../../components/art/program-art";
+import { CoverFill } from "../../../../components/art/photo";
 
 export const metadata: Metadata = { title: "Admin · Content" };
 export const dynamic = "force-dynamic";
@@ -45,7 +45,7 @@ export default async function AdminContent() {
                     id={`cover-${c.id}`}
                     name="coverImage"
                     defaultValue={c.coverImage ?? ""}
-                    placeholder="https://… or /covers/warrior.jpg — leave empty for the drawn scene"
+                    placeholder="https://… or /photos/… — leave empty for the house photo"
                   />
                 </ActionForm>
               </div>
