@@ -23,7 +23,7 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-line bg-bg-0/85 backdrop-blur-md supports-[backdrop-filter]:bg-bg-0/70">
       <div className="mx-auto flex h-16 max-w-[88rem] items-center gap-2 px-[var(--gutter)] sm:gap-4">
         <Link
-          href={member ? "/world" : "/"}
+          href={member ? "/dashboard" : "/"}
           aria-label={member ? "Tycoonhood — your command center" : "Tycoonhood home"}
           className="shrink-0 sm:mr-2 lg:mr-6"
         >

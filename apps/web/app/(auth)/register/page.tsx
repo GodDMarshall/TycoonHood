@@ -12,7 +12,7 @@ export default async function RegisterPage({
 }: {
   searchParams: Promise<{ ref?: string }>;
 }) {
-  if (await getCurrentUser()) redirect("/world");
+  if (await getCurrentUser()) redirect("/dashboard");
 
   // Resolve the invite before the form renders, so an arriving member is told
   // who brought them rather than pasting a code on faith.

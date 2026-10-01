@@ -78,7 +78,7 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
   const blocked = await throttled("login");
   if (blocked) return { error: blocked };
 
-  let destination = "/world";
+  let destination = "/dashboard";
   try {
     const user = await accounts.authenticate(parsed.data);
     const { raw } = await sessions.create(user.id, await deviceInfo());

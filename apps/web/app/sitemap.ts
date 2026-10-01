@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     prisma.course.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true } }),
     prisma.post.findMany({ where: { publishedAt: { not: null } }, select: { slug: true, updatedAt: true } }),
   ]);
-  const statics = ["", "/about", "/programs", "/challenges", "/thc", "/marketplace", "/roadmap", "/blog", "/faq", "/status", "/credits"];
+  const statics = ["", "/about", "/programs", "/challenges", "/thc", "/marketplace", "/roadmap", "/blog", "/faq", "/status"];
   return [
     ...statics.map((p) => ({ url: `${BASE}${p}`, lastModified: new Date() })),
     ...programs.map((c) => ({ url: `${BASE}/programs/${c.slug}`, lastModified: c.updatedAt })),

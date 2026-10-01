@@ -27,7 +27,6 @@ export const GUEST_NAV: NavItem[] = [
 ];
 
 export const MEMBER_NAV: NavItem[] = [
-  { href: "/world", label: "HQ", note: "Walk the headquarters", icon: "vault" },
   { href: "/dashboard", label: "Command", note: "Your command center", icon: "command" },
   { href: "/academy", label: "Academy", note: "Your programs and lessons", icon: "academy", match: ["/programs"] },
   { href: "/challenges", label: "Arena", note: "Challenges and check-ins", icon: "arena" },

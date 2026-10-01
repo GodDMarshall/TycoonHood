@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Onboarding" };
 export default async function OnboardingPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  if (user.profile?.onboardedAt) redirect("/world");
+  if (user.profile?.onboardedAt) redirect("/dashboard");
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col items-stretch px-6 py-12">

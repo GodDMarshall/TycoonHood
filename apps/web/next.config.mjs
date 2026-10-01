@@ -33,8 +33,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
   "frame-src https://js.stripe.com https://hooks.stripe.com",
-  // blob: lets the world's glTF loader read textures embedded in .glb files.
-  "connect-src 'self' blob: https://api.stripe.com",
+  "connect-src 'self' https://api.stripe.com",
   "upgrade-insecure-requests",
 ].join("; ");
 
