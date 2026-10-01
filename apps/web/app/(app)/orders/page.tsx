@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { RoomHeader } from "../../../components/room-header";
+import { Page, PageHeader } from "../../../components/app/page";
 import { requireUser } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
 import { Badge, Card, CardContent, Icon, SectionRule, ThcAmount } from "@tycoonhood/ui";
@@ -23,8 +23,8 @@ export default async function OrdersPage() {
   const library = orders.filter((o) => o.status === "FULFILLED" && o.items.some((i) => i.product.kind === "DIGITAL" || i.product.kind === "COURSE"));
 
   return (
-    <main>
-      <RoomHeader compact icon="orders" room="Orders" title="Bought and" accent="on the books." lead="Every purchase, every parcel and every tracking number — the same record the house works from." />
+    <Page>
+      <PageHeader title="Orders" description="Every purchase, every parcel and every tracking number — the same record staff work from." />
 
       {library.length > 0 && (
         <>
@@ -33,7 +33,7 @@ export default async function OrdersPage() {
             {library.flatMap((o) => o.items.filter((i) => i.product.kind !== "PHYSICAL").map((i) => (
               <Link
                 key={i.id}
-                href={i.product.kind === "COURSE" ? "/academy" : `/library/${i.product.slug}`}
+                href={i.product.kind === "COURSE" ? "/courses" : `/library/${i.product.slug}`}
               >
                 <Badge tone="gold">
                   <Icon name={i.product.kind === "COURSE" ? "academy" : "book"} size={12} /> {i.product.name}
@@ -88,6 +88,6 @@ export default async function OrdersPage() {
           ))}
         </div>
       )}
-    </main>
+    </Page>
   );
 }

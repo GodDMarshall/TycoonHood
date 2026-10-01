@@ -57,7 +57,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
 export function Label({ className, ...props }: LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={cn("font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-ink-2", className)}
+      className={cn("text-[13px] font-medium text-ink-1", className)}
       {...props}
     />
   );

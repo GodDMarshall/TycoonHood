@@ -32,7 +32,8 @@ const csp = [
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
-  "frame-src https://js.stripe.com https://hooks.stripe.com",
+  // Video lessons play from YouTube's privacy-enhanced domain.
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://www.youtube-nocookie.com",
   "connect-src 'self' https://api.stripe.com",
   "upgrade-insecure-requests",
 ].join("; ");
@@ -55,6 +56,19 @@ const nextConfig = {
   serverExternalPackages: ["@prisma/client", "prisma", "pg", "@node-rs/argon2"],
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
+  },
+  // The academy rebuild (DR-24) renamed member rooms. Old links — in
+  // notifications, bookmarks, emails — keep working. Temporary on purpose:
+  // nothing here should be cached by a browser forever.
+  async redirects() {
+    return [
+      { source: "/dashboard", destination: "/today", permanent: false },
+      { source: "/world", destination: "/today", permanent: false },
+      { source: "/leaderboard", destination: "/profile", permanent: false },
+      { source: "/academy", destination: "/courses", permanent: false },
+      { source: "/academy/:slug", destination: "/courses/:slug", permanent: false },
+      { source: "/academy/:slug/lesson/:lessonId", destination: "/courses/:slug/lesson/:lessonId", permanent: false },
+    ];
   },
   webpack: (config, { isServer }) => {
     // Native modules imported through transpiled workspace packages must be

@@ -40,5 +40,5 @@ export async function savePrivacyAction(formData: FormData) {
   };
   await prisma.profile.update({ where: { userId: user.id }, data: { privacy } });
   revalidatePath("/settings");
-  revalidatePath("/leaderboard");
+  revalidatePath("/profile");
 }

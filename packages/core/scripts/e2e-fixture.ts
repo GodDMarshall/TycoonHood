@@ -8,6 +8,7 @@
  *
  * Usage:
  *   tsx scripts/e2e-fixture.ts admin   <email> <password>
+ *   tsx scripts/e2e-fixture.ts member  <email> <password> <displayName>
  *   tsx scripts/e2e-fixture.ts onboard <userId> <username>
  *   tsx scripts/e2e-fixture.ts fund    <userId> <amount>
  *   tsx scripts/e2e-fixture.ts lesson  <userId>
@@ -41,6 +42,23 @@ switch (cmd) {
       });
     }
     await prisma.user.update({ where: { id: user.id }, data: { role: "ADMIN" } });
+    console.log(user.id);
+    break;
+  }
+  case "member": {
+    // An onboarded MEMBER with a password, for browser tests of the app.
+    const [email, password, displayName] = args;
+    let user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      user = await accounts.register({ email, password, name: displayName });
+      await accounts.completeOnboarding(user.id, {
+        username: email.split("@")[0].replace(/[^a-z0-9]/g, "").slice(0, 20),
+        displayName,
+        goals: ["Build a business"],
+        interests: [],
+        experienceLevel: "Just starting",
+      });
+    }
     console.log(user.id);
     break;
   }

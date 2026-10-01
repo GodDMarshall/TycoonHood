@@ -15,7 +15,7 @@ import { getCurrentUser } from "../../../../lib/auth";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
-  if (user?.role !== "ADMIN") redirect("/dashboard");
+  if (user?.role !== "ADMIN") redirect("/today");
   return user;
 }
 
@@ -110,7 +110,7 @@ export async function saveMissionAction(
   }
 
   revalidatePath("/admin/missions");
-  revalidatePath("/dashboard");
+  revalidatePath("/today");
   return { message: missionId ? `Saved "${name}".` : `Created "${name}". It is live for every member now.` };
 }
 

@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
 import { challenges as challengeService, ChallengeService, type Submission } from "@tycoonhood/core";
-import { Badge, Button, EmptyState, Icon, PillarBadge, ThcAmount, buttonStyles, cn } from "@tycoonhood/ui";
-import { getCurrentUser } from "../../../lib/auth";
-import { joinChallengeAction, withdrawChallengeAction, checkInChallengeAction, submitEvidenceAction } from "../../(app)/challenges/actions";
+import { Badge, Button, EmptyState, Icon, PillarBadge, ThcAmount, cn } from "@tycoonhood/ui";
+import { requireUser } from "../../../lib/guard";
+import { joinChallengeAction, withdrawChallengeAction, checkInChallengeAction, submitEvidenceAction } from "./actions";
 import { CheckInButton } from "../../../components/checkin-button";
 import { SubmitEvidence } from "../../../components/submit-evidence";
 import { SubmitButton } from "../../../components/submit-button";
 import { ProgressRing } from "../../../components/progress-ring";
-import { RoomHeader } from "../../../components/room-header";
+import { Page, PageHeader } from "../../../components/app/page";
 
-export const metadata: Metadata = {
-  title: "The Arena — challenges",
-  description: "Timeboxed, verifiable, failable challenges. Finish one and the reward posts to your ledger; miss it and the record says so.",
-  alternates: { canonical: "/challenges" },
-};
+export const metadata: Metadata = { title: "Challenges" };
 export const dynamic = "force-dynamic";
 const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
 const DAY = 86_400_000;
@@ -43,14 +38,14 @@ function windowOf(start: Date | null, end: Date | null, lifecycle: string, now: 
 }
 
 export default async function ChallengesPage() {
-  const user = await getCurrentUser();
+  const user = await requireUser();
   const now = new Date();
   await challengeService.sweepLifecycles();
   const list = await prisma.challenge.findMany({
     where: { lifecycle: { in: ["UPCOMING", "ACTIVE", "ENDED"] } },
     orderBy: [{ startsAt: "asc" }],
     include: {
-      participations: user ? { where: { userId: user.id } } : false,
+      participations: { where: { userId: user.id } },
       _count: { select: { participations: { where: { status: { in: ["JOINED", "COMPLETED"] } } } } },
     },
   });
@@ -60,36 +55,25 @@ export default async function ChallengesPage() {
   const upcoming = list.filter((c) => c.lifecycle === "UPCOMING").length;
 
   return (
-    <main>
-      <RoomHeader
-        icon="arena"
-        room="The Arena"
-        title="Timeboxed. Verifiable."
-        accent="Failable."
-        lead="Every challenge has a window, an objective and a failure state. Finish one and the reward posts to your ledger; miss it and the record says so. That is the point."
-        aside={
-          <dl className="grid grid-cols-2 divide-x divide-line rounded-lg border border-line bg-bg-1/80">
-            <div className="px-5 py-5">
-              <dt className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-3">Live now</dt>
-              <dd className="figures mt-2 text-[22px]">{live}</dd>
-            </div>
-            <div className="px-5 py-5">
-              <dt className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-3">Upcoming</dt>
-              <dd className="figures mt-2 text-[22px]">{upcoming}</dd>
-            </div>
-          </dl>
+    <Page>
+      <PageHeader
+        title="Challenges"
+        description="Each challenge has a window, an objective and a failure state. Finish it and the reward posts to your ledger; miss it and your record says so."
+        actions={
+          <p className="text-[13px] text-ink-3">
+            <span className="tabular-nums text-ink-1">{live}</span> live · <span className="tabular-nums text-ink-1">{upcoming}</span> upcoming
+          </p>
         }
       />
-
-      <div className="mx-auto max-w-[88rem] px-[var(--gutter)] py-14">
+      <div>
         {list.length === 0 ? (
           <EmptyState
-            icon="arena"
+            icon="target"
             title="No challenges on the calendar"
             body="The next season is being set. Challenges appear here with their dates and rewards the moment they are scheduled."
           />
         ) : (
-          <ul className="grid gap-6 lg:grid-cols-2">
+          <ul className="grid gap-4 lg:grid-cols-2">
             {list.map((c) => {
               const p = c.participations?.[0];
               const prog = p?.progress as { checkins?: string[]; submissions?: Submission[] } | null;
@@ -106,14 +90,14 @@ export default async function ChallengesPage() {
               return (
                 <li
                   key={c.id}
-                  data-reveal
+                  id={c.slug}
                   className={cn(
-                    "flex flex-col rounded-lg border bg-bg-1",
-                    done ? "border-gold-deep/70 shadow-[var(--shadow-gold)]" : c.lifecycle === "ACTIVE" ? "border-line-strong" : "border-line"
+                    "flex scroll-mt-6 flex-col rounded-lg border bg-bg-1",
+                    done ? "border-success/40" : c.lifecycle === "ACTIVE" ? "border-line-strong" : "border-line"
                   )}
                 >
-                  <div className="flex items-center justify-between gap-3 border-b border-line px-6 py-3.5">
-                    <span className="flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.18em]">
+                  <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
+                    <span className="flex items-center gap-2 text-[13px] font-medium">
                       <span
                         aria-hidden
                         className={cn(
@@ -128,12 +112,9 @@ export default async function ChallengesPage() {
                     {c.pillar && <PillarBadge pillar={c.pillar} />}
                   </div>
 
-                  <div className="flex flex-1 flex-col gap-6 p-6">
+                  <div className="flex flex-1 flex-col gap-5 p-5">
                     <div className="flex items-start justify-between gap-5">
-                      <div>
-                        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-3">Mission</p>
-                        <h2 className="display mt-1.5 text-[24px] leading-tight">{c.name}</h2>
-                      </div>
+                      <h2 className="text-[20px] font-semibold leading-snug tracking-[-0.01em]">{c.name}</h2>
                       {p && isCheckin && <ProgressRing value={Math.min(checkins, requiredDays)} max={requiredDays} label={`${checkins} of ${requiredDays} days checked in`} caption="days" />}
                       {p && required != null && <ProgressRing value={approvedSubs} max={required} label={`${approvedSubs} of ${required} approved`} caption="approved" />}
                     </div>
@@ -141,35 +122,34 @@ export default async function ChallengesPage() {
 
                     <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line text-[13px]">
                       <div className="bg-bg-1 p-4 max-sm:col-span-2">
-                        <dt className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-3">Objective</dt>
+                        <dt className="text-[12.5px] font-medium text-ink-3">Objective</dt>
                         <dd className="mt-1.5 leading-snug text-ink-1">{objectiveOf(c.criteria)}</dd>
                       </div>
                       <div className="bg-bg-1 p-4 max-sm:col-span-2">
-                        <dt className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-3">Window</dt>
+                        <dt className="text-[12.5px] font-medium text-ink-3">Window</dt>
                         <dd className="mt-1.5 text-ink-1">{windowOf(c.startsAt, c.endsAt, c.lifecycle, now)}</dd>
-                        <dd className="figures mt-0.5 text-[11.5px] text-ink-3">
+                        <dd className="mt-0.5 text-[12.5px] tabular-nums text-ink-3">
                           {c.startsAt ? dateFmt.format(c.startsAt) : "TBA"}
                           {c.endsAt ? ` – ${dateFmt.format(c.endsAt)}` : ""}
                         </dd>
                       </div>
                       <div className="bg-bg-1 p-4">
-                        <dt className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-3">Reward</dt>
+                        <dt className="text-[12.5px] font-medium text-ink-3">Reward</dt>
                         <dd className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                          <span className="figures text-gold-bright">+{c.xpReward.toLocaleString("en-US")} XP</span>
+                          <span className="tabular-nums text-ink-1">+{c.xpReward.toLocaleString("en-US")} XP</span>
                           <ThcAmount amount={c.thcReward} signed size="sm" />
                         </dd>
                       </div>
                       <div className="bg-bg-1 p-4">
-                        <dt className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-3">Entered</dt>
-                        <dd className="figures mt-1.5 text-ink-1">
+                        <dt className="text-[12.5px] font-medium text-ink-3">Entered</dt>
+                        <dd className="mt-1.5 tabular-nums text-ink-1">
                           {c._count.participations} {c._count.participations === 1 ? "member" : "members"}
                         </dd>
                       </div>
                     </dl>
 
                     <div className="mt-auto">
-                      {user ? (
-                        p ? (
+                      {p ? (
                           <div className="flex flex-col gap-4">
                             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
                               <Badge tone={done ? "success" : p.status === "FAILED" ? "danger" : "gold"}>
@@ -192,24 +172,14 @@ export default async function ChallengesPage() {
                               <SubmitEvidence action={submitEvidenceAction.bind(null, c.slug)} approved={approvedSubs} required={required} pending={pendingSubs} />
                             )}
                           </div>
-                        ) : (
-                          open && (
-                            <form action={joinChallengeAction.bind(null, c.slug)} className="flex items-center justify-between gap-3 border-t border-line pt-4">
-                              <span className="text-[12.5px] text-ink-3">Entering is free. Failing is recorded.</span>
-                              <SubmitButton pendingLabel="Entering">
-                                <Icon name="arena" size={15} /> Enter mission
-                              </SubmitButton>
-                            </form>
-                          )
-                        )
                       ) : (
                         open && (
-                          <div className="flex items-center justify-between gap-3 border-t border-line pt-4">
-                            <span className="text-[12.5px] text-ink-3">Members only.</span>
-                            <Link href="/register" className={buttonStyles({ variant: "secondary", size: "sm" })}>
-                              Join to enter
-                            </Link>
-                          </div>
+                          <form action={joinChallengeAction.bind(null, c.slug)} className="flex items-center justify-between gap-3 border-t border-line pt-4">
+                            <span className="text-[13px] text-ink-3">Entering is free. Failing is recorded.</span>
+                            <SubmitButton pendingLabel="Joining">
+                              <Icon name="target" size={15} /> Join challenge
+                            </SubmitButton>
+                          </form>
                         )
                       )}
                     </div>
@@ -220,6 +190,6 @@ export default async function ChallengesPage() {
           </ul>
         )}
       </div>
-    </main>
+    </Page>
   );
 }

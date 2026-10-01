@@ -49,6 +49,6 @@ export function gateLessons(lessons: GateLesson[]): Map<string, Gate> {
 }
 
 /** The member's next lesson in a program, or null when everything is done. */
-export function nextLesson(lessons: GateLesson[]): GateLesson | null {
+export function nextLesson<T extends GateLesson>(lessons: T[]): T | null {
   return orderLessons(lessons).find((l) => !l.completed) ?? null;
 }

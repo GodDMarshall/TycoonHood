@@ -61,7 +61,7 @@ export function XpBar({
   return (
     <div className={cn("flex flex-col gap-2.5", className)}>
       <div className="flex items-baseline justify-between">
-        <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-ink-3">
+        <span className="text-[12px] font-medium text-ink-3">
           Level <span className="figures text-gold">{level}</span>
         </span>
         <span className="figures text-[12px] text-ink-2">

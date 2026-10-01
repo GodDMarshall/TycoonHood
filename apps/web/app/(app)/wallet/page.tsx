@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { RoomHeader } from "../../../components/room-header";
+import { Page, PageHeader } from "../../../components/app/page";
 import { requireUser } from "../../../lib/guard";
 import { LedgerService } from "@tycoonhood/core";
 import { prisma } from "@tycoonhood/db";
@@ -30,17 +30,13 @@ export default async function WalletPage() {
   const audit = await ledger.auditAccount(account.id);
 
   return (
-    <main>
-      <RoomHeader
-        compact
-        icon="wallet"
-        room="Wallet"
-        title="Your ledger,"
-        accent="audited live."
-        lead="Every THC you hold is the sum of real entries. The balance below is recomputed from all of them on every visit."
+    <Page>
+      <PageHeader
+        title="Wallet"
+        description="Every THC you hold is the sum of real ledger entries. The balance below is recomputed from all of them on every visit."
       />
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card variant="gold">
+        <Card variant="raised">
           <CardContent className="py-5">
             <Stat label="Balance" value={<ThcAmount amount={account.balance} size="lg" />} />
           </CardContent>
@@ -82,6 +78,6 @@ export default async function WalletPage() {
           )}
         </CardContent>
       </Card>
-    </main>
+    </Page>
   );
 }

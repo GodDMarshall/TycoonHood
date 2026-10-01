@@ -11,7 +11,7 @@ const xp = new XpService(prisma);
 /** Defense in depth: every admin action re-checks the role (spec §27). */
 async function requireAdmin() {
   const user = await getCurrentUser();
-  if (user?.role !== "ADMIN") redirect("/dashboard");
+  if (user?.role !== "ADMIN") redirect("/today");
   return user;
 }
 
@@ -67,7 +67,7 @@ export async function toggleCoursePublishAction(courseId: string) {
     data: { status: c.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED" },
   });
   revalidatePath("/admin/content");
-  revalidatePath("/academy");
+  revalidatePath("/courses");
   revalidatePath("/programs");
 }
 

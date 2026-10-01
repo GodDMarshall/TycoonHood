@@ -1,12 +1,12 @@
 /* ============================================================
    TYCOONHOOD DESIGN TOKENS — the single source of visual truth (D14).
 
-   Direction: "HQ" (DR-17, supersedes the A9 "ledger" visual layer).
-   A black room holding one gold object. Near-black graphite surfaces,
-   gold used as a material rather than a UI colour, architectural
-   geometry (small radii, hairline borders), an editorial type pairing:
-   Instrument Sans for authority, Instrument Serif italic for the single
-   accent phrase, IBM Plex Mono for anything counted.
+   Direction: "Academy" (DR-24, supersedes the DR-17 "HQ" layer).
+   A serious place to learn and work. Near-black graphite surfaces, gold
+   for the primary action and for progress — nothing decorative. Plain
+   app geometry (8–12px radii), one sans family for everything a member
+   reads, tabular numerals for anything counted. Instrument Serif italic
+   survives only as the single accent phrase on the public website.
 
    Consumed two ways:
      1. CSS custom properties (any consumer)
@@ -119,12 +119,12 @@
   --text-caption: 0.6875rem;
   --text-caption--line-height: 1.4;
 
-  /* ── Geometry — architectural. Small radii; no pills except status dots. */
-  --radius-xs: 1px;
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
-  --radius-xl: 6px;
+  /* ── Geometry — a standard application: soft, consistent radii. */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 
   /* ── Elevation ───────────────────────────────────────────────── */
   --shadow-1: inset 0 1px 0 rgb(255 255 255 / 0.025), 0 1px 2px rgb(0 0 0 / 0.5);
@@ -201,9 +201,9 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Anything counted is set in ledger figures. */
+/* Anything counted lines up: tabular numerals in the reading face. */
 .figures {
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
@@ -227,22 +227,22 @@ body::before {
   color: var(--color-gold-bright);
 }
 
-/* Wide-tracked small caps — the eyebrow of every section. */
+/* A small section label above a heading. Quiet: it names, it does not shout. */
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-gold);
+  color: var(--color-ink-3);
 }
 
-/* A section index: "01 — Enter". */
+/* A step or section number: "Step 2 of 4". */
 .index {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: var(--color-ink-3);
 }
 

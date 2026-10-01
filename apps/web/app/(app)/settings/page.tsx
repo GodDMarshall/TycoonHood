@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { RoomHeader } from "../../../components/room-header";
+import { Page, PageHeader } from "../../../components/app/page";
 import { requireUser } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
 import { activeDiscordTransport, discord, sessions } from "@tycoonhood/core";
@@ -24,8 +24,8 @@ export default async function SettingsPage() {
   const transport = activeDiscordTransport();
 
   return (
-    <main className="max-w-2xl">
-      <RoomHeader compact icon="settings" room="Settings" title="Your" accent="house rules." lead="Devices, Discord and exactly what the rest of the house can see about you." />
+    <Page width="narrow">
+      <PageHeader title="Settings" description="Your devices, Discord, and exactly what other members can see about you." />
 
       <SectionRule label="Devices" className="mb-4" />
       <Card>
@@ -73,13 +73,13 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-      <SectionRule label="Leaderboard privacy" className="mb-4 mt-10" />
+      <SectionRule label="Your public profile card" className="mb-4 mt-10" />
       <Card>
         <CardContent className="py-4">
           <form action={savePrivacyAction} className="flex flex-col gap-3">
             {[["level", "Show my level and XP"], ["rank", "Show my rank"], ["streak", "Show my streak"]].map(([key, label]) => (
               <label key={key} className="flex items-center gap-3 text-[14px] text-ink-1">
-                <input type="checkbox" name={key} defaultChecked={privacy[key] !== false} className="accent-[#c9a227]" />
+                <input type="checkbox" name={key} defaultChecked={privacy[key] !== false} className="accent-[var(--color-gold)]" />
                 {label}
               </label>
             ))}
@@ -89,6 +89,6 @@ export default async function SettingsPage() {
           </form>
         </CardContent>
       </Card>
-    </main>
+    </Page>
   );
 }

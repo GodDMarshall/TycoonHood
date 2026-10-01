@@ -4,8 +4,7 @@ import { cn } from "../cn";
 type Tone = "neutral" | "gold" | "warrior" | "builder" | "tycoon" | "mind" | "success" | "danger" | "warning";
 
 /**
- * A tag, not a pill. Rectangular, hairline-bordered, mono small caps —
- * the label on a drawer in the vault rather than a sticker on a toy.
+ * A small status label. Sentence case, quiet tint, one line.
  */
 const tones: Record<Tone, string> = {
   neutral: "border-line-strong text-ink-2 bg-bg-2",
@@ -27,8 +26,8 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex h-[22px] items-center gap-1.5 rounded-sm border px-2",
-        "font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.14em]",
+        "inline-flex h-[22px] items-center gap-1.5 rounded-full border px-2.5",
+        "text-[11.5px] font-medium leading-none",
         tones[tone],
         className
       )}

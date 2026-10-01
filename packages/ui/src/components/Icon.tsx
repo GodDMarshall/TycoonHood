@@ -4,9 +4,9 @@ import { cn } from "../cn";
 /**
  * The house icon set — one family, drawn for Tycoonhood.
  *
- * 24px grid, 1.5 stroke, square caps, mitred joins, no fills except where a
- * solid mark carries meaning. Geometric and architectural on purpose: every
- * glyph should read as drawn with a rule and a set square. Emoji and mixed
+ * 24px grid, 1.5 stroke, round caps and joins, no fills except where a
+ * solid mark carries meaning. Plain and legible, like the tools people use
+ * every day: an icon names a place in the app, it does not decorate it. Emoji and mixed
  * third-party sets are not used anywhere in the product (see DESIGN_SYSTEM).
  */
 const paths = {
@@ -201,6 +201,94 @@ const paths = {
     </>
   ),
   pillar: <path d="M6 3.5h12M7 20.5h10M8.5 6v12M12 6v12M15.5 6v12M5 21h14" />,
+  // The academy app
+  today: (
+    <>
+      <path d="M4 5.5h16v15H4z" />
+      <path d="M4 10h16M8.5 3v4M15.5 3v4" />
+      <path d="m8.5 14.5 2.5 2.5 4.5-4.5" />
+    </>
+  ),
+  courses: (
+    <>
+      <path d="M3 8.5 12 4l9 4.5-9 4.5z" />
+      <path d="M7 10.5v5c1.5 1.5 3 2 5 2s3.5-.5 5-2v-5M21 8.5v6" />
+    </>
+  ),
+  chat: (
+    <>
+      <path d="M4 5h16v11H9l-5 4z" />
+      <path d="M8 9.5h8M8 12.5h5" />
+    </>
+  ),
+  bell: (
+    <>
+      <path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z" />
+      <path d="M10 20.5a2 2 0 0 0 4 0" />
+    </>
+  ),
+  hash: <path d="M5 9h15M4 15h15M10 3.5 8 20.5M16 3.5l-2 17" />,
+  megaphone: (
+    <>
+      <path d="M4 10v4h3l8 5V5L7 10z" />
+      <path d="M18 9.5a3.5 3.5 0 0 1 0 5M7 14l1.5 6h2.5" />
+    </>
+  ),
+  trophy: (
+    <>
+      <path d="M7 4h10v5a5 5 0 0 1-10 0z" />
+      <path d="M7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5a3.5 3.5 0 0 1-3.5 3.5M12 14v3.5M8 20.5h8M9.5 17.5h5" />
+    </>
+  ),
+  help: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.5v.5M12 16.5v.5" />
+    </>
+  ),
+  pin: <path d="M9 3.5h6l-1 5 3.5 3.5h-11L10 8.5zM12 12v8.5" />,
+  reply: <path d="M10 6 4.5 11.5 10 17M5 11.5h8a6.5 6.5 0 0 1 6.5 6.5v1" />,
+  trash: (
+    <>
+      <path d="M4 6.5h16M9.5 6.5V4h5v2.5M6 6.5l1 14h10l1-14" />
+      <path d="M10 10.5v6M14 10.5v6" />
+    </>
+  ),
+  flag: <path d="M5.5 21V4M5.5 4.5h12l-2.5 4 2.5 4h-12" />,
+  send: <path d="M4 12 20 4.5 15 20l-3.5-6.5zM11.5 13.5 20 4.5" />,
+  store: (
+    <>
+      <path d="M5 8h14l-1 12.5H6z" />
+      <path d="M9 10.5V7a3 3 0 0 1 6 0v3.5" />
+    </>
+  ),
+  more: <path d="M5.5 12h.01M12 12h.01M18.5 12h.01" />,
+  checklist: (
+    <>
+      <path d="m4 6.5 1.5 1.5L8.5 5M4 12.5l1.5 1.5 3-3M4 18.5 5.5 20l3-3" />
+      <path d="M11.5 6.5h8.5M11.5 12.5h8.5M11.5 18.5h8.5" />
+    </>
+  ),
+  mute: (
+    <>
+      <path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z" />
+      <path d="m16.5 9.5 5 5M21.5 9.5l-5 5" />
+    </>
+  ),
+  download: <path d="M12 3.5v12M7 10.5l5 5 5-5M4.5 20.5h15" />,
+  home: (
+    <>
+      <path d="M3.5 11 12 4l8.5 7" />
+      <path d="M6 9.5v11h12v-11M10 20.5v-6h4v6" />
+    </>
+  ),
+  image: (
+    <>
+      <path d="M3.5 5h17v14h-17z" />
+      <path d="m3.5 16 5-5 4 4 2.5-2.5 5.5 5.5" />
+      <circle cx="15.5" cy="9" r="1.5" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof paths;
@@ -227,8 +315,8 @@ export function Icon({
       fill="none"
       stroke="currentColor"
       strokeWidth={strokeWidth}
-      strokeLinecap="square"
-      strokeLinejoin="miter"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={cn("shrink-0", className)}
       aria-hidden={title ? undefined : true}
       role={title ? "img" : undefined}

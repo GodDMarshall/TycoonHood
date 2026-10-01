@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../../../lib/auth";
 import { AdminTabs } from "../../../components/admin-tabs";
+import { Page } from "../../../components/app/page";
 
 /**
  * The House — the operator's console. Utilitarian by design: same type,
@@ -9,17 +10,15 @@ import { AdminTabs } from "../../../components/admin-tabs";
  */
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
-  if (user?.role !== "ADMIN") redirect("/dashboard");
+  if (user?.role !== "ADMIN") redirect("/today");
   return (
-    <div>
-      <div className="mb-8 flex flex-col gap-4 border-b border-line pb-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="eyebrow mb-2">The House · operator console</p>
-          <p className="text-[13px] text-ink-3">Every write here is re-authorized on the server and lands on the ledger.</p>
-        </div>
+    <Page width="wide">
+      <div className="mb-6">
+        <h1 className="text-[26px] font-semibold tracking-[-0.02em]">Admin</h1>
+        <p className="mt-1 text-[14px] text-ink-3">Every write here is re-authorized on the server and lands on the ledger.</p>
       </div>
       <AdminTabs />
       {children}
-    </div>
+    </Page>
   );
 }

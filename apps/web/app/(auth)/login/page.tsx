@@ -7,6 +7,6 @@ import { LoginForm } from "../../../components/auth-forms";
 export const metadata: Metadata = { title: "Sign in" };
 
 export default async function LoginPage() {
-  if (await getCurrentUser()) redirect("/dashboard");
+  if (await getCurrentUser()) redirect("/today");
   return <LoginForm action={loginAction} />;
 }

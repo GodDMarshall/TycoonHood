@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 import { cn } from "../cn";
 
-/** The rule: a hairline with an optional small-caps heading and an index. */
+/** A section label with a hairline, or a bare hairline without one. */
 export function SectionRule({ label, index, className }: { label?: string; index?: string; className?: string }) {
   if (!label) return <hr className={cn("border-line", className)} />;
   return (
-    <div className={cn("flex items-center gap-4", className)}>
+    <div className={cn("flex items-center gap-3", className)}>
       {index && <span className="index">{index}</span>}
-      <span className="eyebrow">{label}</span>
-      <span className="h-px flex-1 bg-gradient-to-r from-line-strong to-transparent" aria-hidden />
+      <span className="text-[15px] font-semibold tracking-[-0.01em] text-ink-1">{label}</span>
+      <span className="h-px flex-1 bg-line" aria-hidden />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { cn } from "../cn";
  *   raised      L3 lifted — a second structural edge and a shadow
  *   interactive L4 — reacts to hover and focus-within; wrap in a link
  *   gold        L5 — the ONE premium object in a view. Use sparingly.
- * Corners are architectural (4px). No blur, no glass.
+ * 12px corners, hairline borders. No blur, no glass.
  */
 type CardVariant = "default" | "raised" | "interactive" | "gold";
 
@@ -72,7 +72,7 @@ export function Stat({
 }) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-ink-3">{label}</span>
+      <span className="text-[12px] font-medium text-ink-3">{label}</span>
       <span className="figures text-[24px] leading-none text-ink-1">{value}</span>
       {delta && (
         <span className={cn("figures text-[12px]", delta.positive ? "text-success" : "text-danger")}>
@@ -103,10 +103,10 @@ export function Metric({
 }) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-ink-3">{label}</span>
+      <span className="text-[12px] font-medium text-ink-3">{label}</span>
       <span className="flex items-baseline gap-2">
         <span className="figures text-[clamp(1.5rem,1.1rem+1.4vw,2.25rem)] leading-none text-ink-1">{value}</span>
-        {unit && <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">{unit}</span>}
+        {unit && <span className="text-[12px] text-ink-3">{unit}</span>}
       </span>
       {hint && <span className="text-[12px] leading-snug text-ink-3">{hint}</span>}
     </div>

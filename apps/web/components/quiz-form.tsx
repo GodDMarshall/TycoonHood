@@ -1,7 +1,8 @@
 "use client";
+import Link from "next/link";
 import { useActionState, useState } from "react";
-import { Badge, Button, Icon, Notice, cn } from "@tycoonhood/ui";
-import type { QuizState } from "../app/(app)/academy/actions";
+import { Badge, Button, Icon, Notice, buttonStyles, cn } from "@tycoonhood/ui";
+import type { QuizState } from "../app/(app)/courses/actions";
 
 interface Props {
   action: (prev: QuizState, data: FormData) => Promise<QuizState>;
@@ -28,7 +29,7 @@ export function QuizForm({ action, questions, completed = false }: Props) {
         aria-live="polite"
         className={cn(
           "rounded-lg border p-6",
-          r.passed ? "border-gold-deep/70 bg-bg-2 shadow-[var(--shadow-gold)]" : "border-line-strong bg-bg-1"
+          r.passed ? "border-success/40 bg-bg-1" : "border-line-strong bg-bg-1"
         )}
       >
         <div className="flex flex-wrap items-center gap-3">
@@ -50,6 +51,11 @@ export function QuizForm({ action, questions, completed = false }: Props) {
           ))}
         </ol>
         <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-4">
+          {r.passed && state.nextHref && (
+            <Link href={state.nextHref} className={buttonStyles({ size: "sm" })}>
+              Continue <Icon name="arrow-right" size={14} />
+            </Link>
+          )}
           <Button
             variant="secondary"
             size="sm"
@@ -89,13 +95,13 @@ export function QuizForm({ action, questions, completed = false }: Props) {
       }}
       className="flex flex-col gap-8"
     >
-      <p className="eyebrow flex items-center gap-2">
-        <Icon name="quiz" size={14} /> Knowledge check · {questions.length} questions
+      <p className="flex items-center gap-2 text-[14px] font-medium text-ink-2">
+        <Icon name="quiz" size={16} className="text-gold" /> Knowledge check · {questions.length} questions · unlimited attempts
       </p>
       {questions.map((q, i) => (
         <fieldset key={i} className="flex flex-col gap-2.5">
           <legend className="mb-2 flex gap-3 text-[16px] font-medium leading-snug text-ink-1">
-            <span className="figures pt-0.5 text-[12px] text-gold">{String(i + 1).padStart(2, "0")}</span>
+            <span className="pt-0.5 text-[14px] tabular-nums text-ink-3">{i + 1}.</span>
             {q.prompt}
           </legend>
           {q.options.map((opt, oi) => (
