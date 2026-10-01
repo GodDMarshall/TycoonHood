@@ -107,7 +107,7 @@ export default async function TodayPage() {
               </SectionTitle>
               <Panel as="div" className="divide-y divide-line">
                 {START.map((s, i) => (
-                  <Link key={s.label} href={s.href} className={cn("flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-bg-2", s.done && "opacity-70")}>
+                  <Link key={s.label} href={s.href} className="flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-bg-2">
                     <span
                       className={cn(
                         "flex size-7 shrink-0 items-center justify-center rounded-full border text-[12.5px] font-semibold tabular-nums",

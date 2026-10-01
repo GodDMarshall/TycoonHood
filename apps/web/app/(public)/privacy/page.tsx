@@ -28,7 +28,7 @@ export default function PrivacyPage() {
             <tbody className="text-ink-2">
               {[
                 ["Email address", "Signing in, and password reset. Never sold, never shared."],
-                ["Name and display name", "So the platform can address you and the leaderboard can name you."],
+                ["Name and display name", "So the platform can address you, and so other members see who wrote a message."],
                 ["Password", "Stored only as an Argon2id hash. We cannot read it, and neither can anyone who steals the database."],
                 ["Username, bio, avatar URL", "Your public profile — and you control which parts are public."],
                 ["Goals, interests, experience level", "The answers you gave at onboarding, used to recommend where to start."],
@@ -43,6 +43,10 @@ export default function PrivacyPage() {
                 ["Discord user ID, if you link it", "Only to sync your rank role. Unlinking removes it."],
                 ["Which videos you watched, and for how long", "So watch-to-earn pays once, and cannot be farmed."],
                 ["Who invited you, and who you invited", "So a referral pays exactly once, to the right person."],
+                ["Community messages, replies and the lesson a question is about", "The conversation itself. Other members in that channel can read it; removing a message hides it from everyone."],
+                ["Which channel messages you have read up to", "So unread counts are right on every device."],
+                ["Reports you file, and any mute placed on you", "So staff can moderate fairly and see what happened."],
+                ["Your daily-standard ticks and the days you met it", "Your record and your streak. Your own items are visible only to you."],
               ].map(([what, why]) => (
                 <tr key={what} className="border-b border-line last:border-0">
                   <td className="py-2 pr-4 align-top text-ink-1">{what}</td>
@@ -131,7 +135,7 @@ export default function PrivacyPage() {
         <ul className="ml-4 list-disc space-y-1">
           <li>delete your email, name, username, bio, avatar and onboarding answers;</li>
           <li>delete your sessions, your Discord link, and your delivery addresses;</li>
-          <li>remove your name from the leaderboard and your public profile;</li>
+          <li>delete your community messages, the reports you filed, and your daily-standard record;</li>
           <li>anonymise your ledger entries rather than delete them, so the books still balance.</li>
         </ul>
         <p>

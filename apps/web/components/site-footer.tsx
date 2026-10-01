@@ -2,9 +2,9 @@ import Link from "next/link";
 import { CoinMark } from "@tycoonhood/ui";
 
 const columns: [string, [string, string][]][] = [
-  ["The HQ", [["/programs", "Academy"], ["/challenges", "Arena"], ["/marketplace", "Vault"], ["/thc", "Treasury"]]],
+  ["Academy", [["/programs", "Programs"], ["/#how", "How it works"], ["/marketplace", "Store"], ["/register", "Join free"]]],
   ["Open books", [["/status", "Live figures"], ["/thc", "How THC works"], ["/roadmap", "Roadmap"]]],
-  ["The house", [["/about", "About"], ["/blog", "Journal"], ["/faq", "FAQ"]]],
+  ["Tycoonhood", [["/about", "About"], ["/blog", "Journal"], ["/faq", "FAQ"]]],
   ["Legal", [["/terms", "Terms"], ["/privacy", "Privacy"], ["/thc#disclosure", "THC disclosure"]]],
 ];
 
@@ -20,11 +20,11 @@ export function SiteFooter() {
         </div>
         {columns.map(([title, items]) => (
           <nav key={title} aria-label={title}>
-            <p className="eyebrow mb-5 text-ink-3">{title}</p>
+            <p className="mb-4 text-[13px] font-semibold text-ink-1">{title}</p>
             <ul className="flex flex-col gap-3">
               {items.map(([href, label]) => (
                 <li key={href + label}>
-                  <Link href={href} className="text-[14px] text-ink-2 transition-colors hover:text-gold-bright">
+                  <Link href={href} className="text-[14px] text-ink-2 transition-colors hover:text-ink-1">
                     {label}
                   </Link>
                 </li>

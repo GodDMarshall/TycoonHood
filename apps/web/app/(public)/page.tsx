@@ -1,471 +1,320 @@
 /**
- * HOMEPAGE — the walk through the house.
+ * HOMEPAGE — the front door of a serious academy.
  *
- *   01 Enter       the HQ: the whole ecosystem, visible at once
- *   —  Open books  live figures from the ledger (the signature band, spec §6)
- *   02 Understand  the philosophy: wealth is an outcome of capability
- *   03 Explore     six rooms, each with a real count and a real door
- *   04 Build       the four programs, each in its own atmosphere
- *   05 Execute     missions, stated with their objective and reward
- *   06 Grow        the ascent: five ranks on public thresholds
- *   07 Treasury    one quadrillion, minted once
- *   08 Become      the seat is free
+ *   hero         the promise, and the real daily standard every member holds
+ *   facts        live counts (only shown when they are real rows)
+ *   how          learn in order · hold the standard · prove it · work alongside others
+ *   programs     the published programs
+ *   standard     the house's daily items, from the database
+ *   community    how it is kept useful
+ *   rank         earned from verified work, five public thresholds
+ *   miner        the one game, kept separate
+ *   join         free to join
  *
  * Every figure on this page is a query. Nothing is typed in.
  */
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { LedgerService } from "@tycoonhood/core";
-import { xpRequiredForLevel } from "@tycoonhood/config";
-import { CoinMark, Icon, PillarBadge, ThcAmount, buttonStyles, cn, type IconName } from "@tycoonhood/ui";
+import { CoinMark, Icon, PILLAR_LABEL, buttonStyles, cn, type IconName } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../lib/auth";
-import { HQStage } from "../../components/hq/hq-stage";
-import { HQDrawing } from "../../components/hq/hq-drawing";
-import { PillarArt } from "../../components/pillar-art";
+import { lessonMinutes } from "../../lib/learning";
 
 export const metadata: Metadata = {
   title: { absolute: "Tycoonhood — build yourself, the rest compounds" },
   description:
-    "A self-mastery academy with an honest internal economy: four programs, missions that pay on verified work, five public ranks and a fixed-supply ledger anyone can audit. Free to enter.",
+    "A serious academy for discipline, business and money. Programs that open lesson by lesson, a daily standard you hold every day, and a community that posts proof. Free to join.",
   alternates: { canonical: "/" },
 };
 export const dynamic = "force-dynamic";
 
-const ledger = new LedgerService(prisma);
-const fmt = (n: number | bigint) => n.toLocaleString("en-US");
+const MINER_URL = process.env.NEXT_PUBLIC_MINER_URL ?? "http://localhost:3001";
+const fmt = (n: number) => n.toLocaleString("en-US");
+
+const PILLAR_TEXT = { WARRIOR: "text-warrior", BUILDER: "text-builder", TYCOON: "text-gold", MIND: "text-mind" } as const;
+const PILLAR_TINT = { WARRIOR: "from-warrior/20", BUILDER: "from-builder/20", TYCOON: "from-gold/20", MIND: "from-mind/20" } as const;
+
+const HOW: { icon: IconName; title: string; body: string }[] = [
+  {
+    icon: "courses",
+    title: "Learn in order",
+    body: "Each program is a sequence. A lesson opens when the one before it is done, so there is always exactly one next step — never a wall of content.",
+  },
+  {
+    icon: "checklist",
+    title: "Hold the daily standard",
+    body: "Train, study, deep work, read, plan tomorrow. Tick it every day; a met day moves your streak. Lessons tick themselves — you cannot fake study.",
+  },
+  {
+    icon: "seal",
+    title: "Prove it",
+    body: "Knowledge checks with explained answers and unlimited attempts. Certificates with public serials. Wins posted with proof, not claims.",
+  },
+  {
+    icon: "chat",
+    title: "Work alongside others",
+    body: "Each program has its own channels. Questions carry the lesson they are about, so answers stay findable. Staff pin what is worth everyone's time.",
+  },
+];
 
 export default async function HomePage() {
   const user = await getCurrentUser();
   const member = !!user?.profile?.onboardedAt;
 
-  const [mint, members, missionsPaid, courses, ranks, circulating, missions, openChallenges, liveItems, firstMission] =
-    await Promise.all([
-      prisma.ledgerAccount.findFirst({ where: { type: "SYSTEM_MINT" } }),
-      prisma.user.count(),
-      prisma.missionCompletion.count(),
-      prisma.course.findMany({
-        where: { status: "PUBLISHED" },
-        orderBy: { sortOrder: "asc" },
-        include: { modules: { select: { _count: { select: { lessons: true } } } } },
-      }),
-      prisma.rankDefinition.findMany({ orderBy: { sortOrder: "asc" } }),
-      ledger.circulatingSupply(),
-      prisma.mission.findMany({ where: { active: true }, orderBy: [{ repeatable: "desc" }, { xpReward: "desc" }], take: 4 }),
-      prisma.challenge.count({ where: { lifecycle: { in: ["UPCOMING", "ACTIVE"] } } }),
-      prisma.product.count({ where: { active: true } }),
-      prisma.mission.findFirst({ where: { slug: "complete-onboarding", active: true } }),
-    ]);
+  const [courses, standard, ranks, members, certificates, metDays] = await Promise.all([
+    prisma.course.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: { sortOrder: "asc" },
+      include: { modules: { include: { lessons: { select: { durationSec: true, contentMd: true } } } } },
+    }),
+    prisma.standardItem.findMany({ where: { userId: null, active: true }, orderBy: { sortOrder: "asc" } }),
+    prisma.rankDefinition.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.profile.count({ where: { onboardedAt: { not: null } } }),
+    prisma.certificate.count(),
+    prisma.standardDay.count(),
+  ]);
 
-  const supply = -(mint?.balance ?? 0n);
-  const lessons = courses.reduce((n, c) => n + c.modules.reduce((m, mod) => m + mod._count.lessons, 0), 0);
+  const programs = courses.map((c) => {
+    const lessons = c.modules.flatMap((m) => m.lessons);
+    return {
+      slug: c.slug,
+      title: c.title,
+      subtitle: c.subtitle,
+      pillar: c.pillar,
+      modules: c.modules.length,
+      lessons: lessons.length,
+      minutes: lessons.reduce((n, l) => n + (lessonMinutes(l) ?? 0), 0),
+    };
+  });
+  const lessonCount = programs.reduce((n, p) => n + p.lessons, 0);
 
-  const rooms: { icon: IconName; name: string; note: string; fact: string; href: string }[] = [
-    {
-      icon: "command",
-      name: "Command Center",
-      note: "Your seat: today's mission, your streak, your rank and your wallet in one place.",
-      fact: "Daily check-in pays every day",
-      href: member ? "/dashboard" : "/register",
-    },
-    {
-      icon: "academy",
-      name: "Academy",
-      note: "Structured programs — modules, lessons, quizzes and certificates with public serials.",
-      fact: `${courses.length} programs · ${lessons} lessons`,
-      href: member ? "/academy" : "/programs",
-    },
-    {
-      icon: "arena",
-      name: "Arena",
-      note: "Challenges with real completion criteria, evidence review and real failure states.",
-      fact: openChallenges ? `${openChallenges} open or upcoming` : "Next season being set",
-      href: "/challenges",
-    },
-    {
-      icon: "vault",
-      name: "Vault",
-      note: "Gear and the digital library, bought with THC you earned — priced in months of work.",
-      fact: liveItems ? `${liveItems} items live` : "Stocking — nothing listed yet",
-      href: "/marketplace",
-    },
-    {
-      icon: "treasury",
-      name: "Treasury",
-      note: "The economy with the books open: supply, pools and every movement, double-entry.",
-      fact: "Supply fixed at genesis",
-      href: "/thc",
-    },
-    {
-      icon: "network",
-      name: "Network",
-      note: "Members ranked in the open. Link Discord and your rank follows you there as a role.",
-      fact: `${fmt(members)} ${members === 1 ? "member" : "members"}`,
-      href: member ? "/leaderboard" : "/register",
-    },
-  ];
+  const facts = [
+    { label: "programs", value: programs.length },
+    { label: "lessons", value: lessonCount },
+    { label: members === 1 ? "member" : "members", value: members },
+    { label: metDays === 1 ? "day of the standard met" : "days of the standard met", value: metDays },
+    { label: certificates === 1 ? "certificate issued" : "certificates issued", value: certificates },
+  ].filter((f) => f.value > 0);
 
-  const ladder = ["yourself", "your mind", "your business", "your wealth", "your network", "your legacy"];
+  const join = member ? { href: "/today", label: "Open the app" } : { href: "/register", label: "Join free" };
 
   return (
     <main>
-      {/* ─── 01 ENTER ───────────────────────────────────────────── */}
-      <section
-        aria-labelledby="hero-title"
-        className="relative isolate flex flex-col overflow-hidden border-b border-line xl:block xl:min-h-[max(720px,calc(100svh-4rem))]"
-      >
-        <div className="grid-plane pointer-events-none absolute inset-0 -z-10 opacity-70" aria-hidden />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute right-[-10%] top-[20%] -z-10 hidden size-[900px] rounded-full bg-[radial-gradient(closest-side,rgb(207_169_94/0.10),transparent)] xl:block"
-        />
-        <div className="xl:absolute xl:inset-0">
-          <div className="mx-auto h-full max-w-[88rem]">
-            <HQStage poster={<HQDrawing className="h-full w-full" />} member={member} className="order-2 px-[var(--gutter)] pb-10 xl:px-0 xl:pb-0" />
-          </div>
-        </div>
-        {/* Scrim so the headline always reads over the scene. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 hidden w-[58%] bg-[linear-gradient(90deg,var(--color-bg-0)_30%,transparent)] xl:block"
-        />
-        <div className="pointer-events-none relative mx-auto flex w-full max-w-[88rem] flex-col px-[var(--gutter)] pb-12 pt-14 max-xl:-order-1 md:pt-20 xl:min-h-[max(720px,calc(100svh-4rem))] xl:justify-center xl:pb-24">
-          <div className="pointer-events-auto max-w-[44rem] animate-rise">
-            <p className="mb-7 flex items-center gap-3">
-              <span className="index">01 — Enter</span>
-              <span className="h-px w-8 bg-line-strong" aria-hidden />
-              <span className="eyebrow">Tycoonhood HQ</span>
+      {/* ─── HERO ─────────────────────────────────────────────── */}
+      <section aria-labelledby="hero-title" className="border-b border-line">
+        <div className="mx-auto grid max-w-[88rem] grid-cols-1 gap-12 px-[var(--gutter)] pb-16 pt-14 md:pt-20 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center lg:gap-16 lg:pb-24">
+          <div className="min-w-0 animate-rise">
+            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-line-strong bg-bg-1 px-3 py-1 text-[13px] text-ink-2">
+              <span aria-hidden className="size-1.5 rounded-full bg-gold" /> The academy for discipline, business and money
             </p>
             <h1 id="hero-title" className="display text-hero">
-              Build yourself.
-              <br />
-              <span className="accent">The rest compounds.</span>
+              Build yourself. <span className="accent">The rest compounds.</span>
             </h1>
-            <p className="mt-8 max-w-[34rem] text-lead text-ink-2">
-              A self-mastery academy with an honest economy. Four programs. Missions that pay the moment the work is
-              verified. Five ranks on public thresholds. One ledger, open to anyone.
+            <p className="mt-7 max-w-[36rem] text-lead text-ink-2">
+              Programs that open lesson by lesson. A daily standard you hold every single day. A community that posts proof, not noise. No shortcuts are
+              sold here — the work is the product.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-3">
-              {member ? (
-                <>
-                  <Link href="/dashboard" className={buttonStyles({ size: "lg" })}>
-                    Open your Command Center
-                    <Icon name="arrow-right" size={16} className="transition-transform group-hover/btn:translate-x-0.5" />
-                  </Link>
-                  <Link href="/academy" className={buttonStyles({ variant: "secondary", size: "lg" })}>
-                    Continue learning
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/register" className={buttonStyles({ size: "lg" })}>
-                    Enter Tycoonhood
-                    <Icon name="arrow-right" size={16} className="transition-transform group-hover/btn:translate-x-0.5" />
-                  </Link>
-                  <Link href="#explore" className={buttonStyles({ variant: "secondary", size: "lg" })}>
-                    Tour the HQ
-                  </Link>
-                </>
-              )}
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <Link href={join.href} className={buttonStyles({ size: "lg", className: "px-7" })}>
+                {join.label} <Icon name="arrow-right" size={16} />
+              </Link>
+              <Link href="/programs" className={buttonStyles({ variant: "secondary", size: "lg" })}>
+                See the programs
+              </Link>
             </div>
-            <p className="mt-6 text-[13px] text-ink-3">Free to enter. Hard to fake. Nothing here is for sale except effort.</p>
+            <p className="mt-5 text-[13.5px] text-ink-3">Free to join. Every published program is free to enroll in.</p>
           </div>
+
+          {/* The real thing: the house standard, as members see it. */}
+          <figure className="min-w-0 animate-fade">
+            <div className="rounded-xl border border-line-strong bg-bg-1 p-5 shadow-[var(--shadow-3)]">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-[15px] font-semibold">Today&rsquo;s standard</p>
+                <p className="text-[13px] tabular-nums text-ink-3">0 of {standard.length}</p>
+              </div>
+              <ul className="flex flex-col divide-y divide-line rounded-lg border border-line bg-bg-0">
+                {standard.map((s) => (
+                  <li key={s.id} className="flex items-center gap-3 px-4 py-3">
+                    <span aria-hidden className="size-5 shrink-0 rounded-md border border-line-input" />
+                    <span className="min-w-0">
+                      <span className="block text-[14.5px] font-medium">{s.title}</span>
+                      {s.detail && <span className="block truncate text-[12.5px] text-ink-3">{s.detail}</span>}
+                    </span>
+                    {s.autoEvent && <Icon name="bolt" size={14} className="ml-auto shrink-0 text-ink-3" />}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <figcaption className="mt-3 text-center text-[13px] text-ink-3">The standard every member holds, every day. Members add up to five of their own.</figcaption>
+          </figure>
         </div>
       </section>
 
-      {/* ─── THE OPEN BOOKS — live from the ledger ─────────────────── */}
-      <section aria-label="The open books" className="border-b border-line bg-bg-1">
-        <div className="mx-auto grid max-w-[88rem] grid-cols-3 px-[var(--gutter)] lg:grid-cols-4">
-          <Figure wide label="Total supply · fixed" value={fmt(supply)} note="Minted once, at genesis" />
-          <Figure label="THC in member hands" value={fmt(circulating)} note="Earned, never bought" />
-          <Figure label="Members" value={fmt(members)} note={members ? "Counted, not estimated" : "The first seat is open"} />
-          <Figure
-            label="Missions paid"
-            value={missionsPaid ? fmt(missionsPaid) : "—"}
-            note={missionsPaid ? "Each one a ledger entry" : "The first is two minutes away"}
-          />
-        </div>
-        <div className="mx-auto max-w-[88rem] border-t border-line px-[var(--gutter)] py-3.5">
-          <p className="flex flex-wrap items-center gap-x-2 text-[12px] text-ink-3">
-            <span className="size-1.5 rounded-full bg-success" aria-hidden />
-            Live from the double-entry ledger — every figure above is a database fact.
-            <Link href="/status" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
-              See all the books
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      {/* ─── 02 UNDERSTAND ─────────────────────────────────────────── */}
-      <section className="mx-auto grid max-w-[88rem] gap-16 px-[var(--gutter)] py-28 lg:grid-cols-[1.1fr_1fr] lg:py-40">
-        <div data-reveal>
-          <p className="mb-6 flex items-center gap-3">
-            <span className="index">02 — Understand</span>
-          </p>
-          <h2 className="display max-w-[14ch] text-display">
-            Wealth is an outcome, <span className="accent">not an aesthetic.</span>
-          </h2>
-          <p className="mt-8 max-w-[52ch] text-lead text-ink-2">
-            No cars, no watches, no highlight reels. Tycoonhood trains the capabilities that wealth comes from —
-            discipline, knowledge, execution — and keeps an honest record of the work.
-          </p>
-          <dl className="mt-12 grid gap-8 sm:grid-cols-3">
-            {[
-              ["Capability first", "Body, business, capital and mind — trained in structured programs, not a feed."],
-              ["Value, then wealth", "Businesses built, capital managed. The outcome follows the work."],
-              ["Status in public", "Ranks come from verified work, on thresholds anyone can read."],
-            ].map(([t, b]) => (
-              <div key={t} className="border-t border-line-strong pt-4">
-                <dt className="text-[15px] font-semibold text-ink-1">{t}</dt>
-                <dd className="mt-2 text-[13.5px] leading-relaxed text-ink-2">{b}</dd>
+      {/* ─── FACTS ───────────────────────────────────────────── */}
+      {facts.length > 0 && (
+        <section aria-label="Tycoonhood in numbers" className="border-b border-line bg-bg-1/50">
+          <dl className="mx-auto flex max-w-[88rem] flex-wrap justify-between gap-x-10 gap-y-6 px-[var(--gutter)] py-8">
+            {facts.map((f) => (
+              <div key={f.label} className="flex items-baseline gap-2">
+                <dd className="text-[28px] font-semibold tabular-nums tracking-[-0.02em]">{fmt(f.value)}</dd>
+                <dt className="text-[14px] text-ink-3">{f.label}</dt>
               </div>
             ))}
           </dl>
-        </div>
-        <div data-reveal className="lg:pt-24">
-          <ol className="ladder border-t border-line">
-            {ladder.map((w, i) => (
-              <li
-                key={w}
-                className="group flex items-baseline gap-5 border-b border-line py-4 text-ink-2 md:py-5"
-              >
-                <span className="figures text-[12px] text-ink-3 group-hover:text-gold">{String(i + 1).padStart(2, "0")}</span>
-                <span className="display text-[clamp(1.6rem,1.1rem+1.8vw,2.6rem)] leading-none text-current">
-                  Build <span className="accent text-current group-hover:text-gold-bright">{w}.</span>
+        </section>
+      )}
+
+      {/* ─── HOW IT WORKS ───────────────────────────────────── */}
+      <section id="how" aria-labelledby="how-title" className="scroll-mt-20 border-b border-line">
+        <div className="mx-auto max-w-[88rem] px-[var(--gutter)] py-20 md:py-28">
+          <p className="eyebrow mb-3">How it works</p>
+          <h2 id="how-title" className="display max-w-[22ch] text-h1">
+            Four habits. Every day. <span className="accent">For as long as it takes.</span>
+          </h2>
+          <ol className="mt-14 grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-2 xl:grid-cols-4">
+            {HOW.map((h, i) => (
+              <li key={h.title} className="flex flex-col bg-bg-0 p-7">
+                <span className="flex size-10 items-center justify-center rounded-lg border border-line-strong bg-bg-1 text-gold">
+                  <Icon name={h.icon} size={20} />
                 </span>
+                <p className="mt-6 text-[13px] text-ink-3">Step {i + 1}</p>
+                <h3 className="mt-1 text-[19px] font-semibold tracking-[-0.01em]">{h.title}</h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{h.body}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      {/* ─── 03 EXPLORE ────────────────────────────────────────────── */}
-      <section id="explore" className="scroll-mt-20 border-y border-line bg-bg-1/50">
-        <div className="mx-auto max-w-[88rem] px-[var(--gutter)] py-28">
-          <div data-reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+      {/* ─── PROGRAMS ───────────────────────────────────────── */}
+      <section aria-labelledby="programs-title" className="border-b border-line">
+        <div className="mx-auto max-w-[88rem] px-[var(--gutter)] py-20 md:py-28">
+          <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="index mb-6">03 — Explore</p>
-              <h2 className="display max-w-[16ch] text-h1">
-                Six rooms. <span className="accent">One building.</span>
+              <p className="eyebrow mb-3">The programs</p>
+              <h2 id="programs-title" className="display max-w-[20ch] text-h1">
+                Body, business, money, mind.
               </h2>
             </div>
-            <p className="max-w-[44ch] text-[15px] leading-relaxed text-ink-2">
-              Every room of the house is a working part of the product, and every one of them writes to the same
-              ledger.
-            </p>
-          </div>
-          <ul className="mt-14 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-            {rooms.map((r, i) => (
-              <li key={r.name} data-reveal style={{ transitionDelay: `${(i % 3) * 80}ms` }} className="bg-bg-1">
-                <Link
-                  href={r.href}
-                  className="group relative flex h-full flex-col gap-5 p-7 transition-colors duration-[var(--dur-2)] hover:bg-bg-2 md:p-8"
-                >
-                  <span className="flex items-center justify-between">
-                    <span className="flex size-11 items-center justify-center rounded-md border border-line-strong text-gold transition-colors group-hover:border-gold-deep">
-                      <Icon name={r.icon} size={20} />
-                    </span>
-                    <span className="index">{String(i + 1).padStart(2, "0")}</span>
-                  </span>
-                  <span>
-                    <span className="display block text-[22px]">{r.name}</span>
-                    <span className="mt-2 block text-[13.5px] leading-relaxed text-ink-2">{r.note}</span>
-                  </span>
-                  <span className="mt-auto flex items-center justify-between border-t border-line pt-4">
-                    <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">{r.fact}</span>
-                    <Icon name="arrow-right" size={16} className="text-ink-3 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-gold" />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* ─── 04 BUILD ──────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-[88rem] px-[var(--gutter)] py-28 lg:py-36">
-        <div data-reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div>
-            <p className="index mb-6">04 — Build</p>
-            <h2 className="display max-w-[18ch] text-h1">
-              Four disciplines. <span className="accent">Each its own world.</span>
-            </h2>
-          </div>
-          <Link href="/programs" className="flex items-center gap-2 text-[14px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
-            All programs <Icon name="arrow-right" size={15} />
-          </Link>
-        </div>
-        <div className="mt-14 grid gap-5 md:grid-cols-2">
-          {courses.map((c, i) => {
-            const count = c.modules.reduce((n, m) => n + m._count.lessons, 0);
-            return (
-              <Link
-                key={c.id}
-                href={`/programs/${c.slug}`}
-                data-reveal
-                style={{ transitionDelay: `${(i % 2) * 90}ms` }}
-                className="group relative flex flex-col overflow-hidden rounded-lg border border-line bg-bg-1 transition-[border-color] duration-[var(--dur-3)] hover:border-gold-deep"
-              >
-                <div className="relative aspect-[5/2] overflow-hidden border-b border-line">
-                  <PillarArt pillar={c.pillar} className="transition-transform duration-[1200ms] ease-[var(--ease-premium)] group-hover:scale-[1.03]" />
-                  <span className="absolute left-5 top-5">
-                    <PillarBadge pillar={c.pillar} />
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col gap-3 p-6 md:p-7">
-                  <h3 className="display text-[24px] leading-tight">{c.title}</h3>
-                  <p className="text-[14px] leading-relaxed text-ink-2">{c.subtitle}</p>
-                  <p className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">
-                    <span>{c.modules.length} modules</span>
-                    <span>{count} lessons</span>
-                    <span className="text-gold">+{fmt(c.xpOnCompletion)} XP on completion</span>
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ─── 05 EXECUTE ────────────────────────────────────────────── */}
-      <section className="border-y border-line bg-bg-1/50">
-        <div className="mx-auto grid max-w-[88rem] gap-14 px-[var(--gutter)] py-28 lg:grid-cols-[1fr_1.3fr]">
-          <div data-reveal>
-            <p className="index mb-6">05 — Execute</p>
-            <h2 className="display max-w-[14ch] text-h1">
-              Every mission states <span className="accent">its reward first.</span>
-            </h2>
-            <p className="mt-6 max-w-[44ch] text-[15px] leading-relaxed text-ink-2">
-              You always know the objective and exactly what it pays before you start. XP and THC land the moment the
-              work is verified — idempotently, on the ledger, forever.
-            </p>
-            <Link href="/challenges" className={cn(buttonStyles({ variant: "secondary" }), "mt-8")}>
-              <Icon name="arena" size={16} /> Enter the Arena
+            <Link href="/programs" className={buttonStyles({ variant: "secondary" })}>
+              All programs
             </Link>
           </div>
-          <ol className="flex flex-col gap-3" data-reveal>
-            {missions.map((m, i) => (
-              <li key={m.id} className="grid grid-cols-[auto_1fr] gap-5 rounded-lg border border-line bg-bg-2/60 p-5 md:grid-cols-[auto_1fr_auto] md:items-center md:p-6">
-                <span className="flex size-11 items-center justify-center rounded-md border border-line-strong font-mono text-[12px] text-gold">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <p className="flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-3">
-                    Mission{m.repeatable && <span className="text-gold">· daily</span>}
-                  </p>
-                  <p className="mt-1 text-[17px] font-semibold tracking-[-0.01em]">{m.name}</p>
-                  <p className="text-[13.5px] text-ink-2">{m.description}</p>
-                </div>
-                <div className="col-span-2 flex items-center gap-4 border-t border-line pt-3 md:col-span-1 md:flex-col md:items-end md:gap-1 md:border-0 md:pt-0">
-                  <span className="figures text-[14px] text-gold-bright">+{fmt(m.xpReward)} XP</span>
-                  <ThcAmount amount={m.thcReward} signed size="sm" />
-                </div>
-              </li>
-            ))}
-          </ol>
+          {programs.length === 0 ? (
+            <p className="mt-10 text-ink-3">The first programs are being written.</p>
+          ) : (
+            <ul className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {programs.map((p) => (
+                <li key={p.slug}>
+                  <Link href={`/programs/${p.slug}`} className="group flex h-full flex-col rounded-xl border border-line bg-bg-1 p-3 transition-colors hover:border-line-strong">
+                    <div className={cn("flex aspect-[16/8] items-end rounded-lg bg-gradient-to-br to-bg-2 p-4", PILLAR_TINT[p.pillar])} aria-hidden>
+                      <span className={cn("text-[12px] font-semibold uppercase tracking-[0.08em]", PILLAR_TEXT[p.pillar])}>{PILLAR_LABEL[p.pillar]}</span>
+                    </div>
+                    <div className="flex flex-1 flex-col px-2 pb-2 pt-4">
+                      <h3 className="text-[17px] font-semibold leading-snug group-hover:text-gold-bright">{p.title}</h3>
+                      {p.subtitle && <p className="mt-1.5 text-[14px] leading-relaxed text-ink-2">{p.subtitle}</p>}
+                      <p className="mt-auto pt-4 text-[13px] text-ink-3">
+                        {p.modules} modules · {p.lessons} lessons{p.minutes ? ` · about ${p.minutes} min` : ""}
+                      </p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
 
-      {/* ─── 06 GROW ───────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-[88rem] px-[var(--gutter)] py-28 lg:py-36">
-        <div data-reveal className="max-w-3xl">
-          <p className="index mb-6">06 — Grow</p>
-          <h2 className="display text-h1">
-            Five ranks. <span className="accent">The same thresholds for everyone.</span>
-          </h2>
-          <p className="mt-6 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
-            Ranks map to levels, levels map to XP, and XP only comes from verified work. Nobody buys a rank, and
-            nobody skips one.
-          </p>
-        </div>
-        <ol className="mt-16 grid items-end gap-3 sm:grid-cols-5" aria-label="The ranks, in order">
-          {ranks.map((r, i) => (
-            <li key={r.id} data-reveal style={{ transitionDelay: `${i * 90}ms` }} className="flex flex-col">
-              <div
-                className={cn(
-                  "relative flex flex-col justify-end rounded-t-sm border border-b-0 p-5 max-sm:!h-auto",
-                  i === ranks.length - 1
-                    ? "border-gold-deep bg-[linear-gradient(180deg,rgb(207_169_94/0.14),rgb(207_169_94/0.02))]"
-                    : "border-line-strong bg-bg-1"
-                )}
-                style={{ height: `${120 + i * 56}px` }}
-              >
-                <span className="figures text-[11px] text-ink-3">Level {r.minLevel}</span>
-                <span className="display mt-1 text-[20px] leading-tight">{r.name.replace(/^Tycoon\s+/, "")}</span>
-                <span className="figures mt-1 text-[12px] text-gold">{fmt(xpRequiredForLevel(r.minLevel))} XP</span>
-              </div>
-              <div className={cn("h-px", i === ranks.length - 1 ? "bg-gold" : "bg-gold-deep")} />
-              {r.description && <p className="mt-3 text-[12.5px] leading-snug text-ink-3">{r.description}</p>}
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* ─── 07 TREASURY ───────────────────────────────────────────── */}
-      <section id="treasury" className="overflow-hidden border-y border-line bg-bg-1">
-        <div className="mx-auto grid max-w-[88rem] items-center gap-12 px-[var(--gutter)] py-24 lg:grid-cols-[auto_1fr_auto]">
-          <div data-reveal className="relative">
-            <div aria-hidden className="absolute inset-0 -z-0 scale-150 rounded-full bg-[radial-gradient(closest-side,rgb(207_169_94/0.18),transparent)]" />
-            <CoinMark size={132} className="relative" />
-          </div>
-          <div data-reveal>
-            <p className="index mb-4">07 — Treasury</p>
-            <h2 className="display text-h1">
-              One quadrillion. <span className="accent">Minted once.</span>
+      {/* ─── COMMUNITY + RANK ───────────────────────────────── */}
+      <section aria-labelledby="community-title" className="border-b border-line">
+        <div className="mx-auto grid max-w-[88rem] gap-16 px-[var(--gutter)] py-20 md:py-28 lg:grid-cols-2">
+          <div>
+            <p className="eyebrow mb-3">The community</p>
+            <h2 id="community-title" className="display max-w-[18ch] text-h2">
+              Built to stay useful.
             </h2>
-            <p className="mt-4 max-w-[58ch] text-[15px] leading-relaxed text-ink-2">
-              THC is earned by doing and spent inside Tycoonhood on things that exist. The supply is provable, every
-              movement is double-entry, and{" "}
-              <span className="figures text-ink-1">{fmt(circulating)}</span> THC is in member hands right now. Not
-              money, not an investment, not redeemable — and no transfers between members.
-            </p>
+            <ul className="mt-8 flex flex-col gap-5">
+              {[
+                ["help", "Questions carry their lesson", "Ask from the lesson page; the answer stays attached to the lesson for the next person."],
+                ["trophy", "Wins come with proof", "A link, a number, a result. Claims without proof are just noise."],
+                ["pin", "Staff pin what matters", "The only community activity that counts toward anything is what staff choose to pin. Volume never counts."],
+                ["mute", "Slow mode, reports and mutes", "Every channel can be slowed. Every report goes to staff. There are no direct messages between members."],
+              ].map(([icon, title, body]) => (
+                <li key={title} className="flex gap-4">
+                  <Icon name={icon as IconName} size={20} className="mt-0.5 shrink-0 text-gold" />
+                  <div>
+                    <p className="text-[16px] font-semibold">{title}</p>
+                    <p className="mt-1 text-[15px] leading-relaxed text-ink-2">{body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
-          <Link href="/thc" className={buttonStyles({ variant: "secondary", size: "lg" })}>
-            Read the economy <Icon name="arrow-right" size={16} />
-          </Link>
+          <div>
+            <p className="eyebrow mb-3">Rank</p>
+            <h2 className="display max-w-[18ch] text-h2">Earned, never bought.</h2>
+            <p className="mt-5 max-w-[52ch] text-[15.5px] leading-relaxed text-ink-2">
+              Rank comes from XP, and XP comes only from verified work: lessons, knowledge checks, challenges and showing up every day. The thresholds are
+              public.
+            </p>
+            <ol className="mt-8 overflow-hidden rounded-xl border border-line">
+              {ranks.map((r, i) => (
+                <li key={r.id} className={cn("flex items-center justify-between gap-4 px-5 py-4", i > 0 && "border-t border-line")}>
+                  <span className="flex items-center gap-3">
+                    <span className="text-[13px] tabular-nums text-ink-3">{i + 1}</span>
+                    <span className="text-[15.5px] font-medium">{r.name.replace(/^Tycoon\s+/, "")}</span>
+                  </span>
+                  <span className="text-[14px] tabular-nums text-ink-3">from level {r.minLevel}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </section>
 
-      {/* ─── 08 BECOME ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        <div className="grid-plane pointer-events-none absolute inset-0 opacity-60" aria-hidden />
-        <div className="relative mx-auto flex max-w-[88rem] flex-col items-center px-[var(--gutter)] py-32 text-center lg:py-44">
-          <p className="index mb-8" data-reveal>
-            08 — Become
-          </p>
-          <h2 data-reveal className="display max-w-[16ch] text-display">
-            The seat is free. <span className="accent">The rank is earned.</span>
+      {/* ─── THE MINER ──────────────────────────────────────── */}
+      <section aria-labelledby="miner-title" className="border-b border-line bg-bg-1/50">
+        <div className="mx-auto flex max-w-[88rem] flex-col gap-8 px-[var(--gutter)] py-16 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-5">
+            <CoinMark size={48} />
+            <div>
+              <h2 id="miner-title" className="text-[22px] font-semibold tracking-[-0.01em]">
+                One game, kept in its place: the Miner.
+              </h2>
+              <p className="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-ink-2">
+                The academy is work. The Miner is a separate app where members mine THC — internal credits spent in the Store. THC are not currency, not an
+                investment, and not redeemable for money.
+              </p>
+            </div>
+          </div>
+          <div className="flex shrink-0 gap-3">
+            <a href={MINER_URL} className={buttonStyles({ variant: "secondary" })}>
+              Open the Miner <Icon name="arrow-up-right" size={15} />
+            </a>
+            <Link href="/thc" className={buttonStyles({ variant: "ghost" })}>
+              How THC works
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── JOIN ───────────────────────────────────────────── */}
+      <section aria-labelledby="join-title">
+        <div className="mx-auto max-w-[88rem] px-[var(--gutter)] py-24 text-center md:py-32">
+          <h2 id="join-title" className="display mx-auto max-w-[18ch] text-h1">
+            Start today. <span className="accent">Not Monday.</span>
           </h2>
-          <p data-reveal className="mt-6 max-w-[46ch] text-[15px] leading-relaxed text-ink-2">
-            {member
-              ? "Your next mission is already on the board."
-              : firstMission
-                ? `Your first mission pays the moment you finish onboarding — ${fmt(firstMission.xpReward)} XP and ${fmt(firstMission.thcReward)} THC for two minutes of honesty about your goals.`
-                : "Onboarding takes two minutes. Your first mission is waiting on the other side."}
-          </p>
-          <div data-reveal className="mt-10">
-            <Link href={member ? "/dashboard" : "/register"} className={buttonStyles({ size: "lg", className: "px-8" })}>
-              {member ? "Go to your Command Center" : "Take your seat"}
-              <Icon name="arrow-right" size={16} className="transition-transform group-hover/btn:translate-x-0.5" />
+          <p className="mx-auto mt-5 max-w-[46ch] text-lead text-ink-2">Pick a program, hold the standard tomorrow morning, and let the record show the rest.</p>
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <Link href={join.href} className={buttonStyles({ size: "lg", className: "px-8" })}>
+              {join.label} <Icon name="arrow-right" size={16} />
+            </Link>
+            <Link href="/faq" className={buttonStyles({ variant: "ghost", size: "lg" })}>
+              Questions first
             </Link>
           </div>
         </div>
       </section>
     </main>
-  );
-}
-
-function Figure({ label, value, note, wide }: { label: string; value: string; note: string; wide?: boolean }) {
-  return (
-    <div
-      className={cn(
-        "flex min-w-0 flex-col gap-2 border-line py-6 lg:border-r lg:px-6 lg:py-7 lg:first:pl-0 lg:last:border-r-0",
-        wide ? "max-lg:col-span-3 max-lg:border-b" : "max-lg:pr-2 max-lg:[&:not(:nth-child(2))]:border-l max-lg:[&:not(:nth-child(2))]:pl-3"
-      )}
-    >
-      <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-gold">{label}</span>
-      <span className="figures whitespace-nowrap text-[clamp(1rem,0.75rem+0.7vw,1.35rem)] leading-tight text-ink-1">{value}</span>
-      <span className="text-[12px] text-ink-3">{note}</span>
-    </div>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { RevealObserver } from "../components/reveal-observer";
+import { RegisterServiceWorker } from "../components/app/register-sw";
 import "./globals.css";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -9,21 +10,25 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: { default: "Tycoonhood — build yourself, the rest compounds", template: "%s · Tycoonhood" },
   description:
-    "A self-mastery academy with an honest internal economy. Four programs, real missions, five ranks, one open ledger. Free to enter.",
+    "A serious academy for discipline, business and money: programs that open lesson by lesson, a daily standard, and a community that posts proof. Free to join.",
   applicationName: "Tycoonhood",
   openGraph: {
     type: "website",
     siteName: "Tycoonhood",
     title: "Tycoonhood — build yourself, the rest compounds",
     description:
-      "Four programs, real missions, five ranks and a fixed-supply ledger you can audit. Progress you can prove.",
+      "Programs that open lesson by lesson, a daily standard you hold every day, and a community that posts proof.",
   },
   twitter: { card: "summary_large_image" },
+  appleWebApp: { capable: true, title: "Tycoonhood", statusBarStyle: "black" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
   themeColor: "#0a0908",
   colorScheme: "dark",
+  viewportFit: "cover",
 };
 
 // Runs before first paint: opt into scroll reveals, with a watchdog that
@@ -42,6 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
         {children}
         <RevealObserver />
+        <RegisterServiceWorker />
       </body>
     </html>
   );

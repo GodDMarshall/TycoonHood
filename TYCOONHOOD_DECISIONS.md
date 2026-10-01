@@ -133,7 +133,7 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 
 ---
 
-### DR-17 — The visual layer is "HQ", superseding the A9 "ledger" visual contract
+### DR-17 — The visual layer is "HQ", superseding the A9 "ledger" visual contract · **SUPERSEDED by DR-24 (2026-10-01)**
 - **Date:** 2026-09-26 · **Status:** **ADOPTED — owner directive ("Claude Code master takeover"), implemented and verified.**
 - **Context:** A9 recorded a warm espresso "vault" palette, an engraved serif hero, **"no WebGL; the hero is typographic"**. DR-1 had been waiting since 15 September on whether a 3D direction existed. The owner's takeover directive now resolves it as option **(b): build it** — a premium dark/gold ecosystem with sophisticated, purposeful 3D, a spatial "headquarters" metaphor, and the same language across every room of the product. It names no red, so none was introduced.
 - **What changed:** colour, geometry, type, motion, iconography and page composition only. **Token names were kept** (`bg-0…`, `ink-1…`, `gold…`, pillar names), so every page re-skinned from one file (D14 still holds). Data contracts, the ledger, the economy, routes, authorization (DR-3) and the honest-state rule (§1) are untouched.
@@ -141,7 +141,7 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **Alternatives rejected:** polishing the ledger system (the owner judged it weak, and the audit agreed: system fonts, template cards, text-only hero, emoji icons); a light theme (dark-first is the brand; a light theme would be a deliberate alternate, not an inversion); React Three Fiber (a second rendering model and ~2× the bundle for a scene that needs none of its reconciliation).
 - **Consequences:** A9's *brand* content survives — the reeded-coin mark (redrawn as solid metal), the pillar identities (muted to threads), the open-books signature band. A9's visual rules ("no WebGL", "typographic hero", espresso palette) are superseded. DR-1 is **closed**.
 
-### DR-18 — The HQ: districts are real rooms, and 3D is tiered, lazy and optional
+### DR-18 — The HQ: districts are real rooms, and 3D is tiered, lazy and optional · **SUPERSEDED by DR-24 (2026-10-01)**
 - **Date:** 2026-09-26 · **Status:** **ADOPTED.**
 - **Decision:** the product's spatial language is six districts — **Command Center** (`/dashboard`), **Academy** (`/programs`, `/academy`), **Arena** (`/challenges`), **Vault** (`/marketplace`), **Treasury** (`/thc`, `/status`), **Network** (`/leaderboard`). No route was renamed; the district is the name, the route is unchanged. A district with no route is not shown (there is no "Exchange" or "War Room": nothing exists behind them).
 - **3D policy:** the homepage HQ is a framework-free three.js scene (`apps/web/components/hq/scene/*`: scene, camera, lighting, materials, objects, interaction, performance). It is fetched **on idle**, only for viewports ≥1280px with a real GPU, no reduced-motion, no Save-Data, not 2G. Everyone else — and anyone whose GPU cannot hold ~25fps, or whose context is lost — gets an isometric SVG drawing of the **same plan**, server-rendered, which is also the poster the scene fades in over. District labels are DOM links in both, so the hero is crawlable and keyboard-navigable with or without WebGL. `?hq=3d` / `?hq=static` override detection for QA only.
@@ -158,7 +158,7 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **Context:** `full-loop.mjs` clicked "Sign in" then called `waitForLoadState("networkidle")`, which resolves **immediately** when the page was already idle. It raced the server action's redirect and only passed while the dashboard rendered fast. The richer Command Center lost the race.
 - **Decision:** wait for either leaving `/login` or a **non-empty** `role=alert` (Next's route announcer is an always-present empty alert). Same assertions, now deterministic: 39/39.
 
-### DR-21 — Members live in the HQ: a walkable 3D campus is the signed-in home (extends DR-18)
+### DR-21 — Members live in the HQ: a walkable 3D campus is the signed-in home (extends DR-18) · **SUPERSEDED by DR-24 (2026-10-01)**
 - **Date:** 2026-09-29 · **Status:** **ADOPTED — owner direction ("explorable 3D world", "cinematic, near-photoreal", "the whole experience").**
 - **Context:** The owner rejected the DR-17/18 result as "just info". DR-18 made 3D a tiered, optional hero. The owner asked for the world to be *the* interface.
 - **Decision:**
@@ -169,7 +169,7 @@ Each needs a product-level judgment. I have not made these for you; I state the 
   - `/world` is `noindex` and disallowed in `robots.ts`. It is behind `requireUser()` (DR-3).
 - **Consequence:** DR-18's "3D is optional" still holds for guests. For members it is the default, with "2D view" one click away.
 
-### DR-22 — Presence in the world is counts, never people
+### DR-22 — Presence in the world is counts, never people · **SUPERSEDED by DR-24 (2026-10-01)**
 - **Date:** 2026-09-29 · **Status:** **ADOPTED.**
 - **Decision:**
   - The world shows activity as 24-hour **counts** per district: lessons completed, challenges joined, orders, mining payouts, rank-ups and missions completed. They are drawn as anonymous figures, capped.
@@ -177,13 +177,63 @@ Each needs a product-level judgment. I have not made these for you; I state the 
   - The member's own data (balance, streak, lessons) is the only personal data it carries.
 - **Why:** DR-19 already keeps profiles out of search. A world that shows "who is here" would publish exactly what DR-19 hides. Real-time, named presence is a product and privacy decision for the owner (OQ-G).
 
-### DR-23 — World assets are ours, or credited
+### DR-23 — World assets are ours, or credited · **SUPERSEDED by DR-24 (2026-10-01)**
 - **Date:** 2026-09-29 · **Status:** **ADOPTED.**
 - **Decision:**
   - Every stone, brass, oak, concrete and hedge texture and every facade is generated in code: `scripts/world/generate-textures.mjs` and `components/world/architecture/facades.ts`.
   - Third-party assets are limited to two CC BY 4.0 Wayfair models from the Khronos glTF sample set and two CC0 Poly Haven HDRIs.
   - CC BY attribution is on `/credits` (linked in the footer), copied from each file's embedded `asset.copyright`, and mirrored in `public/world/CREDITS.md`.
 - **Constraint recorded:** the build sandbox cannot reach Poly Haven, ambientCG or most CDNs. Scanned PBR sets would raise realism further; adding any means adding its licence line to both places.
+
+### DR-24 — Tycoonhood is an academy app; the Miner is the only game (supersedes DR-17, DR-18, DR-21, DR-22, DR-23)
+- **Date:** 2026-10-01 · **Status:** **ADOPTED — owner direction:** "a serious motivational course and working area… a standard application… mining part is the only game." Owner answers: in-app chat, an installable web app, and progress kept as a serious record with no leaderboard.
+- **Removed:**
+  - The 3D world (`/world`), the homepage fly-over, and the HQ/district vocabulary: Command Center, Arena, Vault, Treasury and Network as product names.
+  - The leaderboard.
+  - The CC BY models and the `/credits` page that existed only for them.
+- **The product now:**
+  - A public website (`/`, `/programs`, `/marketplace`, `/thc`, …).
+  - A member app in a standard shell: a sidebar on desktop; on phones, a top bar, tabs and a "More" sheet.
+  - The app's screens are Today, Courses, Community, Challenges, Store, Wallet, Profile, Notifications, Settings and Admin.
+  - Old URLs redirect temporarily: `/dashboard`, `/academy/*`, `/leaderboard` and `/world`.
+- **Design language:**
+  - Kept: the dark ground and the gold accent.
+  - Gold is now reserved for the primary action and progress.
+  - 8–12px radii, one sans family, tabular numerals, round-cap icons.
+  - The serif italic accent survives only on the public website.
+- **Why the old direction failed:** "rooms", monospace labels and a 3D world read as a game or an AI workspace. A member needs to find the next lesson in one click.
+
+### DR-25 — Lessons open in order; a knowledge check completes only by passing
+- **Date:** 2026-10-01 · **Status:** **ADOPTED.**
+- **Decision:**
+  - A lesson opens when every earlier lesson in the program is complete. The order is module order, then lesson order.
+  - Completed lessons stay open for review.
+  - A lesson with a quiz completes only through `submitQuiz`; `completeLesson` refuses it (`QuizRequiredError`).
+  - A locked quiz is not scored.
+  - The same pure rule (`lms/gating.ts`) draws the screens and enforces the server.
+- **Kept on purpose:** each quiz's own pass mark (default 70%), explained answers and unlimited retries. "100% or blocked" is a known complaint about chat-first academies and was not copied.
+- **Before this:** the server let any enrolled member complete any lesson, including a quiz lesson, by calling the action directly.
+
+### DR-26 — The daily standard and the in-app community
+- **Date:** 2026-10-01 · **Status:** **ADOPTED.**
+- **The daily standard:**
+  - The house sets the items; a member may add up to five of their own.
+  - A member's first tick of the day emits `DAILY_ACTIVE`, so the existing "Show Up" mission decides its worth. No new reward numbers were invented.
+  - Meeting every item advances the streak.
+  - "Study" ticks itself from a completed lesson and cannot be ticked by hand.
+  - Days are the member's local days.
+  - *Behaviour change:* a member's first lesson of the day now also counts as showing up.
+- **The community:**
+  - Channels are house-wide (Announcements, General, Wins) plus Discussion and Questions per program. Program channels are readable only by members enrolled in that program.
+  - A question asked from a lesson carries that lesson. Wins carry a proof link.
+  - Moderation tools: slow mode, reports, staff removal, mutes, and staff pins.
+  - There are no direct messages, and no reactions.
+  - New messages arrive by polling a members-only JSON feed every 4s while the tab is visible, so no socket server has to be run.
+- **Rank stays unfarmable:** nothing posted in chat raises rank. `COMMUNITY_CONTRIBUTION` (the contributor achievement) counts only staff-pinned messages that are still standing.
+- **Installable app:**
+  - A manifest that opens on `/today`, with icons, an offline page and an install button (the iOS steps are shown).
+  - The service worker never caches pages or API responses; it caches only hashed build assets and icons.
+  - Push notifications are not built (OQ-K).
 
 ### Open — decisions only the owner can make (surfaced by the takeover, not invented)
 - **OQ-A · The progression ladder.** The directive sketches START → DISCIPLINE → KNOWLEDGE → EXECUTION → BUILDING → LEADERSHIP → TYCOON (seven stages). The live system has five seeded ranks, *Tycoon Initiate → Apprentice → Mastermind → Elite → Legend*, wired to level thresholds and Discord roles. I kept the five and drew them as the Ascent and the Monument's tiers. Renaming or re-cutting ranks is a data migration plus a Discord role change — your call.
@@ -192,8 +242,14 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **OQ-D · Draft programs on the public Academy.** `/programs` lists DRAFT courses with an "In production" tag (pre-existing behaviour, kept). Hide them until published?
 - **OQ-E · Hero line.** "Build yourself. / The rest compounds." — chosen by me from §55 of the directive (wealth as the compounding outcome of capability). Overrule freely; it is one string.
 - **OQ-F · Photography.** Every visual in the product is drawn in code (3D, SVG, CSS). There is no photography because none exists that is ours. If you commission a shoot, the grade to match is: near-black ground, one warm key light, no faces required.
-- **OQ-G · Named, live presence.** Should members see *who* is in a room right now (names, avatars), not just counts? It needs realtime infrastructure (the stack has none), a per-member visibility setting, and a moderation posture. DR-22 ships counts until you decide.
-- **OQ-H · Where members land.** Sign-in now lands in the HQ (DR-21). If you would rather members land on the 2D Command Center and *choose* to enter the world, it is a one-line change in `app/(auth)/actions.ts`.
+- **OQ-G · Named, live presence.** *(DR-24: the world is gone; the question now only concerns showing who is online in Community.)* Should members see *who* is in a room right now (names, avatars), not just counts? It needs realtime infrastructure (the stack has none), a per-member visibility setting, and a moderation posture. DR-22 ships counts until you decide.
+- **OQ-H · Where members land.** ~~Sign-in lands in the HQ (DR-21).~~ Superseded by DR-24: sign-in lands on Today.
+
+- **OQ-I · The house standard and house rules.** The five standard items (Train 30 min, Study one lesson, Deep work 90 min, Read 10 pages, Plan tomorrow) and the five community house rules were written by me as reasonable defaults. Both are yours to change: the standard in Admin → Daily standard, the rules in `components/community/community-frame.tsx`.
+- **OQ-J · Moderators.** Only ADMIN accounts can pin, remove, mute and post announcements. A separate MODERATOR role (staff who cannot touch the economy) does not exist yet.
+- **OQ-K · Push notifications.** The installable app shows notifications inside the app only. Phone push needs VAPID keys and a decision about what is worth interrupting someone for.
+- **OQ-L · Realtime.** Chat polls every 4 seconds. That is fine into the low thousands of concurrent members; past that, move to a hosted realtime service (e.g. Pusher/Ably) or SSE behind Postgres LISTEN/NOTIFY.
+- **OQ-M · Memberships.** Everything is still free to join and enroll in (OQ-C). The academy now has the shape of a paid product; pricing is your call.
 
 ## How to use this file going forward
 Add a Part B entry (or a new `D##` if it's architectural and adopted) for any decision that changes architecture, product scope, the economy, the design contract, or a security posture. Never edit a preserved entry to change its meaning — supersede it with a dated new entry that references the old ID. When an OPEN item is decided, change its status to ADOPTED/REJECTED with the date and a one-line outcome; leave the reasoning intact.

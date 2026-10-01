@@ -17,7 +17,7 @@ export default function ErrorPage({ reset }: { error: Error & { digest?: string 
       <div className="relative flex gap-3">
         <Button onClick={reset}>Try again</Button>
         <Link href="/" className={buttonStyles({ variant: "secondary" })}>
-          Back to the HQ
+          Back to the start
         </Link>
       </div>
     </main>

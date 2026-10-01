@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "../../../lib/auth";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
@@ -14,6 +16,8 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ProgramsPage() {
+  const user = await getCurrentUser();
+  if (user?.profile?.onboardedAt) redirect("/courses");
   const courses = await prisma.course.findMany({
     orderBy: { sortOrder: "asc" },
     include: { modules: { include: { lessons: { select: { id: true } } } } },

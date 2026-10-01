@@ -1,8 +1,7 @@
 # TYCOONHOOD — PROJECT STATUS
 
-**Last verified:** 29 September 2026, by a full run in a Linux sandbox
-(PostgreSQL 16, Node 22, pnpm 9.15.9), after members moved into the walkable
-HQ (DR-21..23).
+**Last verified:** 1 October 2026, by a full run in a Linux sandbox
+(PostgreSQL 16, Node 22, pnpm 9.15.9), after the academy rebuild (DR-24..26).
 **Not deployed.** Nothing here has served a real member.
 
 Every line below is the recorded output of a command, not a claim.
@@ -15,13 +14,13 @@ Every line below is the recorded output of a command, not a claim.
 |---|---|---|
 | Types | `pnpm typecheck` | clean · 6 projects |
 | Lint | `pnpm lint` | clean |
-| Tests | `pnpm test` | **101 / 101** |
-| Web build | `pnpm build:web` | 49 entries (adds `/world`, `/credits`) |
+| Tests | `pnpm test` | **121 / 121** |
+| Web build | `pnpm build:web` | 56 entries |
 | Miner build | `pnpm build:miner` | 5 pages |
 | Deployment harness | `pnpm --filter @tycoonhood/core exec tsx scripts/verify-platform.ts` | **28 / 28** |
-| Browser end-to-end | `pnpm e2e` | **39 / 39** |
-| Responsive + accessibility | 31 page/audience pairs × 1440·1280·1024·768·390·360, axe WCAG 2.1 AA | 0 overflow · 0 violations |
-| The live 3D world | `/world` on the plaza and inside a room, 1440 and 390 (touch), axe WCAG 2.1 AA | 0 overflow · 0 violations |
+| Browser end-to-end | `pnpm e2e` | **58 / 58** (39 commerce/growth + 19 academy) |
+| Responsive + accessibility | 36 page/audience pairs × 1440·1280·1024·768·390·360, axe WCAG 2.1 AA | 0 overflow · 0 violations |
+| Installable app | Chromium installability check + offline navigation | installable (only "incognito" reported) · offline page served |
 
 The browser run is the one worth reading. It opens a real Chromium against
 both production builds and, as an admin and then as a member:
@@ -58,18 +57,14 @@ It then deletes what it created and checks that it left nothing behind.
   server rather than the browser.
 - **Admin** — overview, members, economy, content, missions, products, videos,
   challenges, orders.
-- **The HQ you walk through** — sign-in lands members in `/world`: a campus
-  at dusk with six enterable buildings. Each room carries the member's live
-  state and real actions. Quality is tiered per device, and reduced motion,
-  no WebGL2 and software GPUs get the 2D app. Member pages link back into
-  their building. The homepage flies over the same campus. See DR-21..23 and
-  `docs/DESIGN_SYSTEM.md` §5.
-- **The HQ visual system** — dark/gold design system, self-hosted type, one
-  icon family, context-aware navigation with a phone tab bar, the 3D
-  headquarters on the homepage (with a static drawing for every device that
-  should not run it), the Command Center, pillar atmospheres, mission-style
-  challenges, the Network map, identity-card profiles. See
-  `docs/DESIGN_SYSTEM.md` and `docs/AUDIT-2026-09-26.md`.
+- **The academy app** (DR-24..26) — a standard member app: Today with the daily
+  standard and a guided start, Courses with lessons that open in order and
+  quiz-gated completion, an in-app community (program channels, questions tied
+  to lessons, wins with proof, slow mode, reports, mutes, pins), Profile as a
+  serious record, Notifications, Store, Challenges. Admin → Community and
+  Daily standard. Installable on phone and desktop. See `docs/DESIGN_SYSTEM.md`.
+- **The website** — homepage, programs, store, THC, journal, legal; every figure
+  is a query.
 
 ## What does not exist
 

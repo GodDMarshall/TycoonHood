@@ -12,7 +12,7 @@ export default function NotFound() {
       </h1>
       <p className="relative max-w-sm text-[15px] text-ink-2">Whatever you were promised, it wasn&apos;t ledgered here.</p>
       <Link href="/" className={buttonStyles({ variant: "secondary", className: "relative" })}>
-        <Icon name="arrow-left" size={15} /> Back to the HQ
+        <Icon name="arrow-left" size={15} /> Back to the start
       </Link>
     </main>
   );

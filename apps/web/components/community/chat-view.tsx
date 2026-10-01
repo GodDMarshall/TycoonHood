@@ -324,7 +324,8 @@ export function ChatView({ channel, me, blocked, initial, pinned: initialPinned,
           </div>
         )}
 
-        <ol role="log" aria-label={`Messages in ${channel.name}`} className="flex flex-col">
+        <div role="log" aria-label={`Messages in ${channel.name}`}>
+        <ol className="flex flex-col">
           {messages.map((m, i) => {
             const prev = messages[i - 1];
             const newDay = !prev || new Date(prev.createdAt).toDateString() !== new Date(m.createdAt).toDateString();
@@ -475,6 +476,7 @@ export function ChatView({ channel, me, blocked, initial, pinned: initialPinned,
             );
           })}
         </ol>
+        </div>
 
         {newBelow && (
           <button

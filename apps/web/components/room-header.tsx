@@ -36,7 +36,7 @@ export function RoomHeader({
       <div className="animate-rise">
         <p className="mb-5 flex items-center gap-2.5">
           {icon && (
-            <span className="flex size-7 items-center justify-center rounded-sm border border-line-strong text-gold">
+            <span className="flex size-7 items-center justify-center rounded-md border border-line-strong text-gold">
               <Icon name={icon} size={14} />
             </span>
           )}
@@ -62,7 +62,6 @@ export function RoomHeader({
 
   return (
     <header className={cn("relative overflow-hidden border-b border-line", className)}>
-      <div className="grid-plane pointer-events-none absolute inset-0 opacity-70" aria-hidden />
       <div className="relative mx-auto max-w-[88rem] px-[var(--gutter)] pb-16 pt-16 md:pb-20 md:pt-24">{body}</div>
     </header>
   );

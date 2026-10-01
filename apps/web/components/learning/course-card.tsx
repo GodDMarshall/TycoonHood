@@ -47,8 +47,8 @@ export function CourseCard({ c }: { c: CatalogCourse }) {
   const href = `/courses/${c.slug}`;
   const completed = c.enrollment?.status === "COMPLETED" || (c.enrollment && !c.next);
   return (
-    <article className="flex flex-col rounded-lg border border-line bg-bg-1 p-3 transition-colors hover:border-line-strong">
-      <Link href={href} className="block" tabIndex={-1}>
+    <article className="flex min-w-0 flex-col rounded-lg border border-line bg-bg-1 p-3 transition-colors hover:border-line-strong">
+      <Link href={href} className="block" tabIndex={-1} aria-label={c.title}>
         <CourseCover pillar={c.pillar} title={c.title} />
       </Link>
       <div className="flex flex-1 flex-col px-2 pb-2 pt-4">
@@ -83,8 +83,8 @@ export function CourseCard({ c }: { c: CatalogCourse }) {
                 </span>
               </div>
               {c.next ? (
-                <Link href={`${href}/lesson/${c.next.id}`} className={buttonStyles({ className: "w-full" })}>
-                  {c.done === 0 ? "Start" : "Continue"}: <span className="truncate font-normal">{c.next.title}</span>
+                <Link href={`${href}/lesson/${c.next.id}`} className={buttonStyles({ className: "w-full min-w-0 overflow-hidden" })}>
+                  <span className="shrink-0">{c.done === 0 ? "Start" : "Continue"}:</span> <span className="min-w-0 truncate font-normal">{c.next.title}</span>
                 </Link>
               ) : (
                 <Link href={href} className={buttonStyles({ variant: "secondary", className: "w-full" })}>

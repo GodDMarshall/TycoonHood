@@ -6,7 +6,7 @@ import { CoinMark, Icon, ThcAmount, cn } from "@tycoonhood/ui";
 import { RoomHeader } from "../../../components/room-header";
 
 export const metadata: Metadata = {
-  title: "The Treasury — how THC works",
+  title: "THC — how it works",
   description:
     "THC is Tycoonhood's internal utility credit: one quadrillion minted once, every movement double-entry, earned by verified work and spent on things that exist. Not money, not an investment, not redeemable.",
   alternates: { canonical: "/thc" },
@@ -42,7 +42,7 @@ export default async function ThcPage() {
     { key: "rewards", label: "Rewards pool", note: "Pays missions, challenges, achievements.", amount: bal("REWARDS_POOL") },
     { key: "mining", label: "Mining pool", note: "Distributed by the Miner — not minted.", amount: bal("MINING_POOL") },
     { key: "members", label: "Member hands", note: "Earned by verified work.", amount: circulating, tone: "gold" },
-    { key: "revenue", label: "Revenue", note: "THC spent in the Vault lands here.", amount: bal("REVENUE") },
+    { key: "revenue", label: "Revenue", note: "THC spent in the Store lands here.", amount: bal("REVENUE") },
   ];
 
   const earn = [
@@ -54,7 +54,7 @@ export default async function ThcPage() {
     <main>
       <RoomHeader
         icon="treasury"
-        room="The Treasury"
+        room="THC"
         title="One quadrillion."
         accent="Minted once."
         lead="THC is the internal credit of Tycoonhood: earned through verified work, spent on programs, tools and goods inside the house. It is not a cryptocurrency, not an investment and not redeemable for money — and the whole system is built so you never have to take our word for any of it."
@@ -134,13 +134,13 @@ export default async function ThcPage() {
             <div>
               <h2 className="display text-[21px]">What THC unlocks</h2>
               <p className="mt-3 text-[14.5px] leading-relaxed text-ink-2">
-                Program access, digital tools and gear in the Vault. Gear is priced in months of steady work — the
+                Program access, digital tools and gear in the Store. Gear is priced in months of steady work — the
                 house rule is two to three months per item — so a price means something before you pay it.
               </p>
             </div>
             <Link href="/marketplace" className="mt-auto flex items-center justify-between rounded-md border border-line-strong p-4 transition-colors hover:border-gold-deep">
               <span className="flex items-center gap-3 text-[14px]">
-                <Icon name="vault" size={18} className="text-gold" /> Open the Vault
+                <Icon name="store" size={18} className="text-gold" /> Open the Store
               </span>
               <Icon name="arrow-right" size={16} className="text-ink-3" />
             </Link>

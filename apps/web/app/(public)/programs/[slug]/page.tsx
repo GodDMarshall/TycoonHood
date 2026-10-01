@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
 import { Badge, Icon, PillarBadge, buttonStyles } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../../../lib/auth";
@@ -34,6 +34,8 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   if (!course) notFound();
   const user = await getCurrentUser();
   const member = !!user?.profile?.onboardedAt;
+  // Members study inside the app; the public page is the brochure.
+  if (member) redirect(`/courses/${slug}`);
   const lessons = course.modules.flatMap((m) => m.lessons);
   const lessonXp = lessons.reduce((n, l) => n + l.xpReward, 0);
 
@@ -71,8 +73,8 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
           {course.subtitle && <p className="accent mt-3 text-[clamp(1.4rem,1.1rem+1vw,2rem)]">{course.subtitle}</p>}
           <p className="mt-6 max-w-[60ch] text-lead text-ink-2">{course.description}</p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link href={member ? `/academy/${course.slug}` : "/register"} className={buttonStyles({ size: "lg" })}>
-              {member ? "Open in your Academy" : "Enter to enroll — free"}
+            <Link href={member ? `/courses/${course.slug}` : "/register"} className={buttonStyles({ size: "lg" })}>
+              {member ? "Open in the app" : "Join free to enroll"}
               <Icon name="arrow-right" size={16} />
             </Link>
             <a href="#curriculum" className={buttonStyles({ variant: "secondary", size: "lg" })}>
@@ -144,8 +146,8 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
                 </div>
               ))}
             </dl>
-            <Link href={member ? `/academy/${course.slug}` : "/register"} className={buttonStyles({ className: "mt-5 w-full" })}>
-              {member ? "Go to the program" : "Enter Tycoonhood"}
+            <Link href={member ? `/courses/${course.slug}` : "/register"} className={buttonStyles({ className: "mt-5 w-full" })}>
+              {member ? "Go to the program" : "Join free"}
             </Link>
             <p className="mt-4 text-[12px] leading-relaxed text-ink-3">
               Progress, quizzes and certificates are tracked in your Academy. Education, not advice.
