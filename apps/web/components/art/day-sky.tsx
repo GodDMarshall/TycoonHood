@@ -61,11 +61,12 @@ const SKY: Record<
 };
 
 const SUN_POS: Record<SkyPhase, [number, number]> = {
-  // Kept clear of the left (text) and the far right (Today's stat card).
-  night: [700, 60],
-  dawn: [640, 196],
-  day: [720, 64],
-  dusk: [760, 186],
+  // Between the greeting (left) and Today's stat card (right) on desktop, and
+  // outside the centre crop a phone shows — so it never sits behind text.
+  night: [860, 60],
+  dawn: [830, 140],
+  day: [860, 64],
+  dusk: [870, 146],
 };
 
 export function DaySky({ phase, className }: { phase: SkyPhase; className?: string }) {
