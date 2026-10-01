@@ -16,13 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: slug.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) };
 }
 
-export default async function CoursePage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ completed?: string }>;
-}) {
+export default async function CoursePage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ completed?: string }> }) {
   const user = await requireUser();
   const { slug } = await params;
   const { completed } = await searchParams;
@@ -65,7 +59,7 @@ export default async function CoursePage({
         </div>
 
         <Panel className="p-4 lg:sticky lg:top-6">
-          <CourseCover pillar={course.pillar} title={course.title} />
+          <CourseCover pillar={course.pillar} coverImage={course.coverImage} />
           <div className="px-1 pt-4">
             <p className="text-[13px] text-ink-3">
               {d.modules.length} modules · {d.total} lessons{d.minutes ? ` · about ${duration(d.minutes)}` : ""}
@@ -105,7 +99,11 @@ export default async function CoursePage({
               <p className="mb-2 text-[13px] font-medium text-ink-2">Program community</p>
               <div className="flex flex-col gap-1">
                 {d.channels.map((ch) => (
-                  <Link key={ch.slug} href={`/community/${ch.slug}`} className="flex h-9 items-center gap-2.5 rounded-md px-2 text-[14px] text-ink-2 hover:bg-bg-2 hover:text-ink-1">
+                  <Link
+                    key={ch.slug}
+                    href={`/community/${ch.slug}`}
+                    className="flex h-9 items-center gap-2.5 rounded-md px-2 text-[14px] text-ink-2 hover:bg-bg-2 hover:text-ink-1"
+                  >
                     <Icon name={ch.kind === "QUESTIONS" ? "help" : "hash"} size={16} className="text-ink-3" />
                     {ch.name}
                   </Link>
@@ -144,7 +142,7 @@ export default async function CoursePage({
                             "flex size-8 shrink-0 items-center justify-center rounded-full border",
                             state === "done" && "border-success/40 bg-success/10 text-success",
                             state === "open" && enrollment && "border-gold-deep bg-gold/10 text-gold",
-                            (state === "locked" || !enrollment) && state !== "done" && "border-line-strong text-ink-3"
+                            (state === "locked" || !enrollment) && state !== "done" && "border-line-strong text-ink-3",
                           )}
                           aria-hidden
                         >

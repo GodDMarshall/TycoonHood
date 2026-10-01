@@ -5,7 +5,8 @@ import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
 import { Badge, Icon, PillarBadge } from "@tycoonhood/ui";
 import { RoomHeader } from "../../../components/room-header";
-import { PILLAR_WORLD, PillarArt } from "../../../components/pillar-art";
+import { PILLAR_WORLD } from "../../../components/pillar-art";
+import { CoverFill } from "../../../components/art/program-art";
 
 export const metadata: Metadata = {
   title: "The Academy — four programs",
@@ -60,7 +61,11 @@ export default async function ProgramsPage() {
               className="group flex flex-col overflow-hidden rounded-lg border border-line bg-bg-1 transition-colors duration-[var(--dur-3)] hover:border-gold-deep"
             >
               <div className="relative aspect-[2/1] overflow-hidden border-b border-line">
-                <PillarArt pillar={c.pillar} className="transition-transform duration-[1200ms] ease-[var(--ease-premium)] group-hover:scale-[1.03]" />
+                <CoverFill
+                  pillar={c.pillar}
+                  coverImage={c.coverImage}
+                  className="transition-transform duration-[1200ms] ease-[var(--ease-premium)] group-hover:scale-[1.03]"
+                />
                 <span className="absolute left-5 top-5 flex gap-2">
                   <PillarBadge pillar={c.pillar} />
                   {c.status !== "PUBLISHED" && <Badge>In production</Badge>}
@@ -78,7 +83,11 @@ export default async function ProgramsPage() {
                     {lessonCount} lesson{lessonCount === 1 ? "" : "s"}
                   </span>
                   <span className="text-gold">+{c.xpOnCompletion} XP</span>
-                  <Icon name="arrow-right" size={15} className="ml-auto text-ink-3 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-gold" />
+                  <Icon
+                    name="arrow-right"
+                    size={15}
+                    className="ml-auto text-ink-3 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-gold"
+                  />
                 </p>
               </div>
             </Link>

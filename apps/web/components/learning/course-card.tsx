@@ -7,13 +7,8 @@ import { Badge, Icon, PILLAR_LABEL, Progress, buttonStyles, cn } from "@tycoonho
 import type { CatalogCourse } from "../../lib/learning";
 import { enrollAction } from "../../app/(app)/courses/actions";
 import { SubmitButton } from "../submit-button";
+import { CoverFill } from "../art/program-art";
 
-const PILLAR_TINT: Record<CatalogCourse["pillar"], string> = {
-  WARRIOR: "from-warrior/25",
-  BUILDER: "from-builder/25",
-  TYCOON: "from-gold/25",
-  MIND: "from-mind/25",
-};
 const PILLAR_TEXT: Record<CatalogCourse["pillar"], string> = {
   WARRIOR: "text-warrior",
   BUILDER: "text-builder",
@@ -28,16 +23,33 @@ export function duration(minutes: number) {
   return m ? `${h} h ${m} min` : `${h} h`;
 }
 
-export function CourseCover({ pillar, title, compact, className }: { pillar: CatalogCourse["pillar"]; title: string; compact?: boolean; className?: string }) {
+/**
+ * The program's picture: its cover photo when an admin has set one, otherwise
+ * the pillar's drawn scene. Decorative — the title next to it is the label.
+ */
+export function CourseCover({
+  pillar,
+  coverImage,
+  compact,
+  className,
+}: {
+  pillar: CatalogCourse["pillar"];
+  coverImage?: string | null;
+  compact?: boolean;
+  className?: string;
+}) {
   return (
-    <div
-      className={cn("relative flex aspect-[16/7] overflow-hidden rounded-md bg-gradient-to-br to-bg-2", compact ? "items-center justify-center" : "items-end p-4", PILLAR_TINT[pillar], className)}
-      aria-hidden
-    >
-      {compact ? (
-        <span className={cn("text-[20px] font-semibold", PILLAR_TEXT[pillar])}>{title.charAt(0)}</span>
-      ) : (
-        <span className={cn("text-[12px] font-semibold uppercase tracking-[0.08em]", PILLAR_TEXT[pillar])}>{PILLAR_LABEL[pillar]}</span>
+    <div className={cn("relative aspect-[16/7] overflow-hidden rounded-md bg-bg-2", className)} aria-hidden>
+      <CoverFill pillar={pillar} coverImage={coverImage} />
+      {!compact && (
+        <span
+          className={cn(
+            "absolute bottom-3 left-3 rounded-sm bg-bg-0/80 px-2 py-1 text-[11.5px] font-semibold uppercase tracking-[0.08em] backdrop-blur-sm",
+            PILLAR_TEXT[pillar],
+          )}
+        >
+          {PILLAR_LABEL[pillar]}
+        </span>
       )}
     </div>
   );
@@ -49,7 +61,7 @@ export function CourseCard({ c }: { c: CatalogCourse }) {
   return (
     <article className="flex min-w-0 flex-col rounded-lg border border-line bg-bg-1 p-3 transition-colors hover:border-line-strong">
       <Link href={href} className="block" tabIndex={-1} aria-label={c.title}>
-        <CourseCover pillar={c.pillar} title={c.title} />
+        <CourseCover pillar={c.pillar} coverImage={c.coverImage} />
       </Link>
       <div className="flex flex-1 flex-col px-2 pb-2 pt-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -70,7 +82,8 @@ export function CourseCard({ c }: { c: CatalogCourse }) {
         </h3>
         {c.subtitle && <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{c.subtitle}</p>}
         <p className="mt-3 text-[13px] text-ink-3">
-          {c.modules} modules · {c.lessons} lessons{c.minutes ? ` · about ${duration(c.minutes)}` : ""}
+          {c.modules} modules · {c.lessons} lessons
+          {c.minutes ? ` · about ${duration(c.minutes)}` : ""}
         </p>
 
         <div className="mt-auto pt-5">
@@ -83,11 +96,22 @@ export function CourseCard({ c }: { c: CatalogCourse }) {
                 </span>
               </div>
               {c.next ? (
-                <Link href={`${href}/lesson/${c.next.id}`} className={buttonStyles({ className: "w-full min-w-0 overflow-hidden" })}>
+                <Link
+                  href={`${href}/lesson/${c.next.id}`}
+                  className={buttonStyles({
+                    className: "w-full min-w-0 overflow-hidden",
+                  })}
+                >
                   <span className="shrink-0">{c.done === 0 ? "Start" : "Continue"}:</span> <span className="min-w-0 truncate font-normal">{c.next.title}</span>
                 </Link>
               ) : (
-                <Link href={href} className={buttonStyles({ variant: "secondary", className: "w-full" })}>
+                <Link
+                  href={href}
+                  className={buttonStyles({
+                    variant: "secondary",
+                    className: "w-full",
+                  })}
+                >
                   Review the program
                 </Link>
               )}

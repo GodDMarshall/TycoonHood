@@ -25,6 +25,8 @@ const ok = (label, cond, detail = "") => {
   console.log(`${cond ? "  PASS" : "  FAIL"}  ${label}${detail ? ` — ${detail}` : ""}`);
   if (!cond) fails++;
 };
+/** The path of an absolute URL, without query or hash. */
+const pathOf = (u) => u.replace(/^[a-z]+:\/\/[^/]+/i, "").split(/[?#]/)[0] || "/";
 const section = (t) => console.log(`\n══ ${t} ══`);
 
 const ADMIN_EMAIL = "e2e-admin@tycoonhood.test";
@@ -138,12 +140,23 @@ try {
   section("A MEMBER JOINS THROUGH AN INVITE LINK");
   // The code is minted by visiting the Miner's Squad tab, which is exactly how
   // a member gets theirs. That verifies the page and produces the code at once.
+  // The Miner lives in the member app at /mining; the old app only forwards.
   const adminMiner = await adminCtx.newPage();
-  await adminMiner.goto(`${MINER}/squad`);
+  await adminMiner.goto(`${WEB}/mining/squad`);
   await adminMiner.waitForLoadState("networkidle");
   const squadText = await adminMiner.locator("body").innerText();
   ok("squad page explains that signups pay nothing", /finish their first lesson|first lesson/i.test(squadText));
-  ok("miner shows the tab bar when signed in", await adminMiner.locator('nav[aria-label="Miner sections"]').isVisible());
+  ok("miner shows its section nav when signed in", await adminMiner.locator('nav[aria-label="Miner sections"]').isVisible());
+  await adminMiner.goto(`${WEB}/mining`);
+  await adminMiner.waitForLoadState("networkidle");
+  ok("the rig renders inside the member app", pathOf(adminMiner.url()) === "/mining", adminMiner.url());
+  ok("the rig shows its picture and a claim control",
+    (await adminMiner.locator('svg[role="img"][aria-label^="Mining rig"]').count()) > 0 &&
+      (await adminMiner.getByRole("button", { name: /claim/i }).count()) > 0);
+  // The standalone Miner app forwards every old link to its new home.
+  await adminMiner.goto(`${MINER}/`);
+  await adminMiner.waitForLoadState("networkidle");
+  ok("the old miner app forwards to /mining", pathOf(adminMiner.url()) === "/mining", adminMiner.url());
   const code = sql(`select "referralCode" from "Profile" where "userId"=(select id from "User" where email='e2e-admin@tycoonhood.test')`);
   ok("an invite code was minted", !!code && code.length === 7, code || "none");
 

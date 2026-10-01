@@ -31,7 +31,7 @@ const csp = [
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.youtube.com https://s.ytimg.com",
   // Video lessons play from YouTube's privacy-enhanced domain.
   "frame-src https://js.stripe.com https://hooks.stripe.com https://www.youtube-nocookie.com",
   "connect-src 'self' https://api.stripe.com",

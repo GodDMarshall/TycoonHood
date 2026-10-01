@@ -49,8 +49,9 @@ It then deletes what it created and checks that it left nothing behind.
 - **Gamification** — XP, 50 levels, 5 ranks, achievements, streaks, missions,
   challenges, leaderboard. Missions are **data**: a new one starts paying
   without a deploy.
-- **The Miner** — a separate five-tab application. Rig, Watch, Squad, Ranks,
-  Wallet. See `START-HERE-MINER.md`.
+- **The Miner** — a Mining tab inside the member app (DR-27): `/mining` (the
+  animated rig), `/mining/tasks`, `/mining/squad`, `/mining/ranks`. The old
+  standalone app on :3001 only forwards there.
 - **Merch** — sizes with their own stock, atomic stock-taking, shipping
   addresses, tracking, and prices quoted in months of mining.
 - **Growth** — referrals that pay on real work, and watch-to-earn timed by the
@@ -97,8 +98,7 @@ That installs dependencies, starts or connects a database, applies migrations,
 seeds content, and runs the harness. Then:
 
 ```powershell
-pnpm dev            # the site   → http://localhost:3000
-pnpm dev:miner      # the Miner  → http://localhost:3001
+pnpm dev            # the site and the app → http://localhost:3000 (Miner: /mining)
 ```
 
 Seed the merch catalogue (drafts, priced from the live mining rate):

@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Avatar, Icon, Logo, cn, type IconName } from "@tycoonhood/ui";
 import { logoutAction } from "../../app/(auth)/actions";
-import { ACCOUNT_NAV, PRIMARY_NAV, SECONDARY_NAV, TAB_NAV, isActive, type AppNavItem } from "./nav";
+import { ACCOUNT_NAV, PRIMARY_NAV, SECONDARY_NAV, TAB_NAV, TAB_OVERFLOW_NAV, isActive, type AppNavItem } from "./nav";
 import { InstallAppButton } from "./install-app";
 
 export type ShellUser = { name: string; username: string | null; avatarUrl: string | null; rank: string | null; isAdmin: boolean };
@@ -20,7 +20,6 @@ export type ShellData = {
   programs: { slug: string; title: string; pct: number }[];
   unreadCommunity: number;
   unreadNotifications: number;
-  minerUrl: string;
 };
 
 function Count({ n, className }: { n: number; className?: string }) {
@@ -29,7 +28,7 @@ function Count({ n, className }: { n: number; className?: string }) {
     <span
       className={cn(
         "ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-[11px] font-semibold tabular-nums text-bg-0",
-        className
+        className,
       )}
     >
       {n > 99 ? "99+" : n}
@@ -41,7 +40,7 @@ function Count({ n, className }: { n: number; className?: string }) {
 function SideLink({ item, active, count, external }: { item: AppNavItem; active: boolean; count?: number; external?: boolean }) {
   const cls = cn(
     "group flex h-9 items-center gap-3 rounded-md px-3 text-[14px] font-medium transition-colors duration-[var(--dur-1)]",
-    active ? "bg-bg-3 text-ink-1" : "text-ink-2 hover:bg-bg-2 hover:text-ink-1"
+    active ? "bg-bg-3 text-ink-1" : "text-ink-2 hover:bg-bg-2 hover:text-ink-1",
   );
   const inner = (
     <>
@@ -120,9 +119,17 @@ function UserMenu({ user }: { user: ShellUser }) {
         <Icon name="chevron-down" size={14} className={cn("text-ink-3 transition-transform", open && "rotate-180")} />
       </button>
       {open && (
-        <div role="menu" className="absolute bottom-full left-0 right-0 mb-2 rounded-lg border border-line-strong bg-bg-2 p-1.5 shadow-[var(--shadow-3)] animate-fade">
+        <div
+          role="menu"
+          className="absolute bottom-full left-0 right-0 mb-2 rounded-lg border border-line-strong bg-bg-2 p-1.5 shadow-[var(--shadow-3)] animate-fade"
+        >
           {ACCOUNT_NAV.map((i) => (
-            <Link key={i.href} role="menuitem" href={i.href} className="flex h-9 items-center gap-3 rounded-md px-2.5 text-[13.5px] text-ink-2 hover:bg-bg-3 hover:text-ink-1">
+            <Link
+              key={i.href}
+              role="menuitem"
+              href={i.href}
+              className="flex h-9 items-center gap-3 rounded-md px-2.5 text-[13.5px] text-ink-2 hover:bg-bg-3 hover:text-ink-1"
+            >
               <Icon name={i.icon} size={17} className="text-ink-3" />
               {i.label}
             </Link>
@@ -167,7 +174,7 @@ export function Sidebar({ data }: { data: ShellData }) {
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         "flex h-9 items-center gap-3 rounded-md px-3 text-[13.5px] transition-colors",
-                        active ? "bg-bg-3 text-ink-1" : "text-ink-2 hover:bg-bg-2 hover:text-ink-1"
+                        active ? "bg-bg-3 text-ink-1" : "text-ink-2 hover:bg-bg-2 hover:text-ink-1",
                       )}
                     >
                       <span className="truncate">{p.title}</span>
@@ -187,9 +194,6 @@ export function Sidebar({ data }: { data: ShellData }) {
               <SideLink item={item} active={isActive(pathname, item)} />
             </li>
           ))}
-          <li>
-            <SideLink item={{ href: data.minerUrl, label: "Mining", icon: "miner" }} active={false} external />
-          </li>
           {data.user.isAdmin && (
             <li>
               <SideLink item={{ href: "/admin", label: "Admin", icon: "shield" }} active={isActive(pathname, { href: "/admin" })} />
@@ -266,7 +270,7 @@ export function MobileTabBar({ data }: { data: ShellData }) {
     if (!more && d.open) d.close();
   }, [more]);
   useEffect(() => setMore(false), [pathname]);
-  const moreActive = [...SECONDARY_NAV, ...ACCOUNT_NAV, { href: "/admin" }, { href: "/notifications" }].some((i) => isActive(pathname, i));
+  const moreActive = [...TAB_OVERFLOW_NAV, ...SECONDARY_NAV, ...ACCOUNT_NAV, { href: "/admin" }, { href: "/notifications" }].some((i) => isActive(pathname, i));
 
   return (
     <>
@@ -283,7 +287,10 @@ export function MobileTabBar({ data }: { data: ShellData }) {
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={cn("relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium", active ? "text-gold" : "text-ink-3 hover:text-ink-1")}
+                  className={cn(
+                    "relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium",
+                    active ? "text-gold" : "text-ink-3 hover:text-ink-1",
+                  )}
                 >
                   <Icon name={item.icon} size={22} />
                   {item.label}
@@ -303,7 +310,10 @@ export function MobileTabBar({ data }: { data: ShellData }) {
               onClick={() => setMore(true)}
               aria-haspopup="dialog"
               aria-expanded={more}
-              className={cn("flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] font-medium", moreActive ? "text-gold" : "text-ink-3 hover:text-ink-1")}
+              className={cn(
+                "flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] font-medium",
+                moreActive ? "text-gold" : "text-ink-3 hover:text-ink-1",
+              )}
             >
               <Icon name="menu" size={22} />
               More
@@ -327,11 +337,19 @@ export function MobileTabBar({ data }: { data: ShellData }) {
               <p className="truncate text-[15px] font-medium">{data.user.name}</p>
               <p className="truncate text-[13px] text-ink-3">{data.user.rank ?? "Member"}</p>
             </div>
-            <button type="button" onClick={() => setMore(false)} aria-label="Close" className="ml-auto flex size-10 items-center justify-center rounded-md text-ink-3 hover:bg-bg-3 hover:text-ink-1">
+            <button
+              type="button"
+              onClick={() => setMore(false)}
+              aria-label="Close"
+              className="ml-auto flex size-10 items-center justify-center rounded-md text-ink-3 hover:bg-bg-3 hover:text-ink-1"
+            >
               <Icon name="x" size={20} />
             </button>
           </div>
           <div className="grid grid-cols-1 gap-0.5 border-t border-line pt-2 min-[420px]:grid-cols-2">
+            {TAB_OVERFLOW_NAV.map((i) => (
+              <SheetLink key={i.href} href={i.href} icon={i.icon} label={i.label} onNavigate={() => setMore(false)} />
+            ))}
             {ACCOUNT_NAV.map((i) => (
               <SheetLink key={i.href} href={i.href} icon={i.icon} label={i.label} onNavigate={() => setMore(false)} />
             ))}
@@ -339,7 +357,6 @@ export function MobileTabBar({ data }: { data: ShellData }) {
               <SheetLink key={i.href} href={i.href} icon={i.icon} label={i.label} onNavigate={() => setMore(false)} />
             ))}
             <SheetLink href="/notifications" icon="bell" label="Notifications" onNavigate={() => setMore(false)} />
-            <SheetLink href={data.minerUrl} icon="miner" label="Mining" external onNavigate={() => setMore(false)} />
             {data.user.isAdmin && <SheetLink href="/admin" icon="shield" label="Admin" onNavigate={() => setMore(false)} />}
           </div>
           <div className="mt-2 flex flex-col gap-0.5 border-t border-line pt-2">

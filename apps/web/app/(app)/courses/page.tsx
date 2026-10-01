@@ -18,10 +18,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
 
   return (
     <Page>
-      <PageHeader
-        title="Courses"
-        description="Each program is a sequence. Lessons open in order, so you always know the one next step."
-      />
+      <PageHeader title="Courses" description="Each program is a sequence. Lessons open in order, so you always know the one next step." />
 
       <form role="search" action="/courses" className="mb-10 flex max-w-xl gap-2">
         <div className="relative flex-1">
@@ -95,7 +92,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
                     href={`/courses/${c.slug}/lesson/${c.next!.id}`}
                     className="group flex min-w-0 items-center gap-4 rounded-lg border border-line bg-bg-1 p-3 transition-colors hover:border-gold-deep"
                   >
-                    <CourseCover pillar={c.pillar} title={c.title} compact className="aspect-square w-16 shrink-0" />
+                    <CourseCover pillar={c.pillar} coverImage={c.coverImage} compact className="aspect-square w-16 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] text-ink-3">
                         {c.title} · {c.done}/{c.lessons} done

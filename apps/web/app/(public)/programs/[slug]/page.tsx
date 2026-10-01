@@ -4,7 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
 import { Badge, Icon, PillarBadge, buttonStyles } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../../../lib/auth";
-import { PILLAR_WORLD, PillarArt } from "../../../../components/pillar-art";
+import { PILLAR_WORLD } from "../../../../components/pillar-art";
+import { CoverFill } from "../../../../components/art/program-art";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +54,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <header className="relative overflow-hidden border-b border-line">
         <div className="absolute inset-0 opacity-70" aria-hidden>
-          <PillarArt pillar={course.pillar} />
+          <CoverFill pillar={course.pillar} coverImage={course.coverImage} />
         </div>
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(90deg,var(--color-bg-0)_25%,rgb(10_9_8/0.7)_60%,rgb(10_9_8/0.2))]" />
         <div aria-hidden className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-bg-0 to-transparent" />
@@ -84,7 +85,10 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
           {course.prerequisite && (
             <p className="mt-6 text-[13px] text-ink-3">
               Recommended first:{" "}
-              <Link href={`/programs/${course.prerequisite.slug}`} className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
+              <Link
+                href={`/programs/${course.prerequisite.slug}`}
+                className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold"
+              >
                 {course.prerequisite.title}
               </Link>
             </p>

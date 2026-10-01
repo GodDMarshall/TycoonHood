@@ -57,6 +57,7 @@ export async function catalog(userId: string) {
       subtitle: c.subtitle,
       description: c.description,
       pillar: c.pillar,
+      coverImage: c.coverImage,
       instructorName: c.instructorName,
       modules: c.modules.length,
       lessons: lessons.length,

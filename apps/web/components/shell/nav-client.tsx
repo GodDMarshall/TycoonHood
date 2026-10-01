@@ -27,7 +27,7 @@ export function DesktopNav({ items }: { items: NavItem[] }) {
             className={cn(
               "group relative flex items-center px-3.5 text-[13.5px] font-medium tracking-[-0.005em]",
               "transition-colors duration-[var(--dur-2)]",
-              active ? "text-ink-1" : "text-ink-2 hover:text-ink-1"
+              active ? "text-ink-1" : "text-ink-2 hover:text-ink-1",
             )}
           >
             {item.label}
@@ -35,7 +35,7 @@ export function DesktopNav({ items }: { items: NavItem[] }) {
               aria-hidden
               className={cn(
                 "absolute inset-x-3.5 -bottom-px h-px origin-left bg-gold transition-transform duration-[var(--dur-3)] ease-[var(--ease-premium)]",
-                active ? "scale-x-100" : "scale-x-0 opacity-60 group-hover:scale-x-100"
+                active ? "scale-x-100" : "scale-x-0 opacity-60 group-hover:scale-x-100",
               )}
             />
           </Link>
@@ -57,13 +57,7 @@ type SheetProps = {
  * bar's "More". Portalled to <body> so the header's stacking context can
  * never clip it. Escape closes; focus moves in on open and back on close.
  */
-export function MobileNav({
-  items,
-  secondary,
-  tabs,
-  footer,
-  heading,
-}: SheetProps & { tabs?: NavItem[] }) {
+export function MobileNav({ items, secondary, tabs, footer, heading }: SheetProps & { tabs?: NavItem[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -100,7 +94,7 @@ export function MobileNav({
       className={cn(
         "fixed inset-0 z-[60] flex flex-col bg-bg-0 lg:hidden",
         "transition-[opacity,visibility] duration-[var(--dur-3)] ease-[var(--ease-premium)]",
-        open ? "visible opacity-100" : "invisible opacity-0"
+        open ? "visible opacity-100" : "invisible opacity-0",
       )}
     >
       <div className="grid-plane pointer-events-none absolute inset-0 opacity-60" aria-hidden />
@@ -127,27 +121,21 @@ export function MobileNav({
                 key={item.href}
                 className={cn(
                   "border-b border-line transition-[opacity,transform] duration-[var(--dur-4)] ease-[var(--ease-premium)]",
-                  open ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                  open ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
                 )}
                 style={{ transitionDelay: open ? `${60 + i * 40}ms` : "0ms" }}
               >
-                <Link
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className="group flex items-center gap-4 py-4"
-                >
+                <Link href={item.href} aria-current={active ? "page" : undefined} className="group flex items-center gap-4 py-4">
                   <span
                     className={cn(
                       "flex size-10 items-center justify-center rounded-md border",
-                      active ? "border-gold-deep text-gold" : "border-line-strong text-ink-2"
+                      active ? "border-gold-deep text-gold" : "border-line-strong text-ink-2",
                     )}
                   >
                     <Icon name={item.icon} size={18} />
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col">
-                    <span className={cn("display text-[24px] leading-tight", active && "text-gold-bright")}>
-                      {item.label}
-                    </span>
+                    <span className={cn("display text-[24px] leading-tight", active && "text-gold-bright")}>{item.label}</span>
                     <span className="text-[13px] text-ink-3">{item.note}</span>
                   </span>
                   <Icon name="arrow-right" size={16} className="text-ink-3 group-hover:text-gold" />
@@ -172,9 +160,7 @@ export function MobileNav({
           </ul>
         )}
       </nav>
-      <div className="relative border-t border-line px-[var(--gutter)] py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        {footer}
-      </div>
+      <div className="relative border-t border-line px-[var(--gutter)] py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">{footer}</div>
     </div>
   );
 
@@ -200,10 +186,7 @@ export function MobileNav({
 function TabBar({ tabs, onMore, moreOpen }: { tabs: NavItem[]; onMore: () => void; moreOpen: boolean }) {
   const pathname = usePathname();
   return (
-    <nav
-      aria-label="Quick"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line-strong bg-bg-1/95 pb-[env(safe-area-inset-bottom)] lg:hidden"
-    >
+    <nav aria-label="Quick" className="fixed inset-x-0 bottom-0 z-40 border-t border-line-strong bg-bg-1/95 pb-[env(safe-area-inset-bottom)] lg:hidden">
       <ul className="grid grid-cols-5">
         {tabs.map((t) => {
           const active = isActive(pathname, t);
@@ -214,15 +197,12 @@ function TabBar({ tabs, onMore, moreOpen }: { tabs: NavItem[]; onMore: () => voi
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative flex h-16 flex-col items-center justify-center gap-1 text-[10.5px] font-medium tracking-[0.02em]",
-                  active ? "text-gold-bright" : "text-ink-3"
+                  active ? "text-gold-bright" : "text-ink-3",
                 )}
               >
                 <span
                   aria-hidden
-                  className={cn(
-                    "absolute inset-x-5 top-0 h-px bg-gold transition-transform duration-[var(--dur-3)]",
-                    active ? "scale-x-100" : "scale-x-0"
-                  )}
+                  className={cn("absolute inset-x-5 top-0 h-px bg-gold transition-transform duration-[var(--dur-3)]", active ? "scale-x-100" : "scale-x-0")}
                 />
                 <Icon name={t.icon} size={20} />
                 {t.label}
@@ -253,14 +233,12 @@ export function AccountMenu({
   username,
   rankSlug,
   isAdmin,
-  minerUrl,
   links,
 }: {
   name: string;
   username: string | null;
   rankSlug: string | null;
   isAdmin: boolean;
-  minerUrl: string;
   links: NavItem[];
 }) {
   const [open, setOpen] = useState(false);
@@ -283,8 +261,7 @@ export function AccountMenu({
     };
   }, [open]);
 
-  const row =
-    "flex items-center gap-3 rounded-sm px-3 py-2.5 text-[13.5px] text-ink-2 transition-colors hover:bg-bg-3 hover:text-ink-1";
+  const row = "flex items-center gap-3 rounded-sm px-3 py-2.5 text-[13.5px] text-ink-2 transition-colors hover:bg-bg-3 hover:text-ink-1";
 
   return (
     <div ref={root} className="relative">
@@ -304,7 +281,7 @@ export function AccountMenu({
         className={cn(
           "absolute right-0 top-[calc(100%+10px)] w-64 origin-top-right rounded-lg border border-line-strong bg-bg-1 p-1.5 shadow-[var(--shadow-3)]",
           "transition-[opacity,transform,visibility] duration-[var(--dur-2)] ease-[var(--ease-premium)]",
-          open ? "visible scale-100 opacity-100" : "invisible scale-[0.98] opacity-0"
+          open ? "visible scale-100 opacity-100" : "invisible scale-[0.98] opacity-0",
         )}
       >
         <div className="flex items-center gap-3 border-b border-line px-3 pb-3 pt-2">
@@ -325,10 +302,9 @@ export function AccountMenu({
               <Icon name={l.icon} size={16} /> {l.label}
             </Link>
           ))}
-          <a href={minerUrl} className={row}>
-            <Icon name="miner" size={16} /> The Miner
-            <Icon name="arrow-up-right" size={13} className="ml-auto text-ink-3" />
-          </a>
+          <Link href="/mining" className={row}>
+            <Icon name="miner" size={16} /> Mining
+          </Link>
           {isAdmin && (
             <Link href="/admin" className={cn(row, "text-gold hover:text-gold-bright")}>
               <Icon name="shield" size={16} /> The House

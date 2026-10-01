@@ -8,8 +8,6 @@ import { prisma } from "@tycoonhood/db";
 import { community } from "@tycoonhood/core";
 import { MobileTabBar, MobileTopBar, Sidebar, type ShellData } from "./app-chrome";
 
-const MINER_URL = process.env.NEXT_PUBLIC_MINER_URL ?? "http://localhost:3001";
-
 type ShellUserRow = {
   id: string;
   role: "MEMBER" | "ADMIN";
@@ -41,7 +39,6 @@ export async function AppShell({ user, children }: { user: ShellUserRow; childre
     programs: enrollments.map((e) => ({ slug: e.course.slug, title: e.course.title, pct: e.progressPct })),
     unreadCommunity,
     unreadNotifications,
-    minerUrl: MINER_URL,
   };
 
   return (

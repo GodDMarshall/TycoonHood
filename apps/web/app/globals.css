@@ -24,11 +24,30 @@
 .md-content th, .md-content td { border-bottom: 1px solid var(--color-line); padding: 0.6em 0.5em; text-align: left; }
 .md-content th { font-size: 12.5px; color: var(--color-ink-3); font-weight: 600; }
 
-/* ── Mind: the rings breathe (6s in, 6s out) ── */
-.th-breathe {
-  animation: th-breathe 12s var(--ease-settle) infinite;
+/* ── The Rig (Mining) — motion on top of real numbers. Under reduced motion
+   the global rule stops these at their first/last frame: the picture stays,
+   the movement goes. ── */
+.rig-spin { transform-box: fill-box; transform-origin: center; animation: rig-spin var(--rig-speed, 1.6s) linear infinite; }
+@keyframes rig-spin { to { transform: rotate(360deg); } }
+.rig-blink { animation: rig-blink 1.4s ease-in-out infinite; }
+@keyframes rig-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.rig-pulse { animation: rig-pulse 2.2s ease-in-out infinite; }
+@keyframes rig-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+.rig-flow { animation: rig-flow 0.9s linear infinite; }
+@keyframes rig-flow { to { stroke-dashoffset: -16; } }
+.rig-full { animation: rig-full 1.6s ease-in-out infinite; }
+@keyframes rig-full { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.35; } }
+.rig-wave { animation: rig-wave 2.4s linear infinite; }
+@keyframes rig-wave { to { transform: translateX(60px); } }
+.rig-coin { opacity: 0; animation: rig-coin 3.6s ease-out infinite; }
+@keyframes rig-coin {
+  0% { opacity: 0; transform: translate(0, 10px); }
+  15% { opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(var(--rig-x, 0px), -70px); }
 }
-@keyframes th-breathe {
-  0%, 100% { transform: scale(0.94); opacity: 0.8; }
-  50% { transform: scale(1.04); opacity: 1; }
+.rig-burst { opacity: 0; animation: rig-burst 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) 1 forwards; }
+@keyframes rig-burst {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--bx), var(--by)) scale(0.4); }
 }

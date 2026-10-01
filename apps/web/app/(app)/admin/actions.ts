@@ -15,7 +15,10 @@ async function requireAdmin() {
   return user;
 }
 
-export interface AdminActionState { message?: string; error?: string }
+export interface AdminActionState {
+  message?: string;
+  error?: string;
+}
 
 export async function grantThcAction(userId: string, _p: AdminActionState, fd: FormData): Promise<AdminActionState> {
   const admin = await requireAdmin();
@@ -71,10 +74,30 @@ export async function toggleCoursePublishAction(courseId: string) {
   revalidatePath("/programs");
 }
 
+/**
+ * A program's cover photo. Empty clears it (the drawn pillar scene shows
+ * instead). Only https URLs or paths under /public are accepted.
+ */
+export async function setCourseCoverAction(courseId: string, _p: { ok?: string; error?: string }, fd: FormData): Promise<{ ok?: string; error?: string }> {
+  await requireAdmin();
+  const raw = String(fd.get("coverImage") ?? "").trim();
+  if (raw && !/^https:\/\/[^\s]+$/i.test(raw) && !/^\/[^\s/][^\s]*$/.test(raw)) {
+    return { error: "Use an https:// address or a path starting with / (a file in apps/web/public)." };
+  }
+  if (raw.length > 1000) return { error: "That address is too long." };
+  await prisma.course.update({ where: { id: courseId }, data: { coverImage: raw || null } });
+  for (const path of ["/admin/content", "/courses", "/programs", "/today", "/"]) revalidatePath(path);
+  return { ok: raw ? "Cover saved." : "Cover cleared — the drawn scene shows." };
+}
+
 export async function savePostAction(postId: string | null, _p: AdminActionState, fd: FormData): Promise<AdminActionState> {
   const admin = await requireAdmin();
   const title = String(fd.get("title") ?? "").trim();
-  const slug = String(fd.get("slug") ?? "").trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+  const slug = String(fd.get("slug") ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
   const excerpt = String(fd.get("excerpt") ?? "").trim();
   const contentMd = String(fd.get("contentMd") ?? "");
   const publish = fd.get("publish") === "on";
@@ -82,7 +105,12 @@ export async function savePostAction(postId: string | null, _p: AdminActionState
   const data = {
     title,
     slug,
-    excerpt: excerpt || contentMd.replace(/[#*_>`]/g, "").slice(0, 140).trim(),
+    excerpt:
+      excerpt ||
+      contentMd
+        .replace(/[#*_>`]/g, "")
+        .slice(0, 140)
+        .trim(),
     contentMd,
     publishedAt: publish ? new Date() : null,
     authorName: admin.profile?.displayName ?? admin.name ?? "Tycoonhood",
@@ -91,7 +119,7 @@ export async function savePostAction(postId: string | null, _p: AdminActionState
     const existing = await prisma.post.findUniqueOrThrow({ where: { id: postId } });
     await prisma.post.update({
       where: { id: postId },
-      data: { ...data, publishedAt: publish ? existing.publishedAt ?? new Date() : null },
+      data: { ...data, publishedAt: publish ? (existing.publishedAt ?? new Date()) : null },
     });
   } else {
     await prisma.post.create({ data });
@@ -114,7 +142,10 @@ export async function setChallengeLifecycleAction(challengeId: string, lifecycle
   revalidatePath("/challenges");
 }
 
-export interface ShipState { error?: string; message?: string }
+export interface ShipState {
+  error?: string;
+  message?: string;
+}
 
 /**
  * Marks a parcel sent. Tracking is required: "fulfilled" with nothing to
@@ -144,12 +175,7 @@ export async function settlePendingFiatAction(orderId: string) {
   revalidatePath("/admin/orders");
 }
 
-export async function reviewSubmissionAction(
-  participationId: string,
-  submissionId: string,
-  approve: boolean,
-  fd: FormData
-) {
+export async function reviewSubmissionAction(participationId: string, submissionId: string, approve: boolean, fd: FormData) {
   const admin = await requireAdmin();
   const feedback = String(fd.get("feedback") ?? "") || undefined;
   await challenges.reviewSubmission(participationId, submissionId, approve, feedback, admin.id);
