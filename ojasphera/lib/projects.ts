@@ -27,6 +27,8 @@ export type Project = {
   status: "live-demo" | "in-development" | "concept";
   /** Key of an interactive demo registered in components/projects/demos.tsx. */
   demo?: "marshal-tower" | "emerald-haven";
+  /** Key of a 3D model registered in components/three/Scene3D.tsx. */
+  scene?: "tower" | "estate";
   /** What the visitor should see the system doing on the card. */
   signals: string[];
   problem: { title: string; body: string[] };
@@ -51,6 +53,7 @@ export const projects: Project[] = [
     accent: "#f2b45a",
     status: "live-demo",
     demo: "marshal-tower",
+    scene: "tower",
     signals: ["AI agents", "Real-time activity", "Task routing", "Agent communication", "Live system state"],
     problem: {
       title: "AI was stuck in a text box.",
@@ -113,6 +116,7 @@ export const projects: Project[] = [
     accent: "#6fd3a8",
     status: "live-demo",
     demo: "emerald-haven",
+    scene: "estate",
     signals: ["Spatial layout", "Land & plantation data", "Infrastructure", "Equipment", "Interactive map"],
     problem: {
       title: "A physical project is hard to see.",

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Project } from "@/lib/projects";
+import { Scene3D } from "../three/Scene3D";
 import { ProjectVisual } from "./ProjectVisual";
 
 export function ProjectCard({ project, large = false }: { project: Project; large?: boolean }) {
@@ -13,13 +14,17 @@ export function ProjectCard({ project, large = false }: { project: Project; larg
           className="absolute inset-0 opacity-60 transition-opacity duration-700 group-hover:opacity-100"
           style={{ background: `radial-gradient(60% 60% at 50% 50%, ${project.accent}14, transparent 70%)` }}
         />
-        <div className="absolute inset-0 transition-transform duration-[1200ms] ease-[var(--ease-system)] group-hover:scale-[1.04]">
-          <ProjectVisual project={project} />
+        <div className="absolute inset-0 transition-transform duration-[1200ms] ease-[var(--ease-system)] group-hover:scale-[1.03]">
+          {project.scene ? (
+            <Scene3D name={project.scene} mode="card" desktopOnly fallback={<ProjectVisual project={project} />} />
+          ) : (
+            <ProjectVisual project={project} />
+          )}
         </div>
         <span className="mono absolute left-4 top-4 text-[11px] text-ink-3">{project.index}</span>
         <span className="mono absolute right-4 top-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-ink-3">
           <span className="pulse-dot" style={{ color: project.accent }} aria-hidden="true" />
-          Interactive demo
+          {project.scene ? "Live 3D" : "Interactive demo"}
         </span>
       </div>
       <div className="flex flex-1 flex-col p-6 md:p-8">

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArchitectureDiagram } from "@/components/projects/ArchitectureDiagram";
 import { ProjectDemo } from "@/components/projects/demos";
 import { ProjectVisual } from "@/components/projects/ProjectVisual";
+import { Scene3D } from "@/components/three/Scene3D";
 import { Reveal } from "@/components/ui/Reveal";
 import { getProject, projects } from "@/lib/projects";
 import { site } from "@/lib/site";
@@ -71,59 +72,81 @@ export default async function ProjectPage({ params }: Params) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Entry */}
-      <header className="relative isolate overflow-hidden pt-[calc(var(--nav-h)+4rem)] md:pt-[calc(var(--nav-h)+6rem)]">
-        <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-70" aria-hidden="true" />
-        <div
-          className="pointer-events-none absolute inset-0 -z-10"
-          aria-hidden="true"
-          style={{ background: `radial-gradient(50% 50% at 75% 40%, ${p.accent}14, transparent 70%)` }}
-        />
-        <div className="shell grid gap-12 pb-20 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-7">
-            <Reveal>
+      {p.scene ? (
+        <header className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-black">
+          <div className="absolute inset-0">
+            <Scene3D name={p.scene} fallback={<ProjectVisual project={p} />} />
+          </div>
+          <div
+            className="pointer-events-none absolute inset-0"
+            aria-hidden="true"
+            style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0) 70%), linear-gradient(0deg, rgba(5,6,7,1) 0%, rgba(5,6,7,0) 30%)" }}
+          />
+          <div className="shell pointer-events-none relative flex h-full flex-col justify-end pb-16 md:pb-20">
+            <Reveal className="pointer-events-auto">
               <Link href="/projects" className="eyebrow hover:text-ink">
                 ← Projects / {p.index}
               </Link>
             </Reveal>
-            <Reveal as="p" delay={60} className="eyebrow mt-10" >
+            <Reveal as="p" delay={60} className="eyebrow mt-8">
               <span style={{ color: p.accent }}>{p.category}</span>
             </Reveal>
-            <Reveal as="h1" delay={100} className="display mt-5 text-[clamp(3rem,8vw,7.5rem)]">
+            <Reveal as="h1" delay={100} className="display mt-5 max-w-4xl text-[clamp(3rem,8.5vw,8.5rem)]">
               {p.name}
             </Reveal>
-            <Reveal as="p" delay={160} className="lede mt-8 max-w-2xl">
+            <Reveal as="p" delay={160} className="lede mt-6 max-w-xl">
               {p.summary}
             </Reveal>
-            <Reveal delay={220} className="mt-10 flex flex-wrap gap-3">
-              <a href="#experience" className="btn btn-primary">
+            <Reveal delay={220} className="pointer-events-auto mt-9 flex flex-wrap items-center gap-3">
+              <a href="#experience" className="btn btn-primary" data-magnetic>
                 Enter the experience <span className="arrow">↓</span>
               </a>
               <a href="#system" className="btn btn-ghost">
                 See the architecture
               </a>
+              <span className="mono ml-2 hidden items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-ink-3 md:inline-flex">
+                <span className="inline-block h-3 w-3 rounded-full border border-ink-3" aria-hidden="true" /> Drag to explore in 3D
+              </span>
             </Reveal>
           </div>
-          <Reveal delay={150} className="lg:col-span-5">
-            <div className="brackets relative aspect-[4/3] border border-line bg-void/50">
+        </header>
+      ) : (
+        <header className="relative isolate overflow-hidden pt-[calc(var(--nav-h)+4rem)] md:pt-[calc(var(--nav-h)+6rem)]">
+          <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-70" aria-hidden="true" />
+          <div className="shell grid gap-12 pb-20 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-7">
+              <Link href="/projects" className="eyebrow hover:text-ink">
+                ← Projects / {p.index}
+              </Link>
+              <p className="eyebrow mt-10" style={{ color: p.accent }}>
+                {p.category}
+              </p>
+              <h1 className="display mt-5 text-[clamp(3rem,8vw,7.5rem)]">{p.name}</h1>
+              <p className="lede mt-8 max-w-2xl">{p.summary}</p>
+            </div>
+            <div className="brackets relative aspect-[4/3] border border-line bg-void/50 lg:col-span-5">
               <ProjectVisual project={p} />
             </div>
-            <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
-              <div>
-                <dt className="eyebrow">Category</dt>
-                <dd className="mt-1 text-ink-2">{p.category}</dd>
-              </div>
-              <div>
-                <dt className="eyebrow">Built by</dt>
-                <dd className="mt-1 text-ink-2">{site.name}</dd>
-              </div>
-              <div className="col-span-2">
-                <dt className="eyebrow">Technology</dt>
-                <dd className="mt-1 text-ink-2">{p.technology.join(" · ")}</dd>
-              </div>
-            </dl>
-          </Reveal>
-        </div>
-      </header>
+          </div>
+        </header>
+      )}
+
+      <section className="border-t border-line">
+        <dl className="shell grid gap-6 py-10 text-sm sm:grid-cols-3">
+          <div>
+            <dt className="eyebrow">Category</dt>
+            <dd className="mt-2 text-ink-2">{p.category}</dd>
+          </div>
+          <div>
+            <dt className="eyebrow">Built by</dt>
+            <dd className="mt-2 text-ink-2">{site.name}</dd>
+          </div>
+          <div>
+            <dt className="eyebrow">Technology</dt>
+            <dd className="mt-2 text-ink-2">{p.technology.join(" · ")}</dd>
+          </div>
+        </dl>
+      </section>
 
       <Chapter n="01" label="The problem" title={p.problem.title} accent={p.accent}>
         <div className="grid gap-6 md:grid-cols-2">

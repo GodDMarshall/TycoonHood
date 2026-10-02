@@ -11,8 +11,9 @@ folder into a new repository as-is and it builds.
 
 **Stack:** Next.js 15 (App Router) · React 19 · Tailwind v4 · Geist via
 `next/font/google` (downloaded from Google Fonts at build time, then served from
-this site's own domain — the build needs network access to fonts.googleapis.com). No 3D or animation libraries — every visual system is hand-built
-on Canvas 2D / SVG so it stays fast on phones.
+this site's own domain — the build needs network access to fonts.googleapis.com). Real-time 3D with three.js (WebGL, bloom post-processing) and Lenis smooth
+scrolling. three.js loads only when a 3D scene mounts, so the homepage's first
+load stays ~125 kB.
 
 Run every command **inside this folder**:
 
@@ -85,7 +86,15 @@ consequences of that, all handled from inside this folder:
 - `components/projects/demos.tsx` — registry of interactive demos (code-split). A
   new project can ship without one; the page shows a placeholder.
 - `lib/content.ts` — offerings, method steps, built-for, technology groups.
-- `components/hero/` — the interactive intelligence system (Canvas 2D).
+- `components/three/` — the 3D layer: `engine.ts` (renderer, bloom, pause
+  off-screen/hidden tab, reduced-motion single frame, disposal), `CoreScene`
+  (homepage core), `TowerScene` (Marshal Tower), `EstateScene` (Emerald Haven),
+  `Scene3D` (lazy mount + WebGL check + SVG fallback). Give a project a 3D model
+  by adding a scene there and setting `scene` on it in `lib/projects.ts`.
+- `components/fx/` — intro curtain, smooth scroll, cursor/magnetic buttons, word
+  reveal, marquee.
+- `components/hero/` — hero layout; `HeroCanvas` is the 2D fallback for devices
+  without WebGL.
 - `components/agents/` — the agent operating environment (scripted simulation,
   labelled as such in the UI).
 

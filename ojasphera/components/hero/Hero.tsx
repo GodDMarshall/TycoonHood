@@ -2,10 +2,14 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Words } from "../fx/Words";
+import { hasWebGL } from "../three/env";
 import { CORE, STAGES, STAGE_COLOR, type CoreId } from "./system-model";
 
 // The canvas is the heaviest thing on the page: load it after first paint, client-only.
+const CoreScene = dynamic(() => import("../three/CoreScene"), { ssr: false, loading: () => <SystemBooting /> });
+// 2D fallback for devices without WebGL.
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false, loading: () => <SystemBooting /> });
 
 function SystemBooting() {
@@ -21,6 +25,8 @@ export function Hero() {
   const [selected, setSelected] = useState<CoreId | null>(null);
   const [stage, setStage] = useState<number | null>(null);
   const [pulseKey, setPulseKey] = useState(0);
+  const [gl, setGl] = useState<boolean | null>(null);
+  useEffect(() => setGl(hasWebGL()), []);
 
   const onFocus = useCallback((id: CoreId | null) => setFocus(id), []);
   const onStage = useCallback((s: number | null) => setStage(s), []);
@@ -33,7 +39,7 @@ export function Hero() {
   const node = CORE.find((c) => c.id === focus);
 
   return (
-    <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-void xl:min-h-[100svh]">
+    <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-black xl:min-h-[100svh]">
       <div className="grid-lines pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
       <div
         className="pointer-events-none absolute inset-0"
@@ -51,17 +57,17 @@ export function Hero() {
             Ojasphera Labs
           </p>
           <h1 id="hero-title" className="display mt-7 text-[clamp(2.6rem,5.4vw,5rem)]">
-            We Build Intelligence Around Real-World Problems.
+            <Words text="We Build Intelligence Around Real-World Problems." />
           </h1>
           <p className="lede mt-7 max-w-[32rem] xl:max-w-[30rem]">
             From businesses and physical projects to complex workflows and ambitious ideas, Ojasphera builds the
             intelligent digital systems that make them work, evolve and scale.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <Link href="/projects" className="btn btn-primary">
+            <Link href="/projects" className="btn btn-primary" data-magnetic>
               Explore What We Build <span className="arrow">→</span>
             </Link>
-            <Link href="/build" className="btn btn-ghost">
+            <Link href="/build" className="btn btn-ghost" data-magnetic>
               Build With Ojasphera
             </Link>
           </div>
@@ -71,7 +77,13 @@ export function Hero() {
 
       {/* The live system. Full-bleed behind the copy on wide screens; its own viewport on smaller ones. */}
       <div className="relative h-[68svh] min-h-[420px] xl:absolute xl:inset-0 xl:h-auto">
-        <HeroCanvas selected={selected} pulseKey={pulseKey} onFocus={onFocus} onStage={onStage} />
+        {gl === null ? (
+          <SystemBooting />
+        ) : gl ? (
+          <CoreScene selected={selected} pulseKey={pulseKey} onFocus={onFocus} onStage={onStage} />
+        ) : (
+          <HeroCanvas selected={selected} pulseKey={pulseKey} onFocus={onFocus} onStage={onStage} />
+        )}
         <p className="sr-only">
           An interactive diagram of the Ojasphera Intelligence System. Business and project nodes feed data into AI and
           agents, which connect through systems and automation into experiences, which feed back into the business.
@@ -105,7 +117,7 @@ export function Hero() {
                 </p>
               ) : (
                 <p className="text-sm text-ink-3">
-                  Move through the system. Select any node to send a signal through everything it connects to.
+                  Drag to spin the system. Select any node to send a signal through everything it connects to.
                 </p>
               )}
             </div>

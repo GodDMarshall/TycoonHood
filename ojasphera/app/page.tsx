@@ -1,7 +1,9 @@
 import { Hero } from "@/components/hero/Hero";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { AgentsSection } from "@/components/sections/AgentsSection";
+import { Marquee } from "@/components/fx/Marquee";
 import { BuildCTA } from "@/components/sections/BuildCTA";
+import { ProofSection } from "@/components/sections/ProofSection";
 import { BuiltForSection } from "@/components/sections/BuiltForSection";
 import { CapabilitiesSection } from "@/components/sections/CapabilitiesSection";
 import { MethodSection } from "@/components/sections/MethodSection";
@@ -19,6 +21,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <Marquee />
       <ProblemSection />
       <WhatWeBuild index="03" />
       <MethodSection index="04" />
@@ -28,6 +31,7 @@ export default function Home() {
       <BuiltForSection />
       <WhySection index="08" />
       <AboutSection index="09" />
+      <ProofSection />
       <BuildCTA index="10" />
     </>
   );
