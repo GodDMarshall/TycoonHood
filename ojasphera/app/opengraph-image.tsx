@@ -1,27 +1,27 @@
 import { ImageResponse } from "next/og";
+import { MARK } from "@/lib/brand";
 
 export const alt = "Ojasphera Labs — Intelligent Digital Systems for Real-World Problems";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const nodes: [number, number, string][] = [
-  [720, 200, "#6fd3a8"], [740, 430, "#6fd3a8"], [860, 315, "#7cc7e8"], [980, 220, "#f2b45a"],
-  [970, 410, "#f2b45a"], [1080, 230, "#b9c7ff"], [1075, 405, "#b9c7ff"], [1150, 315, "#eceef1"],
-];
-
 export default function OG() {
   return new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", background: "#050607", color: "#eceef1", padding: 72, position: "relative", fontFamily: "sans-serif" }}>
-        {nodes.map(([x, y, c], i) => (
-          <div key={i} style={{ position: "absolute", left: x - 9, top: y - 9, width: 18, height: 18, borderRadius: 18, border: `2px solid ${c}`, display: "flex" }} />
-        ))}
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: 640 }}>
-          <div style={{ display: "flex", fontSize: 22, letterSpacing: 8 }}>OJASPHERA LABS</div>
-          <div style={{ display: "flex", fontSize: 64, lineHeight: 1.02, letterSpacing: -2, fontWeight: 600 }}>
+        <div style={{ position: "absolute", right: -40, top: 60, width: 640, height: 640, display: "flex", background: "radial-gradient(circle at 70% 25%, rgba(242,180,90,0.22), rgba(5,6,7,0) 60%)" }} />
+        <svg width="460" height="460" viewBox="0 0 100 100" style={{ position: "absolute", right: 70, top: 85 }}>
+          <path fill="#eceef1" fillRule="evenodd" d={MARK.rim} />
+          <circle cx={MARK.spark.cx} cy={MARK.spark.cy} r={MARK.spark.r} fill="#f2b45a" />
+        </svg>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: 600 }}>
+          <div style={{ display: "flex", fontSize: 22, letterSpacing: 7, fontWeight: 600 }}>
+            OJASPHERA <span style={{ color: "#8a909b", marginLeft: 18, fontWeight: 500 }}>LABS</span>
+          </div>
+          <div style={{ display: "flex", fontSize: 62, lineHeight: 1.02, letterSpacing: -2, fontWeight: 600 }}>
             We Build Intelligence Around Real-World Problems.
           </div>
-          <div style={{ display: "flex", fontSize: 20, color: "#a3a9b4", letterSpacing: 4 }}>AI • SYSTEMS • AUTOMATION • EXPERIENCE</div>
+          <div style={{ display: "flex", fontSize: 19, color: "#a3a9b4", letterSpacing: 4 }}>AI • SYSTEMS • AUTOMATION • EXPERIENCE</div>
         </div>
       </div>
     ),

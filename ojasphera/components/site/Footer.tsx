@@ -8,7 +8,7 @@ export function Footer() {
       <div className="shell grid gap-14 py-20 md:grid-cols-12">
         <div className="md:col-span-6">
           <div className="flex items-center gap-3 text-ink">
-            <Mark size={28} />
+            <Mark size={34} />
             <span className="text-sm font-semibold tracking-[0.32em]">OJASPHERA LABS</span>
           </div>
           <p className="eyebrow mt-6">{site.footerPillars.join(" • ")}</p>

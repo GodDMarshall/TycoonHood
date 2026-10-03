@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { MARK } from "@/lib/brand";
 
 /**
  * Cinematic opening: the wordmark assembles while the system "boots" 000→100,
@@ -30,6 +31,10 @@ export function Intro() {
   return (
     <div className="intro" aria-hidden="true">
       <div className="intro-inner">
+        <svg className="intro-mark" viewBox="0 0 100 100" width="72" height="72">
+          <path className="intro-rim" fill="#eceef1" fillRule="evenodd" d={MARK.rim} />
+          <circle className="intro-spark" cx={MARK.spark.cx} cy={MARK.spark.cy} r={MARK.spark.r} fill="#f2b45a" />
+        </svg>
         <div className="intro-word">
           {"OJASPHERA".split("").map((c, i) => (
             <span key={i} style={{ animationDelay: `${120 + i * 55}ms` }}>

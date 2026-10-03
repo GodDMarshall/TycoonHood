@@ -58,7 +58,7 @@ const orgJsonLd = {
   legalName: site.legalName,
   url: site.url,
   description: site.description,
-  logo: `${site.url}/icon.svg`,
+  logo: `${site.url}/brand/ojasphera-icon-512.png`,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
