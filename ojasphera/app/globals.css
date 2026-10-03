@@ -322,10 +322,10 @@ textarea.field { resize: vertical; min-height: 6.5rem; line-height: 1.55; }
   .cursor-layer { position: fixed; inset: 0; pointer-events: none; z-index: 150; }
   .cursor-dot, .cursor-ring { position: fixed; left: 0; top: 0; pointer-events: none; opacity: 0; }
   .has-cursor .cursor-dot, .has-cursor .cursor-ring { opacity: 1; }
-  .cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 9999px; background: var(--color-ojas); }
+  .cursor-dot { width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 9999px; background: var(--color-ink); }
   .cursor-ring {
     width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 9999px;
-    border: 1px solid rgb(236 238 241 / 0.35);
+    border: 1.5px solid rgb(236 238 241 / 0.55);
     display: grid; place-items: center;
     transition: border-color 250ms, background-color 250ms;
   }
@@ -348,4 +348,21 @@ textarea.field { resize: vertical; min-height: 6.5rem; line-height: 1.55; }
   @keyframes marquee { to { transform: translateX(-50%); } }
   .outline-text { color: transparent; -webkit-text-stroke: 1px rgb(236 238 241 / 0.28); }
   @media (prefers-reduced-motion: reduce) { .marquee { animation: none; } }
+}
+
+@layer components {
+  /* ---------- Eclipse motifs ---------- */
+  .eclipse-loader-rim { transform-origin: 50% 50%; animation: eclipse-turn 2.4s var(--ease-system) infinite; }
+  .eclipse-loader-spark { transform-box: fill-box; transform-origin: center; animation: eclipse-breathe 1.2s ease-in-out infinite alternate; filter: drop-shadow(0 0 6px rgb(242 180 90 / 0.9)); }
+  @keyframes eclipse-turn { 0% { transform: rotate(0deg); } 60%, 100% { transform: rotate(360deg); } }
+  @keyframes eclipse-breathe { from { transform: scale(0.7); opacity: 0.6; } to { transform: scale(1.15); opacity: 1; } }
+  .eh-spark { animation: eh-flare 4.5s ease-in-out infinite alternate; transform-origin: 804px 196px; }
+  @keyframes eh-flare { from { opacity: 0.75; transform: scale(0.94); } to { opacity: 1; transform: scale(1.06); } }
+  .cursor-spark { position: absolute; width: 7px; height: 7px; border-radius: 9999px; background: var(--color-ojas); right: 1px; top: 1px; box-shadow: 0 0 10px rgb(242 180 90 / 0.8); }
+  @media (prefers-reduced-motion: reduce) { .eclipse-loader-rim, .eclipse-loader-spark, .eh-spark { animation: none; } }
+}
+
+@layer components {
+  .intake-ignite circle { transform-box: fill-box; transform-origin: center; animation: intro-spark 800ms cubic-bezier(0.34, 1.56, 0.64, 1) 200ms both; filter: drop-shadow(0 0 10px rgb(242 180 90 / 0.95)); }
+  .intake-ignite path { transform-origin: 50% 50%; animation: intro-rim 900ms var(--ease-system) both; }
 }

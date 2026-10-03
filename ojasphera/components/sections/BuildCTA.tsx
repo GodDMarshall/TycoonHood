@@ -1,15 +1,12 @@
 import Link from "next/link";
+import { EclipseHorizon } from "../fx/EclipseHorizon";
 import { Reveal } from "../ui/Reveal";
 
 export function BuildCTA({ index = "10" }: { index?: string }) {
   return (
-    <section id="build" aria-labelledby="build-title" className="relative isolate overflow-hidden border-t border-line py-32 md:py-48">
+    <section id="build" aria-labelledby="build-title" className="relative isolate overflow-hidden border-t border-line bg-black pb-[38vw] pt-32 md:pb-[30vw] md:pt-44">
       <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-80" aria-hidden="true" />
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        aria-hidden="true"
-        style={{ background: "radial-gradient(50% 60% at 50% 100%, rgba(242,180,90,0.10), transparent 70%)" }}
-      />
+      <EclipseHorizon />
       <div className="shell">
         <Reveal className="flex items-center gap-3">
           <span className="mono text-xs text-ojas">{index}</span>

@@ -66,6 +66,7 @@ export function Cursor() {
   return (
     <div aria-hidden="true" className="cursor-layer">
       <div ref={ring} className="cursor-ring">
+        <i className="cursor-spark" />
         <span ref={label} />
       </div>
       <div ref={dot} className="cursor-dot" />

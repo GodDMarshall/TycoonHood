@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Mark } from "../site/Logo";
 import { Reveal } from "./Reveal";
 
 /** Editorial section header: index + label rail on the left, headline on the right. */
@@ -19,6 +20,7 @@ export function SectionHead({
     <div className={`grid gap-8 md:grid-cols-12 ${className}`}>
       <Reveal className="md:col-span-3">
         <div className="flex items-center gap-3 border-t border-line pt-4">
+          <Mark size={13} className="text-ink-2" />
           {index ? <span className="mono text-xs text-ojas">{index}</span> : null}
           <span className="eyebrow">{label}</span>
         </div>

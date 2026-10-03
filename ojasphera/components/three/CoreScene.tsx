@@ -60,7 +60,7 @@ export default function CoreScene({ selected, pulseKey, onFocus, onStage }: Prop
 
   useEffect(() => {
     const host = hostRef.current!;
-    const st = createStage(host, { fov: 32, clear: 0x000000, bloom: { strength: 0.7, radius: 0.5, threshold: 0.22 } });
+    const st = createStage(host, { fov: 32, clear: 0x000000, bloom: { strength: 0.58, radius: 0.45, threshold: 0.3 } });
     const { scene, camera, small, reduced } = st;
     const glow = glowTexture();
     const R = rng(11);
@@ -87,7 +87,7 @@ export default function CoreScene({ selected, pulseKey, onFocus, onStage }: Prop
           float n = snoise(position*0.85 + vec3(uTime*0.18));
           float n2 = snoise(position*2.4 - vec3(uTime*0.12));
           vNoise = n*0.7 + n2*0.3;
-          vec3 p = position + normal * (vNoise*0.11 + uPulse*0.12);
+          vec3 p = position + normal * (vNoise*0.03 + uPulse*0.08);
           vObj = p;
           vec4 mv = modelViewMatrix * vec4(p,1.0);
           vV = -mv.xyz; vN = normalize(normalMatrix*normal);
@@ -98,13 +98,19 @@ export default function CoreScene({ selected, pulseKey, onFocus, onStage }: Prop
         varying vec3 vN; varying vec3 vV; varying float vNoise; varying vec3 vObj;
         void main(){
           vec3 n = normalize(vN); vec3 v = normalize(vV);
-          float fres = pow(1.0 - max(dot(n,v),0.0), 3.2);
-          vec3 deep = mix(vec3(0.012,0.018,0.026), vec3(0.03,0.07,0.1), vNoise*0.5+0.5);
-          vec3 rim = mix(uA, uB, smoothstep(-0.35,0.65,vNoise));
-          float bands = smoothstep(0.46,0.5,abs(fract(vObj.y*5.5 + uTime*0.06)-0.5));
-          float merid = smoothstep(0.485,0.5,abs(fract(atan(vObj.z,vObj.x)*3.8197 - uTime*0.03)-0.5));
-          vec3 col = deep + rim*fres*1.05 + rim*(bands*0.32 + merid*0.16)*(0.25+fres)
-                   + uB*uPulse*0.6*(0.4+fres);
+          float fres = pow(1.0 - max(dot(n,v),0.0), 4.2);
+          // Eclipse: light gathers on the limb facing the spark (screen upper-right),
+          // exactly like the Ojasphera mark. View space keeps it fixed while the sphere turns.
+          vec2 L = normalize(vec2(0.69, 0.72));
+          float facing = max(dot(normalize(n.xy + 1e-4), L), 0.0);
+          float lit = 0.1 + 2.6 * pow(facing, 2.2);
+          vec3 deep = mix(vec3(0.004,0.006,0.008), vec3(0.012,0.022,0.03), vNoise*0.5+0.5);
+          vec3 rim = mix(vec3(0.93,0.94,0.95), uB, smoothstep(0.55, 1.0, facing) * 0.55);
+          rim = mix(rim, uA, (1.0 - facing) * 0.5);
+          float bands = smoothstep(0.47,0.5,abs(fract(vObj.y*5.5 + uTime*0.06)-0.5));
+          float merid = smoothstep(0.488,0.5,abs(fract(atan(vObj.z,vObj.x)*3.8197 - uTime*0.03)-0.5));
+          vec3 col = deep + rim*fres*lit*1.15 + uA*(bands*0.07 + merid*0.04)*(0.2+fres)
+                   + uB*uPulse*0.7*(0.3+fres)*lit;
           gl_FragColor = vec4(col,1.0);
         }`,
     });
@@ -120,15 +126,26 @@ export default function CoreScene({ selected, pulseKey, onFocus, onStage }: Prop
         blending: THREE.AdditiveBlending,
         side: THREE.BackSide,
         vertexShader: `varying vec3 vN; varying vec3 vV; void main(){ vec4 mv=modelViewMatrix*vec4(position,1.0); vV=-mv.xyz; vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*mv; }`,
-        fragmentShader: `uniform float uPulse; varying vec3 vN; varying vec3 vV; void main(){ float d=abs(dot(normalize(vN),normalize(vV))); float i=pow(d,5.0)*(0.55+uPulse*0.9); gl_FragColor=vec4(vec3(0.49,0.78,0.91)*i,i); }`,
+        fragmentShader: `uniform float uPulse; varying vec3 vN; varying vec3 vV; void main(){ vec3 n=normalize(vN); float d=abs(dot(n,normalize(vV))); float facing=max(dot(normalize(n.xy+1e-4), normalize(vec2(0.69,0.72))),0.0); float i=pow(d,6.0)*(0.04+0.7*pow(facing,3.0)+uPulse*0.8); vec3 c=mix(vec3(0.49,0.78,0.91), vec3(0.98,0.78,0.48), facing); gl_FragColor=vec4(c*i,i); }`,
       }),
     );
     halo.scale.setScalar(1.22);
     system.add(halo);
 
+    // The diamond-ring spark: where the light breaks past the rim.
+    const sparkCore = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: 0xfff1d6, transparent: true, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false }));
+    const sparkGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: 0xf2b45a, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false }));
+    const streak = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: 0xf6c27a, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false }));
+    [sparkGlow, streak, sparkCore].forEach((sp) => {
+      sp.renderOrder = 10;
+      world.add(sp);
+    });
+    const sparkDir = new THREE.Vector2(0.69, 0.72).normalize();
+    const camRight = new THREE.Vector3(), camUp = new THREE.Vector3();
+
     const cage = new THREE.LineSegments(
       new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(1.95, 1)),
-      new THREE.LineBasicMaterial({ color: 0x9fb6c8, transparent: true, opacity: 0.09 }),
+      new THREE.LineBasicMaterial({ color: 0x9fb6c8, transparent: true, opacity: 0.05 }),
     );
     system.add(cage);
 
@@ -415,6 +432,18 @@ export default function CoreScene({ selected, pulseKey, onFocus, onStage }: Prop
       shock.scale.setScalar(1.5 + shockT * 4.5);
       (shock.material as THREE.MeshBasicMaterial).opacity = (1 - shockT) * 0.5;
       shock.quaternion.copy(camera.quaternion);
+
+      // spark rides the limb at the upper right, whatever the camera does
+      camRight.set(1, 0, 0).applyQuaternion(camera.quaternion);
+      camUp.set(0, 1, 0).applyQuaternion(camera.quaternion);
+      const limb = 1.45 * system.scale.x * 1.01;
+      sparkCore.position.copy(camRight).multiplyScalar(sparkDir.x * limb).addScaledVector(camUp, sparkDir.y * limb);
+      sparkGlow.position.copy(sparkCore.position);
+      streak.position.copy(sparkCore.position);
+      const breathe = 1 + Math.sin(t * 1.7) * 0.06 + pulseFlash * 0.8;
+      sparkCore.scale.setScalar(0.38 * breathe * ei);
+      sparkGlow.scale.setScalar(0.85 * breathe * ei);
+      streak.scale.set(3.6 * breathe * ei, 0.07 * ei, 1);
 
       // nodes
       world.updateMatrixWorld();

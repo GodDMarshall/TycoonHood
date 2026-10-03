@@ -27,6 +27,7 @@ export const footerLinks = [
   { href: "/capabilities", label: "Capabilities" },
   { href: "/about", label: "About" },
   { href: "/build", label: "Contact" },
+  { href: "/brand", label: "Brand" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
 ] as const;

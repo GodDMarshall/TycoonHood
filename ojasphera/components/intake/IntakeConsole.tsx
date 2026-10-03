@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { BUDGETS, TIMELINES, briefText, emptyIntake, validateIntake, type FieldErrors, type Intake, type IntakeMode } from "@/lib/intake";
+import { MARK } from "@/lib/brand";
 import { site } from "@/lib/site";
 
 type FieldKey = Exclude<keyof Intake, "mode" | "website">;
@@ -165,9 +166,11 @@ export function IntakeConsole() {
 
         {phase === "done" ? (
           <div className="px-5 py-16 md:px-8 md:py-20" role="status">
-            <p className="mono flex items-center gap-3 text-xs text-growth">
-              <span className="pulse-dot" aria-hidden="true" /> {mode === "talk" ? "MESSAGE RECEIVED" : "PROJECT INITIALISED"}
-            </p>
+            <svg width="56" height="56" viewBox="0 0 100 100" className="intake-ignite" aria-hidden="true">
+              <path fill="#eceef1" fillRule="evenodd" d={MARK.rim} />
+              <circle cx={MARK.spark.cx} cy={MARK.spark.cy} r={MARK.spark.r} fill="#f2b45a" />
+            </svg>
+            <p className="mono mt-8 flex items-center gap-3 text-xs text-ojas">{mode === "talk" ? "MESSAGE RECEIVED" : "PROJECT INITIALISED"}</p>
             <h2 className="headline mt-6 text-[clamp(2rem,4vw,3.25rem)]">
               {mode === "talk" ? "Thanks — your message is with us." : "Your project is in the system."}
             </h2>

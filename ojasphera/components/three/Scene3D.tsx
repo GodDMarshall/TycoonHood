@@ -2,11 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { EclipseLoader } from "../fx/EclipseLoader";
 import { hasWebGL } from "./env";
 
 const Loading = () => (
   <div className="absolute inset-0 flex items-center justify-center">
-    <span className="eyebrow animate-pulse">Rendering environment…</span>
+    <EclipseLoader label="Rendering environment" />
   </div>
 );
 

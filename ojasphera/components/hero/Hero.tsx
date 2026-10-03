@@ -3,7 +3,9 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { EclipseLoader } from "../fx/EclipseLoader";
 import { Words } from "../fx/Words";
+import { Mark } from "../site/Logo";
 import { hasWebGL } from "../three/env";
 import { CORE, STAGES, STAGE_COLOR, type CoreId } from "./system-model";
 
@@ -14,8 +16,8 @@ const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false, loading: 
 
 function SystemBooting() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-      <span className="eyebrow animate-pulse">Initialising system…</span>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <EclipseLoader label="Initialising system" />
     </div>
   );
 }
@@ -53,7 +55,7 @@ export function Hero() {
       <div className="shell relative z-10 flex flex-col pt-[calc(var(--nav-h)+3.5rem)] xl:min-h-[100svh] xl:justify-center xl:pb-24 xl:pt-[var(--nav-h)]">
         <div className="max-w-[34rem] xl:max-w-[31rem]">
           <p className="eyebrow flex items-center gap-3">
-            <span className="pulse-dot text-ojas" aria-hidden="true" />
+            <Mark size={15} className="text-ink" />
             Ojasphera Labs
           </p>
           <h1 id="hero-title" className="display mt-7 text-[clamp(2.6rem,5.4vw,5rem)]">

@@ -4,12 +4,19 @@ import { Mark } from "./Logo";
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-line bg-void">
+    <footer className="relative isolate overflow-hidden border-t border-line bg-void">
+      <Mark
+        size={720}
+        className="pointer-events-none absolute -bottom-[340px] -right-[160px] -z-10 text-white/[0.035]"
+        spark="rgb(242 180 90 / 0.12)"
+      />
       <div className="shell grid gap-14 py-20 md:grid-cols-12">
         <div className="md:col-span-6">
-          <div className="flex items-center gap-3 text-ink">
-            <Mark size={34} />
-            <span className="text-sm font-semibold tracking-[0.32em]">OJASPHERA LABS</span>
+          <div className="flex items-center gap-4 text-ink">
+            <Mark size={40} />
+            <span className="text-[15px] font-semibold tracking-[0.18em]">
+              OJASPHERA <span className="ml-3 border-l border-line-strong pl-3 font-medium text-ink-3">LABS</span>
+            </span>
           </div>
           <p className="eyebrow mt-6">{site.footerPillars.join(" • ")}</p>
           <p className="mt-6 max-w-sm text-2xl font-medium leading-tight tracking-tight text-ink-2">{site.tagline}</p>

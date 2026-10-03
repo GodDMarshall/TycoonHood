@@ -1,10 +1,11 @@
 import dynamic from "next/dynamic";
 import type { Project } from "@/lib/projects";
+import { EclipseLoader } from "../fx/EclipseLoader";
 
 function DemoLoading() {
   return (
     <div className="flex aspect-[16/9] items-center justify-center border border-line bg-void">
-      <span className="eyebrow animate-pulse">Loading environment…</span>
+      <EclipseLoader label="Loading environment" />
     </div>
   );
 }
