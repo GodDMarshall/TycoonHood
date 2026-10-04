@@ -23,7 +23,7 @@ export default function ProjectsPage() {
         <div className="shell grid gap-4 md:grid-cols-2">
           {projects.map((p, i) => (
             <Reveal key={p.slug} delay={i * 100}>
-              <ProjectCard project={p} large />
+              <ProjectCard project={p} large heading="h2" />
             </Reveal>
           ))}
           <Reveal className="md:col-span-2">

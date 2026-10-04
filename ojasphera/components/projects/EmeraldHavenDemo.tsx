@@ -205,7 +205,7 @@ export function EmeraldHavenDemo() {
           <p className="mono text-[10px] uppercase tracking-wider" style={{ color: layerColor(selected.layer) }}>
             {LAYERS.find((l) => l.key === selected.layer)!.label} · {selected.kind}
           </p>
-          <h4 className="mt-2 text-xl font-medium tracking-tight">{selected.name}</h4>
+          <h3 className="mt-2 text-xl font-medium tracking-tight">{selected.name}</h3>
           <p className="mt-2 text-xs text-ink-3">Data this feature carries in the environment:</p>
           <dl className="mt-4 flex flex-col">
             {selected.fields.map((f) => (

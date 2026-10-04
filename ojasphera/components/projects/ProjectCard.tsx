@@ -3,7 +3,7 @@ import type { Project } from "@/lib/projects";
 import { Scene3D } from "../three/Scene3D";
 import { ProjectVisual } from "./ProjectVisual";
 
-export function ProjectCard({ project, large = false }: { project: Project; large?: boolean }) {
+export function ProjectCard({ project, large = false, heading: Heading = "h3" }: { project: Project; large?: boolean; heading?: "h2" | "h3" }) {
   return (
     <Link
       href={`/projects/${project.slug}`}
@@ -31,7 +31,7 @@ export function ProjectCard({ project, large = false }: { project: Project; larg
         <p className="eyebrow" style={{ color: project.accent }}>
           {project.category}
         </p>
-        <h3 className="mt-4 text-[clamp(1.75rem,3vw,2.75rem)] font-medium leading-none tracking-tight">{project.name}</h3>
+        <Heading className="mt-4 text-[clamp(1.75rem,3vw,2.75rem)] font-medium leading-none tracking-tight">{project.name}</Heading>
         <p className="mt-4 max-w-lg text-ink-2">{project.summary}</p>
         <ul className="mt-6 flex flex-wrap gap-1.5">
           {project.signals.map((s) => (

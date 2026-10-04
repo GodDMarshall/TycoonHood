@@ -208,7 +208,7 @@ export function MethodSection({ index = "04" }: { index?: string }) {
         <ol className="relative lg:order-1 lg:col-span-5">
           {method.map((m, i) => (
             <li key={m.n} className="relative flex min-h-[52svh] items-center border-l border-line pl-6 md:pl-10 lg:min-h-[70svh]">
-              <div className={`transition-opacity duration-500 ${i === step ? "opacity-100" : "opacity-30"}`}>
+              <div className={`transition-colors duration-500 ${i === step ? "" : "[&_h3]:text-ink-3 [&_p]:text-ink-4 [&_span]:text-ink-4"}`}>
                 <span className={`mono text-sm ${i === step ? "text-ojas" : "text-ink-3"}`}>{m.n}</span>
                 <h3 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-medium tracking-tight">{m.title}</h3>
                 <p className="mt-4 max-w-sm text-lg text-ink-2">{m.body}</p>

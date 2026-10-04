@@ -347,7 +347,7 @@ export function IntakeConsole() {
           {"  "}
           <span className="text-signal">"type"</span>: <span className="text-ojas">"{mode === "talk" ? "conversation" : "new_project"}"</span>,{"\n"}
           {(Object.keys(LABELS) as FieldKey[]).map((k) => (
-            <span key={k} className={data[k] ? "" : "opacity-40"}>
+            <span key={k} className={data[k] ? "" : "text-ink-4 [&_span]:!text-ink-4"}>
               {"  "}
               <span className="text-signal">"{k}"</span>: {data[k] ? <span className="text-ink-2">"{data[k].length > 90 ? data[k].slice(0, 90) + "…" : data[k]}"</span> : <span>null</span>},{"\n"}
             </span>

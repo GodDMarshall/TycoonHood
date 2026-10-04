@@ -122,6 +122,25 @@ The TycoonHood Vercel projects (`apps/web`, `apps/miner`) are unaffected. If you
 don't want them to rebuild when only this folder changes, add an Ignored Build
 Step in those projects — optional, not required.
 
+## Launch checklist
+
+1. **Vercel** → Add New Project → import the repository → **Root Directory:
+   `ojasphera`** (framework, install and build commands come from `vercel.json`).
+2. **Domain** → Project → Settings → Domains → add `ojasphera.com` and
+   `www.ojasphera.com`; point DNS as Vercel shows (A `76.76.21.21` / CNAME
+   `cname.vercel-dns.com`).
+3. **Environment variables** (Production) → `INTAKE_WEBHOOK_URL`, or
+   `RESEND_API_KEY` + `INTAKE_TO_EMAIL` (+ `INTAKE_FROM_EMAIL` on a verified
+   domain). Optional: `NEXT_PUBLIC_CONTACT_EMAIL`. Redeploy after adding.
+4. **Smoke test** the live URL: `/`, both case studies, `/build` (submit a test
+   brief and confirm it arrives), `/brand` downloads, and paste the URL into
+   LinkedIn/WhatsApp to check the share card.
+
+Pre-launch QA last run: 29 internal links 200; zero console errors; zero axe
+violations on 11 pages; 18 client-side transition checks (scroll reset, back
+button, WebGL contexts released, mobile menu); no-JS and keyboard (skip link)
+verified; no hydration warnings in dev.
+
 ## Content rules
 
 No invented clients, statistics, awards or partnerships. Interactive demos are

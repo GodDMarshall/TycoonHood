@@ -17,8 +17,9 @@
 
   --color-ink: #eceef1;
   --color-ink-2: #a3a9b4;
-  --color-ink-3: #69707c;
-  --color-ink-4: #454b55;
+  /* ink-3/ink-4 are tuned to clear WCAG AA (4.5:1) for small text on every surface */
+  --color-ink-3: #8a909b;
+  --color-ink-4: #7a818c;
 
   /* ojas — energy, action, the thing being built */
   --color-ojas: #f2b45a;

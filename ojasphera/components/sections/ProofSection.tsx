@@ -73,7 +73,7 @@ export function ProofSection() {
             <Reveal key={x.k} delay={i * 80} className="border-b border-r border-line p-6 md:p-8">
               <dt className="eyebrow">{x.k}</dt>
               <dd className="mono mt-6 text-[clamp(2.25rem,4vw,3.5rem)] leading-none tracking-tight text-ink tabular-nums">{x.v}</dd>
-              <p className="mt-3 text-xs text-ink-3">{x.note}</p>
+              <dd className="mt-3 text-xs text-ink-3">{x.note}</dd>
             </Reveal>
           ))}
         </dl>

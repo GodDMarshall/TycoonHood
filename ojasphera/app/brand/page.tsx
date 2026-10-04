@@ -65,7 +65,7 @@ export default function BrandPage() {
             {downloads.map((d, i) => (
               <Reveal as="li" key={d.name} delay={(i % 3) * 70} className="border border-line">
                 <div className={`grid aspect-[16/9] place-items-center p-10 ${d.bg === "dark" ? "bg-black" : "bg-[#f3f2ee]"}`}>
-                  <Image src={d.preview} alt={`${d.name} preview`} width={320} height={96} unoptimized className="h-auto max-h-24 w-auto max-w-[80%]" />
+                  <Image src={d.preview} alt={`${d.name} preview`} width={320} height={96} unoptimized className="max-h-24 max-w-[80%]" style={{ width: "auto", height: "auto" }} />
                 </div>
                 <div className="border-t border-line p-5">
                   <p className="text-lg font-medium tracking-tight">{d.name}</p>
