@@ -1,8 +1,0 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "//": "Vercel project: ojasphera.com — separate from every TycoonHood project. Root Directory = ojasphera. Fully static except /api/intake, which needs INTAKE_WEBHOOK_URL or RESEND_API_KEY + INTAKE_TO_EMAIL (see README.md).",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm build",
-  "outputDirectory": ".next",
-  "framework": "nextjs"
-}

@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Ojasphera Labs"><title>Ojasphera Labs</title><defs>
-  <radialGradient id="g" cx="0.78" cy="0.2" r="0.85"><stop offset="0" stop-color="#1a1610"/><stop offset="0.55" stop-color="#07080a"/><stop offset="1" stop-color="#050607"/></radialGradient>
-</defs>
-<rect width="512" height="512"  fill="url(#g)"/>
-<g transform="translate(102 102) scale(3.08)"><path fill="#eceef1" fill-rule="evenodd" d="M87.17 26.46A44 44 0 1 1 72.23 12.03A10.7 10.7 0 1 0 87.17 26.46ZM14.39 53.74a32 32 0 1 0 64 0a32 32 0 1 0 -64 0Z"/><circle cx="77.93" cy="21.08" r="7.4" fill="#f2b45a"/></g></svg>
