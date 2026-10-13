@@ -2,7 +2,9 @@
 
 Episode 01, "Do You Ever Feel Stupid?". Characters: Developer, ChatGPT, Claude.
 
-**Status:** I've audited the cloud sandbox. The PC audit is waiting on you. Nothing is built yet.
+**Status:** I've audited the cloud sandbox and built the Developer v001 proof of concept, which is waiting for your
+review in [`characters/developer/`](../characters/developer/). The PC audit is still waiting on you. Blender was
+installed in the sandbox only, with your approval (bpy 5.2.2 from PyPI).
 
 ## 1. Where this work runs
 
@@ -97,7 +99,7 @@ it in *your* Blender produces a native file for your version.
 | Phase | Produces | Gate |
 |---|---|---|
 | 0. Audit and method | This report and the PC audit script | Done (PC audit pending) |
-| 1. Developer proof of concept | Build script, `.blend` (model, materials, logo, rig, expressions, poses), presentation renders | Your permission to install Blender in the sandbox |
+| 1. Developer proof of concept | Build script, `.blend` (model, materials, logo, rig, expressions, poses), presentation renders | **Done, waiting for your review** |
 | 2. Developer review | v002 with your notes and the concept board | Your feedback |
 | 3. ChatGPT robot | Same structure, floating rig (hover, tilt, eye shapes), emblem | Your approval of the Developer |
 | 4. Claude robot | Same structure, mechanical limbs, amber eyes, emblem | — |
