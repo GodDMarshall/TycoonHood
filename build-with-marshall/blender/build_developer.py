@@ -34,7 +34,7 @@ from bwm import materials as mt  # noqa: E402
 from bwm import scene as sc  # noqa: E402
 from bwm.geo import clamp, lerp, smoothstep  # noqa: E402
 
-VERSION = 'v001'
+VERSION = 'v002'
 
 # ---------------------------------------------------------------- proportions
 # 1.47 m to the crown, head 0.39 m tall: about a 1:4 head-to-body ratio (hair adds ~5 cm).
@@ -349,9 +349,10 @@ def build_face(col, head, M):
 
 # ---------------------------------------------------------------- hair
 
-HAIRLINE = [(0, 0.46), (25, 0.43), (50, 0.34), (70, 0.22), (90, 0.10), (110, -0.04),
-            (130, -0.24), (150, -0.40), (180, -0.50)]
-WHORL = Vector((0.08, 0.45, 0.89)).normalized()      # crown swirl the hair flows away from
+# Hair follows the creator reference: thick, messy, tousled black hair pushed forward into a heavy fringe,
+# volume on top, short tapered sides with the ears showing, flyaway wisps around the outline.
+HAIRLINE = [(0, 0.46), (25, 0.43), (50, 0.34), (70, 0.25), (90, 0.15), (110, 0.01),
+            (130, -0.22), (150, -0.38), (180, -0.46)]
 
 
 def _interp(x, table):
@@ -371,14 +372,46 @@ def hairline(u):
     return _interp(abs(_azimuth(u)), HAIRLINE)
 
 
+def _top_front(u):
+    """1 on the top and front of the head (where the volume is), falling to 0 on the short sides."""
+    return max(smoothstep(115.0, 40.0, abs(_azimuth(u))), smoothstep(0.55, 0.90, u.z))
+
+
 def hair_offset(u):
-    """Hair volume above the skin: thick on the scalp, thin where locks lie on the forehead."""
     hl = hairline(u)
-    return 0.007 + 0.043 * smoothstep(hl - 0.08, hl + 0.40, u.z)
+    return 0.009 + 0.068 * smoothstep(hl - 0.10, hl + 0.45, u.z) * lerp(0.35, 1.0, _top_front(u))
 
 
 def hair_point(u):
     return head_point(u) + head_normal(u) * hair_offset(u)
+
+
+def _tangent(n, v):
+    v = Vector(v) - n * Vector(v).dot(n)
+    return v.normalized() if v.length > 1e-6 else v
+
+
+def hair_lock(u, flow, length, width, lift, wave_turns, wave_amp, phase, stop_z=None, steps=14, R=0.235):
+    """One tapered lock walked over the hair surface along `flow`, gently waved and lifted at the tip."""
+    n = head_normal(u)
+    axis = u.cross(flow).normalized()
+    pts = []
+    for k in range(steps + 1):
+        t = k / steps
+        uk = (Matrix.Rotation(length * t / R, 3, axis) @ u).normalized()
+        nk = head_normal(uk)
+        amp = wave_amp * smoothstep(0.0, 0.35, t)
+        phi = phase + wave_turns * math.tau * t
+        p = (hair_point(uk) + nk * (lift * t * t - 0.008 * (1 - t) + 0.5 * amp * math.cos(phi))
+             + axis * (amp * math.sin(phi)))
+        if stop_z is not None and p.z < stop_z and k > 2:
+            break
+        pts.append(p)
+    if len(pts) < 4:
+        return None
+    pts = geo.resample(pts, 16)
+    return geo.tube(pts, lambda t: 0.5 * width * (1.0 - 0.92 * smoothstep(0.25, 1.0, t)) + 0.0008,
+                    count=8, up_hint=n, ratio=0.5, cap_start='flat', cap_end='flat')
 
 
 def build_hair(col, M, seed=11):
@@ -389,64 +422,57 @@ def build_hair(col, M, seed=11):
     base.verts = [hair_point(d) for d in dirs]
     cap = base.subset(keep)
     cap_obj = sc.to_object(cap, 'DEV_Hair_Cap', col, [M['hair']])
-    sc.add_solidify(cap_obj, 0.006, offset=-1.0)
+    sc.add_solidify(cap_obj, 0.008, offset=-1.0)
     sc.add_subsurf(cap_obj, 1, 2)
 
-    # roots: Fibonacci-sphere samples inside the hairline, jittered
     roots = []
-    total = 190
+    total = 520
     golden = math.pi * (3.0 - math.sqrt(5.0))
     for i in range(total):
         z = 1.0 - 2.0 * (i + 0.5) / total
         r = math.sqrt(1.0 - z * z)
         ph = i * golden
         u = Vector((r * math.cos(ph), r * math.sin(ph), z))
-        u += Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(-1, 1))) * 0.035
+        u += Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(-1, 1))) * 0.03
         u.normalize()
-        if u.z > hairline(u) + 0.06:
+        if u.z > hairline(u) + 0.03:
             roots.append(u)
 
-    clumps = geo.MeshData()
-    R = 0.215
+    locks = geo.MeshData()
     for u in roots:
         n = head_normal(u)
-        flow = (u - WHORL)
-        flow -= n * flow.dot(n)
-        if flow.length < 0.05:
-            flow = Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), 0.0))
-            flow -= n * flow.dot(n)
-        flow.normalize()
-        front = smoothstep(0.2, 0.75, -u.y)
-        sweep = Vector((-1.0, 0.0, 0.0))
-        sweep -= n * sweep.dot(n)
-        flow = (flow + sweep * (0.40 * front)).normalized()
-        flow = Matrix.Rotation(rad(rng.uniform(-22, 22)), 3, n) @ flow
+        tf = _top_front(u)
+        front = smoothstep(115.0, 40.0, abs(_azimuth(u)))
+        fwd, down, back, sweep = (_tangent(n, (0, -1, 0)), _tangent(n, (0, 0, -1)),
+                                  _tangent(n, (0, 1, 0)), _tangent(n, (1, 0, 0)))
+        flow = (fwd * (0.80 * front + 0.6 * smoothstep(0.75, 0.95, u.z)) + sweep * (0.30 * front)
+                + down * (0.40 + 0.45 * (1 - front)) + back * (0.20 * (1 - front)))
+        flow = _tangent(n, flow)
+        flow = Matrix.Rotation(rad(rng.uniform(-28, 28)), 3, n) @ flow
+        is_fringe = front > 0.6 and u.z < hairline(u) + 0.30
+        length = lerp(0.050, 0.120, tf) * rng.uniform(0.85, 1.15) * (1.3 if is_fringe else 1.0)
+        lift = lerp(0.002, 0.036, tf) * rng.uniform(0.4, 1.2)
+        width = lerp(0.032, 0.048, tf) * rng.uniform(0.85, 1.15)
+        lock = hair_lock(u, flow, length, width, lift, rng.uniform(0.4, 0.9), rng.uniform(0.006, 0.014),
+                         rng.uniform(0, math.tau), stop_z=BROW_Z + 0.014 if is_fringe else None)
+        if lock:
+            locks.extend(lock)
 
-        length = lerp(0.085, 0.130, smoothstep(-0.45, 0.75, u.z)) * rng.uniform(0.85, 1.15)
-        is_fringe = front > 0.5 and u.z < 0.75
-        if is_fringe:
-            length *= 1.15
-        lift = 0.006 + (rng.uniform(0.016, 0.034) if rng.random() < 0.35 else rng.uniform(0.0, 0.008))
-        width = rng.uniform(0.050, 0.068)
-
-        pts = []
-        steps = 7
-        axis = u.cross(flow).normalized()
-        for k in range(steps + 1):
-            t = k / steps
-            uk = (Matrix.Rotation(length * t / R, 3, axis) @ u).normalized()
-            p = hair_point(uk) + head_normal(uk) * (lift * t * t - 0.007 * (1 - t))
-            if is_fringe and p.z < BROW_Z + 0.022 and k > 1:
-                break
-            pts.append(p)
-        if len(pts) < 3:
+    # flyaway wisps around the top and fringe, for the messy outline
+    for _ in range(46):
+        az = rad(rng.uniform(-150, 150))
+        uz = rng.uniform(0.45, 0.95)
+        h = math.sqrt(1.0 - uz * uz)
+        u = Vector((h * math.sin(az), -h * math.cos(az), uz)).normalized()
+        if u.z < hairline(u) + 0.08 or _top_front(u) < 0.5:
             continue
-        pts = geo.resample(pts, 10)
-        clump = geo.tube(pts, lambda t, w=width: 0.5 * w * (1.0 - 0.86 * smoothstep(0.28, 1.0, t)) + 0.001,
-                         count=8, up_hint=n, ratio=0.42, cap_start='flat', cap_end='flat',
-                         twist=rng.uniform(-0.45, 0.45))
-        clumps.extend(clump)
-    obj = sc.to_object(clumps, 'DEV_Hair_Clumps', col, [M['hair']], subsurf=(1, 2))
+        n = head_normal(u)
+        flow = _tangent(n, _tangent(n, (0, -1, 0)) * 0.7 + Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), 0)) * 0.6)
+        lock = hair_lock(u, flow, rng.uniform(0.05, 0.085), rng.uniform(0.010, 0.016), rng.uniform(0.02, 0.045),
+                         rng.uniform(0.3, 0.8), 0.008, rng.uniform(0, math.tau), stop_z=BROW_Z + 0.02)
+        if lock:
+            locks.extend(lock)
+    obj = sc.to_object(locks, 'DEV_Hair_Locks', col, [M['hair']], subsurf=(1, 2))
     return cap_obj, obj
 
 
@@ -846,7 +872,7 @@ def widgets(arm, col):
 def bind(arm):
     rig_bones = {
         'DEV_Head': 'head', 'DEV_Ear.L': 'head', 'DEV_Ear.R': 'head', 'DEV_Hair_Cap': 'head',
-        'DEV_Hair_Clumps': 'head', 'DEV_Mouth': 'head',
+        'DEV_Hair_Locks': 'head', 'DEV_Mouth': 'head',
         'DEV_Eye.L': 'eye.L', 'DEV_Eye.R': 'eye.R',
         'DEV_Lid_Upper.L': 'lid_upper_blink.L', 'DEV_Lid_Upper.R': 'lid_upper_blink.R',
         'DEV_Lid_Lower.L': 'lid_lower.L', 'DEV_Lid_Lower.R': 'lid_lower.R',
@@ -1040,24 +1066,7 @@ def store_library(arm):
 # ---------------------------------------------------------------- studio
 
 def build_studio(scn):
-    col = sc.collection('STUDIO')
-    floor = mt.principled('STUDIO_Backdrop', '#08090C', rough=0.45, spec=0.3)
-    studio.cyclorama(col, floor)
-    studio.world(scn, '#05060A', 1.0)
-    tgt = Vector((0, 0, 0.95))
-    studio.area_light('LGT_Key', col, (-1.7, -2.4, 2.3), tgt, 330, '#FFF1E2', 1.3)
-    studio.area_light('LGT_Fill', col, (2.3, -2.0, 1.3), tgt, 70, '#DDE8FF', 2.0)
-    studio.area_light('LGT_Rim_Orange', col, (-1.5, 1.6, 1.8), Vector((0, 0, 1.05)), 460, mt.BWM_ORANGE, 0.7)
-    studio.area_light('LGT_Rim_Cyan', col, (1.6, 1.5, 1.7), Vector((0, 0, 1.05)), 400, mt.BWM_CYAN, 0.7)
-    studio.area_light('LGT_Top', col, (0.0, 0.8, 3.1), Vector((0, 0, 1.25)), 90, '#FFFFFF', 1.0)
-    cams = {
-        'turn': studio.orbit_camera('CAM_Turnaround', col, (0, 0, 0.77), 0, 5.6, 0.86, 100),
-        'face': studio.orbit_camera('CAM_Face', col, (0, 0, HEAD_C.z + 0.01), -14, 1.75, HEAD_C.z + 0.03, 100),
-        'pose': studio.orbit_camera('CAM_Pose_34', col, (0, 0, 0.78), -30, 5.6, 0.95, 100),
-        'hero': studio.orbit_camera('CAM_Hero_9x16', col, (0, 0, 0.86), -22, 2.85, 0.60, 50),
-    }
-    scn.camera = cams['hero']
-    return cams
+    return studio.standard_set(scn, HEAD_C.z)
 
 
 # ---------------------------------------------------------------- main

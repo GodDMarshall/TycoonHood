@@ -169,3 +169,26 @@ def contact_sheet(paths, cols, out_path, pad=12, bg='#0C0D11'):
     out.save()
     bpy.data.images.remove(out)
     return out_path
+
+
+def standard_set(scn, face_z, hero_target_z=0.86):
+    """The shared Build With Marshall review studio: same backdrop, lights and turnaround camera for
+    every character, so renders compare directly. face_z: height of the character's face."""
+    col = sc.collection('STUDIO')
+    floor = mt.principled('STUDIO_Backdrop', '#08090C', rough=0.45, spec=0.3)
+    cyclorama(col, floor)
+    world(scn, '#05060A', 1.0)
+    tgt = Vector((0, 0, 0.95))
+    area_light('LGT_Key', col, (-1.7, -2.4, 2.3), tgt, 330, '#FFF1E2', 1.3)
+    area_light('LGT_Fill', col, (2.3, -2.0, 1.3), tgt, 70, '#DDE8FF', 2.0)
+    area_light('LGT_Rim_Orange', col, (-1.5, 1.6, 1.8), Vector((0, 0, 1.05)), 460, mt.BWM_ORANGE, 0.7)
+    area_light('LGT_Rim_Cyan', col, (1.6, 1.5, 1.7), Vector((0, 0, 1.05)), 400, mt.BWM_CYAN, 0.7)
+    area_light('LGT_Top', col, (0.0, 0.8, 3.1), Vector((0, 0, 1.25)), 90, '#FFFFFF', 1.0)
+    cams = {
+        'turn': orbit_camera('CAM_Turnaround', col, (0, 0, 0.77), 0, 5.6, 0.86, 100),
+        'face': orbit_camera('CAM_Face', col, (0, 0, face_z + 0.01), -14, 1.75, face_z + 0.03, 100),
+        'pose': orbit_camera('CAM_Pose_34', col, (0, 0, 0.78), -30, 5.6, 0.95, 100),
+        'hero': orbit_camera('CAM_Hero_9x16', col, (0, 0, hero_target_z), -22, 2.85, 0.60, 50),
+    }
+    scn.camera = cams['hero']
+    return cams
