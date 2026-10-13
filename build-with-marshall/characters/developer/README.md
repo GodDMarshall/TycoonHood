@@ -1,16 +1,16 @@
-# Developer, "The Creator's Hand": v002
+# Developer, "The Creator's Hand": v003
 
 A stylised young developer at about a 1:4 head-to-body ratio: dark charcoal hoodie, big expressive eyes
-and the orange Build With Marshall ">" on the chest. v002 changes only the hair, which now follows the creator
-reference photo: thick, messy, tousled black hair pushed forward into a heavy fringe, with volume on top,
-short sides that show the ears, and flyaway wisps. Everything else is the approved v001 (the v001 file and
-renders are in the git history).
+and the orange Build With Marshall ">" on the chest. The hair follows the creator reference: thick, straight,
+messy black hair pushed forward into a heavy fringe, with volume on top, short sides that show the ears, and
+flyaway wisps. Only the hair has changed since the approved v001 (v002 tried wavy hair). Earlier files and
+renders are in the git history.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `BWM_Developer_v002.blend` | The editable character, rig, poses, expressions and presentation studio. Saved in Blender 5.2 LTS |
+| `BWM_Developer_v003.blend` | The editable character, rig, poses, expressions and presentation studio. Saved in Blender 5.2 LTS |
 | `renders/sheet_turnaround.png` | Front, ¾, side and back in the rest pose |
 | `renders/sheet_expressions.png` | Neutral, Happy, Awkward, Surprised, Determined |
 | `renders/sheet_poses.png` | Wave (happy), Head-scratch (awkward), Thinking (determined) |
@@ -48,11 +48,11 @@ Select `DEV_Rig`, switch to **Pose Mode**, then:
 The cameras are `CAM_Turnaround`, `CAM_Face`, `CAM_Pose_34` and `CAM_Hero_9x16`. The render settings
 are 1080×1920 Cycles. For the turnaround views, rotate `DEV_Rig` on Z rather than moving the camera.
 
-## Honest limitations of v002
+## Honest limitations of v003
 
 - **It's a scripted base, not a final sculpt.** The forms are clean and readable, but there are no
   sculpted details, wrinkles or fabric folds beyond the rib knit and cuff bunching. The face is simple.
-- **The hair** is about 200 scripted locks plus flyaway wisps over a hair mass (`DEV_Hair_Locks`,
+- **The hair** is about 200 straight, tapered locks plus flyaway wisps over a hair mass (`DEV_Hair_Locks`,
   `DEV_Hair_Cap`). It matches the reference's shape and messiness but not the fine, strand-level texture of
   real hair. The forehead locks stop just above the brows so the brows stay readable for expressions.
 - **Clothing pieces overlap rather than merge.** The sleeves tuck into the torso and the legs into the

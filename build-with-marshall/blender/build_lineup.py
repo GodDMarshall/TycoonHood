@@ -22,9 +22,9 @@ from bwm import studio  # noqa: E402
 
 CHARS = os.path.normpath(os.path.join(HERE, '..', 'characters'))
 CAST = [  # file, collection, rig, (x, y) in the 16:9 line-up, (x, y, turn) in the 9:16 group shot
-    ('developer/BWM_Developer_v002.blend', 'DEV_Developer', 'DEV_Rig', (-0.80, 0.0), (-0.42, -0.25, 10)),
-    ('claude/BWM_Claude_v001.blend', 'CLD_Claude', 'CLD_Rig', (0.0, 0.0), (0.02, 0.00, 0)),
-    ('chatgpt/BWM_ChatGPT_v001.blend', 'GPT_ChatGPT', 'GPT_Rig', (0.82, 0.0), (0.47, 0.32, -14)),
+    ('developer/BWM_Developer_v003.blend', 'DEV_Developer', 'DEV_Rig', (-0.80, 0.0), (-0.42, -0.25, 10)),
+    ('chatgpt/BWM_ChatGPT_v002.blend', 'GPT_ChatGPT', 'GPT_Rig', (0.0, 0.0), (0.02, 0.00, 0)),
+    ('claude/BWM_Claude_v002.blend', 'CLD_Claude', 'CLD_Rig', (0.82, 0.0), (0.47, 0.32, -14)),
 ]
 
 

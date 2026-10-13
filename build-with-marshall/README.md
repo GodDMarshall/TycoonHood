@@ -7,14 +7,14 @@ The visual reference is the approved concept board, [`docs/reference/concept_boa
 
 | Character | Status | Where |
 |---|---|---|
-| Developer, "The Creator's Hand" | **v002**: hair changed to match the creator reference, rest approved | [`characters/developer/`](characters/developer/) |
-| Claude, "The Heartfelt Heart" | **v001, waiting for your review**: floating, soft, orange glow | [`characters/claude/`](characters/claude/) |
-| ChatGPT, "The Implementation Engine" | **v001, waiting for your review**: industrial, teal glow | [`characters/chatgpt/`](characters/chatgpt/) |
+| Developer, "The Creator's Hand" | **v003**: straight, messy hair like the creator reference, rest approved | [`characters/developer/`](characters/developer/) |
+| ChatGPT, "The Friend, The Heartfelt Heart" | **v002, waiting for your review**: floating, soft, cyan glow | [`characters/chatgpt/`](characters/chatgpt/) |
+| Claude, "The Hard Worker, The Implementation Engine" | **v002, waiting for your review**: industrial, amber glow | [`characters/claude/`](characters/claude/) |
 | Line-up (all three, to scale) | Review renders | [`characters/lineup/`](characters/lineup/) |
 
-The robots follow the concept board, which differs from the original written brief. On the board, Claude is
-the floating "Heartfelt Heart" and ChatGPT is the industrial "Implementation Engine". The written brief had
-them the other way round.
+The robots' body designs follow the concept board. Their roles and brand colours follow the written brief:
+ChatGPT is the floating "Heartfelt Heart" (cyan) and Claude is the industrial "Implementation Engine" (amber).
+The board shows those two roles the other way round.
 
 ## Folder layout
 
@@ -50,7 +50,7 @@ $blender = "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
 
 # check any character file
 & $blender --background --factory-startup --python build-with-marshall\blender\verify_blend.py `
-    -- build-with-marshall\characters\claude\BWM_Claude_v001.blend
+    -- build-with-marshall\characters\claude\BWM_Claude_v002.blend
 ```
 
 Rebuilding overwrites that character's `.blend`. If you've hand-edited one, copy it first.

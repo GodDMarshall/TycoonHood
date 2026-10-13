@@ -100,11 +100,11 @@ it in *your* Blender produces a native file for your version.
 |---|---|---|
 | 0. Audit and method | This report and the PC audit script | Done (PC audit pending) |
 | 1. Developer proof of concept | Build script, `.blend` (model, materials, logo, rig, expressions, poses), presentation renders | **Done, waiting for your review** |
-| 2. Developer review | v002: hair matched to the creator reference | **Done** |
-| 3. Claude robot | Floating "Heartfelt Heart" per the concept board | **Done, waiting for your review** |
-| 4. ChatGPT robot | Industrial "Implementation Engine" per the concept board | **Done, waiting for your review** |
+| 2. Developer review | v003: straight, messy hair matched to the creator reference | **Done** |
+| 3. ChatGPT robot | Floating "Heartfelt Heart", cyan (board design, brief's role) | **Done, waiting for your review** |
+| 4. Claude robot | Industrial "Implementation Engine", amber (board design, brief's role) | **Done, waiting for your review** |
 | 5. Line-up | All three to scale, shared lighting, 16:9 line-up and 9:16 group shot | **Done, waiting for your review** |
 | 6. Episode 01 animation | ≤30 s vertical, 1080×1920 | Separate go-ahead |
 
-For phases 3–4: I'll design emblems that are clearly *inspired by* the ChatGPT and Claude marks, as
-you specified, not copies of the official logos (those are OpenAI's and Anthropic's trademarks).
+For phases 3–4: the emblems are clearly *inspired by* the ChatGPT and Claude marks, as you specified, not
+copies of the official logos (those are OpenAI's and Anthropic's trademarks).

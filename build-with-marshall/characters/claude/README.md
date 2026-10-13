@@ -1,39 +1,41 @@
-# Claude, "The Heartfelt Heart": v001
+# Claude, "The Hard Worker, The Implementation Engine": v002
 
-Built to match the approved concept board: a soft, floating companion with a warm-white helmet, a black
-visor showing glowing orange eyes and mouth, an orange sprout on top, orange-ringed ear pods, an egg-shaped
-body with an orange badge carrying a white asterisk-style spark, segmented arms, and a cool glow underneath
-where it hovers. Palette from the board: `#FFF7ED`, `#FF8A3D`, `#FFE0B2`, `#2A2A2A`.
+A compact industrial humanoid. The body design comes from the concept board; the role and brand colours come
+from your written brief. It has warm-white chamfered armour over graphite mechanics, a boxy head with a dark
+screen and glowing amber square eyes, ear modules with orange ring lights, a short antenna, big shoulder
+pads, orange ring lights at the waist and elbows, orange trim, and a dark chest plate with a glowing
+spark-style emblem.
+
+v002 swaps the roles back. The v001 file used this body as ChatGPT.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `BWM_Claude_v001.blend` | The editable robot, rig, poses, expressions and the shared studio. Saved in Blender 5.2 LTS |
+| `BWM_Claude_v002.blend` | The editable robot, rig, poses, expressions and the shared studio. Saved in Blender 5.2 LTS |
 | `renders/sheet_turnaround.png` | Front, ¾, side and back, using the same camera and scale as the Developer |
-| `renders/sheet_expressions.png` | Neutral, Happy, Concerned, Surprised, Thoughtful, Empathetic |
-| `renders/sheet_poses.png` | Open hands (happy), Wave (happy), Heart hands (empathetic) |
+| `renders/sheet_expressions.png` | Neutral, Focused, Amused, Annoyed, Surprised, Thinking |
+| `renders/sheet_poses.png` | Point (focused), Working (neutral), Thinking (thinking) |
 | `renders/cld_hero_9x16.png` | 1080×1920 vertical hero frame |
 
 ## What's inside the .blend
 
-- **Parts:** each one is a named object in `CLD_Body` or `CLD_Face`. The asterisk is `CLD_Emblem`, a separate
-  object with its own material, sitting on the `CLD_Badge` object.
-- **Hard-surface rig (`CLD_Rig`):** every part rides one bone rigidly, so nothing stretches. Move or rotate
-  `chest` to hover, bob and lean. `sprout` lets the leaves wiggle, and `look` slides both eyes across the visor.
-- **Face sliders** on the `face` bone (Properties → Bone → Custom Properties): `eye_happy`, `eye_wide`, `eye_sad`,
-  `eye_blink`, `eye_focus`, `mouth_smile`, `mouth_grin`, `mouth_o`, `mouth_frown`, `mouth_flat` (0–1, mixable).
-  The eyes and mouth are glowing shapes drawn on the visor, as on the board.
+- **Parts:** each one is a named object in `CLD_Body` or `CLD_Face`. The spark is `CLD_Emblem`, a separate object
+  with its own material, sitting on the `CLD_Chest_Plate` object.
+- **Hard-surface rig (`CLD_Rig`):** the same skeleton layout as the Developer (hips, spine, chest, neck, head,
+  clavicles, arms, hands, legs, feet, toes), with every part riding one bone rigidly. `look` slides both
+  eyes across the screen.
+- **Face sliders** on the `face` bone: `eye_squint`, `eye_wide`, `eye_happy`, `eye_annoyed`, `eye_blink`,
+  `mouth_smile`, `mouth_frown`, `mouth_open` (0–1, mixable).
 - **Hand sliders** on `hand.L` and `hand.R`: `fist`, `point`, `open`.
-- **Saved actions:** `CLD_Pose_Rest`, `_OpenHands`, `_Wave`, `_HeartHands` and `CLD_Expr_Neutral`, `_Happy`,
-  `_Concerned`, `_Surprised`, `_Thoughtful`, `_Empathetic`.
+- **Saved actions:** `CLD_Pose_Rest`, `_Point`, `_Working`, `_Thinking` and `CLD_Expr_Neutral`, `_Focused`,
+  `_Amused`, `_Annoyed`, `_Surprised`, `_Thinking`.
 
-## Honest limitations of v001
+## Honest limitations
 
-- **Glow colour.** The glows render a little softer and pinker than the board's punchy orange, because the
-  colour pipeline (AgX) desaturates bright emissive colours. Pushing them brighter turns them white.
-- **Hands.** They're the Developer's hand shape in white, not purpose-built robot hands.
-- **The asterisk** is inspired by Claude's mark, not a copy of the official logo. Using the official logo is
-  your call.
-- **Rendering and compatibility** are the same as the Developer: Cycles on a 4-core CPU, and a Blender 5.2
-  file. Re-run the script for older Blender versions.
+- **Simplified shapes.** The armour plates are clean chamfered blocks, without the panel lines, bolts and
+  layered plating in the board's illustration. Those would come in a detailing pass.
+- **Glow colour.** The amber renders slightly softer and peachier than a pure amber, for the same AgX reason.
+- **Hands.** They're the Developer's hand shape in graphite, not purpose-built mechanical hands.
+- **The spark** is inspired by Claude's mark, not a copy of the official logo.
+- **Rendering and compatibility** are the same as the Developer.

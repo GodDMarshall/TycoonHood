@@ -34,7 +34,7 @@ from bwm import materials as mt  # noqa: E402
 from bwm import scene as sc  # noqa: E402
 from bwm.geo import clamp, lerp, smoothstep  # noqa: E402
 
-VERSION = 'v002'
+VERSION = 'v003'
 
 # ---------------------------------------------------------------- proportions
 # 1.47 m to the crown, head 0.39 m tall: about a 1:4 head-to-body ratio (hair adds ~5 cm).
@@ -349,7 +349,7 @@ def build_face(col, head, M):
 
 # ---------------------------------------------------------------- hair
 
-# Hair follows the creator reference: thick, messy, tousled black hair pushed forward into a heavy fringe,
+# Hair follows the creator reference: thick, straight, messy black hair pushed forward into a heavy fringe,
 # volume on top, short tapered sides with the ears showing, flyaway wisps around the outline.
 HAIRLINE = [(0, 0.46), (25, 0.43), (50, 0.34), (70, 0.25), (90, 0.15), (110, 0.01),
             (130, -0.22), (150, -0.38), (180, -0.46)]
@@ -392,7 +392,7 @@ def _tangent(n, v):
 
 
 def hair_lock(u, flow, length, width, lift, wave_turns, wave_amp, phase, stop_z=None, steps=14, R=0.235):
-    """One tapered lock walked over the hair surface along `flow`, gently waved and lifted at the tip."""
+    """One tapered lock walked over the hair surface along `flow`, lifted at the tip (wave_amp 0 = straight)."""
     n = head_normal(u)
     axis = u.cross(flow).normalized()
     pts = []
@@ -448,12 +448,12 @@ def build_hair(col, M, seed=11):
         flow = (fwd * (0.80 * front + 0.6 * smoothstep(0.75, 0.95, u.z)) + sweep * (0.30 * front)
                 + down * (0.40 + 0.45 * (1 - front)) + back * (0.20 * (1 - front)))
         flow = _tangent(n, flow)
-        flow = Matrix.Rotation(rad(rng.uniform(-28, 28)), 3, n) @ flow
+        flow = Matrix.Rotation(rad(rng.uniform(-36, 36)), 3, n) @ flow
         is_fringe = front > 0.6 and u.z < hairline(u) + 0.30
         length = lerp(0.050, 0.120, tf) * rng.uniform(0.85, 1.15) * (1.3 if is_fringe else 1.0)
         lift = lerp(0.002, 0.036, tf) * rng.uniform(0.4, 1.2)
         width = lerp(0.032, 0.048, tf) * rng.uniform(0.85, 1.15)
-        lock = hair_lock(u, flow, length, width, lift, rng.uniform(0.4, 0.9), rng.uniform(0.006, 0.014),
+        lock = hair_lock(u, flow, length, width, lift, 0.5, rng.uniform(0.0, 0.0025),
                          rng.uniform(0, math.tau), stop_z=BROW_Z + 0.014 if is_fringe else None)
         if lock:
             locks.extend(lock)
@@ -469,7 +469,7 @@ def build_hair(col, M, seed=11):
         n = head_normal(u)
         flow = _tangent(n, _tangent(n, (0, -1, 0)) * 0.7 + Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), 0)) * 0.6)
         lock = hair_lock(u, flow, rng.uniform(0.05, 0.085), rng.uniform(0.010, 0.016), rng.uniform(0.02, 0.045),
-                         rng.uniform(0.3, 0.8), 0.008, rng.uniform(0, math.tau), stop_z=BROW_Z + 0.02)
+                         0.5, 0.0015, rng.uniform(0, math.tau), stop_z=BROW_Z + 0.02)
         if lock:
             locks.extend(lock)
     obj = sc.to_object(locks, 'DEV_Hair_Locks', col, [M['hair']], subsurf=(1, 2))
