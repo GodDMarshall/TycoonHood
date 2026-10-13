@@ -22,9 +22,9 @@ from bwm import studio  # noqa: E402
 
 CHARS = os.path.normpath(os.path.join(HERE, '..', 'characters'))
 CAST = [  # file, collection, rig, (x, y) in the 16:9 line-up, (x, y, turn) in the 9:16 group shot
-    ('developer/BWM_Developer_v002.blend', 'DEV_Developer', 'DEV_Rig', (-0.70, 0.0), (-0.20, -0.25, -12)),
-    ('claude/BWM_Claude_v001.blend', 'CLD_Claude', 'CLD_Rig', (0.0, 0.0), (0.30, -0.05, -24)),
-    ('chatgpt/BWM_ChatGPT_v001.blend', 'GPT_ChatGPT', 'GPT_Rig', (0.72, 0.0), (0.15, 0.55, -18)),
+    ('developer/BWM_Developer_v002.blend', 'DEV_Developer', 'DEV_Rig', (-0.80, 0.0), (-0.42, -0.25, 10)),
+    ('claude/BWM_Claude_v001.blend', 'CLD_Claude', 'CLD_Rig', (0.0, 0.0), (0.02, 0.00, 0)),
+    ('chatgpt/BWM_ChatGPT_v001.blend', 'GPT_ChatGPT', 'GPT_Rig', (0.82, 0.0), (0.47, 0.32, -14)),
 ]
 
 
@@ -62,8 +62,8 @@ def main():
     cams = studio.standard_set(scn, 1.25)
     studio.setup_render(scn, samples=args.samples, res=(1920, 1080))
     col = bpy.data.collections['STUDIO']
-    cams['line'] = studio.orbit_camera('CAM_Lineup_16x9', col, (0, 0, 0.74), 0, 6.2, 0.80, 70)
-    cams['group'] = studio.orbit_camera('CAM_Group_9x16', col, (0.05, 0.1, 0.86), -18, 3.6, 0.70, 45)
+    cams['line'] = studio.orbit_camera('CAM_Lineup_16x9', col, (0, 0, 0.74), 0, 6.6, 0.80, 70)
+    cams['group'] = studio.orbit_camera('CAM_Group_9x16', col, (0.03, 0.05, 0.80), -6, 4.1, 0.72, 35)
     out = os.path.join(CHARS, 'lineup')
     os.makedirs(os.path.join(out, 'renders'), exist_ok=True)
     place(rigs, 'line')

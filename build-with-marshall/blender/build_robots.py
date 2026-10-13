@@ -142,14 +142,32 @@ def arc_shape(W, rise, base, th):
                      lambda s, e: base + rise * e - th * (0.3 + 0.7 * e) / 2)
 
 
-def shape_decal(name, col, mat, target, cx, cz, shapes, offset=0.0012):
+def glow_mesh(fn, frame, rows=8):
+    """Filled shape between an outline's upper and lower curves, split into rows so that a large shape
+    hugs a curved screen instead of cutting through it."""
+    origin, n, tx, tz = frame
+    cols = dev.mouth_layout(fn)
+    md = geo.MeshData()
+
+    def P(x, z):
+        return origin + tx * x + tz * z + n * 0.002
+    left = md.add_verts([P(cols[0][0], cols[0][1])])
+    ids = [md.add_verts([P(c[0], lerp(c[1], c[4], k / rows)) for k in range(rows + 1)]) for c in cols[1:-1]]
+    right = md.add_verts([P(cols[-1][0], cols[-1][1])])
+    for r in range(rows):
+        md.add_face((left, ids[0] + r + 1, ids[0] + r))
+        for a, b in zip(ids, ids[1:]):
+            md.add_face((a + r, a + r + 1, b + r + 1, b + r))
+        md.add_face((ids[-1] + r, ids[-1] + r + 1, right))
+    return md
+
+
+def shape_decal(name, col, mat, target, cx, cz, shapes, offset=0.0015):
     """Glowing face shape (eye or mouth) drawn on a screen, with one shape key per expression shape."""
     frame = dev.face_frame(target, cx, cz)
 
     def mesh(fn):
-        md = dev.mouth_mesh(fn, frame)
-        md.mats = [0] * len(md.faces)
-        return md
+        return glow_mesh(fn, frame)
     obj = sc.to_object(mesh(shapes['Basis']), name, col, [mat], smooth=False)
     obj.shape_key_add(name='Basis', from_mix=False)
     for key, fn in shapes.items():
