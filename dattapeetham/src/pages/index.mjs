@@ -441,7 +441,7 @@ const eventsSection = `<section id="upcoming" class="section ix-events" aria-lab
       ${events.map((e) => `<li class="ix-event" data-filter-item="${e.cat}" data-start="${e.start}" data-end="${e.end}">
         <time class="ix-date" datetime="${e.start}"><b>${e.day}</b><span>${e.mon}</span><small>${e.range}</small></time>
         <div class="ix-event-body">
-          <span class="tag">${e.label}<span class="ix-now" hidden> · On now</span></span>
+          <span class="tag">${e.label}</span>
           <h3>${e.title}</h3>
           <p>${e.text}</p>
           <span class="ix-event-place">${icon('pin', 14)}${e.place}</span>

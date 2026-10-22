@@ -78,6 +78,7 @@
 .wm-core { fill: var(--wm-core); stroke: var(--gold-2); stroke-width: 1; }
 .wm-origin-label { pointer-events: none; paint-order: stroke; stroke: var(--night); stroke-width: 3.5px; stroke-linejoin: round; stroke-opacity: .8; }
 .wm-ol-city { font: italic 500 15px var(--serif); fill: var(--gold-3); }
+html:not([lang="en"]) .wm-ol-city { font-style: normal; }
 .wm-ol-country { font: 600 6.6px var(--sans); letter-spacing: .32em; text-transform: uppercase; fill: var(--cream-on-dark); fill-opacity: .7; }
 
 .wm-twinkles { transition: opacity .6s var(--ease-out); }

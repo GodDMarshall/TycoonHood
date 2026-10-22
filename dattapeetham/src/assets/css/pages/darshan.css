@@ -96,7 +96,7 @@
 .page-darshan .dn-day-events li.is-past b { color: var(--ink-2); font-weight: 500; }
 .page-darshan .dn-day-events li.is-past::before { background: var(--gold-3); border-color: var(--gold-2); }
 .page-darshan .dn-day-events li.is-next::before { background: var(--gold); box-shadow: 0 0 0 5px rgba(201, 164, 92, .22); transform: scale(1.2); }
-.page-darshan .dn-day-events li.is-next b::after { content: "Next"; display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: var(--gold); color: #fffaf0; font: 600 .58rem/1.4 var(--sans); letter-spacing: .12em; text-transform: uppercase; vertical-align: 2px; }
+.page-darshan .dn-day-events li.is-next b::after { content: attr(data-label); display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: var(--gold); color: #fffaf0; font: 600 .58rem/1.4 var(--sans); letter-spacing: .12em; text-transform: uppercase; vertical-align: 2px; }
 
 .page-darshan .dn-day-own { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 22px; font-size: .88rem; color: var(--muted); }
 .page-darshan .dn-day-own .ico { flex: none; margin-top: 3px; color: var(--gold-deep); }
@@ -104,7 +104,7 @@
 .page-darshan .dn-week { list-style: none; margin: 0; padding: 24px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 28px; }
 .page-darshan .dn-week li { position: relative; padding-left: 16px; border-left: 1px solid var(--line-strong); transition: border-color .4s; }
 .page-darshan .dn-week li.is-today { border-left-color: var(--gold); }
-.page-darshan .dn-week li.is-today .dn-week-day::after { content: "Today"; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: rgba(201, 164, 92, .18); color: var(--gold-deep); letter-spacing: .1em; }
+.page-darshan .dn-week li.is-today .dn-week-day::after { content: attr(data-label); margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: rgba(201, 164, 92, .18); color: var(--gold-deep); letter-spacing: .1em; }
 .page-darshan .dn-week-day { display: block; font: 600 .7rem/1.6 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 4px; }
 .page-darshan .dn-week p { margin: 0; font-size: .9rem; color: var(--ink-2); }
 .page-darshan .dn-notice { margin: 0; }
@@ -227,6 +227,10 @@
 .page-darshan .dn-hanuman .dn-time dd { color: var(--muted-on-dark); }
 .page-darshan .dn-stats { margin: 24px 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .page-darshan .dn-stats .stat dt { white-space: nowrap; }
+.page-darshan .dn-stats .stat dt .dn-unit { font-size: inherit; }
+/* a translated unit (e.g. అడుగులు, அடி) sets smaller and may wrap under the number */
+html:not([lang="en"]) .page-darshan .dn-stats .stat dt { white-space: normal; }
+html:not([lang="en"]) .page-darshan .dn-stats .stat dt .dn-unit { font-size: .5em; white-space: nowrap; }
 .page-darshan .dn-hanuman .link-arrow { color: var(--gold-3); }
 
 .page-darshan .dn-forms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: clamp(56px, 7vw, 92px); }
@@ -416,3 +420,26 @@ html:not(.js) .page-darshan .dn-bp-find { display: none; }
   .page-darshan .dn-nav, .page-darshan .dn-nav-lamp { transition: none; }
 }
 .page-darshan .dn-bhairava-art .kb-flame { fill: rgba(226, 200, 142, .55); stroke: var(--gold); stroke-width: 1; }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* a time range kept whole with .dn-nw may wrap on the narrowest phones */
+@media (max-width: 420px) { html:not([lang="en"]) .page-darshan .dn-nw { white-space: normal; } }
+/* TV times: the time column takes its longest entry and every row lines up under it */
+html:not([lang="en"]) .page-darshan .dn-tv ul { grid-template-columns: max-content minmax(0, 1fr); column-gap: 12px; }
+html:not([lang="en"]) .page-darshan .dn-tv li { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; }
+html:not([lang="en"]) .page-darshan .dn-tv b { min-width: 0; white-space: nowrap; }
+/* birth-date pillars: the month column is as wide as the longest translated month */
+html:not([lang="en"]) .page-darshan .dn-bp-grid { grid-template-columns: max-content minmax(0, 1fr); }
+html:not([lang="en"]) .page-darshan .dn-bp-row { grid-column: 1 / -1; grid-template-columns: subgrid; }
+html:not([lang="en"]) .page-darshan .dn-bp-row > span { white-space: nowrap; }
+/* the upcoming label is a phrase in translation: it wraps inside its column */
+html:not([lang="en"]) .page-darshan .dn-upcoming-label { white-space: normal; line-height: 1.5; }
+html:not([lang="en"]) .page-darshan .dn-upcoming-label .ico { flex: none; }
+/* shrine strip: long Tamil names fit their photo column */
+html[lang="ta"] .page-darshan .dn-strip-item span { font-size: .9rem; }
+/* three stats are too narrow for translated labels below 1181px, so the strip becomes a list */
+@media (max-width: 1180px) {
+  html:not([lang="en"]) .page-darshan .dn-stats { grid-template-columns: max-content minmax(0, 1fr); gap: 14px 0; }
+  html:not([lang="en"]) .page-darshan .dn-stats .stat { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
+  html:not([lang="en"]) .page-darshan .dn-stats .stat dd { margin: 0; font-size: .84rem; }
+}

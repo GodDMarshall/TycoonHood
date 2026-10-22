@@ -25,11 +25,25 @@
       .formatToParts(new Date()).forEach(function (p) { o[p.type] = p.value; });
     return { y: +o.year, m: +o.month, d: +o.day, day: WEEK[o.weekday], mins: +o.hour * 60 + +o.minute, label: o.hour + ':' + o.minute, iso: o.year + '-' + o.month + '-' + o.day };
   }
-  function fmt12(m) {
-    var h = Math.floor(m / 60), mm = m % 60, ap = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    return h + ':' + String(mm).padStart(2, '0') + ' ' + ap;
+  // Times written by this script: 'शाम 7:10' / '6 AM' on English pages. Other
+  // languages get the part of the day in words around the 12-hour clock
+  // ('evening %1' → 'ಸಂಜೆ 7:10'), so each can word and order it its own way.
+  var EN = (doc.documentElement.getAttribute('lang') || 'en').slice(0, 2) === 'en';
+  function dayPart(h) {
+    if (h === 4) return 'early morning %1';
+    if (h >= 5 && h < 12) return 'morning %1';
+    if (h === 12) return 'noon %1';
+    if (h >= 13 && h < 16) return 'afternoon %1';
+    if (h >= 16 && h < 19) return 'evening %1';
+    return 'night %1';
   }
+  // short: drop ':00' on the hour ('6 AM' rather than '6:00 AM')
+  function clock12(m, short) {
+    var h = Math.floor(m / 60), mm = m % 60;
+    var t = (h % 12 || 12) + (short && !mm ? '' : ':' + String(mm).padStart(2, '0'));
+    return EN ? t + ' ' + (h >= 12 ? 'PM' : 'AM') : fmt(dayPart(h), t);
+  }
+  function fmt12(m) { return clock12(m, false); }
 
   /* ---------------- 1. sticky shrine navigator ---------------- */
   var nav = $('[data-dn-nav]');
@@ -114,10 +128,10 @@
   /* ---------------- 3. next laser show ---------------- */
   function laserText(now) {
     if (now.day === 0 || now.day === 6) {
-      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return 'आज · ' + fmt12(LASER[i]);
-      return now.day === 6 ? 'कल · ' + fmt12(LASER[0]) : 'शनिवार · ' + fmt12(LASER[0]);
+      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return fmt('Today · %1', fmt12(LASER[i]));
+      return now.day === 6 ? fmt('Tomorrow · %1', fmt12(LASER[0])) : fmt('Saturday · %1', fmt12(LASER[0]));
     }
-    return 'शनिवार · ' + fmt12(LASER[0]);
+    return fmt('Saturday · %1', fmt12(LASER[0]));
   }
 
   // Hours as published on each temple's own page (minutes after midnight IST).
@@ -125,7 +139,7 @@
     sdvt: { wk: [[360, 720], [1020, 1200]], we: [[360, 720], [990, 1230]] },
     hanuman: { wk: [[390, 750], [1020, 1200]], we: [[390, 750], [1020, 1230]] }
   };
-  function short12(m) { return fmt12(m).replace(':00', ''); }
+  function short12(m) { return clock12(m, true); }
   function templeStatus(t, now) {
     var s = now.day === 0 || now.day === 6 ? t.we : t.wk;
     for (var i = 0; i < s.length; i++) {

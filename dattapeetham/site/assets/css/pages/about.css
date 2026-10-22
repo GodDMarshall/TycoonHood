@@ -70,6 +70,9 @@ html:not(.js) .page-about .ab-chron-line i { transform: none; }
 .page-about .ab-triad-halo { fill: none; stroke: var(--gold-2); stroke-width: 1; opacity: .7; }
 .page-about .ab-triad-seed { fill: var(--gold); }
 .page-about .ab-triad-word { font-family: var(--serif); font-size: 27px; font-style: italic; font-weight: 500; fill: var(--ink); text-anchor: middle; }
+/* translated diagram words: upright (Indic scripts have no italic) and sized to stay inside their circle */
+html:not([lang="en"]) .page-about .ab-triad-word { font-size: 23px; font-style: normal; }
+html[lang="ta"] .page-about .ab-triad-word { font-size: 19px; }
 .page-about .ab-triad-sub { font-family: var(--sans); font-size: 8.6px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; fill: var(--gold-deep); text-anchor: middle; }
 .page-about .ab-triad figcaption { margin-top: 14px; font-size: .84rem; color: var(--muted); }
 .page-about .ab-heart-body h3 { font-size: clamp(1.8rem, 3vw, 2.4rem); margin-bottom: 16px; }
@@ -260,4 +263,13 @@ html:not(.js) .page-about .ab-chron-line i { transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .page-about .ab-chron-line i { transform: none; }
   .page-about .ab-dist-bar i { transform: none !important; }
+}
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* chronicle: the year column fits the Tamil "இன்று" (Today), at the same width on every row */
+@media (min-width: 641px) { html[lang="ta"] .page-about .ab-chron-item { grid-template-columns: 128px minmax(0, 1fr) auto; } }
+/* principles and festivals in two-up and three-up rows: long Tamil headings step down to stay whole */
+@media (max-width: 1180px) {
+  html[lang="ta"] .page-about .ab-principle h3 { font-size: 1.3rem; }
+  html[lang="ta"] .page-about .ab-fest-card h4 { font-size: 1.25rem; }
 }

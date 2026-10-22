@@ -348,7 +348,7 @@ function art(uid) {
 </g>
 <g class="a-compass" transform="translate(968 66)">
   <circle r="20"/><path class="a-compass-n" d="M0 -17L5 0L0 4L-5 0Z"/><path d="M0 17L5 0L0 -4L-5 0Z"/>
-  <text y="-25" text-anchor="middle">N</text>
+  <text y="-25" text-anchor="middle" translate="no">N</text>
 </g>
 <rect width="1000" height="720" filter="url(#${uid}-paper)" class="a-grain"/>
 </svg>`;

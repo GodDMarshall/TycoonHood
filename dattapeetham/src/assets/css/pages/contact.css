@@ -329,3 +329,17 @@ html:not(.js) .page-contact .ct-js-only { display: none !important; }
 @media print {
   .ct-form, .ct-map, .ct-social, .ct-copy { display: none !important; }
 }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* email and phone values are Latin: the Indic serif stacks set Latin wider and broke
+   the addresses mid-domain, so these lines keep the Latin serif first */
+html:not([lang="en"]) .page-contact .ct-value a[href^="mailto:"],
+html:not([lang="en"]) .page-contact .ct-value a[href^="tel:"] { font-family: "Cormorant Garamond", "Cormorant", var(--serif); }
+/* the live status is a whole sentence in translation: let it wrap, and keep the stacked
+   visit column from growing to the width of its longest unbreakable line */
+html:not([lang="en"]) .page-contact .ct-live-status b { white-space: normal; }
+@media (max-width: 980px) { html:not([lang="en"]) .page-contact .ct-visit-grid { grid-template-columns: minmax(0, 1fr); } }
+/* day-part ticks under the temple bar ("மதியம் 12", "मध्याह्न 12") set the word over the hour so
+   neighbouring ticks never run into each other */
+html:not([lang="en"]) .page-contact .ct-day-ticks { height: 2.7em; }
+html:not([lang="en"]) .page-contact .ct-day-ticks span { width: min-content; white-space: normal; text-align: center; line-height: 1.3; }

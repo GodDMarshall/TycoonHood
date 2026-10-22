@@ -331,3 +331,11 @@ html:not(.js) .page-music .rs-track i { clip-path: none; }
   .page-music .np-ring, .page-music .record-label { animation: none !important; }
   .page-music .record-sleeve, .page-music .record-disc { transition: none; }
 }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* swara deities: whole names (ஸூர்யநாராயண, மகாவிஷ்ணு) in the four-up tablet row and three-up on phones */
+@media (max-width: 1180px) { html:not([lang="en"]) .page-music .swara-deity { font-size: .96rem; } }
+@media (max-width: 640px) {
+  html:not([lang="en"]) .page-music .swara-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  html:not([lang="en"]) .page-music .swara-deity { font-size: .84rem; }
+}

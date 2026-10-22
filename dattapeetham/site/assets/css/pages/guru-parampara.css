@@ -285,7 +285,7 @@ html:not(.js) .page-guru-parampara .gp-thread { --p: 1; }
 .page-guru-parampara .gp-ep-text b { display: block; font-family: var(--serif); font-size: 1.22rem; font-weight: 600; line-height: 1.1; }
 .page-guru-parampara .gp-ep-text small { display: block; margin-top: 3px; font-size: .78rem; color: var(--muted); }
 .page-guru-parampara .gp-ep[aria-current="true"] .gp-ep-sub { display: none; }
-.page-guru-parampara .gp-ep[aria-current="true"] .gp-ep-text small::after { content: "Now showing"; color: var(--gold-deep); font-weight: 600; }
+.page-guru-parampara .gp-ep[aria-current="true"] .gp-ep-text small::after { content: attr(data-label); color: var(--gold-deep); font-weight: 600; }
 .page-guru-parampara .gp-ep-more { margin: 12px 6px 0 8px; font-size: .9rem; }
 
 /* readable wrapping: no single-word last lines in leads and quotes */

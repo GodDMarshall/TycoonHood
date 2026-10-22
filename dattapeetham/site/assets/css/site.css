@@ -792,8 +792,48 @@ html:not([lang="en"]) .brand-word { letter-spacing: .02em; text-transform: none;
    (Latin set apart with translate="no", like the intro wordmark, keeps its own). */
 html:not([lang="en"]) body :not([translate="no"], [translate="no"] *) { letter-spacing: normal !important; }
 html:not([lang="en"]) .js [data-split] .w, html:not([lang="en"]) .scroll-lit .w { padding-bottom: .15em; }
-html:not([lang="en"]) .nav-top { font-size: .86rem; padding: 12px 8px; }
+/* The reset above matches elements only: generated labels (content: attr(data-label))
+   carry their own tracking on ::before / ::after, so reset those too. */
+html:not([lang="en"]) body :not([translate="no"], [translate="no"] *)::before,
+html:not([lang="en"]) body :not([translate="no"], [translate="no"] *)::after { letter-spacing: normal !important; }
+/* desktop menu only: the burger panel keeps its own larger labels */
+@media (min-width: 1181px), (min-width: 981px) and (hover: hover) {
+  html:not([lang="en"]) .nav-top { font-size: .86rem; padding: 12px 8px; white-space: nowrap; }
+  html:not([lang="en"]) .nav-top::after { left: 8px; right: 8px; }
+}
 html:not([lang="en"]) .btn { line-height: 1.3; }
+/* Tamil menu labels are the longest: a smaller step keeps the full menu on one line from 1181px */
+@media (min-width: 1181px) {
+  html[lang="ta"] .header-inner { gap: 14px; }
+  html[lang="ta"] .nav-top { font-size: .82rem; padding: 12px 6px; }
+  html[lang="ta"] .nav-top::after { left: 6px; right: 6px; }
+}
+@media (max-width: 1180px) and (min-width: 981px) and (hover: hover) {
+  html:not([lang="en"]) .nav-top { padding: 12px 6px; }
+  html:not([lang="en"]) .nav-top::after { left: 6px; right: 6px; }
+}
+/* Utility bar: translated link labels sit closer, and on narrower desktops the Tamil
+   clock gives way so the next ritual reads in full rather than as a stub. */
+html:not([lang="en"]) .util-links a { padding-inline: 9px; }
+@media (max-width: 1239px) { html[lang="ta"] .status-clock { display: none; } }
+/* Hero titles: Indic words are wider than 12ch of the Latin design, so the measure opens
+   up and no word has to break inside itself. */
+html:not([lang="en"]) .page-hero h1 { max-width: 20ch; }
+/* Tamil words are the longest of the four: one size step down on narrow phones keeps the
+   longest ones (சொற்பொழிவுகள், கொண்டாட்டத்தையும்) whole */
+@media (max-width: 400px) {
+  html[lang="ta"] .page-hero h1 { font-size: clamp(1.6rem, 7.6vw, 2rem); }
+  html[lang="ta"] h2 { font-size: clamp(1.45rem, 6.6vw, 1.65rem); }
+}
+/* CTA bands: translated button labels are long, so from 1181px the actions sit under the copy
+   (as they do for three English actions) instead of squeezing the title into a narrow column */
+@media (min-width: 1181px) {
+  html:not([lang="en"]) .cta-box { grid-template-columns: minmax(0, 1fr); }
+  html:not([lang="en"]) .cta-actions { justify-content: flex-start; flex-wrap: wrap; }
+}
+/* ::first-letter takes only the first code point of an Indic cluster (ಶ್ of ಶ್ರೀ),
+   so translated pages set the opening letter in line. */
+html:not([lang="en"]) .dropcap::first-letter { float: none; font-family: inherit; font-size: inherit; line-height: inherit; padding: 0; color: inherit; }
 @media (max-width: 640px) { .lang-btn { padding: 0 8px; } .lang-btn .lang-current { font-size: .72rem; } }
 
 /* ---------- refinements from page reviews ---------- */

@@ -363,3 +363,12 @@ html:not(.js) .page-teachings .says-slide { grid-area: auto; opacity: 1; visibil
   .js .page-teachings .bm-mast .bm-string { stroke-dashoffset: 0; }
   .js .page-teachings .bm-mast .bm-bead, .js .page-teachings .bm-mast .bm-flower { opacity: 1; }
 }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* clamped discourse quotes: a taller line keeps the first line's vowel signs inside the clip */
+html:not([lang="en"]) .page-teachings .tc-quote { line-height: 1.7; }
+/* literature list: a long compound title takes its own line and the language tag drops below it,
+   still at the right, instead of being pushed out of the column */
+html:not([lang="en"]) .page-teachings .lit-list li { flex-wrap: wrap; }
+html:not([lang="en"]) .page-teachings .lit-t { min-width: 0; overflow-wrap: break-word; }
+html:not([lang="en"]) .page-teachings .lit-l { margin-left: auto; }

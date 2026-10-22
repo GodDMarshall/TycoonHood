@@ -2331,6 +2331,49 @@
   ]
  },
  {
+  "k": "Sat, Chit and Ananda: the Triple Principle manifest in Lord Dattatreya",
+  "pages": [
+   "about.html"
+  ]
+ },
+ {
+  "k": "Sat",
+  "pages": [
+   "about.html"
+  ]
+ },
+ {
+  "k": "Existence",
+  "pages": [
+   "about.html"
+  ]
+ },
+ {
+  "k": "Chit",
+  "pages": [
+   "about.html"
+  ]
+ },
+ {
+  "k": "Knowledge",
+  "pages": [
+   "about.html"
+  ]
+ },
+ {
+  "k": "Ananda",
+  "pages": [
+   "about.html",
+   "teachings.html"
+  ]
+ },
+ {
+  "k": "Bliss",
+  "pages": [
+   "about.html"
+  ]
+ },
+ {
   "k": "Sat · Chit · Ananda — the Triple Principle of which Dattatreya is the manifestation",
   "pages": [
    "about.html"
@@ -4189,7 +4232,7 @@
   ]
  },
  {
-  "k": "<1>Live status · this site’s standard hours</1> <2>Checking…</2> <3>Standard hours used across this site: Morning 9:00 AM – 12:00 PM, Evening 3:30 PM – 6:00 PM. Closed on Wednesdays. Timings vary across official sources, and Shuka Vana’s own page says it is temporarily closed for maintenance; please check with the Ashram before visiting.. The live status does not reflect the maintenance closure.</3>",
+  "k": "<1>Live status · this site’s standard hours</1> <2>Checking…</2> <3>Standard hours used across this site: Morning 9:00 AM – 12:00 PM, Evening 3:30 PM – 6:00 PM. Closed on Wednesdays. Timings vary across official sources, and Shuka Vana’s own page says it is temporarily closed for maintenance; please check with the Ashram before visiting. The live status does not reflect the maintenance closure.</3>",
   "pages": [
    "attractions.html"
   ]
@@ -4795,6 +4838,8 @@
   "k": "India",
   "pages": [
    "attractions.html",
+   "centers.html",
+   "index.html",
    "teachings.html"
   ]
  },
@@ -4876,7 +4921,8 @@
   "k": "Germany",
   "pages": [
    "attractions.html",
-   "centers.html"
+   "centers.html",
+   "index.html"
   ]
  },
  {
@@ -4889,7 +4935,8 @@
   "k": "Switzerland",
   "pages": [
    "attractions.html",
-   "centers.html"
+   "centers.html",
+   "index.html"
   ]
  },
  {
@@ -5826,6 +5873,85 @@
   "k": "The Peetham’s directory lists centres in eleven countries beyond India. Choose a country to trace its thread from the Ashram.",
   "pages": [
    "centers.html"
+  ]
+ },
+ {
+  "k": "World map of the Peetham’s reach",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "Golden threads run from Mysuru, India to 11 countries with Datta Peetham centres: United States, United Kingdom, Canada, Australia, New Zealand, Germany, Switzerland, Netherlands, Malaysia, United Arab Emirates, Trinidad and Tobago. Positions are approximate and shown by country only.",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "United States",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "United Kingdom",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "Canada",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "New Zealand",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "Netherlands",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "Malaysia",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "UAE",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "Trinidad &amp; Tobago",
+  "pages": [
+   "centers.html",
+   "index.html"
+  ]
+ },
+ {
+  "k": "Mysuru",
+  "pages": [
+   "centers.html",
+   "index.html",
+   "sri-swamiji.html",
+   "visit.html"
   ]
  },
  {
@@ -7706,21 +7832,7 @@
   ]
  },
  {
-  "k": "United States",
-  "pages": [
-   "centers.html",
-   "index.html"
-  ]
- },
- {
   "k": "Eight Ashrams of Sri Swamiji, coordinated by Datta Yoga Center, USA",
-  "pages": [
-   "centers.html",
-   "index.html"
-  ]
- },
- {
-  "k": "United Kingdom",
   "pages": [
    "centers.html",
    "index.html"
@@ -7731,18 +7843,6 @@
   "pages": [
    "centers.html",
    "index.html"
-  ]
- },
- {
-  "k": "Canada",
-  "pages": [
-   "centers.html"
-  ]
- },
- {
-  "k": "New Zealand",
-  "pages": [
-   "centers.html"
   ]
  },
  {
@@ -7758,19 +7858,7 @@
   ]
  },
  {
-  "k": "Netherlands",
-  "pages": [
-   "centers.html"
-  ]
- },
- {
   "k": "Listed in the official centres directory",
-  "pages": [
-   "centers.html"
-  ]
- },
- {
-  "k": "Malaysia",
   "pages": [
    "centers.html"
   ]
@@ -10457,7 +10545,7 @@
   ]
  },
  {
-  "k": "<1>70</1> ft",
+  "k": "<1>70</1> <2>ft</2>",
   "pages": [
    "darshan.html"
   ]
@@ -10717,6 +10805,12 @@
   ]
  },
  {
+  "k": "Illustration: one main shrine for the Pradhana Bhairava with seven niches around it",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
   "k": "Illustration, not to scale: the Pradhana Bhairava shrine and seven niches.",
   "pages": [
    "darshan.html"
@@ -10901,67 +10995,78 @@
  {
   "k": "Jan",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Feb",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Mar",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Apr",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Jun",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Jul",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Aug",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Sep",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Oct",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Nov",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
   "k": "Dec",
   "pages": [
-   "darshan.html"
+   "darshan.html",
+   "events.html"
   ]
  },
  {
@@ -11304,6 +11409,19 @@
  },
  {
   "k": "Temple timings and the six shrines of the Mysuru Ashram, from Lord Dattatreya to the 70-ft Karya Siddhi Hanuman, with festivals and sevas to book online.",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "Next",
+  "pages": [
+   "darshan.html",
+   "events.html"
+  ]
+ },
+ {
+  "k": "Today",
   "pages": [
    "darshan.html"
   ]
@@ -11660,7 +11778,8 @@
  {
   "k": "Tour · Music",
   "pages": [
-   "events.html"
+   "events.html",
+   "index.html"
   ]
  },
  {
@@ -11709,7 +11828,8 @@
  {
   "k": "Seva Camp",
   "pages": [
-   "events.html"
+   "events.html",
+   "index.html"
   ]
  },
  {
@@ -11746,7 +11866,8 @@
  {
   "k": "Festival",
   "pages": [
-   "events.html"
+   "events.html",
+   "index.html"
   ]
  },
  {
@@ -12226,6 +12347,183 @@
   ]
  },
  {
+  "k": "The festival year: the twelve lunar months set against the Gregorian year",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Illustrative wheel. The outer ring is the Gregorian year from January at the top, with fixed dates: New Year on 1 January, Sri Bala Swamiji’s birthday on 14 January and Sri Swamiji’s birthday on 26 May. The inner ring shows Chaitra to Phalguna at an approximate alignment, with dots for the festivals of each month and an arc for the Chaturmasya, from Guru Purnima to Bhadrapada Purnima.",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "New Year",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Sri Bala Swamiji’s birthday",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Sri Swamiji’s birthday",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Chaitra",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Vaishakha",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Jyeshtha",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Ashadha",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Shravana",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Bhadrapada",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Ashwayuja",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Kartika",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Margashirsha",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Pausha",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Magha",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Phalguna",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Chaturmasya",
+  "pages": [
+   "events.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Yugadi",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Sri Rama Navami",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Sri Jayalakshmi Maata Aradhana",
+  "pages": [
+   "events.html",
+   "guru-parampara.html"
+  ]
+ },
+ {
+  "k": "Guru Purnima",
+  "pages": [
+   "events.html",
+   "sri-swamiji.html"
+  ]
+ },
+ {
+  "k": "Krishna Janmashtami",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Vinayaka Chaturthi",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Chaturmasya concludes",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Devi Navaratri",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Vaikuntha Ekadashi",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Ratha Saptami",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Chaitra to Phalguna",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
   "k": "<1></1>Festival",
   "pages": [
    "events.html"
@@ -12256,19 +12554,7 @@
   ]
  },
  {
-  "k": "Chaitra",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Mar to Apr",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Yugadi",
   "pages": [
    "events.html"
   ]
@@ -12286,12 +12572,6 @@
   ]
  },
  {
-  "k": "Sri Rama Navami",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "Chaitra Shuddha Navami",
   "pages": [
    "events.html"
@@ -12304,22 +12584,9 @@
   ]
  },
  {
-  "k": "Vaishakha",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Apr to May",
   "pages": [
    "events.html"
-  ]
- },
- {
-  "k": "Sri Jayalakshmi Maata Aradhana",
-  "pages": [
-   "events.html",
-   "guru-parampara.html"
   ]
  },
  {
@@ -12349,12 +12616,6 @@
   ]
  },
  {
-  "k": "Jyeshtha",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about May to Jun",
   "pages": [
    "events.html"
@@ -12379,22 +12640,9 @@
   ]
  },
  {
-  "k": "Ashadha",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Jun to Jul",
   "pages": [
    "events.html"
-  ]
- },
- {
-  "k": "Guru Purnima",
-  "pages": [
-   "events.html",
-   "sri-swamiji.html"
   ]
  },
  {
@@ -12452,19 +12700,7 @@
   ]
  },
  {
-  "k": "Shravana",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Jul to Aug",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Krishna Janmashtami",
   "pages": [
    "events.html"
   ]
@@ -12524,19 +12760,7 @@
   ]
  },
  {
-  "k": "Bhadrapada",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Aug to Sep",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Vinayaka Chaturthi",
   "pages": [
    "events.html"
   ]
@@ -12554,12 +12778,6 @@
   ]
  },
  {
-  "k": "Chaturmasya concludes",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "Bhadrapada Purnima",
   "pages": [
    "events.html"
@@ -12572,19 +12790,7 @@
   ]
  },
  {
-  "k": "Ashwayuja",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Sep to Oct",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Devi Navaratri",
   "pages": [
    "events.html"
   ]
@@ -12603,12 +12809,6 @@
  },
  {
   "k": "<1>2026</1><2>Devi Navaratri Festival at Datta Peetham, Mysuru, 11–20 October.</2>",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Kartika",
   "pages": [
    "events.html"
   ]
@@ -12638,19 +12838,7 @@
   ]
  },
  {
-  "k": "Margashirsha",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Nov to Dec",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Vaikuntha Ekadashi",
   "pages": [
    "events.html"
   ]
@@ -12692,12 +12880,6 @@
   ]
  },
  {
-  "k": "Pausha",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Dec to Jan",
   "pages": [
    "events.html"
@@ -12722,19 +12904,7 @@
   ]
  },
  {
-  "k": "Magha",
-  "pages": [
-   "events.html"
-  ]
- },
- {
   "k": "about Jan to Feb",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Ratha Saptami",
   "pages": [
    "events.html"
   ]
@@ -12771,12 +12941,6 @@
  },
  {
   "k": "Photo: Sarva Dosha Hara Shiva, from the Sri Datta Venkateshwara Temple page — not the Shivaratri worship",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Phalguna",
   "pages": [
    "events.html"
   ]
@@ -13346,6 +13510,18 @@
  },
  {
   "k": "The 2026 calendar, month by month",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "This month",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Now",
   "pages": [
    "events.html"
   ]
@@ -14764,6 +14940,12 @@
   ]
  },
  {
+  "k": "Now showing",
+  "pages": [
+   "guru-parampara.html"
+  ]
+ },
+ {
   "k": "Avadhoota Datta Peetham · Sri Ganapathy Sachchidananda Ashram, Mysuru",
   "pages": [
    "index.html"
@@ -15324,6 +15506,13 @@
   ]
  },
  {
+  "k": "Chamundi Hills",
+  "pages": [
+   "index.html",
+   "visit.html"
+  ]
+ },
+ {
   "k": "<1></1> <2><3><4/><5>3</5></3></2> <6>Universal Prayer Hall</6>",
   "pages": [
    "index.html",
@@ -15697,12 +15886,6 @@
   ]
  },
  {
-  "k": "Tour · Music<1> · On now</1>",
-  "pages": [
-   "index.html"
-  ]
- },
- {
   "k": "Japan Ragasagara, Sri Swamiji’s music for meditation and healing, on Sunday 29 November, after the yoga conference “Sound, then Truth” on Saturday 28 November.",
   "pages": [
    "index.html"
@@ -15721,12 +15904,6 @@
   ]
  },
  {
-  "k": "Seva Camp<1> · On now</1>",
-  "pages": [
-   "index.html"
-  ]
- },
- {
   "k": "A camp for the volunteers of Sri Datta Humane Services (SDHS), the charitable organisation founded by Sri Swamiji.",
   "pages": [
    "index.html"
@@ -15740,12 +15917,6 @@
  },
  {
   "k": "<1>20</1><2>Dec 2026</2><3>Sunday</3>",
-  "pages": [
-   "index.html"
-  ]
- },
- {
-  "k": "Festival<1> · On now</1>",
   "pages": [
    "index.html"
   ]
@@ -16917,6 +17088,12 @@
  },
  {
   "k": "Sri Swamiji has taught Datta Kriya Yoga globally for decades, to health, educational and business communities. Camps have been conducted for groups of interested students in several countries.",
+  "pages": [
+   "kriya-yoga.html"
+  ]
+ },
+ {
+  "k": "Illustrative world map with gold markers on the countries where Datta Kriya Yoga camps have been held, linked by arcs to Mysuru",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -18240,12 +18417,6 @@
  },
  {
   "k": "Bhakti Mala",
-  "pages": [
-   "media.html"
-  ]
- },
- {
-  "k": "Chaturmasya",
   "pages": [
    "media.html"
   ]
@@ -20133,6 +20304,12 @@
   ]
  },
  {
+  "k": "Stage",
+  "pages": [
+   "music.html"
+  ]
+ },
+ {
   "k": "<1>Illustrative diagram, not to scale.</1> Seats fan out radially within 140° of the performer, in the shape of a palm-leaf hand fan.",
   "pages": [
    "music.html"
@@ -21841,13 +22018,6 @@
   "k": "Satyanarayana completed His schooling like other children, but found that school had nothing to offer Him. He sang bhajans and kirtans for His friends, and gave Yoga classes in small village huts or on river banks while wandering the countryside as a monk.",
   "pages": [
    "sri-swamiji.html"
-  ]
- },
- {
-  "k": "Mysuru",
-  "pages": [
-   "sri-swamiji.html",
-   "visit.html"
   ]
  },
  {
@@ -24723,12 +24893,6 @@
   ]
  },
  {
-  "k": "Ananda",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "bliss",
   "pages": [
    "teachings.html"
@@ -26465,6 +26629,30 @@
  },
  {
   "k": "Temple darshan is open every day, morning and evening. All times are Indian Standard Time and can change on festival days, so check the <1>official calendar</1> before you travel.",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "12 AM",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "6 AM",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "12 PM",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "6 PM",
   "pages": [
    "visit.html"
   ]
@@ -28962,6 +29150,48 @@
   ]
  },
  {
+  "k": "evening %1",
+  "pages": [
+   "js:darshan.js",
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "early morning %1",
+  "pages": [
+   "js:darshan.js",
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "morning %1",
+  "pages": [
+   "js:darshan.js",
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "noon %1",
+  "pages": [
+   "js:darshan.js",
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "afternoon %1",
+  "pages": [
+   "js:darshan.js",
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "night %1",
+  "pages": [
+   "js:darshan.js",
+   "js:site.js"
+  ]
+ },
+ {
   "k": "Now %1 IST",
   "pages": [
    "js:darshan.js"
@@ -28975,19 +29205,19 @@
   ]
  },
  {
-  "k": "Today · ",
+  "k": "Today · %1",
   "pages": [
    "js:darshan.js"
   ]
  },
  {
-  "k": "Tomorrow · ",
+  "k": "Tomorrow · %1",
   "pages": [
    "js:darshan.js"
   ]
  },
  {
-  "k": "Saturday · ",
+  "k": "Saturday · %1",
   "pages": [
    "js:darshan.js"
   ]
@@ -29067,6 +29297,12 @@
   ]
  },
  {
+  "k": "About %1 to %2",
+  "pages": [
+   "js:events.js"
+  ]
+ },
+ {
   "k": "About Datta Jayanti",
   "pages": [
    "js:events.js"
@@ -29095,6 +29331,12 @@
   "pages": [
    "js:guru-parampara.js",
    "js:media.js"
+  ]
+ },
+ {
+  "k": "On now",
+  "pages": [
+   "js:index.js"
   ]
  },
  {

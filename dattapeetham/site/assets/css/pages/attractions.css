@@ -501,3 +501,20 @@ html:not(.js) .page-attractions .nm-swaras li { --on: 1; }
   .page-attractions .nm-swaras li { --on: 1; }
   .page-attractions .ch-nav { transition: none; }
 }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* chapter tabs: a taller line box so the clipped tab label keeps its vowel signs and repha */
+html:not([lang="en"]) .page-attractions .ch-nav .t { line-height: 1.55; }
+/* stat strips whose Tamil labels outgrow their columns become a list: figure left, label right */
+html[lang="ta"] .page-attractions .sv-team .stats { grid-template-columns: max-content minmax(0, 1fr); gap: 12px 0; }
+html[lang="ta"] .page-attractions .sv-team .stat { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
+html[lang="ta"] .page-attractions .sv-team .stat dd { margin: 0; }
+@media (max-width: 1180px) {
+  html[lang="ta"] .page-attractions .sv-opener .stats { grid-template-columns: max-content minmax(0, 1fr); gap: 12px 0; }
+  html[lang="ta"] .page-attractions .sv-opener .stat { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
+  html[lang="ta"] .page-attractions .sv-opener .stat dd { margin: 0; }
+}
+/* chapter display titles: one step smaller with a taller line, so "விஸ்வம் அருங்காட்சியகம்" and the
+   other long translated names stay whole and their marks clear the line above */
+html:not([lang="en"]) .page-attractions .ch-title { font-size: clamp(2.2rem, 4.6vw, 4.2rem); line-height: 1.25; max-width: 18ch; }
+@media (max-width: 640px) { html:not([lang="en"]) .page-attractions .ch-title { font-size: clamp(1.8rem, 8vw, 2.5rem); } }

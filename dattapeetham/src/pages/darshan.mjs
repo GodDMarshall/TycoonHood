@@ -200,14 +200,14 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
     </div>
     <ol class="dn-day-events">
       ${dayEvents.map(([m, t, title, note], i) => `<li class="${i % 2 ? 'is-low' : 'is-high'}" style="--x:${pct(m)}%" data-m="${m}"${m === 1150 ? ' data-weekend' : ''}>
-        <time>${t}</time><b>${title}</b><small>${note}</small>
+        <time>${t}</time><b data-label="Next">${title}</b><small>${note}</small>
       </li>`).join('')}
     </ol>
   </div>
   <p class="dn-day-own">${icon('info', 16)}<span>The <a href="#venkateshwara">Sri Datta Venkateshwara</a> and <a href="#hanuman">Karya Siddhi Hanuman</a> temples keep their own hours, shown above.</span></p>
   <ul class="dn-week">
-    <li data-days="0"><span class="dn-week-day">Sundays</span><p>Tailabhisheka — oil anointing — to Kaalaagni Shamana Datta, and Sri Swamiji’s darshana in the morning when He is in town.</p></li>
-    <li data-days="5"><span class="dn-week-day">Fridays</span><p>Worship at the Sri Datta Venkateshwara Temple, each Friday when Sri Swamiji is present.</p></li>
+    <li data-days="0"><span class="dn-week-day" data-label="Today">Sundays</span><p>Tailabhisheka — oil anointing — to Kaalaagni Shamana Datta, and Sri Swamiji’s darshana in the morning when He is in town.</p></li>
+    <li data-days="5"><span class="dn-week-day" data-label="Today">Fridays</span><p>Worship at the Sri Datta Venkateshwara Temple, each Friday when Sri Swamiji is present.</p></li>
     <li data-days="0 1 2 3 4 5 6"><span class="dn-week-day">Every evening</span><p>Divya Naama Sankeertana and Kakada Arati — sixteen lamps lit before Lord Datta — in the Universal Prayer Hall.</p></li>
   </ul>
 </div>`;
@@ -381,7 +381,7 @@ const hanuman = `<section id="hanuman" class="section section-dark dn-hanuman" a
       body: `${shrineHead('05', 'The tallest stone statue of Hanuman in India', 'Karya Siddhi Hanuman Temple', 'hanuman')}
         <p>Sri Swamiji consecrated the magnificent 70-ft Karya Siddhi Hanuman statue in 2012, in the precincts of the Sri Datta Venkateshwara Temple Complex. This huge monolithic statue is the tallest stone statue of Lord Hanuman in India.</p>
         <dl class="stats is-light dn-stats" data-stagger>
-          <div class="stat"><dt><span data-count="70">70</span> ft</dt><dd>Monolithic statue of stone</dd></div>
+          <div class="stat"><dt><span data-count="70">70</span> <small class="dn-unit">ft</small></dt><dd>Monolithic statue of stone</dd></div>
           <div class="stat"><dt><span data-count="3">3</span></dt><dd>Forms of Hanuman, as per the Ramayana</dd></div>
           <div class="stat"><dt>2012</dt><dd>Consecrated by Sri Swamiji</dd></div>
         </dl>

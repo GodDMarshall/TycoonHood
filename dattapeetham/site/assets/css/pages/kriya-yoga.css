@@ -375,3 +375,8 @@
   .page-kriya-yoga .ky-record-ring { opacity: .6; }
   .page-kriya-yoga .ky-milestones-line::after { display: none; }
 }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* five components side by side: Tamil names and glosses (பிராணாயாமம், தூய்மைப்படுத்துதல்) step down to stay whole */
+html[lang="ta"] .page-kriya-yoga .ky-component h4 { font-size: 1.2rem; }
+html[lang="ta"] .page-kriya-yoga .ky-gloss { font-size: .9rem; }

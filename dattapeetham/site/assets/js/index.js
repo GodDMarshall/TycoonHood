@@ -86,8 +86,16 @@
         var past = li.dataset.end < today;
         li.hidden = past;
         if (!past) left++;
-        var now = $('.ix-now', li);
-        if (now) now.hidden = !(li.dataset.start <= today && today <= li.dataset.end);
+        // an event under way gets an On now note after its tag (the label is its own string to translate)
+        var tag = $('.tag', li), now = tag && $('.ix-now', tag), on = li.dataset.start <= today && today <= li.dataset.end;
+        if (on && tag && !now) {
+          var onNow = 'On now';
+          now = doc.createElement('span');
+          now.className = 'ix-now';
+          now.textContent = ' · ' + onNow;
+          tag.appendChild(now);
+        }
+        if (now) now.hidden = !on;
       });
       var none = $('[data-events-none]');
       if (none) none.hidden = left > 0;

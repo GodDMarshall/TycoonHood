@@ -27,7 +27,7 @@ const BLOCK = new Set(('html head body main header footer nav section article as
   'template object embed map area menu hgroup search output progress meter').split(' '));
 const SKIP = new Set(['script', 'style', 'svg', 'template', 'textarea', 'code', 'pre', 'math']);
 const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
-export const ATTRS = ['alt', 'title', 'aria-label', 'placeholder', 'data-caption', 'data-title', 'data-note', 'data-name', 'data-q', 'aria-description', 'data-label', 'data-text'];
+export const ATTRS = ['alt', 'title', 'aria-label', 'placeholder', 'data-caption', 'data-title', 'data-note', 'data-name', 'data-q', 'aria-description', 'data-label', 'data-label-now', 'data-text'];
 
 const TOKEN = /<!--[\s\S]*?-->|<![^>]*>|<(\/?)([a-zA-Z][\w:-]*)((?:[^>"']|"[^"]*"|'[^']*')*?)(\/?)>|([^<]+)/g;
 const hasLetter = (s) => /\p{L}/u.test(s);
@@ -46,12 +46,16 @@ function tokenize(html) {
 }
 
 const notranslate = (attrs) => /\btranslate="no"|\bclass="[^"]*\bnotranslate\b/.test(attrs || '');
+// Inside a block-level <svg>, only these elements hold translatable text; each
+// one is its own segment (paths, defs, gradients and icon sprites stay as they are).
+const SVG_TEXT = new Set(['text', 'tspan', 'textpath', 'title', 'desc']);
 
 // Walk tokens, collecting inline runs. `onRun(tokens)` returns replacement raw text.
 function walk(tokens, onRun) {
   const out = [];
   let run = [];
   let skipDepth = 0, skipName = '', noDepth = 0;
+  let svgDepth = 0, svgText = 0;
   const stack = [];
   const flush = () => { if (run.length) { out.push(onRun(run)); run = []; } };
   for (let i = 0; i < tokens.length; i++) {
@@ -64,10 +68,32 @@ function walk(tokens, onRun) {
       if (!skipDepth && run.atomic) { run.push({ t: 'atomic', raw: run.atomic.join('') }); run.atomic = null; }
       continue;
     }
+    if (svgDepth && !noDepth) {
+      const tag = tk.t === 'open' || tk.t === 'close';
+      if (tag && tk.name === 'svg') {
+        flush(); out.push(tk.raw);
+        if (tk.t === 'open' && !tk.self) svgDepth++;
+        else if (tk.t === 'close') { svgDepth--; if (!svgDepth) svgText = 0; }
+        continue;
+      }
+      if (tag && SVG_TEXT.has(tk.name)) {
+        flush(); out.push(tk.raw);
+        if (tk.t === 'open' && !tk.self && notranslate(tk.attrs)) { noDepth = 1; stack.push(tk.name); }
+        else if (tk.t === 'open' && !tk.self) svgText++;
+        else if (tk.t === 'close') svgText = Math.max(0, svgText - 1);
+        continue;
+      }
+      if (!svgText || tk.t === 'comment') { flush(); out.push(tk.raw); continue; }
+      // inline content of a <text>/<tspan>/<textPath>/<title>/<desc>: handled below
+    }
     if (tk.t === 'open' && SKIP.has(tk.name) && !tk.self) {
       // an inline <svg> (icon) inside a text run becomes one atomic placeholder
-      if (tk.name === 'svg' && run.length && !noDepth) { run.atomic = [tk.raw]; skipDepth = 1; skipName = 'svg'; continue; }
+      const inRun = run.some((t) => t.t !== 'comment' && !(t.t === 'text' && !t.raw.trim()));
+      if (tk.name === 'svg' && inRun && !noDepth) { run.atomic = [tk.raw]; skipDepth = 1; skipName = 'svg'; continue; }
       flush();
+      // any other <svg> (diagram, map, chart, or an icon before the text): its
+      // <text>, <title> and <desc> are translated, everything else is kept as is
+      if (tk.name === 'svg' && !noDepth && !notranslate(tk.attrs)) { out.push(tk.raw); svgDepth = 1; svgText = 0; continue; }
       out.push(tk.raw); skipDepth = 1; skipName = tk.name; continue;
     }
     if (noDepth) {
@@ -161,7 +187,8 @@ export function checkTranslation(src, tr, lang) {
   if (typeof tr !== 'string' || !tr.trim()) return 'empty';
   const ph = (s) => (s.match(/<\/?\d+\/?>/g) || []).sort().join(',');
   if (ph(src) !== ph(tr)) return 'placeholders';
-  const nums = (s) => (s.replace(/<\/?\d+\/?>/g, '').match(/\d+/g) || []).sort().join(',');
+  // placeholders become a space, so digits on either side of a tag stay two numbers ('1977</1><2>29')
+  const nums = (s) => (s.replace(/<\/?\d+\/?>/g, ' ').match(/\d+/g) || []).sort().join(',');
   if (nums(src) !== nums(tr)) return 'numbers';
   if (lang.script && tr !== src && !lang.script.test(tr.replace(/<\/?\d+\/?>/g, ''))) return 'script';
   return null;

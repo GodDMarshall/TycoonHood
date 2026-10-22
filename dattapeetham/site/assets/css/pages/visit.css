@@ -110,6 +110,9 @@
 .page-visit .vs-tick { stroke: rgba(239, 228, 204, .32); stroke-width: 1; }
 .page-visit .vs-tick.is-major { stroke: var(--gold-3); stroke-width: 1.6; }
 .page-visit .vs-hour { fill: var(--muted-on-dark); font: 600 11px var(--sans); letter-spacing: .14em; text-anchor: middle; }
+/* translated hours (ಬೆಳಿಗ್ಗೆ 6, காலை 6) are wider: the side ones turn to run along the dial's edge */
+html:not([lang="en"]) .page-visit .vs-hour-l, html:not([lang="en"]) .page-visit .vs-hour-r { transform-box: fill-box; transform-origin: center; transform: rotate(-90deg); }
+html:not([lang="en"]) .page-visit .vs-hour-r { transform: rotate(90deg); }
 .page-visit .vs-glyph { fill: none; stroke: var(--gold-3); stroke-width: 1.4; stroke-linecap: round; opacity: .55; }
 .page-visit .vs-arc-temple { fill: none; stroke: var(--gold-2); stroke-width: 12; stroke-linecap: round; filter: drop-shadow(0 0 7px rgba(232, 180, 92, .55)); }
 .page-visit .vs-arc-shuka { fill: none; stroke: var(--cream-on-dark); stroke-width: 3; stroke-linecap: round; stroke-dasharray: .5 7; opacity: .7; }
@@ -451,3 +454,18 @@
 /* Map detail cards: page-scoped session lines (see placeFixes in visit.mjs) */
 .page-visit .amap-time .vs-sess { display: block; white-space: nowrap; }
 .page-visit .vs-nw { white-space: nowrap; }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* Mysuru guide: the distance column fits "6.5 ಕಿ.ಮೀ." and its Hindi, Tamil and Telugu forms */
+html:not([lang="en"]) .page-visit .vs-place { grid-template-columns: 92px minmax(0, 1fr); }
+@media (max-width: 640px) { html:not([lang="en"]) .page-visit .vs-place { grid-template-columns: 84px minmax(0, 1fr); } }
+/* Tamil: a six-column day is too narrow for its long words, so the rhythm keeps the
+   three-column layout of smaller screens, and the five day-trip titles step down */
+@media (min-width: 1181px) {
+  html[lang="ta"] .page-visit .vs-rhythm-list { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 44px; }
+  html[lang="ta"] .page-visit .vs-rhythm-list::before { display: none; }
+  html[lang="ta"] .page-visit .vs-rhythm-list li { padding-top: 0; }
+  html[lang="ta"] .page-visit .vs-rhythm-list li::before { top: -24px; }
+  html[lang="ta"] .page-visit .vs-rhythm-list li::after { content: ""; position: absolute; top: -18px; left: 20px; right: -26px; height: 1px; background: linear-gradient(90deg, var(--gold-2), rgba(226, 200, 142, .12)); }
+  html[lang="ta"] .page-visit .vs-trip h4 { font-size: 1.16rem; }
+}

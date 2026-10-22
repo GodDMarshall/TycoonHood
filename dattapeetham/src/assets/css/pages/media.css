@@ -474,3 +474,12 @@ html:not(.js) .page-media .reel-nav { display: none; }
   .page-media .reel-screen .video > img { transition: none; }
 }
 .page-media .shelf:focus-visible { outline-offset: -3px; }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* book spines: clip only the length of the title, never the marks above and below its line */
+html:not([lang="en"]) .page-media .spine-title { overflow: visible clip; }
+html:not([lang="en"]) .page-media .spine.is-long .spine-title { line-height: 1.3; }
+/* TV list: the time column takes its longest entry ("காலை 5:40") and every row lines up under it */
+html:not([lang="en"]) .page-media .tv-list { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 14px; }
+html:not([lang="en"]) .page-media .tv-list li { grid-column: 1 / -1; grid-template-columns: subgrid; }
+html:not([lang="en"]) .page-media .tv-list time { white-space: nowrap; }

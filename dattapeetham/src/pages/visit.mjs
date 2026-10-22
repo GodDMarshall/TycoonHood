@@ -202,7 +202,7 @@ function dayDial() {
   }).join('');
   const hourLabels = [[0, '12 AM'], [6, '6 AM'], [12, '12 PM'], [18, '6 PM']].map(([h, label]) => {
     const [x, y] = pt(ang(h * 60), r + 44);
-    return `<text class="vs-hour" x="${x}" y="${y}" dy=".35em">${label}</text>`;
+    return `<text class="vs-hour${h === 6 ? ' vs-hour-l' : h === 18 ? ' vs-hour-r' : ''}" x="${x}" y="${y}" dy=".35em">${label}</text>`;
   }).join('');
   const temple = hours.temple.sessions.map(([a, b]) => `<path class="vs-arc vs-arc-temple" pathLength="100" d="${arcPath(toMin(a), toMin(b), r)}"/>`).join('');
   const shuka = hours.shukaVana.sessions.map(([a, b]) => `<path class="vs-arc-shuka" d="${arcPath(toMin(a), toMin(b), rIn)}"/>`).join('');

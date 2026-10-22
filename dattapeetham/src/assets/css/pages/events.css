@@ -94,7 +94,7 @@
 .page-events .ev-month::after { content: attr(data-num); position: absolute; right: 14px; bottom: 6px; font-family: var(--serif); font-style: italic; font-size: 6.5rem; line-height: .8; font-variant-numeric: lining-nums; color: var(--gold); opacity: .1; pointer-events: none; }
 .page-events .ev-mhead, .page-events .ev-rows, .page-events .ev-none { position: relative; z-index: 1; }
 .page-events .ev-month.is-current { background: var(--paper); border-color: var(--gold-2); box-shadow: inset 0 0 0 1px var(--gold-2), var(--shadow-sm); }
-.page-events .ev-month.is-current::before { content: "This month"; position: absolute; top: -11px; left: 16px; padding: 5px 10px; border-radius: 999px; background: var(--gold-deep); color: #fffaf0; font: 600 .6rem/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; }
+.page-events .ev-month.is-current::before { content: attr(data-label); position: absolute; top: -11px; left: 16px; padding: 5px 10px; border-radius: 999px; background: var(--gold-deep); color: #fffaf0; font: 600 .6rem/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; }
 .page-events .ev-mhead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
 .page-events .ev-mhead h4 { margin: 0; font-size: 1.6rem; }
 .page-events .ev-mcount { min-width: 26px; padding: 5px 8px; border-radius: 999px; background: var(--ivory-2); text-align: center; font: 600 .7rem/1 var(--sans); color: var(--gold-deep); }
@@ -114,8 +114,8 @@
 .page-events .ev-row.is-past .ev-rbody b { font-weight: 400; color: var(--muted); }
 .page-events .ev-row.is-past .ev-rkind { color: var(--line-strong); }
 .page-events .ev-row.is-now time b, .page-events .ev-row.is-next time b { color: var(--gold-deep); font-weight: 600; }
-.page-events .ev-row.is-next .ev-rbody b::after { content: "Next"; display: inline-block; margin-left: 8px; padding: 3px 7px 2px; border-radius: 999px; background: var(--gold-deep); color: #fffaf0; font: 600 .56rem/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; vertical-align: 2px; }
-.page-events .ev-row.is-now .ev-rbody b::after { content: "Now"; }
+.page-events .ev-row.is-next .ev-rbody b::after { content: attr(data-label); display: inline-block; margin-left: 8px; padding: 3px 7px 2px; border-radius: 999px; background: var(--gold-deep); color: #fffaf0; font: 600 .56rem/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; vertical-align: 2px; }
+.page-events .ev-row.is-now .ev-rbody b::after { content: attr(data-label-now); }
 .page-events .ev-month:not(:has(.ev-row:not(.is-filtered))) { display: none; }
 .page-events .ev-empty { margin-top: 18px; }
 .page-events .ev-empty[hidden] { display: none; }
@@ -302,7 +302,7 @@ html:not(.js) .page-events .ec-row { --on: 1; }
 .page-events .ec-row.is-past { opacity: .72; }
 .page-events .ec-row.is-next { opacity: 1; }
 .page-events .ec-row.is-next .ec-node { background: var(--gold); box-shadow: 0 0 0 6px rgba(201, 164, 92, .2), 0 0 18px var(--gold-2); }
-.page-events .ec-row.is-next h4::after { content: "Next"; display: inline-block; margin-left: 10px; padding: 4px 8px 3px; border-radius: 999px; background: var(--gold-3); color: var(--night); font: 700 .58rem/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; vertical-align: 4px; }
+.page-events .ec-row.is-next h4::after { content: attr(data-label); display: inline-block; margin-left: 10px; padding: 4px 8px 3px; border-radius: 999px; background: var(--gold-3); color: var(--night); font: 700 .58rem/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; vertical-align: 4px; }
 .page-events .ec-stills-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin: clamp(52px, 6vw, 76px) 0 22px; padding-top: 28px; border-top: 1px solid rgba(226, 200, 142, .14); }
 .page-events .ec-stills-head .ec-sub { margin: 0; }
 .page-events .ec-stills { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
@@ -471,4 +471,29 @@ html:not(.js) .page-events .ec-row { --on: 1; }
   .page-events .fy-bead, .page-events .ev-plate .ico, .page-events .ec-wave i, .page-events .ec-nlabel::before { animation: none !important; }
   .page-events .fy-ticks { transform: none; }
   .js .page-events .tv-day .tv-mark { opacity: 1; transform: none; }
+}
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* festival ribbon: the longest Tamil month names (ஆஸ்வயுஜ, மார்கசீர்ஷ) fit their twelfth of the row,
+   and in the phone scroller each button grows with its name */
+@media (min-width: 1101px) {
+  html[lang="ta"] .page-events .fy-ribbon button { padding-inline: 2px; }
+  html[lang="ta"] .page-events .fy-ribbon b { font-size: clamp(.74rem, .9vw, .86rem); }
+  html[lang="ta"] .page-events .fy-dot { top: 5px; right: 5px; }
+}
+@media (max-width: 1100px) {
+  html:not([lang="en"]) .page-events .fy-ribbon button { width: auto; min-width: 112px; padding-inline: 18px; }
+  html:not([lang="en"]) .page-events .fy-ribbon b { white-space: nowrap; }
+}
+/* the "until" line under a feature date gets the full width of its date block */
+html:not([lang="en"]) .page-events .ev-fdate small { margin-inline: 3px; }
+/* concert stills: two-line captions keep their marks apart, long names fit the card */
+html:not([lang="en"]) .page-events .ec-still b { line-height: 1.35; }
+@media (max-width: 640px) {
+  html:not([lang="en"]) .page-events .ec-still span { left: 12px; right: 12px; }
+  html[lang="ta"] .page-events .ec-still b { font-size: .94rem; }
+  /* programme stats become a list: three columns are too narrow for translated labels */
+  html:not([lang="en"]) .page-events .pg-stats { grid-template-columns: max-content minmax(0, 1fr); gap: 14px 0; }
+  html:not([lang="en"]) .page-events .pg-stats div { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
+  html:not([lang="en"]) .page-events .pg-stats dd { max-width: none; margin: 0; font-size: .8rem; }
 }

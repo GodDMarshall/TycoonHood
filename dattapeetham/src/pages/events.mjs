@@ -169,14 +169,14 @@ function featureCard(c) {
 
 function monthCard(m) {
   const rows = CAL.filter(([s]) => parse(s).m === m);
-  return `<li class="ev-month" data-month="2026-${String(m + 1).padStart(2, '0')}" data-num="${String(m + 1).padStart(2, '0')}">
+  return `<li class="ev-month" data-month="2026-${String(m + 1).padStart(2, '0')}" data-num="${String(m + 1).padStart(2, '0')}" data-label="This month">
   <header class="ev-mhead"><h4>${MONTH[m]}</h4><span class="ev-mcount" data-ev-count>${rows.length}</span></header>
   <ul class="ev-rows">${rows.map(([s, e, t, p, k]) => {
     const a = parse(s), b = parse(e);
     const sub = s === e ? WD[a.wd] : `to ${b.m === a.m ? b.d : `${b.d} ${MON[b.m]}`}`;
     return `<li class="ev-row" data-filter-item="${k.join(' ')}" data-start="${s}" data-end="${e}">
       <time datetime="${s}"><b>${a.d}</b><small>${sub}</small></time>
-      <span class="ev-rbody"><b>${t}</b>${p ? `<small>${p}</small>` : ''}</span>
+      <span class="ev-rbody"><b data-label="Next" data-label-now="Now">${t}</b>${p ? `<small>${p}</small>` : ''}</span>
       <span class="ev-rkind" title="${kindLabel(k).replace(/&amp;/g, '&')}">${icon(KINDS[k[0]][1], 16)}<span class="visually-hidden">${kindLabel(k)}</span></span>
     </li>`;
   }).join('')}</ul>
@@ -538,7 +538,7 @@ const concertsSection = `<section id="concerts" class="section section-dark ev-c
             return `<li class="ec-row" style="--i:${i}" data-start="${d}" data-end="${d}">
             <span class="ec-node" aria-hidden="true"></span>
             <time datetime="${d}"><b>${a.d}</b><span>${MON[a.m]}</span></time>
-            <div><h4>${t}</h4><p>${p}</p></div>
+            <div><h4 data-label="Next">${t}</h4><p>${p}</p></div>
           </li>`;
           }).join('')}
         </ol>

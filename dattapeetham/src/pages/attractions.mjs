@@ -276,7 +276,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
             <div class="sv-live">
               <span class="sv-live-label">Live status · this site’s standard hours</span>
               <span class="badge" data-badge="shukaVana">Checking…</span>
-              <small>Standard hours used across this site: ${svStandard.rows.map(([a, b]) => `${a} ${b}`).join(', ')}. ${svStandard.note}. The live status does not reflect the maintenance closure.</small>
+              <small>Standard hours used across this site: ${svStandard.rows.map(([a, b]) => `${a} ${b}`).join(', ')}. ${svStandard.note.replace(/\.?$/, '.')} The live status does not reflect the maintenance closure.</small>
             </div>
           </div>
         </article>

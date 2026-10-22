@@ -486,7 +486,7 @@ ${pageHero({
         <ol class="gp-ep-list">
           ${episodes.map(([id, title], i) => `<li><a class="gp-ep" href="https://www.youtube.com/watch?v=${id}" data-ep="${id}" data-ep-title="${esc(title)}"${i === 0 ? ' aria-current="true"' : ''} data-external rel="noopener">
             <span class="gp-ep-num" aria-hidden="true">${pad(i + 1)}</span>
-            <span class="gp-ep-text"><b>Episode ${i + 1}</b><small><span class="gp-ep-sub">Datta Charitram</span></small></span>
+            <span class="gp-ep-text"><b>Episode ${i + 1}</b><small data-label="Now showing"><span class="gp-ep-sub">Datta Charitram</span></small></span>
             <span class="gp-ep-play" aria-hidden="true">${icon('play', 14)}</span>
           </a></li>`).join('')}
         </ol>

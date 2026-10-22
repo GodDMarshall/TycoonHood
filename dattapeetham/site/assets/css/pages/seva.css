@@ -260,3 +260,23 @@ html:not(.js) .page-seva .milestones li { --on: 1; }
   .page-seva .fund-icon { width: 44px; height: 44px; }
   .page-seva .fund-go { top: 16px; right: 14px; }
 }
+
+/* ---------- translated pages: Indic scripts ---------- */
+/* stacked panels: a long translated heading word must not widen the column past the panel */
+@media (max-width: 980px) {
+  html:not([lang="en"]) .page-seva .camp-panel, html:not([lang="en"]) .page-seva .need { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  /* "தேவையுள்ளோருக்கான" is one word: the camp heading steps down until it fits the phone panel */
+  html[lang="ta"] .page-seva .camp-copy h3 { font-size: clamp(1.1rem, 5.4vw, 1.6rem); }
+  /* Annadana figures: two columns are too narrow for 10,00,000+ and the translated labels */
+  html:not([lang="en"]) .page-seva #annadana .split .stats { grid-template-columns: max-content minmax(0, 1fr); gap: 14px 0; }
+  html:not([lang="en"]) .page-seva #annadana .split .stat { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
+  html:not([lang="en"]) .page-seva #annadana .split .stat dd { margin: 0; }
+}
+/* Tamil labels in the Pathashala, camp and relief strips outgrow their columns below 1181px */
+@media (max-width: 1180px) {
+  html[lang="ta"] .page-seva :is(#pathashala .split, .camp-stats, .need) .stats { grid-template-columns: max-content minmax(0, 1fr); gap: 14px 0; }
+  html[lang="ta"] .page-seva :is(#pathashala .split, .camp-stats, .need) .stat { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
+  html[lang="ta"] .page-seva :is(#pathashala .split, .camp-stats, .need) .stat dd { margin: 0; }
+}

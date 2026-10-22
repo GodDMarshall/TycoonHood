@@ -21,10 +21,22 @@
     return { day: DAYS[o.weekday], mins: +o.hour * 60 + +o.minute, label: o.hour + ':' + o.minute };
   }
   function toMins(t) { var a = t.split(':'); return +a[0] * 60 + +a[1]; }
+  // Times written by scripts: '7 AM', 'ಸಂಜೆ 7:10' on English pages. Other
+  // languages get the part of the day in words around the 12-hour clock
+  // ('morning %1' → 'ಬೆಳಿಗ್ಗೆ 7'), so each can word and order it its own way.
+  var EN = (root.getAttribute('lang') || 'en').slice(0, 2) === 'en';
+  function dayPart(h) {
+    if (h === 4) return 'early morning %1';
+    if (h >= 5 && h < 12) return 'morning %1';
+    if (h === 12) return 'noon %1';
+    if (h >= 13 && h < 16) return 'afternoon %1';
+    if (h >= 16 && h < 19) return 'evening %1';
+    return 'night %1';
+  }
   function fmt12(t) {
-    var m = typeof t === 'number' ? t : toMins(t), h = Math.floor(m / 60), mm = m % 60, ap = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    return h + (mm ? ':' + String(mm).padStart(2, '0') : '') + ' ' + ap;
+    var m = typeof t === 'number' ? t : toMins(t), h = Math.floor(m / 60), mm = m % 60;
+    var clock = (h % 12 || 12) + (mm ? ':' + String(mm).padStart(2, '0') : '');
+    return EN ? clock + ' ' + (h >= 12 ? 'PM' : 'AM') : fmt(dayPart(h), clock);
   }
   function status(h, now) {
     var c = h.caution;
@@ -39,7 +51,7 @@
   // Daily rituals at the Karya Siddhi Hanuman temple (from dattapeetham.org).
   var RITUALS = [[420, 'ಹನುಮಾನ್ ಅಭಿಷೇಕ'], [1080, 'ಹನುಮಾನ್ ಆರತಿ']];
   function nextRitual(now) {
-    for (var i = 0; i < RITUALS.length; i++) if (now.mins < RITUALS[i][0]) return RITUALS[i][1] + ' · ' + fmt12(RITUALS[i][0]);
+    for (var i = 0; i < RITUALS.length; i++) if (now.mins < RITUALS[i][0]) return fmt('%1 · %2', RITUALS[i][1], fmt12(RITUALS[i][0]));
     return fmt('%1 · ನಾಳೆ %2', RITUALS[0][1], fmt12(RITUALS[0][0]));
   }
   function tick() {

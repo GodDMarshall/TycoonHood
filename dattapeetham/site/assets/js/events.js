@@ -139,7 +139,9 @@
         if (focus) chosen.focus();
         centre(chosen);
         cname.textContent = $('b', chosen).textContent;
-        csub.textContent = 'about ' + $('small', chosen).textContent.replace(/\s*[–-]\s*/, ' to ');
+        // the month span (Mar – Apr) becomes ABOUT MAR TO APR: one sentence with two slots
+        var span = $('small', chosen).textContent.split(/\s*[–-]\s*/);
+        csub.textContent = span.length > 1 ? fmt('About %1 to %2', span[0], span.slice(1).join(' – ')) : span[0];
       }
       if (window.ScrollTrigger) ScrollTrigger.refresh();
     };
