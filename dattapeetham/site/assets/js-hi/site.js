@@ -104,7 +104,7 @@
   function closeMenu() {
     if (!body.classList.contains('nav-open')) return;
     body.classList.remove('nav-open');
-    if (burger) { burger.setAttribute('aria-expanded', 'false'); burger.setAttribute('aria-label', 'Open menu'); }
+    if (burger) { burger.setAttribute('aria-expanded', 'false'); burger.setAttribute('aria-label', 'मेनू खोलें'); }
     if (main) main.removeAttribute('inert');
     if (DP.lenis) DP.lenis.start();
   }

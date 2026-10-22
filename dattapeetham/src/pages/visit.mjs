@@ -58,6 +58,8 @@ const GEO = { lat: 12.285443, lng: 76.657886 };
 const inr = (n) => '₹' + n.toLocaleString('en-IN');
 const fmt = (t) => { const [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'PM' : 'AM'; return `${h % 12 || 12}${m ? ':' + String(m).padStart(2, '0') : ''} ${ap}`; };
 const templeHours = hours.temple.sessions.map(([a, b]) => `${fmt(a)} – ${fmt(b)}`).join(' · ');
+// Time ranges that never break in the middle; the line may wrap between them.
+const nw = (...list) => list.map((t) => `<span class="vs-nw">${t}</span>`).join(' · ');
 const srcLink = (href, label) => `<p class="vs-source">${icon('info', 14)}<span>Source: <a href="${href}">${label}</a>, dattapeetham.org</span></p>`;
 
 // Auto rickshaw line icon in the sprite's style (not in the shared sprite).
@@ -346,7 +348,7 @@ const timingsSection = `<section id="timings" class="section section-dark vs-tim
       <div class="vs-hours">
         ${hoursCard(tmT.key, 'Temple Darshan', tmT.rows, { img: tmT.img, note: 'Open every day. Timings can change on festival days.' })}
         ${hoursCard(hnT.key, 'Karya Siddhi Hanuman', hnT.rows, { img: hnT.img, note: `Temple hours and the weekend laser show are on <a href="darshan.html#hanuman">Temples &amp; Darshan</a>.` })}
-        ${hoursCard(null, svT.title, [['Homepage', '9 AM – 12 PM · 3:30 – 6 PM'], ['Shuka Vana page', '10 AM – 12:30 PM · 3:30 – 5:30 PM'], ['Holiday', 'Every Wednesday']], { img: svT.img, note: `<span class="vs-check">${icon('info', 14)}Timings vary by source</span>The Peetham’s Shuka Vana page also says it is temporarily closed to the public for maintenance works. Please check with the Ashram before visiting.` })}
+        ${hoursCard(null, svT.title, [['Homepage', nw('9 AM – 12 PM', '3:30 – 6 PM')], ['Shuka Vana page', nw('10 AM – 12:30 PM', '3:30 – 5:30 PM')], ['Holiday', 'Every Wednesday']], { img: svT.img, note: `<span class="vs-check">${icon('info', 14)}Timings vary by source</span>The Peetham’s Shuka Vana page also says it is temporarily closed to the public for maintenance works. Please check with the Ashram before visiting.` })}
       </div>
     </div>
 
@@ -440,11 +442,13 @@ const reach = `<section id="how-to-reach" class="section section-paper vs-reach"
 //   · SGS Hospital: the Avatara timeline dates its inauguration to 1978, while
 //     the hospital page dates the "Holistic Health Centre" to the 1990s; only
 //     what both support is stated.
+// One session per line, so a time range never breaks in the middle.
+const sess = (...list) => list.map((t) => `<span class="vs-sess">${t}</span>`).join(' ');
 const VARY = 'Timings vary across official sources; please check with the Ashram before visiting.';
 const placeFixes = {
   venkateshwara: {
     timing: {
-      rows: [['Weekdays', '6:00 AM – 12:00 PM · 5:00 PM – 8:00 PM'], ['Weekends', '6:00 AM – 12:00 PM · 4:30 PM – 8:30 PM']],
+      rows: [['Weekdays', sess('6:00 AM – 12:00 PM', '5:00 PM – 8:00 PM')], ['Weekends', sess('6:00 AM – 12:00 PM', '4:30 PM – 8:30 PM')]],
       note: `As listed on the <a href="${OFFICIAL}/page/view/sri-datta-venkateshwara-temple">Sri Datta Venkateshwara Temple page</a>.`,
     },
   },
@@ -452,7 +456,7 @@ const placeFixes = {
   'hari-sannidhi': { timing: undefined },
   'shuka-vana': {
     timing: {
-      rows: [['Homepage', '9 AM – 12 PM · 3:30 – 6 PM'], ['Shuka Vana page', '10 AM – 12:30 PM · 3:30 – 5:30 PM']],
+      rows: [['Homepage', sess('9 AM – 12 PM', '3:30 – 6 PM')], ['Shuka Vana page', sess('10 AM – 12:30 PM', '3:30 – 5:30 PM')]],
       note: 'Closed on Wednesdays. Timings vary across official sources, and the Shuka Vana page says it is temporarily closed for maintenance; please check with the Ashram before visiting.',
     },
   },

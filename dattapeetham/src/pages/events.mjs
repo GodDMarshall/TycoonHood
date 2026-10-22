@@ -294,7 +294,7 @@ const FEST = {
   ],
   magha: [
     { name: 'Ratha Saptami', icon: 'sun', tithi: 7, when: 'Magha Shuddha Saptami', y: 'Ratha Saptami at SGS Ashrama, Kurnool, 25 January.', s: '2026-01-25', e: '2026-01-25' },
-    { name: 'Maha Shivaratri', icon: 'moon', tithi: 29, img: P.shiva, alt: 'Sri Swamiji offers a lamp to the lingas of the Sarva Dosha Hara Shiva shrine', note: 'Photo: the Sarva Dosha Hara Shiva shrine at the Sri Datta Venkateshwara temple',
+    { name: 'Maha Shivaratri', icon: 'moon', tithi: 29, img: P.shiva, alt: 'Sri Swamiji offers a lamp to the lingas of the Sarva Dosha Hara Shiva shrine', note: 'Photo: Sarva Dosha Hara Shiva, from the Sri Datta Venkateshwara Temple page — not the Shivaratri worship',
       when: 'Magha Bahula Chaturdashi · a night of vigil', s: '2026-02-15', e: '2026-02-15',
       text: 'On the eve, the Venkatamakhin Memorial and Tyagaraja Aradhana with mass singing of the Pancharatna kritis. On the night itself, Rudra Abhishekam to Sri Sachchidanandeshwara by Sri Swamiji, Sahasra Kalasha Abhishekam by devotees and Sangeeta Seva until late; at 3 AM Sri Swamiji’s discourse on Shiva, and Maha Mangala Arati around 6 AM.',
       y: 'Maha Shivaratri Festival at SGS Ashrama, Mysuru, 15 February.' },

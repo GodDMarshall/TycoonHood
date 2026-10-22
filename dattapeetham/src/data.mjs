@@ -91,7 +91,7 @@ export const timeline = [
   ['1986', 'Sri Jayalakshmi Maata Nitya Annadana Trust established.'],
   ['1987', 'School for the study of the Shastras begins.'],
   ['1988', 'Educational Institution started.'],
-  ['1989', 'Revival of Raga Ragini and Dhyana Chikitsa Kacheri; research and development on Nada Chikitsa.'],
+  ['1989', 'Study of Raga Ragini and Dhyana Chikitsa Kacheri restored; an R&D branch on Nada Chikitsa set up; distribution of CDs for the treatment promoted.'],
   ['1992', 'Ascends the Audumbara Dharma Simhasana.'],
   ['1993', 'Narahareeshwara installed at Jayalakshmipuram. Eight-month Nada Prasara tour.'],
   ['1994', 'Vedic examinations begin; Veda Nidhi and Nada Nidhi titles introduced.'],

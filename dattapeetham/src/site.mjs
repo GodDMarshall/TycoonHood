@@ -51,7 +51,8 @@ export const links = {
   mobileApps: `${OFFICIAL}/mobileapps`,
   ashramCenters: `${OFFICIAL}/ashramcenters`,
   navanatha: `${OFFICIAL}/navanatha-datta-kshetras`,
-  concerts: `${OFFICIAL}/myragasagaraconcerts`,
+  concerts: `${OFFICIAL}/myragasagaraconcerts`, // official concert pages ask visitors to sign in
+  ragaSagara: 'https://www.sgsragasagara.com', // public Raga Sagara site, listed on the bhajans & healing music page
   techSupport: `${OFFICIAL}/techsupport`,
   subscribe: `${OFFICIAL}/subscribe`,
   dattaKriyaYoga: 'https://www.dattakriyayoga.org/',

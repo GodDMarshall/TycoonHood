@@ -453,3 +453,7 @@
      shared ember draw produce NaN alpha and throw (see shared_change_requests) */
   .page-visit .page-hero .embers { display: block; visibility: hidden; }
 }
+
+/* Map detail cards: page-scoped session lines (see placeFixes in visit.mjs) */
+.page-visit .amap-time .vs-sess { display: block; white-space: nowrap; }
+.page-visit .vs-nw { white-space: nowrap; }

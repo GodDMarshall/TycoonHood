@@ -56,7 +56,7 @@ const timingNote = (html, badge) => `<div class="dn-time">
 
 // For shrines whose own pages publish no hours: the Peetham's general timings,
 // labelled as such.
-const generalNote = () => timingNote(`<p><b>General temple timings</b> (Peetham homepage) · ${templeHours}</p><p class="dn-time-more"><a href="#timings">All darshan timings</a></p>`);
+const generalNote = () => timingNote(`<p><b>General temple timings</b> (Peetham homepage)<br>${hours.temple.sessions.map((x) => `<span class="dn-nw">${fmtSession(x)}</span>`).join(' · ')}</p><p class="dn-time-more"><a href="#timings">All darshan timings</a></p>`);
 
 const source = (href, label) => `<a class="link-arrow dn-source" href="${href}">${label} ${icon('external', 14)}</a>`;
 
@@ -140,8 +140,8 @@ const onlineCard = `<article class="dn-live" id="online" aria-labelledby="online
 // Hours cards. The general timings use the shared live badge (hours.temple);
 // the two temples with their own published hours get a page-scoped badge
 // computed in darshan.js from the same figures.
-const hoursBlock = ({ badge, dnBadge, title, rows, note, src, ic }) => `<article class="hours-card dn-hcard" data-reveal="up">
-  ${src ? `<span class="hc-img">${img(src, '')}</span>` : `<span class="hc-img hc-icon">${icon(ic || 'clock', 26)}</span>`}
+const hoursBlock = ({ badge, dnBadge, title, rows, note, src, photo, ic }) => `<article class="hours-card dn-hcard">
+  ${src ? `<span class="hc-img${photo ? ' is-photo' : ''}">${img(src, '')}</span>` : `<span class="hc-img hc-icon">${icon(ic || 'clock', 26)}</span>`}
   <div>
     <h3>${title}</h3>
     <dl>${rows.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl>
@@ -157,13 +157,13 @@ const hoursCards = [
     note: 'General temple timings, daily, as given on the Peetham homepage. The Datta temple opens daily at 6 AM.',
   },
   {
-    dnBadge: 'sdvt', ic: 'temple', title: 'Sri Datta Venkateshwara',
+    dnBadge: 'sdvt', src: pic.sdvtAerial, photo: true, title: 'Sri Datta Venkateshwara',
     rows: [['Weekdays', '6:00 AM – 12:00 PM<br>5:00 PM – 8:00 PM'], ['Weekends', '6:00 AM – 12:00 PM<br>4:30 PM – 8:30 PM']],
     note: `As published on the <a href="${view('sri-datta-venkateshwara-temple')}">temple’s own page</a>.`,
   },
   {
     dnBadge: 'hanuman', src: photos.hanumanIcon, title: 'Karya Siddhi Hanuman',
-    rows: [['Weekdays', '6:30 AM – 12:30 PM<br>5:00 PM – 8:00 PM'], ['Weekends', '6:30 AM – 12:30 PM<br>5:00 PM – 8:30 PM'], ['Laser show', 'Sat &amp; Sun · 7:10, 7:40 &amp; 8:10 PM']],
+    rows: [['Weekdays', '6:30 AM – 12:30 PM<br>5:00 PM – 8:00 PM'], ['Weekends', '6:30 AM – 12:30 PM<br>5:00 PM – 8:30 PM'], ['Laser show', 'Sat &amp; Sun<br>7:10, 7:40 &amp; 8:10&nbsp;PM']],
     note: `As published on the <a href="${view('karya-siddhi-hanuman-temple')}">temple’s own page</a>.`,
   },
 ].map(hoursBlock).join('');
@@ -188,7 +188,7 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
       <span class="eyebrow">A day at the Ashram</span>
       <h3>From the first Abhishekam to the evening lamps</h3>
     </div>
-    <p class="dn-day-legend"><span><i aria-hidden="true"></i>General temple timings · ${templeHours}</span><span data-dn-now-wrap hidden><i class="dn-now-key" aria-hidden="true"></i><span data-dn-now-text></span></span></p>
+    <p class="dn-day-legend"><span><i aria-hidden="true"></i><span>General temple timings · <span class="dn-nw">${templeHours}</span></span></span><span data-dn-now-wrap hidden><i class="dn-now-key" aria-hidden="true"></i><span data-dn-now-text></span></span></p>
   </header>
   <div class="dn-day-track" data-dn-day data-start="${DAY_START}" data-end="${DAY_END}">
     <div class="dn-day-rail" aria-hidden="true">
@@ -216,11 +216,11 @@ const timingsSection = `<section id="timings" class="section section-paper dn-ti
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Daily Darshan', title: 'Temple <span class="em-light">timings</span>', lead: 'Darshan is offered every morning and evening. The Peetham publishes general temple timings, and the Sri Datta Venkateshwara and Karya Siddhi Hanuman temples list their own hours. All timings are in Indian Standard Time.' })}
     <div class="dn-timings">
-      ${onlineCard}
       <div class="dn-hours">
-        ${hoursCards}
+        <div class="dn-hours-grid" data-stagger>${hoursCards}</div>
         <p class="notice dn-notice" data-reveal="up">${icon('info', 18)}<span>Timings vary across official sources; please check with the Ashram before visiting. For festival programmes see the <a href="${links.calendar}">official calendar</a>, and <a href="visit.html">plan your visit</a>. Looking for Shuka Vana? See <a href="attractions.html#shuka-vana">its hours and notice</a>.</span></p>
       </div>
+      ${onlineCard}
     </div>
     ${dayTrack}
   </div>
@@ -354,8 +354,8 @@ const venkateshwara = `<section id="venkateshwara" class="dn-shrine is-paper" ar
           <span class="dn-time-ic">${icon('clock', 18)}</span>
           <div>
             <dl>
-              <dt>Weekdays</dt><dd>6:00 AM – 12:00 PM · 5:00 PM – 8:00 PM</dd>
-              <dt>Weekends</dt><dd>6:00 AM – 12:00 PM · 4:30 PM – 8:30 PM</dd>
+              <dt>Weekdays</dt><dd><span class="dn-nw">6:00 AM – 12:00 PM</span> · <span class="dn-nw">5:00 PM – 8:00 PM</span></dd>
+              <dt>Weekends</dt><dd><span class="dn-nw">6:00 AM – 12:00 PM</span> · <span class="dn-nw">4:30 PM – 8:30 PM</span></dd>
             </dl>
             <p class="dn-contact"><a href="tel:+918212483200">${icon('phone', 14)}(+91) 0821 2483200</a><a href="mailto:sdvt@dattapeetham.com">${icon('mail', 14)}sdvt@dattapeetham.com</a><a href="https://www.sdvtemple.in">${icon('globe', 14)}sdvtemple.in</a></p>
           </div>
@@ -390,8 +390,8 @@ const hanuman = `<section id="hanuman" class="section section-dark dn-hanuman" a
         <div class="dn-time dn-time-table">
           <span class="dn-time-ic">${icon('clock', 18)}</span>
           <div><dl>
-            <dt>Weekdays</dt><dd>6:30 AM – 12:30 PM · 5:00 PM – 8:00 PM</dd>
-            <dt>Weekends</dt><dd>6:30 AM – 12:30 PM · 5:00 PM – 8:30 PM</dd>
+            <dt>Weekdays</dt><dd><span class="dn-nw">6:30 AM – 12:30 PM</span> · <span class="dn-nw">5:00 PM – 8:00 PM</span></dd>
+            <dt>Weekends</dt><dd><span class="dn-nw">6:30 AM – 12:30 PM</span> · <span class="dn-nw">5:00 PM – 8:30 PM</span></dd>
           </dl></div>
         </div>`,
     })}

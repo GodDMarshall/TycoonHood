@@ -107,7 +107,7 @@ ${tiles.length ? quickTiles(tiles, 'overlap', { label: tilesLabel, cols: tilesCo
 }
 
 // Icon tiles row (reference: "Darshan & Puja / Events / Teachings / ...").
-export function quickTiles(items, variant = '', { label = 'On this page', cols } = {}) {
+export function quickTiles(items, variant = '', { label = 'Section shortcuts', cols } = {}) {
   return `<div class="wrap"><nav class="quick-tiles ${variant}" aria-label="${esc(label)}"${cols ? ` style="--cols:${cols}"` : ''} data-stagger>
   ${items.map((t) => `<a class="quick-tile" href="${t.href}"${isExt(t.href) ? ' data-external' : ''}>
     <span class="qt-icon">${icon(t.icon, 28)}</span>

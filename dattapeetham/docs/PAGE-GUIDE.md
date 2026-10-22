@@ -290,6 +290,12 @@ and must be keyboard operable.
   486 for the current species count. The Guinness certificate itself
   (6 May 2017) and the awards page read 468, so never attach 486 to the
   Guinness record.
+- **Nada Mantapa pillars.** One section says the tamburas stand against
+  "each of the 22 pillars", while the same section says the hall is
+  "supported by 72 pillars". Prefer 72, and don't state 22 pillars.
+- **2016 honorary doctorate (World Classical Tamil University).** The
+  certificate reads Doctor of Letters (honoris causa), not a doctorate in
+  music.
 - **Centre directory.** `harvest/centers--ashramcenters.md` holds 86 of the
   92 centres with addresses. Use it on the centres page and say the list is
   partial, linking the official directory.
