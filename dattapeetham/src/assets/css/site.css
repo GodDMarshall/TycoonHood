@@ -785,6 +785,8 @@ html:not([lang="en"]) h3 { font-size: clamp(1.15rem, 1.7vw, 1.4rem); }
 html:not([lang="en"]) .eyebrow, html:not([lang="en"]) .tag, html:not([lang="en"]) .footer-h, html:not([lang="en"]) .process-num,
 html:not([lang="en"]) .crumbs, html:not([lang="en"]) .footer-tagline, html:not([lang="en"]) .badge { letter-spacing: .03em; line-height: 1.5; }
 html:not([lang="en"]) .em-light, html:not([lang="en"]) .serif-quote, html:not([lang="en"]) .mq-track, html:not([lang="en"]) .footer-mantra p { font-style: normal; }
+/* Gradient text only paints inside its box: give Indic marks above and below the line room. */
+html:not([lang="en"]) .em-light { padding: .42em .06em .32em; margin: -.42em -.06em -.32em; }
 html:not([lang="en"]) .brand-word { letter-spacing: .02em; text-transform: none; }
 /* Wide tracking pulls Indic conjuncts and vowel signs apart: no tracking on translated pages
    (Latin set apart with translate="no", like the intro wordmark, keeps its own). */
