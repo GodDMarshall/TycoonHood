@@ -367,8 +367,8 @@ html:not(.js) .page-teachings .says-slide { grid-area: auto; opacity: 1; visibil
 /* ---------- translated pages: Indic scripts ---------- */
 /* clamped discourse quotes: a taller line keeps the first line's vowel signs inside the clip */
 html:not([lang="en"]) .page-teachings .tc-quote { line-height: 1.7; }
-/* literature list: a long compound title takes its own line and the language tag drops below it,
-   still at the right, instead of being pushed out of the column */
+/* literature list: the language tag stays beside the title, and drops below it (still at the right)
+   only when the title holds a compound too long to share the line (ஸ்ரீ லலிதாசஹஸ்ரநாமஸ்தோத்ர) */
 html:not([lang="en"]) .page-teachings .lit-list li { flex-wrap: wrap; }
-html:not([lang="en"]) .page-teachings .lit-t { min-width: 0; overflow-wrap: break-word; }
+html:not([lang="en"]) .page-teachings .lit-t { flex: 1 1 55%; overflow-wrap: break-word; }
 html:not([lang="en"]) .page-teachings .lit-l { margin-left: auto; }
