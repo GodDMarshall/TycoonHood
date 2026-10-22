@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Datta Kriya Yoga (kriya-yoga.html) — page-only styles, scoped to .page-kriya-yoga
+   ========================================================================== */
+
+.page-kriya-yoga { --ky-cycle: 12s; --ky-ease: cubic-bezier(.37, 0, .63, 1); }
+
+/* ---------- hero: the photo is a collage, so calm it under a deeper veil ---------- */
+.page-kriya-yoga .page-hero-media img { filter: saturate(.8) brightness(.82) contrast(1.02); }
+.page-kriya-yoga .page-hero::before {
+  background:
+    linear-gradient(90deg, rgba(10, 19, 16, .9) 0%, rgba(10, 19, 16, .66) 48%, rgba(10, 19, 16, .3) 100%),
+    linear-gradient(0deg, rgba(10, 19, 16, .82) 0%, transparent 60%);
+}
+.page-kriya-yoga .page-hero-media { inset: 0 -4% -30% -4%; }
+.page-kriya-yoga .page-hero h1 { max-width: 12ch; }
+
+/* key words keep their sheen but stay legible on ivory (the shared sheen peaks near white) */
+.page-kriya-yoga .section:not(.section-dark) .em-light { background-image: linear-gradient(105deg, var(--gold-deep) 0%, var(--gold) 28%, var(--gold-2) 48%, var(--gold) 68%, var(--gold-deep) 100%); }
+
+/* ---------- what is DKY ---------- */
+.page-kriya-yoga .ky-what { padding-top: clamp(64px, 8vw, 104px); }
+.page-kriya-yoga .ky-what-split { align-items: start; }
+.page-kriya-yoga .ky-what-split .split-media { position: sticky; top: calc(var(--header-h) + 40px); margin-top: 12px; }
+.page-kriya-yoga .ky-teach .frame-img img { height: 100%; margin-top: 0; }
+.page-kriya-yoga .ky-teach figcaption { right: auto; max-width: calc(100% - 36px); }
+.page-kriya-yoga .ky-what h2 { margin-bottom: .55em; }
+.page-kriya-yoga .ky-first { font-size: 1.08rem; }
+.page-kriya-yoga .ky-what .prose i { font-family: var(--serif); font-size: 1.12em; color: var(--gold-deep); }
+
+.page-kriya-yoga .ky-statement { margin: clamp(80px, 11vw, 140px) auto clamp(56px, 7vw, 88px); }
+.page-kriya-yoga .ky-statement .scroll-lit { max-width: 22ch; }
+
+.page-kriya-yoga .ky-verses { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.2vw, 26px); }
+.page-kriya-yoga .ky-verse {
+  position: relative; margin: 0; padding: 34px 28px 26px; text-align: center;
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  display: flex; flex-direction: column; align-items: center;
+  transition: border-color .4s, box-shadow .5s var(--ease-out), transform .5s var(--ease-out);
+}
+.page-kriya-yoga .ky-verse:hover { border-color: var(--line-strong); box-shadow: var(--shadow-sm); transform: translateY(-3px); }
+.page-kriya-yoga .ky-verse-mark { font-family: var(--deva); font-size: 1.6rem; line-height: 1; color: var(--gold-2); margin-bottom: 16px; }
+.page-kriya-yoga .ky-verse-sk { font-family: var(--serif); font-style: italic; font-size: 1.24rem; line-height: 1.45; color: var(--gold-deep); margin-bottom: 14px; }
+.page-kriya-yoga .ky-verse-en { font-size: .93rem; color: var(--ink-2); margin-bottom: 18px; }
+.page-kriya-yoga .ky-verse footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); width: 84%; font: 600 .68rem/1.4 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+.page-kriya-yoga .ky-note-center { text-align: center; margin: 28px auto 0; max-width: 60ch; font-size: .92rem; color: var(--muted); }
+
+/* ---------- breath section ---------- */
+.page-kriya-yoga .ky-breath-section { overflow: hidden; isolation: isolate; }
+.page-kriya-yoga .ky-breath-section::before {
+  content: ""; position: absolute; left: 70%; top: 50%; width: 900px; height: 900px; margin: -450px 0 0 -450px; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(201, 164, 92, .16), transparent 70%);
+}
+.page-kriya-yoga .ky-breath-grid {
+  position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1.05fr; column-gap: clamp(36px, 6vw, 96px);
+  grid-template-areas: "head visual" "rest visual"; grid-template-rows: auto 1fr;
+}
+.page-kriya-yoga .ky-breath-head { grid-area: head; align-self: end; }
+.page-kriya-yoga .ky-breath-rest { grid-area: rest; align-self: start; }
+.page-kriya-yoga .ky-breath { grid-area: visual; align-self: center; }
+.page-kriya-yoga .ky-breath-head h2 { max-width: 13ch; }
+.page-kriya-yoga .ky-breath-head .lead { color: var(--cream-on-dark); }
+.page-kriya-yoga .ky-illustrative { display: flex; gap: 12px; align-items: flex-start; margin-top: 26px; padding: 14px 18px; border: 1px solid rgba(226, 200, 142, .22); border-radius: var(--radius); background: rgba(255, 246, 226, .04); font-size: .86rem; }
+.page-kriya-yoga .ky-illustrative .ico { color: var(--gold-3); margin-top: 3px; }
+
+.page-kriya-yoga .ky-breath { display: grid; justify-items: center; gap: 22px; }
+.page-kriya-yoga .ky-breath-stage { position: relative; width: min(460px, 82vw); aspect-ratio: 1; display: grid; place-items: center; }
+.page-kriya-yoga .ky-breath-stage > * { grid-area: 1 / 1; }
+.page-kriya-yoga .ky-breath-rings { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.page-kriya-yoga .ky-breath-rings circle { fill: none; stroke: var(--gold-3); vector-effect: non-scaling-stroke; }
+.page-kriya-yoga .ky-breath-rings .r1 { stroke-opacity: .32; stroke-dasharray: 1 7; stroke-linecap: round; stroke-width: 1.4; transform-origin: 200px 200px; animation: spin 160s linear infinite; }
+.page-kriya-yoga .ky-breath-rings .r2 { stroke-opacity: .14; }
+.page-kriya-yoga .ky-breath-rings .r3 { stroke-opacity: .1; }
+.page-kriya-yoga .ky-breath-trace {
+  stroke: #f3d9a1 !important; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100;
+  filter: drop-shadow(0 0 6px rgba(240, 200, 120, .8));
+  animation: ky-trace var(--ky-cycle) var(--ky-ease) infinite;
+}
+.page-kriya-yoga .ky-breath-petals { width: 86%; height: 86%; color: var(--gold-2); opacity: .1; animation: spin 220s linear infinite reverse; }
+.page-kriya-yoga .ky-breath-glow {
+  width: 92%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(246, 211, 138, .42), rgba(232, 180, 92, .14) 55%, transparent 100%);
+  transform: scale(.6); opacity: .55;
+  animation: ky-glow var(--ky-cycle) var(--ky-ease) infinite;
+}
+.page-kriya-yoga .ky-breath-orb {
+  width: 64%; aspect-ratio: 1; border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 246, 224, .96) 0%, rgba(243, 217, 161, .9) 26%, rgba(201, 164, 92, .72) 60%, rgba(138, 102, 40, .5) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 243, 214, .5), inset 0 -18px 50px rgba(138, 102, 40, .35), 0 0 70px rgba(226, 180, 92, .35);
+  transform: scale(.6);
+  animation: ky-breathe var(--ky-cycle) var(--ky-ease) infinite;
+  will-change: transform;
+}
+.page-kriya-yoga .ky-breath-words { position: relative; display: grid; place-items: center; font-family: var(--serif); font-style: italic; font-weight: 500; font-size: clamp(1.5rem, 3vw, 2.1rem); color: var(--forest); letter-spacing: .02em; pointer-events: none; }
+.page-kriya-yoga .ky-breath-words > span { grid-area: 1 / 1; opacity: 0; }
+.page-kriya-yoga .ky-breath-words .w-in { animation: ky-word-in var(--ky-cycle) linear infinite; }
+.page-kriya-yoga .ky-breath-words .w-out { animation: ky-word-out var(--ky-cycle) linear infinite; }
+
+@keyframes ky-breathe { 0%, 100% { transform: scale(.6); } 50% { transform: scale(1); } }
+@keyframes ky-glow { 0%, 100% { transform: scale(.6); opacity: .5; } 50% { transform: scale(1.04); opacity: 1; } }
+@keyframes ky-trace { 0%, 100% { stroke-dashoffset: 100; } 50% { stroke-dashoffset: 0; } }
+@keyframes ky-word-in { 0%, 46%, 100% { opacity: 0; } 6%, 40% { opacity: 1; } }
+@keyframes ky-word-out { 0%, 50%, 96%, 100% { opacity: 0; } 56%, 90% { opacity: 1; } }
+
+.page-kriya-yoga .ky-breath.is-paused :is(.ky-breath-orb, .ky-breath-glow, .ky-breath-trace, .ky-breath-words > span, .ky-breath-petals, .r1),
+.page-kriya-yoga .ky-breath.is-offscreen :is(.ky-breath-orb, .ky-breath-glow, .ky-breath-trace, .ky-breath-words > span, .ky-breath-petals, .r1) { animation-play-state: paused; }
+
+.page-kriya-yoga .ky-breath-toggle {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 10px 20px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(226, 200, 142, .35); background: rgba(255, 246, 226, .04); color: var(--cream-on-dark);
+  font: 500 .82rem/1 var(--sans); letter-spacing: .04em; transition: border-color .3s, background .3s, color .3s;
+}
+.page-kriya-yoga .ky-breath-toggle[hidden] { display: none; }
+.page-kriya-yoga .ky-breath-toggle:hover { border-color: var(--gold-3); background: rgba(255, 246, 226, .1); color: #fff8ea; }
+.page-kriya-yoga .ky-breath-toggle .ico { color: var(--gold-3); }
+
+/* ---------- practice ---------- */
+.page-kriya-yoga .ky-blend-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(36px, 6vw, 88px); align-items: center; }
+.page-kriya-yoga .ky-blend { margin: 0; }
+.page-kriya-yoga .ky-blend-art { position: relative; aspect-ratio: 520 / 340; container-type: inline-size; }
+.page-kriya-yoga .ky-blend-art > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.page-kriya-yoga .ky-ring { fill: none; stroke: var(--gold); stroke-width: 1.4; }
+.page-kriya-yoga .ky-ring.thin { stroke-width: .8; stroke-opacity: .4; }
+.page-kriya-yoga .ky-lens { stroke: none; transition: opacity 1.6s var(--ease-out) .6s; }
+.js .page-kriya-yoga .ky-blend-art svg:not(.is-in) .ky-lens { opacity: 0; }
+.page-kriya-yoga .ky-blend-label { position: absolute; top: 50%; transform: translate(-50%, -50%); text-align: center; display: grid; justify-items: center; gap: 4px; }
+.page-kriya-yoga .ky-blend-label b { font-family: var(--serif); font-weight: 500; font-size: clamp(.95rem, 4.8cqi, 1.75rem); line-height: 1.05; color: var(--ink); }
+.page-kriya-yoga .ky-blend-label small { font-size: clamp(.7rem, 2.5cqi, .84rem); line-height: 1.35; color: var(--muted); max-width: 11em; min-height: 4.05em; }
+.page-kriya-yoga .ky-blend-label.is-a { left: 22%; }
+.page-kriya-yoga .ky-blend-label.is-b { left: 78%; }
+.page-kriya-yoga .ky-blend-label.is-c { left: 50%; max-width: 24cqi; }
+.page-kriya-yoga .ky-blend-label.is-c b { font-size: clamp(.92rem, 3.7cqi, 1.3rem); color: var(--gold-deep); font-style: italic; }
+.page-kriya-yoga .ky-blend-mark { width: clamp(22px, 7cqi, 40px); height: clamp(22px, 7cqi, 40px); color: var(--gold); margin-bottom: 4px; }
+@container (max-width: 460px) { .page-kriya-yoga .ky-blend-label small { display: none; } }
+.page-kriya-yoga .ky-blend figcaption { margin: 22px auto 0; max-width: 46ch; text-align: center; font-family: var(--serif); font-style: italic; font-size: 1.12rem; line-height: 1.45; color: var(--ink-2); }
+
+.page-kriya-yoga .ky-facets h3 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); }
+.page-kriya-yoga .ky-facets > p { color: var(--ink-2); }
+.page-kriya-yoga .ky-facet-list { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 4px; }
+.page-kriya-yoga .ky-facet-list li { display: flex; gap: 18px; align-items: flex-start; padding: 16px 0; border-top: 1px solid var(--line); }
+.page-kriya-yoga .ky-facet-list li:last-child { border-bottom: 1px solid var(--line); }
+.page-kriya-yoga .ky-facet-icon { width: 50px; height: 50px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); background: var(--ivory); }
+.page-kriya-yoga .ky-facet-list b { display: block; font-family: var(--serif); font-size: 1.35rem; font-weight: 600; line-height: 1.2; margin-bottom: 2px; }
+.page-kriya-yoga .ky-facet-list li > span:last-child { font-size: .94rem; color: var(--muted); }
+
+.page-kriya-yoga .ky-sub { text-align: center; margin: clamp(80px, 10vw, 120px) 0 clamp(28px, 4vw, 44px); font-size: clamp(1.9rem, 3.4vw, 2.6rem); }
+.page-kriya-yoga .ky-sub .eyebrow { display: flex; justify-content: center; margin-bottom: 12px; }
+.page-kriya-yoga .ky-components { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; counter-reset: none; }
+.page-kriya-yoga .ky-component {
+  position: relative; padding: 26px 22px 24px; background: var(--ivory); border: 1px solid var(--line); border-radius: var(--radius);
+  overflow: hidden; transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .3s;
+}
+.page-kriya-yoga .ky-component::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: linear-gradient(90deg, var(--gold-3), var(--gold)); transform: scaleX(.18); transform-origin: left; transition: transform .7s var(--ease-out); }
+.page-kriya-yoga .ky-component:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); border-color: var(--line-strong); }
+.page-kriya-yoga .ky-component:hover::before { transform: scaleX(1); }
+.page-kriya-yoga .ky-num { display: block; font: 600 .72rem/1 var(--sans); letter-spacing: .2em; color: var(--gold); margin-bottom: 14px; }
+.page-kriya-yoga .ky-component h4 { font-size: 1.4rem; margin-bottom: 4px; }
+.page-kriya-yoga .ky-gloss { display: block; font-family: var(--serif); font-style: italic; font-size: 1.02rem; color: var(--gold-deep); margin-bottom: 12px; }
+.page-kriya-yoga .ky-component p { margin: 0; font-size: .9rem; color: var(--muted); }
+
+/* ---------- benefits ---------- */
+.page-kriya-yoga .ky-benefit-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.2vw, 24px); }
+.page-kriya-yoga .ky-benefit {
+  position: relative; padding: 30px 28px 26px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .3s;
+}
+.page-kriya-yoga .ky-benefit:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--line-strong); }
+.page-kriya-yoga .ky-benefit-icon { width: 56px; height: 56px; display: grid; place-items: center; margin-bottom: 18px; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); transition: background .4s, color .4s, transform .6s var(--ease-out); }
+.page-kriya-yoga .ky-benefit:hover .ky-benefit-icon { background: var(--gold); color: #fffaf0; transform: rotate(-8deg) scale(1.05); }
+.page-kriya-yoga .ky-benefit h3 { font-size: 1.5rem; margin-bottom: 8px; }
+.page-kriya-yoga .ky-benefit p { margin: 0; font-size: .94rem; color: var(--muted); }
+
+.page-kriya-yoga .ky-also { margin: clamp(36px, 5vw, 52px) auto 0; text-align: center; }
+.page-kriya-yoga .ky-also-title { display: block; font: 600 .7rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.page-kriya-yoga .ky-pills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.page-kriya-yoga .ky-pills li { padding: 8px 15px; border: 1px solid var(--line-strong); border-radius: 999px; background: rgba(255, 252, 246, .7); font-size: .86rem; color: var(--ink-2); }
+
+.page-kriya-yoga .ky-beyond { position: relative; max-width: 880px; margin: clamp(72px, 9vw, 112px) auto 0; text-align: center; }
+.page-kriya-yoga .ky-beyond-mark { width: 54px; height: 54px; margin: 0 auto 20px; color: var(--gold); }
+.page-kriya-yoga .ky-beyond blockquote { margin: 0 0 16px; }
+.page-kriya-yoga .ky-beyond figcaption { font: 600 .7rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+
+/* ---------- worldwide (dark) ---------- */
+.page-kriya-yoga .ky-world { overflow: hidden; }
+.page-kriya-yoga .ky-map { position: relative; max-width: 1180px; margin: 0 auto; }
+.page-kriya-yoga .ky-map-canvas { position: relative; aspect-ratio: 144 / 54; }
+.page-kriya-yoga .ky-map-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.page-kriya-yoga .ky-land { fill: none; stroke: var(--gold-3); stroke-opacity: .26; stroke-width: .52; stroke-linecap: round; }
+.page-kriya-yoga .ky-arc { fill: none; stroke: var(--gold-2); stroke-opacity: .6; stroke-width: .14; stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset 2.4s var(--ease-out); transition-delay: calc(var(--i, 0) * 110ms + 300ms); }
+.js .page-kriya-yoga .ky-map:not(.is-in) .ky-arc { stroke-dashoffset: 1; }
+.page-kriya-yoga .ky-pulse { fill: none; stroke: #fff3d6; stroke-width: .32; stroke-linecap: round; stroke-dasharray: 3 97; stroke-dashoffset: 3; opacity: 0; animation: ky-pulse 7.5s linear infinite; animation-delay: calc(var(--i, 0) * -.68s); }
+.page-kriya-yoga .ky-pulses { transition: opacity 1.2s ease 2.6s; }
+.js .page-kriya-yoga .ky-map:not(.is-in) .ky-pulses { opacity: 0; transition: none; }
+.page-kriya-yoga .ky-map.is-offscreen :is(.ky-pulse, .ky-record-ring, .is-origin .ky-pin-glow) { animation-play-state: paused; }
+@keyframes ky-pulse { 0% { stroke-dashoffset: 3; opacity: 0; } 8% { opacity: 1; } 60% { stroke-dashoffset: -97; opacity: 1; } 66%, 100% { stroke-dashoffset: -97; opacity: 0; } }
+
+.page-kriya-yoga .ky-pin circle { transform-box: fill-box; transform-origin: center; }
+.page-kriya-yoga .ky-pin-glow { opacity: .5; transition: opacity .4s, transform .6s var(--ease-out); }
+.page-kriya-yoga .ky-pin-dot { fill: #f6d38a; transition: fill .3s; }
+.page-kriya-yoga .ky-pin.is-origin .ky-pin-dot { fill: #fff3d6; }
+.page-kriya-yoga .ky-pin.is-origin .ky-pin-glow { opacity: .9; animation: ky-origin 5s ease-in-out infinite alternate; }
+.page-kriya-yoga .ky-pin.is-hot .ky-pin-glow { opacity: 1; transform: scale(1.8); }
+.page-kriya-yoga .ky-pin.is-hot .ky-pin-dot { fill: #fff; }
+@keyframes ky-origin { from { transform: scale(1); } to { transform: scale(1.5); } }
+.page-kriya-yoga .ky-record circle { fill: #fff3d6; }
+.page-kriya-yoga .ky-record .ky-record-ring { fill: none; stroke: #f6d38a; stroke-width: 1; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center; animation: ky-ring 3.6s var(--ease-out) infinite; }
+@keyframes ky-ring { from { transform: scale(.5); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+
+.page-kriya-yoga .ky-map-label {
+  position: absolute; transform: translate(-50%, calc(-100% - 12px)); white-space: nowrap; pointer-events: none;
+  font: 600 .64rem/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--gold-3);
+  text-shadow: 0 1px 10px rgba(5, 10, 8, .9); transition: color .3s;
+}
+.page-kriya-yoga .ky-map-label.is-below { transform: translate(-50%, 12px); }
+.page-kriya-yoga .ky-map-label.is-origin { color: #fff3d6; font-size: .7rem; }
+.page-kriya-yoga .ky-map-label.is-record { color: var(--cream-on-dark); letter-spacing: .14em; }
+.page-kriya-yoga .ky-map-label.is-hot { color: #fff; }
+.page-kriya-yoga .ky-map figcaption { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 18px; font-size: .8rem; color: var(--muted-on-dark); text-align: center; }
+.page-kriya-yoga .ky-map figcaption .ico { color: var(--gold-3); }
+
+.page-kriya-yoga .ky-countries-wrap { margin-top: clamp(26px, 4vw, 40px); }
+.page-kriya-yoga .ky-countries { list-style: none; margin: 0 auto; padding: 0; max-width: 980px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.page-kriya-yoga .ky-countries li {
+  display: inline-flex; align-items: center; gap: 9px; padding: 9px 17px; border-radius: 999px;
+  border: 1px solid rgba(226, 200, 142, .28); background: rgba(255, 246, 226, .03); color: var(--cream-on-dark); font-size: .9rem;
+  transition: border-color .3s, background .3s;
+}
+.page-kriya-yoga .ky-countries li i { width: 6px; height: 6px; border-radius: 50%; background: #f6d38a; box-shadow: 0 0 8px rgba(246, 211, 138, .8); }
+.page-kriya-yoga .ky-countries li.is-more { border-style: dashed; color: var(--muted-on-dark); font-style: italic; font-family: var(--serif); font-size: 1rem; }
+.page-kriya-yoga .ky-countries li[data-c]:hover { border-color: var(--gold-2); background: rgba(201, 164, 92, .12); }
+
+.page-kriya-yoga .ky-record-card { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; overflow: hidden; max-width: 1040px; margin: clamp(64px, 8vw, 104px) auto 0; }
+.page-kriya-yoga .ky-record-media { position: relative; min-height: 360px; background: var(--night); }
+.page-kriya-yoga .ky-record-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.page-kriya-yoga .ky-record-body { padding: clamp(26px, 4vw, 48px); }
+.page-kriya-yoga .ky-record-body h3 { font-size: clamp(1.9rem, 3.2vw, 2.6rem); color: #fbf3e2; margin-bottom: 14px; }
+.page-kriya-yoga .ky-record-body p { color: var(--muted-on-dark); font-size: .96rem; }
+.page-kriya-yoga .ky-record-foot { margin: 20px 0 0; padding-top: 18px; border-top: 1px solid rgba(226, 200, 142, .18); font-family: var(--serif); font-style: italic; font-size: 1.12rem !important; line-height: 1.5; color: var(--cream-on-dark) !important; }
+
+/* ---------- DKYIC ---------- */
+.page-kriya-yoga .ky-accredit { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--paper); color: var(--ink) !important; font-size: .96rem; }
+.page-kriya-yoga .ky-accredit .ico { flex: none; width: 34px; height: 34px; padding: 7px; border-radius: 50%; background: var(--gold); color: #fffaf0; }
+.page-kriya-yoga .ky-accredit small { display: block; margin-top: 4px; font-size: .78rem; letter-spacing: .08em; color: var(--muted); }
+
+.page-kriya-yoga .ky-milestones { position: relative; list-style: none; margin: clamp(72px, 9vw, 112px) 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
+.page-kriya-yoga .ky-milestones-line { position: absolute; left: 10%; right: 10%; top: 52px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-2) 12%, var(--gold-2) 88%, transparent); overflow: hidden; }
+.page-kriya-yoga .ky-milestones-line::after { content: ""; position: absolute; top: -1px; left: 0; width: 12%; height: 3px; border-radius: 3px; background: linear-gradient(90deg, transparent, #fff3d6, transparent); animation: ky-thread 7s linear infinite; }
+@keyframes ky-thread { from { transform: translateX(-100%); } to { transform: translateX(900%); } }
+.page-kriya-yoga .ky-milestones li { position: relative; text-align: center; padding: 0 6px; }
+.page-kriya-yoga .ky-ms-year { display: block; height: 38px; font-family: var(--serif); font-size: 2.1rem; line-height: 1; color: var(--gold-deep); font-variant-numeric: lining-nums; white-space: nowrap; }
+.page-kriya-yoga .ky-ms-dot { display: block; position: relative; z-index: 1; width: 13px; height: 13px; margin: 8px auto 16px; border-radius: 50%; background: var(--ivory); border: 2px solid var(--gold); box-shadow: 0 0 0 5px var(--ivory); }
+.page-kriya-yoga .ky-milestones li p { margin: 0; font-size: .88rem; line-height: 1.5; color: var(--muted); }
+
+.page-kriya-yoga .ky-dkyic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.2vw, 24px); align-items: start; }
+.page-kriya-yoga .ky-panel { height: 100%; }
+.page-kriya-yoga .ky-panel-icon { width: 52px; height: 52px; display: grid; place-items: center; margin-bottom: 16px; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); }
+.page-kriya-yoga .ky-panel h3 { font-size: 1.6rem; margin-bottom: 14px; }
+.page-kriya-yoga .ky-checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.page-kriya-yoga .ky-checks li { display: flex; gap: 10px; align-items: flex-start; font-size: .94rem; color: var(--ink-2); line-height: 1.45; }
+.page-kriya-yoga .ky-checks .ico { color: var(--gold); margin-top: 3px; }
+.page-kriya-yoga .ky-panel-note { font-size: .88rem; color: var(--muted); }
+.page-kriya-yoga .ky-books { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }
+.page-kriya-yoga .ky-books li { display: flex; gap: 12px; align-items: baseline; font-family: var(--serif); font-size: 1.22rem; color: var(--ink); line-height: 1.3; }
+.page-kriya-yoga .ky-books li i { flex: none; width: 7px; height: 7px; transform: rotate(45deg) translateY(-2px); background: var(--gold-2); }
+.page-kriya-yoga .ky-books small { font-family: var(--sans); font-size: .78rem; color: var(--muted); }
+.page-kriya-yoga .ky-panel .info-list { margin-bottom: 18px; }
+.page-kriya-yoga .ky-panel .info-list li > span:last-child { font-size: .92rem; line-height: 1.55; }
+.page-kriya-yoga .ky-panel .info-list a { color: var(--gold-deep); overflow-wrap: anywhere; }
+
+/* ---------- prayers ---------- */
+.page-kriya-yoga .ky-om { display: block; font-size: 2.6rem; line-height: 1; color: var(--gold); margin-bottom: 14px; }
+.page-kriya-yoga .ky-sloka { margin: 4px 0 18px; padding: 4px 0 4px 18px; border-left: 2px solid var(--gold-3); font-family: var(--serif); font-style: italic; font-size: 1.16rem; line-height: 1.65; color: var(--gold-deep); }
+.page-kriya-yoga .ky-prayers .acc-body p:last-child { margin-bottom: 0; font-size: .95rem; }
+
+/* ---------- learn ---------- */
+.page-kriya-yoga .ky-learn .process { max-width: 1020px; margin: 0 auto clamp(56px, 7vw, 88px); }
+.page-kriya-yoga .ky-learn .process-step p a { color: var(--gold-deep); font-weight: 500; }
+.page-kriya-yoga .ky-ways { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.2vw, 24px); }
+.page-kriya-yoga .ky-way {
+  position: relative; display: flex; flex-direction: column; padding: 30px 28px 26px; background: var(--paper);
+  border: 1px solid var(--line); border-radius: var(--radius-lg); transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .3s;
+}
+.page-kriya-yoga .ky-way:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--line-strong); }
+.page-kriya-yoga .ky-way h3 { font-size: 1.55rem; margin-bottom: 8px; }
+.page-kriya-yoga .ky-way h3 a { text-decoration: none; }
+.page-kriya-yoga .ky-way-site h3 a::after, .page-kriya-yoga .ky-way-app h3 a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.page-kriya-yoga .ky-way p { font-size: .94rem; color: var(--muted); }
+.page-kriya-yoga .ky-way-icon { width: 64px; height: 64px; display: grid; place-items: center; margin-bottom: 18px; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); }
+.page-kriya-yoga .ky-app-icon { width: 64px; height: 64px; margin-bottom: 18px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--line); background: #fff; }
+.page-kriya-yoga .ky-app-icon img { width: 100%; height: 100%; object-fit: cover; }
+.page-kriya-yoga .ky-way-cta { margin-top: auto; display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 500; color: var(--gold-deep); }
+.page-kriya-yoga .ky-way-cta .ico:last-child { transition: transform .3s var(--ease-out); }
+.page-kriya-yoga .ky-way:hover .ky-way-cta .ico:last-child { transform: translate(3px, -3px); }
+.page-kriya-yoga .ky-follow { list-style: none; margin: auto 0 0; padding: 0; display: grid; gap: 2px; }
+.page-kriya-yoga .ky-follow a { display: flex; align-items: center; gap: 12px; min-height: 44px; text-decoration: none; font-size: .92rem; color: var(--ink-2); border-top: 1px solid var(--line); overflow-wrap: anywhere; transition: color .25s; }
+.page-kriya-yoga .ky-follow a .ico { color: var(--gold); flex: none; }
+.page-kriya-yoga .ky-follow a:hover { color: var(--gold-deep); }
+.page-kriya-yoga .ky-more-apps { text-align: center; margin: 30px 0 0; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .page-kriya-yoga .ky-components { grid-template-columns: repeat(6, 1fr); }
+  .page-kriya-yoga .ky-component { grid-column: span 2; }
+  .page-kriya-yoga .ky-component:nth-child(4) { grid-column: 2 / span 2; }
+}
+@media (max-width: 980px) {
+  .page-kriya-yoga .ky-breath-grid, .page-kriya-yoga .ky-blend-row { grid-template-columns: 1fr; }
+  .page-kriya-yoga .ky-breath-grid { grid-template-columns: 1fr; grid-template-areas: "head" "visual" "rest"; grid-template-rows: auto; }
+  .page-kriya-yoga .ky-breath { margin: 28px 0 32px; }
+  .page-kriya-yoga .ky-breath-head h2 { max-width: none; }
+  .page-kriya-yoga .ky-what-split .split-media { position: relative; top: auto; margin-top: 0; }
+  .page-kriya-yoga .ky-blend { max-width: 620px; width: 100%; margin: 0 auto; }
+  .page-kriya-yoga .ky-verses, .page-kriya-yoga .ky-benefit-grid, .page-kriya-yoga .ky-ways { grid-template-columns: repeat(2, 1fr); }
+  .page-kriya-yoga .ky-verse:last-child, .page-kriya-yoga .ky-way:last-child { grid-column: 1 / -1; }
+  .page-kriya-yoga .ky-dkyic-grid { grid-template-columns: 1fr 1fr; }
+  .page-kriya-yoga .ky-dkyic-grid .ky-panel:last-child { grid-column: 1 / -1; }
+  .page-kriya-yoga .ky-record-card { grid-template-columns: 1fr; }
+  .page-kriya-yoga .ky-record-media { min-height: 0; aspect-ratio: 16 / 10; }
+  .page-kriya-yoga .ky-record-media img { object-position: center 22%; }
+  .page-kriya-yoga .ky-milestones { grid-template-columns: 1fr; gap: 0; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .page-kriya-yoga .ky-milestones-line { left: 6px; right: auto; top: 8px; bottom: 8px; width: 1px; height: auto; background: linear-gradient(180deg, transparent, var(--gold-2) 6%, var(--gold-2) 94%, transparent); }
+  .page-kriya-yoga .ky-milestones-line::after { width: 3px; height: 14%; left: -1px; top: 0; background: linear-gradient(180deg, transparent, #fff3d6, transparent); animation-name: ky-thread-v; }
+  @keyframes ky-thread-v { from { transform: translateY(-100%); } to { transform: translateY(700%); } }
+  .page-kriya-yoga .ky-milestones li { text-align: left; padding: 0 0 26px 38px; }
+  .page-kriya-yoga .ky-ms-year { height: auto; font-size: 1.7rem; margin-bottom: 6px; }
+  .page-kriya-yoga .ky-ms-dot { position: absolute; left: 0; top: 10px; margin: 0; }
+}
+@media (max-width: 640px) {
+  .page-kriya-yoga .ky-teach figcaption { position: static; margin-top: 28px; padding: 0 0 0 14px; border-left: 2px solid var(--gold-3); border-radius: 0; background: none; backdrop-filter: none; color: var(--muted); }
+  .page-kriya-yoga .ky-teach figcaption b { color: var(--gold-deep); font-size: 1.15rem; }
+  .page-kriya-yoga .ky-teach::before { inset: 12px -10px auto 12px; aspect-ratio: 3 / 2; }
+  .page-kriya-yoga .ky-arc { stroke-width: .3; }
+  .page-kriya-yoga .ky-pulse { stroke-width: .55; }
+  .page-kriya-yoga .ky-verses, .page-kriya-yoga .ky-benefit-grid, .page-kriya-yoga .ky-ways, .page-kriya-yoga .ky-dkyic-grid { grid-template-columns: 1fr; }
+  .page-kriya-yoga .ky-components { grid-template-columns: 1fr; gap: 12px; }
+  .page-kriya-yoga .ky-component, .page-kriya-yoga .ky-component:nth-child(4) { grid-column: auto; padding: 20px 20px 18px; }
+  .page-kriya-yoga .ky-component h4 { display: inline; font-size: 1.3rem; }
+  .page-kriya-yoga .ky-component .ky-num { display: inline-block; margin: 0 12px 0 0; }
+  .page-kriya-yoga .ky-gloss { margin: 4px 0 8px; }
+  .page-kriya-yoga .ky-benefit { padding: 24px 22px 22px; }
+  .page-kriya-yoga .ky-land { stroke-width: .62; stroke-opacity: .3; }
+  .page-kriya-yoga .ky-map-label:not(.is-origin) { display: none; }
+  .page-kriya-yoga .ky-map { overflow: hidden; margin-left: calc(var(--gutter) * -1); margin-right: calc(var(--gutter) * -1); }
+  .page-kriya-yoga .ky-map-canvas { width: 122%; margin-left: -12%; }
+  .page-kriya-yoga .ky-map figcaption { padding: 0 var(--gutter); }
+  .page-kriya-yoga .ky-map figcaption { font-size: .74rem; }
+  .page-kriya-yoga .ky-countries li { padding: 8px 14px; font-size: .84rem; }
+  .page-kriya-yoga .ky-record-media { aspect-ratio: 1 / 1; }
+  .page-kriya-yoga .ky-statement .scroll-lit { font-size: 1.9rem; }
+  .page-kriya-yoga .ky-facet-list li { gap: 14px; }
+  .page-kriya-yoga .ky-facet-icon { width: 44px; height: 44px; }
+}
+
+/* ---------- reduced motion: everything rests in a finished, still state ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .page-kriya-yoga :is(.ky-breath-orb, .ky-breath-glow, .ky-breath-trace, .ky-breath-words > span, .ky-breath-petals, .ky-breath-rings .r1, .ky-pulse, .ky-record-ring, .ky-pin-glow) { animation: none !important; }
+  .page-kriya-yoga .ky-breath-orb { transform: scale(.84); }
+  .page-kriya-yoga .ky-breath-glow { transform: scale(.86); opacity: .85; }
+  .page-kriya-yoga .ky-breath-trace { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .page-kriya-yoga .ky-breath-words { gap: 6px; }
+  .page-kriya-yoga .ky-breath-words > span { grid-area: auto; opacity: 1; }
+  .page-kriya-yoga .ky-breath-words .w-out { border-top: 1px solid rgba(15, 28, 24, .3); padding-top: 6px; }
+  .page-kriya-yoga .ky-breath-toggle { display: none !important; }
+  .page-kriya-yoga .ky-pulses { display: none; }
+  .page-kriya-yoga .ky-record-ring { opacity: .6; }
+  .page-kriya-yoga .ky-milestones-line::after { display: none; }
+}

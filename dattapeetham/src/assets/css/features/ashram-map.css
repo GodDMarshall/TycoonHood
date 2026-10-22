@@ -1,0 +1,312 @@
+/* ==========================================================================
+   Feature: Interactive Ashram Map  (src/features/ashram-map.mjs)
+   An illustrative, hand-drawn plan of the Mysuru Ashram on ivory paper,
+   set in a forest-green section. Pins drop in, the active pin breathes,
+   and a golden thread draws the darshan walk with a bead of light on it.
+   Finished states without JS (.amap without .is-armed) and under reduced
+   motion.
+   ========================================================================== */
+
+.amap { --pin-base: 1; position: relative; }
+.amap [data-cat="shrine"] { --c: var(--gold); --c-num: var(--gold-deep); }
+.amap [data-cat="attraction"] { --c: var(--forest-3); --c-num: var(--forest-3); }
+.amap [data-cat="seva"] { --c: var(--shut); --c-num: var(--shut); }
+
+/* ---------- section shell ---------- */
+/* no stacking context here: the phone bottom sheet must rise above the page */
+.amap-section.section-dark { overflow: hidden; background: radial-gradient(760px 460px at 68% 64%, rgba(201, 164, 92, .14), transparent 70%), radial-gradient(900px 520px at 85% 0%, rgba(201, 164, 92, .13), transparent 60%), radial-gradient(700px 500px at 0% 100%, rgba(201, 164, 92, .08), transparent 60%), linear-gradient(180deg, var(--forest) 0%, var(--night) 100%); }
+
+/* ---------- full layout: layers bar / list / map ---------- */
+.amap-full { display: grid; grid-template-columns: 290px minmax(0, 1fr); grid-template-areas: "bar bar" "list map"; gap: 20px 30px; }
+.amap-bar { grid-area: bar; display: flex; align-items: center; justify-content: flex-end; gap: 14px; flex-wrap: wrap; }
+.amap-bar-label { font: 600 .7rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--gold-3); }
+.amap-layers { display: flex; flex-wrap: wrap; gap: 8px; }
+.amap-switch { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; padding: 8px 16px 8px 10px; border-radius: 999px; border: 1px solid rgba(226, 200, 142, .26); background: rgba(255, 246, 226, .04); color: var(--cream-on-dark); font: 500 .84rem/1 var(--sans); cursor: pointer; transition: background .3s, border-color .3s, color .3s; }
+.amap-switch:hover { border-color: var(--gold-2); background: rgba(255, 246, 226, .08); }
+.amap-switch[aria-checked="false"] { color: var(--muted-on-dark); }
+.amap-switch-track { position: relative; width: 30px; height: 18px; border-radius: 999px; background: rgba(239, 228, 204, .18); transition: background .35s var(--ease-out); }
+.amap-switch-track i { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--cream-on-dark); transition: transform .45s var(--ease-k), background .3s; }
+.amap-switch[aria-checked="true"] .amap-switch-track { background: var(--gold); }
+.amap-switch[aria-checked="true"] .amap-switch-track i { transform: translateX(12px); background: #fffaf0; }
+.amap-swatch { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1.5px rgba(226, 200, 142, .7); }
+.amap-swatch[data-cat="route"] { width: 16px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--gold-deep), var(--gold-3)); box-shadow: 0 0 6px rgba(240, 200, 120, .8); }
+
+/* list of places (synced with the pins) */
+.amap-list { grid-area: list; contain: size; overflow-y: auto; overscroll-behavior: contain; padding: 2px 8px 28px 0; margin-right: -8px; scrollbar-width: thin; scrollbar-color: rgba(226, 200, 142, .3) transparent; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 44px), transparent); }
+.amap-group + .amap-group { margin-top: 18px; }
+.amap-group-head { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; padding: 0 10px; font: 600 .68rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--gold-3); }
+.section-dark .amap-group-head { color: var(--gold-3); }
+.amap-group-head i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1.5px rgba(226, 200, 142, .7); }
+.amap-group-head span { color: var(--muted-on-dark); letter-spacing: .08em; }
+.amap-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.amap-item { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 10px; border: 0; border-radius: 12px; background: transparent; color: var(--cream-on-dark); text-align: left; cursor: pointer; transition: background .3s, opacity .3s, border-color .3s; }
+.amap-item:hover, .amap-item.is-hover { background: rgba(255, 246, 226, .07); }
+.amap-item[aria-pressed="true"] { background: linear-gradient(90deg, rgba(201, 164, 92, .24), rgba(201, 164, 92, .03)); }
+.amap-item[aria-pressed="true"]::before { content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 2px; border-radius: 2px; background: var(--gold-2); box-shadow: 0 0 8px rgba(240, 200, 120, .8); }
+.amap-item.is-off { opacity: .42; }
+.amap-num { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(226, 200, 142, .4); font: 600 .72rem/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--cream-on-dark); transition: background .3s, border-color .3s, color .3s, transform .45s var(--ease-k); }
+.amap-item:hover .amap-num, .amap-item.is-hover .amap-num, .amap-item[aria-pressed="true"] .amap-num { background: var(--c); border-color: var(--gold-3); color: #fffaf0; }
+.amap-item[aria-pressed="true"] .amap-num { transform: scale(1.08); }
+.amap-item-text { min-width: 0; }
+.amap-item-text b { display: block; font-family: var(--serif); font-size: 1.12rem; font-weight: 600; line-height: 1.15; color: #fbf3e2; }
+.amap-item-text small { display: block; margin-top: 2px; font-size: .76rem; line-height: 1.3; color: var(--muted-on-dark); }
+
+/* ---------- the map ---------- */
+.amap-figure { grid-area: map; margin: 0; min-width: 0; }
+.amap-map { position: relative; }
+.amap-scroll { position: relative; overflow: hidden; border-radius: var(--radius-lg); background: var(--sand); box-shadow: 0 46px 90px -42px rgba(0, 0, 0, .85), 0 0 0 1px rgba(226, 200, 142, .3), 0 0 0 7px rgba(226, 200, 142, .05); }
+.amap-canvas { position: relative; aspect-ratio: 1000 / 720; }
+.amap-art, .amap-over { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.amap-over { pointer-events: none; will-change: transform; } /* own layer: the travelling light never repaints the drawing */
+.amap-caption { display: flex; align-items: flex-start; gap: 8px; margin-top: 14px; font-size: .78rem; line-height: 1.5; color: var(--muted-on-dark); }
+.amap-caption .ico { flex: none; margin-top: 2px; color: var(--gold-3); }
+.amap-swipe { display: none; }
+
+/* drawing: everything takes its colour from the palette */
+.a-out { fill: var(--sand); }
+.a-fields path { fill: none; stroke: var(--gold-deep); stroke-opacity: .25; stroke-width: 1; stroke-dasharray: 2 7; }
+.a-hills path { fill: var(--forest-3); fill-opacity: .14; }
+.a-hills .a-hills-ridge { fill: none; stroke: var(--gold-deep); stroke-opacity: .35; stroke-width: 1; }
+.a-road { fill: var(--ivory-2); stroke: var(--line-strong); stroke-width: 1.2; }
+.a-road-line { fill: none; stroke: var(--line-strong); stroke-width: 1.4; stroke-dasharray: 10 12; }
+.a-wall { fill: none; stroke: var(--gold-deep); stroke-opacity: .5; stroke-width: 2.4; }
+.a-lawn path { fill: var(--ok); fill-opacity: .11; }
+.a-path-edge { fill: none; stroke: var(--line-strong); stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+.a-path { fill: none; stroke: var(--paper); stroke-width: 8.5; stroke-linecap: round; stroke-linejoin: round; }
+.a-avenue { fill: var(--paper); stroke: var(--line-strong); stroke-width: 1.2; }
+.a-pillar rect { fill: var(--gold-deep); fill-opacity: .7; }
+.a-fence path { fill: var(--forest-3); fill-opacity: .05; stroke: var(--gold-deep); stroke-opacity: .5; stroke-width: 1.2; stroke-dasharray: 5 4; }
+.a-water { stroke: var(--paper); stroke-width: 3; }
+.a-ripple path { fill: none; stroke: var(--paper); stroke-width: 1.5; stroke-opacity: .9; stroke-linecap: round; }
+.a-lotus circle { fill: var(--gold-2); }
+.a-ghat { fill: none; stroke: var(--gold-deep); stroke-opacity: .45; stroke-width: 1.2; }
+.a-tree-sh { opacity: .16; } .a-tree-sh circle { fill: var(--forest-3); }
+.a-tree { opacity: .46; } .a-tree circle { fill: var(--ok); }
+.a-tree-hi { opacity: .32; } .a-tree-hi circle { fill: var(--paper); }
+.a-tree-in { opacity: .3; } .a-tree-in circle { fill: var(--ok); }
+.a-palm path { fill: none; stroke: var(--ok); stroke-opacity: .75; stroke-width: 1.7; stroke-linecap: round; }
+.a-bld-sh { opacity: .16; } .a-bld-sh path { fill: var(--gold-deep); }
+.a-bld, .a-bld path, .a-bld circle { fill: var(--paper); stroke: var(--gold-deep); stroke-opacity: .72; stroke-width: 1.3; stroke-linejoin: round; }
+.a-detail path, .a-detail circle { fill: none; stroke: var(--gold); stroke-opacity: .6; stroke-width: 1; }
+.a-tamb circle { fill: var(--gold); }
+.a-bhairava circle, .a-bhairava path { fill: var(--gold-deep); fill-opacity: .7; }
+.a-statue { fill: var(--sand); stroke: var(--gold-deep); stroke-width: 1.3; }
+.a-statue-in { fill: var(--gold); }
+.a-mesh-box { fill: var(--forest-3); fill-opacity: .07; stroke: var(--forest-3); stroke-opacity: .55; stroke-width: 1.4; }
+.a-mesh { fill: none; stroke: var(--forest-3); stroke-opacity: .2; stroke-width: .8; }
+.a-bonsai circle { fill: var(--ok); fill-opacity: .6; }
+.a-channel { fill: none; stroke: var(--forest-3); stroke-opacity: .28; stroke-width: 4; stroke-linecap: round; }
+.a-gate path { fill: var(--gold-3); stroke: var(--gold-deep); stroke-width: 1.3; }
+.a-gate .a-gate-arch { fill: none; }
+.a-compass circle { fill: var(--paper); stroke: var(--gold-deep); stroke-opacity: .6; }
+.a-compass path { fill: var(--gold-deep); fill-opacity: .3; }
+.a-compass .a-compass-n { fill-opacity: 1; }
+.a-compass text { font: 400 13px var(--display); fill: var(--gold-deep); }
+.a-label { font: 400 12px var(--display); letter-spacing: .3em; text-transform: uppercase; fill: var(--gold-deep); fill-opacity: .75; }
+.a-grain { mix-blend-mode: multiply; pointer-events: none; }
+
+/* overlay: footprints that light up (and take the mouse), the golden route */
+.amap-hl { fill: var(--gold-3); fill-opacity: 0; stroke: var(--gold); stroke-width: 2.4; stroke-opacity: 0; stroke-linejoin: round; pointer-events: all; cursor: pointer; transition: fill-opacity .45s var(--ease-out), stroke-opacity .45s var(--ease-out); }
+.amap-hl.is-hot { fill-opacity: .38; stroke-opacity: 1; }
+.amap-hl.is-off { pointer-events: none; }
+.amap-route { transition: opacity .5s var(--ease-out); }
+.amap-route.is-off { opacity: 0; }
+.amap-route path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.amap-route-base { stroke: var(--gold-2); stroke-width: 7; stroke-opacity: .2; }
+.amap-route-draw { stroke: var(--gold); stroke-width: 2.6; stroke-dasharray: 1000; stroke-dashoffset: 0; transition: stroke-dashoffset 3.8s var(--ease-in-out) .45s; }
+.js .amap-canvas:not(.is-in) .amap-route-draw { stroke-dashoffset: 1000; }
+.amap-route-pulse { stroke: var(--gold-3); stroke-width: 3.4; stroke-dasharray: 46 954; animation: amap-run 10s linear 4.2s infinite; }
+.amap-route-bead { stroke: var(--paper); stroke-width: 8; stroke-dasharray: .1 999.9; animation: amap-bead 10s linear 4.2s infinite; }
+@keyframes amap-run { from { stroke-dashoffset: 1000; opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes amap-bead { from { stroke-dashoffset: 954; opacity: 1; } to { stroke-dashoffset: -46; opacity: 1; } }
+.amap-route-pulse, .amap-route-bead { opacity: 0; }
+.js .amap-canvas:not(.is-in) .amap-route-pulse, .js .amap-canvas:not(.is-in) .amap-route-bead { animation: none; }
+
+/* ---------- pins (real buttons over the drawing) ---------- */
+.amap-pins { position: absolute; inset: 0; pointer-events: none; }
+.amap-pin { --k: 1; --lift: 0px; position: absolute; left: var(--x); top: var(--y); z-index: 1; width: 44px; height: 50px; margin: -48px 0 0 -22px; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; transition: opacity .4s var(--ease-out), visibility 0s; }
+.amap-pin:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 2px; border-radius: 12px; }
+.amap-pin.is-off { opacity: 0; visibility: hidden; transition: opacity .4s var(--ease-out), visibility 0s .4s; }
+.amap-pin::after { content: ""; position: absolute; left: 50%; bottom: -3px; width: 14px; height: 5px; margin-left: -7px; border-radius: 50%; background: rgba(48, 34, 14, .32); }
+.amap-pin-mark { position: absolute; left: 50%; bottom: 0; width: 30px; height: 38px; margin-left: -15px; transform-origin: 50% 100%; }
+.amap-pin-body { position: relative; display: block; width: 100%; height: 100%; transform-origin: 50% 100%; transform: translateY(var(--lift)) scale(calc(var(--pin-base) * var(--k))); transition: transform .5s var(--ease-k); }
+.amap-pin-body svg { display: block; overflow: visible; filter: drop-shadow(0 4px 5px rgba(48, 34, 14, .32)); }
+.amap-pin-body path { fill: var(--c); stroke: var(--paper); stroke-width: 1.8; }
+.amap-pin-body b { position: absolute; top: 4.5px; left: 50%; display: grid; place-items: center; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: var(--paper); color: var(--c-num); font: 700 .68rem/1 var(--sans); font-variant-numeric: tabular-nums; }
+.amap-pin:hover, .amap-pin.is-hover, .amap-pin:focus-visible { z-index: 4; }
+.amap-pin:hover .amap-pin-body, .amap-pin.is-hover .amap-pin-body, .amap-pin:focus-visible .amap-pin-body { --k: 1.1; --lift: -3px; }
+.amap-pin[aria-pressed="true"] { z-index: 3; }
+.amap-pin[aria-pressed="true"] .amap-pin-body { --k: 1.24; --lift: 0px; }
+.amap-pin[aria-pressed="true"] .amap-pin-body path { stroke: var(--gold-3); stroke-width: 2.2; }
+.amap-pin-label { position: absolute; left: 50%; bottom: calc(100% + 6px); padding: 6px 10px; border-radius: 8px; background: var(--forest); color: var(--cream-on-dark); font: 500 .76rem/1.1 var(--sans); white-space: nowrap; pointer-events: none; opacity: 0; transform: translate(-50%, 6px); transition: opacity .25s, transform .4s var(--ease-k); box-shadow: 0 10px 22px -12px rgba(0, 0, 0, .6); }
+.amap-pin:hover .amap-pin-label, .amap-pin.is-hover .amap-pin-label, .amap-pin:focus-visible .amap-pin-label { opacity: 1; transform: translate(-50%, 0); }
+.amap.has-card .amap-pin[aria-pressed="true"] .amap-pin-label { opacity: 0; }
+/* pulse rings breathing out from the active pin's tip */
+.amap-pin-pulse { position: absolute; left: 50%; bottom: -1px; width: 0; height: 0; }
+.amap-pin-pulse::before, .amap-pin-pulse::after { content: ""; position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--c); opacity: 0; transform: scale(.4, .2); }
+.amap-pin[aria-pressed="true"] .amap-pin-pulse::before { animation: amap-ring 2.6s var(--ease-out) infinite; }
+.amap-pin[aria-pressed="true"] .amap-pin-pulse::after { animation: amap-ring 2.6s var(--ease-out) 1.3s infinite; }
+@keyframes amap-ring { 0% { opacity: .9; transform: scale(.4, .2); } 100% { opacity: 0; transform: scale(3.4, 1.7); } }
+/* pins drop in, one after another, when the map scrolls into view (the
+   canvas carries the shared data-reveal, so site.js / DP.reveal own it) */
+.js .amap-canvas:not(.is-in) .amap-pin-mark, .js .amap-canvas:not(.is-in) .amap-pin::after { opacity: 0; }
+.js .amap-canvas.is-in .amap-pin-mark { animation: amap-drop 1s var(--ease-k) calc(var(--i, 0) * 75ms + 300ms) both; }
+.js .amap-canvas.is-in .amap-pin::after { animation: amap-shadow 1s var(--ease-k) calc(var(--i, 0) * 75ms + 300ms) both; }
+@keyframes amap-drop { 0% { opacity: 0; transform: translateY(-64px); } 50% { opacity: 1; transform: translateY(0) scale(1.08, .9); } 70% { transform: translateY(-7px) scale(.97, 1.04); } 100% { opacity: 1; transform: none; } }
+@keyframes amap-shadow { 0% { opacity: 0; transform: scale(.2); } 50% { opacity: 1; transform: scale(1.2, 1); } 100% { opacity: 1; transform: none; } }
+
+/* ---------- detail card (popover by the pin; bottom sheet on phones) ---------- */
+.amap-card { position: absolute; top: 0; left: 0; z-index: 6; width: min(430px, calc(100% - 24px)); transform: translate(var(--tx, 16px), var(--ty, 16px)); transition: transform .85s var(--ease-k), opacity .45s var(--ease-out), visibility 0s; }
+.amap-card::before { content: ""; position: absolute; z-index: -1; width: 18px; height: 18px; background: var(--paper); border-radius: 3px; transform: rotate(45deg); box-shadow: 0 0 0 1px rgba(180, 138, 67, .22); transition: top .85s var(--ease-k), left .85s var(--ease-k); }
+.amap-card[data-side="right"]::before { left: -7px; top: var(--ny, 48px); margin-top: -9px; }
+.amap-card[data-side="left"]::before { right: -7px; top: var(--ny, 48px); margin-top: -9px; }
+.amap-card[data-side="below"]::before { top: -7px; left: var(--nx, 48px); margin-left: -9px; }
+.amap-card[data-side="above"]::before { bottom: -7px; left: var(--nx, 48px); margin-left: -9px; }
+.amap-card.no-notch::before { display: none; }
+.amap-full:not(.has-card) .amap-card { opacity: 0; visibility: hidden; transition: transform .85s var(--ease-k), opacity .3s var(--ease-out), visibility 0s .3s; }
+.amap-card-live { position: relative; max-height: var(--card-max, 540px); overflow-y: auto; overscroll-behavior: contain; border-radius: 18px; background: var(--paper); color: var(--ink); box-shadow: 0 36px 70px -26px rgba(5, 10, 8, .75), 0 0 0 1px rgba(180, 138, 67, .22); scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.amap-card-close { position: absolute; top: 8px; right: 8px; z-index: 3; display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--ivory-2); color: var(--ink); cursor: pointer; transition: transform .4s var(--ease-k), background .25s; }
+.amap-card-close::after { content: ""; position: absolute; inset: -5px; }
+.amap-card-close:hover { transform: rotate(90deg); background: var(--sand); }
+.amap-card-item { animation: amap-fade .6s var(--ease-k) both; }
+.amap .amap-card-item[hidden] { display: none; }
+@keyframes amap-fade { from { opacity: 0; transform: translateY(10px); } }
+.amap-card-media { position: relative; overflow: hidden; background: var(--sand); }
+.amap-card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); animation: amap-settle 1.6s var(--ease-out) forwards; }
+@keyframes amap-settle { to { transform: none; } }
+.amap-card-media.is-art { display: grid; place-items: center; background: radial-gradient(circle at 50% 60%, var(--forest-3), var(--forest) 75%); color: var(--gold-3); }
+.amap-card-mandala { position: absolute; left: 50%; top: 50%; width: 170px; height: 170px; margin: -85px 0 0 -85px; color: var(--gold-2); opacity: .16; }
+.amap-card-media.is-art .ico { position: relative; }
+.amap-card-tag { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin-bottom: 6px; padding-right: 30px; font: 600 .62rem/1.35 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--gold-deep); }
+.amap-card-tag i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.amap-since { display: block; margin: -2px 0 6px; font-family: var(--serif); font-style: italic; font-size: .92rem; line-height: 1.2; color: var(--gold-deep); }
+.amap .amap-card-title { margin: 0 0 4px; font-size: 1.42rem; line-height: 1.08; color: var(--ink); }
+.amap .amap-card-body p { margin: 0 0 12px; font-size: .86rem; line-height: 1.55; color: var(--ink-2); }
+.amap .amap-card-body .amap-short { color: var(--muted); }
+.amap-more { display: none; }
+.amap-more .amap-source { display: inline-flex; margin: -4px 0 12px; }
+.amap-card-item.is-expanded .amap-more { display: block; animation: amap-fade .5s var(--ease-k) both; }
+.amap-card-item.is-expanded .amap-short { display: none; }
+.amap-card-time { display: flex; gap: 9px; margin-bottom: 12px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--ivory); color: var(--gold-deep); }
+.amap-card-time > .ico { flex: none; margin-top: 2px; }
+.amap-time { display: grid; grid-template-columns: auto 1fr; gap: 1px 12px; margin: 0; font-size: .8rem; line-height: 1.45; }
+.amap-time dt { font-weight: 600; color: var(--ink); }
+.amap-time dd { margin: 0; color: var(--muted); }
+.amap-card-time .badge { margin-top: 7px; }
+.amap .amap-card-body .amap-time-note { margin: 7px 0 0; font-size: .72rem; line-height: 1.45; color: var(--muted); }
+.amap-card-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; }
+.amap .amap-card-links .link-arrow { color: var(--gold-deep); font-size: .88rem; }
+.amap-more-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0; border: 0; background: transparent; color: var(--ink-2); font: 500 .84rem/1 var(--sans); cursor: pointer; transition: color .25s; }
+.amap-more-btn span { text-decoration: underline dotted var(--line-strong); text-underline-offset: 4px; }
+.amap-more-btn:hover { color: var(--gold-deep); }
+.amap-more-btn .ico { transition: transform .35s var(--ease-k); }
+.amap-more-btn[aria-expanded="true"] .ico { transform: rotate(180deg); }
+.amap-source { display: inline-flex; align-items: center; gap: 4px; font-size: .74rem; color: var(--muted); text-decoration: none; }
+.amap-source:hover { color: var(--gold-deep); }
+/* desktop popover: photo beside the words, like the reference's map card */
+.amap-full .amap-card-item { display: grid; grid-template-columns: 132px minmax(0, 1fr); }
+.amap-full .amap-card-media { min-height: 100%; border-radius: 18px 0 0 18px; }
+.amap-full .amap-card-body { padding: 14px 18px 14px 16px; }
+
+
+/* ---------- compact teaser (homepage) ---------- */
+.amap-compact { --pin-base: .8; padding: clamp(18px, 2.4vw, 26px); border: 1px solid rgba(226, 200, 142, .18); border-radius: var(--radius-lg); background: radial-gradient(420px 260px at 80% 0%, rgba(201, 164, 92, .14), transparent 70%), linear-gradient(165deg, var(--forest-2), var(--night)); color: var(--cream-on-dark); box-shadow: var(--shadow); }
+.amap-c-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+.amap-c-icon { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid rgba(226, 200, 142, .4); border-radius: 50%; color: var(--gold-3); }
+.amap-compact .amap-c-head h3 { margin: 2px 0 6px; font-size: clamp(1.45rem, 2.2vw, 1.8rem); color: #fbf3e2; }
+.amap-compact .amap-c-head p { margin: 0; font-size: .9rem; line-height: 1.55; color: var(--muted-on-dark); }
+.amap-compact .amap-scroll { border-radius: 14px; }
+.amap-compact .amap-card { position: relative; top: auto; left: auto; z-index: 5; width: auto; margin: -38px 14px 0; transform: none; }
+.amap-compact .amap-card::before { display: none; }
+.amap-compact .amap-card-live { border-radius: 14px; }
+.amap-compact .amap-card-item { display: grid; grid-template-columns: 92px minmax(0, 1fr) 44px; align-items: center; gap: 14px; padding: 10px 12px 10px 10px; }
+.amap-compact .amap-card-media, .amap-compact .amap-card-media.is-art { height: 74px; border-radius: 10px; }
+.amap-compact .amap-card-media.is-art .ico { width: 24px; height: 24px; }
+.amap-compact .amap-card-body { padding: 0; }
+.amap-compact .amap-card-tag { margin-bottom: 4px; font-size: .58rem; }
+.amap-compact .amap-card-title { margin: 0 0 3px; font-size: 1.2rem; }
+.amap-compact .amap-card-body p { margin: 0; font-size: .8rem; line-height: 1.4; color: var(--muted); }
+.amap-card-go { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-2), var(--gold) 55%, var(--gold-deep)); color: #fffaf0; box-shadow: var(--shadow-gold); transition: transform .4s var(--ease-k); }
+.amap-card-go:hover { transform: translateX(3px); }
+.amap-compact .amap-caption { margin-top: 14px; font-size: .74rem; }
+.amap-compact .amap-c-link, .section-dark .amap-compact .amap-c-link { margin-top: 6px; color: var(--gold-3); }
+
+/* ---------- no JS: every place readable, as cards under the map ---------- */
+html:not(.js) .amap-full .amap-card { position: static; width: auto; margin-top: 18px; transform: none; }
+html:not(.js) .amap-full .amap-card::before, html:not(.js) .amap-card-close { display: none; }
+html:not(.js) .amap-full .amap-card-live { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; max-height: none; overflow: visible; background: none; box-shadow: none; }
+html:not(.js) .amap-full .amap-card-item, html:not(.js) .amap.amap-full .amap-card-item[hidden] { display: block; overflow: hidden; border-radius: 18px; background: var(--paper); }
+html:not(.js) .amap-full .amap-card-media { height: 150px; border-radius: 0; }
+html:not(.js) .amap-short, html:not(.js) .amap-more-btn { display: none; }
+html:not(.js) .amap-more { display: block; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .amap-full { grid-template-columns: 250px minmax(0, 1fr); gap: 18px 24px; }
+  .amap-item-text b { font-size: 1.04rem; }
+}
+@media (max-width: 980px) {
+  .amap-full { grid-template-columns: minmax(0, 1fr); grid-template-areas: "bar" "list" "map"; gap: 14px; }
+  .amap-bar { justify-content: flex-start; }
+  .amap-list { contain: none; display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; margin: 0 calc(var(--gutter) * -1); padding: 4px var(--gutter) 8px; scroll-padding: 0 var(--gutter); scrollbar-width: none; -webkit-mask-image: none; mask-image: none; }
+  .amap-list::-webkit-scrollbar { display: none; }
+  .amap-group, .amap-list ul { display: contents; }
+  .amap-group-head { display: none; }
+  .amap-list li { flex: none; }
+  .amap-item { width: auto; min-height: 44px; padding: 5px 16px 5px 6px; gap: 9px; border: 1px solid rgba(226, 200, 142, .24); border-radius: 999px; white-space: nowrap; }
+  .amap-item[aria-pressed="true"] { border-color: var(--gold-2); background: rgba(201, 164, 92, .2); }
+  .amap-item[aria-pressed="true"]::before { display: none; }
+  .amap-item-text b { font: 500 .86rem/1.2 var(--sans); color: var(--cream-on-dark); }
+  .amap-item-text small { display: none; }
+  .amap-num { width: 30px; height: 30px; }
+}
+@media (max-width: 760px) {
+  .amap-bar-label { display: none; }
+  .amap-layers { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .amap-switch { justify-content: flex-start; gap: 7px; padding: 8px 10px 8px 8px; font-size: .82rem; white-space: nowrap; }
+  .amap-full .amap-scroll { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; }
+  .amap-full .amap-scroll::-webkit-scrollbar { display: none; }
+  .amap-full .amap-canvas { width: 640px; }
+  .amap-full .amap-swipe { position: absolute; left: 50%; bottom: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; background: rgba(15, 28, 24, .82); color: var(--cream-on-dark); font: 500 .74rem/1 var(--sans); letter-spacing: .04em; pointer-events: none; transform: translateX(-50%); transition: opacity .5s var(--ease-out); }
+  .amap-full .amap-swipe .ico { color: var(--gold-3); }
+  .amap-full.has-swiped .amap-swipe { opacity: 0; }
+  /* bottom sheet */
+  .amap-full .amap-card { position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 80; width: auto; visibility: hidden; transform: translateY(104%); transition: transform .6s var(--ease-k), visibility 0s .6s; }
+  .amap-full.has-card .amap-card { visibility: visible; opacity: 1; transform: none; transition: transform .6s var(--ease-k), visibility 0s; }
+  .amap-full .amap-card::before { display: none; }
+  .amap-full .amap-card::after { content: ""; position: absolute; top: 8px; left: 50%; z-index: 4; width: 40px; height: 4px; margin-left: -20px; border-radius: 4px; background: rgba(255, 252, 246, .85); box-shadow: 0 1px 4px rgba(0, 0, 0, .35); }
+  .amap-full .amap-card-live { max-height: min(74vh, 600px); max-height: min(74svh, 600px); border-radius: 22px 22px 0 0; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -24px 60px -18px rgba(5, 10, 8, .65), 0 0 0 1px rgba(180, 138, 67, .22); }
+  .amap-full .amap-card-item { display: block; }
+  .amap-full .amap-card-media { height: 176px; min-height: 0; border-radius: 22px 22px 0 0; }
+  .amap-full .amap-card-media.is-art { height: 120px; }
+  .amap-full .amap-card-body { padding: 16px 20px 20px; }
+  .amap-full .amap-card-tag { padding-right: 0; }
+  .amap-full .amap-card-close { top: 14px; right: 14px; width: 38px; height: 38px; background: rgba(255, 252, 246, .92); box-shadow: 0 6px 16px -8px rgba(0, 0, 0, .55); }
+  .amap-full .amap-short, .amap-full .amap-more-btn { display: none; }
+  .amap-full .amap-more { display: block; }
+  body:has(.amap-full.has-card) .to-top { opacity: 0; pointer-events: none; }
+  html:not(.js) .amap-full .amap-card { position: static; visibility: visible; transform: none; }
+  html:not(.js) .amap-full .amap-card::after { display: none; }
+}
+@media (max-width: 420px) {
+  .amap-compact .amap-card { margin: -30px 8px 0; }
+  .amap-compact .amap-card-item { grid-template-columns: 72px minmax(0, 1fr) 44px; gap: 10px; }
+  .amap-compact .amap-card-media, .amap-compact .amap-card-media.is-art { height: 64px; }
+  .amap-compact .amap-card-title { font-size: 1.08rem; }
+}
+
+/* ---------- reduced motion: the finished picture, no travelling light ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .amap-route-pulse, .amap-route-bead { display: none; }
+  .amap .amap-route-draw { stroke-dashoffset: 0 !important; transition: none; }
+  .amap .amap-pin-mark, .amap .amap-pin::after { opacity: 1 !important; animation: none !important; }
+  .amap-pin[aria-pressed="true"] .amap-pin-pulse::before { animation: none; opacity: .7; transform: scale(2.2, 1.1); }
+  .amap-pin[aria-pressed="true"] .amap-pin-pulse::after { animation: none; }
+  .amap-card-media img { animation: none; transform: none; }
+}
+
+@media print {
+  .amap .amap-pin-mark, .amap .amap-pin::after { opacity: 1 !important; animation: none !important; }
+  .amap .amap-route-draw { stroke-dashoffset: 0 !important; }
+  .amap-route-pulse, .amap-route-bead, .amap-swipe { display: none; }
+}

@@ -1,0 +1,264 @@
+/* ==========================================================================
+   Feature: world-map — "Global Reach" night map with golden threads
+   Markup: src/features/world-map.mjs · behaviour: assets/js/features/world-map.js
+   Made for .section-dark. Finished, still state is the default; motion is
+   layered on only for .js + prefers-reduced-motion: no-preference.
+   ========================================================================== */
+
+.wm {
+  --wm-core: #fff3d6;          /* the site's light-on-gold (see .horizon, .em-light) */
+  --wm-warm: #e8b45c;
+  --wm-line: rgba(226, 200, 142, .18);
+  position: relative;
+  color: var(--cream-on-dark);
+}
+.wm-figure { margin: 0; }
+.wm-canvas { position: relative; }
+.wm-stage { position: relative; width: 100%; aspect-ratio: var(--ar, 1000/424); }
+.wm-stage svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* ---------- land ---------- */
+.wm-s-hot { stop-color: var(--gold-3); stop-opacity: .82; }
+.wm-s-warm { stop-color: var(--gold-2); stop-opacity: .5; }
+.wm-s-cool { stop-color: var(--gold-2); stop-opacity: .24; }
+.wm-s-sun0 { stop-color: var(--gold-2); stop-opacity: .22; }
+.wm-s-sun1 { stop-color: var(--gold-2); stop-opacity: .07; }
+.wm-s-sun2 { stop-color: var(--gold-2); stop-opacity: 0; }
+.wm-grat { fill: none; stroke: var(--cream-on-dark); stroke-opacity: .07; stroke-width: .6; }
+.wm-land, .wm-india, .wm-cdots { fill: none; stroke-linecap: round; stroke-dasharray: 0 5; }
+.wm-land { stroke-width: 1.9; }
+.wm-india { stroke: var(--wm-core); stroke-width: 2.2; stroke-opacity: .9; }
+.wm-cdots { stroke: var(--gold-3); stroke-width: 2.1; stroke-opacity: .62; transition: stroke .5s var(--ease-out), stroke-opacity .5s var(--ease-out), stroke-width .5s var(--ease-out); }
+.wm-cdots.is-active { stroke: var(--wm-core); stroke-opacity: 1; stroke-width: 2.5; }
+.wm.has-active .wm-cdots:not(.is-active) { stroke-opacity: .28; }
+
+/* ---------- threads ---------- */
+.wm-route { transition: opacity .6s var(--ease-out); }
+.wm-s-a0 { stop-color: var(--wm-core); stop-opacity: .95; }
+.wm-s-a1 { stop-color: var(--gold-3); stop-opacity: .78; }
+.wm-s-a2 { stop-color: var(--gold-2); stop-opacity: .72; }
+.wm-arc-glow { fill: none; stroke: var(--gold-2); stroke-opacity: .14; stroke-width: 4.6; stroke-linecap: round; transition: stroke-opacity .5s, stroke-width .5s var(--ease-out); }
+.wm-arc { fill: none; stroke-width: 1.15; stroke-linecap: round; transition: stroke-width .5s var(--ease-out); }
+.wm-bead { fill: none; stroke-linecap: round; opacity: 0; }
+.wm-tail { stroke: var(--gold-3); stroke-width: 1.8; stroke-opacity: .5; }
+.wm-tail2 { stroke: var(--wm-core); stroke-width: 2; stroke-opacity: .85; }
+.wm-head-glow { stroke: var(--wm-warm); stroke-width: 12; stroke-opacity: .26; }
+.wm-head { stroke: var(--wm-core); stroke-width: 3.8; }
+.wm.has-active .wm-route:not(.is-active) { opacity: .14; }
+.wm-route.is-active .wm-arc { stroke-width: 2; }
+.wm-route.is-active .wm-arc-glow { stroke-opacity: .34; stroke-width: 7.5; }
+
+/* ---------- destination nodes ---------- */
+.wm-node { cursor: pointer; transition: opacity .5s var(--ease-out); }
+.wm-hit { fill: transparent; }
+.wm-leader { fill: none; stroke: var(--cream-on-dark); stroke-opacity: .34; stroke-width: .6; transition: stroke-opacity .4s; }
+.wm-node.is-active .wm-leader { stroke-opacity: .8; }
+.wm-s-n0 { stop-color: var(--wm-warm); stop-opacity: .7; }
+.wm-s-n1 { stop-color: var(--wm-warm); stop-opacity: .2; }
+.wm-s-n2 { stop-color: var(--wm-warm); stop-opacity: 0; }
+.wm-ring { fill: none; stroke: var(--gold-3); stroke-width: .9; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.wm-pop { transform-box: fill-box; transform-origin: center; }
+.wm-pin { fill: var(--wm-core); stroke: var(--gold-2); stroke-width: .8; transition: r .4s var(--ease-out); }
+.wm-label {
+  font: 600 9px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase;
+  fill: var(--cream-on-dark); fill-opacity: .84;
+  paint-order: stroke; stroke: var(--night); stroke-width: 3.2px; stroke-linejoin: round; stroke-opacity: .85;
+  pointer-events: none; transition: fill-opacity .4s;
+}
+.wm.has-active .wm-node:not(.is-active) { opacity: .38; }
+.wm-node.is-active .wm-pin { r: 3.5; }
+.wm-node.is-active .wm-label { fill: #fffaf0; fill-opacity: 1; }
+
+/* ---------- Mysuru ---------- */
+.wm-s-h0 { stop-color: var(--wm-warm); stop-opacity: .42; }
+.wm-s-h1 { stop-color: var(--gold-2); stop-opacity: .12; }
+.wm-s-h2 { stop-color: var(--gold-2); stop-opacity: 0; }
+.wm-halo, .wm-ripple { transform-box: fill-box; transform-origin: center; }
+.wm-ripple { fill: none; stroke: var(--gold-3); stroke-width: .8; opacity: 0; }
+.wm-core { fill: var(--wm-core); stroke: var(--gold-2); stroke-width: 1; }
+.wm-origin-label { pointer-events: none; paint-order: stroke; stroke: var(--night); stroke-width: 3.5px; stroke-linejoin: round; stroke-opacity: .8; }
+.wm-ol-city { font: italic 500 15px var(--serif); fill: var(--gold-3); }
+.wm-ol-country { font: 600 6.6px var(--sans); letter-spacing: .32em; text-transform: uppercase; fill: var(--cream-on-dark); fill-opacity: .7; }
+
+.wm-twinkles { transition: opacity .6s var(--ease-out); }
+.wm.has-active .wm-twinkles { opacity: .25; }
+.wm-twinkles path { fill: none; stroke: var(--wm-core); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 0 5; opacity: 0; }
+
+/* ---------- motion (JS present, motion allowed) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .wm .wm-arc, .js .wm .wm-arc-glow { stroke-dasharray: var(--len) calc(var(--len) + 20); stroke-dashoffset: var(--len); }
+  .js .wm.is-in .wm-arc, .js .wm.is-in .wm-arc-glow { animation: wm-draw 1.5s var(--ease-in-out) var(--delay) forwards; }
+  .js .wm .wm-pop { opacity: 0; transform: scale(.2); }
+  .js .wm.is-in .wm-pop { animation: wm-pop 1s var(--ease-k) var(--land) forwards; }
+  .js .wm .wm-label, .js .wm .wm-leader { opacity: 0; }
+  .js .wm.is-in .wm-label, .js .wm.is-in .wm-leader { animation: wm-fade .9s var(--ease-out) var(--land) forwards; }
+  .js .wm .wm-cdots { opacity: 0; }
+  .js .wm.is-in .wm-cdots { animation: wm-fade 1.6s var(--ease-out) var(--land) forwards; }
+  .js .wm.is-in .wm-bead { animation: wm-run var(--cycle) cubic-bezier(.5, 0, .3, 1) var(--run) infinite; }
+  .js .wm.is-in .wm-ring { animation: wm-ping var(--cycle) var(--ease-out) var(--ping) infinite; }
+  .js .wm.is-in .wm-twinkles path { animation: wm-twinkle 4.85s ease-in-out var(--tw) infinite; }
+  .js .wm .wm-halo { animation: wm-breathe 5.6s ease-in-out infinite alternate; }
+  .js .wm .wm-ripple { animation: wm-ripple 5.2s var(--ease-out) infinite; }
+  .js .wm .wm-ripple.r2 { animation-delay: 2.6s; }
+
+  /* off-screen or hidden tab: loops hold still (the one-off draw finishes) */
+  .wm.is-paused .wm-bead, .wm.is-paused .wm-ring, .wm.is-paused .wm-twinkles path,
+  .wm.is-paused .wm-halo, .wm.is-paused .wm-ripple { animation-play-state: paused; }
+}
+@keyframes wm-draw { to { stroke-dashoffset: 0; } }
+@keyframes wm-fade { to { opacity: 1; } }
+@keyframes wm-pop {
+  0% { opacity: 0; transform: scale(.2); }
+  55% { opacity: 1; transform: scale(1.45); }
+  100% { opacity: 1; transform: none; }
+}
+/* the front of the bead travels for the first 70% of a cycle (TRAVEL in world-map.mjs) */
+@keyframes wm-run {
+  0% { opacity: 1; stroke-dashoffset: var(--o0); }
+  70%, 100% { opacity: 1; stroke-dashoffset: var(--o1); }
+}
+@keyframes wm-ping {
+  0% { opacity: .95; transform: scale(.5); }
+  42%, 100% { opacity: 0; transform: scale(3.8); }
+}
+@keyframes wm-twinkle { 0%, 100% { opacity: 0; } 50% { opacity: .8; } }
+@keyframes wm-breathe { from { opacity: .7; transform: scale(.86); } to { opacity: 1; transform: scale(1.12); } }
+@keyframes wm-ripple { 0% { opacity: .8; transform: scale(.6); } 70%, 100% { opacity: 0; transform: scale(5.2); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .wm *, .wm *::before, .wm *::after { animation: none !important; }
+  .wm-bead, .wm-twinkles { display: none; }
+}
+
+/* ---------- readout (full map) ---------- */
+.wm-readout {
+  position: absolute; left: 1.5%; bottom: 5%; width: min(290px, 26%);
+  padding: 16px 18px; border-radius: var(--radius); pointer-events: none;
+}
+.wm-ro-eyebrow { display: block; font: 600 .66rem/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--gold-3); margin-bottom: 8px; }
+.wm-ro-name { display: block; font: 500 1.45rem/1.1 var(--serif); color: #fbf3e2; }
+.wm-ro-note { display: block; margin-top: 6px; font-size: .84rem; line-height: 1.5; color: var(--muted-on-dark); }
+.wm-readout.is-swap .wm-ro-name, .wm-readout.is-swap .wm-ro-note { animation: wm-swap .55s var(--ease-k); }
+@keyframes wm-swap { from { opacity: 0; transform: translateY(6px); } }
+
+/* ---------- caption ---------- */
+.wm-caption { display: flex; gap: 10px; align-items: flex-start; justify-content: center; max-width: 780px; margin: 18px auto 0; font-size: .82rem; line-height: 1.55; color: var(--muted-on-dark); text-align: center; }
+.wm-full .wm-caption { text-align: left; }
+.wm-caption .ico { flex: none; margin-top: 2px; color: var(--gold-3); }
+.wm-caption a { color: var(--gold-3); text-decoration: underline; text-decoration-color: rgba(226, 200, 142, .4); white-space: nowrap; }
+.wm-caption a .ico { display: inline; margin: 0 0 0 3px; vertical-align: -1px; }
+.wm-caption a:hover { color: #fff; text-decoration-color: currentColor; }
+.wm-compact .wm-caption { font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; margin-top: 10px; opacity: .8; }
+
+/* ---------- legend (full) ---------- */
+.wm-legend { margin-top: clamp(30px, 4vw, 48px); }
+.wm-full .wm-caption { margin-top: clamp(22px, 3vw, 32px); }
+.wm-legend-hint { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 0 18px; font-size: .9rem; color: var(--muted-on-dark); text-align: center; }
+.wm-legend-hint .ico { color: var(--gold-3); flex: none; }
+.wm-legend-hint b { color: var(--cream-on-dark); font-weight: 600; }
+.wm-keys { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.wm-keys > li { display: flex; }
+.wm-key {
+  position: relative; width: 100%; display: flex; align-items: flex-start; gap: 14px; text-align: left;
+  padding: 16px 18px; border-radius: var(--radius); border: 1px solid var(--wm-line);
+  background: linear-gradient(160deg, rgba(19, 36, 31, .62), rgba(10, 19, 16, .4));
+  color: var(--cream-on-dark); font: inherit; cursor: pointer; overflow: hidden;
+  transition: border-color .4s var(--ease-out), background .4s, transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
+}
+.wm-key::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-3), transparent); transform: scaleX(0); transition: transform .6s var(--ease-out); }
+.wm-key:hover, .wm-key.is-active { border-color: rgba(226, 200, 142, .5); background: linear-gradient(160deg, rgba(27, 49, 41, .8), rgba(15, 28, 24, .6)); transform: translateY(-2px); }
+.wm-key:hover::after, .wm-key.is-active::after { transform: scaleX(1); }
+.wm-key[aria-pressed="true"] { border-color: var(--gold-2); box-shadow: 0 0 0 1px var(--gold-2), 0 18px 40px -22px rgba(232, 180, 92, .55); }
+.wm-key-mark {
+  flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid rgba(226, 200, 142, .42); color: var(--gold-3);
+  font: 400 .76rem/1 var(--display); letter-spacing: .1em; padding-left: .1em;
+  transition: background .4s, color .4s, border-color .4s, box-shadow .4s;
+}
+.wm-key.is-active .wm-key-mark, .wm-key[aria-pressed="true"] .wm-key-mark { background: var(--gold-2); border-color: var(--gold-2); color: var(--night); box-shadow: 0 0 18px rgba(232, 180, 92, .45); }
+.wm-key-text { min-width: 0; }
+.wm-key-text b { display: block; font: 500 1.24rem/1.12 var(--serif); color: #fbf3e2; }
+.wm-key-text small { display: block; margin-top: 5px; font-size: .8rem; line-height: 1.45; color: var(--muted-on-dark); }
+.wm-key-link { text-decoration: none; align-items: center; border-style: dashed; border-color: rgba(226, 200, 142, .34); background: radial-gradient(120% 140% at 100% 100%, rgba(201, 164, 92, .16), transparent 60%), linear-gradient(160deg, rgba(19, 36, 31, .5), rgba(10, 19, 16, .3)); }
+.wm-key-link .wm-key-mark { color: var(--wm-core); border-color: var(--gold-2); background: rgba(201, 164, 92, .14); }
+.wm-key-link > .ico { margin-left: auto; flex: none; color: var(--gold-3); transition: transform .4s var(--ease-out); }
+.wm-key-link:hover > .ico { transform: translate(3px, -3px); }
+.wm-key-link:hover { border-style: solid; }
+
+/* ---------- teaser (compact) ---------- */
+.wm-teaser { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-top: 22px; }
+.wm-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.wm-chip {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px;
+  border-radius: 999px; border: 1px solid rgba(226, 200, 142, .3); background: rgba(15, 28, 24, .4);
+  color: var(--cream-on-dark); font: 500 .88rem/1 var(--sans); text-decoration: none; cursor: pointer;
+  transition: border-color .3s, background .3s, color .3s;
+}
+.wm-chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--gold-2); box-shadow: 0 0 0 3px rgba(201, 164, 92, .18); transition: background .3s, box-shadow .3s; }
+.wm-chip:hover, .wm-chip.is-active { border-color: var(--gold-2); background: rgba(201, 164, 92, .14); color: #fffaf0; }
+.wm-chip.is-active i, .wm-chip[aria-pressed="true"] i { background: var(--wm-core); box-shadow: 0 0 0 3px rgba(232, 180, 92, .3), 0 0 12px rgba(232, 180, 92, .8); }
+.wm-chip[aria-pressed="true"] { border-color: var(--gold-2); }
+.wm-more { color: var(--gold-3); border-style: dashed; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .wm-keys { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 980px) {
+  .wm-keys { grid-template-columns: repeat(2, 1fr); }
+  .wm-readout { position: relative; left: auto; bottom: auto; width: auto; margin-top: 14px; }
+  .wm-land { stroke-width: 2.2; }
+  .wm-arc { stroke-width: 1.6; }
+  .wm-arc-glow { stroke-width: 6; }
+  .wm-label { font-size: 12.5px; }
+  .wm-pin { r: 3.4; }
+}
+@media (max-width: 640px) {
+  .wm-land { stroke-width: 2.7; }
+  .wm-india, .wm-cdots { stroke-width: 2.9; }
+  .wm-cdots.is-active { stroke-width: 3.2; }
+  .wm-arc { stroke-width: 2.6; }
+  .wm-route.is-active .wm-arc { stroke-width: 3.4; }
+  .wm-arc-glow { stroke-width: 9; }
+  .wm-tail, .wm-tail2 { stroke-width: 3; }
+  .wm-head { stroke-width: 6.5; }
+  .wm-head-glow { stroke-width: 20; }
+  .wm-pin { r: 5; stroke-width: 1.4; }
+  .wm-node.is-active .wm-pin { r: 6.5; }
+  .wm-glow { r: 15; }
+  .wm-ring { stroke-width: 1.8; }
+  .wm-core { r: 6; }
+  .wm-core-glow { r: 18; }
+  .wm-halo { r: 56; }
+  .wm-twinkles path { stroke-width: 3.6; }
+  /* the map bleeds to the screen edges and trims the empty far Pacific */
+  .wm-canvas { margin-inline: calc(-1 * var(--gutter)); overflow: hidden; }
+  .wm-stage { width: 119%; margin-left: -14%; }
+  .wm-readout { margin: 10px var(--gutter) 0; padding: 14px 16px; }
+  .wm-ro-name { font-size: 1.3rem; }
+  /* country labels would collide at this size; the readout and buttons name them */
+  .wm-label, .wm-leader { visibility: hidden; }
+  .wm-ol-city { font-size: 32px; }
+  .wm-ol-country { display: none; }
+  .wm-origin-label { stroke-width: 7px; transform: translateY(16px); }
+  .wm.has-active .wm-origin-label { opacity: .25; }
+
+  .wm-legend { margin-top: 18px; }
+  .wm-keys { display: flex; flex-wrap: wrap; gap: 8px; }
+  .wm-keys > li { display: block; }
+  .wm-keys > li:last-child { flex-basis: 100%; }
+  .wm-key { align-items: center; gap: 9px; padding: 5px 15px 5px 5px; min-height: 44px; border-radius: 999px; }
+  .wm-key:hover, .wm-key.is-active { transform: none; }
+  .wm-key::after { display: none; }
+  .wm-key-mark { width: 32px; height: 32px; font-size: .6rem; }
+  .wm-key-text b { font-size: 1.02rem; white-space: nowrap; }
+  .wm-key-text small { display: none; }
+  .wm-key-link { border-radius: var(--radius); padding: 10px 14px 10px 10px; margin-top: 4px; }
+  .wm-key-link small { display: block; font-size: .78rem; }
+  .wm-legend-hint { justify-content: flex-start; font-size: .84rem; text-align: left; margin-bottom: 12px; }
+  .wm-caption { font-size: .78rem; }
+  .wm-teaser { margin-top: 18px; }
+  .wm-chip { padding: 0 14px; font-size: .84rem; }
+  .wm-cta { width: 100%; }
+  .wm-compact .wm-caption { font-size: .68rem; letter-spacing: .1em; }
+}

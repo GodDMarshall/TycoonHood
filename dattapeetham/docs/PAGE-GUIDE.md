@@ -233,3 +233,61 @@ fb, tg, yt, ig, spotify, apple, mandala.
    wrapping, empty areas. Repeat until it is genuinely excellent on both
    desktop and mobile. The script must report no problems.
 4. Re-read your copy against the sources for factual accuracy.
+
+## More patterns from the client's past builds (use where they fit)
+
+Port these into your page CSS and JS. All of them need a reduced-motion state
+and must be keyboard operable.
+
+- **Horizontal scroll-snap rails** (Gaali-De). Use
+  `display:grid; grid-auto-flow:column; grid-auto-columns:minmax(260px,1fr); overflow-x:auto; scroll-snap-type:x mandatory`
+  and mask the edges with a gradient. Good for discourses, festivals, albums
+  and seva cards.
+- **Month/festival bar** (Emerald Haven). Twelve Hindu lunar months (Chaitra →
+  Phalguna) marked up as a `radiogroup` with arrow-key navigation, festival
+  months highlighted in gold and a "today" dot from `DP.istNow()`. Clicking a
+  month filters the cards below.
+- **Date-prominent event rows** (PharmaCartel). A large date block, then the
+  title, then the meta line, with a stretched link. Format dates with
+  `Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata' })`. Only show dates
+  the source states.
+- **Long-form sticky TOC with scrollspy** (Gaali-De/PharmaCartel). Use an
+  IntersectionObserver with `rootMargin: '-96px 0px -60% 0px'` and set
+  `aria-current` on the matching link. Good for biographies, the lineage and
+  visitor guidelines.
+- **Breathing orb** (Gaali-De). A gold orb that scales over about an 8 s cycle,
+  with an Inhale / Exhale label switched on `animationiteration`. It is
+  illustrative only, so don't prescribe practice timings.
+- **Animated waveform bars** (Gaali-De). Generate the bars deterministically
+  with a formula, then animate their height.
+- **Native share** (Gaali-De). Call `navigator.share()` and fall back to copying
+  to the clipboard. Announce the result in an `aria-live` region. Use it
+  alongside the WhatsApp, Facebook and Telegram row.
+- **BalancedGrid** (Gaali-De). Use a CSS quantity query so a single card is
+  never left alone on the last row.
+- **Gold pen-stroke underline** (PharmaCartel). Draw an SVG swash under one key
+  phrase on reveal: `stroke-dasharray` set to the path length, animated over
+  900 ms.
+- **Auto-advancing story** (Emerald Haven). Stops advance every 12–15 s with a
+  thin gold progress bar and prev/next buttons. Pause on hover, on focus and
+  while `document.hidden` is true. Use it for "A day at the Ashram"-style
+  sequences, and only with sourced content.
+
+## Known source contradictions (state carefully, don't silently pick one)
+
+- **Shuka Vana and Bonsai Garden hours.** The homepage says 9–12 and
+  3:30–6, closed Wednesday. Their own pages say 10–12:30 and 3:30–5:30,
+  Wednesday holiday, and that Shuka Vana is "temporarily closed for
+  maintenance". The site config uses the homepage hours. On detail pages, show
+  a notice: "Timings vary across official sources; please check with the
+  Ashram before visiting".
+- **Karya Siddhi Hanuman.** The homepage says Abhisheka 7 AM and Aarti 6 PM
+  daily. The temple's own page lists longer weekday and weekend hours plus a
+  laser show. Show what the temple page states on the darshan page.
+- **Sri Jayalakshmi Maata's passing.** One page says 1951, two say 1953.
+  Prefer the timeline's 1953, or avoid stating the year.
+- **Shuka Vana species count.** 486 on most pages, 468 in one summary. Use
+  486.
+- **Centre directory.** `harvest/centers--ashramcenters.md` holds 86 of the
+  92 centres with addresses. Use it on the centres page and say the list is
+  partial, linking the official directory.

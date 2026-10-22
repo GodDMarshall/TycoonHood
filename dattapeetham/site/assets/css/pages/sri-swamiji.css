@@ -1,0 +1,323 @@
+/* ==========================================================================
+   Sri Swamiji — a cinematic biography
+   Page-only styles, scoped under .page-sri-swamiji. Tokens from site.css.
+   ========================================================================== */
+
+/* ---------- hero: the portrait stands in a temple arch (desktop) ---------- */
+.page-sri-swamiji .page-hero {
+  --arch-w: clamp(330px, 31vw, 460px);
+  --arch-top: clamp(64px, 9vh, 96px);
+  --arch-right: max(var(--gutter), calc((100vw - var(--wrap)) / 2 + var(--gutter) + 28px));
+}
+@media (min-width: 981px) {
+  .page-sri-swamiji .page-hero {
+    min-height: clamp(620px, 84vh, 780px);
+    background:
+      radial-gradient(560px 520px at calc(100% - var(--arch-right) - var(--arch-w) / 2) 58%, rgba(201, 164, 92, .26), transparent 70%),
+      radial-gradient(900px 600px at 0% 100%, rgba(201, 164, 92, .1), transparent 60%),
+      linear-gradient(180deg, var(--forest-2) 0%, var(--night) 100%);
+  }
+  .page-sri-swamiji .page-hero-media {
+    inset: auto;
+    top: var(--arch-top);
+    bottom: 0;
+    right: var(--arch-right);
+    width: var(--arch-w);
+    border-radius: calc(var(--arch-w) / 2) calc(var(--arch-w) / 2) 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(226, 200, 142, .55), 0 40px 140px -30px rgba(232, 180, 92, .55);
+  }
+  /* a second, finer arch traced in gold around the portrait */
+  .page-sri-swamiji .page-hero::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: calc(var(--arch-top) - 18px);
+    bottom: 0;
+    right: calc(var(--arch-right) - 18px);
+    width: calc(var(--arch-w) + 36px);
+    border: 1px solid rgba(226, 200, 142, .32);
+    border-bottom: 0;
+    border-radius: calc(var(--arch-w) / 2 + 18px) calc(var(--arch-w) / 2 + 18px) 0 0;
+    pointer-events: none;
+  }
+  .page-sri-swamiji .page-hero::before {
+    background: linear-gradient(0deg, rgba(10, 19, 16, .9) 0%, rgba(10, 19, 16, .35) 22%, rgba(10, 19, 16, 0) 42%);
+  }
+  .page-sri-swamiji .page-hero-inner { padding-right: calc(var(--arch-w) + 96px); }
+  .page-sri-swamiji .page-hero h1 { max-width: 12ch; }
+}
+/* phone & tablet: the arch sits centred above a centred title, like a shrine niche */
+@media (max-width: 980px) {
+  .page-sri-swamiji .page-hero {
+    --m-arch-w: min(232px, 58vw);
+    --m-arch-h: min(290px, 72vw);
+    --m-arch-top: 30px;
+    min-height: 0;
+    align-items: flex-start;
+    background:
+      radial-gradient(360px 320px at 50% calc(var(--m-arch-top) + var(--m-arch-h) / 2), rgba(201, 164, 92, .3), transparent 70%),
+      linear-gradient(180deg, var(--forest-2) 0%, var(--night) 100%);
+  }
+  .page-sri-swamiji .page-hero-media {
+    inset: auto;
+    top: var(--m-arch-top);
+    left: 50%;
+    width: var(--m-arch-w);
+    height: var(--m-arch-h);
+    margin-left: calc(var(--m-arch-w) / -2);
+    border-radius: calc(var(--m-arch-w) / 2) calc(var(--m-arch-w) / 2) 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(226, 200, 142, .55), 0 30px 90px -20px rgba(232, 180, 92, .5);
+    -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+  }
+  .page-sri-swamiji .page-hero::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: calc(var(--m-arch-top) - 12px);
+    left: 50%;
+    width: calc(var(--m-arch-w) + 24px);
+    height: calc(var(--m-arch-h) + 12px);
+    margin-left: calc((var(--m-arch-w) + 24px) / -2);
+    border: 1px solid rgba(226, 200, 142, .32);
+    border-bottom: 0;
+    border-radius: calc(var(--m-arch-w) / 2 + 12px) calc(var(--m-arch-w) / 2 + 12px) 0 0;
+    -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+    pointer-events: none;
+  }
+  .page-sri-swamiji .page-hero::before { background: none; }
+  .page-sri-swamiji .page-hero-inner {
+    padding-top: calc(var(--m-arch-top) + var(--m-arch-h) + 26px);
+    padding-bottom: 100px;
+    text-align: center;
+  }
+  .page-sri-swamiji .page-hero .crumbs,
+  .page-sri-swamiji .page-hero .hero-actions { justify-content: center; }
+  .page-sri-swamiji .page-hero h1,
+  .page-sri-swamiji .page-hero .lead { margin-left: auto; margin-right: auto; }
+  .page-sri-swamiji .page-hero .eyebrow { justify-content: center; }
+}
+@media (max-width: 640px) {
+  .page-sri-swamiji .page-hero .lead { font-size: 1.04rem; }
+  .page-sri-swamiji .hero-actions { gap: 10px; }
+  .page-sri-swamiji .hero-actions .btn { padding: 12px 16px; font-size: .86rem; }
+}
+
+/* five quick tiles under the hero */
+.page-sri-swamiji .quick-tiles { --cols: 5; }
+.page-sri-swamiji .quick-tile { padding: 22px 18px; }
+@media (max-width: 1180px) {
+  .page-sri-swamiji .quick-tile { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+@media (max-width: 980px) {
+  .page-sri-swamiji .quick-tile:last-child { grid-column: 1 / -1; border-bottom: 0; }
+}
+@media (max-width: 640px) {
+  .page-sri-swamiji .quick-tile { align-items: center; }
+  .page-sri-swamiji .quick-tile:last-child { flex-direction: row; justify-content: center; }
+  .page-sri-swamiji .quick-tile:last-child .qt-text { text-align: left; }
+}
+
+/* ---------- life: four chapters ---------- */
+.page-sri-swamiji .sgs-life { padding-top: clamp(64px, 8vw, 104px); padding-bottom: clamp(64px, 9vw, 112px); }
+.page-sri-swamiji .sgs-chapter { position: relative; padding: clamp(40px, 6vw, 80px) 0; }
+.page-sri-swamiji .sgs-chapter .split { position: relative; z-index: 1; }
+.page-sri-swamiji .sgs-chapter .split-body { position: relative; isolation: isolate; }
+.page-sri-swamiji .sgs-numeral {
+  position: absolute; top: clamp(-56px, -3vw, -24px); right: 0; z-index: -1;
+  font-family: var(--serif); font-weight: 400; font-size: clamp(7rem, 15vw, 13rem); line-height: 1;
+  color: var(--gold-3); opacity: .28; pointer-events: none; user-select: none;
+}
+.page-sri-swamiji .sgs-frame-full .frame-img img { height: 100%; margin-top: 0; }
+.page-sri-swamiji .sgs-life .split-media { padding: 0 22px 22px 0; }
+.page-sri-swamiji .sgs-ch-kicker {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+  font: 600 .72rem/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--gold);
+}
+.page-sri-swamiji .sgs-ch-kicker i { display: inline-block; width: 34px; height: 1px; background: var(--gold-2); }
+.page-sri-swamiji .sgs-chapter h3 { font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 400; margin-bottom: .55em; }
+.page-sri-swamiji .sgs-chapter .dropcap::first-letter { font-size: 4em; }
+.page-sri-swamiji .sgs-facts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0 18px;
+  margin: 26px 0 0; padding-top: 4px; border-top: 1px solid var(--line-strong);
+}
+.page-sri-swamiji .sgs-facts div { padding-top: 14px; }
+.page-sri-swamiji .sgs-facts dt { font: 600 .66rem/1.2 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.page-sri-swamiji .sgs-facts dd { margin: 0; font-family: var(--serif); font-size: 1.22rem; line-height: 1.25; color: var(--ink); }
+
+/* layered media: a framed photograph with a portrait medallion or inset */
+.page-sri-swamiji .sgs-stack { position: relative; }
+.page-sri-swamiji .sgs-medallion {
+  position: absolute; top: 22px; right: -14px; z-index: 2; margin: 0; width: clamp(104px, 11vw, 136px);
+}
+.page-sri-swamiji .sgs-medallion img {
+  width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; object-position: center 22%; border-radius: 50%;
+  border: 4px solid var(--paper); box-shadow: 0 0 0 1px var(--gold-2), var(--shadow);
+}
+.page-sri-swamiji .sgs-medallion figcaption {
+  position: absolute; top: 100%; right: 0; margin-top: 8px;
+  padding: 5px 10px; border-radius: 999px; background: var(--paper); box-shadow: var(--shadow-sm);
+  font: 600 .64rem/1.2 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--gold-deep); text-align: center; white-space: nowrap;
+}
+
+.page-sri-swamiji .sgs-verse { margin: 24px 0 26px; padding: 4px 0 4px 24px; border-left: 2px solid var(--gold-2); }
+.page-sri-swamiji .sgs-verse p { font-family: var(--serif); font-style: italic; font-size: clamp(1.3rem, 2vw, 1.55rem); line-height: 1.42; color: var(--ink); margin-bottom: 12px; }
+.page-sri-swamiji .sgs-verse footer { font-size: .84rem; color: var(--muted); }
+
+/* reach: video beside the numbers */
+.page-sri-swamiji .sgs-reach {
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(32px, 5vw, 64px); align-items: stretch;
+  margin-top: clamp(48px, 7vw, 88px); padding: clamp(22px, 3.6vw, 44px);
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+}
+.page-sri-swamiji .sgs-reach-media .video { height: 100%; min-height: 320px; aspect-ratio: auto; }
+.page-sri-swamiji .sgs-reach-body { align-self: center; }
+.page-sri-swamiji .sgs-reach h3 { font-size: clamp(1.7rem, 2.6vw, 2.2rem); }
+.page-sri-swamiji .sgs-reach p { color: var(--ink-2); }
+.page-sri-swamiji .sgs-reach .stats { grid-template-columns: repeat(2, 1fr); margin: 24px 0 0; }
+
+/* ---------- the quote band ---------- */
+.page-sri-swamiji .sgs-quote { position: relative; overflow: hidden; isolation: isolate; padding: clamp(96px, 13vw, 160px) 0 clamp(72px, 9vw, 112px); }
+.page-sri-swamiji .sgs-quote > .wrap { position: relative; z-index: 2; }
+.page-sri-swamiji .sgs-quote-mark {
+  position: absolute; left: 50%; top: 42%; width: 960px; height: 960px; margin: -480px 0 0 -480px;
+  color: var(--gold-2); opacity: .07; z-index: 0; pointer-events: none; animation: spin 180s linear infinite;
+}
+.page-sri-swamiji .sgs-quote-fig { margin: 0 auto clamp(56px, 8vw, 96px); text-align: center; }
+.page-sri-swamiji .sgs-quote .scroll-lit { margin: 0 auto; max-width: none; font-weight: 400; line-height: 1.16; }
+.page-sri-swamiji .sgs-quote-fig figcaption { margin-top: 26px; font: 600 .74rem/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: var(--gold-3); }
+.page-sri-swamiji .sgs-sayings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.page-sri-swamiji .sgs-saying { margin: 0; padding: 26px 24px 28px; }
+.page-sri-swamiji .sgs-saying .om { display: block; font-size: 1.5rem; line-height: 1; color: var(--gold-2); margin-bottom: 16px; }
+.page-sri-swamiji .sgs-saying p { margin: 0; font-family: var(--serif); font-size: clamp(1.3rem, 1.7vw, 1.5rem); line-height: 1.36; color: #fbf3e2; }
+.page-sri-swamiji .sgs-sayings-note { margin: 30px 0 0; text-align: center; font-size: .9rem; }
+.page-sri-swamiji .sgs-sayings-note .link-arrow { margin-left: 6px; }
+
+/* ---------- mission pillars ---------- */
+.page-sri-swamiji .sgs-pillars .card-media { aspect-ratio: 16 / 11; }
+.page-sri-swamiji .sgs-pillars .card-body p { font-size: .93rem; }
+
+/* ---------- avatara timeline (dark) ---------- */
+.page-sri-swamiji .sgs-timeline { overflow: hidden; isolation: isolate; }
+.page-sri-swamiji .sgs-timeline > .wrap { position: relative; z-index: 2; }
+.page-sri-swamiji .sgs-timeline .mark-watermark { top: 22%; margin-top: 0; z-index: 0; }
+.page-sri-swamiji .sgs-timeline .tl-line { background: rgba(226, 200, 142, .2); }
+.page-sri-swamiji .sgs-timeline .tl-progress { box-shadow: 0 0 14px rgba(232, 180, 92, .55); }
+.page-sri-swamiji .sgs-timeline .tl-year { font-size: 2.2rem; }
+.page-sri-swamiji .sgs-timeline .tl-item { padding-bottom: 30px; }
+.page-sri-swamiji .sgs-timeline .tl-item p { font-size: .98rem; }
+/* the shared reveal leaves clip-path: inset(0) on revealed items, which cuts the
+   dot that straddles the line; release it once the item is in */
+.page-sri-swamiji .tl-item.is-in { clip-path: none; }
+.page-sri-swamiji .sgs-timeline .tl-item.is-in .tl-dot { box-shadow: 0 0 0 5px rgba(201, 164, 92, .16), 0 0 14px rgba(232, 180, 92, .7); }
+.page-sri-swamiji .sgs-tl-more { margin: 28px 0 0; text-align: center; }
+
+/* ---------- honours ---------- */
+.page-sri-swamiji .sgs-hon-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(36px, 5vw, 72px); align-items: start; }
+.page-sri-swamiji .sgs-hon-media { padding: 0 22px 22px 0; position: sticky; top: calc(var(--header-h) + 28px); }
+.page-sri-swamiji .sgs-hon-list h3 { font-size: clamp(1.7rem, 2.4vw, 2rem); margin-bottom: 8px; }
+.page-sri-swamiji .sgs-awards { list-style: none; margin: 0; padding: 0; }
+.page-sri-swamiji .sgs-awards li { display: grid; grid-template-columns: 66px 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.page-sri-swamiji .sgs-aw-year { font-family: var(--serif); font-size: 1.55rem; line-height: 1.1; color: var(--gold-deep); font-variant-numeric: lining-nums; }
+.page-sri-swamiji .sgs-awards b { display: block; font-family: var(--serif); font-size: 1.28rem; font-weight: 600; line-height: 1.2; }
+.page-sri-swamiji .sgs-awards li > div > span { display: block; margin-top: 3px; font-size: .88rem; line-height: 1.55; color: var(--muted); }
+.page-sri-swamiji .sgs-visa { display: flex; gap: 12px; align-items: flex-start; margin: 20px 0 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--ivory); font-size: .9rem; color: var(--ink-2); }
+.page-sri-swamiji .sgs-visa .ico { flex: none; margin-top: 3px; color: var(--gold); }
+
+.page-sri-swamiji .sgs-rec-title { margin: clamp(56px, 8vw, 96px) 0 26px; text-align: center; font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 400; }
+.page-sri-swamiji .sgs-rec-title span { font-style: italic; color: var(--gold-deep); }
+.page-sri-swamiji .sgs-records { list-style: none; margin: 0 0 clamp(36px, 5vw, 56px); padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); column-gap: clamp(28px, 4vw, 56px); }
+.page-sri-swamiji .sgs-records li { display: grid; grid-template-columns: 112px 1fr; align-content: start; column-gap: 18px; padding: 16px 0; border-top: 1px solid var(--line); }
+.page-sri-swamiji .sgs-records time { grid-row: span 2; padding-top: 6px; font: 600 .7rem/1.4 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); }
+.page-sri-swamiji .sgs-records b { font-family: var(--serif); font-size: 1.28rem; font-weight: 600; line-height: 1.2; }
+.page-sri-swamiji .sgs-records span { font-size: .88rem; line-height: 1.55; color: var(--muted); }
+.page-sri-swamiji .sgs-rec-gallery { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 240px; }
+.page-sri-swamiji .sgs-rec-gallery .g-item:nth-child(n) { grid-row: auto; grid-column: auto; }
+.page-sri-swamiji .sgs-hon-more { margin: 26px 0 0; text-align: center; }
+
+/* ---------- Sri Bala Swamiji ---------- */
+.page-sri-swamiji .sgs-bala .split-media { padding: 0 22px 72px 0; }
+.page-sri-swamiji .sgs-bala .sgs-bala-two .split-media { padding: 0; }
+.page-sri-swamiji .sgs-bala .split h2 { font-size: clamp(2.2rem, 3.8vw, 3.2rem); }
+.page-sri-swamiji .sgs-inset {
+  position: absolute; right: -22px; bottom: -64px; z-index: 2; width: 52%; margin: 0;
+  padding: 8px 8px 10px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.page-sri-swamiji .sgs-inset img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 9px; }
+.page-sri-swamiji .sgs-inset figcaption { padding: 8px 4px 0; font-size: .78rem; color: var(--muted); }
+.page-sri-swamiji .sgs-bala-steps { margin: clamp(48px, 7vw, 88px) 0 clamp(56px, 8vw, 96px); }
+.page-sri-swamiji .sgs-bala .process-dot { background: var(--ivory-2); }
+.page-sri-swamiji .sgs-bala-two h3 { font-size: clamp(1.7rem, 2.6vw, 2.2rem); }
+.page-sri-swamiji .sgs-causes li { margin: .25em 0; }
+.page-sri-swamiji .sgs-bala-two .btn-row { margin-top: 22px; }
+
+/* ---------- official social media ---------- */
+.page-sri-swamiji .sgs-social { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.page-sri-swamiji .sgs-social-card { padding: 24px 22px 12px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.page-sri-swamiji .sgs-social-card h3 { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; margin-bottom: 10px; }
+.page-sri-swamiji .sgs-social-ic { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); }
+.page-sri-swamiji .sgs-social-card ul { list-style: none; margin: 0; padding: 0; }
+.page-sri-swamiji .sgs-social-card li + li { border-top: 1px solid var(--line); }
+.page-sri-swamiji .sgs-social-card a { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 46px; padding: 8px 0; font-size: .92rem; line-height: 1.35; color: var(--ink-2); text-decoration: none; transition: color .25s; }
+.page-sri-swamiji .sgs-social-card a .ico { flex: none; color: var(--gold); transition: transform .3s var(--ease-out); }
+.page-sri-swamiji .sgs-social-card a:hover { color: var(--gold-deep); }
+.page-sri-swamiji .sgs-social-card a:hover .ico { transform: translate(2px, -2px); }
+.page-sri-swamiji .sgs-listen {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px;
+  margin-top: 26px; padding: 22px 26px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--ivory-2);
+}
+.page-sri-swamiji .sgs-listen-label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 1.35rem; color: var(--ink); }
+.page-sri-swamiji .sgs-listen-label .ico { color: var(--gold); }
+.page-sri-swamiji .sgs-listen .btn { padding: 12px 20px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .page-sri-swamiji .sgs-sayings { grid-template-columns: repeat(2, 1fr); }
+  .page-sri-swamiji .sgs-social { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 980px) {
+  .page-sri-swamiji .sgs-numeral { font-size: 6.5rem; top: -30px; }
+  .page-sri-swamiji .sgs-chapter .split-media { max-width: 520px; }
+  .page-sri-swamiji .sgs-reach,
+  .page-sri-swamiji .sgs-hon-grid { grid-template-columns: 1fr; }
+  .page-sri-swamiji .sgs-hon-media { max-width: 620px; position: static; }
+  .page-sri-swamiji .sgs-records { grid-template-columns: 1fr; }
+  .page-sri-swamiji .sgs-rec-gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
+  .page-sri-swamiji .sgs-bala .split-media { max-width: 480px; }
+  .page-sri-swamiji .sgs-bala .sgs-bala-two .split-media { max-width: none; }
+}
+@media (max-width: 640px) {
+  .page-sri-swamiji .sgs-chapter { padding: 36px 0; }
+  .page-sri-swamiji .sgs-numeral { font-size: 5rem; opacity: .22; }
+  .page-sri-swamiji .sgs-life .split-media,
+  .page-sri-swamiji .sgs-hon-media { padding: 0 12px 12px 0; }
+  .page-sri-swamiji .sgs-medallion { width: 84px; right: -8px; top: 12px; }
+  .page-sri-swamiji .sgs-medallion figcaption { display: none; }
+  .page-sri-swamiji .sgs-hon-media .frame-img { aspect-ratio: 1; }
+  .page-sri-swamiji .sgs-reach .stats { gap: 16px; }
+  .page-sri-swamiji .sgs-reach .stat dt { font-size: 2rem; }
+  .page-sri-swamiji .sgs-sayings { grid-template-columns: 1fr; }
+  .page-sri-swamiji .sgs-saying p { font-size: 1.22rem; }
+  .page-sri-swamiji .sgs-awards li { grid-template-columns: 54px 1fr; gap: 12px; }
+  .page-sri-swamiji .sgs-records li { grid-template-columns: 1fr; }
+  .page-sri-swamiji .sgs-records time { grid-row: auto; padding: 0 0 4px; }
+  .page-sri-swamiji .sgs-rec-gallery { grid-auto-rows: 150px; gap: 8px; }
+  .page-sri-swamiji .sgs-bala .split-media { padding: 0 12px 56px 0; }
+  .page-sri-swamiji .sgs-inset { right: -12px; bottom: -48px; width: 58%; }
+  .page-sri-swamiji .sgs-social { grid-template-columns: 1fr; }
+  .page-sri-swamiji .sgs-listen { padding: 20px; }
+  .page-sri-swamiji .sgs-listen .btn-row { width: 100%; }
+  .page-sri-swamiji .sgs-listen .btn { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-sri-swamiji .sgs-quote-mark { animation: none; }
+}
+
+/* on ivory sections the shared sheen's brightest stop nearly vanishes; keep
+   the travelling light but within the legible golds */
+.page-sri-swamiji .section:not(.section-dark) .em-light {
+  background-image: linear-gradient(105deg, var(--gold-deep) 0%, var(--gold) 28%, var(--gold-2) 48%, var(--gold) 68%, var(--gold-deep) 100%);
+}
