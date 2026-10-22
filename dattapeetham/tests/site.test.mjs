@@ -51,7 +51,10 @@ for (const { f, lang, html } of pages) {
     const title = (/<title>([^<]*)<\/title>/.exec(html) || [])[1] || '';
     const desc = (/<meta name="description" content="([^"]*)"/.exec(html) || [])[1] || '';
     assert.ok(title.length >= 10 && title.length <= 90, `title length ${title.length}: ${title}`);
-    assert.ok(desc.length >= 50 && desc.length <= 200, `description length ${desc.length}`);
+    // Count visible letters: Indic vowel signs are separate code units, and
+    // conjuncts pack a translated description into fewer letters than English.
+    const len = [...new Intl.Segmenter(lang, { granularity: 'grapheme' }).segment(desc)].length;
+    assert.ok(len >= (lang === 'en' ? 50 : 30) && len <= 200, `description length ${len}`);
     assert.match(html, /<link rel="canonical" href="https:\/\/www\.dattapeetham\.org\//);
     assert.match(html, /<meta property="og:image" content="https:\/\//);
   });

@@ -691,11 +691,12 @@ function defHtml(t) {
   if (target) return `ref. <a class="gl-ref" href="#${target.id}">${esc(m[1])}</a>`;
   return esc(t.def);
 }
+// Terms sort by their romanised spelling, so the letter index stays in Latin in every language.
 const letters = [...new Set(terms.map((t) => t.term[0].toUpperCase()))];
 
 function glossary() {
   const groups = letters.map((L) => `<section class="gl-group" id="gl-${L.toLowerCase()}" aria-labelledby="gl-h-${L.toLowerCase()}" data-gl-group>
-      <h3 class="gl-letter" id="gl-h-${L.toLowerCase()}">${L}</h3>
+      <h3 class="gl-letter" id="gl-h-${L.toLowerCase()}" translate="no">${L}</h3>
       <dl>
         ${terms.filter((t) => t.term[0].toUpperCase() === L).map((t) => `<div class="gl-item" id="${t.id}" data-gl-item>
           <dt>${esc(t.term)}</dt>
@@ -710,7 +711,7 @@ function glossary() {
       <div class="gl-field">${icon('search', 18)}<input id="gl-q" type="search" placeholder="Try “yoga” or “Prasada”" autocomplete="off" spellcheck="false" data-gl-input><button type="button" class="gl-clear" data-gl-clear aria-label="Clear the search" hidden>${icon('close', 16)}</button></div>
       <p class="gl-status" data-gl-status aria-live="polite">${terms.length} terms</p>
     </div>
-    <nav class="gl-letters" aria-label="Glossary letters">
+    <nav class="gl-letters" aria-label="Glossary letters" translate="no">
       ${letters.map((L) => `<a href="#gl-${L.toLowerCase()}" data-gl-letter="${L}">${L}</a>`).join('')}
     </nav>
     <p class="gl-source">Definitions as published in the <a href="${EXT.glossary}"${ext}>Datta Peetham Glossary</a>.</p>

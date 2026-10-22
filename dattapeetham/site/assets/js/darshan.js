@@ -8,6 +8,8 @@
    Everything is readable without this script; it only adds live state. */
 (function () {
   'use strict';
+  // Whole sentences with numbered slots (%1, %2) so translations can reorder them.
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
   var doc = document;
   var $ = function (s, c) { return (c || doc).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
@@ -92,9 +94,9 @@
       var inDay = now.mins >= start && now.mins <= end;
       sun.hidden = !inDay;
       if (inDay) sun.style.left = ((now.mins - start) / (end - start) * 100).toFixed(3) + '%';
-      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = 'Now ' + now.label + ' IST';
+      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = fmt('Now %1 IST', now.label);
     }
-    if (wrap && text) { wrap.hidden = false; text.textContent = 'Now in Mysuru · ' + now.label + ' IST'; }
+    if (wrap && text) { wrap.hidden = false; text.textContent = fmt('Now in Mysuru · %1 IST', now.label); }
     var weekend = now.day === 0 || now.day === 6, nextSet = false;
     $$('.dn-day-events li', track).forEach(function (li) {
       var m = +li.getAttribute('data-m'), skip = li.hasAttribute('data-weekend') && !weekend;
@@ -127,11 +129,11 @@
   function templeStatus(t, now) {
     var s = now.day === 0 || now.day === 6 ? t.we : t.wk;
     for (var i = 0; i < s.length; i++) {
-      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: 'Open now · until ' + short12(s[i][1]) };
-      if (now.mins < s[i][0]) return { open: false, text: 'Closed · opens ' + short12(s[i][0]) };
+      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: fmt('Open now · until %1', short12(s[i][1])) };
+      if (now.mins < s[i][0]) return { open: false, text: fmt('Closed · opens %1', short12(s[i][0])) };
     }
     var tomorrow = (now.day + 1) % 7, first = (tomorrow === 0 || tomorrow === 6 ? t.we : t.wk)[0][0];
-    return { open: false, text: 'Closed · opens ' + short12(first) + ' tomorrow' };
+    return { open: false, text: fmt('Closed · opens %1 tomorrow', short12(first)) };
   }
   function updateTemples(now) {
     Object.keys(TEMPLES).forEach(function (k) {
@@ -185,7 +187,7 @@
       $$('.is-picked', grid).forEach(function (i) { i.classList.remove('is-picked'); });
       var key = month.value + '-' + day.value, el = $('[data-md="' + key + '"]', grid);
       if (el) el.classList.add('is-picked');
-      out.textContent = 'Along the pathway, look for the pillar of ' + day.value + ' ' + MONTHS[+month.value - 1] + ' — it carries the deity and demigod for that day.';
+      out.textContent = fmt('Along the pathway, look for the pillar of %1 %2 — it carries the deity and demigod for that day.', day.value, MONTHS[+month.value - 1]);
     };
     form.addEventListener('change', function () { touched = true; pick(); });
     form.addEventListener('submit', function (e) { e.preventDefault(); });

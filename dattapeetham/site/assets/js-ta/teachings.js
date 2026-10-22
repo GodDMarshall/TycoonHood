@@ -66,7 +66,7 @@
     toggle.addEventListener('click', function () {
       userPaused = !userPaused;
       toggle.setAttribute('aria-pressed', String(userPaused));
-      toggle.setAttribute('aria-label', userPaused ? 'Play the sayings' : 'Pause the sayings');
+      toggle.setAttribute('aria-label', userPaused ? 'அருள்மொழிகளை இயக்கு' : 'அருள்மொழிகளை இடைநிறுத்து');
       sync();
     });
     stage.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hover = true; sync(); } });
@@ -90,7 +90,7 @@
         var v = chip.getAttribute('data-filter');
         var shown = $$('[data-filter-item]', cat).filter(function (li) { return !li.classList.contains('is-filtered'); }).length;
         var lang = chip.firstChild ? chip.firstChild.textContent.trim() : '';
-        count.textContent = v === 'all' ? base : shown + (shown === 1 ? ' title in ' : ' titles in ') + lang;
+        count.textContent = v === 'all' ? base : shown + (shown === 1 ? ' நூல் · மொழி: ' : ' நூல்கள் · மொழி: ') + lang;
         pane.scrollTop = 0;
       });
     });
@@ -147,7 +147,7 @@
       });
       empty.hidden = shown > 0;
       clear.hidden = !q;
-      status.textContent = q ? (shown === 1 ? '1 term matches' : shown + ' terms match') + ' “' + raw + '”' : total + ' terms';
+      status.textContent = q ? (shown === 1 ? '1 சொல் பொருந்துகிறது:' : shown + ' சொற்கள் பொருந்துகின்றன:') + ' “' + raw + '”' : total + ' terms';
       pane.scrollTop = 0;
       spy();
     }

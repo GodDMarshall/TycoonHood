@@ -11,6 +11,8 @@
    5. Concerts: marks the next Raga Sagara on the list. */
 (function () {
   'use strict';
+  // Whole sentences with numbered slots (%1, %2) so translations can reorder them.
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
   var doc = document, DP = window.DP || {};
   var reduced = DP.reduced || matchMedia('(prefers-reduced-motion: reduce)').matches;
   var $ = function (s, c) { return (c || doc).querySelector(s); };
@@ -30,7 +32,7 @@
     var s = el.getAttribute('data-start'), e = el.getAttribute('data-end'), st = $('[data-ev-status]', el), txt;
     if (e < today) { el.classList.add('is-past'); txt = 'Concluded'; }
     else if (s <= today) { el.classList.add('is-now'); txt = 'Happening now'; }
-    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? 'Tomorrow' : 'In ' + n + ' days'; }
+    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? 'Tomorrow' : fmt('In %1 days', n); }
     if (st) { st.textContent = txt; st.hidden = false; st.classList.toggle('is-now', el.classList.contains('is-now')); }
   });
   var feature = $$('.ev-fcard');
@@ -70,7 +72,7 @@
       list.classList.toggle('fold-past', folded);
       earlier.setAttribute('aria-expanded', String(!folded));
       var n = pastWithMatches().length;
-      earlierLabel.textContent = folded ? 'Show ' + n + ' earlier month' + (n === 1 ? '' : 's') : 'Hide earlier months';
+      earlierLabel.textContent = folded ? (n === 1 ? 'Show 1 earlier month' : fmt('Show %1 earlier months', n)) : 'Hide earlier months';
       earlier.hidden = n === 0;
     };
     var opened = false;
@@ -183,7 +185,7 @@
     var tick = function () {
       var t = DP.istNow(), x = t.mins / 1440;
       now.style.setProperty('--x', (x * 100).toFixed(2) + '%');
-      nowLabel.textContent = 'Now in Mysuru · ' + t.label + ' IST';
+      nowLabel.textContent = fmt('Now in Mysuru · %1 IST', t.label);
       // keep the label inside the ribbon at either end of the day
       var cw = now.parentNode.clientWidth, half = nowLabel.offsetWidth / 2, at = x * cw;
       now.classList.toggle('to-left', at + half > cw);

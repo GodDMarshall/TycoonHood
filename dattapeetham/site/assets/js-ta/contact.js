@@ -10,6 +10,8 @@
    mailto: form with native validation. */
 (function () {
   'use strict';
+  // Whole sentences with numbered slots (%1, %2) so translations can reorder them.
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
   var doc = document;
   var DP = window.DP || {};
   var $ = function (s, c) { return (c || doc).querySelector(s); };
@@ -26,7 +28,7 @@
       var ok = false;
       try { ok = doc.execCommand('copy'); } catch (e) { ok = false; }
       doc.body.removeChild(ta);
-      if (ok) resolve(); else reject(new Error('copy failed'));
+      if (ok) resolve(); else reject(new Error('நகலெடுக்க இயலவில்லை'));
     });
   }
   var copyLive = $('[data-copy-live]');
@@ -40,10 +42,10 @@
     b.addEventListener('click', function () {
       copyText(b.getAttribute('data-copy')).then(function () {
         b.classList.add('is-done'); if (label) label.textContent = 'Copied';
-        announce(copyLive, 'Copied the ' + b.getAttribute('data-copy-label') + '.');
+        announce(copyLive, 'நகலெடுக்கப்பட்டது: ' + b.getAttribute('data-copy-label') + '.');
       }, function () {
-        if (label) label.textContent = 'Copy failed';
-        announce(copyLive, 'Sorry, copying did not work. Please select the text instead.');
+        if (label) label.textContent = 'நகலெடுக்க இயலவில்லை';
+        announce(copyLive, 'மன்னிக்கவும், நகலெடுக்க இயலவில்லை. அதற்குப் பதிலாக உரையைத் தேர்ந்தெடுங்கள்.');
       });
       clearTimeout(timer);
       timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = 'Copy'; }, 2400);
@@ -81,7 +83,7 @@
   var submitted = false, touched = {}, lastMail = null;
 
   // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'Email ID', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  var LABEL = { name: 'Name', email: 'மின்னஞ்சல் முகவரி', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -90,28 +92,28 @@
     switch (key) {
       case 'name':
         v = F.name.value.trim();
-        if (!v) return 'Please enter your Name';
-        if (v.length < 3) return 'Please enter at least 3 characters';
+        if (!v) return 'உங்கள் பெயரை உள்ளிடுங்கள்';
+        if (v.length < 3) return 'குறைந்தது 3 எழுத்துகளை உள்ளிடுங்கள்';
         return '';
       case 'email':
         v = F.email.value.trim();
-        if (!v) return 'Please enter your Email ID';
-        if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v)) return 'Please enter a valid Email ID, like name@example.com';
+        if (!v) return 'உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடுங்கள்';
+        if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v)) return 'name@example.com போன்ற சரியான மின்னஞ்சல் முகவரியை உள்ளிடுங்கள்';
         return '';
       case 'phone':
         v = F.phone.value.trim();
         if (!v) return '';
         var digits = v.replace(/[\s-]/g, '');
-        if (/\D/.test(digits)) return 'Please use digits only';
-        if (digits.length < 8) return 'Please enter at least 8 digits';
-        if (digits.length > 15) return 'Please enter no more than 15 digits';
+        if (/\D/.test(digits)) return 'எண்களை மட்டும் பயன்படுத்துங்கள்';
+        if (digits.length < 8) return 'குறைந்தது 8 இலக்கங்களை உள்ளிடுங்கள்';
+        if (digits.length > 15) return '15 இலக்கங்களுக்கு மேல் உள்ளிட வேண்டாம்';
         return '';
       case 'purpose':
-        return F.purpose.value ? '' : 'Please select Purpose';
+        return F.purpose.value ? '' : 'நோக்கத்தைத் தேர்ந்தெடுங்கள்';
       case 'message':
         v = F.message.value.trim();
-        if (!v) return 'Please enter Message';
-        if (v.length < 10) return 'Please enter at least 10 characters';
+        if (!v) return 'செய்தியை உள்ளிடுங்கள்';
+        if (v.length < 10) return 'குறைந்தது 10 எழுத்துகளை உள்ளிடுங்கள்';
         return '';
     }
     return '';
@@ -167,7 +169,7 @@
   function refreshSummary(focus) {
     var bad = KEYS.map(function (k) { return [k, check(k)]; }).filter(function (x) { return x[1]; });
     if (!bad.length) { summary.hidden = true; return bad; }
-    summaryTitle.textContent = bad.length === 1 ? 'Please check 1 field before continuing' : 'Please check ' + bad.length + ' fields before continuing';
+    summaryTitle.textContent = bad.length === 1 ? 'தொடர்வதற்கு முன் 1 புலத்தைச் சரிபாருங்கள்' : fmt('Please check %1 fields before continuing', bad.length);
     summaryList.innerHTML = '';
     bad.forEach(function (x) {
       var li = doc.createElement('li'), a = doc.createElement('a');
@@ -183,18 +185,18 @@
   function compose() {
     var name = F.name.value.trim(), email = F.email.value.trim(), purpose = F.purpose.value;
     var digits = F.phone.value.trim().replace(/[\s-]/g, '');
-    var phone = digits ? ((F.cc.value ? '+' + F.cc.value.replace(/^\+/, '') + ' ' : '') + digits) : 'Not given';
-    var subject = purpose + ': message from ' + name;
+    var phone = digits ? ((F.cc.value ? '+' + F.cc.value.replace(/^\+/, '') + ' ' : '') + digits) : 'குறிப்பிடப்படவில்லை';
+    var subject = purpose + ': செய்தி — அனுப்புநர்: ' + name;
     var body = [
       F.message.value.trim(),
       '',
       '----',
-      'Name: ' + name,
-      'Email ID: ' + email,
-      'Phone: ' + phone,
-      'Purpose: ' + purpose,
+      'பெயர்: ' + name,
+      'மின்னஞ்சல் முகவரி: ' + email,
+      'தொலைபேசி: ' + phone,
+      'நோக்கம்: ' + purpose,
       '',
-      'Written on the Contact page of the Avadhoota Datta Peetham website.',
+      'அவதூத தத்த பீட இணையதளத்தின் தொடர்புப் பக்கத்தில் எழுதப்பட்டது.',
     ].join('\n');
     return {
       subject: subject, body: body,
@@ -214,7 +216,7 @@
     $('[data-preview-body]', form).textContent = lastMail.body;
     $('[data-mailto]', form).href = lastMail.href;
     result.hidden = false;
-    announce(formLive, 'Opening your email app with your message to ' + TO + '. It is not sent until you press Send there.');
+    announce(formLive, fmt('Opening your email app with your message to %1. It is not sent until you press Send there.', TO));
     // Open the visitor's email app. Nothing leaves this page by itself.
     window.location.href = lastMail.href;
     setTimeout(function () {
@@ -227,12 +229,12 @@
   $('[data-copy-message]', form).addEventListener('click', function () {
     if (!lastMail) return;
     var b = this, label = b.querySelector('span');
-    copyText('To: ' + TO + '\nSubject: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
+    copyText('பெறுநர்: ' + TO + '\nபொருள்: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
       label.textContent = 'Copied';
-      announce(formLive, 'Message copied. Paste it into a new email to ' + TO + '.');
+      announce(formLive, fmt('Message copied. Paste it into a new email to %1.', TO));
       setTimeout(function () { label.textContent = 'செய்தியை நகலெடு'; }, 2400);
     }, function () {
-      announce(formLive, 'Copying did not work. Open “See the composed email” and select the text instead.');
+      announce(formLive, 'நகலெடுக்க இயலவில்லை. “தயாரான மின்னஞ்சலைக் காண்க” என்பதைத் திறந்து, அதற்குப் பதிலாக உரையைத் தேர்ந்தெடுங்கள்.');
     });
   });
 
@@ -252,7 +254,7 @@
       });
       summary.hidden = true; result.hidden = true;
       syncCC(); syncCount();
-      announce(formLive, 'The form has been cleared.');
+      announce(formLive, 'படிவம் அழிக்கப்பட்டது.');
     }, 0);
   });
 })();

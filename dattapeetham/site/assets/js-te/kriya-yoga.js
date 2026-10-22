@@ -25,7 +25,7 @@
     btn.hidden = false;
     btn.addEventListener('click', function () {
       var paused = box.classList.toggle('is-paused');
-      label.textContent = paused ? 'Resume the circle' : 'వృత్తాన్ని ఆపండి';
+      label.textContent = paused ? 'వలయాన్ని కొనసాగించండి' : 'వృత్తాన్ని ఆపండి';
     });
   });
 

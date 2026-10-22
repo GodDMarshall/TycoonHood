@@ -378,7 +378,7 @@ const special = `<div class="ce-special">
   </header>
   <div class="ce-sp-grid">
     <article class="ce-sp" data-reveal="up">
-      <div class="ce-sp-media">${img(P.dattaKashi, 'The flower-garlanded Datta idol at Datta Kashi, Mekedatu, with worship being offered beside it', { pos: '50% 28%' })}<span class="ce-sp-letter" aria-hidden="true">A</span></div>
+      <div class="ce-sp-media">${img(P.dattaKashi, 'The flower-garlanded Datta idol at Datta Kashi, Mekedatu, with worship being offered beside it', { pos: '50% 28%' })}<span class="ce-sp-letter" aria-hidden="true" translate="no">A</span></div>
       <div class="ce-sp-body">
         <span class="tag">Sri Swamiji’s birthplace</span>
         <h3><a href="${kashi.href}">${kashi.name}</a></h3>
@@ -393,7 +393,7 @@ const special = `<div class="ce-special">
       </div>
     </article>
     <article class="ce-sp" data-reveal="up">
-      <div class="ce-sp-media">${img(P.dattaRameshwaram, 'The garlanded idols at the seaside Datta Rameshwaram temple, Manginapudi, with worship being offered beside them', { pos: '50% 40%' })}<span class="ce-sp-letter" aria-hidden="true">B</span></div>
+      <div class="ce-sp-media">${img(P.dattaRameshwaram, 'The garlanded idols at the seaside Datta Rameshwaram temple, Manginapudi, with worship being offered beside them', { pos: '50% 40%' })}<span class="ce-sp-letter" aria-hidden="true" translate="no">B</span></div>
       <div class="ce-sp-body">
         <span class="tag">By the sea at Manginapudi</span>
         <h3><a href="${rameshwaram.href}">${rameshwaram.name}</a></h3>

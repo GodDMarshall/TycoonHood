@@ -3,6 +3,8 @@
    without them, and every effect has a finished state under reduced motion. */
 (function () {
   'use strict';
+  // Whole sentences with numbered slots (%1, %2) so translations can reorder them.
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
   var doc = document, root = doc.documentElement, body = doc.body;
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var DP = window.DP = window.DP || {};
@@ -29,8 +31,8 @@
     if (h.closed.indexOf(now.day) !== -1) return { open: false, text: c ? 'Weekly holiday today' : 'Closed today' };
     for (var i = 0; i < h.sessions.length; i++) {
       var s = toMins(h.sessions[i][0]), e = toMins(h.sessions[i][1]);
-      if (now.mins >= s && now.mins < e) return { open: true, text: (c ? 'Within listed hours · until ' : 'Open now · until ') + fmt12(h.sessions[i][1]) };
-      if (now.mins < s) return { open: false, text: (c ? 'Listed hours from ' : 'Closed · opens ') + fmt12(h.sessions[i][0]) };
+      if (now.mins >= s && now.mins < e) return { open: true, text: fmt(c ? 'Within listed hours · until %1' : 'Open now · until %1', fmt12(h.sessions[i][1])) };
+      if (now.mins < s) return { open: false, text: fmt(c ? 'Listed hours from %1' : 'Closed · opens %1', fmt12(h.sessions[i][0])) };
     }
     return { open: false, text: c ? 'Outside listed hours' : 'Closed · opens tomorrow' };
   }
@@ -38,7 +40,7 @@
   var RITUALS = [[420, 'Hanuman Abhisheka'], [1080, 'Hanuman Aarti']];
   function nextRitual(now) {
     for (var i = 0; i < RITUALS.length; i++) if (now.mins < RITUALS[i][0]) return RITUALS[i][1] + ' · ' + fmt12(RITUALS[i][0]);
-    return RITUALS[0][1] + ' · ' + fmt12(RITUALS[0][0]) + ' tomorrow';
+    return fmt('%1 · %2 tomorrow', RITUALS[0][1], fmt12(RITUALS[0][0]));
   }
   function tick() {
     var now = istNow(), hours = window.DP_HOURS || {};

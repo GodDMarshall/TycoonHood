@@ -9,6 +9,8 @@
    4. TV band: a "now" pin at the current time in Mysuru (IST). */
 (function () {
   'use strict';
+  // Whole sentences with numbered slots (%1, %2) so translations can reorder them.
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
   var doc = document;
   var DP = window.DP || {};
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -151,7 +153,7 @@
       wave.style.setProperty('--p', p.toFixed(4));
       if (!seeking) seek.value = Math.round(p * 1000);
       cur.textContent = t(audio.currentTime);
-      seek.setAttribute('aria-valuetext', t(audio.currentTime) + (d ? ' of ' + t(d) : ''));
+      seek.setAttribute('aria-valuetext', d ? fmt('Played %1 of %2', t(audio.currentTime), t(d)) : t(audio.currentTime));
     };
     var setState = function () {
       var playing = !audio.paused && !audio.ended;

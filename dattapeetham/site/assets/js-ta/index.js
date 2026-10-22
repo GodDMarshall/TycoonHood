@@ -122,7 +122,7 @@
     var orb = $('.ix-breath-orb i', breath), label = $('[data-breath-label]', breath), inhale = true;
     if (orb && label) orb.addEventListener('animationiteration', function () {
       inhale = !inhale;
-      label.textContent = inhale ? 'Breathe in' : 'Breathe out';
+      label.textContent = inhale ? 'மூச்சை உள்ளிழுங்கள்' : 'மூச்சை வெளிவிடுங்கள்';
     });
   }
   if ('IntersectionObserver' in window) {

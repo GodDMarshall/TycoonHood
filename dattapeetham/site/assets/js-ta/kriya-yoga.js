@@ -25,7 +25,7 @@
     btn.hidden = false;
     btn.addEventListener('click', function () {
       var paused = box.classList.toggle('is-paused');
-      label.textContent = paused ? 'Resume the circle' : 'வட்டத்தை இடைநிறுத்து';
+      label.textContent = paused ? 'வட்டத்தை மீண்டும் இயக்கு' : 'வட்டத்தை இடைநிறுத்து';
     });
   });
 

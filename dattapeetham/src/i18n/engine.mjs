@@ -211,7 +211,7 @@ export function extractJs(code) {
   for (const m of code.matchAll(JS_STR)) {
     const s = m[2];
     if (/\$\{|^\s*$|^[\w.#\[\]=:\-\/ >*,()"']+$/.test(s) && !/\s/.test(s)) continue;
-    if (!/\p{Lu}\p{Ll}+|\p{Ll}{3,} \p{Ll}{2,}/u.test(s) || /^(?:[a-z-]+:|\.|#|\[)|https?:|\.(?:js|css|html|webp|jpe?g|png)\b|^[a-z]+(?:[-_][a-z]+)+$/.test(s)) continue;
+    if (!/\p{Lu}\p{Ll}+|\p{Ll}{3,} \p{Ll}{2,}|%\d.*\p{Ll}{3,}|\p{Ll}{3,}.*%\d/u.test(s) || /^(?:[a-z-]+:|\.|#|\[)|https?:|\.(?:js|css|html|webp|jpe?g|png)\b|^[a-z]+(?:[-_][a-z]+)+$/.test(s)) continue;
     if (/[<>{}]|=>|;/.test(s) || s === 'use strict') continue;
     out.add(s.replace(/\\'/g, "'").replace(/\\"/g, '"'));
   }

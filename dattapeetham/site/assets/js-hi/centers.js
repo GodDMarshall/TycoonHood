@@ -9,6 +9,8 @@
    state panels open natively. */
 (function () {
   'use strict';
+  // Whole sentences with numbered slots (%1, %2) so translations can reorder them.
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
   var doc = document;
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || doc).querySelectorAll(sel)); };
   var fold = function (s) { return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); };
@@ -62,8 +64,9 @@
       if (empty) empty.hidden = shown > 0;
       if (status) {
         status.textContent = shown === total
-          ? 'यहाँ सूचीबद्ध सभी ' + total + ' केंद्र दिखाए जा रहे हैं'
-          : 'दिखाए जा रहे हैं: ' + shown + ' of ' + total + ' centres' + (q ? ' matching “' + input.value.trim() + '”' : '');
+          ? fmt('Showing all %1 centres listed here', total)
+          : q ? fmt('Showing %1 of %2 centres matching “%3”', shown, total, input.value.trim())
+          : fmt('Showing %1 of %2 centres', shown, total);
       }
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     };

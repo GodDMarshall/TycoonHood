@@ -10,6 +10,8 @@
    mailto: form with native validation. */
 (function () {
   'use strict';
+  // Whole sentences with numbered slots (%1, %2) so translations can reorder them.
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
   var doc = document;
   var DP = window.DP || {};
   var $ = function (s, c) { return (c || doc).querySelector(s); };
@@ -167,7 +169,7 @@
   function refreshSummary(focus) {
     var bad = KEYS.map(function (k) { return [k, check(k)]; }).filter(function (x) { return x[1]; });
     if (!bad.length) { summary.hidden = true; return bad; }
-    summaryTitle.textContent = bad.length === 1 ? 'आगे बढ़ने से पहले कृपया 1 फ़ील्ड जाँचें' : 'आगे बढ़ने से पहले कृपया ' + bad.length + ' फ़ील्ड जाँचें';
+    summaryTitle.textContent = bad.length === 1 ? 'आगे बढ़ने से पहले कृपया 1 फ़ील्ड जाँचें' : fmt('Please check %1 fields before continuing', bad.length);
     summaryList.innerHTML = '';
     bad.forEach(function (x) {
       var li = doc.createElement('li'), a = doc.createElement('a');
@@ -214,7 +216,7 @@
     $('[data-preview-body]', form).textContent = lastMail.body;
     $('[data-mailto]', form).href = lastMail.href;
     result.hidden = false;
-    announce(formLive, 'आपका ईमेल ऐप खुल रहा है, संदेश प्राप्तकर्ता: ' + TO + '. It is not sent until you press Send there.');
+    announce(formLive, fmt('Opening your email app with your message to %1. It is not sent until you press Send there.', TO));
     // Open the visitor's email app. Nothing leaves this page by itself.
     window.location.href = lastMail.href;
     setTimeout(function () {
@@ -229,7 +231,7 @@
     var b = this, label = b.querySelector('span');
     copyText('प्रति: ' + TO + '\nविषय: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
       label.textContent = 'Copied';
-      announce(formLive, 'संदेश कॉपी हो गया। इसे एक नए ईमेल में पेस्ट करके इस पते पर भेजें: ' + TO + '.');
+      announce(formLive, fmt('Message copied. Paste it into a new email to %1.', TO));
       setTimeout(function () { label.textContent = 'संदेश कॉपी करें'; }, 2400);
     }, function () {
       announce(formLive, 'कॉपी नहीं हो सका। “तैयार ईमेल देखें” खोलें और इसके बजाय टेक्स्ट चुनें।');

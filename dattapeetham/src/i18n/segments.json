@@ -69,7 +69,7 @@
   ]
  },
  {
-  "k": "<1><2/>Live Darshan</1> <3>Events</3> <4>Contact</4> <5>Sign in</5>",
+  "k": "<1><2/>Live streams</1> <3>Events</3> <4>Contact</4> <5>Sign in</5>",
   "pages": [
    "404.html",
    "about.html",
@@ -2756,7 +2756,7 @@
   ]
  },
  {
-  "k": "Temple opens · 6 AM",
+  "k": "Temple opens · 6&nbsp;AM",
   "pages": [
    "about.html"
   ]
@@ -2768,7 +2768,7 @@
   ]
  },
  {
-  "k": "Sri Chakra Puja · about 8 AM",
+  "k": "Sri Chakra Puja · about 8&nbsp;AM",
   "pages": [
    "about.html"
   ]
@@ -3148,7 +3148,7 @@
   ]
  },
  {
-  "k": "On this page",
+  "k": "Section shortcuts",
   "pages": [
    "about.html",
    "attractions.html",
@@ -3163,9 +3163,7 @@
    "music.html",
    "seva.html",
    "sri-swamiji.html",
-   "teachings.html",
-   "visit.html",
-   "js:visit.js"
+   "teachings.html"
   ]
  },
  {
@@ -4071,7 +4069,7 @@
   ]
  },
  {
-  "k": "Varam the parrot chants the Hanuman Chalisa",
+  "k": "Varam the parrot chants the first line of the Hanuman Chalisa",
   "pages": [
    "attractions.html"
   ]
@@ -4173,7 +4171,7 @@
   ]
  },
  {
-  "k": "<1>Live status · this site’s standard hours</1> <2>Checking…</2> <3>Standard hours used across this site: Morning 9:00 AM – 12:00 PM, Evening 3:30 PM – 6:00 PM. Closed on Wednesdays. The live status does not reflect the maintenance closure.</3>",
+  "k": "<1>Live status · this site’s standard hours</1> <2>Checking…</2> <3>Standard hours used across this site: Morning 9:00 AM – 12:00 PM, Evening 3:30 PM – 6:00 PM. Closed on Wednesdays. Timings vary across official sources, and Shuka Vana’s own page says it is temporarily closed for maintenance; please check with the Ashram before visiting.. The live status does not reflect the maintenance closure.</3>",
   "pages": [
    "attractions.html"
   ]
@@ -5396,7 +5394,7 @@
   ]
  },
  {
-  "k": "Play video: Varam the parrot chants the Hanuman Chalisa",
+  "k": "Play video: Varam the parrot chants the first line of the Hanuman Chalisa",
   "pages": [
    "attractions.html"
   ]
@@ -5698,10 +5696,10 @@
   ]
  },
  {
-  "k": "A garlanded idol of Lord Hanuman at the Karya Siddhi Hanuman Temple",
+  "k": "The 70-foot monolithic Karya Siddhi Hanuman statue rising above the carved stone temple",
   "pages": [
    "attractions.html",
-   "media.html"
+   "index.html"
   ]
  },
  {
@@ -6536,7 +6534,7 @@
   ]
  },
  {
-  "k": "<1>Nam</1> <2>Dattanatha Kshetram</2>",
+  "k": "<1>Nam</1> <2>Dattanatha Kshetram</2><3> (Nellore)</3>",
   "pages": [
    "centers.html"
   ]
@@ -6603,6 +6601,12 @@
  },
  {
   "k": "<1><2>Bhartareenatha</2><3><4/>Kamareddy</3></1> </5> <6/> </7>",
+  "pages": [
+   "centers.html"
+  ]
+ },
+ {
+  "k": "<1>Nam</1> <2>Dattanatha Kshetram</2><3> (Eluru)</3>",
   "pages": [
    "centers.html"
   ]
@@ -9454,13 +9458,13 @@
   ]
  },
  {
-  "k": "<1><2>Book a Puja</2><3/></1><4><5/><6>Live Darshan</6></4>",
+  "k": "<1><2>Book a Puja</2><3/></1><4><5>Darshan timings</5><6/></4>",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "<1> <2><3/></2> <4><5>Daily Darshan</5><6>Timings &amp; Live</6></4> </1><7> <8><9/></8> <10><11>Pujas &amp; Sevas</11><12>Book Online</12></10> </7><13> <14><15/></14> <16><17>Festivals</17><18>Calendar</18></16> </13><19> <20><21/></20> <22><23>Learn</23><24>Significance</24></22> </19>",
+  "k": "<1> <2><3/></2> <4><5>Daily Darshan</5><6>Temple Timings</6></4> </1><7> <8><9/></8> <10><11>Pujas &amp; Sevas</11><12>Book Online</12></10> </7><13> <14><15/></14> <16><17>Festivals</17><18>Calendar</18></16> </13><19> <20><21/></20> <22><23>Learn</23><24>Significance</24></22> </19>",
   "pages": [
    "darshan.html"
   ]
@@ -9472,37 +9476,135 @@
   ]
  },
  {
-  "k": "Timings &amp; <1>live</1> darshan",
+  "k": "Temple <1>timings</1>",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "Temple darshan is open every day, morning and evening. All timings are in Indian Standard Time and may change on festival days.",
+  "k": "Darshan is offered every morning and evening. The Peetham publishes general temple timings, and the Sri Datta Venkateshwara and Karya Siddhi Hanuman temples list their own hours. All timings are in Indian Standard Time.",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "<1></1>Live Darshan",
+  "k": "Temple Darshan",
+  "pages": [
+   "darshan.html",
+   "index.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "6:00 AM – 12:00 PM",
+  "pages": [
+   "darshan.html",
+   "index.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "4:00 PM – 8:00 PM",
+  "pages": [
+   "darshan.html",
+   "index.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "<1>Checking…</1> <2>General temple timings, daily, as given on the Peetham homepage. The Datta temple opens daily at 6 AM.</2>",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "Darshan from <1>wherever you are</1>",
+  "k": "Sri Datta Venkateshwara",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "Join the Ashram from home on the Peetham’s official YouTube channel, and follow live updates of Sri Swamiji’s programmes.",
+  "k": "Weekdays",
+  "pages": [
+   "darshan.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "6:00 AM – 12:00 PM<1/>5:00 PM – 8:00 PM",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "<1><2>Watch on YouTube</2><3/></1> <4><5>Live updates</5><6/></4>",
+  "k": "Weekends",
+  "pages": [
+   "darshan.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "6:00 AM – 12:00 PM<1/>4:30 PM – 8:30 PM",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "<1>Checking…</1> <2>As published on the <3>temple’s own page</3>.</2>",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "6:30 AM – 12:30 PM<1/>5:00 PM – 8:00 PM",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "6:30 AM – 12:30 PM<1/>5:00 PM – 8:30 PM",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "Laser show",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "Sat &amp; Sun<1/>7:10, 7:40 &amp; 8:10&nbsp;PM",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "Timings vary across official sources; please check with the Ashram before visiting. For festival programmes see the <1>official calendar</1>, and <2>plan your visit</2>. Looking for Shuka Vana? See <3>its hours and notice</3>.",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "Online &amp; on TV",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "Watch &amp; <1>follow online</1>",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "Watch Sri Swamiji’s programmes on the Peetham’s YouTube channel and on TV.",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "<1><2>Watch on YouTube</2><3/></1> <4><5>Social media pages</5><6/></4>",
   "pages": [
    "darshan.html"
   ]
@@ -9526,7 +9628,7 @@
   ]
  },
  {
-  "k": "Temple",
+  "k": "General temple timings",
   "pages": [
    "darshan.html"
   ]
@@ -9538,19 +9640,7 @@
   ]
  },
  {
-  "k": "Next ritual",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
-  "k": "Hanuman Abhisheka · 7 AM",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
-  "k": "Laser show",
+  "k": "6:30 AM – 12:30 PM · 5 PM – 8 PM",
   "pages": [
    "darshan.html"
   ]
@@ -9605,105 +9695,6 @@
   ]
  },
  {
-  "k": "Temple Darshan",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "6:00 AM – 12:00 PM",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "4:00 PM – 8:00 PM",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "<1>Checking…</1> <2>Daily</2>",
-  "pages": [
-   "darshan.html",
-   "index.html"
-  ]
- },
- {
-  "k": "Shuka Vana (Birds)",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "9:00 AM – 12:00 PM",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "3:30 PM – 6:00 PM",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "<1>Checking…</1> <2>Closed on Wednesdays</2>",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
-  "k": "Abhisheka",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "7:00 AM daily",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "Aarti",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "6:00 PM daily",
-  "pages": [
-   "darshan.html",
-   "index.html",
-   "visit.html"
-  ]
- },
- {
-  "k": "Please remove footwear, observe silence in the temples and wear decent, non-provocative attire. Timings can change on festival days — check the <1>official calendar</1> or <2>plan your visit</2>.",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
   "k": "A day at the Ashram",
   "pages": [
    "darshan.html",
@@ -9718,7 +9709,7 @@
   ]
  },
  {
-  "k": "<1><2></2>Temple darshan · 6 AM – 12 PM · 4 PM – 8 PM</1><3><4></4><5></5></3>",
+  "k": "<1><2></2><3>General temple timings · <4>6 AM – 12 PM · 4 PM – 8 PM</4></3></1><5><6></6><7></7></5>",
   "pages": [
    "darshan.html"
   ]
@@ -9730,31 +9721,19 @@
   ]
  },
  {
-  "k": "<1>7:00 AM</1><2>Hanuman Abhisheka</2><3>Karya Siddhi Hanuman, daily</3>",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
   "k": "<1>~8:00 AM</1><2>Sri Chakra Puja</2><3>When Sri Swamiji or Sri Bala Swamiji is in town; Teertha follows</3>",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "<1>12:00 PM</1><2>Midday close</2><3>Temple darshan pauses for the afternoon</3>",
+  "k": "<1>12:00 PM</1><2>Midday close</2><3>General temple timings</3>",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "<1>4:00 PM</1><2>Temple reopens</2><3>Evening darshan</3>",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
-  "k": "<1>6:00 PM</1><2>Hanuman Aarti</2><3>Karya Siddhi Hanuman, daily</3>",
+  "k": "<1>4:00 PM</1><2>Evening darshan</2><3>General temple timings</3>",
   "pages": [
    "darshan.html"
   ]
@@ -9766,7 +9745,13 @@
   ]
  },
  {
-  "k": "<1>8:00 PM</1><2>Temple closes</2><3>Until 6 AM tomorrow</3>",
+  "k": "<1>8:00 PM</1><2>Evening darshan ends</2><3>General temple timings</3>",
+  "pages": [
+   "darshan.html"
+  ]
+ },
+ {
+  "k": "The <1>Sri Datta Venkateshwara</1> and <2>Karya Siddhi Hanuman</2> temples keep their own hours, shown above.",
   "pages": [
    "darshan.html"
   ]
@@ -10070,10 +10055,9 @@
   ]
  },
  {
-  "k": "Checking…",
+  "k": "All darshan timings",
   "pages": [
-   "darshan.html",
-   "visit.html"
+   "darshan.html"
   ]
  },
  {
@@ -10205,7 +10189,7 @@
   ]
  },
  {
-  "k": "<1>Temple darshan</1> · 6 AM – 12 PM · 4 PM – 8 PM",
+  "k": "<1>General temple timings</1> (Peetham homepage)<2/><3>6 AM – 12 PM</3> · <4>4 PM – 8 PM</4>",
   "pages": [
    "darshan.html"
   ]
@@ -10255,7 +10239,7 @@
   ]
  },
  {
-  "k": "Within the Sannidhi",
+  "k": "At the Sannidhi",
   "pages": [
    "darshan.html"
   ]
@@ -10372,25 +10356,13 @@
   ]
  },
  {
-  "k": "Weekdays",
+  "k": "<1>6:00 AM – 12:00 PM</1> · <2>5:00 PM – 8:00 PM</2>",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "6:00 AM – 12:00 PM · 5:00 PM – 8:00 PM",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
-  "k": "Weekends",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
-  "k": "6:00 AM – 12:00 PM · 4:30 PM – 8:30 PM",
+  "k": "<1>6:00 AM – 12:00 PM</1> · <2>4:30 PM – 8:30 PM</2>",
   "pages": [
    "darshan.html"
   ]
@@ -10529,6 +10501,14 @@
   ]
  },
  {
+  "k": "Abhisheka",
+  "pages": [
+   "darshan.html",
+   "index.html",
+   "visit.html"
+  ]
+ },
+ {
   "k": "Vada Male Seva",
   "pages": [
    "darshan.html"
@@ -10541,13 +10521,13 @@
   ]
  },
  {
-  "k": "6:30 AM – 12:30 PM · 5:00 PM – 8:00 PM",
+  "k": "<1>6:30 AM – 12:30 PM</1> · <2>5:00 PM – 8:00 PM</2>",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "6:30 AM – 12:30 PM · 5:00 PM – 8:30 PM",
+  "k": "<1>6:30 AM – 12:30 PM</1> · <2>5:00 PM – 8:30 PM</2>",
   "pages": [
    "darshan.html"
   ]
@@ -11282,19 +11262,19 @@
   ]
  },
  {
-  "k": "Rudra Abhishekam to the Sachchidanandeshwara Shiva Lingam and Sahasra Kalasha Abhishekam by devotees; musicians offer Sangeeta Seva through the vigil, and at 3 AM Sri Swamiji gives His discourse on Shiva.",
+  "k": "Sri Swamiji performs Rudra Abhishekam to the Sachchidanandeshwara Shiva Lingam, followed by Sahasra Kalasha Abhishekam by devotees; musicians offer Sangeeta Seva until late night as devotees keep vigil, and at 3 AM Sri Swamiji gives His discourse on Shiva.",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "26 May",
+  "k": "Late May",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "Sri Bala Swamiji performs Pratyaksha Paada Pooja to Sri Swamiji; mobility aids are given to the physically challenged and Annadaana is offered on a large scale.",
+  "k": "Celebrated around 26 May, with exact dates set by the Hindu calendar. Sri Bala Swamiji performs Pratyaksha Paada Pooja to Sri Swamiji; mobility aids are given to the physically challenged and Annadaana is offered on a large scale.",
   "pages": [
    "darshan.html"
   ]
@@ -11313,13 +11293,13 @@
   ]
  },
  {
-  "k": "Sri Ganapathy Sachchidananda Ashram, Datta Nagar, Ooty Road, Mysuru. Temple darshan daily, 6 AM – 12 PM · 4 PM – 8 PM.",
+  "k": "Sri Ganapathy Sachchidananda Ashram, Datta Nagar, Ooty Road, Mysuru. General temple timings, daily: 6 AM – 12 PM · 4 PM – 8 PM.",
   "pages": [
    "darshan.html"
   ]
  },
  {
-  "k": "Darshan timings, live status and the six shrines of the Mysuru Ashram, from Lord Dattatreya to the 70-ft Karya Siddhi Hanuman — with sevas to book online.",
+  "k": "Temple timings and the six shrines of the Mysuru Ashram, from Lord Dattatreya to the 70-ft Karya Siddhi Hanuman, with festivals and sevas to book online.",
   "pages": [
    "darshan.html"
   ]
@@ -11604,7 +11584,7 @@
   ]
  },
  {
-  "k": "Festivals, concerts, discourses and Sri Swamiji’s programmes around the world — every date as published on the Peetham’s official calendar.",
+  "k": "Festivals, concerts, discourses and Sri Swamiji’s programmes around the world — every date as published on the Peetham’s official calendar and events listing.",
   "pages": [
    "events.html"
   ]
@@ -11649,7 +11629,7 @@
   ]
  },
  {
-  "k": "From the official calendar, read on 22 October 2026. Programmes can change — please confirm before you travel.",
+  "k": "From the official calendar and events listing, read on 22 October 2026. Programmes can change — please confirm before you travel.",
   "pages": [
    "events.html"
   ]
@@ -12751,6 +12731,12 @@
   ]
  },
  {
+  "k": "Photo: Sarva Dosha Hara Shiva, from the Sri Datta Venkateshwara Temple page — not the Shivaratri worship",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
   "k": "Phalguna",
   "pages": [
    "events.html"
@@ -12977,7 +12963,7 @@
   ]
  },
  {
-  "k": "In 2026 Sri Swamiji’s Raga Sagara — music for meditation and healing — travels from Tenali and New Delhi to Athens, Niagara, Basel and Nara. Every date here is from the official calendar.",
+  "k": "In 2026 Sri Swamiji’s Raga Sagara — music for meditation and healing — travels from Tenali and New Delhi to Niagara, Basel and Nara, with a music concert in Athens. Every date here is from the official calendar.",
   "pages": [
    "events.html"
   ]
@@ -13163,7 +13149,7 @@
   ]
  },
  {
-  "k": "<1><2>Healing music</2><3/></1> <4><5>My Raga Sagara Concerts</5><6/></4>",
+  "k": "<1><2>Healing music</2><3/></1> <4><5>My concert bookings (sign in)</5><6/></4>",
   "pages": [
    "events.html"
   ]
@@ -13381,7 +13367,7 @@
   ]
  },
  {
-  "k": "Sri Swamiji worships a Shiva Lingam with a lamp",
+  "k": "Sri Swamiji offers a lamp to the lingas of the Sarva Dosha Hara Shiva shrine",
   "pages": [
    "events.html"
   ]
@@ -14059,7 +14045,7 @@
   ]
  },
  {
-  "k": "<1>Sri Ganeshaya Namaha</1><2>|</2> <3>Sri Saraswatyai Namaha</3><4>|</4> <5>Sri Pada Vallabha Narasimha Saraswathi Sri Guru Dattatreyaya Namaha</5><6>|</6>",
+  "k": "<1>Sri Ganeshaya Namaha <2>|</2></1> <3>Sri Saraswatyai Namaha <4>|</4></3> <5>Sri Pada Vallabha Narasimha Saraswathi Sri Guru Dattatreyaya Namaha <6>|</6></5>",
   "pages": [
    "guru-parampara.html"
   ]
@@ -14570,7 +14556,7 @@
   ]
  },
  {
-  "k": "Discourses by Sri Swamiji on “Datta Charitram”, in the Telugu language — 10 episodes.",
+  "k": "Discourses by Sri Swamiji on “Datta Charitram”, in the Telugu language — 10&nbsp;episodes.",
   "pages": [
    "guru-parampara.html"
   ]
@@ -14589,61 +14575,61 @@
   ]
  },
  {
-  "k": "<1>01</1> <2><3>Episode 1</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>01</1> <2><3>Episode 1</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>02</1> <2><3>Episode 2</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>02</1> <2><3>Episode 2</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>03</1> <2><3>Episode 3</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>03</1> <2><3>Episode 3</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>04</1> <2><3>Episode 4</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>04</1> <2><3>Episode 4</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>05</1> <2><3>Episode 5</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>05</1> <2><3>Episode 5</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>06</1> <2><3>Episode 6</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>06</1> <2><3>Episode 6</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>07</1> <2><3>Episode 7</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>07</1> <2><3>Episode 7</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>08</1> <2><3>Episode 8</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>08</1> <2><3>Episode 8</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>09</1> <2><3>Episode 9</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>09</1> <2><3>Episode 9</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>10</1> <2><3>Episode 10</3><4>Datta Charitram</4></2> <5><6/></5>",
+  "k": "<1>10</1> <2><3>Episode 10</3><4><5>Datta Charitram</5></4></2> <6><7/></6>",
   "pages": [
    "guru-parampara.html"
   ]
@@ -14885,9 +14871,55 @@
   ]
  },
  {
+  "k": "<1>Checking…</1> <2>Daily</2>",
+  "pages": [
+   "index.html"
+  ]
+ },
+ {
+  "k": "Shuka Vana (Birds)",
+  "pages": [
+   "index.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "9:00 AM – 12:00 PM",
+  "pages": [
+   "index.html"
+  ]
+ },
+ {
+  "k": "3:30 PM – 6:00 PM",
+  "pages": [
+   "index.html"
+  ]
+ },
+ {
   "k": "<1>Checking…</1> <2>Closed on Wednesdays. Timings vary across official sources, and <3>Shuka Vana’s own page</3> says it is temporarily closed for maintenance; please check with the Ashram before visiting.</2>",
   "pages": [
    "index.html"
+  ]
+ },
+ {
+  "k": "7:00 AM",
+  "pages": [
+   "index.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Aarti",
+  "pages": [
+   "index.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "6:00 PM daily",
+  "pages": [
+   "index.html",
+   "visit.html"
   ]
  },
  {
@@ -15479,7 +15511,7 @@
   ]
  },
  {
-  "k": "Dr. Sri Ganapathy Sachchidananda Swamiji is a renowned composer, singer and musician. He understands the ancient music system of Raga-Ragini and has created many new ragas using it. Because His compositions are so prolific, the title <1>Sagara</1>, “ocean”, was given to express this form of Raga-Ragini, and His concerts of music for meditation and healing are known as <2>Raga Sagara</2>.",
+  "k": "Dr. Sri Ganapathy Sachchidananda Swamiji is a renowned composer, singer and musician. He understands the ancient music system of Raga-Ragini and has created many new ragas using it. Because His compositions are so prolific, the title <1>Sagara</1>, “ocean”, was given to express this form of Raga-Ragini, and His concerts of music for meditation and healing carry the name <2>Raga Sagara</2>.",
   "pages": [
    "index.html"
   ]
@@ -16009,12 +16041,6 @@
   ]
  },
  {
-  "k": "The 70-foot monolithic Karya Siddhi Hanuman statue rising above the carved stone temple",
-  "pages": [
-   "index.html"
-  ]
- },
- {
   "k": "Sri Swamiji, smiling and waving, surrounded by green parrots at Shuka Vana",
   "pages": [
    "index.html"
@@ -16473,7 +16499,7 @@
   ]
  },
  {
-  "k": "Concluding Dhyana Shloka, Srimad Bhagavad Gita",
+  "k": "<1>Concluding Dhyana Shloka,</1> <2>Srimad Bhagavad Gita</2>",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -17172,7 +17198,7 @@
   ]
  },
  {
-  "k": "<1><2/></1><3><4>Address</4>Datta Kriya Yoga International Centre<5/>2nd Floor, SGS Ayurvedic Hospital<6/>Sri Ganapathy Sachchidananda Ashram, Datta Nagar<7/>Ooty Road, Mysuru 570 025</3>",
+  "k": "<1><2/></1><3><4>Address</4>Datta Kriya Yoga International Centre<5/>2nd Floor, SGS Ayurvedic Hospital<6/>Sri Ganapathy Sachchidananda Ashram, Datta Nagar<7/>Ooty Road, Mysuru 570&nbsp;025</3>",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -17190,7 +17216,7 @@
   ]
  },
  {
-  "k": "Plan your visit to the Ashram",
+  "k": "Plan your visit to the <1>Ashram <2/></1>",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -17220,7 +17246,7 @@
   ]
  },
  {
-  "k": "śrī bhūyuta śrī hari cihnitābhyām agastya rekhādibhirancitābhyām |<1/>nigūdha bījākṣara mudritābhyām namo namah(s) sadguru pādukābhyām ||",
+  "k": "śrī bhūyuta śrī hari cihnitābhyām agastya rekhādibhirancitābhyām&nbsp;|<1/>nigūdha bījākṣara mudritābhyām namo namah(s) sadguru pādukābhyām&nbsp;||",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -17238,7 +17264,7 @@
   ]
  },
  {
-  "k": "mūlādhāraṁ tathā svādhiṣṭhānaṁ ca manipūrakam<1/>anāhatam viśuddhākhyam ājñācakram vidurbudhāh<2/>tavādhāra svarūpāṇī konacakrani pārvāti<3/>trikona rupini śaktih bindurūpaḥ(s) śivassmrtah<4/>avinābhāva sambandhah tasmāt bindu trikonayoh ||",
+  "k": "mūlādhāraṁ tathā svādhiṣṭhānaṁ ca manipūrakam<1/>anāhatam viśuddhākhyam ājñācakram vidurbudhāh<2/>tavādhāra svarūpāṇī konacakrani pārvāti<3/>trikona rupini śaktih bindurūpaḥ(s) śivassmrtah<4/>avinābhāva sambandhah tasmāt bindu trikonayoh&nbsp;||",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -17256,7 +17282,7 @@
   ]
  },
  {
-  "k": "mūlādhāre ganapati vapurdhārinam deśikendram |<1/>svādhishthāne dhratavidhitanum sādhakoddāra dakṣam |<2/>jvālāvarṇam rucira manipūrāntare rudramūrtim |<3/>nādātmānam vitata mahitānāhatākāśa purnām |<4/>bhāmārdhāngam paramapuruṣākāra gamyam viśuddhe |<5/>jyotīrūpam vikti rahitam tattvamajñātārāle |<6/>svātmārāmam dvayavirahitam tam sahasrāra padme |<7/>dhyāyāmi tvām ganapati gurum saccidānanda rūpam |",
+  "k": "mūlādhāre ganapati vapurdhārinam deśikendram&nbsp;|<1/>svādhishthāne dhratavidhitanum sādhakoddāra dakṣam&nbsp;|<2/>jvālāvarṇam rucira manipūrāntare rudramūrtim&nbsp;|<3/>nādātmānam vitata mahitānāhatākāśa purnām&nbsp;|<4/>bhāmārdhāngam paramapuruṣākāra gamyam viśuddhe&nbsp;|<5/>jyotīrūpam vikti rahitam tattvamajñātārāle&nbsp;|<6/>svātmārāmam dvayavirahitam tam sahasrāra padme&nbsp;|<7/>dhyāyāmi tvām ganapati gurum saccidānanda rūpam&nbsp;|",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -17298,7 +17324,7 @@
   ]
  },
  {
-  "k": "WhatsApp “Jaya Guru Datta” to <1>7090 689 789</1> for updates on live online and offline classes.",
+  "k": "WhatsApp “Jaya Guru Datta” to <1>7090&nbsp;689&nbsp;789</1> for updates on live online and offline classes.",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -19142,6 +19168,12 @@
   ]
  },
  {
+  "k": "A garlanded idol of Lord Hanuman at the Karya Siddhi Hanuman Temple",
+  "pages": [
+   "media.html"
+  ]
+ },
+ {
   "k": "Sri Swamiji at Shuka Vana",
   "pages": [
    "media.html"
@@ -19229,7 +19261,8 @@
  {
   "k": "Sri Swamiji feeding a calf",
   "pages": [
-   "media.html"
+   "media.html",
+   "seva.html"
   ]
  },
  {
@@ -20917,7 +20950,7 @@
   ]
  },
  {
-  "k": "Since 1978, Sri Ganapathy Sachchidananda Hospital has run a comprehensive healthcare system within the Holistic Health Centre, providing preventive and curative care for outpatients and inpatients — in Ayurveda, Allopathy, Homeopathy, Naturopathy and other systems.",
+  "k": "Sri Ganapathy Sachchidananda Hospital operates a comprehensive healthcare system within the Holistic Health Centre, providing preventive and curative care: outpatient services in Ayurveda, Allopathy, Homeopathy, Naturopathy and other systems, and Ayurvedic inpatient care.",
   "pages": [
    "seva.html"
   ]
@@ -20941,13 +20974,19 @@
   ]
  },
  {
-  "k": "Camps during the Chaturmasya Vrata",
+  "k": "Camps for the needy",
   "pages": [
    "seva.html"
   ]
  },
  {
-  "k": "Annual free medical camps are held during Sri Bala Swamiji’s Chaturmasya Vrata, including cancer screening for women over 40.",
+  "k": "SGS Hospital regularly conducts free medical camps for the detection and treatment of various diseases.",
+  "pages": [
+   "seva.html"
+  ]
+ },
+ {
+  "k": "Regular free camps at SGS Hospital",
   "pages": [
    "seva.html"
   ]
@@ -20989,13 +21028,19 @@
   ]
  },
  {
-  "k": "2024 free medical camps",
+  "k": "In addition, annual free medical camps are organised for the needy during the Chaturmasya Vrata of Sri Bala Swamiji, including cancer screening for women over 40.",
   "pages": [
    "seva.html"
   ]
  },
  {
-  "k": "cases seen",
+  "k": "Chaturmasya Vrata camps, 2024",
+  "pages": [
+   "seva.html"
+  ]
+ },
+ {
+  "k": "cases, new and follow-up",
   "pages": [
    "seva.html"
   ]
@@ -21031,7 +21076,13 @@
   ]
  },
  {
-  "k": "Sri Swamiji’s timeline marks the inauguration of SGS Hospital in Mysuru to provide free medical services.",
+  "k": "<1></1><2>Late 1970s</2>",
+  "pages": [
+   "seva.html"
+  ]
+ },
+ {
+  "k": "The “Humanity Service Center” is established in a new building, now known as Manipadma Kuteera. Sri Swamiji’s timeline dates the inauguration of SGS Hospital, to provide free medical services, to 1978.",
   "pages": [
    "seva.html"
   ]
@@ -21247,13 +21298,13 @@
   ]
  },
  {
-  "k": "species",
+  "k": "species, per the Shuka Vana page",
   "pages": [
    "seva.html"
   ]
  },
  {
-  "k": "Guinness World Record, 2017: most bird species in an aviary",
+  "k": "Guinness World Record, 6 May 2017: most bird species in an aviary. The certificate pictured records 468 species.",
   "pages": [
    "seva.html"
   ]
@@ -21488,7 +21539,7 @@
   ]
  },
  {
-  "k": "<1><2/></1> <3><4>Sri Jayalakshmi Matha Nitya Annadana Trust</4><5>SJMNAT · daily Annadana · PAN AAATS5046G</5></3> <6><7/></6>",
+  "k": "<1><2/></1> <3><4>Sri Jayalakshmi Matha Nitya Annadana Trust</4><5>SJMNAT · PAN AAATS5046G · INR only</5></3> <6><7/></6>",
   "pages": [
    "seva.html"
   ]
@@ -21524,13 +21575,13 @@
   ]
  },
  {
-  "k": "<1><2/></1> <3><4>Seasonal funds</4><5>Event funds, such as the Chaturmasya Vrata Deeksha, are listed on the donation page while they are open.</5></3>",
+  "k": "<1><2/></1> <3><4>Seasonal funds</4><5>Event funds, such as the Chaturmasya Vrata Deeksha, also appear on the donation page.</5></3>",
   "pages": [
    "seva.html"
   ]
  },
  {
-  "k": "On the donation page, choose <1>INR (₹)</1> if you have an Indian residential address, or <2>USD ($)</2> if you live outside India. You can also give on behalf of friends and family by adding the same donation to your cart more than once.",
+  "k": "On the donation page, choose <1>INR (₹)</1> if you have an Indian residential address, or <2>USD ($)</2> if you live outside India. The Sri Jayalakshmi Matha Nitya Annadana Trust accepts INR only. You can also give on behalf of friends and family by adding the same donation to your cart more than once.",
   "pages": [
    "seva.html"
   ]
@@ -21548,13 +21599,13 @@
   ]
  },
  {
-  "k": "<1> <2><3/></2> <4><5>Donate</5><6>Choose a fund</6></4> </1><7> <8><9/></8> <10><11>Book a puja</11><12>Participate online</12></10> </7><13> <14><15/></14> <16><17>Volunteer</17><18>Join the SDHS</18></16> </13><19> <20><21/></20> <22><23>Subscribe to Bhaktimala</23><24>Write to the Bhaktimala office</24></22> </19>",
+  "k": "<1> <2><3/></2> <4><5>Donate</5><6>Choose a fund</6></4> </1><7> <8><9/></8> <10><11>Book a puja</11><12>Participate online</12></10> </7><13> <14><15/></14> <16><17>Volunteer</17><18>Join the SDHS</18></16> </13><19> <20><21/></20> <22><23>Subscribe</23><24>Bhaktimala magazine</24></22> </19>",
   "pages": [
    "seva.html"
   ]
  },
  {
-  "k": "Bhaktimala, the Peetham’s monthly magazine since 1976, is published in seven languages. All Kannada and English issues since October 2022 are in the Bhaktimala app; for new subscriptions, write to <1>bhaktimala@sgstech.cc</1>. Other subscriptions are on the <2>Peetham’s subscriptions page</2>.",
+  "k": "Bhaktimala, the Peetham’s monthly magazine since 1976, is published in seven languages. All Kannada and English issues since October 2022 are in the Bhaktimala app. Existing English and Kannada subscribers can write to <1>bhaktimala@sgstech.cc</1> to enable app access; for new subscriptions, contact the Bhaktimala office at Datta Peetham, Mysuru (see <2>Contact</2>). Other subscriptions are on the <3>Peetham’s subscriptions page</3>.",
   "pages": [
    "seva.html"
   ]
@@ -21585,12 +21636,6 @@
  },
  {
   "k": "Vedic scholars and students at the Annual Veda Sabha, Mysuru Ashram",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "Sri Swamiji feeding a calf at the Goshala",
   "pages": [
    "seva.html"
   ]
@@ -21638,13 +21683,7 @@
   ]
  },
  {
-  "k": "SGS Hospital doctors and volunteers beside an early cancer detection van",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "Regular free camps",
+  "k": "A group gathered at a cancer detection unit van, with a saffron-robed Swamiji on its steps",
   "pages": [
    "seva.html"
   ]
@@ -22253,7 +22292,7 @@
   ]
  },
  {
-  "k": "Revival of Raga Ragini and Dhyana Chikitsa Kacheri; research and development on Nada Chikitsa.",
+  "k": "Study of Raga Ragini and Dhyana Chikitsa Kacheri restored; an R&D branch on Nada Chikitsa set up; distribution of CDs for the treatment promoted.",
   "pages": [
    "sri-swamiji.html"
   ]
@@ -26636,7 +26675,7 @@
   ]
  },
  {
-  "k": "9 AM – 12 PM · 3:30 – 6 PM",
+  "k": "<1>9 AM – 12 PM</1> · <2>3:30 – 6 PM</2>",
   "pages": [
    "visit.html"
   ]
@@ -26648,7 +26687,7 @@
   ]
  },
  {
-  "k": "10 AM – 12:30 PM · 3:30 – 5:30 PM",
+  "k": "<1>10 AM – 12:30 PM</1> · <2>3:30 – 5:30 PM</2>",
   "pages": [
    "visit.html"
   ]
@@ -27285,6 +27324,12 @@
   ]
  },
  {
+  "k": "Checking…",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
   "k": "Consecrated 28 Dec 2023",
   "pages": [
    "visit.html"
@@ -27327,7 +27372,31 @@
   ]
  },
  {
+  "k": "<1>6:00 AM – 12:00 PM</1> <2>5:00 PM – 8:00 PM</2>",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "<1>6:00 AM – 12:00 PM</1> <2>4:30 PM – 8:30 PM</2>",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "As listed on the <1>Sri Datta Venkateshwara Temple page</1>.",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
   "k": "Consecrated by Sri Swamiji in 2012, the 70-ft monolithic statue is the tallest stone statue of Hanuman in India. On weekends, 3D projection mapping is synchronised with the Hanuman Chalisa.",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "7:00 AM daily",
   "pages": [
    "visit.html"
   ]
@@ -27369,7 +27438,19 @@
   ]
  },
  {
-  "k": "Closed on Wednesdays. The official Shuka Vana page says it is temporarily closed to the public for maintenance.",
+  "k": "<1>9 AM – 12 PM</1> <2>3:30 – 6 PM</2>",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "<1>10 AM – 12:30 PM</1> <2>3:30 – 5:30 PM</2>",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Closed on Wednesdays. Timings vary across official sources, and the Shuka Vana page says it is temporarily closed for maintenance; please check with the Ashram before visiting.",
   "pages": [
    "visit.html"
   ]
@@ -27381,7 +27462,7 @@
   ]
  },
  {
-  "k": "Closed on Wednesdays.",
+  "k": "Closed on Wednesdays. Hours from the Bonsai Garden page. Timings vary across official sources; please check with the Ashram before visiting.",
   "pages": [
    "visit.html"
   ]
@@ -27441,7 +27522,7 @@
   ]
  },
  {
-  "k": "Inaugurated 1978",
+  "k": "Medical service since the 1970s",
   "pages": [
    "visit.html"
   ]
@@ -28593,9 +28674,22 @@
   ]
  },
  {
+  "k": "Visit essentials",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
   "k": "The Karya Siddhi Hanuman temple at the Ashram, with the 70-ft monolithic statue of Hanuman rising above it",
   "pages": [
    "visit.html"
+  ]
+ },
+ {
+  "k": "On this page",
+  "pages": [
+   "visit.html",
+   "js:visit.js"
   ]
  },
  {
@@ -28809,19 +28903,19 @@
   ]
  },
  {
-  "k": "Showing all ",
+  "k": "Showing all %1 centres listed here",
   "pages": [
    "js:centers.js"
   ]
  },
  {
-  "k": " centres listed here",
+  "k": "Showing %1 of %2 centres matching “%3”",
   "pages": [
    "js:centers.js"
   ]
  },
  {
-  "k": "Showing ",
+  "k": "Showing %1 of %2 centres",
   "pages": [
    "js:centers.js"
   ]
@@ -28923,13 +29017,7 @@
   ]
  },
  {
-  "k": "Please check ",
-  "pages": [
-   "js:contact.js"
-  ]
- },
- {
-  "k": " fields before continuing",
+  "k": "Please check %1 fields before continuing",
   "pages": [
    "js:contact.js"
   ]
@@ -28977,7 +29065,7 @@
   ]
  },
  {
-  "k": "Opening your email app with your message to ",
+  "k": "Opening your email app with your message to %1. It is not sent until you press Send there.",
   "pages": [
    "js:contact.js"
   ]
@@ -28995,7 +29083,7 @@
   ]
  },
  {
-  "k": "Message copied. Paste it into a new email to ",
+  "k": "Message copied. Paste it into a new email to %1.",
   "pages": [
    "js:contact.js"
   ]
@@ -29019,13 +29107,13 @@
   ]
  },
  {
-  "k": "Now ",
+  "k": "Now %1 IST",
   "pages": [
    "js:darshan.js"
   ]
  },
  {
-  "k": "Now in Mysuru · ",
+  "k": "Now in Mysuru · %1 IST",
   "pages": [
    "js:darshan.js",
    "js:events.js"
@@ -29050,19 +29138,33 @@
   ]
  },
  {
+  "k": "Open now · until %1",
+  "pages": [
+   "js:darshan.js",
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "Closed · opens %1",
+  "pages": [
+   "js:darshan.js",
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "Closed · opens %1 tomorrow",
+  "pages": [
+   "js:darshan.js"
+  ]
+ },
+ {
   "k": "Choose a birth date to find its pillar.",
   "pages": [
    "js:darshan.js"
   ]
  },
  {
-  "k": "Along the pathway, look for the pillar of ",
-  "pages": [
-   "js:darshan.js"
-  ]
- },
- {
-  "k": " — it carries the deity and demigod for that day.",
+  "k": "Along the pathway, look for the pillar of %1 %2 — it carries the deity and demigod for that day.",
   "pages": [
    "js:darshan.js"
   ]
@@ -29086,19 +29188,19 @@
   ]
  },
  {
-  "k": "In ",
+  "k": "In %1 days",
   "pages": [
    "js:events.js"
   ]
  },
  {
-  "k": "Show ",
+  "k": "Show 1 earlier month",
   "pages": [
    "js:events.js"
   ]
  },
  {
-  "k": " earlier month",
+  "k": "Show %1 earlier months",
   "pages": [
    "js:events.js"
   ]
@@ -29165,6 +29267,12 @@
   ]
  },
  {
+  "k": "Played %1 of %2",
+  "pages": [
+   "js:media.js"
+  ]
+ },
+ {
   "k": "Pause the chant",
   "pages": [
    "js:media.js"
@@ -29207,25 +29315,13 @@
   ]
  },
  {
-  "k": "Within listed hours · until ",
+  "k": "Within listed hours · until %1",
   "pages": [
    "js:site.js"
   ]
  },
  {
-  "k": "Open now · until ",
-  "pages": [
-   "js:site.js"
-  ]
- },
- {
-  "k": "Listed hours from ",
-  "pages": [
-   "js:site.js"
-  ]
- },
- {
-  "k": "Closed · opens ",
+  "k": "Listed hours from %1",
   "pages": [
    "js:site.js"
   ]
@@ -29250,6 +29346,24 @@
  },
  {
   "k": "Hanuman Aarti",
+  "pages": [
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "%1 · %2 tomorrow",
+  "pages": [
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "Open now",
+  "pages": [
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "Closed now",
   "pages": [
    "js:site.js"
   ]

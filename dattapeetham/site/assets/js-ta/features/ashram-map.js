@@ -90,7 +90,7 @@
     function expand(c, on) {
       var btn = c.querySelector('.amap-more-btn');
       c.classList.toggle('is-expanded', on);
-      if (btn) { btn.setAttribute('aria-expanded', String(on)); btn.firstElementChild.textContent = on ? 'Show less' : 'Read more'; }
+      if (btn) { btn.setAttribute('aria-expanded', String(on)); btn.firstElementChild.textContent = on ? 'குறைவாகக் காட்டு' : 'மேலும் படிக்க'; }
     }
     function showCard(id) {
       if (!id) return;
@@ -124,7 +124,7 @@
       if (route) route.classList.toggle('is-off', s.layers.route === false);
       root.classList.toggle('has-card', !!s.active);
       if (!prev || s.active !== prev.active) {
-        // a card always (re)opens short; "Read more" is a choice per visit
+        // a card always (re)opens short; "மேலும் படிக்க" is a choice per visit
         cards.forEach(function (c) { if (c.classList.contains('is-expanded')) expand(c, false); });
         showCard(s.active);
         if (s.active) requestAnimationFrame(function () { placeCard(store.get()); });
