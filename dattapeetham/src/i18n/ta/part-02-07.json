@@ -1,6 +1,5 @@
 {
  "<1>7:10 PM</1><2>Laser show</2><3>Saturdays &amp; Sundays — also 7:40 and 8:10 PM</3>": "<1>இரவு 7:10</1><2>லேசர் காட்சி</2><3>சனி &amp; ஞாயிற்றுக்கிழமைகளில் — இரவு 7:40, 8:10 மணிக்கும்</3>",
- "<1>8:00 PM</1><2>Temple closes</2><3>Until 6 AM tomorrow</3>": "<1>இரவு 8:00</1><2>கோயில் மூடல்</2><3>நாளை காலை 6 மணி வரை</3>",
  "Sundays": "ஞாயிற்றுக்கிழமைகளில்",
  "Tailabhisheka — oil anointing — to Kaalaagni Shamana Datta, and Sri Swamiji’s darshana in the morning when He is in town.": "காலாக்னி சமன தத்தருக்குத் தைலாபிஷேகம் — எண்ணெய்க் காப்பு; ஸ்ரீ ஸ்வாமிஜி அவர்கள் ஊரில் இருக்கும்போது காலையில் அவர்களின் தரிசனமும் உண்டு.",
  "Fridays": "வெள்ளிக்கிழமைகளில்",
@@ -72,7 +71,6 @@
  "Devotees all over the world wrote millions of Lalita Sahasranama books": "உலகெங்கிலும் உள்ள பக்தர்கள் மில்லியன் கணக்கான லலிதா சஹஸ்ரநாமப் புத்தகங்களை எழுதினார்கள்",
  "Kumbhabhisheka by Sri Swamiji": "ஸ்ரீ ஸ்வாமிஜி செய்த கும்பாபிஷேகம்",
  "Annakoota Archana": "அன்னகூட அர்ச்சனை",
- "<1>Temple darshan</1> · 6 AM – 12 PM · 4 PM – 8 PM": "<1>கோயில் தரிசனம்</1> · காலை 6 – மதியம் 12 · மாலை 4 – இரவு 8",
  "The consecration, on dattapeetham.org": "dattapeetham.org தளத்தில் பிரதிஷ்டை விவரங்கள்",
  "Unveiled 2023": "2023-இல் திறந்துவைக்கப்பட்டது",
  "<1>03</1> <2>Lord Hari · 28 December 2023</2>": "<1>03</1> <2>ஸ்ரீ ஹரி · 28 டிசம்பர் 2023</2>",
@@ -80,7 +78,6 @@
  "<1>2,108</1><2>rare Salagramas, in the form of Ananthanaga Shayana</2>": "<1>2,108</1><2>அரிய சாளக்கிராமங்கள், அனந்தநாக சயன வடிவில்</2>",
  "The most spectacular Hari Sannidhi stands to the immediate right of the Rajarajeshwari temple, unveiled by Sri Swamiji on 28 December 2023.": "மிகவும் கண்கவர் ஹரி சன்னிதி, ராஜராஜேஸ்வரி கோயிலுக்கு உடனடியாக வலப்புறம் அமைந்துள்ளது; 28 டிசம்பர் 2023 அன்று ஸ்ரீ ஸ்வாமிஜி அவர்கள் இதைத் திறந்துவைத்தார்கள்.",
  "The Trivikrama Salagrama and the Manoratha Kurma Salagrama, weighing 300 kg, have also been installed inside the Sannidhi. A specially made <1>Sudarshana Yantra</1> on top of the Sannidhi was designed and conceptualised by Sri Swamiji.": "300 கிலோ எடையுள்ள திரிவிக்ரம சாளக்கிராமமும் மனோரத கூர்ம சாளக்கிராமமும் சன்னிதிக்குள் பிரதிஷ்டை செய்யப்பட்டுள்ளன. சன்னிதியின் உச்சியில் உள்ள, சிறப்பாக உருவாக்கப்பட்ட <1>சுதர்சன யந்திரம்</1> ஸ்ரீ ஸ்வாமிஜி அவர்களால் கருத்துருவாக்கப்பட்டு வடிவமைக்கப்பட்டது.",
- "Within the Sannidhi": "சன்னிதிக்குள்",
  "Ananthanaga Shayana": "அனந்தநாக சயனம்",
  "Trivikrama Salagrama": "திரிவிக்ரம சாளக்கிராமம்",
  "Manoratha Kurma Salagrama": "மனோரத கூர்ம சாளக்கிராமம்",
@@ -98,5 +95,10 @@
  "Dhanvantari": "தன்வந்திரி",
  "Sarva Doshahara Shiva": "சர்வ தோஷ ஹர சிவன்",
  "Sri Marakata Subrahmanya Swamy": "ஸ்ரீ மரகத சுப்ரமணிய ஸ்வாமி",
- "Navagrahas": "நவக்கிரகங்கள்"
+ "Navagrahas": "நவக்கிரகங்கள்",
+ "<1>8:00 PM</1><2>Evening darshan ends</2><3>General temple timings</3>": "<1>இரவு 8:00</1><2>மாலைத் தரிசனம் நிறைவு</2><3>பொதுவான கோயில் நேரங்கள்</3>",
+ "The <1>Sri Datta Venkateshwara</1> and <2>Karya Siddhi Hanuman</2> temples keep their own hours, shown above.": "<1>ஸ்ரீ தத்த வெங்கடேஸ்வரர்</1> கோயிலும் <2>காரிய சித்தி ஹனுமான்</2> கோயிலும் தங்களுக்கெனத் தனி நேரங்களைப் பின்பற்றுகின்றன; அவை மேலே காட்டப்பட்டுள்ளன.",
+ "All darshan timings": "அனைத்துத் தரிசன நேரங்களும்",
+ "<1>General temple timings</1> (Peetham homepage)<2/><3>6 AM – 12 PM</3> · <4>4 PM – 8 PM</4>": "<1>பொதுவான கோயில் நேரங்கள்</1> (பீடத்தின் முகப்புப் பக்கம்)<2/><3>காலை 6 – மதியம் 12</3> · <4>மாலை 4 – இரவு 8</4>",
+ "At the Sannidhi": "சன்னிதியில்"
 }

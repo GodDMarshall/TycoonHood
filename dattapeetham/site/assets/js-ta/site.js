@@ -31,8 +31,8 @@
     if (h.closed.indexOf(now.day) !== -1) return { open: false, text: c ? 'இன்று வார விடுமுறை' : 'இன்று மூடப்பட்டுள்ளது' };
     for (var i = 0; i < h.sessions.length; i++) {
       var s = toMins(h.sessions[i][0]), e = toMins(h.sessions[i][1]);
-      if (now.mins >= s && now.mins < e) return { open: true, text: fmt(c ? 'Within listed hours · until %1' : 'Open now · until %1', fmt12(h.sessions[i][1])) };
-      if (now.mins < s) return { open: false, text: fmt(c ? 'Listed hours from %1' : 'Closed · opens %1', fmt12(h.sessions[i][0])) };
+      if (now.mins >= s && now.mins < e) return { open: true, text: fmt(c ? 'குறிப்பிட்ட நேரத்திற்குள் · மூடும் நேரம்: %1' : 'இப்போது திறந்திருக்கிறது · மூடும் நேரம்: %1', fmt12(h.sessions[i][1])) };
+      if (now.mins < s) return { open: false, text: fmt(c ? 'குறிப்பிட்ட நேரம் தொடங்குவது: %1' : 'மூடப்பட்டுள்ளது · திறக்கும் நேரம்: %1', fmt12(h.sessions[i][0])) };
     }
     return { open: false, text: c ? 'குறிப்பிட்ட நேரத்திற்கு வெளியே' : 'மூடப்பட்டுள்ளது · நாளை திறக்கும்' };
   }
@@ -40,7 +40,7 @@
   var RITUALS = [[420, 'ஹனுமான் அபிஷேகம்'], [1080, 'ஹனுமான் ஆரத்தி']];
   function nextRitual(now) {
     for (var i = 0; i < RITUALS.length; i++) if (now.mins < RITUALS[i][0]) return RITUALS[i][1] + ' · ' + fmt12(RITUALS[i][0]);
-    return fmt('%1 · %2 tomorrow', RITUALS[0][1], fmt12(RITUALS[0][0]));
+    return fmt('%1 · நாளை %2', RITUALS[0][1], fmt12(RITUALS[0][0]));
   }
   function tick() {
     var now = istNow(), hours = window.DP_HOURS || {};
@@ -49,7 +49,7 @@
     Object.keys(hours).forEach(function (k) {
       var st = status(hours[k], now);
       $$('[data-badge="' + k + '"]').forEach(function (el) { el.textContent = st.text; el.className = 'badge ' + (st.open ? 'open' : 'closed'); });
-      $$('[data-status="' + k + '"]').forEach(function (el) { el.textContent = st.open ? 'Open now' : 'Closed now'; });
+      $$('[data-status="' + k + '"]').forEach(function (el) { el.textContent = st.open ? 'இப்போது திறந்திருக்கிறது' : 'இப்போது மூடப்பட்டுள்ளது'; });
       $$('[data-status-long="' + k + '"]').forEach(function (el) { el.textContent = st.text; });
       $$('[data-dot="' + k + '"]').forEach(function (el) { el.className = (el.classList.contains('live-dot') ? 'live-dot' : 'dot') + ' ' + (st.open ? 'open' : 'closed'); });
     });

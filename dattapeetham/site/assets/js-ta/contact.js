@@ -169,7 +169,7 @@
   function refreshSummary(focus) {
     var bad = KEYS.map(function (k) { return [k, check(k)]; }).filter(function (x) { return x[1]; });
     if (!bad.length) { summary.hidden = true; return bad; }
-    summaryTitle.textContent = bad.length === 1 ? 'தொடர்வதற்கு முன் 1 புலத்தைச் சரிபாருங்கள்' : fmt('Please check %1 fields before continuing', bad.length);
+    summaryTitle.textContent = bad.length === 1 ? 'தொடர்வதற்கு முன் 1 புலத்தைச் சரிபாருங்கள்' : fmt('தொடர்வதற்கு முன் %1 புலங்களைச் சரிபாருங்கள்', bad.length);
     summaryList.innerHTML = '';
     bad.forEach(function (x) {
       var li = doc.createElement('li'), a = doc.createElement('a');
@@ -216,7 +216,7 @@
     $('[data-preview-body]', form).textContent = lastMail.body;
     $('[data-mailto]', form).href = lastMail.href;
     result.hidden = false;
-    announce(formLive, fmt('Opening your email app with your message to %1. It is not sent until you press Send there.', TO));
+    announce(formLive, fmt('%1 முகவரிக்கான உங்கள் செய்தியுடன் மின்னஞ்சல் செயலி திறக்கப்படுகிறது. அங்கே ‘அனுப்பு’ (Send) என்பதை அழுத்தும் வரை அது அனுப்பப்படாது.', TO));
     // Open the visitor's email app. Nothing leaves this page by itself.
     window.location.href = lastMail.href;
     setTimeout(function () {
@@ -231,7 +231,7 @@
     var b = this, label = b.querySelector('span');
     copyText('பெறுநர்: ' + TO + '\nபொருள்: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
       label.textContent = 'Copied';
-      announce(formLive, fmt('Message copied. Paste it into a new email to %1.', TO));
+      announce(formLive, fmt('செய்தி நகலெடுக்கப்பட்டது. அதை %1 முகவரிக்கான புதிய மின்னஞ்சலில் ஒட்டுங்கள்.', TO));
       setTimeout(function () { label.textContent = 'செய்தியை நகலெடு'; }, 2400);
     }, function () {
       announce(formLive, 'நகலெடுக்க இயலவில்லை. “தயாரான மின்னஞ்சலைக் காண்க” என்பதைத் திறந்து, அதற்குப் பதிலாக உரையைத் தேர்ந்தெடுங்கள்.');

@@ -32,7 +32,7 @@
     var s = el.getAttribute('data-start'), e = el.getAttribute('data-end'), st = $('[data-ev-status]', el), txt;
     if (e < today) { el.classList.add('is-past'); txt = 'Concluded'; }
     else if (s <= today) { el.classList.add('is-now'); txt = 'இப்போது நடைபெறுகிறது'; }
-    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? 'Tomorrow' : fmt('In %1 days', n); }
+    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? 'Tomorrow' : fmt('%1 நாட்களில்', n); }
     if (st) { st.textContent = txt; st.hidden = false; st.classList.toggle('is-now', el.classList.contains('is-now')); }
   });
   var feature = $$('.ev-fcard');
@@ -72,7 +72,7 @@
       list.classList.toggle('fold-past', folded);
       earlier.setAttribute('aria-expanded', String(!folded));
       var n = pastWithMatches().length;
-      earlierLabel.textContent = folded ? (n === 1 ? 'Show 1 earlier month' : fmt('Show %1 earlier months', n)) : 'முந்தைய மாதங்களை மறை';
+      earlierLabel.textContent = folded ? (n === 1 ? 'முந்தைய 1 மாதத்தைக் காட்டு' : fmt('முந்தைய %1 மாதங்களைக் காட்டு', n)) : 'முந்தைய மாதங்களை மறை';
       earlier.hidden = n === 0;
     };
     var opened = false;
@@ -185,7 +185,7 @@
     var tick = function () {
       var t = DP.istNow(), x = t.mins / 1440;
       now.style.setProperty('--x', (x * 100).toFixed(2) + '%');
-      nowLabel.textContent = fmt('Now in Mysuru · %1 IST', t.label);
+      nowLabel.textContent = fmt('இப்போது மைசூருவில் · %1 IST', t.label);
       // keep the label inside the ribbon at either end of the day
       var cw = now.parentNode.clientWidth, half = nowLabel.offsetWidth / 2, at = x * cw;
       now.classList.toggle('to-left', at + half > cw);

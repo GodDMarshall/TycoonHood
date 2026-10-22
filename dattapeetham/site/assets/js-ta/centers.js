@@ -74,9 +74,9 @@
       if (empty) empty.hidden = shown > 0;
       if (status) {
         status.textContent = shown === total
-          ? fmt('Showing all %1 centres listed here', total)
-          : q ? fmt('Showing %1 of %2 centres matching “%3”', shown, total, input.value.trim())
-          : fmt('Showing %1 of %2 centres', shown, total);
+          ? fmt('இங்கே பட்டியலிடப்பட்டுள்ள %1 மையங்களும் காட்டப்படுகின்றன', total)
+          : q ? fmt('%2 மையங்களில் “%3” உடன் பொருந்தும் %1 காட்டப்படுகின்றன', shown, total, input.value.trim())
+          : fmt('%2 மையங்களில் %1 காட்டப்படுகின்றன', shown, total);
       }
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     };

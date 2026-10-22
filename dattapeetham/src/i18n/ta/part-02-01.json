@@ -23,7 +23,6 @@
  "Each Kshetra opens its page on dattapeetham.org, with its history, address and contacts. <1>See the full Shodasha grid</1>.": "ஒவ்வொரு க்ஷேத்திரமும் அதன் வரலாறு, முகவரி, தொடர்பு விவரங்களுடன் கூடிய dattapeetham.org பக்கத்தைத் திறக்கும். <1>முழு ஷோடச அட்டவணையைக் காண்க</1>.",
  "Also on the Shodasha grid": "ஷோடச அட்டவணையில் இவையும்",
  "Datta Kashi &amp; Datta <1>Rameshwaram</1>": "தத்த காசி &amp; தத்த <1>ராமேஸ்வரம்</1>",
- "A": "A",
  "Sri Swamiji’s birthplace": "ஸ்ரீ ஸ்வாமிஜி அவதரித்த தலம்",
  "Datta Kashi": "தத்த காசி",
  "Mekedatu, Kanakapura Taluk, Karnataka": "மேகதாது, கனகபுரா தாலுகா, கர்நாடகா",
@@ -35,7 +34,6 @@
  "Also enshrined": "உடன் எழுந்தருளியுள்ளவை",
  "Panchamukha Anjaneya, Ganapathy, Vana Durga, Sadguru Padukas": "பஞ்சமுக ஆஞ்சநேயர், கணபதி, வன துர்கை, சத்குரு பாதுகைகள்",
  "Datta Kashi on <1>dattapeetham.org<2/></1>": "<1>dattapeetham.org<2/></1> தளத்தில் தத்த காசி",
- "B": "B",
  "By the sea at Manginapudi": "மங்கினபூடி கடற்கரையில்",
  "Datta Rameshwaram": "தத்த ராமேஸ்வரம்",
  "Manginapudi, Machilipatnam, Andhra Pradesh": "மங்கினபூடி, மச்சிலிப்பட்டினம், ஆந்திரப் பிரதேசம்",
@@ -69,7 +67,6 @@
  "The nine syllables of Sri Swamiji’s name, <1>Ga·ṇa·pa·ti·sa·chchi·dā·nan·da</1>, set beside the nine Kshetras in their published order.": "ஸ்ரீ ஸ்வாமிஜியின் திருநாமத்திலுள்ள ஒன்பது அக்ஷரங்கள், <1>க·ண·ப·தி·ஸ·ச்சி·தா·நந்·த</1>, ஒன்பது க்ஷேத்திரங்களின் அருகே, அவை வெளியிடப்பட்ட வரிசையில் அமைக்கப்பட்டுள்ளன.",
  "<1>Gam</1> <2>Dattanatha Kshetram</2>": "<1>கம்</1> <2>தத்தநாத க்ஷேத்திரம்</2>",
  "<1><2>Matsyendranatha</2><3><4/>New Delhi</3></1> </5> <6/> </7>": "<1><2>மச்சேந்திரநாதர்</2><3><4/>புது டெல்லி</3></1> </5> <6/> </7>",
- "<1>Nam</1> <2>Dattanatha Kshetram</2>": "<1>ணம்</1> <2>தத்தநாத க்ஷேத்திரம்</2>",
  "<1><2>Gorakhnatha</2><3><4/>Nellore</3></1> </5> <6/> </7>": "<1><2>கோரக்கநாதர்</2><3><4/>நெல்லூர்</3></1> </5> <6/> </7>",
  "<1>Pam</1> <2>Dattanatha Kshetram</2>": "<1>பம்</1> <2>தத்தநாத க்ஷேத்திரம்</2>",
  "<1><2>Jalandharanatha</2><3><4/>Bhimavaram</3></1> </5> <6/> </7>": "<1><2>ஜாலந்தரநாதர்</2><3><4/>பீமாவரம்</3></1> </5> <6/> </7>",
@@ -98,5 +95,7 @@
  "<1>A partial list.</1> 86 of the 92 centres in the official directory are shown here, with contacts as published. Please confirm timings with the centre before you visit, and see the <2>official Ashram Centres directory</2> for the complete, current list.": "<1>இது ஒரு பகுதிப் பட்டியல் மட்டுமே.</1> அதிகாரப்பூர்வப் பட்டியலில் உள்ள 92 மையங்களில் 86 மையங்கள், வெளியிடப்பட்ட தொடர்பு விவரங்களுடன் இங்கே காட்டப்பட்டுள்ளன. வருகைக்கு முன் நேரங்களை அந்த மையத்துடன் உறுதிசெய்துகொள்ளுங்கள்; முழுமையான, தற்போதைய பட்டியலுக்கு <2>அதிகாரப்பூர்வ ஆசிரம மையங்கள் பட்டியலைப்</2> பாருங்கள்.",
  "Search centres by town or name": "ஊர் அல்லது பெயர் மூலம் மையங்களைத் தேடு",
  "86 of the 92 centres in the official directory": "அதிகாரப்பூர்வப் பட்டியலில் உள்ள 92 மையங்களில் 86",
- "All <1>86</1>": "அனைத்தும் <1>86</1>"
+ "All <1>86</1>": "அனைத்தும் <1>86</1>",
+ "<1>Nam</1> <2>Dattanatha Kshetram</2><3> (Nellore)</3>": "<1>ணம்</1> <2>தத்தநாத க்ஷேத்திரம்</2><3> (நெல்லூர்)</3>",
+ "<1>Nam</1> <2>Dattanatha Kshetram</2><3> (Eluru)</3>": "<1>நம்</1> <2>தத்தநாத க்ஷேத்திரம்</2><3> (ஏலூரு)</3>"
 }
