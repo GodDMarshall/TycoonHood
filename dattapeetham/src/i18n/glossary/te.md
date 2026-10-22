@@ -141,8 +141,8 @@ The build rejects a translation if its runs of ASCII digits differ from the Engl
   If the English uses digits, keep the digits.
 - Ordinals: 20th becomes 20వ, and 3rd Stage becomes 3వ స్టేజ్. "No. 1" becomes నం. 1.
 - Roman numerals (I, II, III, IV, and i, ii, iii) stay as they are.
-- Units: km is కి.మీ., ft is అడుగులు, sq ft is చదరపు అడుగులు (చ.అ. in tight labels), acres is
-  ఎకరాలు, and min is నిమిషాలు. ₹, MB and KB stay unchanged. Ranges keep the en dash: 15–20 నిమిషాలు.
+- Units: km is కి.మీ., ft is అడుగులు (అ. in a large stat number), sq ft is చదరపు అడుగులు
+  (చ.అ. in tight labels), acres is ఎకరాలు, and min is నిమిషాలు. ₹, MB and KB stay unchanged. Ranges keep the en dash: 15–20 నిమిషాలు.
 
 ## 5. Times and dates
 
@@ -151,8 +151,8 @@ Never switch to the 24-hour clock: 8 PM must not become 20:00, because that chan
 
 | English | Telugu word |
 |---|---|
-| 3:00–5:59 AM | తెల్లవారుజామున |
-| 6:00–11:59 AM | ఉదయం |
+| 3:00–4:59 AM | తెల్లవారుజామున |
+| 5:00–11:59 AM | ఉదయం |
 | 12:00–3:59 PM | మధ్యాహ్నం |
 | 4:00–6:59 PM | సాయంత్రం |
 | 7:00 PM–2:59 AM | రాత్రి |
@@ -161,7 +161,9 @@ Never switch to the 24-hour clock: 8 PM must not become 20:00, because that chan
 - "6 AM – 12 PM · 4 PM – 8 PM" becomes ఉదయం 6 – మధ్యాహ్నం 12 · సాయంత్రం 4 – రాత్రి 8.
 - "9 AM – 12 PM · 3:30 – 6 PM" becomes ఉదయం 9 – మధ్యాహ్నం 12 · మధ్యాహ్నం 3:30 – సాయంత్రం 6.
 - "Abhisheka 7 AM · Aarti 6 PM" becomes అభిషేకం ఉదయం 7 · హారతి సాయంత్రం 6.
-- "5:40 AM" becomes తెల్లవారుజామున 5:40, and "Sat & Sun · 7:10 PM" becomes శని & ఆది · రాత్రి 7:10.
+- "5:40 AM" becomes ఉదయం 5:40, and "Sat & Sun · 7:10 PM" becomes శని & ఆది · రాత్రి 7:10.
+- "3 AM" in prose becomes తెల్లవారుజామున 3 గంటలకు. The ticks of the 24-hour TV chart stay short:
+  రాత్రి 12, రాత్రి 3.
 - "5 PM onwards" becomes సాయంత్రం 5 నుంచి, "Around 8 AM" becomes ఉదయం సుమారు 8 గంటలకు, and
   "gates close at 11 PM" becomes రాత్రి 11 గంటలకు ద్వారాలు మూసివేస్తారు.
 - IST stays IST in labels. Spelled out, it is భారత ప్రామాణిక కాలమానం.

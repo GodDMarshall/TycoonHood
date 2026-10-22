@@ -183,3 +183,22 @@ unchanged in the Tamil text**, and it rejects any extra digit runs. So:
 4. The digits are the same as in the English, with nothing added or removed. Western digits only.
 5. Times read "காலை/மதியம்/மாலை/இரவு + time". Dates read day month year.
 6. Placeholders and `&amp;` are unchanged. UI labels are short.
+
+## 10. Editor decisions (final consistency pass)
+
+These settle questions the translators raised; the glossary has the matching entries.
+
+- **Main / presiding deity and "Moola virat"** → **மூலவர்** everywhere (not மூல தெய்வம், பிரதான தெய்வம் or மூலவிராட்).
+- **Sri Swamiji's father** (Narasimha Sastry, later Sri Narahari Teertha Swami / Sri Narahareeshwara
+  Swami of the Guru Parampara) takes the honorific **-ஆர்கள் / அவர்கள்**, like Sri Jayalakshmi Maata.
+- **Letter H in acronyms and initials** is **எச்**: எஸ்.டி.எச்.எஸ்., எச்.டி.ஒய்.சி., கே.எஸ்.எச்.டி., பி.எச்.இ.எல்., எச். வி. பிரசாத்.
+- **Yoga.** Practice systems and the Peetham's brand names keep **யோகா** (தத்த கிரியா யோகா, ஹட யோகா);
+  the classical paths take **யோகம்** (கர்ம யோகம், பக்தி யோகம், ஞான யோகம், ராஜ யோகம், நாத யோகம்).
+- **"directory"** of centres → **பட்டியல்** (அதிகாரப்பூர்வப் பட்டியல்). **fax** → **தொலைநகல்**. **not to scale** → **அளவுப்படி வரையப்படவில்லை**.
+- **Live streams** (header link) → **நேரலை**. **Open now / Closed now** (status pill) → **திறந்துள்ளது / மூடியுள்ளது**;
+  the longer badges reuse them ("மூடியுள்ளது · திறக்கும் நேரம்: %1"). The status-bar label **Next** before a ritual name is **அடுத்து**.
+- **Narrow layouts.** When a Tamil word is wider than its box (hero headings, stat columns, chips), prefer an equally
+  natural wording with shorter words (மைசூரு முதல் உலகம் வரை, தொடர்பு கொள்ளுங்கள், மனித குலம்) over a single long
+  compound. In the TV schedule, 5:40 AM is written **காலை 5:40** because அதிகாலை does not fit the time column.
+- **Runtime messages** are whole sentences with slots (%1, %2 …). Keep every slot; move them to fit Tamil word order
+  ("%2 மையங்களில் %1 காட்டப்படுகின்றன").
