@@ -5,7 +5,8 @@
 //
 // Sources (harvested 22 Oct 2026): dattapeetham.org/page/view/sgs-hospital,
 // /sgs-veda-pathashala, /social-activities, /contribution-towards-nature,
-// /sdhs-volunteers, /shuka-vana, /bonsai-garden, /about-us, /donations?ashram_id=4,
+// /sdhs-volunteers, /shuka-vana, /bonsai-garden, /about-us, /donations (recipient ids
+// 4, 6, 11, 13, 15, 19, 20 each checked with Nimble on 22 Oct 2026),
 // /calendar (SDHS camp), the homepage Kamadhenu / Pathashala / Hospital block
 // (src/legacy-homepage.html) and data.timeline (1978, 1985, 1986, 2005, 2012).
 
@@ -36,6 +37,20 @@ const EXT = {
   sdhs: `${OFFICIAL}/page/view/sdhs-volunteers`,
   sdhsFacebook: 'https://www.facebook.com/SriDattaHumaneServices/',
   bhaktimala: 'mailto:bhaktimala@sgstech.cc',
+  bhaktimalaOffice: 'contact.html#reach-us',
+};
+
+// Each donation recipient has its own ashram_id on dattapeetham.org/donations;
+// the id preselects that recipient ("Ashrama selected: …").
+const donate = (id) => `${OFFICIAL}/donations?ashram_id=${id}`;
+const DONATE = {
+  main: links.donations, // ashram_id=4, Avadhoota Datta Peetham, Mysore (Main)
+  templeSdv: donate(6),
+  gandluru: donate(11),
+  dkyic: donate(13),
+  guruKanika: donate(15),
+  hospital: donate(19),
+  annadana: donate(20), // SJMNAT: INR only
 };
 
 const X = ' data-external';
@@ -61,7 +76,7 @@ const pillars = [
   { title: 'Music &amp; Nada Chikitsa', note: 'The healing power of divine music', icon: 'veena', img: photos.nadaMantapaInterior, alt: 'A full Nada Mantapa during a programme', href: 'music.html' },
   { title: 'Education', note: 'Vedic learning and value-based education', icon: 'school', img: P.vedaSabha, alt: 'Vedic scholars and students at the Annual Veda Sabha, Mysuru Ashram', href: '#pathashala' },
   { title: 'Healthcare', note: 'Hospital, medical camps and wellness', icon: 'medical', img: photos.medicalCamp, alt: 'A doctor examines a boy at a free medical camp', href: '#hospital' },
-  { title: 'Cow Care', note: 'Protection and service to our sacred cows', icon: 'cow', img: photos.feedingCow, alt: 'Sri Swamiji feeding a calf at the Goshala', href: '#goshala' },
+  { title: 'Cow Care', note: 'Protection and service to our sacred cows', icon: 'cow', img: photos.feedingCow, alt: 'Sri Swamiji feeding a calf', href: '#goshala' },
   { title: 'Global Initiatives', note: 'Spreading spirituality and service worldwide', icon: 'globe', img: P.dallas, alt: 'Volunteers of SGS Ashram, Dallas, USA, with groceries collected for charity', href: 'centers.html' },
 ];
 
@@ -86,7 +101,7 @@ const learning = [
 
 const milestones = [
   ['Mid-1970s', 'A small dispensary opens in the Ashram, where a visiting physician treats minor ailments.'],
-  ['1978', 'Sri Swamiji’s timeline marks the inauguration of SGS Hospital in Mysuru to provide free medical services.'],
+  ['Late 1970s', 'The “Humanity Service Center” is established in a new building, now known as Manipadma Kuteera. Sri Swamiji’s timeline dates the inauguration of SGS Hospital, to provide free medical services, to 1978.'],
   ['Early 1990s', 'Medical services expand to the Swami Narahari Teertha Complex, renamed SGS Hospital, Holistic Health Centre.'],
   ['2012', 'In Sri Swamiji’s 70th birth year, the free SGS Hospital Polyclinic Day Care Centre (Allopathy) opens in a new building.'],
 ];
@@ -111,20 +126,20 @@ const sdhsServices = [
 
 // Recipients listed on dattapeetham.org/donations (ashram picker), Oct 2026.
 const funds = [
-  ['temple', 'Avadhoota Datta Peetham, Mysore (Main)', 'Sri Ganapathy Sachchidananda Ashrama, Datta Nagar, Mysuru'],
-  ['heart-hand', 'Sri Jayalakshmi Matha Nitya Annadana Trust', 'SJMNAT · daily Annadana · PAN AAATS5046G'],
-  ['medical', 'SGS Hospitals, Mysore', 'Tel +91 (0821) 2488888 · sevas@dattapeetham.org'],
-  ['lotus', 'Guru Kanika', 'Avadhoota Datta Peetham, Datta Nagar, Mysuru'],
-  ['diya', 'Sri Datta Venkateswara Temple, Mysore', 'Datta Nagar, Mysuru · Tel +91 821 248 3200'],
-  ['yoga', 'Datta Kriya Yoga International Centre', 'Avadhoota Datta Peetham, Datta Nagar, Mysuru'],
-  ['sun', 'Jayalakshmi Puram (Gandluru Trust)', 'SGS Ashramam, Jayalakshmipuram (Bommeparti), Anantapur Dt., Andhra Pradesh'],
+  ['temple', 'Avadhoota Datta Peetham, Mysore (Main)', 'Sri Ganapathy Sachchidananda Ashrama, Datta Nagar, Mysuru', DONATE.main],
+  ['heart-hand', 'Sri Jayalakshmi Matha Nitya Annadana Trust', 'SJMNAT · PAN AAATS5046G · INR only', DONATE.annadana],
+  ['medical', 'SGS Hospitals, Mysore', 'Tel +91 (0821) 2488888 · sevas@dattapeetham.org', DONATE.hospital],
+  ['lotus', 'Guru Kanika', 'Avadhoota Datta Peetham, Datta Nagar, Mysuru', DONATE.guruKanika],
+  ['diya', 'Sri Datta Venkateswara Temple, Mysore', 'Datta Nagar, Mysuru · Tel +91 821 248 3200', DONATE.templeSdv],
+  ['yoga', 'Datta Kriya Yoga International Centre', 'Avadhoota Datta Peetham, Datta Nagar, Mysuru', DONATE.dkyic],
+  ['sun', 'Jayalakshmi Puram (Gandluru Trust)', 'SGS Ashramam, Jayalakshmipuram (Bommeparti), Anantapur Dt., Andhra Pradesh', DONATE.gandluru],
 ];
 
 const ways = [
   { icon: 'heart-hand', title: 'Donate', note: 'Choose a fund', href: links.donations },
   { icon: 'flame', title: 'Book a puja', note: 'Participate online', href: links.poojas },
   { icon: 'namaste', title: 'Volunteer', note: 'Join the SDHS', href: '#volunteer' },
-  { icon: 'book', title: 'Subscribe to Bhaktimala', note: 'Write to the Bhaktimala office', href: EXT.bhaktimala },
+  { icon: 'book', title: 'Subscribe', note: 'Bhaktimala magazine', href: EXT.bhaktimalaOffice },
 ];
 
 const isExt = (href) => /^https?:|^mailto:/.test(href);
@@ -220,11 +235,11 @@ ${pageHero({
     ${split({
       media: `<div class="hosp-media">
         ${frame(P.hospitalBuilding, 'The SGS Hospital building at the Mysuru Ashram', { ratio: '4/3', caption: '<b>SGS Hospital</b>Holistic Health Centre, Mysuru' })}
-        <figure class="hosp-inset">${img(photos.hospitalSeva, 'SGS Hospital doctors and volunteers beside an early cancer detection van')}</figure>
+        <figure class="hosp-inset">${img(photos.hospitalSeva, 'A group gathered at a cancer detection unit van, with a saffron-robed Swamiji on its steps')}</figure>
       </div>`,
       body: `${index('hospital', 'SGS Hospital · Holistic Health Centre', true)}
         <h2 data-split>Serving with <span class="em-light">compassion</span></h2>
-        <p class="lead">Since 1978, Sri Ganapathy Sachchidananda Hospital has run a comprehensive healthcare system within the Holistic Health Centre, providing preventive and curative care for outpatients and inpatients — in Ayurveda, Allopathy, Homeopathy, Naturopathy and other systems.</p>
+        <p class="lead">Sri Ganapathy Sachchidananda Hospital operates a comprehensive healthcare system within the Holistic Health Centre, providing preventive and curative care: outpatient services in Ayurveda, Allopathy, Homeopathy, Naturopathy and other systems, and Ayurvedic inpatient care.</p>
         <blockquote class="hosp-quote"><p>Sri Swamiji always emphasises primary health care, rather than spending lakhs of rupees on tertiary health care.</p></blockquote>
         <p>Every month, SGS Hospital attends to 5,000–10,000 people. A Mobile Dispensary Van regularly visits the villages around Mysuru, and the hospital takes part in national programmes such as Immunization and Pulse-Polio. The Holistic Health Centre was inaugurated by former President of India Sri R. Venkataraman and then Chief Minister of Karnataka Sri S.M. Krishna.</p>`,
     })}
@@ -232,13 +247,15 @@ ${pageHero({
     <div class="camp-panel glass" data-reveal="up">
       <div class="camp-copy">
         <span class="eyebrow">Free medical camps</span>
-        <h3>Camps during the Chaturmasya Vrata</h3>
-        <p>Annual free medical camps are held during Sri Bala Swamiji’s Chaturmasya Vrata, including cancer screening for women over 40.</p>
-        <ul class="camp-chips" aria-label="Regular free camps">${camps.map((c) => `<li>${c}</li>`).join('')}</ul>
+        <h3>Camps for the needy</h3>
+        <p>SGS Hospital regularly conducts free medical camps for the detection and treatment of various diseases.</p>
+        <p class="camp-label" id="camp-regular">Regular free camps at SGS Hospital</p>
+        <ul class="camp-chips" aria-labelledby="camp-regular">${camps.map((c) => `<li>${c}</li>`).join('')}</ul>
+        <p class="camp-season">In addition, annual free medical camps are organised for the needy during the Chaturmasya Vrata of Sri Bala Swamiji, including cancer screening for women over 40.</p>
       </div>
       <div class="camp-stats">
-        <p class="camp-label">2024 free medical camps</p>
-        ${stats([['1,512', 'cases seen'], ['35', 'eye check-ups'], ['31', 'dental procedures']], true)}
+        <p class="camp-label">Chaturmasya Vrata camps, 2024</p>
+        ${stats([['1,512', 'cases, new and follow-up'], ['35', 'eye check-ups'], ['31', 'dental procedures']], true)}
         <p class="camp-label">Blood-donation drive</p>
         ${stats([['200', 'units collected with local organisations for emergency services', '+']], true)}
       </div>
@@ -260,7 +277,7 @@ ${pageHero({
     </div>
 
     <div class="btn-row hosp-actions" data-reveal="up">
-      ${btn('Donate to SGS Hospitals', links.donations, 'gold', 'arrow-up-right', X)}
+      ${btn('Donate to SGS Hospitals', DONATE.hospital, 'gold', 'arrow-up-right', X)}
       ${btn('About SGS Hospital', EXT.hospital, 'ghost', 'arrow-up-right', X)}
     </div>
   </div>
@@ -275,7 +292,7 @@ ${pageHero({
         <p class="lead">It is a tradition that every visitor to the Ashram receives free food three times a day. More than one million people are fed every year at the Mysuru Ashram and its branches.</p>
         <p>The Sri Jayalakshmi Matha Nitya Annadana Trust was established in 1986. On every full moon (Purnima), the Peetham also organises Annadana for those in need, and during Sri Swamiji’s birthday celebrations each May, volunteer groups serve meals in Mysuru, Bengaluru, Hyderabad, Vijayawada and other places.</p>
         ${stats([['3', 'free meals a day for every visitor'], ['10,00,000', 'people fed each year, Mysuru and branches', '+']])}
-        <div class="btn-row">${btn('Support Nitya Annadana', links.donations, 'gold', 'arrow-up-right', X)}</div>`,
+        <div class="btn-row">${btn('Support Nitya Annadana', DONATE.annadana, 'gold', 'arrow-up-right', X)}</div>`,
     })}
     <div class="need panel" data-reveal="up">
       <figure class="need-media">${img(P.foodGrains, 'Sri Swamiji hands over sacks of food grains to the Mysuru District Administration')}<figcaption>Sri Swamiji hands over Rs. 18 lakh worth of food grains to the Mysuru District Administration</figcaption></figure>
@@ -307,8 +324,8 @@ ${pageHero({
           <span class="tag tag-light">Founded 2012</span>
           <h3>Shuka Vana</h3>
           <p>A rehabilitation centre for birds, with its own bird hospital: a free-flight walk-in aviary that shelters abused, injured and abandoned birds. About 70 people care for them, including two resident vets. In 2018 Shuka Vana was invited to join the global “Year of the Bird” project.</p>
-          ${stats([['2,000', 'birds', '+'], ['486', 'species']], true)}
-          <p class="np-record">${icon('sparkle', 16)} Guinness World Record, 2017: most bird species in an aviary</p>
+          ${stats([['2,000', 'birds', '+'], ['486', 'species, per the Shuka Vana page']], true)}
+          <p class="np-record">${icon('sparkle', 16)} <span>Guinness World Record, 6 May 2017: most bird species in an aviary. The certificate pictured records 468 species.</span></p>
         </div>
       </article>
       <article class="nature-pane" data-reveal="up">
@@ -318,7 +335,7 @@ ${pageHero({
           <h3>Kishkindha Moolika Bonsai Garden</h3>
           <p>More than 450 miniaturised trees in an oriental garden setting, nurtured by Sri Swamiji Himself. At the World Bonsai Convention in the Mysuru Ashram on 21 December 2016, Sri Swamiji was awarded the Guinness World Record for the largest display of bonsai trees.</p>
           ${stats([['450', 'trees in the garden', '+'], ['2,649', 'trees in the record display']], true)}
-          <p class="np-record">${icon('sparkle', 16)} Guinness World Record, 2016: largest display of bonsai trees</p>
+          <p class="np-record">${icon('sparkle', 16)} <span>Guinness World Record, 2016: largest display of bonsai trees</span></p>
         </div>
       </article>
     </div>
@@ -372,17 +389,17 @@ ${pageHero({
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Donate', title: 'Support the Peetham’s <span class="em-light">seva</span>', lead: 'Your offering sustains Annadana, Gau Seva, the Veda Pathashala, free medical care and the birds of Shuka Vana. Donations are made on the Peetham’s own system at dattapeetham.org, where you choose the fund to support.' })}
     <ul class="funds" data-stagger>
-      ${funds.map(([ic, name, line]) => `<li class="fund"><a href="${links.donations}"${X}>
+      ${funds.map(([ic, name, line, href]) => `<li class="fund"><a href="${href}"${X}>
         <span class="fund-icon">${icon(ic, 24)}</span>
         <span class="fund-text"><b>${name}</b><small>${line}</small></span>
         <span class="fund-go" aria-hidden="true">${icon('arrow-up-right', 16)}</span>
       </a></li>`).join('')}
       <li class="fund fund-note"><div>
         <span class="fund-icon">${icon('calendar', 24)}</span>
-        <span class="fund-text"><b>Seasonal funds</b><small>Event funds, such as the Chaturmasya Vrata Deeksha, are listed on the donation page while they are open.</small></span>
+        <span class="fund-text"><b>Seasonal funds</b><small>Event funds, such as the Chaturmasya Vrata Deeksha, also appear on the donation page.</small></span>
       </div></li>
     </ul>
-    <p class="notice donate-notice" data-reveal="up">${icon('info', 20)}<span>On the donation page, choose <b>INR (₹)</b> if you have an Indian residential address, or <b>USD ($)</b> if you live outside India. You can also give on behalf of friends and family by adding the same donation to your cart more than once.</span></p>
+    <p class="notice donate-notice" data-reveal="up">${icon('info', 20)}<span>On the donation page, choose <b>INR (₹)</b> if you have an Indian residential address, or <b>USD ($)</b> if you live outside India. The Sri Jayalakshmi Matha Nitya Annadana Trust accepts INR only. You can also give on behalf of friends and family by adding the same donation to your cart more than once.</span></p>
     <div class="btn-row donate-cta" data-reveal="up">${btn('Go to donations', links.donations, 'gold', 'arrow-up-right', X + ' data-magnetic')}</div>
 
     <div class="ways">
@@ -393,7 +410,7 @@ ${pageHero({
           <span class="qt-text"><b>${w.title}</b><small>${w.note}</small></span>
         </a>`).join('')}
       </nav>
-      <p class="ways-note" data-reveal="up">Bhaktimala, the Peetham’s monthly magazine since 1976, is published in seven languages. All Kannada and English issues since October 2022 are in the Bhaktimala app; for new subscriptions, write to <a href="${EXT.bhaktimala}">bhaktimala@sgstech.cc</a>. Other subscriptions are on the <a href="${links.subscriptions}">Peetham’s subscriptions page</a>.</p>
+      <p class="ways-note" data-reveal="up">Bhaktimala, the Peetham’s monthly magazine since 1976, is published in seven languages. All Kannada and English issues since October 2022 are in the Bhaktimala app. Existing English and Kannada subscribers can write to <a href="${EXT.bhaktimala}">bhaktimala@sgstech.cc</a> to enable app access; for new subscriptions, contact the Bhaktimala office at Datta Peetham, Mysuru (see <a href="${EXT.bhaktimalaOffice}">Contact</a>). Other subscriptions are on the <a href="${links.subscriptions}"${X}>Peetham’s subscriptions page</a>.</p>
     </div>
   </div>
 </section>`;

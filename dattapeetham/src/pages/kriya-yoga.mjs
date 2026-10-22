@@ -20,7 +20,7 @@ const DKY = {
   youtube: 'https://www.youtube.com/@dattakriyayoga108',
   whatsapp: 'https://wa.me/917090689789?text=Jaya%20Guru%20Datta',
   certificate: 'YCB/20/YC/000019',
-  address: ['Datta Kriya Yoga International Centre', '2nd Floor, SGS Ayurvedic Hospital', 'Sri Ganapathy Sachchidananda Ashram, Datta Nagar', 'Ooty Road, Mysuru 570 025'],
+  address: ['Datta Kriya Yoga International Centre', '2nd Floor, SGS Ayurvedic Hospital', 'Sri Ganapathy Sachchidananda Ashram, Datta Nagar', 'Ooty Road, Mysuru 570&nbsp;025'],
 };
 
 const app = apps.find((a) => a.name === 'Datta Kriya Yoga');
@@ -254,7 +254,7 @@ ${pageHero({
         <span class="ky-verse-mark" aria-hidden="true">ॐ</span>
         <p class="ky-verse-sk" lang="sa-Latn">${sk.replace(' / ', '<br>')}</p>
         <p class="ky-verse-en">“${en}”</p>
-        <footer>${src}</footer>
+        <footer>${src.replace(/^(.+?), (.+)$/, '<span>$1,</span> <span>$2</span>')}</footer>
       </blockquote>`).join('')}
     </div>
     <p class="ky-note-center">Every chapter of the Bhagavad Gita is termed “yoga”, and the entire Gita is designated as Yoga Shastra.</p>
@@ -414,7 +414,7 @@ ${pageHero({
           ['mail', 'Email', `<a href="mailto:${DKY.email}">${DKY.email}</a>`],
           ['globe', 'Website', `<a href="${links.dattaKriyaYoga}" data-external>dattakriyayoga.org</a>`],
         ])}
-        <a class="link-arrow" href="visit.html">Plan your visit to the Ashram ${icon('arrow', 16)}</a>
+        <a class="link-arrow" href="visit.html">Plan your visit to the <span class="ky-nowrap">Ashram ${icon('arrow', 16)}</span></a>
       </article>
     </div>
   </div>
@@ -428,7 +428,7 @@ ${pageHero({
       <h2 id="prayers-title" data-split>Prayers to the <span class="em-light">Guru</span></h2>
       <p class="lead" data-reveal="up">Three prayers from the Datta Kriya Yoga tradition, with their meanings.</p>
     </header>
-    <div data-reveal="up">${accordion(prayers)}</div>
+    <div data-reveal="up">${accordion(prayers.map(([t, h]) => [t, h.replace(/ (\|{1,2})/g, '&nbsp;$1')]))}</div>
     <p class="ky-prayer-note" data-reveal="up">${icon('info', 14)}<span>Text as published on the Peetham’s Datta Kriya Yoga page. Diacritic encoding slips (ü, ä, ş for ū, ā, ṣ) and obvious typos in the meanings have been corrected; spellings are otherwise unchanged.</span></p>
   </div>
 </section>
@@ -443,7 +443,7 @@ ${pageHero({
     </header>
 
     ${processSteps([
-      ['Get notifications', `WhatsApp “Jaya Guru Datta” to <a href="${DKY.whatsapp}">7090 689 789</a> for updates on live online and offline classes.`],
+      ['Get notifications', `WhatsApp “Jaya Guru Datta” to <a href="${DKY.whatsapp}">7090&nbsp;689&nbsp;789</a> for updates on live online and offline classes.`],
       ['Prepare for the session', 'Slip into something comfortable, grab your mat and create some space, placing your phone or laptop a few feet away.'],
       ['Yoga time', `Join the classes streamed by experienced faculty on the <a href="${DKY.facebook}">Datta Kriya Yoga Facebook page</a>.`],
     ])}

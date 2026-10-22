@@ -98,6 +98,9 @@
 .page-seva .camp-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; }
 .page-seva .camp-chips li { padding: 8px 14px; border: 1px solid rgba(226, 200, 142, .3); border-radius: 999px; font-size: .8rem; color: var(--cream-on-dark); }
 .page-seva .camp-label { margin: 0; font: 600 .7rem/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-3); }
+.page-seva .camp-copy .camp-label { margin-top: 24px; }
+.page-seva .camp-copy .camp-chips { margin-top: 12px; }
+.page-seva .camp-season { margin: 24px 0 0; padding-top: 20px; border-top: 1px solid rgba(226, 200, 142, .18); font-size: .95rem; color: var(--cream-on-dark); }
 .page-seva .camp-stats .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 14px 0 30px; }
 .page-seva .camp-stats .stats:last-child { grid-template-columns: 1fr; margin-bottom: 0; }
 
@@ -152,7 +155,8 @@ html:not(.js) .page-seva .milestones li { --on: 1; }
 .page-seva .np-body h3 { color: #fbf3e2; font-size: clamp(1.8rem, 3vw, 2.4rem); }
 .page-seva .np-body p { color: var(--muted-on-dark); font-size: .95rem; }
 .page-seva .np-body .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 18px 0 14px; }
-.page-seva .np-record { display: flex; align-items: center; gap: 8px; margin: 0; font-size: .84rem; color: var(--gold-3); }
+.page-seva .np-record { display: flex; align-items: flex-start; gap: 8px; margin: 0; font-size: .84rem; line-height: 1.5; color: var(--gold-3); }
+.page-seva .np-record .ico { flex: none; margin-top: 3px; }
 .page-seva .nature-actions { justify-content: center; margin-top: 44px; }
 
 /* ---------- 06 Volunteer (immersive dark) ---------- */
@@ -207,7 +211,16 @@ html:not(.js) .page-seva .milestones li { --on: 1; }
 @media (max-width: 1180px) {
   .page-seva .pillar-band { grid-template-columns: repeat(3, 1fr); }
   .page-seva .funds { grid-template-columns: repeat(2, 1fr); }
+  .page-seva .fund > a, .page-seva .fund > div { flex-direction: row; align-items: flex-start; gap: 16px; }
   .page-seva .unit-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 981px) and (max-width: 1180px) {
+  /* the split's text column is narrow here: Gau Seva cards become rows, stats stay three-up */
+  .page-seva .gau-cards { grid-template-columns: 1fr; gap: 10px; }
+  .page-seva .gau-cards a { flex-direction: row; align-items: center; gap: 14px; padding: 14px 16px; }
+  .page-seva .gau-cards em { margin-top: 6px; }
+  .page-seva #pathashala .split .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .page-seva #pathashala .split .stat { padding-left: 14px; }
 }
 @media (max-width: 980px) {
   .page-seva .quick-tiles.overlap { grid-template-columns: repeat(3, 1fr); }
@@ -248,6 +261,9 @@ html:not(.js) .page-seva .milestones li { --on: 1; }
   .page-seva .camp-stats .stats, .page-seva .need .stats { grid-template-columns: 1fr 1fr; }
   .page-seva .need .stats .stat:last-child { grid-column: 1 / -1; }
   .page-seva .camp-stats .stats .stat:last-child:nth-child(3) { grid-column: auto; }
+  .page-seva .camp-stats .stats .stat:first-child:nth-last-child(3) { grid-column: 1 / -1; }
+  .page-seva #pathashala .split .stats { grid-template-columns: 1fr 1fr; }
+  .page-seva #pathashala .split .stat:last-child:nth-child(3) { grid-column: 1 / -1; }
   .page-seva .stat dt { font-size: 2.1rem; }
   .page-seva .unit-grid { grid-template-columns: 1fr; }
   .page-seva .nature-pane { display: block; min-height: 0; background: var(--night); }

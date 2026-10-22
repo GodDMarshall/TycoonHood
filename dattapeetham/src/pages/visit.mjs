@@ -25,11 +25,13 @@
 //     here; the temple page's longer hours live on darshan.html#hanuman.
 //   · Road advice: the guidelines page says after 9 PM; an older Ashram-office
 //     page says after 7 PM. The current guidelines page is used.
+//   · Map detail cards: see placeFixes below (SDVT, Rajarajeshwari, Hari
+//     Sannidhi, Shuka Vana, Bonsai Garden, SGS Hospital).
 
 import { pageHero, sectionHead, split, frame, processSteps, scrollLit, accordion, tabs, infoList, hoursCard, ctaBand, btn, img, icon, esc } from '../components.mjs';
 import { site, links, hours, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, timings } from '../data.mjs';
-import { ashramMap } from '../features/ashram-map.mjs';
+import { ashramMap, ashramPlaces } from '../features/ashram-map.mjs';
 
 /* ---------------------------------------------------------------------------
    Sources and photographs (Peetham S3 bucket)
@@ -284,6 +286,7 @@ const hero = pageHero({
   pos: 'center 38%',
   crumb: 'Visit',
   actions: `${btn('Get directions', links.directions, 'gold', 'pin', ' data-magnetic')}${btn('Explore the Ashram map', '#map', 'ghost', 'map')}`,
+  tilesLabel: 'Visit essentials',
   tiles: [
     { icon: 'pin', title: 'How to Reach', note: 'Maps &amp; Directions', href: '#how-to-reach' },
     { icon: 'clock', title: 'Ashram Timings', note: '&amp; Guidelines', href: '#timings' },
@@ -424,11 +427,64 @@ const reach = `<section id="how-to-reach" class="section section-paper vs-reach"
   </div>
 </section>`;
 
-const mapSection = ashramMap({
+// Page-scoped corrections to the shared map's detail cards (the shared feature
+// is read-only for this page). Applied only while this page renders its map,
+// then restored, so other pages that use ashramPlaces are unaffected.
+//   · Sri Datta Venkateshwara Temple: the temple's own page gives weekday and
+//     weekend hours (not the homepage's generic darshan hours), so no live
+//     badge built on hours.temple is shown.
+//   · Rajarajeshwari Temple, Hari Sannidhi: no official source gives their
+//     hours, so none are shown.
+//   · Shuka Vana, Bonsai Garden: the homepage and their own pages disagree;
+//     both are labelled with the PAGE-GUIDE notice, and no live badge.
+//   · SGS Hospital: the Avatara timeline dates its inauguration to 1978, while
+//     the hospital page dates the "Holistic Health Centre" to the 1990s; only
+//     what both support is stated.
+const VARY = 'Timings vary across official sources; please check with the Ashram before visiting.';
+const placeFixes = {
+  venkateshwara: {
+    timing: {
+      rows: [['Weekdays', '6:00 AM – 12:00 PM · 5:00 PM – 8:00 PM'], ['Weekends', '6:00 AM – 12:00 PM · 4:30 PM – 8:30 PM']],
+      note: `As listed on the <a href="${OFFICIAL}/page/view/sri-datta-venkateshwara-temple">Sri Datta Venkateshwara Temple page</a>.`,
+    },
+  },
+  rajarajeshwari: { timing: undefined },
+  'hari-sannidhi': { timing: undefined },
+  'shuka-vana': {
+    timing: {
+      rows: [['Homepage', '9 AM – 12 PM · 3:30 – 6 PM'], ['Shuka Vana page', '10 AM – 12:30 PM · 3:30 – 5:30 PM']],
+      note: 'Closed on Wednesdays. Timings vary across official sources, and the Shuka Vana page says it is temporarily closed for maintenance; please check with the Ashram before visiting.',
+    },
+  },
+  'bonsai-garden': {
+    timing: {
+      rows: [['Morning', '10:00 AM – 12:30 PM'], ['Evening', '3:30 PM – 5:30 PM']],
+      note: `Closed on Wednesdays. Hours from the Bonsai Garden page. ${VARY}`,
+    },
+  },
+  'sgs-hospital': { since: 'Medical service since the 1970s' },
+};
+
+function withPlaceFixes(fixes, fn) {
+  const saved = [];
+  for (const p of ashramPlaces) {
+    const fix = fixes[p.id];
+    if (!fix) continue;
+    for (const k of Object.keys(fix)) {
+      saved.push([p, k, Object.prototype.hasOwnProperty.call(p, k), p[k]]);
+      if (fix[k] === undefined) delete p[k]; else p[k] = fix[k];
+    }
+  }
+  try { return fn(); } finally {
+    for (const [p, k, had, v] of saved.reverse()) { if (had) p[k] = v; else delete p[k]; }
+  }
+}
+
+const mapSection = withPlaceFixes(placeFixes, () => ashramMap({
   id: 'map',
   eyebrow: 'Interactive Ashram Map',
   title: 'Once you <span class="em-light">arrive</span>',
-});
+}));
 
 const guidelinesSection = `<section id="guidelines" class="section vs-guidelines" aria-labelledby="guidelines-h">
   <div class="wrap vs-guide-grid">

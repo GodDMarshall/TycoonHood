@@ -1,7 +1,8 @@
 /* Temples & Darshan — page behaviour (no dependencies).
    1. Sticky shrine navigator: follows the header, lights the current shrine.
    2. "A day at the Ashram": a sun marks the time in Mysuru; next ritual flagged.
-   3. Next weekend laser show at the Karya Siddhi Hanuman temple.
+   3. Next weekend laser show at the Karya Siddhi Hanuman temple, and an
+      open/closed status for the two temples that publish their own hours.
    4. Birth Date Pillars: today's pillar, and a picker for the visitor's day.
    5. Dated festival entries disappear once they have passed.
    Everything is readable without this script; it only adds live state. */
@@ -117,6 +118,29 @@
     return 'Saturday · ' + fmt12(LASER[0]);
   }
 
+  // Hours as published on each temple's own page (minutes after midnight IST).
+  var TEMPLES = {
+    sdvt: { wk: [[360, 720], [1020, 1200]], we: [[360, 720], [990, 1230]] },
+    hanuman: { wk: [[390, 750], [1020, 1200]], we: [[390, 750], [1020, 1230]] }
+  };
+  function short12(m) { return fmt12(m).replace(':00', ''); }
+  function templeStatus(t, now) {
+    var s = now.day === 0 || now.day === 6 ? t.we : t.wk;
+    for (var i = 0; i < s.length; i++) {
+      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: 'Open now · until ' + short12(s[i][1]) };
+      if (now.mins < s[i][0]) return { open: false, text: 'Closed · opens ' + short12(s[i][0]) };
+    }
+    var tomorrow = (now.day + 1) % 7, first = (tomorrow === 0 || tomorrow === 6 ? t.we : t.wk)[0][0];
+    return { open: false, text: 'Closed · opens ' + short12(first) + ' tomorrow' };
+  }
+  function updateTemples(now) {
+    Object.keys(TEMPLES).forEach(function (k) {
+      var st = templeStatus(TEMPLES[k], now);
+      $$('[data-dn-badge="' + k + '"]').forEach(function (el) { el.textContent = st.text; el.className = 'badge ' + (st.open ? 'open' : 'closed'); });
+      $$('[data-dn-status="' + k + '"]').forEach(function (el) { el.textContent = st.text; });
+    });
+  }
+
   /* ---------------- 5. dated festival entries ---------------- */
   function pruneUpcoming(now) {
     var box = $('[data-dn-upcoming]');
@@ -134,6 +158,7 @@
     var now = ist();
     updateDay(now);
     $$('[data-dn-laser]').forEach(function (el) { el.textContent = laserText(now); });
+    updateTemples(now);
     pruneUpcoming(now);
     return now;
   }

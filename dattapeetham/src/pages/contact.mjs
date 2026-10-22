@@ -19,6 +19,12 @@
 //     and the Bhaktimala announcement (bhaktimala@sgstech.cc for existing
 //     English and Kannada subscribers; new subscriptions via the Bhaktimala
 //     office at Datta Peetham Mysore).
+//   dattapeetham.org/page/view/karya-siddhi-hanuman-temple and
+//     /sri-datta-venkateshwara-temple — each lists its own weekday and weekend
+//     hours, so the homepage's Temple Timings are not presented as every
+//     shrine's hours.
+//   dattapeetham.org/youtube — a list of the Peetham's YouTube channels (not a
+//     live stream), hence "YouTube channels" in the closing CTA.
 //   dattapeetham.org/page/view/social-media-pages — social accounts.
 //   dattapeetham.org/ashrams/avadhoota-datta-peetham-mysore-main — Email / SMS
 //     subscribe.
@@ -50,7 +56,7 @@ const PHONE_INTL = '+91 821 2486 486';
 const fmt = (t) => { const [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'PM' : 'AM'; return `${h % 12 || 12}${m ? ':' + String(m).padStart(2, '0') : ''} ${ap}`; };
 const pct = (t) => { const [h, m] = t.split(':').map(Number); return +(((h * 60 + m) / 1440) * 100).toFixed(3); };
 const sessions = hours.temple.sessions;
-const strip = (html) => html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+const strip = (html) => html.replace(/<\/p>\s*<p[^>]*>/g, ' ').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 const copyIcon = (size = 14) => `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11" height="11" rx="2.2"/><path d="M15.5 8.5V6.7a2.2 2.2 0 0 0-2.2-2.2H6.7a2.2 2.2 0 0 0-2.2 2.2v6.6a2.2 2.2 0 0 0 2.2 2.2h1.8"/></g></svg>`;
 const copyBtn = (value, what) => `<button type="button" class="ct-copy" data-copy="${esc(value)}" data-copy-label="${esc(what)}" hidden>${copyIcon()}<span data-copy-text>Copy</span><span class="visually-hidden"> ${esc(what)}</span></button>`;
 
@@ -375,7 +381,7 @@ const visitSection = `<section id="visit-info" class="section section-dark ct-vi
           ${dayBar}
           <dl class="ct-hours">
             ${sessions.map(([a, b], i) => `<div><dt>${i === 0 ? 'Morning' : 'Evening'}</dt><dd>${fmt(a)} – ${fmt(b)}</dd></div>`).join('')}
-            <div><dt>Hanuman Temple</dt><dd>Abhisheka 7 AM · Aarti 6 PM<span class="ct-js-only ct-next">Next: <b data-next-ritual></b></span></dd></div>
+            <div class="ct-hours-ritual"><dt>Hanuman Temple</dt><dd>Abhisheka 7 AM · Aarti 6 PM<span class="ct-js-only ct-next">Next: <b data-next-ritual></b></span></dd></div>
           </dl>
           <p class="ct-live-note">Temple darshan hours as listed on the Peetham’s homepage; individual shrines may keep their own hours. The Ashram gates close at 11 PM.</p>
           <a class="link-arrow" href="darshan.html#timings">All temple timings ${icon('arrow', 15)}</a>

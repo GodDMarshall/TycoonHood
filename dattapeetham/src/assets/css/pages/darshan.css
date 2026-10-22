@@ -22,14 +22,19 @@
 /* ---------- 1. daily darshan ---------- */
 .page-darshan .dn-timings { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(18px, 2.4vw, 28px); align-items: stretch; }
 .page-darshan .dn-hours { display: flex; flex-direction: column; gap: 16px; }
-.page-darshan .dn-hours .hours-card { align-items: center; }
+.page-darshan .dn-hours .hours-card { align-items: flex-start; }
+.page-darshan .dn-hcard h3 { font-size: 1.3rem; }
+.page-darshan .dn-hcard dl { grid-template-columns: 84px 1fr; row-gap: 6px; }
+.page-darshan .dn-hcard dd { font-variant-numeric: tabular-nums; }
+.page-darshan .dn-hcard .badge { margin-top: 10px; }
+.page-darshan .dn-hcard small a { color: var(--gold-deep); }
+.page-darshan .dn-hcard .hc-icon { color: var(--gold-deep); }
 
 .page-darshan .dn-live { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 26px; padding: clamp(26px, 3.4vw, 40px); border-radius: var(--radius-lg); background: var(--forest); color: var(--cream-on-dark); box-shadow: var(--shadow); }
 .page-darshan .dn-live-bg { position: absolute; inset: 0; z-index: -2; }
 .page-darshan .dn-live-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 40%; opacity: .5; filter: blur(3px) saturate(1.15); transform: scale(1.08); }
 .page-darshan .dn-live::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(520px 320px at 18% 0%, rgba(201, 164, 92, .28), transparent 70%), linear-gradient(170deg, rgba(10, 19, 16, .55) 0%, rgba(10, 19, 16, .9) 62%, var(--night) 100%); }
-.page-darshan .dn-live-pill { display: inline-flex; align-items: center; gap: 9px; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255, 180, 143, .45); background: rgba(217, 87, 43, .14); color: #ffc6aa; font: 600 .7rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 18px; }
-.page-darshan .dn-live-pill .live-dot { background: var(--live); box-shadow: 0 0 10px var(--live); }
+.page-darshan .dn-live-pill { display: inline-flex; align-items: center; gap: 9px; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(226, 200, 142, .4); background: rgba(226, 200, 142, .1); color: var(--gold-3); font: 600 .7rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 18px; }
 .page-darshan .dn-live h3 { color: #fbf3e2; font-size: clamp(1.9rem, 3vw, 2.5rem); margin-bottom: 10px; }
 .page-darshan .dn-live-top p { color: var(--muted-on-dark); max-width: 46ch; }
 .page-darshan .dn-live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
@@ -90,6 +95,9 @@
 .page-darshan .dn-day-events li.is-next::before { background: var(--gold); box-shadow: 0 0 0 5px rgba(201, 164, 92, .22); transform: scale(1.2); }
 .page-darshan .dn-day-events li.is-next b::after { content: "Next"; display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: var(--gold); color: #fffaf0; font: 600 .58rem/1.4 var(--sans); letter-spacing: .12em; text-transform: uppercase; vertical-align: 2px; }
 
+.page-darshan .dn-day-own { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 22px; font-size: .88rem; color: var(--muted); }
+.page-darshan .dn-day-own .ico { flex: none; margin-top: 3px; color: var(--gold-deep); }
+.page-darshan .dn-day-own a { color: var(--gold-deep); }
 .page-darshan .dn-week { list-style: none; margin: 0; padding: 24px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 28px; }
 .page-darshan .dn-week li { position: relative; padding-left: 16px; border-left: 1px solid var(--line-strong); transition: border-color .4s; }
 .page-darshan .dn-week li.is-today { border-left-color: var(--gold); }
@@ -162,6 +170,9 @@
 .page-darshan .dn-time-ic { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); }
 .page-darshan .dn-time p { margin: 0; font-size: .93rem; }
 .page-darshan .dn-time .badge { margin-top: 10px; }
+.page-darshan .dn-time p + p { margin-top: 4px; }
+.page-darshan .dn-time-more { font-size: .86rem !important; }
+.page-darshan .dn-time-more a { display: inline-flex; align-items: center; min-height: 32px; color: var(--gold-deep); }
 .page-darshan .dn-time dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: .93rem; }
 .page-darshan .dn-time dt { font-weight: 600; color: var(--ink); }
 .page-darshan .dn-time dd { margin: 0; color: var(--muted); }

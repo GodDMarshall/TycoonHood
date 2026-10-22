@@ -372,7 +372,7 @@ ${pageHero({
       </figure>
       <div class="gp-prayer-body" data-reveal="up">
         ${eyebrow('The Guru Parampara prayer')}
-        <p class="gp-mantra" lang="sa-Latn"><span>Sri Ganeshaya Namaha</span><i aria-hidden="true">|</i> <span>Sri Saraswatyai Namaha</span><i aria-hidden="true">|</i> <span>Sri Pada Vallabha Narasimha Saraswathi Sri Guru Dattatreyaya Namaha</span><i aria-hidden="true">|</i></p>
+        <p class="gp-mantra" lang="sa-Latn"><span>Sri Ganeshaya Namaha <i aria-hidden="true">|</i></span> <span>Sri Saraswatyai Namaha <i aria-hidden="true">|</i></span> <span>Sri Pada Vallabha Narasimha Saraswathi Sri Guru Dattatreyaya Namaha <i aria-hidden="true">|</i></span></p>
         <p>The Datta Peetham’s Guru Parampara prayer begins with salutations to Lord Ganapathy, the remover of all obstacles, then to Mother Saraswathy, the Goddess of knowledge, followed by the lineage of Gurus starting from Sri Pada Vallabha and Narasimha Saraswathi, the incarnations of Lord Dattatreya, up to the present Guru — who is none other than Sri Swamiji.</p>
       </div>
     </div>
@@ -474,7 +474,7 @@ ${pageHero({
     ${sectionHead({
       eyebrow: 'Discourses by Sri Swamiji',
       title: 'Datta <span class="em-light">Charitram</span>',
-      lead: `Discourses by Sri Swamiji on “Datta Charitram”, in the Telugu language — ${episodes.length} episodes.`,
+      lead: `Discourses by Sri Swamiji on “Datta Charitram”, in the Telugu language — ${episodes.length}&nbsp;episodes.`,
     })}
     <div class="gp-episodes" data-episodes>
       <div class="gp-ep-player" data-reveal="scale">
@@ -485,7 +485,7 @@ ${pageHero({
         <ol class="gp-ep-list">
           ${episodes.map(([id, title], i) => `<li><a class="gp-ep" href="https://www.youtube.com/watch?v=${id}" data-ep="${id}" data-ep-title="${esc(title)}"${i === 0 ? ' aria-current="true"' : ''} data-external rel="noopener">
             <span class="gp-ep-num" aria-hidden="true">${pad(i + 1)}</span>
-            <span class="gp-ep-text"><b>Episode ${i + 1}</b><small>Datta Charitram</small></span>
+            <span class="gp-ep-text"><b>Episode ${i + 1}</b><small><span class="gp-ep-sub">Datta Charitram</span></small></span>
             <span class="gp-ep-play" aria-hidden="true">${icon('play', 14)}</span>
           </a></li>`).join('')}
         </ol>

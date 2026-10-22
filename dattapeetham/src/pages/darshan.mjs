@@ -8,9 +8,9 @@
 // src/data.mjs (timings, latestSevas, timeline) and src/site.mjs (hours, links).
 // Photographs are the Peetham's own, from its S3 bucket.
 
-import { pageHero, sectionHead, split, frame, card, ctaBand, processSteps, scrollLit, hoursCard, shareRow, btn, icon, img, esc } from '../components.mjs';
+import { pageHero, sectionHead, split, frame, card, ctaBand, processSteps, scrollLit, shareRow, btn, icon, img, esc } from '../components.mjs';
 import { links, hours, site, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
-import { photos, timings, latestSevas } from '../data.mjs';
+import { photos, latestSevas } from '../data.mjs';
 
 const view = (slug) => `${OFFICIAL}/page/view/${slug}`;
 
@@ -54,6 +54,10 @@ const timingNote = (html, badge) => `<div class="dn-time">
   <div>${html}${badge ? `<span class="badge" data-badge="${badge}">Checking…</span>` : ''}</div>
 </div>`;
 
+// For shrines whose own pages publish no hours: the Peetham's general timings,
+// labelled as such.
+const generalNote = () => timingNote(`<p><b>General temple timings</b> (Peetham homepage) · ${templeHours}</p><p class="dn-time-more"><a href="#timings">All darshan timings</a></p>`);
+
 const source = (href, label) => `<a class="link-arrow dn-source" href="${href}">${label} ${icon('external', 14)}</a>`;
 
 const shrineHead = (n, kicker, title, id) => `<span class="dn-num" aria-hidden="true">${n}</span>
@@ -80,16 +84,21 @@ const hero = pageHero({
   image: photos.prayerHall,
   pos: '74% 50%',
   crumb: 'Temples & Darshan',
-  actions: `${btn('Book a Puja', links.poojas, 'gold', 'arrow')}${btn('Live Darshan', '#live', 'ghost', 'live')}`,
+  actions: `${btn('Book a Puja', links.poojas, 'gold', 'arrow')}${btn('Darshan timings', '#timings', 'ghost', 'clock')}`,
   tiles: [
-    { icon: 'temple', title: 'Daily Darshan', note: 'Timings &amp; Live', href: '#timings' },
+    { icon: 'temple', title: 'Daily Darshan', note: 'Temple Timings', href: '#timings' },
     { icon: 'diya', title: 'Pujas &amp; Sevas', note: 'Book Online', href: '#sevas' },
     { icon: 'calendar', title: 'Festivals', note: 'Calendar', href: '#festivals' },
     { icon: 'book', title: 'Learn', note: 'Significance', href: '#mandir' },
   ],
 });
 
-// --- 1. daily darshan: timings, live readout, the day at the Ashram -------
+// --- 1. daily darshan: timings, watching online, the day at the Ashram ----
+//
+// Temple hours differ between official pages, so each set is labelled with
+// its source: the general "Temple Timings" of the Peetham homepage
+// (hours.temple in site.mjs) and the hours published on the Sri Datta
+// Venkateshwara and Karya Siddhi Hanuman temple pages.
 
 const tv = [
   ['5:40 AM', 'Sakshi TV', 'Telugu'],
@@ -99,15 +108,15 @@ const tv = [
   ['9:40 PM', 'Aastha', 'Hindi'],
 ];
 
-const liveCard = `<article class="dn-live" id="live" aria-labelledby="live-h" data-reveal="up">
+const onlineCard = `<article class="dn-live" id="online" aria-labelledby="online-h" data-reveal="up">
   <div class="dn-live-bg">${img(photos.dattatreya, '')}</div>
   <div class="dn-live-top">
-    <span class="dn-live-pill"><span class="live-dot" aria-hidden="true"></span>Live Darshan</span>
-    <h3 id="live-h">Darshan from <span class="em-light">wherever you are</span></h3>
-    <p>Join the Ashram from home on the Peetham’s official YouTube channel, and follow live updates of Sri Swamiji’s programmes.</p>
+    <span class="dn-live-pill">${icon('play-circle', 15)}Online &amp; on TV</span>
+    <h3 id="online-h">Watch &amp; <span class="em-light">follow online</span></h3>
+    <p>Watch Sri Swamiji’s programmes on the Peetham’s YouTube channel and on TV.</p>
     <div class="btn-row">
       ${btn('Watch on YouTube', links.youtube, 'gold', 'yt')}
-      ${btn('Live updates', links.liveUpdates, 'ghost', 'arrow-up-right')}
+      ${btn('Social media pages', view('social-media-pages'), 'ghost', 'arrow-up-right')}
     </div>
   </div>
   <div class="dn-live-grid">
@@ -115,8 +124,8 @@ const liveCard = `<article class="dn-live" id="live" aria-labelledby="live-h" da
       <h4><span class="live-dot" data-dot="temple" aria-hidden="true"></span>Now in Mysuru</h4>
       <dl>
         <dt>Local time</dt><dd data-clock>IST</dd>
-        <dt>Temple</dt><dd data-status-long="temple">${templeHours}</dd>
-        <dt>Next ritual</dt><dd data-next-ritual>Hanuman Abhisheka · 7 AM</dd>
+        <dt>General temple timings</dt><dd data-status-long="temple">${templeHours}</dd>
+        <dt>Karya Siddhi Hanuman</dt><dd data-dn-status="hanuman">6:30 AM – 12:30 PM · 5 PM – 8 PM</dd>
         <dt>Laser show</dt><dd data-dn-laser>Sat &amp; Sun · 7:10 PM</dd>
       </dl>
     </div>
@@ -128,18 +137,48 @@ const liveCard = `<article class="dn-live" id="live" aria-labelledby="live-h" da
   </div>
 </article>`;
 
-// The day, 5 AM to 9 PM. Open sessions come from hours.temple (site.mjs);
-// rituals from data.timings and the Kaalaagni, Ashram Life and Hanuman pages.
+// Hours cards. The general timings use the shared live badge (hours.temple);
+// the two temples with their own published hours get a page-scoped badge
+// computed in darshan.js from the same figures.
+const hoursBlock = ({ badge, dnBadge, title, rows, note, src, ic }) => `<article class="hours-card dn-hcard" data-reveal="up">
+  ${src ? `<span class="hc-img">${img(src, '')}</span>` : `<span class="hc-img hc-icon">${icon(ic || 'clock', 26)}</span>`}
+  <div>
+    <h3>${title}</h3>
+    <dl>${rows.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl>
+    ${badge ? `<span class="badge" data-badge="${badge}">Checking…</span>` : ''}${dnBadge ? `<span class="badge" data-dn-badge="${dnBadge}">Checking…</span>` : ''}
+    ${note ? `<small>${note}</small>` : ''}
+  </div>
+</article>`;
+
+const hoursCards = [
+  {
+    badge: 'temple', src: photos.logo, title: 'Temple Darshan',
+    rows: [['Morning', '6:00 AM – 12:00 PM'], ['Evening', '4:00 PM – 8:00 PM']],
+    note: 'General temple timings, daily, as given on the Peetham homepage. The Datta temple opens daily at 6 AM.',
+  },
+  {
+    dnBadge: 'sdvt', ic: 'temple', title: 'Sri Datta Venkateshwara',
+    rows: [['Weekdays', '6:00 AM – 12:00 PM<br>5:00 PM – 8:00 PM'], ['Weekends', '6:00 AM – 12:00 PM<br>4:30 PM – 8:30 PM']],
+    note: `As published on the <a href="${view('sri-datta-venkateshwara-temple')}">temple’s own page</a>.`,
+  },
+  {
+    dnBadge: 'hanuman', src: photos.hanumanIcon, title: 'Karya Siddhi Hanuman',
+    rows: [['Weekdays', '6:30 AM – 12:30 PM<br>5:00 PM – 8:00 PM'], ['Weekends', '6:30 AM – 12:30 PM<br>5:00 PM – 8:30 PM'], ['Laser show', 'Sat &amp; Sun · 7:10, 7:40 &amp; 8:10 PM']],
+    note: `As published on the <a href="${view('karya-siddhi-hanuman-temple')}">temple’s own page</a>.`,
+  },
+].map(hoursBlock).join('');
+
+// The day, 5 AM to 9 PM. The gold bands are the general temple timings
+// (hours.temple); other moments come from the Kaalaagni, Ashram Life and
+// Hanuman temple pages.
 const DAY_START = 300, DAY_END = 1260;
 const dayEvents = [
   [360, '6:00 AM', 'Datta temple opens', 'Kaalaagni Shamana Dattatreya, in the Universal Prayer Hall'],
-  [420, '7:00 AM', 'Hanuman Abhisheka', 'Karya Siddhi Hanuman, daily'],
   [480, '~8:00 AM', 'Sri Chakra Puja', 'When Sri Swamiji or Sri Bala Swamiji is in town; Teertha follows'],
-  [720, '12:00 PM', 'Midday close', 'Temple darshan pauses for the afternoon'],
-  [960, '4:00 PM', 'Temple reopens', 'Evening darshan'],
-  [1080, '6:00 PM', 'Hanuman Aarti', 'Karya Siddhi Hanuman, daily'],
+  [720, '12:00 PM', 'Midday close', 'General temple timings'],
+  [960, '4:00 PM', 'Evening darshan', 'General temple timings'],
   [1150, '7:10 PM', 'Laser show', 'Saturdays &amp; Sundays — also 7:40 and 8:10 PM'],
-  [1200, '8:00 PM', 'Temple closes', 'Until 6 AM tomorrow'],
+  [1200, '8:00 PM', 'Evening darshan ends', 'General temple timings'],
 ];
 const pct = (m) => (((m - DAY_START) / (DAY_END - DAY_START)) * 100).toFixed(3);
 
@@ -149,7 +188,7 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
       <span class="eyebrow">A day at the Ashram</span>
       <h3>From the first Abhishekam to the evening lamps</h3>
     </div>
-    <p class="dn-day-legend"><span><i aria-hidden="true"></i>Temple darshan · ${templeHours}</span><span data-dn-now-wrap hidden><i class="dn-now-key" aria-hidden="true"></i><span data-dn-now-text></span></span></p>
+    <p class="dn-day-legend"><span><i aria-hidden="true"></i>General temple timings · ${templeHours}</span><span data-dn-now-wrap hidden><i class="dn-now-key" aria-hidden="true"></i><span data-dn-now-text></span></span></p>
   </header>
   <div class="dn-day-track" data-dn-day data-start="${DAY_START}" data-end="${DAY_END}">
     <div class="dn-day-rail" aria-hidden="true">
@@ -165,6 +204,7 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
       </li>`).join('')}
     </ol>
   </div>
+  <p class="dn-day-own">${icon('info', 16)}<span>The <a href="#venkateshwara">Sri Datta Venkateshwara</a> and <a href="#hanuman">Karya Siddhi Hanuman</a> temples keep their own hours, shown above.</span></p>
   <ul class="dn-week">
     <li data-days="0"><span class="dn-week-day">Sundays</span><p>Tailabhisheka — oil anointing — to Kaalaagni Shamana Datta, and Sri Swamiji’s darshana in the morning when He is in town.</p></li>
     <li data-days="5"><span class="dn-week-day">Fridays</span><p>Worship at the Sri Datta Venkateshwara Temple, each Friday when Sri Swamiji is present.</p></li>
@@ -174,12 +214,12 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
 
 const timingsSection = `<section id="timings" class="section section-paper dn-timings-sec">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Daily Darshan', title: 'Timings &amp; <span class="em-light">live</span> darshan', lead: 'Temple darshan is open every day, morning and evening. All timings are in Indian Standard Time and may change on festival days.' })}
+    ${sectionHead({ eyebrow: 'Daily Darshan', title: 'Temple <span class="em-light">timings</span>', lead: 'Darshan is offered every morning and evening. The Peetham publishes general temple timings, and the Sri Datta Venkateshwara and Karya Siddhi Hanuman temples list their own hours. All timings are in Indian Standard Time.' })}
     <div class="dn-timings">
-      ${liveCard}
+      ${onlineCard}
       <div class="dn-hours">
-        ${timings.map((t) => hoursCard(t.key, t.title, t.rows, { img: t.img, note: t.note })).join('')}
-        <p class="notice dn-notice" data-reveal="up">${icon('info', 18)}<span>Please remove footwear, observe silence in the temples and wear decent, non-provocative attire. Timings can change on festival days — check the <a href="${links.calendar}">official calendar</a> or <a href="visit.html">plan your visit</a>.</span></p>
+        ${hoursCards}
+        <p class="notice dn-notice" data-reveal="up">${icon('info', 18)}<span>Timings vary across official sources; please check with the Ashram before visiting. For festival programmes see the <a href="${links.calendar}">official calendar</a>, and <a href="visit.html">plan your visit</a>. Looking for Shuka Vana? See <a href="attractions.html#shuka-vana">its hours and notice</a>.</span></p>
       </div>
     </div>
     ${dayTrack}
@@ -240,7 +280,7 @@ const prayerHall = `<section id="prayer-hall" class="dn-shrine" aria-labelledby=
           ['Kshetra', 'The first of the sixteen Shodasha Datta Kshetras'],
         ])}
         <blockquote class="dn-greeting"><span>Jaya Guru Datta</span><p>Datta worship, the Datta Stava and the greeting <em>Jaya Guru Deva Datta</em> were introduced in that week of June 1978; by the mid-eighties the greeting had become <em>Jaya Guru Datta</em>.</p></blockquote>
-        ${timingNote(`<p><b>The Datta temple opens daily at 6 AM.</b> Tailabhisheka every Sunday; every evening, Divya Naama Sankeertana and Kakada Arati.</p>`, 'temple')}
+        ${timingNote(`<p><b>The Datta temple opens daily at 6 AM.</b> Tailabhisheka every Sunday; every evening, Divya Naama Sankeertana and Kakada Arati.</p><p class="dn-time-more"><a href="#timings">All darshan timings</a></p>`)}
         ${source(view('kaalaagni-shamana-dattatreya'), 'Kaalaagni Shamana Dattatreya')}`,
     })}
   </div>
@@ -268,7 +308,7 @@ const rajarajeshwari = `<section id="rajarajeshwari" class="dn-shrine is-paper" 
         <div class="dn-moments" data-gallery>
           ${moments.map(([src, alt, cap]) => `<button type="button" class="dn-moment" data-full="${src}" data-caption="${esc(cap)}" aria-label="Open photo: ${esc(cap)}">${img(src, alt)}<span>${cap}</span></button>`).join('')}
         </div>
-        ${timingNote(`<p><b>Temple darshan</b> · ${templeHours}</p>`, 'temple')}
+        ${generalNote()}
         ${source(view('rajarajeshwari-temple'), 'The consecration, on dattapeetham.org')}`,
     })}
   </div>
@@ -283,8 +323,8 @@ const hariSannidhi = `<section id="hari-sannidhi" class="dn-shrine" aria-labelle
         <div class="dn-salagrama"><span data-count="2108">2,108</span><small>rare Salagramas, in the form of Ananthanaga Shayana</small></div>
         <p>The most spectacular Hari Sannidhi stands to the immediate right of the Rajarajeshwari temple, unveiled by Sri Swamiji on 28 December 2023.</p>
         <p>The Trivikrama Salagrama and the Manoratha Kurma Salagrama, weighing 300 kg, have also been installed inside the Sannidhi. A specially made <strong>Sudarshana Yantra</strong> on top of the Sannidhi was designed and conceptualised by Sri Swamiji.</p>
-        ${deities('Within the Sannidhi', ['Ananthanaga Shayana', 'Trivikrama Salagrama', 'Manoratha Kurma Salagrama', 'Sudarshana Yantra'])}
-        ${timingNote(`<p><b>Temple darshan</b> · ${templeHours}</p>`, 'temple')}
+        ${deities('At the Sannidhi', ['Ananthanaga Shayana', 'Trivikrama Salagrama', 'Manoratha Kurma Salagrama', 'Sudarshana Yantra'])}
+        ${generalNote()}
         ${source(view('ashram-shrines'), 'Ashram Shrines, on dattapeetham.org')}`,
     })}
   </div>
@@ -535,8 +575,8 @@ const upcoming = [
 const festivals = [
   { img: photos.dattatreya, alt: 'Sri Swamiji offers arati to Lord Dattatreya', when: 'December · three days', title: 'Datta Jayanti', text: 'The incarnation day of Adi Guru Dattatreya: Abhisheka in the Universal Prayer Hall, bhajans and a Shastra Sadas — and the one day in the year devotees may offer oil ablutions to the Moola virat.' },
   { img: pic.deviArati, alt: 'Sri Swamiji offers arati to Sri Rajarajeshwari Devi', when: 'Sep or Oct · nine days', title: 'Navaratri', text: 'Sri Swamiji honours Mother Goddess Raja Rajeshwari through the Nava Avarana Puja, with Kumari Puja, Sri Chakra Puja, Devi Homa and concerts at Nada Mantapa.' },
-  { img: pic.doshaHaraShiva, alt: 'Sri Swamiji worships Sarva Dosha Hara Shiva', when: 'A night of vigil', title: 'Maha Shivaratri', text: 'Rudra Abhishekam to the Sachchidanandeshwara Shiva Lingam and Sahasra Kalasha Abhishekam by devotees; musicians offer Sangeeta Seva through the vigil, and at 3 AM Sri Swamiji gives His discourse on Shiva.' },
-  { img: photos.swamijiGarland, alt: 'Sri Ganapathy Sachchidananda Swamiji, garlanded', when: '26 May', title: 'Sri Swamiji’s Birthday', text: 'Sri Bala Swamiji performs Pratyaksha Paada Pooja to Sri Swamiji; mobility aids are given to the physically challenged and Annadaana is offered on a large scale.' },
+  { img: pic.doshaHaraShiva, alt: 'Sri Swamiji worships Sarva Dosha Hara Shiva', when: 'A night of vigil', title: 'Maha Shivaratri', text: 'Sri Swamiji performs Rudra Abhishekam to the Sachchidanandeshwara Shiva Lingam, followed by Sahasra Kalasha Abhishekam by devotees; musicians offer Sangeeta Seva until late night as devotees keep vigil, and at 3 AM Sri Swamiji gives His discourse on Shiva.' },
+  { img: photos.swamijiGarland, alt: 'Sri Ganapathy Sachchidananda Swamiji, garlanded', when: 'Late May', title: 'Sri Swamiji’s Birthday', text: 'Celebrated around 26 May, with exact dates set by the Hindu calendar. Sri Bala Swamiji performs Pratyaksha Paada Pooja to Sri Swamiji; mobility aids are given to the physically challenged and Annadaana is offered on a large scale.' },
 ];
 const festivalsSection = `<section id="festivals" class="section section-sand dn-festivals">
   <div class="wrap">
@@ -572,7 +612,7 @@ export default {
   title: 'Temples & Darshan',
   crumb: 'Temples & Darshan',
   nav: 'Darshan & Puja',
-  description: 'Darshan timings, live status and the six shrines of the Mysuru Ashram, from Lord Dattatreya to the 70-ft Karya Siddhi Hanuman — with sevas to book online.',
+  description: 'Temple timings and the six shrines of the Mysuru Ashram, from Lord Dattatreya to the 70-ft Karya Siddhi Hanuman, with festivals and sevas to book online.',
   image: photos.prayerHall,
   preload: photos.prayerHall,
   css: true,
@@ -609,7 +649,7 @@ ${sevasSection}
 ${festivalsSection}
 ${ctaBand({
   title: 'Come for <span class="em-light">darshan</span>',
-  text: `Sri Ganapathy Sachchidananda Ashram, Datta Nagar, Ooty Road, Mysuru. Temple darshan daily, ${templeHours}.`,
+  text: `Sri Ganapathy Sachchidananda Ashram, Datta Nagar, Ooty Road, Mysuru. General temple timings, daily: ${templeHours}.`,
   actions: `${btn('Plan your visit', 'visit.html', 'gold', 'arrow')}${btn('Get directions', links.directions, 'ghost', 'pin')}`,
   image: pic.sdvtAerial,
 })}`,

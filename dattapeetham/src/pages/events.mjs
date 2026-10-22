@@ -1,7 +1,8 @@
 // Events & Festivals — the Peetham's year of festivals, programmes and concerts.
 // Sources (harvested 22 Oct 2026):
 //   /calendar (Nimble vx8, wait 4000): 49 dated 2026 entries — every date below
-//     is taken from that table (overlapping travel rows are merged or left out);
+//     is taken from that table (overlapping travel rows are merged or left out),
+//     except the 29 July Dallas Guru Purnima row, which is from the /events listing;
 //   /events (vx8): category list, the 2026 Guru Purnima event in Dallas, years 1996–2026;
 //   /page/view/ashram-life: daily programmes, Maha Shivaratri, birthday, Navaratri, Datta Jayanti;
 //   /page/view/sri-bala-swamiji and /datta-peetha-guru-parampara: Guru Purnima, Chaturmasya;
@@ -58,7 +59,8 @@ const KINDS = {
 const kindLabel = (k) => k.map((x) => KINDS[x][0]).join(' · ');
 
 // ---------------------------------------------------------------------------
-// 2026 official calendar (Swamiji, Bala Swamiji and Datta Peetham calendars).
+// 2026 official calendar (Swamiji, Bala Swamiji and Datta Peetham calendars),
+// plus the 29 July Dallas event from the official /events listing.
 // [start, end, title, place, kinds]
 
 const CAL = [
@@ -187,12 +189,12 @@ const calendarSection = `<section id="calendar" class="section section-paper ev-
     ${sectionHead({
       eyebrow: 'Events &amp; Programmes · 2026',
       title: 'What’s <span class="em-light">coming up</span>',
-      lead: 'Festivals, concerts, discourses and Sri Swamiji’s programmes around the world — every date as published on the Peetham’s official calendar.',
+      lead: 'Festivals, concerts, discourses and Sri Swamiji’s programmes around the world — every date as published on the Peetham’s official calendar and events listing.',
     })}
     <div class="ev-scope" data-filter-scope>
       <div class="ev-toolbar" data-reveal="up">
         ${chips('Show events of one kind', [['all', 'All'], ['festivals', 'Festivals'], ['music', 'Music'], ['discourses', 'Discourses &amp; Parayana'], ['seva-camps', 'Seva Camps'], ['vratas', 'Vratas'], ['tours', 'Tours']])}
-        <p class="ev-asof">${icon('info', 16)}<span>From the official calendar, read on 22 October 2026. Programmes can change — please confirm before you travel.</span></p>
+        <p class="ev-asof">${icon('info', 16)}<span>From the official calendar and events listing, read on 22 October 2026. Programmes can change — please confirm before you travel.</span></p>
       </div>
 
       <div class="ev-subhead"><h3>Coming up</h3><span class="ev-line" aria-hidden="true"></span></div>
@@ -292,7 +294,7 @@ const FEST = {
   ],
   magha: [
     { name: 'Ratha Saptami', icon: 'sun', tithi: 7, when: 'Magha Shuddha Saptami', y: 'Ratha Saptami at SGS Ashrama, Kurnool, 25 January.', s: '2026-01-25', e: '2026-01-25' },
-    { name: 'Maha Shivaratri', icon: 'moon', tithi: 29, img: P.shiva, alt: 'Sri Swamiji worships a Shiva Lingam with a lamp',
+    { name: 'Maha Shivaratri', icon: 'moon', tithi: 29, img: P.shiva, alt: 'Sri Swamiji offers a lamp to the lingas of the Sarva Dosha Hara Shiva shrine', note: 'Photo: the Sarva Dosha Hara Shiva shrine at the Sri Datta Venkateshwara temple',
       when: 'Magha Bahula Chaturdashi · a night of vigil', s: '2026-02-15', e: '2026-02-15',
       text: 'On the eve, the Venkatamakhin Memorial and Tyagaraja Aradhana with mass singing of the Pancharatna kritis. On the night itself, Rudra Abhishekam to Sri Sachchidanandeshwara by Sri Swamiji, Sahasra Kalasha Abhishekam by devotees and Sangeeta Seva until late; at 3 AM Sri Swamiji’s discourse on Shiva, and Maha Mangala Arati around 6 AM.',
       y: 'Maha Shivaratri Festival at SGS Ashrama, Mysuru, 15 February.' },
@@ -381,6 +383,7 @@ function festItem(f) {
     ${f.stat ? `<p class="fy-stat"><b data-count="${f.stat[0]}">${Number(f.stat[0]).toLocaleString('en-IN')}</b><span>${f.stat[1]}</span></p>` : ''}
     ${f.y ? `<p class="fy-year"${f.s ? ` data-fest-start="${f.s}" data-fest-end="${f.e}"` : ''}><span class="fy-ylabel">${f.yLabel || '2026'}</span><span>${f.y}</span></p>` : ''}
     ${f.link ? `<a class="ev-more" href="${f.link[0]}">${f.link[1]} ${icon('arrow', 14)}</a>` : ''}
+    ${f.note ? `<p class="fy-pnote">${icon('camera', 14)}<span>${f.note}</span></p>` : ''}
   </div>
 </article>`;
 }
@@ -510,7 +513,7 @@ const concertsSection = `<section id="concerts" class="section section-dark ev-c
         ${sectionHead({
           eyebrow: 'Music for Meditation &amp; Healing',
           title: 'Raga Sagara <span class="em-light">concerts</span>',
-          lead: 'In 2026 Sri Swamiji’s Raga Sagara — music for meditation and healing — travels from Tenali and New Delhi to Athens, Niagara, Basel and Nara. Every date here is from the official calendar.',
+          lead: 'In 2026 Sri Swamiji’s Raga Sagara — music for meditation and healing — travels from Tenali and New Delhi to Niagara, Basel and Nara, with a music concert in Athens. Every date here is from the official calendar.',
           align: 'left', light: true,
         })}
         <article class="ec-next glass" data-reveal="up" data-start="2026-11-29" data-end="2026-11-29">

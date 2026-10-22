@@ -59,6 +59,9 @@ export const links = {
   playStore: 'https://play.google.com/store/apps/details?id=org.dattapeetham.mobile',
   facebook: `${OFFICIAL}/facebook`,
   youtube: `${OFFICIAL}/youtube`,
+  // The Peetham's main YouTube channel (listed on its social-media page);
+  // the streams tab shows the live broadcast when one is on.
+  live: 'https://www.youtube.com/@DattaPeetham/streams',
   websites: `${OFFICIAL}/websites`,
   privacy: `${OFFICIAL}/page/view/privacy-policy`,
   terms: `${OFFICIAL}/page/view/terms-and-conditions`,
@@ -69,6 +72,9 @@ export const links = {
 
 // Opening hours in Indian Standard Time; `closed` lists weekdays shut
 // (0 = Sunday). Serialised into the page for the live open/closed badges.
+// `temple` is the homepage's general "Temple Timings" block; individual
+// shrines (Sri Datta Venkateshwara, Karya Siddhi Hanuman) list their own
+// weekday/weekend hours on their pages, shown on darshan.html.
 export const hours = {
   temple: { label: 'Temple', sessions: [['06:00', '12:00'], ['16:00', '20:00']], closed: [] },
   // Official sources disagree on Shuka Vana's hours and its own page says it

@@ -287,7 +287,9 @@ and must be keyboard operable.
 - **Sri Jayalakshmi Maata's passing.** One page says 1951, two say 1953.
   Prefer the timeline's 1953, or avoid stating the year.
 - **Shuka Vana species count.** 486 on most pages, 468 in one summary. Use
-  486.
+  486 for the current species count. The Guinness certificate itself
+  (6 May 2017) and the awards page read 468, so never attach 486 to the
+  Guinness record.
 - **Centre directory.** `harvest/centers--ashramcenters.md` holds 86 of the
   92 centres with addresses. Use it on the centres page and say the list is
   partial, linking the official directory.

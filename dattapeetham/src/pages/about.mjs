@@ -112,7 +112,7 @@ const maxKm = 25;
 
 // A stat whose number counts up (count) or stays put (years).
 const stat = (n, unit, label, { count = true } = {}) => `<div class="ab-stat">
-  <dt><span${count ? ` data-count="${n}"` : ''}>${count ? Number(n).toLocaleString('en-IN') : n}</span>${unit ? `<small>${unit}</small>` : ''}</dt>
+  <dt><span${count ? ` data-count="${n}"` : ''}>${count ? Number(n).toLocaleString('en-IN') : n}</span>${unit === '+' ? '<span class="ab-stat-plus">+</span>' : unit ? `<small>${unit}</small>` : ''}</dt>
   <dd>${label}</dd>
 </div>`;
 
@@ -341,8 +341,8 @@ ${pageHero({
     })}
 
     ${processSteps([
-      ['Temple opens · 6 AM', 'Daily Abhishekam, Archana and Ashtottara Seva are performed to Lord Dattatreya.'],
-      ['Sri Chakra Puja · about 8 AM', 'When in town, Sri Swamiji or Sri Balaswamiji performs it. Teertha is offered, and devotees practise Datta Kriya Yoga.'],
+      ['Temple opens · 6&nbsp;AM', 'Daily Abhishekam, Archana and Ashtottara Seva are performed to Lord Dattatreya.'],
+      ['Sri Chakra Puja · about 8&nbsp;AM', 'When in town, Sri Swamiji or Sri Balaswamiji performs it. Teertha is offered, and devotees practise Datta Kriya Yoga.'],
       ['Rituals & lectures', 'Devotees can join and sponsor rituals such as Homa and Tailabhishekam. Sri Balaswamiji gives daily lectures on the Yoga Vasistham in Kannada and Telugu.'],
       ['Evening bhajans', 'Divya Naama Sankeertana for at least one and a half hours, and Kakada Arati with sixteen lamps before Lord Datta.'],
     ])}

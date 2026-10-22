@@ -42,6 +42,7 @@
 .page-kriya-yoga .ky-verse-sk { font-family: var(--serif); font-style: italic; font-size: 1.24rem; line-height: 1.45; color: var(--gold-deep); margin-bottom: 14px; }
 .page-kriya-yoga .ky-verse-en { font-size: .93rem; color: var(--ink-2); margin-bottom: 18px; }
 .page-kriya-yoga .ky-verse footer { margin-top: auto; padding-top: 14px; min-height: calc(2.8em + 14px); border-top: 1px solid var(--line); width: 84%; font: 600 .68rem/1.4 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-deep); }
+.page-kriya-yoga .ky-verse footer span { display: inline-block; white-space: nowrap; }
 .page-kriya-yoga .ky-note-center { text-align: center; margin: 28px auto 0; max-width: 60ch; font-size: .92rem; color: var(--muted); }
 
 /* ---------- breath section ---------- */
@@ -266,6 +267,9 @@
 .page-kriya-yoga .ky-panel .info-list { margin-bottom: 18px; }
 .page-kriya-yoga .ky-panel .info-list li > span:last-child { font-size: .92rem; line-height: 1.55; }
 .page-kriya-yoga .ky-panel .info-list a { color: var(--gold-deep); overflow-wrap: anywhere; }
+.page-kriya-yoga .ky-panel .link-arrow { display: inline; line-height: 1.5; }
+.page-kriya-yoga .ky-nowrap { white-space: nowrap; }
+.page-kriya-yoga .ky-panel .link-arrow .ico { display: inline-block; margin-left: 6px; vertical-align: -2px; }
 
 /* ---------- prayers ---------- */
 .page-kriya-yoga .ky-om { display: block; font-size: 2.6rem; line-height: 1; color: var(--gold); margin-bottom: 14px; }
@@ -301,6 +305,9 @@
 
 /* ---------- responsive ---------- */
 @media (max-width: 1180px) {
+  .page-kriya-yoga .ky-verse { padding: 30px 22px 24px; }
+  .page-kriya-yoga .ky-verse-sk { font-size: 1.14rem; }
+  .page-kriya-yoga .ky-verse footer { width: 100%; letter-spacing: .15em; }
   .page-kriya-yoga .ky-components { grid-template-columns: repeat(6, 1fr); }
   .page-kriya-yoga .ky-component { grid-column: span 2; }
   .page-kriya-yoga .ky-component:nth-child(4) { grid-column: 2 / span 2; }

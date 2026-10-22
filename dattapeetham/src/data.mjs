@@ -196,5 +196,5 @@ export const dattaCharitram = [
   ['qRCpMqrPd4Y', 'Datta Charitram · Episode 10'],
 ];
 
-// Shuka Vana parrot "Varam" chanting the Hanuman Chalisa (linked from the Shuka Vana page).
-export const varamVideo = ['waPXoqK8Oeo', 'Varam the parrot chants the Hanuman Chalisa'];
+// Shuka Vana parrot "Varam" chanting the first line of the Hanuman Chalisa (linked from the Shuka Vana page).
+export const varamVideo = ['waPXoqK8Oeo', 'Varam the parrot chants the first line of the Hanuman Chalisa'];
