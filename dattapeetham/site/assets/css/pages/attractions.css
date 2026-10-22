@@ -504,7 +504,14 @@ html:not(.js) .page-attractions .nm-swaras li { --on: 1; }
 
 /* ---------- translated pages: Indic scripts ---------- */
 /* chapter tabs: a taller line box so the clipped tab label keeps its vowel signs and repha */
-html:not([lang="en"]) .page-attractions .ch-nav .t { line-height: 1.55; }
+html:not([lang="en"]) .page-attractions .ch-nav .t { line-height: 1.7; }
+/* Kannada and Tamil chapter names are too long for four tabs beside the "Plan your visit" link: the
+   tabs take the link's room (the closing band of the page carries the same link), and Tamil uses
+   the short names */
+html:is([lang="kn"], [lang="ta"]) .page-attractions .ch-nav-cta { display: none; }
+html[lang="ta"] .page-attractions .ch-nav .t-full { display: none; }
+html[lang="ta"] .page-attractions .ch-nav .t-short { display: inline; }
+@media (max-width: 640px) { html[lang="ta"] .page-attractions .ch-nav .t { font-size: .82rem; line-height: 1.45; } }
 /* stat strips whose Tamil labels outgrow their columns become a list: figure left, label right */
 html[lang="ta"] .page-attractions .sv-team .stats { grid-template-columns: max-content minmax(0, 1fr); gap: 12px 0; }
 html[lang="ta"] .page-attractions .sv-team .stat { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
