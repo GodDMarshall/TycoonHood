@@ -19,9 +19,9 @@
  "Get directions": "வழி காண்க",
  "<1>Copy</1><2> postal address</2>": "<2>அஞ்சல் முகவரியை </2><1>நகலெடு</1>",
  "Permission to visit &amp; stay": "வருகை &amp; தங்குவதற்கான அனுமதி",
- "H. V. Prasad": "ஹெச். வி. பிரசாத்",
+ "H. V. Prasad": "எச். வி. பிரசாத்",
  "Personal secretary to Sri Swamiji": "ஸ்ரீ ஸ்வாமிஜியின் தனிச் செயலர்",
- "Seek permission well in advance, by letter, phone, fax or email. Once your plans are final, tell the Ashram your arrival date, the number in your party and how long you will stay.": "கடிதம், தொலைபேசி, ஃபேக்ஸ் அல்லது மின்னஞ்சல் மூலம் நன்கு முன்கூட்டியே அனுமதி கோருங்கள். உங்கள் திட்டம் உறுதியானதும், நீங்கள் வந்துசேரும் தேதி, உங்கள் குழுவில் உள்ளவர்களின் எண்ணிக்கை, எத்தனை நாட்கள் தங்குவீர்கள் என்பதை ஆசிரமத்திற்குத் தெரிவியுங்கள்.",
+ "Seek permission well in advance, by letter, phone, fax or email. Once your plans are final, tell the Ashram your arrival date, the number in your party and how long you will stay.": "கடிதம், தொலைபேசி, தொலைநகல் அல்லது மின்னஞ்சல் மூலம் நன்கு முன்கூட்டியே அனுமதி கோருங்கள். உங்கள் திட்டம் உறுதியானதும், நீங்கள் வந்துசேரும் தேதி, உங்கள் குழுவில் உள்ளவர்களின் எண்ணிக்கை, எத்தனை நாட்கள் தங்குவீர்கள் என்பதை ஆசிரமத்திற்குத் தெரிவியுங்கள்.",
  "Visitor guidelines": "வருகையாளர் வழிகாட்டுதல்கள்",
  "Bhaktimala app": "பக்திமாலா செயலி",
  "bhaktimala@sgstech.cc": "bhaktimala@sgstech.cc",
@@ -85,7 +85,7 @@
  "Subject": "பொருள்",
  "Find your way to <1>Datta Nagar</1>": "<1>தத்த நகருக்கு</1> வழி காணுங்கள்",
  "The Ashram sits on Ooty Road (Nanjangud Road), at the foot of Chamundi Hill in Mysuru. Persons of all faiths are welcome.": "ஆசிரமம் மைசூருவில், சாமுண்டி மலையின் அடிவாரத்தில், ஊட்டி சாலையில் (நஞ்சன்கூடு சாலை) அமைந்துள்ளது. எல்லா நம்பிக்கைகளையும் சேர்ந்தவர்களும் வரவேற்கப்படுகிறார்கள்.",
- "<1><2/></1> <3><4>Datta Nagar, Mysuru</4>12.2854° N · 76.6579° E<5>Google Map. If it does not load, use Directions.</5></3>": "<1><2/></1> <3><4>தத்த நகர், மைசூரு</4>12.2854° N · 76.6579° E<5>Google வரைபடம். அது ஏற்றப்படவில்லை என்றால், ‘வழிகள்’ என்பதைப் பயன்படுத்துங்கள்.</5></3>",
+ "<1><2/></1> <3><4>Datta Nagar, Mysuru</4>12.2854° N · 76.6579° E<5>Google Map. If it does not load, use Directions.</5></3>": "<1><2/></1> <3><4>தத்த நகர், மைசூரு</4>12.2854° வடக்கு · 76.6579° கிழக்கு<5>Google வரைபடம். அது ஏற்றப்படவில்லை என்றால், ‘வழிகள்’ என்பதைப் பயன்படுத்துங்கள்.</5></3>",
  "<1><2/></1> <3><4>Avadhoota Datta Peetham</4>Sri Ganapathy Sachchidananda Ashram, Datta Nagar, Ooty Road, Mysuru 570 025</3> <5><6>Directions</6><7/></5>": "<1><2/></1> <3><4>அவதூத தத்த பீடம்</4>ஸ்ரீ கணபதி சச்சிதானந்த ஆசிரமம், தத்த நகர், ஊட்டி சாலை, மைசூரு 570 025</3> <5><6>வழிகள்</6><7/></5>",
  "Right now in Mysuru": "இப்போது மைசூருவில்",
  "<1></1><2>Temple darshan <3>·</3></2>": "<1></1><2>கோயில் தரிசனம் <3>·</3></2>",
@@ -98,5 +98,5 @@
  "All temple timings": "அனைத்துக் கோயில் நேரங்களும்",
  "Getting here": "வந்தடையும் வழி",
  "<1>By air</1>Fly to Bengaluru, then take a taxi to Mysuru from the airport arrival hall.": "<1>விமானம் மூலம்</1>பெங்களூருவுக்கு விமானத்தில் வந்து, பின்னர் விமான நிலைய வருகை அரங்கிலிருந்து மைசூருவுக்கு டாக்ஸியில் செல்லுங்கள்.",
- "<1>By city bus</1>Bus 119 from the Mysuru City Bus Stand runs directly to the Ashram; 119A goes via JSS Medical College.": "<1>நகரப் பேருந்து மூலம்</1>மைசூரு நகரப் பேருந்து நிலையத்திலிருந்து 119 எண் பேருந்து நேரடியாக ஆசிரமத்திற்குச் செல்கிறது; 119A பேருந்து ஜே.எஸ்.எஸ். மருத்துவக் கல்லூரி வழியாகச் செல்கிறது."
+ "<1>By city bus</1>Bus 119 from the Mysuru City Bus Stand runs directly to the Ashram; 119A goes via JSS Medical College.": "<1>நகரப் பேருந்தில்</1>மைசூரு நகரப் பேருந்து நிலையத்திலிருந்து 119 எண் பேருந்து நேரடியாக ஆசிரமத்திற்குச் செல்கிறது; 119A பேருந்து ஜே.எஸ்.எஸ். மருத்துவக் கல்லூரி வழியாகச் செல்கிறது."
 }
