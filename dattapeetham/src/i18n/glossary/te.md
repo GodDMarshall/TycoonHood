@@ -67,7 +67,7 @@ Telugu one exists.
   a goddess, అమ్మవారు కొలువై ఉన్నారు. For "is enshrined" use కొలువై ఉన్నారు, and for "grants
   darshan" use దర్శనమిస్తారు. "Lord X" becomes శ్రీ X స్వామి (శ్రీ హనుమాన్ స్వామి,
   శ్రీ వేంకటేశ్వర స్వామి), except where the glossary gives another form (Lord Datta is
-  దత్త ప్రభువు, Lord Shiva is పరమశివుడు). The generic "God" is భగవంతుడు, and "the Lord" is
+  దత్త ప్రభువు, Lord Shiva is పరమశివుడు, Lord Krishna is శ్రీకృష్ణ పరమాత్మ). The generic "God" is భగవంతుడు, and "the Lord" is
   భగవంతుడు / స్వామి.
 - **Sri Jayalakshmi Maata** and the other saints of the lineage take plural verbs:
   శ్రీ జయలక్ష్మీ మాత మహాసమాధి పొందారు.
@@ -76,7 +76,8 @@ Telugu one exists.
 - **Lay people** named in prose take గారు: శ్రీ హెచ్. వి. ప్రసాద్ గారు. Labels and contact cards
   keep the bare name.
 - Address the reader as మీరు. Instructions use the polite plural imperative (-ండి): దర్శించుకోండి,
-  పాటించండి. Never use నువ్వు forms.
+  పాటించండి. Never use నువ్వు forms for the reader. Prayers addressed to God inside a quotation
+  (“O Lord, You are the Truth…”) keep the devotional singular of the stotras: నీవు / నీ.
 - Write శ్రీ as a separate word before a name (శ్రీ స్వామీజీ, శ్రీ రామ నవమి). It joins the next
   word only in established compounds: శ్రీపాద, శ్రీమద్భగవద్గీత, శ్రీహరి. "Sri Sri Sri" is
   శ్రీ శ్రీ శ్రీ.
@@ -150,11 +151,11 @@ Never switch to the 24-hour clock: 8 PM must not become 20:00, because that chan
 
 | English | Telugu word |
 |---|---|
-| 4:00–5:59 AM | తెల్లవారుజామున |
+| 3:00–5:59 AM | తెల్లవారుజామున |
 | 6:00–11:59 AM | ఉదయం |
 | 12:00–3:59 PM | మధ్యాహ్నం |
 | 4:00–6:59 PM | సాయంత్రం |
-| 7:00 PM–3:59 AM | రాత్రి |
+| 7:00 PM–2:59 AM | రాత్రి |
 
 - "6:00 AM" becomes ఉదయం 6:00, and "6:00 PM daily" becomes ప్రతిరోజూ సాయంత్రం 6:00.
 - "6 AM – 12 PM · 4 PM – 8 PM" becomes ఉదయం 6 – మధ్యాహ్నం 12 · సాయంత్రం 4 – రాత్రి 8.
@@ -226,3 +227,25 @@ Never switch to the 24-hour clock: 8 PM must not become 20:00, because that chan
   letter: ఆన్‌లైన్, సబ్‌స్క్రైబ్, ఎస్‌జీఎస్. Do not strip it.
 - Use the Unicode Telugu block only. Do not use Kannada look-alike letters or ASCII
   transliteration.
+- Write the doubled ḷ with ల-vattu: ళ్ల (వెళ్లండి, హోటళ్లు, బళ్లారి, మేటగళ్లి), not ళ్ళ.
+- "Largest" is one word: అతిపెద్ద.
+
+## 9. Decisions from the editorial pass
+
+The six chunks were made consistent in one editing pass. These choices now apply everywhere:
+
+- Guinness record titles have one fixed wording (they are in `te.json`): బోన్సాయ్ వృక్షాల అతిపెద్ద
+  ప్రదర్శన, ఒకే పక్షిశాలలో అత్యధిక పక్షి జాతులు, అతిపెద్ద సంగీత చికిత్స పాఠం, సుదీర్ఘ పఠన మారథాన్
+  (బృందం), ప్రపంచంలోనే అతిపెద్ద ప్రత్యేక స్టాంపు. The organisation is గిన్నిస్ వరల్డ్ రికార్డ్స్;
+  a record, or several records counted, is గిన్నిస్ ప్రపంచ రికార్డు / రికార్డులు.
+- "Live" is లైవ్ in every UI sense (లైవ్ దర్శనం, లైవ్ స్థితి, లైవ్‌గా రికార్డ్ చేసిన). ప్రత్యక్ష is
+  kept only for "in person" and for the ritual name ప్రత్యక్ష పాద పూజ.
+- Film and event titles: “Sri Swamiji Unveiled” is శ్రీ స్వామీజీ — ఆవిష్కరణ; the Nara conference
+  “Sound, then Truth” is “నాదం, ఆపై సత్యం”.
+- Short labels: ఒక్క చూపులో (At a glance), ఇప్పుడు మైసూరులో (Now in Mysuru), మా చిరునామా (Find us),
+  శ్రీ స్వామీజీ వారి ఆశ్రమం (An Ashram of Sri Swamiji), ముఖ్య ఘట్టాలు (Milestones), సంగీత కచేరీలు
+  (Concerts).
+- In the Teachings glossary, the "Pooja — ref. puja" entry explains that both English spellings
+  exist, because both headwords are పూజ in Telugu.
+- Hidden search strings (`data-q` on the Centres page) hold the Telugu names followed by the
+  English ones, so visitors can search in either script. They are in NFD form on purpose.

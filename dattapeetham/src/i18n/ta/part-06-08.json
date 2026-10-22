@@ -36,9 +36,9 @@
  "bottom top": "bottom top",
  "top bottom": "top bottom",
  "Weekly holiday today": "இன்று வார விடுமுறை",
- "Closed today": "இன்று மூடப்பட்டுள்ளது",
+ "Closed today": "இன்று மூடியுள்ளது",
  "Outside listed hours": "குறிப்பிட்ட நேரத்திற்கு வெளியே",
- "Closed · opens tomorrow": "மூடப்பட்டுள்ளது · நாளை திறக்கும்",
+ "Closed · opens tomorrow": "மூடியுள்ளது · நாளை திறக்கும்",
  "Hanuman Abhisheka": "ஹனுமான் அபிஷேகம்",
  "Hanuman Aarti": "ஹனுமான் ஆரத்தி",
  "Close menu": "மெனுவை மூடு",
@@ -55,9 +55,9 @@
  "Message copied. Paste it into a new email to %1.": "செய்தி நகலெடுக்கப்பட்டது. அதை %1 முகவரிக்கான புதிய மின்னஞ்சலில் ஒட்டுங்கள்.",
  "Now %1 IST": "இப்போது %1 IST",
  "Now in Mysuru · %1 IST": "இப்போது மைசூருவில் · %1 IST",
- "Open now · until %1": "இப்போது திறந்திருக்கிறது · மூடும் நேரம்: %1",
- "Closed · opens %1": "மூடப்பட்டுள்ளது · திறக்கும் நேரம்: %1",
- "Closed · opens %1 tomorrow": "மூடப்பட்டுள்ளது · நாளை திறக்கும் நேரம்: %1",
+ "Open now · until %1": "திறந்துள்ளது · மூடும் நேரம்: %1",
+ "Closed · opens %1": "மூடியுள்ளது · திறக்கும் நேரம்: %1",
+ "Closed · opens %1 tomorrow": "மூடியுள்ளது · நாளை திறக்கும் நேரம்: %1",
  "Along the pathway, look for the pillar of %1 %2 — it carries the deity and demigod for that day.": "பாதையோரம் %1 %2 தேதிக்குரிய தூணைத் தேடுங்கள் — அதில் அந்த நாளுக்குரிய தெய்வமும் உபதேவதையும் இடம்பெற்றுள்ளனர்.",
  "In %1 days": "%1 நாட்களில்",
  "Show 1 earlier month": "முந்தைய 1 மாதத்தைக் காட்டு",
@@ -66,6 +66,6 @@
  "Within listed hours · until %1": "குறிப்பிட்ட நேரத்திற்குள் · மூடும் நேரம்: %1",
  "Listed hours from %1": "குறிப்பிட்ட நேரம் தொடங்குவது: %1",
  "%1 · %2 tomorrow": "%1 · நாளை %2",
- "Open now": "இப்போது திறந்திருக்கிறது",
- "Closed now": "இப்போது மூடப்பட்டுள்ளது"
+ "Open now": "திறந்துள்ளது",
+ "Closed now": "மூடியுள்ளது"
 }

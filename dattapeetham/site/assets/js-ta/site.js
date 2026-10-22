@@ -28,13 +28,13 @@
   }
   function status(h, now) {
     var c = h.caution;
-    if (h.closed.indexOf(now.day) !== -1) return { open: false, text: c ? 'இன்று வார விடுமுறை' : 'இன்று மூடப்பட்டுள்ளது' };
+    if (h.closed.indexOf(now.day) !== -1) return { open: false, text: c ? 'இன்று வார விடுமுறை' : 'இன்று மூடியுள்ளது' };
     for (var i = 0; i < h.sessions.length; i++) {
       var s = toMins(h.sessions[i][0]), e = toMins(h.sessions[i][1]);
-      if (now.mins >= s && now.mins < e) return { open: true, text: fmt(c ? 'குறிப்பிட்ட நேரத்திற்குள் · மூடும் நேரம்: %1' : 'இப்போது திறந்திருக்கிறது · மூடும் நேரம்: %1', fmt12(h.sessions[i][1])) };
-      if (now.mins < s) return { open: false, text: fmt(c ? 'குறிப்பிட்ட நேரம் தொடங்குவது: %1' : 'மூடப்பட்டுள்ளது · திறக்கும் நேரம்: %1', fmt12(h.sessions[i][0])) };
+      if (now.mins >= s && now.mins < e) return { open: true, text: fmt(c ? 'குறிப்பிட்ட நேரத்திற்குள் · மூடும் நேரம்: %1' : 'திறந்துள்ளது · மூடும் நேரம்: %1', fmt12(h.sessions[i][1])) };
+      if (now.mins < s) return { open: false, text: fmt(c ? 'குறிப்பிட்ட நேரம் தொடங்குவது: %1' : 'மூடியுள்ளது · திறக்கும் நேரம்: %1', fmt12(h.sessions[i][0])) };
     }
-    return { open: false, text: c ? 'குறிப்பிட்ட நேரத்திற்கு வெளியே' : 'மூடப்பட்டுள்ளது · நாளை திறக்கும்' };
+    return { open: false, text: c ? 'குறிப்பிட்ட நேரத்திற்கு வெளியே' : 'மூடியுள்ளது · நாளை திறக்கும்' };
   }
   // Daily rituals at the Karya Siddhi Hanuman temple (from dattapeetham.org).
   var RITUALS = [[420, 'ஹனுமான் அபிஷேகம்'], [1080, 'ஹனுமான் ஆரத்தி']];
@@ -49,7 +49,7 @@
     Object.keys(hours).forEach(function (k) {
       var st = status(hours[k], now);
       $$('[data-badge="' + k + '"]').forEach(function (el) { el.textContent = st.text; el.className = 'badge ' + (st.open ? 'open' : 'closed'); });
-      $$('[data-status="' + k + '"]').forEach(function (el) { el.textContent = st.open ? 'இப்போது திறந்திருக்கிறது' : 'இப்போது மூடப்பட்டுள்ளது'; });
+      $$('[data-status="' + k + '"]').forEach(function (el) { el.textContent = st.open ? 'திறந்துள்ளது' : 'மூடியுள்ளது'; });
       $$('[data-status-long="' + k + '"]').forEach(function (el) { el.textContent = st.text; });
       $$('[data-dot="' + k + '"]').forEach(function (el) { el.className = (el.classList.contains('live-dot') ? 'live-dot' : 'dot') + ' ' + (st.open ? 'open' : 'closed'); });
     });

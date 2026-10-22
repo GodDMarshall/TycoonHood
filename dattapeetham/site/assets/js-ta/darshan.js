@@ -129,11 +129,11 @@
   function templeStatus(t, now) {
     var s = now.day === 0 || now.day === 6 ? t.we : t.wk;
     for (var i = 0; i < s.length; i++) {
-      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: fmt('இப்போது திறந்திருக்கிறது · மூடும் நேரம்: %1', short12(s[i][1])) };
-      if (now.mins < s[i][0]) return { open: false, text: fmt('மூடப்பட்டுள்ளது · திறக்கும் நேரம்: %1', short12(s[i][0])) };
+      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: fmt('திறந்துள்ளது · மூடும் நேரம்: %1', short12(s[i][1])) };
+      if (now.mins < s[i][0]) return { open: false, text: fmt('மூடியுள்ளது · திறக்கும் நேரம்: %1', short12(s[i][0])) };
     }
     var tomorrow = (now.day + 1) % 7, first = (tomorrow === 0 || tomorrow === 6 ? t.we : t.wk)[0][0];
-    return { open: false, text: fmt('மூடப்பட்டுள்ளது · நாளை திறக்கும் நேரம்: %1', short12(first)) };
+    return { open: false, text: fmt('மூடியுள்ளது · நாளை திறக்கும் நேரம்: %1', short12(first)) };
   }
   function updateTemples(now) {
     Object.keys(TEMPLES).forEach(function (k) {
