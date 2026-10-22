@@ -35,14 +35,12 @@ import { worldMap } from '../features/world-map.mjs';
 --------------------------------------------------------------------------- */
 const P = {
   hero: `${PAGE_IMG}528/528_322ad0b196f6e909.jpg`,           // Karya Siddhi Hanuman temple, Mysuru Ashram
-  campus: `${PAGE_IMG}527/527_3e9d83aa1fdb79cf.png`,         // aerial view of the Mysuru temple complex
   prayerHall: photos.prayerHall,                             // Universal Prayer Hall
   kaalaagni: `${KSHETRA_IMG}01-kalagni-shamana-dattatreya-mysore-karnataka-india.jpg`,
   dattaKashi: `${KSHETRA_IMG}17-datta-kashi-mekedatu.jpg`,
   dattaRameshwaram: `${KSHETRA_IMG}18-datta-rameshvara-kshetra-manginapudi.jpg`,
   sydney: `${PAGE_IMG}513/513_a9cd007c07ab1712.jpg`,
   caverns: `${PAGE_IMG}513/513_0f3f84798f6304a5.jpg`,
-  dallas: `${PAGE_IMG}514/514_8bb2be323f146173.png`,
   chicago: `${PAGE_IMG}514/514_b7a1c01aeacc37c6.jpg`,
 };
 
@@ -78,7 +76,6 @@ const wells = ['Audumbara', 'Amalaka', 'Nirvindhya', 'Padma', 'Sarva', 'Unmochan
 // Sri Swamiji abroad: photographs and captions from the Peetham's own pages.
 const moments = [
   { img: P.chicago, alt: 'An arena filled with thousands of devotees seated in rows, facing a stage and large screens', place: 'NOW Arena, Chicago', date: 'July 2024', title: 'Bhagavad Gita chanting', text: 'On 20 July 2024, 8,000 people recited the entire Bhagavad Gita in a single venue, led by Sri Swamiji.' },
-  { img: P.dallas, alt: 'Devotees in rows across the floor of a large indoor arena, with a stage and screens at the far end', place: 'Allen Event Center, Dallas', date: 'August 2023', title: 'Bhagavad Gita chanting', text: 'The Gita chanters rendered the Sampoorna Bhagavad Gita Parayana here.' },
   { img: P.caverns, alt: 'An audience seated inside a vast cave, lit in blue and violet, facing a stage of musicians', place: 'The Caverns, Pelham, Tennessee', date: '3 August 2024', title: 'Music for Healing & Meditation in a cave', text: 'Sri Swamiji’s first ever music for healing and meditation at a cave.' },
   { img: P.sydney, alt: 'Collage: the Sydney Opera House at dusk, the audience in its hall, and Sri Swamiji holding a Guinness World Records certificate', place: 'Sydney Opera House', date: '6 April 2015', title: 'Sydney Opera House concert', text: 'Pictured on the Peetham’s pages with Sri Swamiji’s Guinness World Record for the largest music therapy lesson.' },
 ];
@@ -147,7 +144,7 @@ const centres = [
   ["IN", "Andhra Pradesh", "Sri Ganapati Sachchidananda Trust, Cuddapah (Kadapa)", "sri-ganapati-sachchidananda-trust-cuddapah-kadapa", "Cuddapah", [], "mail@dattapeetham.com"],
   ["IN", "Andhra Pradesh", "Sri Jayalakshmi Matha Mathru Mandali, Nellore", "sri-jayalakshmi-matha-mathru-mandali-nellore", "Nellore", ["0861-2323696"], "mail@dattapeetham.com"],
   ["IN", "Andhra Pradesh", "Sri Paada Vallabha Anagha Datta Kshetram, Pithapuram", "sri-paada-vallabha-anagha-datta-kshetram-pithapuram", "Pithapuram", ["062814 15422"], ""],
-  ["IN", "Telangana", "Panchamukha Anjaneya Swami Temple, BHEL, Hyderabad", "panchamukha-anjaneya-swami-temple-bhel-hyderabad", "BHEL, Hyderabad", ["9701533359"], "panchamukhaanjaneyaswami@gmail.com"],
+  ["IN", "Telangana", "Panchamukha Anjaneya Swami Temple, BHEL, Hyderabad", "panchamukha-anjaneya-swami-temple-bhel-hyderabad", "Hyderabad (BHEL)", ["9701533359"], "panchamukhaanjaneyaswami@gmail.com"],
   ["IN", "Telangana", "Sri Anagha Datta Kendram, BDL, Hyderabad", "sri-anagha-datta-kendram-bdl-hyderabad", "Hyderabad", ["9492913800"], "srianaghadattakendram@gmail.com"],
   ["IN", "Telangana", "Sri Ganapathy Sachchidananda Ashrama, Chinakodepaka", "sri-ganapathy-sachchidananda-ashrama-chinakodepaka", "Warangal", [], ""],
   ["IN", "Telangana", "Sri Ganapathy Sachchidananda Ashrama, Datta Giri, Hyderabad", "sri-ganapathy-sachchidananda-ashrama-datta-giri-hyderabad", "Hyderabad", ["9394548157"], "mail@dattapeetham.com"],
@@ -186,10 +183,10 @@ const label = (cc) => shortName[cc] || countryName[cc];
 
 const india = centres.filter((c) => c.cc === 'IN');
 const abroad = centres.filter((c) => c.cc !== 'IN');
-const byCount = (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]);
-const groupBy = (list, key) => [...list.reduce((m, c) => m.set(c[key], [...(m.get(c[key]) || []), c]), new Map())].sort(byCount);
+const byCount = (name) => (a, b) => b[1].length - a[1].length || name(a[0]).localeCompare(name(b[0]));
+const groupBy = (list, key, name = (k) => k) => [...list.reduce((m, c) => m.set(c[key], [...(m.get(c[key]) || []), c]), new Map())].sort(byCount(name));
 const states = groupBy(india, 'state');
-const nations = groupBy(abroad, 'cc');
+const nations = groupBy(abroad, 'cc', (cc) => countryName[cc]);
 
 // tel: href — digits only, keeping a leading + and dropping the trunk "(0)".
 const telHref = (p) => {
@@ -206,39 +203,46 @@ function centreCard(c) {
     c.email ? `<a href="mailto:${c.email}">${icon('mail', 14)}<span>${esc(c.email)}</span></a>` : '',
   ].filter(Boolean).join('');
   return `<li class="ce-c" data-q="${esc(q)}">
-      <a class="ce-c-name" href="${c.href}">${esc(c.name)}${icon('arrow-up-right', 14)}</a>
+      <a class="ce-c-name" href="${c.href}">${tail(c.name, icon('arrow-up-right', 14))}</a>
       <span class="ce-c-place">${icon('pin', 14)}<span>${esc(c.place)}</span></span>
       ${contact ? `<span class="ce-c-contact">${contact}</span>` : `<span class="ce-c-contact is-empty">Contact via the <a href="${c.href}">centre’s page</a></span>`}
     </li>`;
 }
 
 const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+// town names for a collapsed group: the first part of each place line
+const towns = (list) => [...new Set(list.map((c) => c.place.replace(/\s*\(.*\)/, '').split(',')[0].trim()))].sort().join(' · ');
+const toggle = `<span class="ce-toggle" aria-hidden="true">${icon('plus', 18)}</span>`;
+// keeps a trailing icon on the same line as the last word
+const tail = (text, ic) => { const i = text.lastIndexOf(' '); return `${esc(text.slice(0, i + 1))}<span class="ce-nw">${esc(text.slice(i + 1))}${ic}</span>`; };
 
 const directory = `<div class="ce-dir" data-filter-scope data-ce-dir>
   <div class="ce-dir-bar">
+    <div class="ce-dir-top">
+      <div class="ce-search" data-ce-search hidden>
+        <label class="visually-hidden" for="ce-q">Search centres by town or name</label>
+        ${icon('search', 18)}
+        <input id="ce-q" type="search" placeholder="Search by town or name" autocomplete="off" spellcheck="false">
+      </div>
+      <p class="ce-status" data-ce-status aria-live="polite">${centres.length} of the ${DIRECTORY_TOTAL} centres in the official directory</p>
+    </div>
     ${chips('Filter centres by country', [
       ['all', `All <small>${centres.length}</small>`],
       ['IN', `India <small>${india.length}</small>`],
       ['abroad', `Outside India <small>${abroad.length}</small>`],
       ...nations.map(([cc, list]) => [cc, `${label(cc)} <small>${list.length}</small>`]),
     ])}
-    <div class="ce-search" data-ce-search hidden>
-      <label class="visually-hidden" for="ce-q">Search centres by town or name</label>
-      ${icon('search', 18)}
-      <input id="ce-q" type="search" placeholder="Search by town or name" autocomplete="off" spellcheck="false">
-    </div>
   </div>
-  <p class="ce-status" data-ce-status aria-live="polite">${centres.length} of the ${DIRECTORY_TOTAL} centres in the official directory</p>
 
   <div class="ce-region" data-filter-item="IN" data-ce-region>
     <h3 class="ce-region-title"><span>India</span><small>${plural(india.length, 'centre')} in ${plural(states.length, 'state')}</small></h3>
     <div class="ce-states">
       ${states.map(([state, list]) => `<details class="ce-state" data-ce-group>
         <summary>
-          <span class="ce-state-name">${state}</span>
+          <h4 class="ce-state-name">${state}</h4>
           <span class="ce-state-count">${plural(list.length, 'centre')}</span>
-          <span class="ce-state-towns">${[...new Set(list.map((c) => c.place.replace(/\s*\(.*\)/, '').split(',').pop().trim()))].sort().join(' · ')}</span>
-          <span class="ce-state-toggle" aria-hidden="true">${icon('plus', 18)}</span>
+          <span class="ce-state-towns">${towns(list)}</span>
+          ${toggle}
         </summary>
         <ul class="ce-cards">${list.map(centreCard).join('')}</ul>
       </details>`).join('')}
@@ -248,10 +252,14 @@ const directory = `<div class="ce-dir" data-filter-scope data-ce-dir>
   <div class="ce-region ce-region-abroad" data-ce-region>
     <h3 class="ce-region-title"><span>Outside India</span><small>${plural(abroad.length, 'centre')} in ${plural(nations.length, 'country', 'countries')}</small></h3>
     <div class="ce-nations">
-      ${nations.map(([cc, list]) => `<div class="ce-nation${list.length > 1 ? ' is-wide' : ''}" data-filter-item="abroad ${cc}" data-ce-group>
-        <h4 class="ce-nation-title"><span class="ce-cc" aria-hidden="true">${cc === 'GB' ? 'UK' : cc}</span>${countryName[cc]}${list.length > 1 ? ` <small>${plural(list.length, 'centre')}</small>` : ''}</h4>
+      ${nations.map(([cc, list]) => `<details class="ce-nation${list.length > 1 ? ' is-wide' : ''}" data-filter-item="abroad ${cc}" data-ce-group data-ce-fold data-cc="${cc}" open>
+        <summary>
+          <h4 class="ce-nation-title"><span class="ce-cc" aria-hidden="true">${cc === 'GB' ? 'UK' : cc}</span><span>${countryName[cc]}</span><small>${plural(list.length, 'centre')}</small></h4>
+          <span class="ce-nation-towns">${towns(list)}</span>
+          ${toggle}
+        </summary>
         <ul class="ce-cards">${list.map(centreCard).join('')}</ul>
-      </div>`).join('')}
+      </details>`).join('')}
     </div>
   </div>
 
@@ -273,7 +281,7 @@ const hero = pageHero({
   tiles: [
     { icon: 'globe', title: 'World Map', note: 'Centres in 12 countries', href: '#global-reach' },
     { icon: 'temple', title: '16 Datta Kshetras', note: 'Shodasha Datta Kshetras', href: '#kshetras' },
-    { icon: 'lotus', title: 'Navanatha Kshetras', note: 'Nine seed syllables', href: '#navanatha' },
+    { icon: 'lotus', title: 'Navanatha Kshetras', note: 'Nine Datta Kshetras', href: '#navanatha' },
     { icon: 'diya', title: 'Mysuru Ashram', note: 'The headquarters', href: '#mysuru' },
   ],
 });
@@ -297,7 +305,7 @@ const overview = `<section id="overview" class="section ce-overview" aria-labell
 const reach = `<section id="global-reach" class="section section-dark ce-reach grain">
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Global Reach', title: 'Golden threads from <span class="em-light">Mysuru</span>', lead: 'The Peetham’s directory lists centres in eleven countries beyond India. Choose a country to trace its thread from the Ashram.', light: true })}
-    ${worldMap({ id: 'reach-map' })}
+    ${worldMap({ id: 'reach-map', findHref: '#centres' })}
     <p class="ce-reach-cta" data-reveal="up">${btn('Browse the centres by country', '#centres', 'ghost', 'arrow')}</p>
 
     <div class="ce-moments-wrap">
@@ -362,12 +370,12 @@ const special = `<div class="ce-special">
       </div>
     </article>
     <article class="ce-sp" data-reveal="up">
-      <div class="ce-sp-media">${img(P.dattaRameshwaram, 'The garlanded idols at the seaside Datta Rameshwaram temple, Manginapudi', { pos: '50% 40%' })}<span class="ce-sp-letter" aria-hidden="true">B</span></div>
+      <div class="ce-sp-media">${img(P.dattaRameshwaram, 'The garlanded idols at the seaside Datta Rameshwaram temple, Manginapudi, with worship being offered beside them', { pos: '50% 40%' })}<span class="ce-sp-letter" aria-hidden="true">B</span></div>
       <div class="ce-sp-body">
         <span class="tag">By the sea at Manginapudi</span>
         <h3><a href="${rameshwaram.href}">${rameshwaram.name}</a></h3>
         <p class="ce-sp-place">${icon('pin', 14)}<span>Manginapudi, Machilipatnam, Andhra Pradesh</span></p>
-        <p>To protect Manginapudi (Tallapalem) from severe cyclones and strong tidal waves, Sri Swamiji consecrated Lord Dattatreya at the seaside temple of Lord Nagareswara in 1991, and had twelve wells dug, each with healing waters of different constituents. Hence the name Datta Rameswaram.</p>
+        <p>To protect Manginapudi (Tallapalem) from severe cyclones and strong tidal waves, Sri Swamiji consecrated Lord Dattatreya at the seaside temple of Lord Nagareswara in 1991, and had twelve wells dug, each with healing waters of different constituents. A bath at these medicinal wells destroys sins; hence the name Datta Rameswaram.</p>
         <p class="ce-wells-label">The twelve wells</p>
         <ul class="ce-wells">${wells.map((w) => `<li>${w}</li>`).join('')}</ul>
         <a class="link-arrow" href="${rameshwaram.href}">Datta Rameshwaram on dattapeetham.org ${icon('arrow-up-right', 15)}</a>
@@ -404,7 +412,7 @@ const navanathaSection = `<section id="navanatha" class="section section-dark ce
             <span class="ce-nv-num" aria-hidden="true">${i + 1}</span>
             <span class="ce-nv-text">
               <h3><span class="ce-nv-seed">${n.seed}</span> <span class="ce-nv-kind">Dattanatha Kshetram</span></h3>
-              <span class="ce-nv-meta"><b>${n.natha}</b><span class="ce-dot" aria-hidden="true">·</span>${n.place}</span>
+              <span class="ce-nv-meta"><b>${n.natha}</b><span class="ce-nv-place">${icon('pin', 13)}${n.place}</span></span>
             </span>
             ${icon('arrow-up-right', 16)}
           </a>
@@ -439,7 +447,7 @@ const mysuru = `<section id="mysuru" class="section section-sand ce-my" aria-lab
     <div class="ce-my-media" data-reveal="clip">
       ${frame(P.prayerHall, 'Devotees seated in the Universal Prayer Hall of the Mysuru Ashram, facing the main shrine', { ratio: '4/5', pos: '74% 55%', badge: 'Since 1966', caption: '<b>Universal Prayer Hall</b>Home of Kaalaagni Shamana Dattatreya, the Peetham’s main deity' })}
       <figure class="ce-my-deity">
-        ${img(kaalaagniThumb.img, 'Kaalaagni Shamana Dattatreya, the main deity of Avadhoota Datta Peetham', { w: 250, h: 250 })}
+        ${img(kaalaagniThumb.img, kshetraAlt(kaalaagniThumb), { w: 250, h: 250 })}
         <figcaption><b>Kshetra No. 1</b>Kaalaagni Shamana Dattatreya</figcaption>
       </figure>
     </div>
@@ -447,7 +455,7 @@ const mysuru = `<section id="mysuru" class="section section-sand ce-my" aria-lab
       <span class="eyebrow">The headquarters</span>
       <h2 id="mysuru-title" data-split>Avadhoota Datta Peetham, <span class="em-light">Mysuru</span></h2>
       <p class="lead" data-reveal="up">Popularly called Sri Ganapathy Sachchidananda Ashram, the Peetham is situated on a sprawling 40-acre site at the foot of Chamundi Hill, in the royal city of Mysuru. This is the headquarters of Sri Swamiji’s mission.</p>
-      <p data-reveal="up">Here one can study Yoga, the Vedas and Sanskrit, bhajans and music, and in the Universal Prayer Hall traditional Pujas and Homas are performed. The Ashram is the primordial and central seat of Datta Peetham’s global reach: the first of the sixteen Datta Kshetras stands here.</p>
+      <p data-reveal="up">Here one can study Yoga, the Vedas and Sanskrit, bhajans and music, and in the Universal Prayer Hall traditional Pujas and Homas are performed. The first of the sixteen Datta Kshetras stands here, the temple the Peetham calls the primordial and central seat of Datta Peetham’s global reach.</p>
       <dl class="stats ce-my-stats" data-stagger>
         <div class="stat"><dt><span data-count="40">40</span></dt><dd>acres at the foot of Chamundi Hill</dd></div>
         <div class="stat"><dt>1966</dt><dd>the Ashram is established at Mysuru</dd></div>
@@ -473,7 +481,7 @@ const mysuru = `<section id="mysuru" class="section section-sand ce-my" aria-lab
 const closing = ctaBand({
   title: 'Come to the <span class="em-light">Mysuru</span> Ashram',
   text: 'Plan a pilgrimage to the headquarters of Sri Swamiji’s mission, or offer a puja online from wherever you are.',
-  image: P.campus,
+  image: P.prayerHall,
   actions: `${btn('Plan your visit', 'visit.html', 'gold')}${btn('Book a puja', links.poojas, 'ghost', 'arrow-up-right')}`,
 });
 

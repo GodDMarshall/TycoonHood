@@ -285,6 +285,12 @@
 .page-attractions .sv-notice p { margin: 0 0 8px; color: var(--ink-2); }
 .page-attractions .sv-notice strong { color: var(--ink); }
 .page-attractions .sv-notice-actions { display: flex; flex-wrap: wrap; gap: 0 18px; margin: 0 !important; }
+/* "timings vary" note under the Bonsai hours card */
+.page-attractions .at-vary { padding: 14px 18px; border-left: 3px solid var(--gold-deep); }
+.page-attractions .at-vary > .ico { color: var(--gold-deep); flex: none; margin-top: 3px; }
+.page-attractions .at-vary p { margin: 0; color: var(--ink-2); line-height: 1.5; }
+.page-attractions .at-vary p + p { margin-top: 4px; }
+.page-attractions .at-vary b { color: var(--ink); font-weight: 600; }
 .page-attractions .sv-hours .sv-src { margin: 0 0 8px; font-size: .78rem; color: var(--muted); }
 .page-attractions .sv-live { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line-strong); }
 .page-attractions .sv-live-label { display: block; font: 600 .66rem/1.3 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--gold-deep); }

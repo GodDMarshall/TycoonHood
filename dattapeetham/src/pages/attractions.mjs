@@ -145,7 +145,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
         <div class="btn-row" data-reveal="up">${btn('Watch Varam chant', '#sv-varam', 'gold', 'play-circle')}${btn('Timings &amp; notice', '#sv-visit', 'ghost', 'clock')}</div>
       </div>
       <div class="sv-opener-media" data-reveal="clip">
-        ${frame(photos.shukaVana1, 'Sri Swamiji seated with black and white cockatoos perched on his arms and shoulders', { ratio: '4/3', pos: 'center 35%', caption: '<b>Sri Swamiji at Shuka Vana</b>He personally feeds, cajoles and nurtures the birds', badge: 'Founded 2012' })}
+        ${frame(photos.shukaVana1, 'Sri Swamiji smiling, with dark palm cockatoos perched on his arms and shoulders and white cockatoos on perches behind him', { ratio: '4/3', pos: 'center 35%', caption: '<b>Sri Swamiji at Shuka Vana</b>He personally feeds, cajoles and nurtures the birds', badge: 'Founded 2012' })}
       </div>
     </div>
   </div>
@@ -161,7 +161,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
         <p>Sri Swamiji believes that birds play a crucial role in the survival of other species. With bird populations declining in recent years, Shuka Vana aims to educate and sensitise the public, and to foster respect and kindness towards birds.</p>
       </div>
       <div class="sv-honours" data-stagger>
-        ${record({ date: '6 May 2017', title: 'Most bird species in an aviary', text: '486 species at SGS Ashram, Avadhoota Datta Peetham, Mysuru: the record for housing the most parrot species in a single aviary.', image: photos.shukaVanaRecord, alt: 'Sri Swamiji holding the Guinness World Records certificate, a parrot perched on his shoulder' })}
+        ${record({ date: '6 May 2017', title: 'Most bird species in an aviary', text: 'Awarded at SGS Avadhoota Datta Peetham, Mysuru, for housing the most parrot species in a single aviary. The certificate records 468 species; the Peetham’s Shuka Vana pages give 486.', image: photos.shukaVanaRecord, alt: 'Sri Swamiji holding the Guinness World Records certificate, a parrot perched on his shoulder' })}
         <article class="at-record">
           <span class="at-record-seal" aria-hidden="true">${icon('globe', 26)}</span>
           <div>
@@ -176,7 +176,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
 
   <div class="ch-body section section-sand" id="sv-care">
     <div class="wrap">
-      ${subhead({ eyebrow: 'How the birds are cared for', title: 'Four units, one <span class="em-light">promise</span> of care', lead: 'The parrots are arranged according to their nativity and behaviour inside a well-protected, two-layered meshed aviary, planted with selected plants and trees, with food stations, water pots and nest boxes.', center: true })}
+      ${subhead({ eyebrow: 'How the birds are cared for', title: 'The units that care for the <span class="em-light">birds</span>', lead: 'The parrots are arranged according to their nativity and behaviour inside a well-protected, two-layered meshed aviary, planted with selected plants and trees, with food stations, water pots and nest boxes.', center: true })}
       <div class="sv-units at-snap" data-snap="Shuka Vana care units" data-stagger>
         ${svUnits.map((u) => `<article class="sv-unit">
           <span class="sv-unit-icon">${icon(u.icon, 26)}</span>
@@ -286,6 +286,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
    Chapter 02 · Kishkindha Moolika Bonsai Garden
 =========================================================================== */
 const BONSAI = {
+  page: `${OFFICIAL}/page/view/bonsai-garden`,
   social: [
     ['fb', 'Facebook', 'https://www.facebook.com/sgs.bonsai.museum'],
     ['ig', 'Instagram', 'https://www.instagram.com/bonsaisgs'],
@@ -382,6 +383,13 @@ const chBonsai = `<section id="bonsai" class="chapter ch-bonsai" aria-labelledby
       <div class="ch-visit">
         <h3 class="ch-mini" id="bonsai-visit-title">${icon('clock', 18)}Visiting the garden</h3>
         ${hoursCard(null, 'Timings for public visit', [['Morning', '10:00 AM – 12:30 PM'], ['Evening', '3:30 PM – 5:30 PM'], ['Holiday', 'Every Wednesday']], { note: 'As listed on the Peetham’s Bonsai Garden page.' })}
+        <div class="notice at-vary" role="note">
+          ${icon('info', 20)}
+          <div>
+            <p><b>Timings vary across official sources;</b> please check with the Ashram before visiting.</p>
+            <p class="sv-notice-actions">${telLink}<a href="${BONSAI.page}">${icon('external', 16)}<span>Bonsai Garden page</span></a></p>
+          </div>
+        </div>
         <div class="ch-visit-more">
           <p>Follow the garden</p>
           ${socialRow(BONSAI.social, 'Bonsai Garden on social media')}
@@ -402,7 +410,7 @@ const worlds = [
   ['diya', 'World of Spirituality', 'Items of deep religious and philosophical significance from humanity’s spiritual heritage.'],
   ['namaste', 'World of Sri Swamiji’s Paraphernalia', 'Personal items and memorabilia, offering insights into Sri Swamiji’s life and teachings.'],
   ['lotus', 'World of Wonders', 'Extraordinary and unique items that defy conventional categories.'],
-  ['mail', 'Stamps and Coins', 'Sri Swamiji’s stamp collection and coins tracing India’s monetary history.'],
+  ['mail', 'Collection of Stamps and Coins', 'Sri Swamiji’s stamp collection and coins tracing India’s monetary history.'],
   ['veena', 'Music Instruments Section', 'Instruments from over forty countries: string, plucking, wind, percussion and more.'],
 ];
 
@@ -449,7 +457,7 @@ const chVishwam = `<section id="vishwam" class="chapter ch-vishwam" aria-labelle
 
   <div class="ch-body section">
     <div class="wrap">
-      ${subhead({ eyebrow: 'Nine worlds under one roof', title: 'A journey through different <span class="em-light">realms</span>', lead: 'Upon entering Vishwam, visitors are guided through several worlds, each with its own theme and significance.', center: true })}
+      ${subhead({ eyebrow: 'Seven worlds and two collections', title: 'A journey through different <span class="em-light">realms</span>', lead: 'Upon entering Vishwam, visitors are guided through several worlds, each with its own theme and significance.', center: true })}
       <ul class="vw-worlds" data-stagger>
         ${worlds.map(([ic, name, text]) => `<li><span class="vw-icon">${icon(ic, 26)}</span><h4>${name}</h4><p>${text}</p></li>`).join('')}
       </ul>
@@ -700,7 +708,7 @@ ${chNada}
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Also within the Ashram', title: 'More to <span class="em-light">discover</span>', lead: 'Temples, a 70-foot monolithic Hanuman and a centre for the science of breath and meditation are a short walk away.' })}
     ${cards([
-      { img: photos.dattatreya, alt: 'Nirajanam (aarti) offered to a garlanded idol of Lord Dattatreya', tag: 'Darshan daily', title: 'Temples &amp; shrines', text: `Shrines to Lord Dattatreya, Sri Raja Rajeshwari, Sri Datta Venkateshwara and more. Darshan ${temple.rows.map(([, b]) => b).join(' and ')}.`, href: 'darshan.html', cta: 'Temples &amp; darshan' },
+      { img: photos.dattatreya, alt: 'Nirajanam (aarti) offered to a garlanded idol of Lord Dattatreya', tag: 'Darshan daily', title: 'Temples &amp; shrines', text: `Shrines to Lord Dattatreya, Sri Raja Rajeshwari, Sri Datta Venkateshwara and more. General darshan ${temple.rows.map(([, b]) => b).join(' and ')}; individual temples keep their own hours, listed on the darshan page.`, href: 'darshan.html#timings', cta: 'Temples &amp; darshan' },
       { img: photos.hanumanStatue, alt: 'A garlanded idol of Lord Hanuman at the Karya Siddhi Hanuman Temple', pos: 'center 30%', tag: 'Since 2012', title: 'Karya Siddhi Hanuman', text: 'The 70-foot monolithic statue consecrated by Sri Swamiji in 2012. On Saturdays and Sundays a short laser show is projected onto it at 7:10, 7:40 and 8:10 PM.', href: 'darshan.html', cta: 'Plan darshan' },
       { img: P.yogaDay, alt: 'Datta Kriya Yoga students demonstrating asanas on stage during International Yoga Day', tag: 'Ministry of AYUSH accredited', title: 'Datta Kriya Yoga International Center', text: 'Accredited as a “Yoga Training Center” by the Yoga Certification Board, Ministry of AYUSH, Government of India. Find it on the 2nd floor of the SGS Ayurvedic Hospital.', href: 'kriya-yoga.html', cta: 'Explore Datta Kriya Yoga' },
     ], 3)}

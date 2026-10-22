@@ -62,7 +62,7 @@
       if (empty) empty.hidden = shown > 0;
       if (status) {
         status.textContent = shown === total
-          ? total + ' centres listed · ' + (q ? 'all match' : 'choose a country or search by town')
+          ? 'Showing all ' + total + ' centres listed here'
           : 'Showing ' + shown + ' of ' + total + ' centres' + (q ? ' matching “' + input.value.trim() + '”' : '');
       }
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
@@ -73,9 +73,20 @@
       input.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(refresh, 120); });
       input.addEventListener('keydown', function (e) { if (e.key === 'Escape' && input.value) { input.value = ''; refresh(); } });
     }
+    // countries abroad start open (no JS: everything visible); on a phone they
+    // fold into compact rows like the Indian states
+    var folds = $$('[data-ce-fold]', dir);
+    if (window.matchMedia && matchMedia('(max-width: 760px)').matches) folds.forEach(function (d) { d.open = false; });
+
     // the shared chip handler runs first (on the button); this runs as the click bubbles
     var chipRow = dir.querySelector('.chips');
-    if (chipRow) chipRow.addEventListener('click', function (e) { if (e.target.closest('[data-filter]')) refresh(); });
+    if (chipRow) chipRow.addEventListener('click', function (e) {
+      var chip = e.target.closest('[data-filter]');
+      if (!chip) return;
+      var one = dir.querySelector('[data-ce-fold][data-cc="' + chip.getAttribute('data-filter') + '"]');
+      if (one) one.open = true;
+      refresh();
+    });
     refresh();
   }
 

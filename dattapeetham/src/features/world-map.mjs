@@ -217,7 +217,8 @@ function fx(id) {
 </svg>`;
 }
 
-function legendFull() {
+function legendFull(findHref) {
+  const local = findHref && !/^https?:/.test(findHref);
   const items = routes.map((r) => `<li><button type="button" class="wm-key" data-code="${r.code}" data-name="${esc(r.name)}" data-note="${esc(r.note)}" aria-pressed="false">
       <span class="wm-key-mark" aria-hidden="true">${r.code === 'GB' ? 'UK' : r.code}</span>
       <span class="wm-key-text"><b>${esc(r.name)}</b><small>${esc(r.note)}</small></span>
@@ -226,7 +227,7 @@ function legendFull() {
     <p class="wm-legend-hint">${icon('globe', 16)}<span><b>${routes.length} countries</b> beyond India. Choose one to trace its thread.</span></p>
     <ul class="wm-keys" data-stagger>
       ${items}
-      <li><a class="wm-key wm-key-link" href="${links.ashramCenters}"><span class="wm-key-mark" aria-hidden="true">${icon('pin', 17)}</span><span class="wm-key-text"><b>Find a centre</b><small>Addresses and contacts on the official directory</small></span>${icon('arrow-up-right', 16)}</a></li>
+      <li><a class="wm-key wm-key-link" href="${findHref || links.ashramCenters}"><span class="wm-key-mark" aria-hidden="true">${icon('pin', 17)}</span><span class="wm-key-text"><b>Find a centre</b><small>${local ? 'Addresses and contacts in the directory below' : 'Addresses and contacts on the official directory'}</small></span>${icon(local ? 'arrow' : 'arrow-up-right', 16)}</a></li>
     </ul>
   </div>`;
 }
@@ -243,7 +244,8 @@ function legendCompact() {
   </div>`;
 }
 
-export function worldMap({ compact = false, id = 'global-reach' } = {}) {
+// findHref: where "Find a centre" points (defaults to the official directory).
+export function worldMap({ compact = false, id = 'global-reach', findHref } = {}) {
   const readout = compact ? '' : `<div class="wm-readout glass" aria-hidden="true">
       <span class="wm-ro-eyebrow" data-wm-eyebrow>From the Ashram</span>
       <b class="wm-ro-name" data-wm-name>${ORIGIN.name}, ${ORIGIN.country}</b>
@@ -264,7 +266,7 @@ export function worldMap({ compact = false, id = 'global-reach' } = {}) {
   return `<div class="wm ${compact ? 'wm-compact' : 'wm-full'}" id="${id}" data-world-map>
   <figure class="wm-figure">
     ${canvas}
-    ${compact ? caption : `${legendFull()}\n    ${caption}`}
+    ${compact ? caption : `${legendFull(findHref)}\n    ${caption}`}
   </figure>
   ${compact ? legendCompact() : ''}
 </div>`;

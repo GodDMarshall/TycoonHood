@@ -12,6 +12,7 @@
 import { readdir, readFile, writeFile, mkdir, cp, rm, stat, rename } from 'node:fs/promises';
 import { watch } from 'node:fs';
 import { createServer } from 'node:http';
+import { spawn } from 'node:child_process';
 import { join, extname, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -48,6 +49,13 @@ function indexPage(page, body) {
 function checkLinks(pages) {
   const ids = new Map(pages.map((p) => [p.file, new Set([...p.html.matchAll(/\sid="([^"]+)"/g)].map((x) => x[1]))]));
   const problems = [];
+  for (const p of pages) {
+    const seen = new Set();
+    for (const [, id] of p.html.matchAll(/\sid="([^"]+)"/g)) {
+      if (seen.has(id)) problems.push(`${p.file}: duplicate id "${id}"`);
+      seen.add(id);
+    }
+  }
   for (const p of pages) {
     for (const [, href] of p.html.matchAll(/\shref="([^"]+)"/g)) {
       if (/^(https?:|mailto:|tel:|data:)/.test(href) || href.startsWith('assets/')) continue;
@@ -104,7 +112,7 @@ ${pages.filter((p) => p.slug !== '404').map((p) => `  <url><loc>${site.origin}/$
   const ms = Math.round(performance.now() - t0);
   console.log(`Built ${pages.length} pages, ${search.length} search entries in ${ms} ms → ${OUT}`);
   if (problems.length) {
-    console.error(`\n${problems.length} broken internal link(s):\n  ` + problems.join('\n  '));
+    console.error(`\n${problems.length} link/id problem(s):\n  ` + problems.join('\n  '));
     process.exitCode = 1;
   }
   return problems;
@@ -128,11 +136,18 @@ function serve() {
     }
   }).listen(PORT, () => console.log(`Serving http://localhost:${PORT}  (Ctrl+C to stop)`));
 
-  let timer;
-  watch(SRC, { recursive: true }, () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => build().catch((e) => console.error(e)), 150);
-  });
+  // Rebuild in a fresh Node process: ESM caches every imported module, so an
+  // in-process rebuild would keep stale copies of components, data and features.
+  let timer, running = false, again = false;
+  const rebuild = () => {
+    if (running) { again = true; return; }
+    running = true;
+    spawn(process.execPath, [fileURLToPath(import.meta.url)], { stdio: 'inherit' }).on('exit', () => {
+      running = false;
+      if (again) { again = false; rebuild(); }
+    });
+  };
+  watch(SRC, { recursive: true }, () => { clearTimeout(timer); timer = setTimeout(rebuild, 150); });
 }
 
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
