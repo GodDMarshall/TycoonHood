@@ -112,7 +112,7 @@
       player.setAttribute('data-title', title);
       player.querySelector('.video-title').textContent = title;
       var play = player.querySelector('.video-play');
-      play.setAttribute('aria-label', 'Play video: ' + title);
+      play.setAttribute('aria-label', 'ವಿಡಿಯೊ ಪ್ಲೇ ಮಾಡಿ: ' + title);
       var r = player.getBoundingClientRect();
       if (r.top < 0 || r.bottom > innerHeight) { if (DP.scrollTo) DP.scrollTo(player); }
       play.click(); // site.js swaps in the youtube-nocookie player

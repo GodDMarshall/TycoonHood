@@ -55,7 +55,7 @@
         // a country with no legend entry (compact teaser) falls back to its node label
         var name = k ? k.getAttribute('data-name') : null;
         if (!name && code) { var n = root.querySelector('.wm-node[data-code="' + code + '"] .wm-label'); name = n ? n.textContent : code; }
-        roEyebrow.textContent = code ? 'From Mysuru to' : defaults.eyebrow;
+        roEyebrow.textContent = code ? 'ಮೈಸೂರಿನಿಂದ' : defaults.eyebrow;
         roName.textContent = code ? name : defaults.name;
         roNote.textContent = code ? (k ? k.getAttribute('data-note') : '') : defaults.note;
         if (!reduced) { readout.classList.remove('is-swap'); void readout.offsetWidth; readout.classList.add('is-swap'); }

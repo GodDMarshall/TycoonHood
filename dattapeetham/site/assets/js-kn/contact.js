@@ -28,7 +28,7 @@
       var ok = false;
       try { ok = doc.execCommand('copy'); } catch (e) { ok = false; }
       doc.body.removeChild(ta);
-      if (ok) resolve(); else reject(new Error('copy failed'));
+      if (ok) resolve(); else reject(new Error('ನಕಲು ವಿಫಲವಾಯಿತು'));
     });
   }
   var copyLive = $('[data-copy-live]');
@@ -42,10 +42,10 @@
     b.addEventListener('click', function () {
       copyText(b.getAttribute('data-copy')).then(function () {
         b.classList.add('is-done'); if (label) label.textContent = 'Copied';
-        announce(copyLive, 'Copied the ' + b.getAttribute('data-copy-label') + '.');
+        announce(copyLive, 'ನಕಲಿಸಲಾಗಿದೆ: ' + b.getAttribute('data-copy-label') + '.');
       }, function () {
-        if (label) label.textContent = 'Copy failed';
-        announce(copyLive, 'Sorry, copying did not work. Please select the text instead.');
+        if (label) label.textContent = 'ನಕಲು ವಿಫಲ';
+        announce(copyLive, 'ಕ್ಷಮಿಸಿ, ನಕಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಬದಲಿಗೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ.');
       });
       clearTimeout(timer);
       timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = 'Copy'; }, 2400);
@@ -83,7 +83,7 @@
   var submitted = false, touched = {}, lastMail = null;
 
   // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'Email ID', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  var LABEL = { name: 'Name', email: 'ಇಮೇಲ್ ಐಡಿ', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -92,28 +92,28 @@
     switch (key) {
       case 'name':
         v = F.name.value.trim();
-        if (!v) return 'Please enter your Name';
-        if (v.length < 3) return 'Please enter at least 3 characters';
+        if (!v) return 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ';
+        if (v.length < 3) return 'ದಯವಿಟ್ಟು ಕನಿಷ್ಠ 3 ಅಕ್ಷರಗಳನ್ನು ನಮೂದಿಸಿ';
         return '';
       case 'email':
         v = F.email.value.trim();
-        if (!v) return 'Please enter your Email ID';
-        if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v)) return 'Please enter a valid Email ID, like name@example.com';
+        if (!v) return 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಮೇಲ್ ಐಡಿಯನ್ನು ನಮೂದಿಸಿ';
+        if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v)) return 'ದಯವಿಟ್ಟು name@example.com ರೀತಿಯ ಮಾನ್ಯ ಇಮೇಲ್ ಐಡಿಯನ್ನು ನಮೂದಿಸಿ';
         return '';
       case 'phone':
         v = F.phone.value.trim();
         if (!v) return '';
         var digits = v.replace(/[\s-]/g, '');
-        if (/\D/.test(digits)) return 'Please use digits only';
-        if (digits.length < 8) return 'Please enter at least 8 digits';
-        if (digits.length > 15) return 'Please enter no more than 15 digits';
+        if (/\D/.test(digits)) return 'ದಯವಿಟ್ಟು ಅಂಕಿಗಳನ್ನು ಮಾತ್ರ ಬಳಸಿ';
+        if (digits.length < 8) return 'ದಯವಿಟ್ಟು ಕನಿಷ್ಠ 8 ಅಂಕಿಗಳನ್ನು ನಮೂದಿಸಿ';
+        if (digits.length > 15) return 'ದಯವಿಟ್ಟು 15ಕ್ಕಿಂತ ಹೆಚ್ಚು ಅಂಕಿಗಳನ್ನು ನಮೂದಿಸಬೇಡಿ';
         return '';
       case 'purpose':
-        return F.purpose.value ? '' : 'Please select Purpose';
+        return F.purpose.value ? '' : 'ದಯವಿಟ್ಟು ಉದ್ದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ';
       case 'message':
         v = F.message.value.trim();
-        if (!v) return 'Please enter Message';
-        if (v.length < 10) return 'Please enter at least 10 characters';
+        if (!v) return 'ದಯವಿಟ್ಟು ಸಂದೇಶವನ್ನು ನಮೂದಿಸಿ';
+        if (v.length < 10) return 'ದಯವಿಟ್ಟು ಕನಿಷ್ಠ 10 ಅಕ್ಷರಗಳನ್ನು ನಮೂದಿಸಿ';
         return '';
     }
     return '';
@@ -169,7 +169,7 @@
   function refreshSummary(focus) {
     var bad = KEYS.map(function (k) { return [k, check(k)]; }).filter(function (x) { return x[1]; });
     if (!bad.length) { summary.hidden = true; return bad; }
-    summaryTitle.textContent = bad.length === 1 ? 'Please check 1 field before continuing' : fmt('Please check %1 fields before continuing', bad.length);
+    summaryTitle.textContent = bad.length === 1 ? 'ಮುಂದುವರಿಯುವ ಮೊದಲು ದಯವಿಟ್ಟು 1 ಕ್ಷೇತ್ರವನ್ನು ಪರಿಶೀಲಿಸಿ' : fmt('ಮುಂದುವರಿಯುವ ಮೊದಲು ದಯವಿಟ್ಟು %1 ಕ್ಷೇತ್ರಗಳನ್ನು ಪರಿಶೀಲಿಸಿ', bad.length);
     summaryList.innerHTML = '';
     bad.forEach(function (x) {
       var li = doc.createElement('li'), a = doc.createElement('a');
@@ -185,18 +185,18 @@
   function compose() {
     var name = F.name.value.trim(), email = F.email.value.trim(), purpose = F.purpose.value;
     var digits = F.phone.value.trim().replace(/[\s-]/g, '');
-    var phone = digits ? ((F.cc.value ? '+' + F.cc.value.replace(/^\+/, '') + ' ' : '') + digits) : 'Not given';
-    var subject = purpose + ': message from ' + name;
+    var phone = digits ? ((F.cc.value ? '+' + F.cc.value.replace(/^\+/, '') + ' ' : '') + digits) : 'ನೀಡಿಲ್ಲ';
+    var subject = purpose + ': ಸಂದೇಶ ಕಳುಹಿಸಿದವರು ' + name;
     var body = [
       F.message.value.trim(),
       '',
       '----',
-      'Name: ' + name,
-      'Email ID: ' + email,
-      'Phone: ' + phone,
-      'Purpose: ' + purpose,
+      'ಹೆಸರು: ' + name,
+      'ಇಮೇಲ್ ಐಡಿ: ' + email,
+      'ದೂರವಾಣಿ: ' + phone,
+      'ಉದ್ದೇಶ: ' + purpose,
       '',
-      'Written on the Contact page of the Avadhoota Datta Peetham website.',
+      'ಅವಧೂತ ದತ್ತ ಪೀಠದ ಜಾಲತಾಣದ ಸಂಪರ್ಕ ಪುಟದಲ್ಲಿ ಬರೆಯಲಾಗಿದೆ.',
     ].join('\n');
     return {
       subject: subject, body: body,
@@ -216,7 +216,7 @@
     $('[data-preview-body]', form).textContent = lastMail.body;
     $('[data-mailto]', form).href = lastMail.href;
     result.hidden = false;
-    announce(formLive, fmt('Opening your email app with your message to %1. It is not sent until you press Send there.', TO));
+    announce(formLive, fmt('%1 ವಿಳಾಸಕ್ಕೆ ಕಳುಹಿಸಬೇಕಾದ ನಿಮ್ಮ ಸಂದೇಶದೊಂದಿಗೆ ನಿಮ್ಮ ಇಮೇಲ್ ಆಪ್ ತೆರೆಯಲಾಗುತ್ತಿದೆ. ಅಲ್ಲಿ ನೀವು ‘ಕಳುಹಿಸಿ’ ಒತ್ತುವವರೆಗೆ ಅದು ಕಳುಹಿಸಲ್ಪಡುವುದಿಲ್ಲ.', TO));
     // Open the visitor's email app. Nothing leaves this page by itself.
     window.location.href = lastMail.href;
     setTimeout(function () {
@@ -229,12 +229,12 @@
   $('[data-copy-message]', form).addEventListener('click', function () {
     if (!lastMail) return;
     var b = this, label = b.querySelector('span');
-    copyText('To: ' + TO + '\nSubject: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
+    copyText('ಸ್ವೀಕರಿಸುವವರು: ' + TO + '\nವಿಷಯ: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
       label.textContent = 'Copied';
-      announce(formLive, fmt('Message copied. Paste it into a new email to %1.', TO));
+      announce(formLive, fmt('ಸಂದೇಶವನ್ನು ನಕಲಿಸಲಾಗಿದೆ. %1 ವಿಳಾಸಕ್ಕೆ ಹೊಸ ಇಮೇಲ್‌ನಲ್ಲಿ ಅದನ್ನು ಅಂಟಿಸಿ.', TO));
       setTimeout(function () { label.textContent = 'ಸಂದೇಶವನ್ನು ನಕಲಿಸಿ'; }, 2400);
     }, function () {
-      announce(formLive, 'Copying did not work. Open “See the composed email” and select the text instead.');
+      announce(formLive, 'ನಕಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. “ರಚಿಸಿದ ಇಮೇಲ್ ನೋಡಿ” ತೆರೆದು ಬದಲಿಗೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ.');
     });
   });
 
@@ -254,7 +254,7 @@
       });
       summary.hidden = true; result.hidden = true;
       syncCC(); syncCount();
-      announce(formLive, 'The form has been cleared.');
+      announce(formLive, 'ನಮೂನೆಯನ್ನು ತೆರವುಗೊಳಿಸಲಾಗಿದೆ.');
     }, 0);
   });
 })();

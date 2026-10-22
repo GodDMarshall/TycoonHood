@@ -373,8 +373,6 @@
 .page-centers .ce-my-contact { padding: clamp(22px, 3vw, 30px); border-radius: var(--radius-lg); background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
 .page-centers .ce-my-contact .info-list { margin-bottom: 22px; }
 
-.page-centers .cta-band { background: var(--ivory-2); }
-
 /* ==========================================================================
    Motion (only when JS is on and motion is welcome)
    ========================================================================== */

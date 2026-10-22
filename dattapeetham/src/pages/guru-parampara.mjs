@@ -238,6 +238,7 @@ export default {
 ${pageHero({
   eyebrow: 'Datta Peetha Guru Parampara',
   title: 'Guru <span class="em-light">Parampara</span>',
+  crumb: 'Guru Parampara',
   lead: 'The continuous succession of Gurus — from Adi Guru Dattatreya, through Sripada Vallabha and Narasimha Saraswati, to Sri Swamiji, our present Guru.',
   image: photos.guruParamparaPooja,
   pos: 'center 34%',

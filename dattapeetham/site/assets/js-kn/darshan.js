@@ -3,7 +3,7 @@
    2. "ಆಶ್ರಮದಲ್ಲಿ ಒಂದು ದಿನ": a sun marks the time in Mysuru; next ritual flagged.
    3. Next weekend laser show at the Karya Siddhi Hanuman temple, and an
       open/closed status for the two temples that publish their own hours.
-   4. Birth Date Pillars: today's pillar, and a picker for the visitor's day.
+   4. Birth Date Pillars: today'ರ ಸ್ತಂಭ, ಮತ್ತು ಸಂದರ್ಶಕರಿಗಾಗಿ ದಿನಾಂಕ ಆಯ್ಕೆ ಸಾಧನ's day.
    5. Dated festival entries disappear once they have passed.
    Everything is readable without this script; it only adds live state. */
 (function () {
@@ -94,9 +94,9 @@
       var inDay = now.mins >= start && now.mins <= end;
       sun.hidden = !inDay;
       if (inDay) sun.style.left = ((now.mins - start) / (end - start) * 100).toFixed(3) + '%';
-      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = fmt('Now %1 IST', now.label);
+      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = fmt('ಈಗ %1 IST', now.label);
     }
-    if (wrap && text) { wrap.hidden = false; text.textContent = fmt('Now in Mysuru · %1 IST', now.label); }
+    if (wrap && text) { wrap.hidden = false; text.textContent = fmt('ಮೈಸೂರಿನಲ್ಲಿ ಈಗ · %1 IST', now.label); }
     var weekend = now.day === 0 || now.day === 6, nextSet = false;
     $$('.dn-day-events li', track).forEach(function (li) {
       var m = +li.getAttribute('data-m'), skip = li.hasAttribute('data-weekend') && !weekend;
@@ -114,10 +114,10 @@
   /* ---------------- 3. next laser show ---------------- */
   function laserText(now) {
     if (now.day === 0 || now.day === 6) {
-      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return 'Today · ' + fmt12(LASER[i]);
-      return now.day === 6 ? 'Tomorrow · ' + fmt12(LASER[0]) : 'Saturday · ' + fmt12(LASER[0]);
+      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return 'ಇಂದು · ' + fmt12(LASER[i]);
+      return now.day === 6 ? 'ನಾಳೆ · ' + fmt12(LASER[0]) : 'ಶನಿವಾರ · ' + fmt12(LASER[0]);
     }
-    return 'Saturday · ' + fmt12(LASER[0]);
+    return 'ಶನಿವಾರ · ' + fmt12(LASER[0]);
   }
 
   // Hours as published on each temple's own page (minutes after midnight IST).
@@ -129,11 +129,11 @@
   function templeStatus(t, now) {
     var s = now.day === 0 || now.day === 6 ? t.we : t.wk;
     for (var i = 0; i < s.length; i++) {
-      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: fmt('Open now · until %1', short12(s[i][1])) };
-      if (now.mins < s[i][0]) return { open: false, text: fmt('Closed · opens %1', short12(s[i][0])) };
+      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: fmt('ಈಗ ತೆರೆದಿದೆ · ಮುಚ್ಚುವ ಸಮಯ: %1', short12(s[i][1])) };
+      if (now.mins < s[i][0]) return { open: false, text: fmt('ಮುಚ್ಚಿದೆ · ತೆರೆಯುವ ಸಮಯ: %1', short12(s[i][0])) };
     }
     var tomorrow = (now.day + 1) % 7, first = (tomorrow === 0 || tomorrow === 6 ? t.we : t.wk)[0][0];
-    return { open: false, text: fmt('Closed · opens %1 tomorrow', short12(first)) };
+    return { open: false, text: fmt('ಮುಚ್ಚಿದೆ · ನಾಳೆ ತೆರೆಯುವ ಸಮಯ: %1', short12(first)) };
   }
   function updateTemples(now) {
     Object.keys(TEMPLES).forEach(function (k) {
@@ -183,11 +183,11 @@
     };
     var pick = function () {
       fitDays();
-      if (!touched) { out.textContent = 'Choose a birth date to find its pillar.'; return; }
+      if (!touched) { out.textContent = 'ಸ್ತಂಭವನ್ನು ಕಂಡುಕೊಳ್ಳಲು ಜನ್ಮದಿನಾಂಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ.'; return; }
       $$('.is-picked', grid).forEach(function (i) { i.classList.remove('is-picked'); });
       var key = month.value + '-' + day.value, el = $('[data-md="' + key + '"]', grid);
       if (el) el.classList.add('is-picked');
-      out.textContent = fmt('Along the pathway, look for the pillar of %1 %2 — it carries the deity and demigod for that day.', day.value, MONTHS[+month.value - 1]);
+      out.textContent = fmt('ಹಾದಿಯುದ್ದಕ್ಕೂ %1 %2 ದಿನಾಂಕದ ಸ್ತಂಭವನ್ನು ಹುಡುಕಿ — ಅದು ಆ ದಿನದ ದೇವತೆ ಮತ್ತು ಉಪದೇವತೆಯನ್ನು ಹೊಂದಿದೆ.', day.value, MONTHS[+month.value - 1]);
     };
     form.addEventListener('change', function () { touched = true; pick(); });
     form.addEventListener('submit', function (e) { e.preventDefault(); });

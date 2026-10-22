@@ -49,7 +49,7 @@
     }
   }
 
-  /* ---------------- 2. scrollspy for the "on this page" bar ---------------- */
+  /* ---------------- 2. scrollspy for the "ಈ ಪುಟದಲ್ಲಿ" bar ---------------- */
   var nav = $('[data-vs-nav]');
   if (nav && 'IntersectionObserver' in window) {
     var links = $$('[data-spy]', nav);
@@ -100,7 +100,7 @@
           });
         }
         buttons.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-        if (status) status.textContent = 'Hotels sorted: ' + b.textContent.trim().toLowerCase() + '.';
+        if (status) status.textContent = 'ಹೋಟೆಲ್‌ಗಳನ್ನು ವಿಂಗಡಿಸಲಾಗಿದೆ: ' + b.textContent.trim().toLowerCase() + '.';
       });
     });
   });

@@ -95,7 +95,7 @@ export function pageHero({ eyebrow: eb, title, lead, image, pos = 'center', tile
   <div class="page-hero-glow" aria-hidden="true"></div>
   <canvas class="embers" data-embers aria-hidden="true"></canvas>
   <div class="wrap page-hero-inner">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">${crumb || title}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">${crumb || title.replace(/<[^>]+>/g, '')}</span></nav>
     ${eb ? eyebrow(eb, 'eyebrow-light') : ''}
     <h1 data-split>${title}</h1>
     ${lead ? `<p class="lead" data-reveal="up">${lead}</p>` : ''}

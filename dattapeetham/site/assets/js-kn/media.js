@@ -72,7 +72,7 @@
         poster.src = d.poster;
         if (poster.complete) done();
         vTitle.textContent = d.title;
-        vPlay.setAttribute('aria-label', 'Play video: ' + d.title);
+        vPlay.setAttribute('aria-label', 'ವಿಡಿಯೊ ಪ್ಲೇ ಮಾಡಿ: ' + d.title);
         out.tag.textContent = d.tag || '';
         out.title.textContent = d.title;
         out.text.textContent = d.text || '';
@@ -103,7 +103,7 @@
       el.setAttribute('aria-pressed', String(el.dataset.id === current));
       el.setAttribute('aria-controls', 'reel-stage');
       el.addEventListener('click', function (e) {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0) return; // let "open in new tab" through
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0) return; // let "ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ" through
         e.preventDefault();
         select(el);
       });
@@ -153,12 +153,12 @@
       wave.style.setProperty('--p', p.toFixed(4));
       if (!seeking) seek.value = Math.round(p * 1000);
       cur.textContent = t(audio.currentTime);
-      seek.setAttribute('aria-valuetext', d ? fmt('Played %1 of %2', t(audio.currentTime), t(d)) : t(audio.currentTime));
+      seek.setAttribute('aria-valuetext', d ? fmt('ಒಟ್ಟು %2ರಲ್ಲಿ %1 ಪ್ಲೇ ಆಗಿದೆ', t(audio.currentTime), t(d)) : t(audio.currentTime));
     };
     var setState = function () {
       var playing = !audio.paused && !audio.ended;
       box.classList.toggle('is-playing', playing);
-      btn.setAttribute('aria-label', playing ? 'Pause the chant' : 'ಜಪವನ್ನು ಪ್ಲೇ ಮಾಡಿ');
+      btn.setAttribute('aria-label', playing ? 'ಮಂತ್ರಪಠಣವನ್ನು ವಿರಾಮಗೊಳಿಸಿ' : 'ಜಪವನ್ನು ಪ್ಲೇ ಮಾಡಿ');
     };
 
     btn.addEventListener('click', function () {
@@ -172,7 +172,7 @@
     audio.addEventListener('ended', function () { setState(); audio.currentTime = 0; paint(); });
     audio.addEventListener('timeupdate', paint);
     audio.addEventListener('loadedmetadata', function () { dur.textContent = t(audio.duration); paint(); });
-    audio.addEventListener('error', function () { dur.textContent = 'Use the download link'; });
+    audio.addEventListener('error', function () { dur.textContent = 'ಡೌನ್‌ಲೋಡ್ ಕೊಂಡಿಯನ್ನು ಬಳಸಿ'; });
 
     seek.addEventListener('input', function () {
       seeking = true;

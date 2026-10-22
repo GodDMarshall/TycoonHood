@@ -49,7 +49,7 @@ function optimizeHtml(html, man, prefix = '') {
     if (!e) return tag;
     const lazy = /\sloading="lazy"/.test(tag);
     let out = tag.replace(m[0], ` src="${prefix}${pick(e)}"`);
-    if (!/\ssrcset=/.test(out)) out = out.replace(/^<img/, `<img srcset="${e.srcs.map(([w, f]) => `${prefix}${f} ${w}w`).join(', ')}" sizes="${lazy ? 'auto, 100vw' : '100vw'}"`);
+    if (!/\ssrcset=/.test(out)) out = out.replace(/^<img/, `<img srcset="${e.srcs.map(([w, f]) => `${prefix}${f} ${w}w`).join(', ')}"${/\ssizes=/.test(out) ? '' : ` sizes="${lazy ? 'auto, 100vw' : '100vw'}"`}`);
     if (!/\swidth=/.test(out) && !/\sheight=/.test(out)) out = out.replace(/^<img/, `<img width="${e.w}" height="${e.h}"`);
     return out;
   });

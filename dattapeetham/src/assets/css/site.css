@@ -83,7 +83,8 @@ b, strong { font-weight: 600; }
 .section { padding: clamp(72px, 10vw, 128px) 0; position: relative; }
 .section-tight { padding: clamp(48px, 7vw, 84px) 0; }
 .section-paper { background: var(--paper); }
-.section-sand { background: linear-gradient(180deg, var(--ivory) 0%, var(--ivory-2) 100%); }
+/* sand fades in and back out, so it meets the ivory or paper either side without a hard edge */
+.section-sand { background: linear-gradient(180deg, var(--ivory) 0%, var(--ivory-2) 22%, var(--ivory-2) 78%, var(--ivory) 100%); }
 .section-dark {
   background:
     radial-gradient(900px 520px at 85% 0%, rgba(201, 164, 92, .13), transparent 60%),
@@ -254,8 +255,14 @@ b, strong { font-weight: 600; }
 /* ---------- quick tiles ---------- */
 .quick-tiles { display: grid; grid-template-columns: repeat(var(--cols, 4), 1fr); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow); position: relative; z-index: 5; overflow: hidden; }
 .quick-tiles.overlap { margin-top: -64px; }
+/* the strip under an overlapping tile row takes the colour of the section that follows */
+main > .wrap:has(> .quick-tiles.overlap):has(+ .section-paper) { border-image: linear-gradient(transparent 64px, var(--paper) 64px) fill 0 / 0 / 0 50vw; }
 .quick-tile { display: flex; align-items: center; gap: 14px; padding: 22px 22px; text-decoration: none; border-right: 1px solid var(--line); position: relative; transition: background .3s; }
 .quick-tile:last-child { border-right: 0; }
+/* hero rows that overlap the photograph: icon over label, centred, as in the reference's inner pages */
+.quick-tiles.overlap .quick-tile { flex-direction: column; justify-content: flex-start; text-align: center; gap: 12px; }
+.quick-tiles.overlap .quick-tile::after { left: 30%; right: 30%; }
+@media (min-width: 641px) { .quick-tiles.overlap .quick-tile { padding: 24px 14px 22px; } }
 .quick-tile::after { content: ""; position: absolute; left: 22px; right: 22px; bottom: 0; height: 2px; background: var(--gold); transform: scaleX(0); transition: transform .45s var(--ease-out); }
 .quick-tile:hover { background: var(--ivory); }
 .quick-tile:hover::after { transform: scaleX(1); }
@@ -599,7 +606,9 @@ main { animation: page-enter .7s var(--ease-k) backwards; }
 
 /* emphasis sheen: a slow light running through key words */
 .em-light { padding: 0 .06em .12em; margin: 0 -.06em -.12em; background: linear-gradient(105deg, var(--gold-deep) 0%, #a57a33 24%, #c79a4c 44%, #a57a33 64%, var(--gold-deep) 100%); background-size: 240% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: sheen 7s ease-in-out infinite; font-style: italic; }
-.section-dark .em-light, .page-hero .em-light, .hero .em-light { background-image: linear-gradient(105deg, #f6d38a 0%, #fff6e0 26%, #e8b45c 46%, #fff6e0 64%, #f6d38a 100%); }
+/* on dark surfaces (forest sections, heroes, CTA boxes, dark panels, glass) the sheen runs light */
+:root { --sheen-on-dark: linear-gradient(105deg, #f6d38a 0%, #fff6e0 26%, #e8b45c 46%, #fff6e0 64%, #f6d38a 100%); }
+.section-dark .em-light, .page-hero .em-light, .hero .em-light, .cta-box .em-light, .panel-dark .em-light, .glass .em-light { background-image: var(--sheen-on-dark); }
 .js [data-split].is-in .w.em-light { animation: k-in 1.05s var(--ease-k) backwards, sheen 7s ease-in-out infinite; animation-delay: calc(var(--kd, 0ms) + var(--i, 0) * var(--ks, 45ms)), 0s; }
 @keyframes sheen { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0% 0; } }
 

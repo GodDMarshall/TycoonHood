@@ -8,10 +8,6 @@
 /* ---------- hero: six tiles, icon over label (reference "Media & Teachings") ---------- */
 .page-media .page-hero h1 { max-width: 12ch; }
 .page-media .quick-tiles { --cols: 6; }
-.page-media .quick-tile { flex-direction: column; justify-content: flex-start; text-align: center; gap: 12px; padding: 24px 12px 22px; }
-.page-media .quick-tile::after { left: 30%; right: 30%; }
-.page-media .qt-icon { width: 54px; height: 54px; }
-.page-media .qt-text b { font-size: 1.22rem; }
 
 /* ---------- overview: scroll-lit line + archive counts ---------- */
 .page-media .media-intro { padding-bottom: clamp(56px, 8vw, 96px); }

@@ -25,7 +25,7 @@
     btn.hidden = false;
     btn.addEventListener('click', function () {
       var paused = box.classList.toggle('is-paused');
-      label.textContent = paused ? 'Resume the circle' : 'ವೃತ್ತದ ಚಲನೆಯನ್ನು ನಿಲ್ಲಿಸಿ';
+      label.textContent = paused ? 'ವೃತ್ತದ ಚಲನೆಯನ್ನು ಮುಂದುವರಿಸಿ' : 'ವೃತ್ತದ ಚಲನೆಯನ್ನು ನಿಲ್ಲಿಸಿ';
     });
   });
 

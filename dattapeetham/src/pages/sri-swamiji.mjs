@@ -38,7 +38,7 @@ const pic = {
 // Doctorates and awards (awards-honors page and the Avatara Timeline).
 const honours = [
   ['2013', 'Honorary Doctorate in Music', 'Vijayanagara Sri Krishna Devaraya University, Bellary — conferred at the Mysuru Ashram on 22 June 2013.'],
-  ['2016', 'Honorary Doctorate in Music', 'World Classical Tamil University, London — 23 May 2016.'],
+  ['2016', 'Honorary Doctorate', 'World Classical Tamil University, London — 23 May 2016. The certificate reads Doctor of Letters (honoris causa).'],
   ['2022', 'Piteelu Chowdaiah Lifetime Award', 'Sri Nadabrahma Sangeetha Sabha and Sangeetha Ratna Mysuru T. Chowdaiah Samsmarana Vedike, Mysuru — 19 January 2022.'],
   ['2022', 'Yoga Ratna Award', 'Shwaasa Guru Sri Vachanananda Swamiji’s Shwaasa Yoga Peetha, presented by the Governor of Karnataka in Bengaluru — 11 June 2022.'],
   ['2023', 'Honorary Doctorate', 'Karnataka State Dr. Gangubai Hanagal Music and Performing Arts University, at Raj Bhavan, Bengaluru — 31 October 2023.'],

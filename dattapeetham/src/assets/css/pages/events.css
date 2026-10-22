@@ -7,12 +7,6 @@
 
 /* ---------- 1. hero tiles: five across ---------- */
 .page-events .quick-tiles.overlap { --cols: 5; }
-.page-events .quick-tile { padding: 20px 18px; }
-/* five across gets tight on small laptops: stack icon over label there */
-@media (min-width: 981px) and (max-width: 1240px) {
-  .page-events .quick-tile { flex-direction: column; justify-content: center; gap: 10px; padding: 18px 12px; text-align: center; }
-  .page-events .quick-tile .qt-icon { width: 46px; height: 46px; }
-}
 
 /* ---------- 2. calendar ---------- */
 .page-events .ev-cal { padding-top: clamp(96px, 11vw, 140px); }
@@ -381,9 +375,6 @@ html:not(.js) .page-events .ec-row { --on: 1; }
 @media (min-width: 761px) {
   .page-events .ev-earlier { display: none; }
 }
-
-/* the closing band continues the sand of the section above */
-.page-events .ev-stay + .cta-band { background: var(--ivory-2); }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1180px) {

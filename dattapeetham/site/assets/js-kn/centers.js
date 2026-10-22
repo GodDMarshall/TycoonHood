@@ -65,9 +65,9 @@
       if (empty) empty.hidden = shown > 0;
       if (status) {
         status.textContent = shown === total
-          ? fmt('Showing all %1 centres listed here', total)
-          : q ? fmt('Showing %1 of %2 centres matching “%3”', shown, total, input.value.trim())
-          : fmt('Showing %1 of %2 centres', shown, total);
+          ? fmt('ಇಲ್ಲಿ ಪಟ್ಟಿ ಮಾಡಲಾದ ಎಲ್ಲ %1 ಕೇಂದ್ರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ', total)
+          : q ? fmt('ಒಟ್ಟು %2 ಕೇಂದ್ರಗಳಲ್ಲಿ “%3” ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವ %1 ಕೇಂದ್ರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ', shown, total, input.value.trim())
+          : fmt('ಒಟ್ಟು %2 ಕೇಂದ್ರಗಳಲ್ಲಿ %1 ಕೇಂದ್ರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ', shown, total);
       }
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     };

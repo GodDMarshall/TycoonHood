@@ -102,7 +102,8 @@
 
 /* ---------- 2 · quick tiles: six across, stacked like the reference ---------- */
 .page-index .ix-tiles { --cols: 6; }
-.page-index .ix-tiles .quick-tile { flex-direction: column; align-items: flex-start; gap: 14px; padding: 24px 22px 22px; }
+.page-index .ix-tiles .quick-tile { flex-direction: column; align-items: flex-start; text-align: left; gap: 14px; padding: 24px 22px 22px; }
+.page-index .ix-tiles .quick-tile::after { left: 22px; right: 22px; }
 .page-index .ix-tiles .qt-icon { width: 48px; height: 48px; }
 .page-index .ix-tiles .qt-text b { font-size: 1.16rem; }
 
@@ -110,6 +111,7 @@
 .page-index .ix-compassion {
   overflow: hidden;
   background:
+    linear-gradient(180deg, var(--ivory) 0, rgba(248, 243, 233, 0) 180px),
     radial-gradient(760px 440px at 50% 0%, rgba(226, 200, 142, .24), transparent 70%),
     linear-gradient(180deg, var(--paper) 0%, var(--ivory) 100%);
 }

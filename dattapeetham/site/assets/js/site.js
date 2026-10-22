@@ -419,6 +419,16 @@
     });
   }
 
+  /* ---------------- photos cropped by object-fit: cover ----------------
+     sizes="auto" picks a file by the box width alone, so a tall crop of a wide
+     photograph got a file narrower than the crop it shows. Ask for that width. */
+  $$('img[srcset][sizes^="auto"]').forEach(function (im) {
+    var w = im.clientWidth, h = im.clientHeight, ar = (+im.getAttribute('width') || 0) / (+im.getAttribute('height') || 1);
+    if (!w || !h || !ar || getComputedStyle(im).objectFit !== 'cover') return;
+    var need = Math.ceil(Math.max(w, h * ar));
+    if (need > w * 1.15) im.sizes = need + 'px';
+  });
+
   /* ---------------- misc ---------------- */
   $$('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });
   DP.$ = $; DP.$$ = $$;
