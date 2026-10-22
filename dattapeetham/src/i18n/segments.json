@@ -69,7 +69,7 @@
   ]
  },
  {
-  "k": "<1><2/>Live streams</1> <3>Events</3> <4>Contact</4> <5>Sign in</5>",
+  "k": "<1><2/>Live streams <3/></1> <4>Events</4> <5>Contact</5> <6>Sign in <7/></6>",
   "pages": [
    "404.html",
    "about.html",
@@ -678,7 +678,7 @@
   ]
  },
  {
-  "k": "<1>Apps & Bhaktimala</1><2>18 devotional apps</2>",
+  "k": "<1>Mobile Apps</1><2>18 devotional apps</2>",
   "pages": [
    "404.html",
    "about.html",
@@ -930,6 +930,18 @@
    "sri-swamiji.html",
    "teachings.html",
    "visit.html"
+  ]
+ },
+ {
+  "k": "<1><2/><3>Temples &amp; Darshan</3></1> <4><5/><6>Plan Your Visit</6></4> <7><8/><9>Events &amp; Festivals</9></7> <10><11/><12>Contact</12></10>",
+  "pages": [
+   "404.html"
+  ]
+ },
+ {
+  "k": "Booking a puja, donating or signing in? Those pages are on the Peetham’s booking system: <1>Book a Puja</1> · <2>Donate</2> · <3>Sign in</3>.",
+  "pages": [
+   "404.html"
   ]
  },
  {
@@ -1891,6 +1903,12 @@
   ]
  },
  {
+  "k": "Main destinations",
+  "pages": [
+   "404.html"
+  ]
+ },
+ {
   "k": "Facebook",
   "pages": [
    "404.html",
@@ -2277,7 +2295,7 @@
   ]
  },
  {
-  "k": "More than 80 branches across India — including 16 Ashrams for the 16 incarnations of Lord Dattatreya — and 15 centres abroad, in the UK, USA, Malaysia, Europe, Trinidad, Canada and Australia.",
+  "k": "More than 80 branches across India — including 16 Ashrams for the 16 incarnations of Lord Dattatreya — and, in the Peetham’s directory, centres in eleven countries beyond India, among them the UK, USA, Malaysia, Trinidad, Canada and Australia.",
   "pages": [
    "about.html"
   ]
@@ -2670,7 +2688,7 @@
   ]
  },
  {
-  "k": "<1>15 centres abroad</1><2>From Trinidad to Australia</2>",
+  "k": "<1>Centres in 11 countries</1><2>Beyond India, from Trinidad to Australia</2>",
   "pages": [
    "about.html"
   ]
@@ -6255,13 +6273,6 @@
   ]
  },
  {
-  "k": "A",
-  "pages": [
-   "centers.html",
-   "teachings.html"
-  ]
- },
- {
   "k": "Sri Swamiji’s birthplace",
   "pages": [
    "centers.html"
@@ -6325,13 +6336,6 @@
   "k": "Datta Kashi on <1>dattapeetham.org<2/></1>",
   "pages": [
    "centers.html"
-  ]
- },
- {
-  "k": "B",
-  "pages": [
-   "centers.html",
-   "teachings.html"
   ]
  },
  {
@@ -11613,7 +11617,8 @@
  {
   "k": "Seva Camps",
   "pages": [
-   "events.html"
+   "events.html",
+   "index.html"
   ]
  },
  {
@@ -11661,7 +11666,8 @@
  {
   "k": "Pujya Swamiji in Nara, Japan",
   "pages": [
-   "events.html"
+   "events.html",
+   "index.html"
   ]
  },
  {
@@ -12154,7 +12160,7 @@
   ]
  },
  {
-  "k": "<1>Vaishakha</1><2>Apr – May</2>",
+  "k": "<1>Vaishakha</1><2>Apr – May</2><3></3>",
   "pages": [
    "events.html"
   ]
@@ -12310,9 +12316,36 @@
   ]
  },
  {
-  "k": "No festival in Vaishakha is described on the dattapeetham.org pages this guide is drawn from. Daily worship, bhajans and discourses continue — see the <1>official calendar</1> for the year’s programmes.",
+  "k": "Sri Jayalakshmi Maata Aradhana",
+  "pages": [
+   "events.html",
+   "guru-parampara.html"
+  ]
+ },
+ {
+  "k": "Vaishaakha Panchami",
   "pages": [
    "events.html"
+  ]
+ },
+ {
+  "k": "Every year Sri Swamiji conducts special rituals and worship on the Aradhana day of His mother, Sri Jayalakshmi Maata.",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "<1>2026</1><2>The 2026 calendar also lists a Jayalakshmi Mata Aradhana Festival on 1 February.</2>",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Sri Jayalakshmi Maata",
+  "pages": [
+   "events.html",
+   "guru-parampara.html",
+   "sri-swamiji.html"
   ]
  },
  {
@@ -12444,6 +12477,30 @@
  },
  {
   "k": "<1>2026</1><2>Krishna Janmashtami Festival at the Mysuru Ashrama, 4 September.</2>",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Sri Narahari Teertha Swami Aradhana",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "In the lunar month of Shravana",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "Every year Sri Swamiji conducts the Aradhana of His father, Sri Narahari Teertha Swami (Narasimha Sastry).",
+  "pages": [
+   "events.html"
+  ]
+ },
+ {
+  "k": "<1>2026</1><2>Narahari Teertha Aradhana on 20 August at the Hanuman Temple, Datta Yoga Center, Erin, Canada.</2>",
   "pages": [
    "events.html"
   ]
@@ -12660,24 +12717,6 @@
  },
  {
   "k": "<1>2026</1><2>New Year Darshana at SGS Ashrama, Vijayawada.</2>",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Sri Bala Swamiji’s Birthday",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "14 January — a fixed date",
-  "pages": [
-   "events.html"
-  ]
- },
- {
-  "k": "Sri Datta Vijayananda Teertha Swamiji, the junior pontiff, was born on 14 January 1977 in Mysuru.",
   "pages": [
    "events.html"
   ]
@@ -13360,13 +13399,6 @@
   ]
  },
  {
-  "k": "Sri Datta Vijayananda Teertha Swamiji",
-  "pages": [
-   "events.html",
-   "guru-parampara.html"
-  ]
- },
- {
   "k": "Sri Swamiji offers a lamp to the lingas of the Sarva Dosha Hara Shiva shrine",
   "pages": [
    "events.html"
@@ -13415,7 +13447,7 @@
   ]
  },
  {
-  "k": "<1>Home</1><2>/</2><3>Guru <4>Parampara</4></3>",
+  "k": "<1>Home</1><2>/</2><3>Guru Parampara</3>",
   "pages": [
    "guru-parampara.html"
   ]
@@ -13595,7 +13627,7 @@
   ]
  },
  {
-  "k": "According to the determination of Brahma and as a consequence of the great penance of Sage Atri and Anasuya in the Kriya Yuga (the first of the Yugas / eons), Dattatreya, combining all the aspects of the Trinity — Brahma, Vishnu and Shiva — incarnated for the sake of his devotees.",
+  "k": "According to the determination of Brahma and as a consequence of the great penance of Sage Atri and Anasuya in the Kriya Yuga (the Krita Yuga of the Peetham’s glossary, the first of the Yugas / eons), Dattatreya, combining all the aspects of the Trinity — Brahma, Vishnu and Shiva — incarnated for the sake of his devotees.",
   "pages": [
    "guru-parampara.html"
   ]
@@ -14057,13 +14089,13 @@
   ]
  },
  {
-  "k": "<1>Kriya Yuga</1><2>Through the penance of Sage Atri and Anasuya</2>",
+  "k": "<1>Krita Yuga</1><2>Through the penance of Sage Atri and Anasuya</2>",
   "pages": [
    "guru-parampara.html"
   ]
  },
  {
-  "k": "<1>Kriya Yuga</1> <2>Adi Guru · Guru of Gurus</2>",
+  "k": "<1>Krita Yuga</1> <2>Adi Guru · Guru of Gurus</2>",
   "pages": [
    "guru-parampara.html"
   ]
@@ -14171,13 +14203,6 @@
   ]
  },
  {
-  "k": "Sri Jayalakshmi Maata",
-  "pages": [
-   "guru-parampara.html",
-   "sri-swamiji.html"
-  ]
- },
- {
   "k": "Sri Jayalakshmi Maata was the Mother and spiritual Guru of Sri Swamiji. She imparted spiritual training to Sri Swamiji in his childhood, bestowed Sri Vidya and Raja Yoga and explained the esoteric meanings of scriptures like the Vedas, Puranas, Mahabharata, and Ramayana.",
   "pages": [
    "guru-parampara.html"
@@ -14227,6 +14252,12 @@
  },
  {
   "k": "<1>Mysuru, 14 January 1977</1> <2>Junior Pontiff · Sri Bala Swamiji</2>",
+  "pages": [
+   "guru-parampara.html"
+  ]
+ },
+ {
+  "k": "Sri Datta Vijayananda Teertha Swamiji",
   "pages": [
    "guru-parampara.html"
   ]
@@ -14304,7 +14335,7 @@
   ]
  },
  {
-  "k": "Gandluru Narasimha Sastry, later Sri Narahareeshwara Swami",
+  "k": "Gandluru Narasimha Sastry, later Sri Narahari Teertha Swami (the Guru Parampara page calls him Sri Narahareeshwara Swami)",
   "pages": [
    "guru-parampara.html"
   ]
@@ -14443,12 +14474,6 @@
  },
  {
   "k": "Reverence to parents",
-  "pages": [
-   "guru-parampara.html"
-  ]
- },
- {
-  "k": "Sri Jayalakshmi Maata Aradhana",
   "pages": [
    "guru-parampara.html"
   ]
@@ -14964,7 +14989,8 @@
  {
   "k": "Datta worship, Vedic rituals and meditation",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
@@ -14977,7 +15003,8 @@
  {
   "k": "The healing power of divine music",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
@@ -14990,7 +15017,8 @@
  {
   "k": "The Veda Pathashala, founded in 1985",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
@@ -15003,7 +15031,8 @@
  {
   "k": "SGS Hospital and free medical camps",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
@@ -15016,7 +15045,8 @@
  {
   "k": "A Gau Shala for more than 50 cows",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
@@ -15029,7 +15059,8 @@
  {
   "k": "Centres and programmes worldwide",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
@@ -15171,7 +15202,7 @@
   ]
  },
  {
-  "k": "Founded by Sri Swamiji in 2012: a free-flight, walk-in aviary and bird hospital, home to more than 2,000 birds of 486 species and a Guinness World Record holder. (Its official page currently notes that it is temporarily closed to the public for maintenance.)",
+  "k": "Founded by Sri Swamiji in 2012: a free-flight, walk-in aviary and bird hospital, home to more than 2,000 birds of 486 species. It holds a Guinness World Record (6 May 2017) for the most bird species in an aviary; the certificate records 468. (Its official page currently notes that it is temporarily closed to the public for maintenance.)",
   "pages": [
    "index.html"
   ]
@@ -15660,25 +15691,13 @@
   ]
  },
  {
-  "k": "Seva camps",
-  "pages": [
-   "index.html"
-  ]
- },
- {
   "k": "<1>25</1><2>Nov 2026</2><3>to 2 December</3>",
   "pages": [
    "index.html"
   ]
  },
  {
-  "k": "Concert<1> · On now</1>",
-  "pages": [
-   "index.html"
-  ]
- },
- {
-  "k": "Sri Swamiji in Nara, Japan",
+  "k": "Tour · Music<1> · On now</1>",
   "pages": [
    "index.html"
   ]
@@ -15702,7 +15721,7 @@
   ]
  },
  {
-  "k": "Seva camp<1> · On now</1>",
+  "k": "Seva Camp<1> · On now</1>",
   "pages": [
    "index.html"
   ]
@@ -15976,38 +15995,44 @@
  {
   "k": "Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the presiding deity of the Peetham",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
   "k": "Musicians perform before a packed audience in Nada Mantapa",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
   "k": "Three Veda Pathashala students seated at a microphone, chanting",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
   "k": "A doctor examines a young boy’s ear at a free medical camp",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
   "k": "Sri Swamiji feeds the cows at the Gau Shala, Mysuru Ashram",
   "pages": [
    "index.html",
+   "seva.html",
    "teachings.html"
   ]
  },
  {
   "k": "An arena filled with devotees for Bhagavad Gita chanting at NOW Arena, Chicago, July 2024",
   "pages": [
-   "index.html"
+   "index.html",
+   "seva.html"
   ]
  },
  {
@@ -19224,8 +19249,7 @@
  {
   "k": "A doctor examines a boy at a free medical camp",
   "pages": [
-   "media.html",
-   "seva.html"
+   "media.html"
   ]
  },
  {
@@ -19261,8 +19285,7 @@
  {
   "k": "Sri Swamiji feeding a calf",
   "pages": [
-   "media.html",
-   "seva.html"
+   "media.html"
   ]
  },
  {
@@ -20674,42 +20697,6 @@
   ]
  },
  {
-  "k": "<1>Dattatreya worship, Vedic rituals, meditation</1></2> </3> </4>",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "<1>The healing power of divine music</1></2> </3> </4>",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "<1>Vedic learning and value-based education</1></2> </3> </4>",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "<1>Hospital, medical camps and wellness</1></2> </3> </4>",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "<1>Protection and service to our sacred cows</1></2> </3> </4>",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "<1>Spreading spirituality and service worldwide</1></2> </3> </4>",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
   "k": "All social activities",
   "pages": [
    "seva.html"
@@ -21623,30 +21610,6 @@
   ]
  },
  {
-  "k": "Sri Swamiji offering arati to Lord Dattatreya",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "A full Nada Mantapa during a programme",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "Vedic scholars and students at the Annual Veda Sabha, Mysuru Ashram",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "Volunteers of SGS Ashram, Dallas, USA, with groceries collected for charity",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
   "k": "Sri Swamiji with garlanded cows at the Ashram Goshala",
   "pages": [
    "seva.html"
@@ -22466,7 +22429,7 @@
   ]
  },
  {
-  "k": "<1>Honorary Doctorate in Music</1><2>World Classical Tamil University, London — 23 May 2016.</2>",
+  "k": "<1>Honorary Doctorate</1><2>World Classical Tamil University, London — 23 May 2016. The certificate reads Doctor of Letters (honoris causa).</2>",
   "pages": [
    "sri-swamiji.html"
   ]
@@ -24694,12 +24657,6 @@
   ]
  },
  {
-  "k": "<1>A</1><2>B</2><3>C</3><4>D</4><5>E</5><6>G</6><7>H</7><8>J</8><9>K</9><10>L</10><11>M</11><12>N</12><13>O</13><14>P</14><15>R</15><16>S</16><17>T</17><18>V</18><19>Y</19>",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Definitions as published in the <1>Datta Peetham Glossary</1>.",
   "pages": [
    "teachings.html"
@@ -24916,12 +24873,6 @@
   ]
  },
  {
-  "k": "C",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Chakra",
   "pages": [
    "teachings.html"
@@ -24941,12 +24892,6 @@
  },
  {
   "k": "moon",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "D",
   "pages": [
    "teachings.html"
   ]
@@ -25024,12 +24969,6 @@
   ]
  },
  {
-  "k": "E",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Ekagrata",
   "pages": [
    "teachings.html"
@@ -25037,12 +24976,6 @@
  },
  {
   "k": "concentration, one-pointedness",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "G",
   "pages": [
    "teachings.html"
   ]
@@ -25084,12 +25017,6 @@
   ]
  },
  {
-  "k": "H",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Hatha Yoga",
   "pages": [
    "teachings.html"
@@ -25115,12 +25042,6 @@
  },
  {
   "k": "pit in which the fire worship is performed",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "J",
   "pages": [
    "teachings.html"
   ]
@@ -25157,12 +25078,6 @@
  },
  {
   "k": "knowledge",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "K",
   "pages": [
    "teachings.html"
   ]
@@ -25234,12 +25149,6 @@
   ]
  },
  {
-  "k": "L",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Leela",
   "pages": [
    "teachings.html"
@@ -25259,12 +25168,6 @@
  },
  {
   "k": "lit.: symbol; in general use: a bare idol in the form of an egg or a rounded cylinder symbolizing Shiva who has no beginning or end",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "M",
   "pages": [
    "teachings.html"
   ]
@@ -25366,12 +25269,6 @@
   ]
  },
  {
-  "k": "N",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Naada",
   "pages": [
    "teachings.html"
@@ -25456,12 +25353,6 @@
   ]
  },
  {
-  "k": "O",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Omkara",
   "pages": [
    "teachings.html"
@@ -25469,12 +25360,6 @@
  },
  {
   "k": "primordial sound",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "P",
   "pages": [
    "teachings.html"
   ]
@@ -25666,12 +25551,6 @@
   ]
  },
  {
-  "k": "R",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Raaga",
   "pages": [
    "teachings.html"
@@ -25703,12 +25582,6 @@
  },
  {
   "k": "demon",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "S",
   "pages": [
    "teachings.html"
   ]
@@ -26032,12 +25905,6 @@
   ]
  },
  {
-  "k": "T",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Tapas",
   "pages": [
    "teachings.html"
@@ -26057,12 +25924,6 @@
  },
  {
   "k": "Treta Yuga",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "V",
   "pages": [
    "teachings.html"
   ]
@@ -26129,12 +25990,6 @@
  },
  {
   "k": "a treasure of Vedas",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "Y",
   "pages": [
    "teachings.html"
   ]
@@ -27101,19 +26956,7 @@
   ]
  },
  {
-  "k": "<1></1>Shrines <2>8</2>",
-  "pages": [
-   "visit.html"
-  ]
- },
- {
-  "k": "<1>1</1><2><3>Hanumadwaram</3><4>The welcome arch</4></2>",
-  "pages": [
-   "visit.html"
-  ]
- },
- {
-  "k": "<1>2</1><2><3>Birth Date Pillars</3><4>366 pillars along the pathway</4></2>",
+  "k": "<1></1>Shrines <2>6</2>",
   "pages": [
    "visit.html"
   ]
@@ -27155,7 +26998,19 @@
   ]
  },
  {
-  "k": "<1></1>Attractions <2>5</2>",
+  "k": "<1></1>Attractions <2>7</2>",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "<1>1</1><2><3>Hanumadwaram</3><4>The welcome arch</4></2>",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "<1>2</1><2><3>Birth Date Pillars</3><4>366 pillars along the pathway</4></2>",
   "pages": [
    "visit.html"
   ]
@@ -27300,12 +27155,6 @@
   ]
  },
  {
-  "k": "Temples & darshan",
-  "pages": [
-   "visit.html"
-  ]
- },
- {
   "k": "366 pillars, one for each birth date.",
   "pages": [
    "visit.html"
@@ -27325,6 +27174,12 @@
  },
  {
   "k": "Checking…",
+  "pages": [
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Temples & darshan",
   "pages": [
    "visit.html"
   ]
@@ -27432,7 +27287,7 @@
   ]
  },
  {
-  "k": "Founded by Sri Swamiji in 2012, with its own bird hospital. The free-flight walk-in aviary is home to more than 2,000 birds of 486 species, and holds a Guinness World Record for the most parrot species in a single aviary.",
+  "k": "Founded by Sri Swamiji in 2012, with its own bird hospital. The free-flight walk-in aviary is home to more than 2,000 birds of 486 species. Its Guinness World Record (6 May 2017) is for the most bird species in an aviary; the certificate records 468.",
   "pages": [
    "visit.html"
   ]
@@ -28717,13 +28572,13 @@
   ]
  },
  {
-  "k": "1. Hanumadwaram (Shrine)",
+  "k": "1. Hanumadwaram (Attraction)",
   "pages": [
    "visit.html"
   ]
  },
  {
-  "k": "2. Birth Date Pillars (Shrine)",
+  "k": "2. Birth Date Pillars (Attraction)",
   "pages": [
    "visit.html"
   ]

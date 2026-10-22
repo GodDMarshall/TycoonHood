@@ -32,7 +32,6 @@
 }
 
 /* ---------- hero ---------- */
-.page-attractions .page-hero h1 { max-width: 11ch; }
 .page-attractions .page-hero .lead { max-width: 52ch; }
 .page-attractions .page-hero::before {
   background:

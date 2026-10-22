@@ -117,6 +117,6 @@ export const nav = [
   { label: 'Media', href: 'media.html', children: [
     { label: 'Videos & Photos', href: 'media.html', note: 'Watch and explore' },
     { label: 'Music & Audio', href: 'media.html#audio', note: 'Albums and bhajans' },
-    { label: 'Apps & Bhaktimala', href: 'media.html#apps', note: '18 devotional apps' },
+    { label: 'Mobile Apps', href: 'media.html#apps', note: '18 devotional apps' },
   ] },
 ];

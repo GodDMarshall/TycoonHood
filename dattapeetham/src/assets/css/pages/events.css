@@ -99,11 +99,11 @@
 .page-events .ev-mhead h4 { margin: 0; font-size: 1.6rem; }
 .page-events .ev-mcount { min-width: 26px; padding: 5px 8px; border-radius: 999px; background: var(--ivory-2); text-align: center; font: 600 .7rem/1 var(--sans); color: var(--gold-deep); }
 .page-events .ev-rows { list-style: none; margin: 0; padding: 0; }
-.page-events .ev-row { display: grid; grid-template-columns: 42px minmax(0, 1fr) 20px; gap: 10px; align-items: start; padding: 10px 0; border-bottom: 1px dashed var(--line); transition: opacity .3s; }
+.page-events .ev-row { display: grid; grid-template-columns: 52px minmax(0, 1fr) 20px; gap: 10px; align-items: start; padding: 10px 0; border-bottom: 1px dashed var(--line); transition: opacity .3s; }
 .page-events .ev-row:last-child { border-bottom: 0; }
 .page-events .ev-row time { text-align: center; line-height: 1; padding-top: 2px; }
 .page-events .ev-row time b { display: block; font-family: var(--serif); font-size: 1.5rem; font-weight: 500; color: var(--gold-deep); }
-.page-events .ev-row time small { display: block; margin-top: 3px; font-size: .6rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.page-events .ev-row time small { display: block; margin-top: 3px; font-size: .6rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); overflow-wrap: anywhere; }
 .page-events .ev-rbody b { display: block; font-size: .88rem; font-weight: 500; line-height: 1.38; color: var(--ink); }
 .page-events .ev-rbody small { display: block; margin-top: 2px; font-size: .76rem; line-height: 1.4; color: var(--muted); }
 .page-events .ev-rkind { color: var(--gold); padding-top: 3px; }

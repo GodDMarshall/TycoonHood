@@ -44,7 +44,7 @@
         b.classList.add('is-done'); if (label) label.textContent = 'Copied';
         announce(copyLive, 'ನಕಲಿಸಲಾಗಿದೆ: ' + b.getAttribute('data-copy-label') + '.');
       }, function () {
-        if (label) label.textContent = 'ನಕಲು ವಿಫಲ';
+        if (label) label.textContent = 'ನಕಲು ವಿಫಲವಾಯಿತು';
         announce(copyLive, 'ಕ್ಷಮಿಸಿ, ನಕಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಬದಲಿಗೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ.');
       });
       clearTimeout(timer);
@@ -83,7 +83,7 @@
   var submitted = false, touched = {}, lastMail = null;
 
   // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'ಇಮೇಲ್ ಐಡಿ', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  var LABEL = { name: 'Name', email: 'ಇಮೇಲ್ ವಿಳಾಸ', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -97,8 +97,8 @@
         return '';
       case 'email':
         v = F.email.value.trim();
-        if (!v) return 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಮೇಲ್ ಐಡಿಯನ್ನು ನಮೂದಿಸಿ';
-        if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v)) return 'ದಯವಿಟ್ಟು name@example.com ರೀತಿಯ ಮಾನ್ಯ ಇಮೇಲ್ ಐಡಿಯನ್ನು ನಮೂದಿಸಿ';
+        if (!v) return 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ';
+        if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v)) return 'ದಯವಿಟ್ಟು name@example.com ರೀತಿಯ ಮಾನ್ಯ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ';
         return '';
       case 'phone':
         v = F.phone.value.trim();
@@ -192,7 +192,7 @@
       '',
       '----',
       'ಹೆಸರು: ' + name,
-      'ಇಮೇಲ್ ಐಡಿ: ' + email,
+      'ಇಮೇಲ್ ವಿಳಾಸ: ' + email,
       'ದೂರವಾಣಿ: ' + phone,
       'ಉದ್ದೇಶ: ' + purpose,
       '',

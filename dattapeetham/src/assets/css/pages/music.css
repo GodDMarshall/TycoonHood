@@ -19,12 +19,9 @@
 .page-music .nada-hero .em-light { background-image: var(--sheen-on-dark); }
 .page-music .nada-hero-glow { position: absolute; inset: 0; z-index: -2; pointer-events: none; background: radial-gradient(420px 320px at 18% 88%, rgba(201, 164, 92, .14), transparent 70%); }
 .page-music .nada-hero-inner { display: grid; grid-template-columns: 1.08fr .92fr; gap: clamp(32px, 5vw, 72px); align-items: center; padding-top: clamp(56px, 7vw, 96px); padding-bottom: clamp(120px, 13vw, 156px); }
-.page-music .nada-hero h1 { color: #fffaf0; font-size: clamp(3rem, 6.6vw, 5.8rem); line-height: .98; letter-spacing: -.01em; margin-bottom: .32em; }
+.page-music .nada-hero h1 { color: #fffaf0; margin-bottom: .32em; }
 .page-music .nada-h1-sub { display: block; margin-top: .14em; font-size: .5em; font-style: italic; line-height: 1.1; color: var(--cream-on-dark); letter-spacing: 0; }
 .page-music .nada-hero .lead { color: rgba(255, 246, 230, .84); font-size: 1.12rem; max-width: 50ch; }
-.page-music .nada-hero .crumbs { display: flex; flex-wrap: wrap; gap: 10px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: rgba(255, 246, 230, .7); margin-bottom: 22px; }
-.page-music .nada-hero .crumbs a { text-decoration: none; }
-.page-music .nada-hero .crumbs a:hover { color: var(--gold-3); }
 .page-music .nada-thread { position: absolute; left: 0; right: 0; bottom: 18px; }
 .page-music .nada-hero .eyebrow { line-height: 1.6; }
 
@@ -52,7 +49,6 @@
 .page-music .nc-img img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 30%; transform: scale(1.12); transform-origin: 60% 22%; }
 .page-music .nc-figure figcaption { margin-top: 26px; font-size: .88rem; color: var(--muted); }
 .page-music .nc-figure figcaption b { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--gold-deep); }
-.page-music #nada-chikitsa { padding-top: clamp(88px, 11vw, 136px); }
 .page-music .nada-pull { margin: 26px 0 0; padding: 4px 0 4px 22px; border-left: 2px solid var(--gold-2); }
 .page-music .nada-pull p { font-family: var(--serif); font-style: italic; font-size: 1.3rem; line-height: 1.4; color: var(--ink); margin: 0 0 8px; }
 .page-music .nada-pull cite { font: 600 .7rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; font-style: normal; color: var(--gold-deep); }
@@ -239,11 +235,11 @@ html:not(.js) .page-music .rs-track i { clip-path: none; }
 .page-music .swaras { margin-top: clamp(64px, 9vw, 104px); padding: clamp(28px, 4vw, 48px) clamp(20px, 3vw, 40px); border-radius: var(--radius-lg); border: 1px solid rgba(226, 200, 142, .18); background: linear-gradient(160deg, rgba(27, 49, 41, .55), rgba(10, 19, 16, .4)); text-align: center; }
 .page-music .swaras-head h3 { font-size: clamp(1.6rem, 2.8vw, 2.2rem); }
 .page-music .swaras-head p { margin: 0 auto 28px; max-width: 52ch; }
-.page-music .swara-row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+.page-music .swara-row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
 .page-music .swara { display: grid; justify-items: center; gap: 12px; }
 .page-music .swara-note { position: relative; width: clamp(60px, 7vw, 84px); aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(226, 200, 142, .5); font: 400 clamp(1.3rem, 2vw, 1.7rem)/1 var(--display); color: var(--gold-3); background: rgba(10, 19, 16, .35); transition: background .6s var(--ease-out), color .6s, box-shadow .6s; }
 .page-music .swara-note::after { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid var(--gold-3); opacity: 0; transform: scale(1); }
-.page-music .swara-deity { font-family: var(--serif); font-size: 1.08rem; line-height: 1.2; color: #fbf3e2; }
+.page-music .swara-deity { max-width: 100%; font-family: var(--serif); font-size: 1.08rem; line-height: 1.2; color: #fbf3e2; text-align: center; overflow-wrap: anywhere; }
 .page-music .swara:hover .swara-note { background: var(--gold-2); color: var(--night); box-shadow: 0 0 34px -4px rgba(226, 200, 142, .7); }
 .page-music .swara:hover .swara-note::after { animation: swara-ripple 1.4s var(--ease-out); }
 /* Aarohana: the seven notes light in ascending order as the row arrives */
@@ -301,10 +297,9 @@ html:not(.js) .page-music .rs-track i { clip-path: none; }
   .page-music .relief { grid-template-columns: auto 1fr; }
   .page-music .relief-actions { grid-column: 2; flex-direction: row; flex-wrap: wrap; width: auto; }
   .page-music .relief-actions small { flex-basis: 100%; }
-  .page-music .swara-row { grid-template-columns: repeat(4, 1fr); row-gap: 22px; }
+  .page-music .swara-row { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 22px; }
 }
 @media (max-width: 640px) {
-  .page-music .nada-hero h1 { font-size: clamp(2.7rem, 12vw, 3.4rem); }
   .page-music .nada-hero .lead { font-size: 1.04rem; }
   .page-music .nada-portrait { width: min(250px, 66vw); }
   .page-music .relief { grid-template-columns: 1fr; }
@@ -330,6 +325,7 @@ html:not(.js) .page-music .rs-track i { clip-path: none; }
   .page-music .honour-img { width: 60px; height: 60px; }
   .page-music .swara-row { gap: 10px; }
   .page-music .swara-deity { font-size: .98rem; }
+  html:not([lang="en"]) .page-music .swara-deity { font-size: .84rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .page-music .np-ring, .page-music .record-label { animation: none !important; }

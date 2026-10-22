@@ -6,7 +6,6 @@
    ========================================================================== */
 
 /* ---------- hero: six tiles, icon over label (reference "Media & Teachings") ---------- */
-.page-media .page-hero h1 { max-width: 12ch; }
 .page-media .quick-tiles { --cols: 6; }
 
 /* ---------- overview: scroll-lit line + archive counts ---------- */
@@ -261,13 +260,14 @@ html:not(.js) .page-media .reel-nav { display: none; }
 .page-media .pa-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px; margin-bottom: 22px; }
 .page-media .pa-head h3 { font-size: clamp(1.6rem, 2.4vw, 2rem); margin: 0; }
 .page-media .pa-head p { margin: 0; color: var(--muted); max-width: 58ch; }
-.page-media .pa-grid { list-style: none; margin: 0 0 28px; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.page-media .pa-grid { list-style: none; margin: 0 0 28px; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .page-media .pa { display: block; text-decoration: none; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); background: var(--paper); transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out); }
 .page-media .pa:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
 .page-media .pa-img { display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--sand); }
 .page-media .pa-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease-out); }
 .page-media .pa:hover .pa-img img { transform: scale(1.05); }
-.page-media .pa-body { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 14px 16px; }
+.page-media .pa-body { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 10px; padding: 14px 16px; }
+.page-media .pa-body b { min-width: 0; overflow-wrap: break-word; }
 .page-media .pa-body b { font: 600 1.12rem/1.2 var(--serif); }
 .page-media .pa-body small { font-size: .78rem; color: var(--muted); white-space: nowrap; }
 .page-media .pa-actions { justify-content: center; }
@@ -391,7 +391,7 @@ html:not(.js) .page-media .reel-nav { display: none; }
   .page-media .dl { grid-template-columns: 1fr; }
   .page-media .articles-grid { grid-template-columns: 1fr; }
   .page-media .media-gallery { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 190px; }
-  .page-media .pa-grid { grid-template-columns: repeat(2, 1fr); }
+  .page-media .pa-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .page-media .mobile { grid-template-columns: 1fr; }
   .page-media .phone-stage { max-width: 420px; }
   .page-media .mobile-copy { text-align: center; }
@@ -400,6 +400,13 @@ html:not(.js) .page-media .reel-nav { display: none; }
   .page-media .app-grid { grid-template-columns: repeat(3, 1fr); }
   .page-media .social-grid { grid-template-columns: 1fr; }
   .page-media .tv { position: static; }
+}
+/* the shelf of sixteen spines is wider than tablets: it scrolls sideways under 980px */
+@media (max-width: 980px) {
+  .page-media .shelf-wrap { margin: 0 calc(var(--gutter) * -1); }
+  .page-media .shelf { justify-content: flex-start; overflow-x: auto; padding: 14px var(--gutter) 0; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent 100%); }
+  .page-media .shelf::-webkit-scrollbar { display: none; }
+  .page-media .shelf-plank { margin: 0 var(--gutter); }
 }
 @media (max-width: 640px) {
   .page-media .quick-tiles { grid-template-columns: repeat(3, 1fr); }
@@ -442,10 +449,7 @@ html:not(.js) .page-media .reel-nav { display: none; }
   .page-media .mag-lang { font-size: 1.3rem; }
   .page-media .mag-month { font-size: .64rem; }
   .page-media .mag-foot { font-size: .6rem; }
-  .page-media .shelf-wrap { margin: 0 calc(var(--gutter) * -1); }
-  .page-media .shelf { justify-content: flex-start; height: 250px; overflow-x: auto; padding: 14px var(--gutter) 0; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent 100%); }
-  .page-media .shelf::-webkit-scrollbar { display: none; }
-  .page-media .shelf-plank { margin: 0 var(--gutter); }
+  .page-media .shelf { height: 250px; }
   .page-media .dl { padding: 24px 18px; }
   .page-media .media-gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 150px; gap: 8px; }
   .page-media .media-gallery .g-item:nth-child(7n + 3) { grid-column: span 2; }

@@ -4,7 +4,6 @@
    ========================================================================== */
 
 /* ---------- hero ---------- */
-.page-darshan .page-hero h1 { max-width: 12ch; }
 .page-darshan .page-hero .lead { max-width: 52ch; }
 
 /* ---------- shared bits ---------- */
@@ -378,7 +377,7 @@ html:not(.js) .page-darshan .dn-bp-find { display: none; }
   .page-darshan .dn-shrine .split-media, .page-darshan .dn-hanuman .split-media { max-width: none; }
   .page-darshan .dn-media { max-width: 560px; }
   .page-darshan .dn-inset { left: auto; right: 14px; bottom: -36px; width: 36%; }
-  .page-darshan .dn-hanuman-foot, .page-darshan .dn-sevas-lower, .page-darshan .dn-bp-layout { grid-template-columns: 1fr; }
+  .page-darshan .dn-hanuman-foot, .page-darshan .dn-sevas-lower, .page-darshan .dn-bp-layout { grid-template-columns: minmax(0, 1fr); }
   .page-darshan .dn-forms { grid-template-columns: 1fr; gap: 12px; }
   .page-darshan .dn-upcoming { grid-template-columns: 1fr; grid-template-areas: "label" "list" "link"; }
 }

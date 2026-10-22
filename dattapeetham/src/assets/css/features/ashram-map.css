@@ -167,6 +167,7 @@
 .amap-card-live { position: relative; max-height: var(--card-max, 540px); overflow-y: auto; overscroll-behavior: contain; border-radius: 18px; background: var(--paper); color: var(--ink); box-shadow: 0 36px 70px -26px rgba(5, 10, 8, .75), 0 0 0 1px rgba(180, 138, 67, .22); scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
 .amap-card-close { position: absolute; top: 8px; right: 8px; z-index: 3; display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--ivory-2); color: var(--ink); cursor: pointer; transition: transform .4s var(--ease-k), background .25s; }
 .amap-card-close::after { content: ""; position: absolute; inset: -5px; }
+@media (pointer: coarse) { .amap-card-close { width: 44px; height: 44px; top: 4px; right: 4px; } .amap-more-btn { min-height: 44px; } }
 .amap-card-close:hover { transform: rotate(90deg); background: var(--sand); }
 .amap-card-item { animation: amap-fade .6s var(--ease-k) both; }
 .amap .amap-card-item[hidden] { display: none; }

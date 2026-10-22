@@ -1,4 +1,5 @@
 import { btn, icon } from '../components.mjs';
+import { links } from '../site.mjs';
 
 export default {
   slug: '404',
@@ -18,6 +19,13 @@ export default {
       ${btn('Return to the Ashram', 'index.html', 'gold', 'arrow', ' data-magnetic')}
       <button class="btn btn-ghost" type="button" data-search-open>${icon('search', 16)}<span>Search the site</span></button>
     </div>
+    <nav class="notfound-links" aria-label="Main destinations" data-reveal="up">
+      <a href="darshan.html#timings">${icon('clock', 18)}<span>Temples &amp; Darshan</span></a>
+      <a href="visit.html">${icon('pin', 18)}<span>Plan Your Visit</span></a>
+      <a href="events.html">${icon('calendar', 18)}<span>Events &amp; Festivals</span></a>
+      <a href="contact.html">${icon('phone', 18)}<span>Contact</span></a>
+    </nav>
+    <p class="notfound-note" data-reveal="up">Booking a puja, donating or signing in? Those pages are on the Peetham’s booking system: <a href="${links.poojas}">Book a Puja</a> · <a href="${links.donations}">Donate</a> · <a href="${links.login}">Sign in</a>.</p>
   </div>
 </section>`,
 };

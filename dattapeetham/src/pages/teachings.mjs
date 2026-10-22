@@ -827,6 +827,7 @@ ${pageHero({
 
 ${ctaBand({
   title: 'Carry the teachings home',
+  image: P.gitaChicago,
   text: 'Subscribe to the Peetham’s notifications, or watch and listen to Sri Swamiji’s discourses, music and films.',
   actions: `${btn('Subscribe for notifications', links.subscribe, 'gold', 'arrow-up-right', ext)}${btn('Watch &amp; listen', 'media.html', 'ghost', 'play-circle')}`,
 })}

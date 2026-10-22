@@ -238,7 +238,11 @@ const FEST = {
     { name: 'Yugadi', icon: 'sun', tithi: 1, when: 'Chaitra Shuddha Pratipada — the lunar new year', y: 'Yugadi programmes at SGS Ashrama, Dundigal, Hyderabad, 16–20 March; Yugadi fell on 19 March.', s: '2026-03-19', e: '2026-03-19' },
     { name: 'Sri Rama Navami', icon: 'sparkle', tithi: 9, when: 'Chaitra Shuddha Navami', y: 'Sri Ramanavami Festival at the Dundigal Ashrama, Hyderabad, 27 March.', s: '2026-03-27', e: '2026-03-27' },
   ],
-  vaishakha: [],
+  vaishakha: [
+    { name: 'Sri Jayalakshmi Maata Aradhana', icon: 'diya', tithi: 5, when: 'Vaishaakha Panchami',
+      text: 'Every year Sri Swamiji conducts special rituals and worship on the Aradhana day of His mother, Sri Jayalakshmi Maata.',
+      y: 'The 2026 calendar also lists a Jayalakshmi Mata Aradhana Festival on 1 February.', link: ['guru-parampara.html#jayalakshmi-maata', 'Sri Jayalakshmi Maata'] },
+  ],
   jyeshtha: [
     { name: 'Sri Swamiji’s Birthday', icon: 'lotus', tithi: 11, img: photos.swamijiGarland, alt: 'Sri Ganapathy Sachchidananda Swamiji, garlanded',
       when: 'Born 26 May 1942, Jyeshtha Shuddha Ekadashi', s: '2026-05-24', e: '2026-05-31',
@@ -257,6 +261,9 @@ const FEST = {
   ],
   shravana: [
     { name: 'Krishna Janmashtami', icon: 'sparkle', tithi: 23, when: 'Shravana Bahula Ashtami', y: 'Krishna Janmashtami Festival at the Mysuru Ashrama, 4 September.', s: '2026-09-04', e: '2026-09-04' },
+    { name: 'Sri Narahari Teertha Swami Aradhana', icon: 'flame', when: 'In the lunar month of Shravana',
+      text: 'Every year Sri Swamiji conducts the Aradhana of His father, Sri Narahari Teertha Swami (Narasimha Sastry).',
+      y: 'Narahari Teertha Aradhana on 20 August at the Hanuman Temple, Datta Yoga Center, Erin, Canada.', s: '2026-08-20', e: '2026-08-20' },
     { name: 'Varamahalakshmi Vrata', icon: 'diya', when: 'A Friday in Shravana', y: 'Observed on 21 August at the Hanuman Temple, Datta Yoga Center, Erin, Canada, during Sri Swamiji’s visit.', s: '2026-08-21', e: '2026-08-21' },
   ],
   bhadrapada: [
@@ -288,9 +295,6 @@ const FEST = {
   ],
   pausha: [
     { name: 'New Year Darshana', icon: 'sun', when: '1 January — a fixed date', y: 'New Year Darshana at SGS Ashrama, Vijayawada.', s: '2026-01-01', e: '2026-01-01' },
-    { name: 'Sri Bala Swamiji’s Birthday', icon: 'lotus', img: photos.balaSwamiji, alt: 'Sri Datta Vijayananda Teertha Swamiji',
-      when: '14 January — a fixed date',
-      text: 'Sri Datta Vijayananda Teertha Swamiji, the junior pontiff, was born on 14 January 1977 in Mysuru.' },
   ],
   magha: [
     { name: 'Ratha Saptami', icon: 'sun', tithi: 7, when: 'Magha Shuddha Saptami', y: 'Ratha Saptami at SGS Ashrama, Kurnool, 25 January.', s: '2026-01-25', e: '2026-01-25' },

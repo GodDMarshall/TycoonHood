@@ -72,7 +72,7 @@
       list.classList.toggle('fold-past', folded);
       earlier.setAttribute('aria-expanded', String(!folded));
       var n = pastWithMatches().length;
-      earlierLabel.textContent = folded ? (n === 1 ? 'Show 1 earlier month' : fmt('Show %1 earlier months', n)) : 'पूर्व माह छिपाएँ';
+      earlierLabel.textContent = folded ? (n === 1 ? 'Show 1 earlier month' : fmt('Show %1 earlier months', n)) : 'पिछले महीने छिपाएँ';
       earlier.hidden = n === 0;
     };
     var opened = false;

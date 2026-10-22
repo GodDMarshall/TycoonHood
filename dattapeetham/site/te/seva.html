@@ -53,13 +53,13 @@
 <div class="util-bar">
   <div class="wrap">
     <div class="util-status" aria-live="polite">
-      <span class="status-pill"><i class="dot" data-dot="temple"></i>ఆలయం <b data-status="temple">·</b></span> <span class="status-pill hide-sm"><svg class="ico" width="13" height="13" aria-hidden="true" focusable="false"><use href="#i-diya"/></svg>తదుపరి <b data-next-ritual>·</b></span> <span class="status-pill hide-sm"><svg class="ico" width="13" height="13" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>మైసూరు <b data-clock>--:--</b></span>
+      <span class="status-pill"><i class="dot" data-dot="temple"></i>ఆలయం <b data-status="temple">·</b></span> <span class="status-pill status-next hide-sm"><svg class="ico" width="13" height="13" aria-hidden="true" focusable="false"><use href="#i-diya"/></svg>తదుపరి <b data-next-ritual>·</b></span> <span class="status-pill status-clock hide-sm"><svg class="ico" width="13" height="13" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>మైసూరు <b data-clock>--:--</b></span>
     </div>
     <nav class="util-links" aria-label="ఉపయోగకరమైన లింకులు">
-      <a href="https://www.youtube.com/@DattaPeetham/streams" class="live-link"><svg class="ico" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-live"/></svg>Live streams</a>
+      <a href="https://www.youtube.com/@DattaPeetham/streams" class="live-link"><svg class="ico" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-live"/></svg>Live streams <svg class="ico" width="11" height="11" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a>
       <a href="events.html">Events</a>
       <a href="contact.html">Contact</a>
-      <a href="https://www.dattapeetham.org/login">Sign in</a>
+      <a href="https://www.dattapeetham.org/login">Sign in <svg class="ico" width="11" height="11" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a>
     </nav>
   </div>
 </div>
@@ -110,7 +110,7 @@
   <a class="nav-top" href="media.html" aria-haspopup="true">మీడియా</a>
   <button class="sub-toggle" type="button" aria-expanded="false" aria-controls="sub-6" aria-label="మీడియా మెనూ చూపించండి"><svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-chev"/></svg></button>
   <div class="sub" id="sub-6">
-    <ul><li><a href="media.html"><b>వీడియోలు & ఫోటోలు</b><span>చూడండి, అన్వేషించండి</span></a></li><li><a href="media.html#audio"><b>సంగీతం & ఆడియో</b><span>ఆల్బమ్‌లు, భజనలు</span></a></li><li><a href="media.html#apps"><b>యాప్‌లు & భక్తిమాల</b><span>18 భక్తి యాప్‌లు</span></a></li></ul>
+    <ul><li><a href="media.html"><b>వీడియోలు & ఫోటోలు</b><span>చూడండి, అన్వేషించండి</span></a></li><li><a href="media.html#audio"><b>సంగీతం & ఆడియో</b><span>ఆల్బమ్‌లు, భజనలు</span></a></li><li><a href="media.html#apps"><b>Mobile Apps</b><span>18 devotional apps</span></a></li></ul>
   </div>
 </li></ul>
       <div class="nav-mobile-extra">
@@ -123,7 +123,7 @@
   <ul class="lang-menu" id="lang-menu" role="list"><li><a href="../seva.html" hreflang="en" lang="en" data-lang="en" translate="no">English</a></li><li><a href="../kn/seva.html" hreflang="kn" lang="kn" data-lang="kn" translate="no">ಕನ್ನಡ</a></li><li><a href="../hi/seva.html" hreflang="hi" lang="hi" data-lang="hi" translate="no">हिन्दी</a></li><li><a href="../ta/seva.html" hreflang="ta" lang="ta" data-lang="ta" translate="no">தமிழ்</a></li><li><a href="../te/seva.html" hreflang="te" lang="te" data-lang="te" translate="no" aria-current="true">తెలుగు</a></li></ul>
 </div>
       <button class="icon-btn" type="button" data-search-open aria-label="సైట్‌లో వెతకండి" aria-haspopup="dialog"><svg class="ico" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-search"/></svg></button>
-      <a class="btn btn-gold btn-sm hide-md" href="https://www.dattapeetham.org/donations?ashram_id=4">విరాళం ఇవ్వండి</a>
+      <a class="btn btn-gold btn-sm header-donate" href="https://www.dattapeetham.org/donations?ashram_id=4">విరాళం ఇవ్వండి</a>
       <button class="icon-btn burger" type="button" aria-label="మెనూ తెరవండి" aria-controls="primary-nav" aria-expanded="false"><span></span></button>
     </div>
   </div>
@@ -168,9 +168,10 @@
   <a class="quick-tile" href="#goshala"> <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-cow"/></svg></span> <span class="qt-text"><b>గోశాల</b><small>గో సేవ</small></span> </a><a class="quick-tile" href="#pathashala"> <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-book"/></svg></span> <span class="qt-text"><b>పాఠశాల</b><small>వేద విద్య</small></span> </a><a class="quick-tile" href="#hospital"> <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-medical"/></svg></span> <span class="qt-text"><b>ఎస్‌జీఎస్ ఆసుపత్రి</b><small>ఉచిత వైద్యం</small></span> </a><a class="quick-tile" href="#annadana"> <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-heart-hand"/></svg></span> <span class="qt-text"><b>అన్నదానం</b><small>ప్రతిరోజూ ఉచిత భోజనం</small></span> </a><a class="quick-tile" href="#nature"> <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-bird"/></svg></span> <span class="qt-text"><b>ప్రకృతి</b><small>శుక వనం & బోన్సాయ్</small></span> </a><a class="quick-tile" href="#volunteer"> <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-namaste"/></svg></span> <span class="qt-text"><b>స్వచ్ఛంద సేవ</b><small>ఎస్‌డీహెచ్‌ఎస్‌లో చేరండి</small></span> </a>
 </nav></div>
 
-<section id="pillars" class="section seva-pillars">
+<section id="pillars" class="section seva-pillars" aria-labelledby="pillars-h">
   <div class="wrap">
-    <header class="section-head  ">
+    <div class="pillars-panel">
+  <header class="section-head  ">
   <svg class="ornament " viewBox="0 0 160 20" aria-hidden="true" data-draw>
   <path d="M0 10h58M102 10h58" />
   <path d="M80 2c3.6 3.2 5.4 5.8 5.4 8S83.6 15.6 80 18c-3.6-2.4-5.4-5.8-5.4-8S76.4 5.2 80 2Z"/>
@@ -178,49 +179,50 @@
   <circle cx="62" cy="10" r="1.6"/><circle cx="98" cy="10" r="1.6"/>
 </svg>
   <span class="eyebrow ">ఆచరణలో సేవ</span>
-  <h2 data-split>మా <span class="em-light">సేవా</span> స్తంభాలు</h2>
+  <h2 data-split id="pillars-h">మా <span class="em-light">సేవా</span> స్తంభాలు</h2>
   <p class="lead" data-reveal="up">అవధూత దత్త పీఠం అవసరార్థులకు వైద్య, విద్యా, వృత్తి శిక్షణ, ఆధ్యాత్మిక సేవలు అందిస్తోంది. ఇక్కడి కరుణ గోవులు, పిల్లలు, రోగులు, పక్షులు — అందరినీ సమానంగా చేరుతుంది.</p>
 </header>
-    <ul class="pillar-band" data-stagger>
-      <li class="pillar">
-        <a href="darshan.html">
-          <span class="pillar-media"><img width="400" height="267" srcset="../assets/img/opt/c32225fac0bd-400.webp 400w" sizes="auto, 100vw" src="../assets/img/opt/c32225fac0bd-400.webp" alt="శ్రీ దత్తాత్రేయ స్వామికి హారతి ఇస్తున్న శ్రీ స్వామీజీ" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-lotus"/></svg></span>
-            <span><h3>ఆధ్యాత్మికత</h3><small>దత్తాత్రేయ ఆరాధన, వైదిక క్రతువులు, ధ్యానం</small></span> </span> </a>
-      </li><li class="pillar">
-        <a href="music.html">
-          <span class="pillar-media"><img width="800" height="534" srcset="../assets/img/opt/183ac010ede9-480.webp 480w, ../assets/img/opt/183ac010ede9-800.webp 800w" sizes="auto, 100vw" src="../assets/img/opt/183ac010ede9-800.webp" alt="ఒక కార్యక్రమం సందర్భంగా నిండిన నాద మంటపం" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-veena"/></svg></span>
-            <span><h3>సంగీతం &amp; నాద చికిత్స</h3><small>దివ్య సంగీతంలోని స్వస్థత శక్తి</small></span> </span> </a>
-      </li><li class="pillar">
-        <a href="#pathashala">
-          <span class="pillar-media"><img width="1600" height="1066" srcset="../assets/img/opt/45f939e5c923-480.webp 480w, ../assets/img/opt/45f939e5c923-960.webp 960w, ../assets/img/opt/45f939e5c923-1600.webp 1600w" sizes="auto, 100vw" src="../assets/img/opt/45f939e5c923-960.webp" alt="మైసూరు ఆశ్రమంలో వార్షిక వేద సభలో వేద పండితులు, విద్యార్థులు" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-school"/></svg></span>
-            <span><h3>విద్య</h3><small>వేద విద్య, విలువలతో కూడిన విద్య</small></span> </span> </a>
-      </li><li class="pillar">
-        <a href="#hospital">
-          <span class="pillar-media"><img width="1200" height="800" srcset="../assets/img/opt/814c09fb0812-480.webp 480w, ../assets/img/opt/814c09fb0812-960.webp 960w, ../assets/img/opt/814c09fb0812-1200.webp 1200w" sizes="auto, 100vw" src="../assets/img/opt/814c09fb0812-960.webp" alt="ఉచిత వైద్య శిబిరంలో ఒక బాలుడిని పరీక్షిస్తున్న వైద్యులు" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-medical"/></svg></span>
-            <span><h3>ఆరోగ్య సంరక్షణ</h3><small>ఆసుపత్రి, వైద్య శిబిరాలు, ఆరోగ్యం</small></span> </span> </a>
-      </li><li class="pillar">
-        <a href="#goshala">
-          <span class="pillar-media"><img width="500" height="333" srcset="../assets/img/opt/6d70cbb9d8e0-480.webp 480w, ../assets/img/opt/6d70cbb9d8e0-500.webp 500w" sizes="auto, 100vw" src="../assets/img/opt/6d70cbb9d8e0-500.webp" alt="ఒక లేగదూడకు ఆహారం తినిపిస్తున్న శ్రీ స్వామీజీ" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-cow"/></svg></span>
-            <span><h3>గో సంరక్షణ</h3><small>పవిత్ర గోవుల సంరక్షణ, సేవ</small></span> </span> </a>
-      </li><li class="pillar">
-        <a href="centers.html">
-          <span class="pillar-media"><img width="1000" height="750" srcset="../assets/img/opt/83670437a917-480.webp 480w, ../assets/img/opt/83670437a917-960.webp 960w, ../assets/img/opt/83670437a917-1000.webp 1000w" sizes="auto, 100vw" src="../assets/img/opt/83670437a917-960.webp" alt="దాతృత్వం కోసం సేకరించిన సరుకులతో అమెరికాలోని డాలస్ ఎస్‌జీఎస్ ఆశ్రమ స్వచ్ఛంద సేవకులు" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-globe"/></svg></span>
-            <span><h3>ప్రపంచవ్యాప్త కార్యక్రమాలు</h3><small>ప్రపంచవ్యాప్తంగా ఆధ్యాత్మికత, సేవల వ్యాప్తి</small></span> </span> </a>
-      </li>
-    </ul>
-    <div class="pillar-more" data-reveal="up"><a class="btn btn-line" href="https://www.dattapeetham.org/page/view/social-activities" data-external><span>అన్ని సామాజిక సేవా కార్యక్రమాలు</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></div>
+  <ul class="pillars" data-stagger>
+    <li class="pillar">
+      <div class="pillar-media"><img width="402" height="500" srcset="../assets/img/opt/43f9961bd885-402.webp 402w" sizes="auto, 100vw" src="../assets/img/opt/43f9961bd885-402.webp" alt="పీఠం అధిష్ఠాన దైవమైన కాలాగ్ని శమన దత్తాత్రేయ స్వామికి హారతి ఇస్తున్న శ్రీ స్వామీజీ" loading="lazy" decoding="async" style="object-position:50% 30%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-lotus"/></svg></span>
+        <div><h3><a href="darshan.html">ఆధ్యాత్మికత</a></h3><p>దత్త ఆరాధన, వైదిక క్రతువులు, ధ్యానం</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="1600" height="1067" srcset="../assets/img/opt/e0b821ff85fa-480.webp 480w, ../assets/img/opt/e0b821ff85fa-960.webp 960w, ../assets/img/opt/e0b821ff85fa-1600.webp 1600w" sizes="auto, 100vw" src="../assets/img/opt/e0b821ff85fa-960.webp" alt="నాద మంటపంలో కిక్కిరిసిన ప్రేక్షకుల ఎదుట ప్రదర్శన ఇస్తున్న సంగీత కళాకారులు" loading="lazy" decoding="async" style="object-position:50% 60%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-veena"/></svg></span>
+        <div><h3><a href="music.html">సంగీతం &amp; నాద చికిత్స</a></h3><p>దివ్య సంగీతం యొక్క స్వస్థత శక్తి</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="600" height="400" srcset="../assets/img/opt/7e9d65c8465e-480.webp 480w, ../assets/img/opt/7e9d65c8465e-600.webp 600w" sizes="auto, 100vw" src="../assets/img/opt/7e9d65c8465e-600.webp" alt="మైక్రోఫోన్ ముందు కూర్చుని వేద పఠనం చేస్తున్న ముగ్గురు వేద పాఠశాల విద్యార్థులు" loading="lazy" decoding="async" style="object-position:50% 45%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-book"/></svg></span>
+        <div><h3><a href="seva.html#pathashala">విద్య</a></h3><p>1985లో స్థాపించిన వేద పాఠశాల</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="1200" height="800" srcset="../assets/img/opt/814c09fb0812-480.webp 480w, ../assets/img/opt/814c09fb0812-960.webp 960w, ../assets/img/opt/814c09fb0812-1200.webp 1200w" sizes="auto, 100vw" src="../assets/img/opt/814c09fb0812-960.webp" alt="ఉచిత వైద్య శిబిరంలో ఒక చిన్న బాలుడి చెవిని పరీక్షిస్తున్న వైద్యులు" loading="lazy" decoding="async" style="object-position:50% 40%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-medical"/></svg></span>
+        <div><h3><a href="seva.html#hospital">ఆరోగ్య సంరక్షణ</a></h3><p>ఎస్‌జీఎస్ ఆసుపత్రి, ఉచిత వైద్య శిబిరాలు</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="1600" height="1067" srcset="../assets/img/opt/e09085953cc6-480.webp 480w, ../assets/img/opt/e09085953cc6-960.webp 960w, ../assets/img/opt/e09085953cc6-1600.webp 1600w" sizes="auto, 100vw" src="../assets/img/opt/e09085953cc6-960.webp" alt="మైసూరు ఆశ్రమంలోని గోశాలలో ఆవులకు ఆహారం తినిపిస్తున్న శ్రీ స్వామీజీ" loading="lazy" decoding="async" style="object-position:40% 40%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-cow"/></svg></span>
+        <div><h3><a href="seva.html#goshala">గో సంరక్షణ</a></h3><p>50కి పైగా గోవుల కోసం గోశాల</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="1600" height="1066" srcset="../assets/img/opt/0673d15ca3d1-480.webp 480w, ../assets/img/opt/0673d15ca3d1-960.webp 960w, ../assets/img/opt/0673d15ca3d1-1600.webp 1600w" sizes="auto, 100vw" src="../assets/img/opt/0673d15ca3d1-960.webp" alt="జులై 2024, చికాగోలోని నౌ అరీనాలో భగవద్గీత పారాయణం కోసం భక్తులతో నిండిన సభా ప్రాంగణం" loading="lazy" decoding="async" style="object-position:50% 50%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-globe"/></svg></span>
+        <div><h3><a href="centers.html">ప్రపంచవ్యాప్త కార్యక్రమాలు</a></h3><p>ప్రపంచవ్యాప్తంగా కేంద్రాలు, కార్యక్రమాలు</p></div>
+      </div>
+    </li>
+  </ul>
+  <div class="pillars-cta"><a class="btn btn-line" href="https://www.dattapeetham.org/page/view/social-activities" data-external><span>అన్ని సామాజిక సేవా కార్యక్రమాలు</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></div>
+</div>
   </div>
   <div class="seva-creed">
     <svg class="thread seva-thread" viewBox="0 0 1460 26" preserveAspectRatio="none" aria-hidden="true">
@@ -431,7 +433,7 @@
       </article>
     </div>
     <div class="btn-row nature-actions" data-reveal="up">
-      <a class="btn btn-gold" href="attractions.html"><span>శుక వనం &amp; బోన్సాయ్ వనాన్ని సందర్శించండి</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a> <a class="btn btn-line" href="https://www.dattapeetham.org/page/view/contribution-towards-nature" data-external><span>ప్రకృతికి తోడ్పాటు</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a>
+      <a class="btn btn-gold" href="attractions.html#sv-visit"><span>శుక వనం &amp; బోన్సాయ్ వనాన్ని సందర్శించండి</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a> <a class="btn btn-line" href="https://www.dattapeetham.org/page/view/contribution-towards-nature" data-external><span>ప్రకృతికి తోడ్పాటు</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a>
     </div>
   </div>
 </section>
@@ -529,7 +531,7 @@
         </a><a class="quick-tile" href="#volunteer">
           <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-namaste"/></svg></span>
           <span class="qt-text"><b>Volunteer</b><small>Join the SDHS</small></span>
-        </a><a class="quick-tile" href="contact.html#reach-us">
+        </a><a class="quick-tile" href="teachings.html#bhaktimala">
           <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-book"/></svg></span>
           <span class="qt-text"><b>Subscribe</b><small>Bhaktimala magazine</small></span>
         </a>
@@ -559,9 +561,9 @@
         </div>
       </div>
       <div><h2 class="footer-h">అన్వేషించండి</h2><ul><li><a href="about.html">పీఠం గురించి</a></li><li><a href="sri-swamiji.html">శ్రీ స్వామీజీ</a></li><li><a href="guru-parampara.html">గురు పరంపర</a></li><li><a href="centers.html">ప్రపంచవ్యాప్త విస్తరణ</a></li><li><a href="attractions.html">ఆశ్రమ విశేషాలు</a></li></ul></div>
-      <div><h2 class="footer-h">పాల్గొనండి</h2><ul><li><a href="darshan.html">ఆలయాలు & దర్శనం</a></li><li><a href="events.html">కార్యక్రమాలు & పండుగలు</a></li><li><a href="https://www.dattapeetham.org/poojas?ashram_id=4">పూజ బుక్ చేయండి</a></li><li><a href="https://www.dattapeetham.org/donations?ashram_id=4">విరాళం ఇవ్వండి</a></li><li><a href="seva.html#volunteer">స్వచ్ఛంద సేవ</a></li><li><a href="https://www.dattapeetham.org/store">స్టోర్</a></li></ul></div>
+      <div><h2 class="footer-h">పాల్గొనండి</h2><ul><li><a href="darshan.html">ఆలయాలు & దర్శనం</a></li><li><a href="events.html">కార్యక్రమాలు & పండుగలు</a></li><li><a href="https://www.dattapeetham.org/poojas?ashram_id=4">పూజ బుక్ చేయండి<svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li><li><a href="https://www.dattapeetham.org/donations?ashram_id=4">విరాళం ఇవ్వండి<svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li><li><a href="seva.html#volunteer">స్వచ్ఛంద సేవ</a></li><li><a href="https://www.dattapeetham.org/store">స్టోర్<svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li></ul></div>
       <div><h2 class="footer-h">నేర్చుకోండి & వినండి</h2><ul><li><a href="teachings.html">ప్రవచనాలు</a></li><li><a href="music.html">నాద చికిత్స</a></li><li><a href="kriya-yoga.html">దత్త క్రియా యోగ</a></li><li><a href="media.html">వీడియోలు & ఫోటోలు</a></li><li><a href="media.html#apps">మొబైల్ యాప్‌లు</a></li></ul></div>
-      <div><h2 class="footer-h">సందర్శన</h2><ul><li><a href="visit.html">మీ సందర్శన ప్రణాళిక</a></li><li><a href="visit.html#map">ఆశ్రమ పటం</a></li><li><a href="contact.html">సంప్రదించండి</a></li><li><a href="https://www.dattapeetham.org/techsupport">అభిప్రాయం / సహాయం</a></li><li><a href="https://www.dattapeetham.org/subscribe">తాజా సమాచారం కోసం సబ్‌స్క్రైబ్ చేయండి</a></li></ul></div>
+      <div><h2 class="footer-h">సందర్శన</h2><ul><li><a href="visit.html">మీ సందర్శన ప్రణాళిక</a></li><li><a href="visit.html#map">ఆశ్రమ పటం</a></li><li><a href="contact.html">సంప్రదించండి</a></li><li><a href="https://www.dattapeetham.org/techsupport">అభిప్రాయం / సహాయం<svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li><li><a href="https://www.dattapeetham.org/subscribe">తాజా సమాచారం కోసం సబ్‌స్క్రైబ్ చేయండి<svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li></ul></div>
     </div>
     <div class="footer-mantra" aria-label="లోకాః సమస్తాః సుఖినో భవంతు">
       <span class="om" aria-hidden="true">ॐ</span>

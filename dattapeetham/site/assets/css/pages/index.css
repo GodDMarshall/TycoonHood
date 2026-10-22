@@ -155,22 +155,7 @@
 .page-index .ix-note .link-arrow { margin-left: 6px; white-space: nowrap; }
 
 /* ---------- 5 · pillars of service ---------- */
-.page-index .ix-pillars-sec { padding-top: clamp(16px, 3vw, 40px); background: linear-gradient(180deg, var(--ivory) 0%, var(--ivory-2) 100%); }
-.page-index .ix-pillars-panel { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: clamp(36px, 5vw, 64px) clamp(18px, 3vw, 40px) clamp(32px, 4vw, 48px); }
-.page-index .ix-pillars-panel .section-head { margin-bottom: clamp(32px, 4vw, 48px); }
-.page-index .ix-pillars { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 18px; }
-.page-index .ix-pillar { position: relative; display: flex; flex-direction: column; }
-.page-index .ix-pillar-media { aspect-ratio: 5 / 4; overflow: hidden; border-radius: 12px; background: var(--sand); }
-.page-index .ix-pillar-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-out); }
-.page-index .ix-pillar:hover .ix-pillar-media img { transform: scale(1.07); }
-.page-index .ix-pillar-body { display: flex; align-items: flex-start; gap: 10px; padding: 16px 2px 0; }
-.page-index .ix-pillar-icon { flex: none; width: 34px; height: 34px; display: grid; place-items: center; color: var(--gold); transition: transform .6s var(--ease-out); }
-.page-index .ix-pillar:hover .ix-pillar-icon { transform: rotate(-8deg) scale(1.08); }
-.page-index .ix-pillar h3 { margin: 4px 0 4px; font-size: 1.16rem; line-height: 1.15; }
-.page-index .ix-pillar h3 a { text-decoration: none; background: linear-gradient(var(--gold), var(--gold)) 0 100% / 0 1px no-repeat; transition: background-size .6s var(--ease-out), color .3s; }
-.page-index .ix-pillar h3 a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
-.page-index .ix-pillar:hover h3 a, .page-index .ix-pillar h3 a:focus-visible { color: var(--gold-deep); background-size: 100% 1px; }
-.page-index .ix-pillar p { margin: 0; font-size: .82rem; line-height: 1.5; color: var(--muted); }
+.page-index .ix-pillars-sec { padding-top: clamp(16px, 3vw, 40px); background: linear-gradient(180deg, var(--ivory) 0%, var(--ivory-2) 55%, var(--ivory) 100%); }
 .page-index .ix-center { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; margin-top: clamp(32px, 4vw, 44px); text-align: center; }
 
 /* ---------- 6 · latest sevas ---------- */
@@ -357,6 +342,8 @@
     linear-gradient(180deg, var(--night) 0%, var(--forest) 100%);
   color: var(--cream-on-dark);
 }
+/* a gold hairline marks where the apps band ends and the closing begins (both are dark) */
+.page-index .ix-closing::before { content: ""; position: absolute; top: 0; left: 50%; width: min(var(--wrap), 100%); height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, rgba(226, 200, 142, .32), transparent); }
 .page-index .ix-closing .horizon { top: calc(64% - .07 * var(--hz)); bottom: auto; width: var(--hz); max-width: none; }
 .page-index .ix-closing-mandala { position: absolute; left: 50%; top: 64%; width: 300px; height: 300px; margin: 40px 0 0 -150px; color: var(--gold-2); opacity: .12; z-index: -1; animation: spin 120s linear infinite; pointer-events: none; }
 .page-index .ix-closing-inner { position: relative; max-width: 760px; }
@@ -379,13 +366,13 @@
   .page-index .ix-comp-bala { grid-column: 1 / -1; display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 20px; max-width: 520px; }
   .page-index .ix-bala-img { aspect-ratio: 1; border-radius: 50%; -webkit-mask-image: none; mask-image: none; }
   .page-index .ix-comp-bala figcaption { margin-top: 0; }
-  .page-index .ix-pillars { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .page-index .ix-events-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .page-index .ix-app-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   /* three hours cards in ~300px columns: put the emblem above the text so times stay on one line */
   .page-index .ix-timings .hours-card { flex-direction: column; gap: 12px; }
   .page-index .ix-timings .hc-img { width: 52px; height: 52px; }
-  .page-index .ix-timings .hours-card dd { white-space: nowrap; }
+  .page-index .ix-timings .hours-card dd:lang(en) { white-space: nowrap; }
+  .page-index .ix-timings .hours-card > div { min-width: 0; }
   /* the readout may wrap to two lines here; the centred scroll cue would collide with it */
   .page-index .ix-scroll-cue { display: none; }
 }
@@ -446,11 +433,6 @@
   .page-index .ix-play-label { font-size: 1.1rem; }
   .page-index .ix-comp-bala { grid-template-columns: 96px 1fr; gap: 16px; }
   .page-index .ix-note { font-size: .82rem; }
-  .page-index .ix-pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
-  .page-index .ix-pillar-body { flex-direction: column; gap: 4px; padding-top: 12px; }
-  .page-index .ix-pillar-icon { width: 28px; height: 28px; }
-  .page-index .ix-pillar-icon .ico { width: 24px; height: 24px; }
-  .page-index .ix-pillar h3 { font-size: 1.08rem; }
   .page-index .ix-seva-grid { grid-template-columns: minmax(0, 1fr); }
   .page-index .ix-seva:last-child:nth-child(odd) .card-media { aspect-ratio: 16 / 11; }
   .page-index .ix-mandir-grid {

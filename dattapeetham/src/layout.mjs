@@ -53,6 +53,10 @@ function head(page) {
   const title = page.slug === 'index' ? `${site.name} · ${site.ashram}, Mysuru` : `${page.title} · ${site.name}`;
   const og = page.image || 'https://dattapeetham.s3.amazonaws.com/homepage_assets/site_1/front_page_images/sadguru-deva.jpg';
   const canonical = page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`;
+  // The 404 page answers unknown URLs: not indexed, no language alternates, and no
+  // remembered-language redirect (it would loop, every unknown URL is this page).
+  const is404 = page.slug === '404';
+  const langRedirect = "(function(d){try{var pref=localStorage.getItem('dp-lang'),cur=d.lang||'en';if(pref&&pref!==cur&&/^(en|kn|hi|ta|te)$/.test(pref)&&!/[?&]lang=keep/.test(location.search)){var f=location.pathname.split('/').pop()||'index.html';location.replace((d.getAttribute('data-root')||'')+(pref==='en'?'':pref+'/')+f+location.hash);return;}}catch(e){}})(document.documentElement);";
   return `<!doctype html>
 <html lang="en" data-root="">
 <head>
@@ -62,8 +66,8 @@ function head(page) {
 <meta name="description" content="${esc(page.description)}">
 <meta name="theme-color" content="#0f1c18">
 <link rel="canonical" href="${canonical}">
-${LANG_CODES.map(([code]) => `<link rel="alternate" hreflang="${code}" href="${site.origin}/${code === 'en' ? '' : code + '/'}${page.slug === 'index' ? '' : page.file}">`).join('\n')}
-<link rel="alternate" hreflang="x-default" href="${page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`}">
+${is404 ? '<meta name="robots" content="noindex">' : `${LANG_CODES.map(([code]) => `<link rel="alternate" hreflang="${code}" href="${site.origin}/${code === 'en' ? '' : code + '/'}${page.slug === 'index' ? '' : page.file}">`).join('\n')}
+<link rel="alternate" hreflang="x-default" href="${page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`}">`}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.name)}">
 <meta property="og:title" content="${esc(page.title)}">
@@ -81,7 +85,7 @@ ${page.preload ? `<link rel="preload" as="image" href="${page.preload}" fetchpri
 ${(page.features || []).map((f) => `<link rel="stylesheet" href="assets/css/features/${f}.css">`).join('\n')}
 ${page.css ? `<link rel="stylesheet" href="assets/css/pages/${page.slug}.css">` : ''}
 ${jsonLd(page)}
-<script>(function(d){try{var pref=localStorage.getItem('dp-lang'),cur=d.lang||'en';if(pref&&pref!==cur&&/^(en|kn|hi|ta|te)$/.test(pref)&&!/[?&]lang=keep/.test(location.search)){var f=location.pathname.split('/').pop()||'index.html';location.replace((d.getAttribute('data-root')||'')+(pref==='en'?'':pref+'/')+f+location.hash);return;}}catch(e){}})(document.documentElement);(function(d){d.classList.add('js');try{if(sessionStorage.getItem('dp-intro'))d.classList.add('intro-seen');else sessionStorage.setItem('dp-intro','1');}catch(e){d.classList.add('intro-seen');}})(document.documentElement);window.DP_HOURS=${JSON.stringify(hours)};</script>
+<script>${is404 ? '' : langRedirect}(function(d){d.classList.add('js');try{if(sessionStorage.getItem('dp-intro'))d.classList.add('intro-seen');else sessionStorage.setItem('dp-intro','1');}catch(e){d.classList.add('intro-seen');}})(document.documentElement);window.DP_HOURS=${JSON.stringify(hours)};</script>
 </head>`;
 }
 
@@ -111,14 +115,14 @@ function header(page) {
   <div class="wrap">
     <div class="util-status" aria-live="polite">
       <span class="status-pill"><i class="dot" data-dot="temple"></i>Temple <b data-status="temple">·</b></span>
-      <span class="status-pill hide-sm">${icon('diya', 13)}Next <b data-next-ritual>·</b></span>
-      <span class="status-pill hide-sm">${icon('clock', 13)}Mysuru <b data-clock>--:--</b></span>
+      <span class="status-pill status-next hide-sm">${icon('diya', 13)}Next <b data-next-ritual>·</b></span>
+      <span class="status-pill status-clock hide-sm">${icon('clock', 13)}Mysuru <b data-clock>--:--</b></span>
     </div>
     <nav class="util-links" aria-label="Utility links">
-      <a href="${links.live}" class="live-link">${icon('live', 14)}Live streams</a>
+      <a href="${links.live}" class="live-link">${icon('live', 14)}Live streams ${icon('arrow-up-right', 11)}</a>
       <a href="events.html">Events</a>
       <a href="contact.html">Contact</a>
-      <a href="${links.login}">Sign in</a>
+      <a href="${links.login}">Sign in ${icon('arrow-up-right', 11)}</a>
     </nav>
   </div>
 </div>
@@ -135,7 +139,7 @@ function header(page) {
     <div class="header-actions">
       ${langSwitch()}
       <button class="icon-btn" type="button" data-search-open aria-label="Search the site" aria-haspopup="dialog">${icon('search', 20)}</button>
-      <a class="btn btn-gold btn-sm hide-md" href="${links.donations}">Donate</a>
+      <a class="btn btn-gold btn-sm header-donate" href="${links.donations}">Donate</a>
       <button class="icon-btn burger" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false"><span></span></button>
     </div>
   </div>
@@ -164,7 +168,7 @@ function searchDialog() {
 }
 
 function footer() {
-  const col = (title, items) => `<div><h2 class="footer-h">${title}</h2><ul>${items.map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></div>`;
+  const col = (title, items) => `<div><h2 class="footer-h">${title}</h2><ul>${items.map(([l, h]) => `<li><a href="${h}">${l}${ext(h) ? ` ${icon('arrow-up-right', 12)}` : ''}</a></li>`).join('')}</ul></div>`;
   return `<footer class="site-footer">
   <div class="footer-glow" aria-hidden="true"></div>
   <svg class="footer-watermark" viewBox="0 0 104 104" aria-hidden="true"><use href="#i-mandala"/></svg>

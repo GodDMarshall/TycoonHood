@@ -128,6 +128,14 @@ new site, choose one of these:
 - Or proxy those paths (`/poojas`, `/donations`, `/login`, `/store` and the
   others) from the new host to the existing platform.
 
+The pages also cite the Peetham's own pages as sources ("As published on the
+temple's own page", "The full timeline on dattapeetham.org", the glossary and
+so on). They are built from `OFFICIAL` too, as `${OFFICIAL}/page/view/...`, and
+`vercel.json` redirects exactly those `/page/view/...` paths into the new pages.
+With the subdomain option the citations follow `OFFICIAL` to the old pages. With
+the proxy option they would loop back to the section that cites them, so point
+`OFFICIAL` at a host that keeps the old pages, or remove those citation links.
+
 ## How it is organised
 
 ```

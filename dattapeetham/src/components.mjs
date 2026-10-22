@@ -159,6 +159,24 @@ export function photoTile({ img: src, title, text, href, tag, pos }) {
 </a>`;
 }
 
+// "Our Pillars of Service" (homepage and seva.html): a paper panel holding the
+// heading, six photo tiles (whole tile is the link) and one call to action.
+export function pillarsPanel(items, { eyebrow: eb = 'Seva in action', title = 'Our Pillars of <span class="em-light">Service</span>', lead, headingId = 'pillars-h', cta = '' } = {}) {
+  return `<div class="pillars-panel">
+  ${sectionHead({ eyebrow: eb, title, lead, headingId })}
+  <ul class="pillars" data-stagger>
+    ${items.map((p) => `<li class="pillar">
+      <div class="pillar-media">${img(p.img, p.alt, { pos: p.pos })}</div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true">${icon(p.icon, 30)}</span>
+        <div><h3><a href="${p.href}">${p.title}</a></h3><p>${p.text}</p></div>
+      </div>
+    </li>`).join('')}
+  </ul>
+  ${cta ? `<div class="pillars-cta">${cta}</div>` : ''}
+</div>`;
+}
+
 export function stats(items, light = false) {
   return `<dl class="stats ${light ? 'is-light' : ''}" data-stagger>${items.map(([n, label, suffix = '']) => {
     const num = String(n).replace(/[^\d.]/g, '');

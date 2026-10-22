@@ -286,7 +286,7 @@ function bookshelf() {
   <p class="shelf-note" data-reveal="up">Books are sold at the <b>Raga Ragini Book Store</b> in the Mysuru Ashram and some branches of the Peetham, and online.</p>
   <div class="btn-row shelf-actions" data-reveal="up">
     ${btn('Raga Ragini online store', EXT.ragaRagini, 'gold', 'external')}
-    ${btn('The full list of titles', EXT.literary, 'line', 'arrow')}
+    ${btn('The full list of titles', EXT.literary, 'line', 'arrow-up-right')}
   </div>
 </div>`;
 }
@@ -298,7 +298,7 @@ function downloads() {
     <h3>Free to read, print and share</h3>
     <p>Sixty-seven files on dattapeetham.org: puja vidhis, stotrams, invitations, music and back issues of Bhakti Mala, the Peetham’s magazine.</p>
     <ul class="dl-cats" aria-label="Download categories">${dlCategories.map((c) => `<li>${c}</li>`).join('')}</ul>
-    ${btn('Browse all downloads', links.downloads, 'line', 'arrow')}
+    ${btn('Browse all downloads', links.downloads, 'line', 'arrow-up-right')}
   </div>
   <ul class="dl-list dl-feature" data-stagger>
     ${featuredDownloads.map(([t, cat, size, href]) => `<li><a href="${href}">${icon('download', 18)}<span><b>${t}</b><small>${cat} · PDF · ${size}</small></span></a></li>`).join('')}
@@ -584,7 +584,7 @@ ${pageHero({
       </ul>
       <div class="btn-row pa-actions" data-reveal="up">
         ${btn('Browse 980 photos', links.photos, 'gold', 'external')}
-        ${btn('All photo albums', EXT.photoAlbums, 'line', 'arrow')}
+        ${btn('All photo albums', EXT.photoAlbums, 'line', 'arrow-up-right')}
       </div>
     </div>
   </div>
@@ -610,7 +610,7 @@ ${pageHero({
 ${ctaBand({
   title: 'Never miss a <span class="em-light">programme</span>',
   text: 'Subscribe to notifications from the Peetham, or keep the Ashram close with the Datta Peetham app.',
-  actions: `${btn('Subscribe for notifications', links.subscribe, 'gold', 'arrow')}${btn('Get the app', '#apps', 'ghost', 'mobile')}`,
+  actions: `${btn('Subscribe for notifications', links.subscribe, 'gold', 'arrow-up-right')}${btn('Get the app', '#apps', 'ghost', 'mobile')}`,
   image: P.mantapaStage,
 })}
 `,

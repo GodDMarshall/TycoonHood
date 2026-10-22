@@ -66,6 +66,17 @@ export const photos = {
   guruParamparaPooja: `${PAGE_IMG}521/521_c857a326b3939174.jpg`,
 };
 
+// "Our Pillars of Service" (homepage and seva.html): one set of six, captions
+// from the Peetham's pages (Veda Pathashala 1985; a Gau Shala for 50+ cows).
+export const pillars = [
+  { icon: 'lotus', title: 'Spirituality', text: 'Datta worship, Vedic rituals and meditation', img: `${KSHETRA_IMG}01-kalagni-shamana-dattatreya-mysore-karnataka-india.jpg`, alt: 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the presiding deity of the Peetham', pos: '50% 30%', href: 'darshan.html' },
+  { icon: 'veena', title: 'Music &amp; Nada Chikitsa', text: 'The healing power of divine music', img: `${PAGE_IMG}506/506_575a490450b5a1d7.jpg`, alt: 'Musicians perform before a packed audience in Nada Mantapa', pos: '50% 60%', href: 'music.html' },
+  { icon: 'book', title: 'Education', text: 'The Veda Pathashala, founded in 1985', img: `${IMG}students-1.jpg`, alt: 'Three Veda Pathashala students seated at a microphone, chanting', pos: '50% 45%', href: 'seva.html#pathashala' },
+  { icon: 'medical', title: 'Healthcare', text: 'SGS Hospital and free medical camps', img: `${IMG}camp-2.jpg`, alt: 'A doctor examines a young boy’s ear at a free medical camp', pos: '50% 40%', href: 'seva.html#hospital' },
+  { icon: 'cow', title: 'Cow Care', text: 'A Gau Shala for more than 50 cows', img: `${PAGE_IMG}514/514_bb5a23cc41a0f878.jpg`, alt: 'Sri Swamiji feeds the cows at the Gau Shala, Mysuru Ashram', pos: '40% 40%', href: 'seva.html#goshala' },
+  { icon: 'globe', title: 'Global Initiatives', text: 'Centres and programmes worldwide', img: `${PAGE_IMG}514/514_b7a1c01aeacc37c6.jpg`, alt: 'An arena filled with devotees for Bhagavad Gita chanting at NOW Arena, Chicago, July 2024', pos: '50% 50%', href: 'centers.html' },
+];
+
 export const timings = [
   { key: 'temple', title: 'Temple Darshan', img: photos.logo, rows: [['Morning', '6:00 AM – 12:00 PM'], ['Evening', '4:00 PM – 8:00 PM']], note: 'Daily' },
   { key: 'shukaVana', title: 'Shuka Vana (Birds)', img: photos.birdsIcon, rows: [['Morning', '9:00 AM – 12:00 PM'], ['Evening', '3:30 PM – 6:00 PM']], note: 'Closed on Wednesdays. Timings vary across official sources, and Shuka Vana’s own page says it is temporarily closed for maintenance; please check with the Ashram before visiting.' },

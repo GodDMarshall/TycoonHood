@@ -159,7 +159,7 @@
       s.addEventListener('click', function () { select(s.getAttribute('data-month')); });
     });
 
-    // links into a month panel (e.g. "ದತ್ತ ಜಯಂತಿಯ ಬಗ್ಗೆ") open that month first
+    // links into a month panel (e.g. "ದತ್ತ ಜಯಂತಿಯ ಕುರಿತು") open that month first
     doc.addEventListener('click', function (e) {
       var a = e.target.closest && e.target.closest('a[href^="#fy-p-"]');
       if (a) select(a.getAttribute('href').slice(6));

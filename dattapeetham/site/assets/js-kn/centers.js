@@ -28,6 +28,15 @@
     var total = cards.length;
     var opened = [];   // state panels the search opened, closed again when it clears
     var timer;
+    // closing a long state panel from its (sticky) heading: bring the heading back into view
+    groups.forEach(function (g) {
+      var sum = g.tagName === 'DETAILS' && g.querySelector('summary');
+      if (!sum) return;
+      sum.addEventListener('click', function () {
+        if (!g.open) return;   // this click closes it
+        setTimeout(function () { if (g.getBoundingClientRect().top < 0 && window.DP && DP.scrollTo) DP.scrollTo(g, { immediate: true }); }, 0);
+      });
+    });
 
     var chipOn = function (el) {
       var item = el.closest('[data-filter-item]');

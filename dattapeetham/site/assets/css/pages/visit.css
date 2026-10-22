@@ -23,7 +23,6 @@
 .page-visit .section-dark a:not(.btn) { color: var(--gold-3); }
 
 /* ---------- hero ---------- */
-.page-visit .page-hero h1 { max-width: 12ch; }
 .page-visit .page-hero .lead { max-width: 50ch; }
 .page-visit .page-hero::before {
   background:
@@ -83,6 +82,8 @@
 .page-visit .vs-nav ul {
   flex: 1; min-width: 0; display: flex; gap: 2px; list-style: none; margin: 0; padding: 0;
   overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
+  /* soft edges where the list scrolls, as on the darshan shrine navigator */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent);
 }
 .page-visit .vs-nav ul::-webkit-scrollbar { display: none; }
 .page-visit .vs-nav a {
@@ -340,10 +341,6 @@
 .page-visit .vs-contact .info-list span { color: var(--ink-2); }
 .page-visit .vs-contact .vs-fine { margin-top: 18px; }
 .page-visit .vs-contact-media { justify-self: end; width: min(100%, 440px); }
-
-/* ---------- closing CTA: one primary action, two quieter ones beneath ---------- */
-.page-visit .cta-actions { display: grid; grid-template-columns: repeat(2, max-content); justify-content: end; gap: 12px; }
-.page-visit .cta-actions .btn:first-child { grid-column: 1 / -1; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1180px) {

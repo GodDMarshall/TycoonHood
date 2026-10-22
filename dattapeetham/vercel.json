@@ -32,7 +32,7 @@
     { "source": "/page/view/awards-honors", "destination": "/sri-swamiji#honours", "permanent": true },
     { "source": "/page/view/datta-peetha-guru-parampara", "destination": "/guru-parampara", "permanent": true },
     { "source": "/page/view/adi-guru-dattatreya", "destination": "/guru-parampara#dattatreya", "permanent": true },
-    { "source": "/page/view/datta-avadhoota", "destination": "/guru-parampara#dattatreya", "permanent": true },
+    { "source": "/page/view/datta-avadhoota", "destination": "/centers#kshetras", "permanent": true },
     { "source": "/page/view/sri-jayalakshmi-maata", "destination": "/guru-parampara#jayalakshmi-maata", "permanent": true },
     { "source": "/dattapeetham", "destination": "/about", "permanent": true },
     { "source": "/page/view/about-us", "destination": "/about", "permanent": true },

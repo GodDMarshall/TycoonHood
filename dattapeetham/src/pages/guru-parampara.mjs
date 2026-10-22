@@ -136,7 +136,7 @@ const gurusGrid = () => `<div class="gt-layout" data-gurus>
 const lineage = [
   {
     img: photos.lordDattatreya, alt: 'Lord Dattatreya, adorned with garlands', pos: '50% 12%',
-    place: 'Kriya Yuga', placeNote: 'Through the penance of Sage Atri and Anasuya',
+    place: 'Krita Yuga', placeNote: 'Through the penance of Sage Atri and Anasuya',
     role: 'Adi Guru · Guru of Gurus', name: 'Lord Dattatreya',
     text: '<p>Dattatreya Swami is the Supreme God who is an incarnation of the Trinity — Brahma, Vishnu and Shiva. He is known as the Guru of Gurus since he was the foremost Guru who promoted and propagated the divine knowledge.</p><p>Lord Dattatreya (or Datta) takes on several incarnations time and again to uplift his devotees.</p>',
     link: ['Adi Guru Dattatreya', '#dattatreya'],
@@ -310,7 +310,7 @@ ${pageHero({
       media: frame(P.dattatreya, 'Lord Dattatreya with three heads, adorned with garlands', { caption: '<b>Lord Dattatreya</b>Adi Guru — the Guru of Gurus', ratio: '4/5', pos: '50% 30%' }),
       body: `${eyebrow('Adi Guru')}
         <h2 data-split>Lord <span class="em-light">Dattatreya</span></h2>
-        <p class="lead">According to the determination of Brahma and as a consequence of the great penance of Sage Atri and Anasuya in the Kriya Yuga (the first of the Yugas / eons), Dattatreya, combining all the aspects of the Trinity — Brahma, Vishnu and Shiva — incarnated for the sake of his devotees.</p>
+        <p class="lead">According to the determination of Brahma and as a consequence of the great penance of Sage Atri and Anasuya in the Kriya Yuga (the Krita Yuga of the Peetham’s glossary, the first of the Yugas / eons), Dattatreya, combining all the aspects of the Trinity — Brahma, Vishnu and Shiva — incarnated for the sake of his devotees.</p>
         <p>The word “Datta” means the one who has given himself, and since he was born to Sage Atri, he came to be known as Lord Dattatreya. Dattatreya Swami is known as the Guru of Gurus since he was the foremost Guru who promoted and propagated the divine knowledge. Hence He is extolled as “Adi Guru”.</p>
         <p>Datta’s incarnation has a unique feature: while other incarnations return to their original abode as soon as their respective tasks are completed, Dattatreya’s incarnation remains permanently on Earth as Guru Murti, exerting an eternal influence.</p>
         <p class="gp-motto"><span lang="sa-Latn">Jaya Guru Datta</span> — the motto of Avadhoota Datta Peetham, and the greeting devotees share with each other.</p>`,
@@ -400,7 +400,7 @@ ${pageHero({
         <p>She worshipped Ganapathy and lived with her family at Mekedatu, in the sacred woods near Sangama, at the confluence of the rivers Kaveri, Arkavati and Gupta Gamini. One day she experienced a communion with Lord Datta in a cave among the holy hills near Mekedatu. Lord Datta told her that He would be born as her son to propagate Truth in the world.</p>
         <dl class="gp-facts">
           <div><dt>Her Gurus</dt><dd>Fakir Taata, a Muslim saint, and Kara Paatra Swami</dd></div>
-          <div><dt>Her husband</dt><dd>Gandluru Narasimha Sastry, later Sri Narahareeshwara Swami</dd></div>
+          <div><dt>Her husband</dt><dd>Gandluru Narasimha Sastry, later Sri Narahari Teertha Swami (the Guru Parampara page calls him Sri Narahareeshwara Swami)</dd></div>
           <div><dt>Mahasamadhi</dt><dd>On Shankara Jayanti in 1953</dd></div>
           <div><dt>Aradhana</dt><dd>Vaishaakha Panchami, every year</dd></div>
         </dl>
@@ -500,7 +500,7 @@ ${ctaBand({
   title: 'Jaya Guru <span class="em-light">Datta</span>',
   text: 'Offer gratitude to the lineage of Gurus who have bestowed divine wisdom — with a puja at the Ashram, or by following Sri Swamiji’s life and teachings.',
   image: photos.guruParamparaPooja,
-  actions: `${btn('Book a Puja', links.poojas, 'gold', 'arrow', ' data-external rel="noopener"')}${btn('Sri Swamiji', 'sri-swamiji.html', 'ghost', 'arrow')}`,
+  actions: `${btn('Book a Puja', links.poojas, 'gold', 'arrow-up-right', ' data-external rel="noopener"')}${btn('Sri Swamiji', 'sri-swamiji.html', 'ghost', 'arrow')}`,
 })}
 `,
 };

@@ -53,14 +53,14 @@
   <div class="wrap">
     <div class="util-status" aria-live="polite">
       <span class="status-pill"><i class="dot" data-dot="temple"></i>Temple <b data-status="temple">·</b></span>
-      <span class="status-pill hide-sm"><svg class="ico" width="13" height="13" aria-hidden="true" focusable="false"><use href="#i-diya"/></svg>Next <b data-next-ritual>·</b></span>
-      <span class="status-pill hide-sm"><svg class="ico" width="13" height="13" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>Mysuru <b data-clock>--:--</b></span>
+      <span class="status-pill status-next hide-sm"><svg class="ico" width="13" height="13" aria-hidden="true" focusable="false"><use href="#i-diya"/></svg>Next <b data-next-ritual>·</b></span>
+      <span class="status-pill status-clock hide-sm"><svg class="ico" width="13" height="13" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>Mysuru <b data-clock>--:--</b></span>
     </div>
     <nav class="util-links" aria-label="Utility links">
-      <a href="https://www.youtube.com/@DattaPeetham/streams" class="live-link"><svg class="ico" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-live"/></svg>Live streams</a>
+      <a href="https://www.youtube.com/@DattaPeetham/streams" class="live-link"><svg class="ico" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-live"/></svg>Live streams <svg class="ico" width="11" height="11" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a>
       <a href="events.html">Events</a>
       <a href="contact.html">Contact</a>
-      <a href="https://www.dattapeetham.org/login">Sign in</a>
+      <a href="https://www.dattapeetham.org/login">Sign in <svg class="ico" width="11" height="11" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a>
     </nav>
   </div>
 </div>
@@ -111,7 +111,7 @@
   <a class="nav-top" href="media.html" aria-haspopup="true">Media</a>
   <button class="sub-toggle" type="button" aria-expanded="false" aria-controls="sub-6" aria-label="Show Media menu"><svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-chev"/></svg></button>
   <div class="sub" id="sub-6">
-    <ul><li><a href="media.html"><b>Videos & Photos</b><span>Watch and explore</span></a></li><li><a href="media.html#audio"><b>Music & Audio</b><span>Albums and bhajans</span></a></li><li><a href="media.html#apps"><b>Apps & Bhaktimala</b><span>18 devotional apps</span></a></li></ul>
+    <ul><li><a href="media.html"><b>Videos & Photos</b><span>Watch and explore</span></a></li><li><a href="media.html#audio"><b>Music & Audio</b><span>Albums and bhajans</span></a></li><li><a href="media.html#apps"><b>Mobile Apps</b><span>18 devotional apps</span></a></li></ul>
   </div>
 </li></ul>
       <div class="nav-mobile-extra">
@@ -125,7 +125,7 @@
   <ul class="lang-menu" id="lang-menu" role="list"><li><a href="seva.html" hreflang="en" lang="en" data-lang="en" translate="no" aria-current="true">English</a></li><li><a href="kn/seva.html" hreflang="kn" lang="kn" data-lang="kn" translate="no">ಕನ್ನಡ</a></li><li><a href="hi/seva.html" hreflang="hi" lang="hi" data-lang="hi" translate="no">हिन्दी</a></li><li><a href="ta/seva.html" hreflang="ta" lang="ta" data-lang="ta" translate="no">தமிழ்</a></li><li><a href="te/seva.html" hreflang="te" lang="te" data-lang="te" translate="no">తెలుగు</a></li></ul>
 </div>
       <button class="icon-btn" type="button" data-search-open aria-label="Search the site" aria-haspopup="dialog"><svg class="ico" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-search"/></svg></button>
-      <a class="btn btn-gold btn-sm hide-md" href="https://www.dattapeetham.org/donations?ashram_id=4">Donate</a>
+      <a class="btn btn-gold btn-sm header-donate" href="https://www.dattapeetham.org/donations?ashram_id=4">Donate</a>
       <button class="icon-btn burger" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false"><span></span></button>
     </div>
   </div>
@@ -188,9 +188,10 @@
   </a>
 </nav></div>
 
-<section id="pillars" class="section seva-pillars">
+<section id="pillars" class="section seva-pillars" aria-labelledby="pillars-h">
   <div class="wrap">
-    <header class="section-head  ">
+    <div class="pillars-panel">
+  <header class="section-head  ">
   <svg class="ornament " viewBox="0 0 160 20" aria-hidden="true" data-draw>
   <path d="M0 10h58M102 10h58" />
   <path d="M80 2c3.6 3.2 5.4 5.8 5.4 8S83.6 15.6 80 18c-3.6-2.4-5.4-5.8-5.4-8S76.4 5.2 80 2Z"/>
@@ -198,61 +199,50 @@
   <circle cx="62" cy="10" r="1.6"/><circle cx="98" cy="10" r="1.6"/>
 </svg>
   <span class="eyebrow ">Seva in action</span>
-  <h2 data-split>Our Pillars of <span class="em-light">Service</span></h2>
+  <h2 data-split id="pillars-h">Our Pillars of <span class="em-light">Service</span></h2>
   <p class="lead" data-reveal="up">Avadhoota Datta Peetham provides medical, educational, vocational and spiritual services to the needy. Compassion here reaches cows, children, patients and birds alike.</p>
 </header>
-    <ul class="pillar-band" data-stagger>
-      <li class="pillar">
-        <a href="darshan.html">
-          <span class="pillar-media"><img width="400" height="267" srcset="assets/img/opt/c32225fac0bd-400.webp 400w" sizes="auto, 100vw" src="assets/img/opt/c32225fac0bd-400.webp" alt="Sri Swamiji offering arati to Lord Dattatreya" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-lotus"/></svg></span>
-            <span><h3>Spirituality</h3><small>Dattatreya worship, Vedic rituals, meditation</small></span>
-          </span>
-        </a>
-      </li><li class="pillar">
-        <a href="music.html">
-          <span class="pillar-media"><img width="800" height="534" srcset="assets/img/opt/183ac010ede9-480.webp 480w, assets/img/opt/183ac010ede9-800.webp 800w" sizes="auto, 100vw" src="assets/img/opt/183ac010ede9-800.webp" alt="A full Nada Mantapa during a programme" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-veena"/></svg></span>
-            <span><h3>Music &amp; Nada Chikitsa</h3><small>The healing power of divine music</small></span>
-          </span>
-        </a>
-      </li><li class="pillar">
-        <a href="#pathashala">
-          <span class="pillar-media"><img width="1600" height="1066" srcset="assets/img/opt/45f939e5c923-480.webp 480w, assets/img/opt/45f939e5c923-960.webp 960w, assets/img/opt/45f939e5c923-1600.webp 1600w" sizes="auto, 100vw" src="assets/img/opt/45f939e5c923-960.webp" alt="Vedic scholars and students at the Annual Veda Sabha, Mysuru Ashram" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-school"/></svg></span>
-            <span><h3>Education</h3><small>Vedic learning and value-based education</small></span>
-          </span>
-        </a>
-      </li><li class="pillar">
-        <a href="#hospital">
-          <span class="pillar-media"><img width="1200" height="800" srcset="assets/img/opt/814c09fb0812-480.webp 480w, assets/img/opt/814c09fb0812-960.webp 960w, assets/img/opt/814c09fb0812-1200.webp 1200w" sizes="auto, 100vw" src="assets/img/opt/814c09fb0812-960.webp" alt="A doctor examines a boy at a free medical camp" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-medical"/></svg></span>
-            <span><h3>Healthcare</h3><small>Hospital, medical camps and wellness</small></span>
-          </span>
-        </a>
-      </li><li class="pillar">
-        <a href="#goshala">
-          <span class="pillar-media"><img width="500" height="333" srcset="assets/img/opt/6d70cbb9d8e0-480.webp 480w, assets/img/opt/6d70cbb9d8e0-500.webp 500w" sizes="auto, 100vw" src="assets/img/opt/6d70cbb9d8e0-500.webp" alt="Sri Swamiji feeding a calf" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-cow"/></svg></span>
-            <span><h3>Cow Care</h3><small>Protection and service to our sacred cows</small></span>
-          </span>
-        </a>
-      </li><li class="pillar">
-        <a href="centers.html">
-          <span class="pillar-media"><img width="1000" height="750" srcset="assets/img/opt/83670437a917-480.webp 480w, assets/img/opt/83670437a917-960.webp 960w, assets/img/opt/83670437a917-1000.webp 1000w" sizes="auto, 100vw" src="assets/img/opt/83670437a917-960.webp" alt="Volunteers of SGS Ashram, Dallas, USA, with groceries collected for charity" loading="lazy" decoding="async"></span>
-          <span class="pillar-body">
-            <span class="pillar-icon"><svg class="ico" width="26" height="26" aria-hidden="true" focusable="false"><use href="#i-globe"/></svg></span>
-            <span><h3>Global Initiatives</h3><small>Spreading spirituality and service worldwide</small></span>
-          </span>
-        </a>
-      </li>
-    </ul>
-    <div class="pillar-more" data-reveal="up"><a class="btn btn-line" href="https://www.dattapeetham.org/page/view/social-activities" data-external><span>All social activities</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></div>
+  <ul class="pillars" data-stagger>
+    <li class="pillar">
+      <div class="pillar-media"><img width="402" height="500" srcset="assets/img/opt/43f9961bd885-402.webp 402w" sizes="auto, 100vw" src="assets/img/opt/43f9961bd885-402.webp" alt="Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the presiding deity of the Peetham" loading="lazy" decoding="async" style="object-position:50% 30%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-lotus"/></svg></span>
+        <div><h3><a href="darshan.html">Spirituality</a></h3><p>Datta worship, Vedic rituals and meditation</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="1600" height="1067" srcset="assets/img/opt/e0b821ff85fa-480.webp 480w, assets/img/opt/e0b821ff85fa-960.webp 960w, assets/img/opt/e0b821ff85fa-1600.webp 1600w" sizes="auto, 100vw" src="assets/img/opt/e0b821ff85fa-960.webp" alt="Musicians perform before a packed audience in Nada Mantapa" loading="lazy" decoding="async" style="object-position:50% 60%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-veena"/></svg></span>
+        <div><h3><a href="music.html">Music &amp; Nada Chikitsa</a></h3><p>The healing power of divine music</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="600" height="400" srcset="assets/img/opt/7e9d65c8465e-480.webp 480w, assets/img/opt/7e9d65c8465e-600.webp 600w" sizes="auto, 100vw" src="assets/img/opt/7e9d65c8465e-600.webp" alt="Three Veda Pathashala students seated at a microphone, chanting" loading="lazy" decoding="async" style="object-position:50% 45%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-book"/></svg></span>
+        <div><h3><a href="seva.html#pathashala">Education</a></h3><p>The Veda Pathashala, founded in 1985</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="1200" height="800" srcset="assets/img/opt/814c09fb0812-480.webp 480w, assets/img/opt/814c09fb0812-960.webp 960w, assets/img/opt/814c09fb0812-1200.webp 1200w" sizes="auto, 100vw" src="assets/img/opt/814c09fb0812-960.webp" alt="A doctor examines a young boy’s ear at a free medical camp" loading="lazy" decoding="async" style="object-position:50% 40%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-medical"/></svg></span>
+        <div><h3><a href="seva.html#hospital">Healthcare</a></h3><p>SGS Hospital and free medical camps</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="1600" height="1067" srcset="assets/img/opt/e09085953cc6-480.webp 480w, assets/img/opt/e09085953cc6-960.webp 960w, assets/img/opt/e09085953cc6-1600.webp 1600w" sizes="auto, 100vw" src="assets/img/opt/e09085953cc6-960.webp" alt="Sri Swamiji feeds the cows at the Gau Shala, Mysuru Ashram" loading="lazy" decoding="async" style="object-position:40% 40%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-cow"/></svg></span>
+        <div><h3><a href="seva.html#goshala">Cow Care</a></h3><p>A Gau Shala for more than 50 cows</p></div>
+      </div>
+    </li><li class="pillar">
+      <div class="pillar-media"><img width="1600" height="1066" srcset="assets/img/opt/0673d15ca3d1-480.webp 480w, assets/img/opt/0673d15ca3d1-960.webp 960w, assets/img/opt/0673d15ca3d1-1600.webp 1600w" sizes="auto, 100vw" src="assets/img/opt/0673d15ca3d1-960.webp" alt="An arena filled with devotees for Bhagavad Gita chanting at NOW Arena, Chicago, July 2024" loading="lazy" decoding="async" style="object-position:50% 50%"></div>
+      <div class="pillar-body">
+        <span class="pillar-icon" aria-hidden="true"><svg class="ico" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-globe"/></svg></span>
+        <div><h3><a href="centers.html">Global Initiatives</a></h3><p>Centres and programmes worldwide</p></div>
+      </div>
+    </li>
+  </ul>
+  <div class="pillars-cta"><a class="btn btn-line" href="https://www.dattapeetham.org/page/view/social-activities" data-external><span>All social activities</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></div>
+</div>
   </div>
   <div class="seva-creed">
     <svg class="thread seva-thread" viewBox="0 0 1460 26" preserveAspectRatio="none" aria-hidden="true">
@@ -464,7 +454,7 @@
       </article>
     </div>
     <div class="btn-row nature-actions" data-reveal="up">
-      <a class="btn btn-gold" href="attractions.html"><span>Visit Shuka Vana &amp; the Bonsai Garden</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+      <a class="btn btn-gold" href="attractions.html#sv-visit"><span>Visit Shuka Vana &amp; the Bonsai Garden</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
       <a class="btn btn-line" href="https://www.dattapeetham.org/page/view/contribution-towards-nature" data-external><span>Contribution towards Nature</span><svg class="ico" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a>
     </div>
   </div>
@@ -576,7 +566,7 @@
         </a><a class="quick-tile" href="#volunteer">
           <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-namaste"/></svg></span>
           <span class="qt-text"><b>Volunteer</b><small>Join the SDHS</small></span>
-        </a><a class="quick-tile" href="contact.html#reach-us">
+        </a><a class="quick-tile" href="teachings.html#bhaktimala">
           <span class="qt-icon"><svg class="ico" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-book"/></svg></span>
           <span class="qt-text"><b>Subscribe</b><small>Bhaktimala magazine</small></span>
         </a>
@@ -606,9 +596,9 @@
         </div>
       </div>
       <div><h2 class="footer-h">Explore</h2><ul><li><a href="about.html">About the Peetham</a></li><li><a href="sri-swamiji.html">Sri Swamiji</a></li><li><a href="guru-parampara.html">Guru Parampara</a></li><li><a href="centers.html">Global Reach</a></li><li><a href="attractions.html">Ashram Attractions</a></li></ul></div>
-      <div><h2 class="footer-h">Participate</h2><ul><li><a href="darshan.html">Temples & Darshan</a></li><li><a href="events.html">Events & Festivals</a></li><li><a href="https://www.dattapeetham.org/poojas?ashram_id=4">Book a Puja</a></li><li><a href="https://www.dattapeetham.org/donations?ashram_id=4">Donate</a></li><li><a href="seva.html#volunteer">Volunteer</a></li><li><a href="https://www.dattapeetham.org/store">Store</a></li></ul></div>
+      <div><h2 class="footer-h">Participate</h2><ul><li><a href="darshan.html">Temples & Darshan</a></li><li><a href="events.html">Events & Festivals</a></li><li><a href="https://www.dattapeetham.org/poojas?ashram_id=4">Book a Puja <svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li><li><a href="https://www.dattapeetham.org/donations?ashram_id=4">Donate <svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li><li><a href="seva.html#volunteer">Volunteer</a></li><li><a href="https://www.dattapeetham.org/store">Store <svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li></ul></div>
       <div><h2 class="footer-h">Learn & Listen</h2><ul><li><a href="teachings.html">Discourses</a></li><li><a href="music.html">Nada Chikitsa</a></li><li><a href="kriya-yoga.html">Datta Kriya Yoga</a></li><li><a href="media.html">Videos & Photos</a></li><li><a href="media.html#apps">Mobile Apps</a></li></ul></div>
-      <div><h2 class="footer-h">Visit</h2><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="visit.html#map">Ashram Map</a></li><li><a href="contact.html">Contact</a></li><li><a href="https://www.dattapeetham.org/techsupport">Feedback / Support</a></li><li><a href="https://www.dattapeetham.org/subscribe">Subscribe for updates</a></li></ul></div>
+      <div><h2 class="footer-h">Visit</h2><ul><li><a href="visit.html">Plan Your Visit</a></li><li><a href="visit.html#map">Ashram Map</a></li><li><a href="contact.html">Contact</a></li><li><a href="https://www.dattapeetham.org/techsupport">Feedback / Support <svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li><li><a href="https://www.dattapeetham.org/subscribe">Subscribe for updates <svg class="ico" width="12" height="12" aria-hidden="true" focusable="false"><use href="#i-arrow-up-right"/></svg></a></li></ul></div>
     </div>
     <div class="footer-mantra" aria-label="Lokah samastah sukhino bhavantu">
       <span class="om" aria-hidden="true">ॐ</span>

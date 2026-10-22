@@ -6,7 +6,6 @@
    .js + prefers-reduced-motion: no-preference.
    ========================================================================== */
 
-.page-centers .page-hero h1 { max-width: 12ch; }
 
 /* shared bits ------------------------------------------------------------- */
 .page-centers .ce-dot { color: var(--gold-2); opacity: .8; }
@@ -256,7 +255,7 @@
 .page-centers .ce-search .ico { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--gold-deep); pointer-events: none; }
 .page-centers .ce-search input {
   width: 100%; height: 48px; padding: 0 18px 0 46px; border-radius: 999px; border: 1px solid var(--line-strong);
-  background: var(--ivory); font: inherit; font-size: .95rem; color: var(--ink); transition: border-color .3s, box-shadow .3s, background .3s;
+  background: var(--ivory); font: inherit; font-size: 1rem; /* 16px: iOS zooms into smaller fields */ color: var(--ink); transition: border-color .3s, box-shadow .3s, background .3s;
 }
 .page-centers .ce-search input::placeholder { color: var(--muted); opacity: .85; }
 .page-centers .ce-search input:focus { outline: none; border-color: var(--gold); background: var(--paper); box-shadow: 0 0 0 3px rgba(201, 164, 92, .25); }
@@ -287,6 +286,11 @@
 .page-centers .ce-state summary:hover .ce-toggle { border-color: var(--gold); }
 .page-centers .ce-state[open] .ce-toggle { transform: rotate(45deg); background: var(--gold); border-color: var(--gold); color: #fffaf0; }
 .page-centers .ce-state .ce-cards { padding: 4px 16px 18px; }
+/* a long open state (Andhra Pradesh lists 33 centres) keeps its heading, and the way to close it, in view */
+@media (max-width: 980px) {
+  .page-centers .ce-state[open] > summary { position: sticky; top: var(--header-h); z-index: 3; background: var(--paper); border-radius: var(--radius) var(--radius) 0 0; box-shadow: 0 10px 18px -16px rgba(48, 34, 14, .55); transition: top .45s var(--ease-out); }
+  .page-centers:has(.site-header.is-hidden) .ce-state[open] > summary { top: 0; }
+}
 .page-centers .ce-state[open] .ce-cards { animation: ce-open .7s var(--ease-out); }
 @keyframes ce-open { from { opacity: 0; transform: translateY(-6px); } }
 
@@ -298,6 +302,7 @@
 }
 .page-centers .ce-c:hover { border-color: var(--gold-2); background: #fffaf2; box-shadow: var(--shadow-sm); }
 .page-centers .ce-c-name { font: 500 1.14rem/1.25 var(--serif); color: var(--ink); text-decoration: none; }
+@media (pointer: coarse) { .page-centers .ce-c-name { display: inline-block; padding: 11px 0; margin: -11px 0; } }
 .page-centers .ce-c-name .ico { display: inline; margin-left: 5px; vertical-align: -1px; color: var(--gold); opacity: .7; transition: transform .4s var(--ease-out), opacity .3s; }
 .page-centers .ce-c-name:hover { color: var(--gold-deep); text-decoration: underline; text-decoration-color: var(--gold-3); }
 .page-centers .ce-c-name:hover .ico { opacity: 1; transform: translate(2px, -2px); }

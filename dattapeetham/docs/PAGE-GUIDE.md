@@ -96,6 +96,23 @@ Only create or edit **your own** files. If you need a change in a shared file,
 don't make it. Put a page-scoped equivalent in your page CSS or JS, and list
 the request under `shared_change_requests` in your result.
 
+Shared pieces added in the cross-site pass; use these rather than page copies:
+
+- **`pillarsPanel()`** (components.mjs), with its data in data.mjs and the
+  `.pillars*` styles.
+- **`--sheen-on-dark`**: the light gold sheen for `.em-light` on any dark
+  surface.
+- **One hero tile layout** for `.quick-tiles.overlap`: icon over label,
+  centred.
+- **Utility bar classes** `status-next` and `status-clock`, plus the
+  `header-donate` link.
+- **The `(pointer: coarse)` tap-target block** in site.css.
+- **Root-absolute links on the English 404**: build.mjs `rootAbsolute()`
+  writes them, and `body[data-base]` marks the page.
+- **Runtime messages are whole sentences with numbered slots**
+  (`fmt('Showing %1 of %2 centres', a, b)`). Concatenating English fragments
+  can't be translated.
+
 ## Page module contract
 
 ```js

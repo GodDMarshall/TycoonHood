@@ -7,7 +7,6 @@
    ========================================================================== */
 
 /* ---------- hero: six tiles, icon over label (reference "Media & Teachings") ---------- */
-.page-teachings .page-hero h1 { max-width: 12ch; }
 .page-teachings .page-hero .lead { max-width: 54ch; }
 .page-teachings .quick-tiles { --cols: 6; }
 @media (min-width: 981px) {
@@ -281,6 +280,7 @@ html:not(.js) .page-teachings .says-slide { grid-area: auto; opacity: 1; visibil
 .page-teachings .gl-item dt { font: 600 1.3rem/1.2 var(--serif); color: var(--ink); margin-bottom: 3px; }
 .page-teachings .gl-item dd { margin: 0; font-size: .93rem; line-height: 1.55; color: var(--ink-2); }
 .page-teachings .gl-ref { color: var(--gold-deep); font-weight: 500; }
+@media (pointer: coarse) { .page-teachings .gl-ref { display: inline-block; padding: 13px 4px; margin: -13px -4px; } }
 .page-teachings .gl mark { background: rgba(226, 200, 142, .6); color: inherit; border-radius: 3px; padding: 0 1px; }
 .page-teachings .gl-empty { margin: 0; padding: 56px 12px; text-align: center; font: italic 400 1.3rem/1.4 var(--serif); color: var(--muted); }
 

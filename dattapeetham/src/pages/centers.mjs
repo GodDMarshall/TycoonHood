@@ -208,7 +208,8 @@ const nations = groupBy(abroad, 'cc', (cc) => countryName[cc]);
 // tel: href — digits only, keeping a leading + and dropping the trunk "(0)".
 const telHref = (p) => {
   const plus = p.trim().startsWith('+');
-  const digits = (plus ? p.replace(/\(0\)/g, '') : p).replace(/\D/g, '');
+  // after a country code the trunk 0 is dropped: "+44 (0)20…" and "+91 (0821)…" dial without it
+  const digits = (plus ? p.replace(/\(0\)/g, '').replace(/\(0/g, '(') : p).replace(/\D/g, '');
   return `tel:${plus ? '+' : ''}${digits}`;
 };
 const fold = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();

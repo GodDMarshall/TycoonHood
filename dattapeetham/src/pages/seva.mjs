@@ -10,9 +10,9 @@
 // /calendar (SDHS camp), the homepage Kamadhenu / Pathashala / Hospital block
 // (src/legacy-homepage.html) and data.timeline (1978, 1985, 1986, 2005, 2012).
 
-import { pageHero, sectionHead, split, frame, stats, card, btn, img, icon, scrollLit, thread } from '../components.mjs';
+import { pageHero, pillarsPanel, sectionHead, split, frame, stats, card, btn, img, icon, scrollLit, thread } from '../components.mjs';
 import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
-import { photos, latestSevas } from '../data.mjs';
+import { photos, pillars, latestSevas } from '../data.mjs';
 
 const P = {
   prakrutiPuja: `${PAGE_IMG}518/518_3afb42ae5333fe82.jpg`,
@@ -70,15 +70,6 @@ const num = (id) => String(sevas.findIndex((s) => s.id === id) + 1).padStart(2, 
 // Numbered small-caps eyebrow that opens each seva section.
 const index = (id, label, light = false) => `<span class="seva-index${light ? ' is-light' : ''}"><i>${num(id)}</i><span>${label}</span></span>`;
 
-// The reference's "Our Pillars of Service" band, one card per pillar.
-const pillars = [
-  { title: 'Spirituality', note: 'Dattatreya worship, Vedic rituals, meditation', icon: 'lotus', img: photos.dattatreya, alt: 'Sri Swamiji offering arati to Lord Dattatreya', href: 'darshan.html' },
-  { title: 'Music &amp; Nada Chikitsa', note: 'The healing power of divine music', icon: 'veena', img: photos.nadaMantapaInterior, alt: 'A full Nada Mantapa during a programme', href: 'music.html' },
-  { title: 'Education', note: 'Vedic learning and value-based education', icon: 'school', img: P.vedaSabha, alt: 'Vedic scholars and students at the Annual Veda Sabha, Mysuru Ashram', href: '#pathashala' },
-  { title: 'Healthcare', note: 'Hospital, medical camps and wellness', icon: 'medical', img: photos.medicalCamp, alt: 'A doctor examines a boy at a free medical camp', href: '#hospital' },
-  { title: 'Cow Care', note: 'Protection and service to our sacred cows', icon: 'cow', img: photos.feedingCow, alt: 'Sri Swamiji feeding a calf', href: '#goshala' },
-  { title: 'Global Initiatives', note: 'Spreading spirituality and service worldwide', icon: 'globe', img: P.dallas, alt: 'Volunteers of SGS Ashram, Dallas, USA, with groceries collected for charity', href: 'centers.html' },
-];
 
 const gauSevas = [
   { title: 'Care for Cow', note: 'Medical care for cows', icon: 'medical', href: links.donations },
@@ -139,7 +130,7 @@ const ways = [
   { icon: 'heart-hand', title: 'Donate', note: 'Choose a fund', href: links.donations },
   { icon: 'flame', title: 'Book a puja', note: 'Participate online', href: links.poojas },
   { icon: 'namaste', title: 'Volunteer', note: 'Join the SDHS', href: '#volunteer' },
-  { icon: 'book', title: 'Subscribe', note: 'Bhaktimala magazine', href: EXT.bhaktimalaOffice },
+  { icon: 'book', title: 'Subscribe', note: 'Bhaktimala magazine', href: 'teachings.html#bhaktimala' },
 ];
 
 const isExt = (href) => /^https?:|^mailto:/.test(href);
@@ -158,21 +149,9 @@ ${pageHero({
   // quickTiles() labels every row "Quick links", which the utility bar also uses.
 }).replace('class="quick-tiles overlap" aria-label="Quick links"', 'class="quick-tiles overlap" aria-label="On this page"')}
 
-<section id="pillars" class="section seva-pillars">
+<section id="pillars" class="section seva-pillars" aria-labelledby="pillars-h">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Seva in action', title: 'Our Pillars of <span class="em-light">Service</span>', lead: 'Avadhoota Datta Peetham provides medical, educational, vocational and spiritual services to the needy. Compassion here reaches cows, children, patients and birds alike.' })}
-    <ul class="pillar-band" data-stagger>
-      ${pillars.map((p) => `<li class="pillar">
-        <a href="${p.href}">
-          <span class="pillar-media">${img(p.img, p.alt)}</span>
-          <span class="pillar-body">
-            <span class="pillar-icon">${icon(p.icon, 26)}</span>
-            <span><h3>${p.title}</h3><small>${p.note}</small></span>
-          </span>
-        </a>
-      </li>`).join('')}
-    </ul>
-    <div class="pillar-more" data-reveal="up">${btn('All social activities', EXT.social, 'line', 'arrow-up-right', X)}</div>
+    ${pillarsPanel(pillars, { lead: 'Avadhoota Datta Peetham provides medical, educational, vocational and spiritual services to the needy. Compassion here reaches cows, children, patients and birds alike.', cta: btn('All social activities', EXT.social, 'line', 'arrow-up-right', X) })}
   </div>
   <div class="seva-creed">
     ${thread('seva-thread')}
@@ -340,7 +319,7 @@ ${pageHero({
       </article>
     </div>
     <div class="btn-row nature-actions" data-reveal="up">
-      ${btn('Visit Shuka Vana &amp; the Bonsai Garden', 'attractions.html', 'gold', 'arrow')}
+      ${btn('Visit Shuka Vana &amp; the Bonsai Garden', 'attractions.html#sv-visit', 'gold', 'arrow')}
       ${btn('Contribution towards Nature', EXT.nature, 'line', 'arrow-up-right', X)}
     </div>
   </div>

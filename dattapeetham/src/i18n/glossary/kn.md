@@ -73,7 +73,8 @@ The forms used most:
   they keep -ಾ: ಭಕ್ತಿಮಾಲಾ, ಜ್ಞಾನ ಬೋಧ ಸಭಾ, ಮಾತಾ, ಕಿಷ್ಕಿಂಧಾ.
 - **Acronyms.** The Peetham's own Indian institutions are written in Kannada letters:
   ಎಸ್‌ಜಿಎಸ್, ಎಸ್‌ಡಿಎಚ್‌ಎಸ್, ಡಿಕೆವೈ. Acronyms of overseas centres stay in Latin letters (KSHT,
-  HDYC, JDYC, TDYC, SGS DYC).
+  HDYC, JDYC, TDYC, SGS DYC). When "SGS" begins a name followed by words (SGS Ashrama, Austin;
+  SGS Hanuman Mandir, Hounslow; SGS Gita Foundation), write ಎಸ್‌ಜಿಎಸ್, in India and abroad alike.
 - **Zero-width non-joiner.** U+200C keeps a halant visible before the next letter in loanwords
   and acronyms: ಎಸ್‌ಜಿಎಸ್, ಆನ್‌ಲೈನ್, ಡೌನ್‌ಲೋಡ್, ಆಪ್‌ಗಳು. It is already in the glossary values.
   Do not strip it.
@@ -225,3 +226,35 @@ Peetham's own Kannada publications. Use the Sanskrit-origin words devotees use (
   as ಮತ್ತು, but keep the entity form wherever the symbol remains.
 - End sentences with a full stop (.). Keep the curly quotes “ ” ‘ ’, the · separators, the en
   and em dashes, and the ellipsis character (…). Use । and ॥ only in verses.
+
+## 10. Decisions from the editorial pass
+
+These settle points on which the six translation chunks differed. They are already applied in
+`src/i18n/kn/`.
+
+- **One rendering per UI label.** Temples & Darshan is ದೇವಸ್ಥಾನಗಳು ಮತ್ತು ದರ್ಶನ everywhere (nav,
+  breadcrumb, page title). Between Kannada words, write "&" as ಮತ್ತು. Keep a literal `&amp;`
+  only inside published titles and data strings.
+- **Directory** (the Peetham's list of centres) is ಪಟ್ಟಿ, not ಸೂಚಿ. Email ID is ಇಮೇಲ್ ವಿಳಾಸ.
+  Speeches archive is ಪ್ರವಚನಗಳ ಸಂಗ್ರಹ. Festival calendar is ಉತ್ಸವಗಳ ದಿನದರ್ಶಿಕೆ.
+- **Guinness record titles** are worded the same on every page: ಬೋನ್ಸಾಯ್ ಮರಗಳ ಅತಿ ದೊಡ್ಡ
+  ಪ್ರದರ್ಶನ, ಪಕ್ಷಿಗೃಹವೊಂದರಲ್ಲಿ ಅತಿ ಹೆಚ್ಚು ಪಕ್ಷಿ ಪ್ರಭೇದಗಳು, ಅತಿ ದೊಡ್ಡ … (never ಅತ್ಯಂತ ದೊಡ್ಡ).
+- **Book catalogue.** An English-language edition keeps its published English title in Latin
+  script, unless the title is purely Sanskrit or Indian words (then transliterate it). Editions
+  in Indian languages, Sanskrit included, get the Kannada title.
+- **Spacing.** ನಾಮ ಸಂಕೀರ್ತನೆ (two words, as in ದಿವ್ಯ ನಾಮ ಸಂಕೀರ್ತನೆ), ಯೋಗ ಕೇಂದ್ರ, ಪ್ರತಿ ವರ್ಷ,
+  ಜೀವನ ಚರಿತ್ರೆ; but ಕಿರುಮರಗಳು, ಆಯ್ಕೆಮಾಡಿ, ಮುಖಮಾಡಿ, ಬೇರೆಬೇರೆ as one word.
+- **Short labels in tight UI.** The breathing circle shows ಉಸಿರೆಳೆಯಿರಿ / ಉಸಿರು ಬಿಡಿ.
+- **Drop caps.** Paragraphs styled with a drop cap (the first paragraph of a story section)
+  must not begin with a digit or with a conjunct or ಶ್ರೀ, because CSS `::first-letter` takes
+  only the first code point (ಶ್ of ಶ್ರೀ, ಪ್ of ಪ್ರಾ). Start them with a plain syllable
+  (ಇಸವಿ 1966ರಲ್ಲಿ…, ಕರ್ನಾಟಕದ…, ವೇದಕಾಲದ…).
+- **Word-by-word animations.** Empty placeholder pairs are attached to the previous word
+  without a space (`<1>ಮರದಿಂದ</1><2></2> <3>…`), so they add no visible gaps.
+- **Digits next to placeholders.** The number check strips placeholders without spaces, so
+  `…1977</1><2>29 ಮೇ…` reads as "197729" and is rejected. Keep a non-digit between two
+  numbers that touch across a placeholder (this is why some date chips read "– 8").
+- **The two "Nam" Navanatha card headings** (new keys `…<3> (Nellore)</3>` and
+  `…<3> (Eluru)</3>`): Nellore is ಣಂ, Eluru is ನಂ; (ನೆಲ್ಲೂರು), (ಏಲೂರು).
+- **Social-media page names** keep the page's own Kannada name where it has one:
+  Datta Vijayam is ದತ್ತವಿಜಯಮ್ (as on the Facebook page).

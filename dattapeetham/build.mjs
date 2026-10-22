@@ -103,6 +103,17 @@ function localizePage(html, page, lang, langs) {
   return out;
 }
 
+// The 404 page is served for unknown URLs at any depth (old links such as
+// /ashrams/.../events/2016/...), so its links and assets must be root-absolute.
+function rootAbsolute(html) {
+  const abs = (u) => (/^(?:[a-z]+:|#|\/)/i.test(u) ? u : '/' + u);
+  return html
+    .replace(/(\s(?:src|href|poster|data-full)=")([^"]*)"/g, (all, a, u) => `${a}${abs(u)}"`)
+    .replace(/(\ssrcset=")([^"]+)"/g, (all, a, v) => a + v.split(/,\s*/).map((c) => abs(c.trim())).join(', ') + '"')
+    .replace(/url\((['"]?|&quot;)assets\//g, 'url($1/assets/')
+    .replace(/<body class="([^"]*)"/, '<body class="$1" data-base="/"');
+}
+
 async function load(rel, bust) {
   return import(pathToFileURL(join(SRC, rel)).href + `?v=${bust}`);
 }
@@ -141,8 +152,9 @@ function checkLinks(pages) {
   }
   for (const p of pages) {
     for (const [, href] of p.html.matchAll(/\shref="([^"]+)"/g)) {
-      if (/^(https?:|mailto:|tel:|data:)/.test(href) || href.startsWith('assets/') || /^(kn|hi|ta|te)\//.test(href)) continue;
-      const [file, hash] = href.split('#');
+      const rel = href.replace(/^\//, '');
+      if (/^(https?:|mailto:|tel:|data:)/.test(href) || rel.startsWith('assets/') || /^(kn|hi|ta|te)\//.test(rel)) continue;
+      const [file, hash] = rel.split('#');
       const target = file || p.file;
       if (!ids.has(target)) { problems.push(`${p.file}: link to missing page "${href}"`); continue; }
       if (hash && !ids.get(target).has(hash)) problems.push(`${p.file}: link to missing anchor "${href}"`);
@@ -231,7 +243,10 @@ export async function build() {
     await mkdir(join(ROOT, '.cache', 'i18n'), { recursive: true });
     await writeFile(join(ROOT, '.cache', 'i18n', `report-${lang.code}.json`), JSON.stringify({ missing: [...stats.missing], rejected: stats.rejected }, null, 1));
   }
-  for (const p of pages) { p.html = p.htmlLocal; await writeFile(join(TMP, p.file), p.html); }
+  for (const p of pages) {
+    p.html = p.slug === '404' ? rootAbsolute(p.htmlLocal) : p.htmlLocal;
+    await writeFile(join(TMP, p.file), p.html);
+  }
 
   // `node build.mjs --extract`: every English segment, for the translators
   if (process.argv.includes('--extract')) {

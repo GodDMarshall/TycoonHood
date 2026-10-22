@@ -9,9 +9,9 @@
 // the Peetham's own, from its S3 bucket. Upcoming events show only dates the
 // official calendar states; past ones hide themselves (assets/js/index.js).
 
-import { quickTiles, hoursCard, photoTile, scrollLit, marquee, shareRow, horizon, ornament, thread, stats, btn, icon, img, esc } from '../components.mjs';
-import { links, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
-import { photos, timings, latestSevas, albums, apps, kshetras, countries, dattaCharitram, varamVideo } from '../data.mjs';
+import { quickTiles, pillarsPanel, hoursCard, photoTile, scrollLit, marquee, shareRow, horizon, ornament, thread, stats, btn, icon, img, esc } from '../components.mjs';
+import { links, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
+import { photos, pillars, timings, latestSevas, albums, apps, kshetras, countries, dattaCharitram, varamVideo } from '../data.mjs';
 
 // Official photographs, by the dattapeetham.org page they appear on.
 const pic = {
@@ -122,7 +122,7 @@ const compassion = `<section id="compassion" class="section ix-compassion" aria-
 // Shuka Vana: the homepage hours above differ from its own page (10 AM – 12:30 PM,
 // 3:30 – 5:30 PM), which also says it is temporarily closed for maintenance.
 const notes = {
-  shukaVana: `Closed on Wednesdays. Timings vary across official sources, and <a href="attractions.html#shuka-vana">Shuka Vana’s own page</a> says it is temporarily closed for maintenance; please check with the Ashram before visiting.`,
+  shukaVana: `Closed on Wednesdays. Timings vary across official sources, and <a href="${OFFICIAL}/page/view/shuka-vana">Shuka Vana’s own page</a> says it is temporarily closed for maintenance; please check with the Ashram before visiting.`,
 };
 
 const timingsSection = `<section id="timings" class="section-tight ix-timings" aria-labelledby="timings-h">
@@ -145,35 +145,10 @@ const timingsSection = `<section id="timings" class="section-tight ix-timings" a
    5 · Our Pillars of Service
 --------------------------------------------------------------------------- */
 
-const pillars = [
-  { icon: 'lotus', title: 'Spirituality', text: 'Datta worship, Vedic rituals and meditation', img: pic.kaalaagni, alt: 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the presiding deity of the Peetham', pos: '50% 30%', href: 'darshan.html' },
-  { icon: 'veena', title: 'Music &amp; Nada Chikitsa', text: 'The healing power of divine music', img: pic.nadaConcert, alt: 'Musicians perform before a packed audience in Nada Mantapa', pos: '50% 60%', href: 'music.html' },
-  { icon: 'book', title: 'Education', text: 'The Veda Pathashala, founded in 1985', img: photos.students, alt: 'Three Veda Pathashala students seated at a microphone, chanting', pos: '50% 45%', href: 'seva.html#pathashala' },
-  { icon: 'medical', title: 'Healthcare', text: 'SGS Hospital and free medical camps', img: photos.medicalCamp, alt: 'A doctor examines a young boy’s ear at a free medical camp', pos: '50% 40%', href: 'seva.html#hospital' },
-  { icon: 'cow', title: 'Cow Care', text: 'A Gau Shala for more than 50 cows', img: pic.gauShala, alt: 'Sri Swamiji feeds the cows at the Gau Shala, Mysuru Ashram', pos: '40% 40%', href: 'seva.html#goshala' },
-  { icon: 'globe', title: 'Global Initiatives', text: 'Centres and programmes worldwide', img: pic.gitaChicago, alt: 'An arena filled with devotees for Bhagavad Gita chanting at NOW Arena, Chicago, July 2024', pos: '50% 50%', href: 'centers.html' },
-];
 
 const pillarsSection = `<section id="pillars" class="section ix-pillars-sec" aria-labelledby="pillars-h">
   <div class="wrap">
-    <div class="ix-pillars-panel">
-      <header class="section-head">
-        ${ornament()}
-        <span class="eyebrow">Seva in action</span>
-        <h2 id="pillars-h" data-split>Our Pillars of <span class="em-light">Service</span></h2>
-        <p class="lead" data-reveal="up">An internationally acclaimed institution dedicated to the social, moral and spiritual upliftment of humanity.</p>
-      </header>
-      <ul class="ix-pillars" data-stagger>
-        ${pillars.map((p) => `<li class="ix-pillar">
-          <div class="ix-pillar-media">${img(p.img, p.alt, { pos: p.pos })}</div>
-          <div class="ix-pillar-body">
-            <span class="ix-pillar-icon" aria-hidden="true">${icon(p.icon, 30)}</span>
-            <div><h3><a href="${p.href}">${p.title}</a></h3><p>${p.text}</p></div>
-          </div>
-        </li>`).join('')}
-      </ul>
-      <div class="ix-center">${btn('Explore All Initiatives', 'seva.html', 'line', 'arrow')}</div>
-    </div>
+    ${pillarsPanel(pillars, { lead: 'An internationally acclaimed institution dedicated to the social, moral and spiritual upliftment of humanity.', cta: btn('Explore All Initiatives', 'seva.html', 'line', 'arrow') })}
   </div>
 </section>`;
 
@@ -197,7 +172,7 @@ const sevasSection = `<section id="sevas" class="section section-sand ix-sevas" 
           <h3>${s.title}</h3>
           <p>${s.text}</p>
           <div class="ix-seva-foot">
-            <a class="btn btn-gold btn-sm" href="${s.href}"><span>Participate</span>${icon('arrow', 16)}</a>
+            <a class="btn btn-gold btn-sm" href="${s.href}"><span>Participate</span>${icon('arrow-up-right', 16)}</a>
             ${shareRow(`${s.title} at Avadhoota Datta Peetham`, s.href).replace('<div class="share">', `<div class="share" role="group" aria-label="Share ${esc(s.title)}">`)}
           </div>
         </div>
@@ -248,7 +223,7 @@ const stops = [
     text: 'The 70-foot monolithic statue consecrated in 2012 is the tallest stone statue of Hanuman in India. On weekends, 3D projection mapping is synchronised with the Hanuman Chalisa.',
     href: 'darshan.html#hanuman', cta: 'The temple' },
   { place: 'Attraction', title: 'Shuka Vana', img: photos.shukaVana2, alt: 'Sri Swamiji, smiling and waving, surrounded by green parrots at Shuka Vana', print: true,
-    text: 'Founded by Sri Swamiji in 2012: a free-flight, walk-in aviary and bird hospital, home to more than 2,000 birds of 486 species and a Guinness World Record holder. (Its official page currently notes that it is temporarily closed to the public for maintenance.)',
+    text: 'Founded by Sri Swamiji in 2012: a free-flight, walk-in aviary and bird hospital, home to more than 2,000 birds of 486 species. It holds a Guinness World Record (6 May 2017) for the most bird species in an aviary; the certificate records 468. (Its official page currently notes that it is temporarily closed to the public for maintenance.)',
     href: 'attractions.html#shuka-vana', cta: 'Shuka Vana', video: VIDEO.varam, videoLabel: 'Varam the parrot' },
   { place: 'Attraction', title: 'Bonsai Garden', img: pic.bonsaiGarden, alt: 'A pagoda pavilion among bonsai trees, rocks and a stream in the Kishkindha Moolika Bonsai Garden', pos: '50% 55%',
     text: 'More than 450 carefully shaped miniaturised trees in an oriental garden setting: the Kishkindha Moolika Bonsai Garden, passionately developed and nurtured by Sri Swamiji Himself.',
@@ -303,7 +278,7 @@ const statement = `<section id="teaching" class="section ix-statement" aria-labe
     <h2 id="teaching-h" class="eyebrow">Sri Swamiji says</h2>
     <figure class="ix-teaching">
       <blockquote>${scrollLit('Just as *fire* cannot be separated from wood, similarly, a true devotee is not separate from the object of his *devotion* – the *Lord.*')}</blockquote>
-      <figcaption><span>Pujya Sri Swamiji, <cite>Sadguru Sookti Sangraha</cite> (Devotion – The Most Difficult Path)</span><a class="link-arrow" href="${links.swamijiSays}">More sayings ${icon('arrow', 14)}</a></figcaption>
+      <figcaption><span>Pujya Sri Swamiji, <cite>Sadguru Sookti Sangraha</cite> (Devotion – The Most Difficult Path)</span><a class="link-arrow" href="${links.swamijiSays}">More sayings ${icon('arrow-up-right', 14)}</a></figcaption>
     </figure>
   </div>
 </section>`;
@@ -440,9 +415,9 @@ const musicSection = `<section id="music" class="section ix-music" aria-labelled
 --------------------------------------------------------------------------- */
 
 const events = [
-  { cat: 'music', label: 'Concert', start: '2026-11-25', end: '2026-12-02', day: '25', mon: 'Nov 2026', range: 'to 2 December', title: 'Sri Swamiji in Nara, Japan', place: 'Nara, Japan',
+  { cat: 'music', label: 'Tour · Music', start: '2026-11-25', end: '2026-12-02', day: '25', mon: 'Nov 2026', range: 'to 2 December', title: 'Pujya Swamiji in Nara, Japan', place: 'Nara, Japan',
     text: 'Japan Ragasagara, Sri Swamiji’s music for meditation and healing, on Sunday 29 November, after the yoga conference “Sound, then Truth” on Saturday 28 November.' },
-  { cat: 'seva', label: 'Seva camp', start: '2026-12-15', end: '2026-12-17', day: '15', mon: 'Dec 2026', range: 'to 17 December', title: 'SDHS Volunteer camp', place: 'Vishwaroopa Datta Kshetra, Ganagapura',
+  { cat: 'seva', label: 'Seva Camp', start: '2026-12-15', end: '2026-12-17', day: '15', mon: 'Dec 2026', range: 'to 17 December', title: 'SDHS Volunteer camp', place: 'Vishwaroopa Datta Kshetra, Ganagapura',
     text: 'A camp for the volunteers of Sri Datta Humane Services (SDHS), the charitable organisation founded by Sri Swamiji.' },
   { cat: 'festival', label: 'Festival', start: '2026-12-20', end: '2026-12-20', day: '20', mon: 'Dec 2026', range: 'Sunday', title: 'Vaikuntha Ekadashi &amp; Gita Jayanti', place: 'Mysuru Ashram',
     text: 'Vaikuntha Ekadashi at the Sri Datta Venkateswara Temple, and Gita Jayanti at Nada Mantapa.' },
@@ -459,7 +434,7 @@ const eventsSection = `<section id="upcoming" class="section ix-events" aria-lab
         <p class="ix-events-src">${icon('calendar', 16)}<span>From the official Datta Peetham calendar for 2026</span></p>
       </div>
       <div class="chips" role="group" aria-label="Filter events">
-        ${[['all', 'All'], ['festival', 'Festivals'], ['music', 'Music'], ['seva', 'Seva camps']].map(([v, l], i) => `<button type="button" class="chip" data-filter="${v}" aria-pressed="${i === 0}">${l}</button>`).join('')}
+        ${[['all', 'All'], ['festival', 'Festivals'], ['music', 'Music'], ['seva', 'Seva Camps']].map(([v, l], i) => `<button type="button" class="chip" data-filter="${v}" aria-pressed="${i === 0}">${l}</button>`).join('')}
       </div>
     </div>
     <ol class="ix-events-list" data-stagger>

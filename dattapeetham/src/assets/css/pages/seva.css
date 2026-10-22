@@ -26,20 +26,8 @@
 .page-seva .section-dark .seva-sub::after { background: linear-gradient(90deg, rgba(226, 200, 142, .35), transparent); }
 .page-seva .prose .seva-sub { margin-top: 1.8em; }
 
-/* ---------- pillars band (the reference's "Our Pillars of Service") ---------- */
-.page-seva .pillar-band { list-style: none; margin: 0; padding: clamp(16px, 1.8vw, 24px); display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(14px, 1.6vw, 22px); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow); }
-.page-seva .pillar a { display: flex; flex-direction: column; gap: 14px; height: 100%; text-decoration: none; border-radius: 12px; }
-.page-seva .pillar-media { display: block; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: var(--sand); }
-.page-seva .pillar-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-out), filter .5s; }
-.page-seva .pillar a:hover .pillar-media img, .page-seva .pillar a:focus-visible .pillar-media img { transform: scale(1.07); filter: saturate(1.08) brightness(1.04); }
-.page-seva .pillar-body { display: flex; gap: 10px; align-items: flex-start; padding: 0 2px 4px; }
-.page-seva .pillar-icon { flex: none; margin-top: 1px; color: var(--gold); transition: transform .6s var(--ease-out); }
-.page-seva .pillar a:hover .pillar-icon { transform: rotate(-10deg) scale(1.08); }
-.page-seva .pillar h3 { margin: 0 0 4px; font-size: 1.14rem; font-weight: 600; line-height: 1.15; transition: color .3s; }
-.page-seva .pillar a:hover h3 { color: var(--gold-deep); }
-.page-seva .pillar small { display: block; font-size: .8rem; line-height: 1.45; color: var(--muted); }
-.page-seva .pillar-more { display: flex; justify-content: center; margin-top: 30px; }
-
+/* ---------- pillars of service: shared .pillars-panel in site.css; the panel's own padding replaces some of the section's ---------- */
+.page-seva .seva-pillars { padding-top: clamp(28px, 4.5vw, 64px); }
 /* the creed under the band */
 .page-seva .seva-creed { margin-top: clamp(64px, 8vw, 104px); text-align: center; }
 .page-seva .seva-thread { margin-bottom: clamp(44px, 6vw, 72px); }
@@ -205,7 +193,6 @@ html:not(.js) .page-seva .milestones li { --on: 1; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1180px) {
-  .page-seva .pillar-band { grid-template-columns: repeat(3, 1fr); }
   .page-seva .funds { grid-template-columns: repeat(2, 1fr); }
   .page-seva .fund > a, .page-seva .fund > div { flex-direction: row; align-items: flex-start; gap: 16px; }
   .page-seva .unit-grid { grid-template-columns: repeat(2, 1fr); }
@@ -242,10 +229,6 @@ html:not(.js) .page-seva .milestones li { --on: 1; }
   .page-seva .quick-tiles.overlap .quick-tile:nth-child(n + 4) { border-bottom: 1px solid var(--line); }
   .page-seva .quick-tiles.overlap .quick-tile:nth-last-child(-n + 2) { border-bottom: 0; }
   .page-seva .ways-tiles .quick-tile:nth-last-child(-n + 2) { border-bottom: 0; }
-  .page-seva .pillar-band { grid-template-columns: repeat(2, 1fr); padding: 12px; gap: 16px 12px; }
-  .page-seva .pillar h3 { font-size: 1.04rem; }
-  .page-seva .pillar-body { gap: 8px; }
-  .page-seva .pillar-icon .ico { width: 22px; height: 22px; }
   .page-seva .gm-badge { left: 10px; bottom: 12px; padding: 10px 14px; }
   .page-seva .gm-badge b { font-size: 2rem; }
   .page-seva .gau-mosaic::before { inset: 12px -10px -10px 12px; }

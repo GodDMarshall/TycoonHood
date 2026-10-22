@@ -39,7 +39,7 @@ const chronicle = [
   { year: '2012', title: 'Shuka Vana and Karya Siddhi Hanuman', text: 'In Sri Swamiji’s 70th year, Shuka Vana, the rehabilitation centre for birds, is founded and the 70-foot Karya Siddhi Hanuman statue is consecrated.', img: pic.hanumanTemple, alt: 'The Karya Siddhi Hanuman Temple, Mysuru, with the monolithic Hanuman statue rising above it', pos: '44% 28%' },
   { year: '2016', title: 'Ashta Bhairava', text: 'On 14 December 2016 eight Bhairava idols are consecrated as per Shaiva Agama rites, where a tunnel once led towards Chamundi Hill when the Ashrama started in 1966.' },
   { year: '2023', title: 'Rajarajeshwari and Hari Sannidhi', text: 'On 28 December 2023 Sri Swamiji consecrates the temple of Mother Goddess Rajarajeshwari and unveils Hari Sannidhi, home to 2,108 rare Salagramas.', img: photos.rajarajeshwariSannidhi, alt: 'Sri Swamiji at the Rajarajeshwari Sannidhi', pos: '60% 40%' },
-  { year: 'Today', title: 'An international institution', text: 'More than 80 branches across India — including 16 Ashrams for the 16 incarnations of Lord Dattatreya — and 15 centres abroad, in the UK, USA, Malaysia, Europe, Trinidad, Canada and Australia.' },
+  { year: 'Today', title: 'An international institution', text: 'More than 80 branches across India — including 16 Ashrams for the 16 incarnations of Lord Dattatreya — and, in the Peetham’s directory, centres in eleven countries beyond India, among them the UK, USA, Malaysia, Trinidad, Canada and Australia.' },
 ];
 
 // The mission, in the Peetham's own words.
@@ -75,7 +75,7 @@ const highlights = [
   { cls: 'is-beyond', icon: 'globe', tag: 'Global reach', title: 'Beyond Mysuru', href: 'centers.html', cta: 'Centres & Kshetras', img: pic.aadiGuruChennai, alt: 'Aadi Guru Dattatreya, the Datta Kshetra at Chennai', pos: '50% 35%', items: [
     ['Shodasha Datta Kshetras', '16 shrines for 16 forms of Datta'],
     ['More than 80 branches', 'Across India'],
-    ['15 centres abroad', 'From Trinidad to Australia'],
+    ['Centres in 11 countries', 'Beyond India, from Trinidad to Australia'],
   ] },
 ];
 

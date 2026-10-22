@@ -5,7 +5,7 @@ All Hindi translators follow this guide. Use it together with `glossary/hi.json`
 ## 1. The glossary comes first
 
 - Every name and term listed in `hi.json` must be written exactly as it appears there, every time. Do not swap in a synonym or a different spelling, even when a variant looks "more correct". For example, always write श्री स्वामीजी, never श्री स्वामी जी or स्वामीजी महाराज.
-- Variant English spellings map to one Hindi form. Ashram/Ashrama → आश्रम. Puja/Pooja → पूजा. Aarti/Arati → आरती. Venkateshwara/Venkateswara → वेंकटेश्वर. Nuzvid/Nuzvidu → नूज़िवीडु. Raga Sagara/Ragasagara → राग सागर.
+- Variant English spellings map to one Hindi form. Ashram/Ashrama → आश्रम. Puja/Pooja → पूजा. Aarti/Arati → आरती. Venkateshwara/Venkateswara → वेंकटेश्वर. Nuzvid/Nuzvidu/Nuzuvidu → नूजिवीडु. Raga Sagara/Ragasagara → राग सागर. Bhaktimala/Bhakti Mala (the Peetham's magazine, app and video album) → भक्तिमाला. Raga Ragini/Raga-Ragini → राग रागिनी. Nama Sankeertana/Namasankeertana → नाम संकीर्तन. "Kriya Yuga (the first of the Yugas)" is the Krita Yuga → कृत युग.
 - If a term is missing, transliterate it the way devotees would pronounce it, and add it to `hi.json` in the same pull request so the next translator uses the same form.
 - Brand: **अवधूत दत्त पीठम्**. Short forms are दत्त पीठम् and पीठम्. पीठम् is masculine: पीठम् का मिशन, पीठम् के आश्रम.
 - Name fragments, possessives and gender:
@@ -19,6 +19,9 @@ All Hindi translators follow this guide. Use it together with `glossary/hi.json`
   - "Sri Swamiji founded the Ashram in 1966." → श्री स्वामीजी ने 1966 में आश्रम की स्थापना की।
   - "Lord Dattatreya is the Adi Guru." → भगवान दत्तात्रेय आदि गुरु हैं।
   - "She imparted Sri Vidya to Sri Swamiji." → उन्होंने श्री स्वामीजी को श्रीविद्या प्रदान की।
+  - This includes Sri Swamiji as a child: "…their child was destined to uplift mankind" → … बालक … संपन्न होंगे, और मानवता का उत्थान करना उनकी नियति है।
+  - Plural forms of Gurus: गुरुजन as a noun phrase on its own (गुरुजनों के प्रति श्रद्धा); the ordinary oblique plural गुरुओं is correct in phrases such as गुरुओं की परंपरा, गुरुओं के गुरु.
+  - Prayers addressed to God may keep the intimate तुम where the source is a prayer ("Allah is your name…" → अल्लाह तुम्हारा नाम है). Everything addressed to the reader uses आप.
 - **Devotional vocabulary** where English is plain:
 
   | English | Hindi |
@@ -50,9 +53,12 @@ All Hindi translators follow this guide. Use it together with `glossary/hi.json`
 - **Punctuation:**
   - End Hindi sentences with । (purna viram). ? and ! stay the same.
   - Keep the source's quotation marks (“ ”, ‘ ’), the · separators, — (em dash) and – (en dash in ranges).
-  - Keep `&amp;` and other HTML entities exactly as they appear in the segment.
-- **Acronyms** are written in Devanagari: एसजीएस, एसडीएचएस, डीकेवाई. Emails, URLs, social handles, hashtags and app-store IDs stay in Latin script, unchanged.
+  - "&" between words is और, whether the segment has a plain `&` or the entity `&amp;` (मंदिर और दर्शन, शरीर, मन और आत्मा, शनि और रवि, भाग 1 और 2). Inside a transliterated English name it is एंड (एसजीएस वेदनिधि एकेडमी एंड मास्टर्स इंस्टीट्यूट); "R&D" is अनुसंधान एवं विकास. Never leave a bare `&` in a value. Other entities (`&nbsp;`, `&quot;`) stay as they are.
+- **Acronyms** are written in Devanagari: एसजीएस, एसडीएचएस, डीकेवाई. An acronym the Peetham pronounces as a word is written as that word, like नासा or यूनेस्को: SVAMI → स्वामी. Emails, URLs, social handles, hashtags and app-store IDs stay in Latin script, unchanged.
+- **Two-letter country-code badges** (US, UK, CA, AU, NZ, DE, CH, NL, MY, AE, TT) are ISO codes, not words: they stay in Latin script on every page, next to the Hindi country name.
 - **Book, album and app titles:** transliterate the title (कवच मंजरी, सूर्य प्रभा राग सागर, एसजीएस पंचांगम्). Translate the language tag next to it (Telugu → तेलुगु). If a sentence tells the reader to search an app store, you may add the Roman name once in brackets, for example भक्तिमाला (Bhaktimala).
+  - Creative English titles are transliterated (दत्त स्पीक्स, म्यूज़िंग्स ऑन योग वासिष्ठ). Descriptive store labels are translated, the same way for every language edition: Chanting Book → पारायण पुस्तक, Meaning Book → अर्थ पुस्तक, Books Set → पुस्तक सेट, with Meaning → (अर्थ सहित), Life History → जीवन-चरित, Part-2 → भाग-2, Nadi Shuddhi Exercises → नाड़ी शुद्धि व्यायाम, Sayings of Sri Swamiji → श्री स्वामीजी की सूक्तियाँ.
+- **Hyphens and compounds:** write one form everywhere: माता-पिता, वंशपरंपरा, ताड़पत्र, भक्तिभाव, आत्मसाक्षात्कार, प्रतिवर्ष, डाक टिकट, समाज कल्याण, ताल वाद्य, विश्व बंधुत्व, साइन इन, प्राण-प्रतिष्ठा.
 
 ## 4. Sanskrit verses, mantras and chants
 
@@ -103,7 +109,9 @@ The build rejects any Hindi string whose digit sequences differ from the English
 - **Don't change how a number is written.** A number written as a word in English is written as a word in Hindi: "sixteen Datta Kshetras" → सोलह दत्त क्षेत्र. A number written as digits stays as digits: "16 Datta Kshetras" → 16 दत्त क्षेत्र. Never add a digit that is not in the source, and never drop one.
 - **Ordinals:** keep the digit and add the Hindi suffix.
   - Most numbers take वाँ / वीं / वें, agreeing in gender and case: "80th birthday" → 80वाँ जन्मदिवस; "on his 80th birthday" → उनके 80वें जन्मदिवस पर; "the 22nd Chaturmasya" → 22वाँ चातुर्मास्य.
-  - The irregular forms are 1ला, 2रा, 3रा, 4था, 6ठा.
+  - The irregular forms are 1ला, 2रा, 3रा, 4था, 6ठा; feminine 1ली, 2री, 3री, 4थी, 6ठी ("2nd floor" → 2री मंज़िल).
+- **A paragraph that opens with a drop cap must not start with a digit**, or the cap shows a lone "1" before "966". Start with a word: "In 1966, Sri Swamiji moved…" → सन् 1966 में श्री स्वामीजी … पधारे.
+- Do not double a number word that the Sanskrit already contains: "the sixteen Shodasha Datta Kshetras" → षोडश दत्त क्षेत्र.
 - **Roman numerals** (Chapter IV, I, II) stay as Roman numerals.
 - **Units:** km → किमी, ft → फ़ुट, sq ft / square feet → वर्ग फ़ुट, acres → एकड़. Keep `~`, MB, KB, MP3 and PDF as they are. "Rs." → रु.; INR and USD stay as they are.
 
@@ -141,6 +149,10 @@ The build rejects any Hindi string whose digit sequences differ from the English
 - Status messages are short and plain: अभी खुला है, आज बंद, कॉपी हो गया, पृष्ठ नहीं मिला.
 - Form errors are polite requests: "Please enter your Name" → कृपया अपना नाम लिखें.
 - Screen-reader labels (aria-label, alt) are translated naturally and in full. Do not leave them in English.
+- **One label, one rendering.** Labels that recur across pages use the same Hindi everywhere (see `hi.json`): Support the mission → मिशन में सहयोग करें; Volunteer / Volunteer with SDHS → स्वयंसेवक बनें / एसडीएचएस के स्वयंसेवक बनें; Subscribe for notifications → सूचनाओं के लिए सदस्यता लें; Speeches archive → प्रवचन अभिलेखागार (Discourse collection stays प्रवचन संग्रह); Healing through music → संगीत द्वारा उपचार; Find a centre near you → अपने निकट का केंद्र खोजें; Breathe in / out → साँस लें / साँस छोड़ें; Show / Hide earlier months → पिछले महीने दिखाएँ / छिपाएँ; the footer and marquee motto Spirituality • Service • Harmony • A better humanity → आध्यात्मिकता • सेवा • सद्भाव • बेहतर मानवता.
+- **Labels that sit before a name filled in by the page** must agree with any noun: the top-bar "Next ·" before the next ritual is आगामी (gender-neutral, so it works before हनुमान आरती and हनुमान अभिषेक alike); the search-hint "Try" is सुझाव.
+- **External-link arrows** (`<2/>` inside the link pair, as in `Datta Kashi on <1>dattapeetham.org<2/></1>`) belong at the end of the link: दत्त काशी — `<1>dattapeetham.org<2/></1>`, not `<1>dattapeetham.org<2/></1>` पर दत्त काशी.
+- **Highlighted words** (gold, italic words inside headings) are drawn with a gradient that currently cuts off marks above and below the line (ि, ी, े, ं, र्). This is a CSS issue, not a translation issue; do not reword headings to avoid it.
 
 ## 8. Technical rules (the build checks these)
 
@@ -149,3 +161,5 @@ The build rejects any Hindi string whose digit sequences differ from the English
   - Never drop, merge or renumber them.
 - Every Hindi string must contain Devanagari, or be byte-identical to the English. Strings like `mail@dattapeetham.com`, `IST` or `YouTube @dattakriyayoga108` can stay identical.
 - **Leading and trailing spaces in a segment are significant.** These are script fragments that are joined to numbers or names, for example `"Now in Mysuru · "` and `" centres listed here"`. Keep the same spaces, and phrase each fragment so the joined result still reads as Hindi.
+- **Slot strings.** Runtime messages are now whole sentences with numbered slots, for example `Showing %1 of %2 centres`. Keep every `%1`, `%2` … exactly once; you may move them: `%2 में से %1 केंद्र दिखाए जा रहे हैं`.
+- Keys that are no longer English segments (the English changed) are reported by `node tools/i18n-check.mjs hi` as unknown keys. Remove them; translate the new key instead.

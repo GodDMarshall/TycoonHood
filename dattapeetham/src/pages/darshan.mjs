@@ -84,7 +84,7 @@ const hero = pageHero({
   image: photos.prayerHall,
   pos: '74% 50%',
   crumb: 'Temples & Darshan',
-  actions: `${btn('Book a Puja', links.poojas, 'gold', 'arrow')}${btn('Darshan timings', '#timings', 'ghost', 'clock')}`,
+  actions: `${btn('Book a Puja', links.poojas, 'gold', 'arrow-up-right')}${btn('Darshan timings', '#timings', 'ghost', 'clock')}`,
   tiles: [
     { icon: 'temple', title: 'Daily Darshan', note: 'Temple Timings', href: '#timings' },
     { icon: 'diya', title: 'Pujas &amp; Sevas', note: 'Book Online', href: '#sevas' },
@@ -218,7 +218,7 @@ const timingsSection = `<section id="timings" class="section section-paper dn-ti
     <div class="dn-timings">
       <div class="dn-hours">
         <div class="dn-hours-grid" data-stagger>${hoursCards}</div>
-        <p class="notice dn-notice" data-reveal="up">${icon('info', 18)}<span>Timings vary across official sources; please check with the Ashram before visiting. For festival programmes see the <a href="${links.calendar}">official calendar</a>, and <a href="visit.html">plan your visit</a>. Looking for Shuka Vana? See <a href="attractions.html#shuka-vana">its hours and notice</a>.</span></p>
+        <p class="notice dn-notice" data-reveal="up">${icon('info', 18)}<span>Timings vary across official sources; please check with the Ashram before visiting. For festival programmes see the <a href="${links.calendar}">official calendar</a>, and <a href="visit.html">plan your visit</a>. Looking for Shuka Vana? See <a href="attractions.html#sv-visit">its hours and notice</a>.</span></p>
       </div>
       ${onlineCard}
     </div>
@@ -433,7 +433,7 @@ const hanuman = `<section id="hanuman" class="section section-dark dn-hanuman" a
         <figcaption>Sri Swamiji has blessed devotees to chant this, from the Sundarakanda of Srimad Valmiki Ramayana, for the fulfilment of their tasks and to tide over hardships.</figcaption>
         <div class="btn-row">
           ${btn('Hanuman Chalisa Parayana by Sri Swamiji', 'https://www.youtube.com/watch?v=jI2j6_HzXb0', 'ghost', 'play-circle')}
-          <a class="link-arrow" href="${OFFICIAL}/hanuman-chalisa-form">Submit your Parayana count ${icon('arrow', 15)}</a>
+          <a class="link-arrow" href="${OFFICIAL}/hanuman-chalisa-form">Submit your Parayana count ${icon('arrow-up-right', 15)}</a>
         </div>
       </figure>
     </div>
@@ -558,7 +558,7 @@ const sevasSection = `<section id="sevas" class="section dn-sevas">
           <li><b>Choose a currency</b><span>INR (₹) for devotees in India, with an Indian residential address; USD ($) for devotees outside India, with a foreign address.</span></li>
           <li><b>Add to cart</b><span>Book for family and friends by adding the same Pooja again.</span></li>
         </ol>
-        <div class="btn-row">${btn('Book a Puja', links.poojas, 'gold', 'arrow')}</div>
+        <div class="btn-row">${btn('Book a Puja', links.poojas, 'gold', 'arrow-up-right')}</div>
         <p class="dn-book-note">${icon('info', 14)} Booking and payment take place on the Peetham’s secure system at dattapeetham.org.</p>
       </aside>
     </div>

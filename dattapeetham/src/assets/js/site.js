@@ -63,8 +63,10 @@
     var y = window.scrollY, max = root.scrollHeight - innerHeight;
     if (header) {
       header.classList.toggle('is-scrolled', y > 8);
-      header.classList.toggle('is-hidden', y > 420 && y > lastY + 4 && !body.classList.contains('nav-open'));
-      if (y < lastY - 4) header.classList.remove('is-hidden');
+      // hide while scrolling down, show again only on a real scroll up (or near the top):
+      // the small deltas at the end of a smooth or flung scroll leave it as it is
+      if (y > 420 && y > lastY + 4 && !body.classList.contains('nav-open')) header.classList.add('is-hidden');
+      else if (y < lastY - 4 || y <= 420) header.classList.remove('is-hidden');
     }
     if (progress) progress.style.setProperty('--p', max > 0 ? (y / max).toFixed(4) : 0);
     if (toTop) toTop.classList.toggle('is-on', y > 900);
@@ -74,8 +76,20 @@
   if (toTop) toTop.addEventListener('click', function () { DP.scrollTo(0); });
 
   /* ---------------- smooth anchors & cross-page hash landing ---------------- */
+  // On phones and tablets a section's photo stacks above its heading, so a jump
+  // to the section would land on the picture with the heading below the fold.
+  // Land on the heading's block instead when it sits far down the section.
+  function landing(el) {
+    if (innerWidth > 980 || el.tagName !== 'SECTION') return el;
+    var h = $('h2', el);
+    if (!h) return el;
+    var gap = h.getBoundingClientRect().top - el.getBoundingClientRect().top;
+    if (gap < innerHeight * 0.45) return el;
+    return h.closest('.split-body, .section-head') || h;
+  }
   DP.scrollTo = function (target, opts) {
     var el = typeof target === 'string' ? doc.getElementById(target.replace('#', '')) : target;
+    if (el && el.nodeType === 1) el = landing(el);
     var offset = -((header ? header.offsetHeight : 80) + 12);
     if (DP.lenis) { DP.lenis.scrollTo(el === 0 || target === 0 ? 0 : el, Object.assign({ offset: offset }, opts || {})); return; }
     var top = target === 0 ? 0 : el.getBoundingClientRect().top + scrollY + offset;
@@ -103,11 +117,13 @@
 
   /* ---------------- navigation ---------------- */
   var burger = $('.burger'), navEl = $('#primary-nav'), main = $('#main');
+  // everything behind the full-screen menu is taken out of reach while it is open
+  var behind = [main, $('.util-bar'), $('.site-footer')].filter(Boolean);
   function closeMenu() {
     if (!body.classList.contains('nav-open')) return;
     body.classList.remove('nav-open');
     if (burger) { burger.setAttribute('aria-expanded', 'false'); burger.setAttribute('aria-label', 'Open menu'); }
-    if (main) main.removeAttribute('inert');
+    behind.forEach(function (el) { el.removeAttribute('inert'); });
     if (DP.lenis) DP.lenis.start();
   }
   DP.closeMenu = closeMenu;
@@ -117,7 +133,7 @@
     navEl.style.setProperty('--nav-top', Math.max(hb, 0) + 'px');
     body.classList.add('nav-open');
     burger.setAttribute('aria-expanded', 'true'); burger.setAttribute('aria-label', 'Close menu');
-    if (main) main.setAttribute('inert', '');
+    behind.forEach(function (el) { el.setAttribute('inert', ''); });
     if (DP.lenis) DP.lenis.stop();
     var first = $('a, button', navEl); if (first) setTimeout(function () { first.focus(); }, 60);
   });
@@ -350,9 +366,11 @@
   /* ---------------- search (build-generated index) ---------------- */
   var dlg = $('[data-search]'), input = $('[data-search-input]'), results = $('[data-search-results]'), hints = $('[data-search-hints]');
   var index = null, sel = -1, lastFocus;
+  // the 404 page is served at any depth, so it resolves search from the site root
+  var base = body.getAttribute('data-base') || '';
   function loadIndex() {
     if (index) return Promise.resolve(index);
-    return fetch('assets/search-index.json').then(function (r) { return r.json(); }).then(function (d) { index = d; return d; })
+    return fetch(base + 'assets/search-index.json').then(function (r) { return r.json(); }).then(function (d) { index = d; return d; })
       .catch(function () { index = []; return index; });
   }
   function openSearch() {
@@ -392,7 +410,7 @@
       results.innerHTML = scored.map(function (r, i) {
         var x = r.e.x, pos = x.toLowerCase().indexOf(terms[0]);
         var snip = (pos > 60 ? '…' : '') + x.slice(Math.max(0, pos - 60), pos + 140) + '…';
-        return '<li><a href="' + r.e.u + '" role="option" id="sr-' + i + '"><small>' + escHtml(r.e.t) + '</small><b>' + escHtml(r.e.s || r.e.t) + '</b><span>' + escHtml(snip).replace(re, '<mark>$1</mark>') + '</span></a></li>';
+        return '<li><a href="' + base + r.e.u + '" role="option" id="sr-' + i + '"><small>' + escHtml(r.e.t) + '</small><b>' + escHtml(r.e.s || r.e.t) + '</b><span>' + escHtml(snip).replace(re, '<mark>$1</mark>') + '</span></a></li>';
       }).join('');
       sel = -1;
     });

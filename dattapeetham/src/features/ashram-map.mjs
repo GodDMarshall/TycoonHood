@@ -27,18 +27,20 @@ export const categories = {
   seva: { label: 'Seva & service', one: 'Seva', cta: 'Our seva' },
 };
 
+// The source lists six shrines; the welcome arch and the Birth Date Pillars are
+// filed as attractions so the Shrines filter counts six.
 // x, y: the pin's tip on the 1000 × 720 plan. `since` comes from the page or
 // the Avatara timeline in data.mjs.
 export const ashramPlaces = [
   {
-    id: 'hanumadwaram', cat: 'shrine', x: 345, y: 660, icon: 'temple',
+    id: 'hanumadwaram', cat: 'attraction', x: 345, y: 660, icon: 'temple',
     name: 'Hanumadwaram', note: 'The welcome arch',
     short: 'The grand welcome arch with Hanuman idols.',
     text: 'Visitors enter through the grand Hanumadwaram, a magnificently sculpted welcome arch with Hanuman idols. Just beyond it, an intricate carving of the infant form of Lord Dattatreya greets them.',
     href: 'darshan.html#mandir', source: SHRINES_PAGE,
   },
   {
-    id: 'birth-date-pillars', cat: 'shrine', x: 345, y: 560, icon: 'calendar',
+    id: 'birth-date-pillars', cat: 'attraction', x: 345, y: 560, icon: 'calendar',
     name: 'Birth Date Pillars', note: '366 pillars along the pathway',
     short: '366 pillars, one for each birth date.',
     text: '366 pillars stand on either side of a pathway in the Ashrama. Called the “Date of Birth Pillars”, each carries the deity and demigod for that particular day.',
@@ -105,7 +107,7 @@ export const ashramPlaces = [
     name: 'Shuka Vana', note: 'Rehabilitation centre for birds', since: 'Founded 2012',
     img: photos.shukaVanaAviary, alt: 'The Shuka Vana aviary from above',
     short: 'A free-flight aviary of 2,000+ birds from 486 species.',
-    text: 'Founded by Sri Swamiji in 2012, with its own bird hospital. The free-flight walk-in aviary is home to more than 2,000 birds of 486 species, and holds a Guinness World Record for the most parrot species in a single aviary.',
+    text: 'Founded by Sri Swamiji in 2012, with its own bird hospital. The free-flight walk-in aviary is home to more than 2,000 birds of 486 species. Its Guinness World Record (6 May 2017) is for the most bird species in an aviary; the certificate records 468.',
     timing: { rows: [['Morning', '9:00 AM – 12:00 PM'], ['Evening', '3:30 PM – 6:00 PM']], badge: 'shukaVana', note: 'Closed on Wednesdays. The official Shuka Vana page says it is temporarily closed to the public for maintenance.' },
     href: 'attractions.html#shuka-vana', source: `${OFFICIAL}/page/view/shuka-vana`,
   },
