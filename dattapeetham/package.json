@@ -8,7 +8,9 @@
     "dev": "node build.mjs --serve",
     "qa": "node qa/check-pages.mjs",
     "shot": "node qa/shot.mjs",
-    "images": "node build.mjs && node tools/optimize-images.mjs && node build.mjs"
+    "images": "node build.mjs && node tools/optimize-images.mjs && node build.mjs",
+    "test": "node --test tests/site.test.mjs",
+    "verify": "node build.mjs && node --test tests/site.test.mjs && node qa/check-pages.mjs"
   },
   "engines": {
     "node": ">=20"
