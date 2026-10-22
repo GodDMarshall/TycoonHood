@@ -47,7 +47,7 @@
     Object.keys(hours).forEach(function (k) {
       var st = status(hours[k], now);
       $$('[data-badge="' + k + '"]').forEach(function (el) { el.textContent = st.text; el.className = 'badge ' + (st.open ? 'open' : 'closed'); });
-      $$('[data-status="' + k + '"]').forEach(function (el) { el.textContent = st.open ? 'Open' : 'Closed'; });
+      $$('[data-status="' + k + '"]').forEach(function (el) { el.textContent = st.open ? 'Open now' : 'Closed now'; });
       $$('[data-status-long="' + k + '"]').forEach(function (el) { el.textContent = st.text; });
       $$('[data-dot="' + k + '"]').forEach(function (el) { el.className = (el.classList.contains('live-dot') ? 'live-dot' : 'dot') + ' ' + (st.open ? 'open' : 'closed'); });
     });

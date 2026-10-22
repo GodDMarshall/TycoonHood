@@ -132,7 +132,7 @@ Peetham's own Kannada publications. Use the Sanskrit-origin words devotees use (
   translated: “Keep chanting śivāya rudrāya namaḥ during the Rudra Homa.” becomes “ರುದ್ರ
   ಹೋಮದ ಸಮಯದಲ್ಲಿ ‘ಶಿವಾಯ ರುದ್ರಾಯ ನಮಃ’ ಎಂದು ಜಪಿಸುತ್ತಿರಿ.”
 - The syllable row `Ga·ṇa·pa·ti·sa·chchi·dā·nan·da` becomes `ಗ·ಣ·ಪ·ತಿ·ಸ·ಚ್ಚಿ·ದಾ·ನಂ·ದ`. The two
-  "Nam" seed syllables differ: the 2nd (ṇa, Nellore) is ಣಂ and the 8th (nan, Eluru) is ಂನಂ.
+  "Nam" seed syllables differ: the 2nd (ṇa, Nellore) is ಣಂ and the 8th (nan, Eluru) is ನಂ.
   See the glossary.
 - Keep the ॐ glyph as it is. "Om" in text is ಓಂ.
 

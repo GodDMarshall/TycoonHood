@@ -215,7 +215,7 @@ const temples = [
   { img: pic.kaalaagni, tag: 'Presiding deity', title: 'Universal Prayer Hall', text: 'Home of Kaalaagni Shamana Dattatreya Swami, the main deity of the Peetham.', href: 'darshan.html#prayer-hall', pos: '50% 35%' },
   { img: photos.rajarajeshwariSannidhi, tag: 'Consecrated 28 Dec 2023', title: 'Rajarajeshwari Temple', text: 'Mother Goddess Rajarajeshwari, amid the forms of the Nava Durgas.', href: 'darshan.html#rajarajeshwari', pos: '58% 40%' },
   { img: pic.venkateshwara, tag: 'Since 1999', title: 'Sri Datta Venkateshwara', text: 'Its architecture is much like the temple at holy Tirumala.', href: 'darshan.html#venkateshwara', pos: '62% 40%' },
-  { img: photos.hanumanStatue, tag: '70-ft monolith · 2012', title: 'Karya Siddhi Hanuman', text: 'The tallest stone statue of Hanuman in India.', href: 'darshan.html#hanuman', pos: '50% 25%' },
+  { img: pic.hanumanExterior, tag: '70-ft monolith · 2012', title: 'Karya Siddhi Hanuman', text: 'The tallest stone statue of Hanuman in India.', href: 'darshan.html#hanuman', pos: '42% 40%' },
 ];
 
 const mandirSection = `<section id="mandir" class="section ix-mandir" aria-labelledby="mandir-h">
