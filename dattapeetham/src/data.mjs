@@ -68,8 +68,8 @@ export const photos = {
 
 export const timings = [
   { key: 'temple', title: 'Temple Darshan', img: photos.logo, rows: [['Morning', '6:00 AM – 12:00 PM'], ['Evening', '4:00 PM – 8:00 PM']], note: 'Daily' },
-  { key: 'shukaVana', title: 'Shuka Vana (Birds)', img: photos.birdsIcon, rows: [['Morning', '9:00 AM – 12:00 PM'], ['Evening', '3:30 PM – 6:00 PM']], note: 'Closed on Wednesdays' },
-  { key: null, title: 'Karya Siddhi Hanuman', img: photos.hanumanIcon, rows: [['Abhisheka', '7:00 AM daily'], ['Aarti', '6:00 PM daily']], note: '' },
+  { key: 'shukaVana', title: 'Shuka Vana (Birds)', img: photos.birdsIcon, rows: [['Morning', '9:00 AM – 12:00 PM'], ['Evening', '3:30 PM – 6:00 PM']], note: 'Closed on Wednesdays. Timings vary across official sources, and Shuka Vana’s own page says it is temporarily closed for maintenance; please check with the Ashram before visiting.' },
+  { key: null, title: 'Karya Siddhi Hanuman', img: photos.hanumanIcon, rows: [['Abhisheka', '7:00 AM'], ['Aarti', '6:00 PM daily']], note: 'As listed on the Peetham homepage. The temple’s own page gives darshan hours of 6:30 AM – 12:30 PM and 5 – 8 PM (to 8:30 PM at weekends).' },
 ];
 
 export const latestSevas = [
@@ -110,7 +110,7 @@ export const timeline = [
   ['2016', 'Guinness World Records: largest breathing lesson, largest online video album of people chanting, largest display of bonsai trees. Honorary Doctorate — World Classical Tamil University.'],
   ['2017', 'Guinness World Records: most bird species in an aviary, largest Hindu Smriti.'],
   ['2018', 'Guinness World Record: world’s largest special stamp.'],
-  ['2022', '80th birthday. Guinness World Records including the largest simultaneous recital of the Bhagavad Gita. Yoga Ratna Award and Piteelu Chowdaiah Lifetime Award.'],
+  ['2022', '80th birthday. Guinness World Records including the Largest simultaneous Hindu text recital (the Bhagavad Gita). Yoga Ratna Award and Piteelu Chowdaiah Lifetime Award.'],
   ['2023', 'Honorary Doctorate in Music — Dr. Gangubai Hanagal Music and Performing Arts University.'],
   ['2024', 'First-ever Music for Meditation & Healing in a cave — The Caverns, Pelham, Tennessee, USA.'],
 ];

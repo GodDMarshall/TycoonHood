@@ -544,7 +544,7 @@ const concertsSection = `<section id="concerts" class="section section-dark ev-c
       <h3 class="ec-sub">From earlier concerts</h3>
       <div class="btn-row">
         ${btn('Healing music', 'music.html#concerts', 'ghost', 'arrow')}
-        ${btn('My Raga Sagara Concerts', links.concerts, 'ghost', 'arrow-up-right', ext)}
+        ${btn('My concert bookings (sign in)', links.concerts, 'ghost', 'arrow-up-right', ext)}
       </div>
     </div>
     <ul class="ec-stills" data-stagger>

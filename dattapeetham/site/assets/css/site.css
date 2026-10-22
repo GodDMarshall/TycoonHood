@@ -98,7 +98,7 @@ b, strong { font-weight: 600; }
 /* ---------- type helpers ---------- */
 .eyebrow {
   display: inline-flex; align-items: center; gap: 12px;
-  font: 600 .72rem/1 var(--sans); letter-spacing: .24em; text-transform: uppercase;
+  font: 600 .72rem/1.5 var(--sans); letter-spacing: .24em; text-transform: uppercase;
   color: var(--gold-deep); margin-bottom: 18px;
 }
 .eyebrow-light { color: var(--gold-3); }
@@ -136,7 +136,7 @@ b, strong { font-weight: 600; }
 .btn-gold::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .35) 50%, transparent 70%); transform: translateX(-120%); transition: transform .9s var(--ease-out); }
 .btn-gold:hover::after { transform: translateX(120%); }
 .btn-line { border-color: var(--gold); color: var(--gold-deep); background: transparent; }
-.btn-line:hover { background: var(--gold); color: #fffaf0; }
+.btn-line:hover { background: var(--gold-deep); color: #fffaf0; }
 .btn-ghost { border-color: rgba(255, 246, 226, .55); color: #fff8ea; background: rgba(15, 28, 24, .15); backdrop-filter: blur(4px); }
 .btn-ghost:hover { background: rgba(255, 246, 226, .14); border-color: var(--gold-3); }
 .btn-ghost .ico:first-child { width: 26px; height: 26px; padding: 5px; border: 1px solid currentColor; border-radius: 50%; }
@@ -162,7 +162,7 @@ b, strong { font-weight: 600; }
 .dot.closed { background: #e07a5f; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(88, 211, 148, 0); } }
 .util-links { display: flex; gap: 4px; align-items: center; }
-.util-links a { padding: 6px 12px; text-decoration: none; border-right: 1px solid rgba(239, 228, 204, .14); }
+.util-links a { padding: 6px 12px; text-decoration: none; white-space: nowrap; border-right: 1px solid rgba(239, 228, 204, .14); }
 .util-links a:last-child { border-right: 0; }
 .util-links a:hover { color: #fff; }
 .live-link { display: inline-flex; align-items: center; gap: 6px; color: #ffb48f; }
@@ -272,7 +272,7 @@ b, strong { font-weight: 600; }
 .frame-img img { width: 100%; height: 118%; object-fit: cover; margin-top: -9%; }
 .frame::before { content: ""; position: absolute; inset: 18px -18px -18px 18px; border: 1px solid var(--gold-2); border-radius: var(--radius-lg); z-index: -1; opacity: .7; }
 .frame figcaption { position: absolute; left: 18px; right: 18px; bottom: 18px; padding: 14px 18px; border-radius: 12px; background: rgba(15, 28, 24, .78); backdrop-filter: blur(8px); color: var(--cream-on-dark); font-size: .86rem; }
-.frame figcaption b { display: block; font-family: var(--serif); font-size: 1.25rem; font-weight: 500; color: var(--gold-3); }
+.frame figcaption b { display: block; font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.25; color: var(--gold-3); }
 .frame-badge { position: absolute; top: 18px; left: 18px; padding: 6px 12px; border-radius: 999px; background: var(--paper); color: var(--gold-deep); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; box-shadow: var(--shadow-sm); }
 
 /* ---------- cards ---------- */
@@ -755,3 +755,15 @@ html:not([lang="en"]) .btn { line-height: 1.3; }
 }
 @media (hover: none) { .pt-text { max-height: none; opacity: 1; } }
 .footer-tagline span { line-height: 1.6; text-align: center; }
+
+/* Small light text sits on --gold-deep, never on --gold (3:1). */
+/* Consecutive dark sections: drop the bottom glow so it does not end in a hard edge. */
+.section-dark:has(+ .section-dark) {
+  background:
+    radial-gradient(900px 520px at 85% 0%, rgba(201, 164, 92, .13), transparent 60%),
+    linear-gradient(180deg, var(--forest) 0%, var(--night) 100%);
+}
+/* CTA bands with three actions: give the buttons their own column so none wraps alone. */
+@media (min-width: 1181px) { .cta-box:has(.cta-actions > :nth-child(3)) { grid-template-columns: 1fr auto; } }
+@media (max-width: 980px) { .cta-actions .btn { flex: 1 1 200px; } }
+@media (max-width: 640px) { .cta-actions .btn { flex-basis: 100%; } }

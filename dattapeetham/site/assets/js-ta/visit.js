@@ -1,7 +1,7 @@
 /* Plan Your Visit — page behaviour (no dependencies).
    1. 24-hour dial: the "now" bead sweeps from midnight to the current time in
       Mysuru (IST) when the dial is first seen, then keeps time.
-   2. "On this page" bar: scrollspy sets aria-current on the visible section.
+   2. "இந்தப் பக்கத்தில்" bar: scrollspy sets aria-current on the visible section.
    3. Hotels: sort each table by distance or price (FLIP-animated rows).
    4. Mysuru guide: a place's row and its bead on the golden thread light
       together on hover.

@@ -115,7 +115,7 @@ function header(page) {
       <span class="status-pill hide-sm">${icon('clock', 13)}Mysuru <b data-clock>--:--</b></span>
     </div>
     <nav class="util-links" aria-label="Utility links">
-      <a href="${links.live}" class="live-link">${icon('live', 14)}Live Darshan</a>
+      <a href="${links.live}" class="live-link">${icon('live', 14)}Live streams</a>
       <a href="events.html">Events</a>
       <a href="contact.html">Contact</a>
       <a href="${links.login}">Sign in</a>

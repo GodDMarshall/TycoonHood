@@ -7,14 +7,7 @@
 
 import { pageHero, sectionHead, split, frame, cards, stats, ctaBand, gallery, video, timeline, processSteps, scrollLit, marquee, btn, icon, img, eyebrow } from '../components.mjs';
 import { links, OFFICIAL, PAGE_IMG } from '../site.mjs';
-import { photos, timeline as sharedTimeline } from '../data.mjs';
-
-// The shared timeline paraphrases one 2022 record title; the Avatara Timeline
-// and awards pages name it "Largest simultaneous Hindu text recital".
-const avataraTimeline = sharedTimeline.map(([y, t]) => [y, t.replace(
-  'the largest simultaneous recital of the Bhagavad Gita',
-  'the Largest simultaneous Hindu text recital (the Bhagavad Gita)',
-)]);
+import { photos, timeline as avataraTimeline } from '../data.mjs';
 
 const page = (slug) => `${OFFICIAL}/page/view/${slug}`;
 

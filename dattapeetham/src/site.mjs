@@ -38,7 +38,6 @@ export const links = {
   login: `${OFFICIAL}/login`,
   calendar: `${OFFICIAL}/calendar`,
   eventsArchive: `${OFFICIAL}/events`,
-  liveUpdates: `${OFFICIAL}/liveupdates`,
   speeches: `${OFFICIAL}/speeches`,
   dattaVaakya: `${OFFICIAL}/speeches?category=449`,
   vijayaVyakhya: `${OFFICIAL}/speeches?category=450`,
