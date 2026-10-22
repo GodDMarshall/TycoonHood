@@ -40,7 +40,8 @@
       var shown = 0;
 
       cards.forEach(function (c) {
-        var hay = c.getAttribute('data-q') || '';
+        // fold both sides so translated names match whatever Unicode form the visitor types
+        var hay = c._q || (c._q = fold(c.getAttribute('data-q')));
         var hit = terms.every(function (t) { return hay.indexOf(t) !== -1; });
         c.classList.toggle('is-unmatched', !hit);
       });
