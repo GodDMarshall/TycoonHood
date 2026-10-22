@@ -70,7 +70,7 @@
         poster.src = d.poster;
         if (poster.complete) done();
         vTitle.textContent = d.title;
-        vPlay.setAttribute('aria-label', 'Play video: ' + d.title);
+        vPlay.setAttribute('aria-label', 'वीडियो चलाएँ: ' + d.title);
         out.tag.textContent = d.tag || '';
         out.title.textContent = d.title;
         out.text.textContent = d.text || '';
@@ -101,7 +101,7 @@
       el.setAttribute('aria-pressed', String(el.dataset.id === current));
       el.setAttribute('aria-controls', 'reel-stage');
       el.addEventListener('click', function (e) {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0) return; // let "open in new tab" through
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0) return; // let "नए टैब में खोलें" through
         e.preventDefault();
         select(el);
       });
@@ -156,7 +156,7 @@
     var setState = function () {
       var playing = !audio.paused && !audio.ended;
       box.classList.toggle('is-playing', playing);
-      btn.setAttribute('aria-label', playing ? 'Pause the chant' : 'Play the chant');
+      btn.setAttribute('aria-label', playing ? 'जप रोकें' : 'जप चलाएँ');
     };
 
     btn.addEventListener('click', function () {
@@ -170,7 +170,7 @@
     audio.addEventListener('ended', function () { setState(); audio.currentTime = 0; paint(); });
     audio.addEventListener('timeupdate', paint);
     audio.addEventListener('loadedmetadata', function () { dur.textContent = t(audio.duration); paint(); });
-    audio.addEventListener('error', function () { dur.textContent = 'Use the download link'; });
+    audio.addEventListener('error', function () { dur.textContent = 'डाउनलोड लिंक का उपयोग करें'; });
 
     seek.addEventListener('input', function () {
       seeking = true;

@@ -49,7 +49,7 @@
     }
   }
 
-  /* ---------------- 2. scrollspy for the "on this page" bar ---------------- */
+  /* ---------------- 2. scrollspy for the "इस पृष्ठ पर" bar ---------------- */
   var nav = $('[data-vs-nav]');
   if (nav && 'IntersectionObserver' in window) {
     var links = $$('[data-spy]', nav);
@@ -100,7 +100,7 @@
           });
         }
         buttons.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-        if (status) status.textContent = 'Hotels sorted: ' + b.textContent.trim().toLowerCase() + '.';
+        if (status) status.textContent = 'होटल क्रमबद्ध: ' + b.textContent.trim().toLowerCase() + '.';
       });
     });
   });

@@ -1,13 +1,13 @@
 /* Events & Festivals page (events.html).
-   1. Dated entries: "Concluded" / "Happening now" / "In N days", from today's
+   1. Dated entries: "Concluded" / "अभी चल रहा है" / "N दिनों में", from today's
       date in Mysuru (IST). The markup already lists every entry; this only labels.
    2. Month by month: marks this month and the next entry; per-month counts
       follow the filter chips (filtering itself is site.js). On phones the
-      months already past fold behind a "Show earlier months" button.
+      months already past fold behind a "पिछले महीने दिखाएँ" button.
    3. Festival year: lunar-month radiogroup (arrow keys, Home/End) driving the
       wheel and the month panels; "today" on the Gregorian ring. Without JS all
       twelve panels are listed and the wheel is drawn in its finished state.
-   4. TV: a "now in Mysuru" marker on the day ribbon.
+   4. TV: a "अभी मैसूरु में" marker on the day ribbon.
    5. Concerts: marks the next Raga Sagara on the list. */
 (function () {
   'use strict';
@@ -29,8 +29,8 @@
   $$('[data-start][data-end]').forEach(function (el) {
     var s = el.getAttribute('data-start'), e = el.getAttribute('data-end'), st = $('[data-ev-status]', el), txt;
     if (e < today) { el.classList.add('is-past'); txt = 'Concluded'; }
-    else if (s <= today) { el.classList.add('is-now'); txt = 'Happening now'; }
-    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? 'Tomorrow' : 'In ' + n + ' days'; }
+    else if (s <= today) { el.classList.add('is-now'); txt = 'अभी चल रहा है'; }
+    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? 'Tomorrow' : 'शेष: ' + n + ' days'; }
     if (st) { st.textContent = txt; st.hidden = false; st.classList.toggle('is-now', el.classList.contains('is-now')); }
   });
   var feature = $$('.ev-fcard');
@@ -70,7 +70,7 @@
       list.classList.toggle('fold-past', folded);
       earlier.setAttribute('aria-expanded', String(!folded));
       var n = pastWithMatches().length;
-      earlierLabel.textContent = folded ? 'Show ' + n + ' earlier month' + (n === 1 ? '' : 's') : 'Hide earlier months';
+      earlierLabel.textContent = folded ? 'दिखाएँ: ' + n + ' पूर्व माह' + (n === 1 ? '' : 's') : 'पूर्व माह छिपाएँ';
       earlier.hidden = n === 0;
     };
     var opened = false;
@@ -157,7 +157,7 @@
       s.addEventListener('click', function () { select(s.getAttribute('data-month')); });
     });
 
-    // links into a month panel (e.g. "About Datta Jayanti") open that month first
+    // links into a month panel (e.g. "दत्त जयंती के बारे में") open that month first
     doc.addEventListener('click', function (e) {
       var a = e.target.closest && e.target.closest('a[href^="#fy-p-"]');
       if (a) select(a.getAttribute('href').slice(6));
@@ -183,7 +183,7 @@
     var tick = function () {
       var t = DP.istNow(), x = t.mins / 1440;
       now.style.setProperty('--x', (x * 100).toFixed(2) + '%');
-      nowLabel.textContent = 'Now in Mysuru · ' + t.label + ' IST';
+      nowLabel.textContent = 'अभी मैसूरु में · ' + t.label + ' IST';
       // keep the label inside the ribbon at either end of the day
       var cw = now.parentNode.clientWidth, half = nowLabel.offsetWidth / 2, at = x * cw;
       now.classList.toggle('to-left', at + half > cw);
@@ -198,6 +198,6 @@
   var card = $('.ec-next'), label = $('[data-ec-label]');
   if (card && label) {
     if (card.classList.contains('is-now')) label.textContent = 'Today';
-    else if (card.classList.contains('is-past')) label.textContent = 'Latest on the calendar';
+    else if (card.classList.contains('is-past')) label.textContent = 'कैलेंडर पर नवीनतम';
   }
 })();

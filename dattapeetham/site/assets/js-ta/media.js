@@ -156,7 +156,7 @@
     var setState = function () {
       var playing = !audio.paused && !audio.ended;
       box.classList.toggle('is-playing', playing);
-      btn.setAttribute('aria-label', playing ? 'Pause the chant' : 'Play the chant');
+      btn.setAttribute('aria-label', playing ? 'Pause the chant' : 'ஜபத்தை இயக்கு');
     };
 
     btn.addEventListener('click', function () {

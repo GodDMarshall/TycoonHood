@@ -25,7 +25,7 @@
     btn.hidden = false;
     btn.addEventListener('click', function () {
       var paused = box.classList.toggle('is-paused');
-      label.textContent = paused ? 'Resume the circle' : 'Pause the circle';
+      label.textContent = paused ? 'वृत्त फिर से चलाएँ' : 'वृत्त रोकें';
     });
   });
 

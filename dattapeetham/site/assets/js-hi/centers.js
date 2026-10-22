@@ -62,8 +62,8 @@
       if (empty) empty.hidden = shown > 0;
       if (status) {
         status.textContent = shown === total
-          ? 'Showing all ' + total + ' centres listed here'
-          : 'Showing ' + shown + ' of ' + total + ' centres' + (q ? ' matching “' + input.value.trim() + '”' : '');
+          ? 'यहाँ सूचीबद्ध सभी ' + total + ' केंद्र दिखाए जा रहे हैं'
+          : 'दिखाए जा रहे हैं: ' + shown + ' of ' + total + ' centres' + (q ? ' matching “' + input.value.trim() + '”' : '');
       }
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     };

@@ -152,7 +152,7 @@
     if (!ccFace) return;
     var opt = F.cc.options[F.cc.selectedIndex];
     var iso = opt.getAttribute('data-iso');
-    ccFace.innerHTML = iso ? '<small>' + iso + '</small>' + opt.value : 'Other';
+    ccFace.innerHTML = iso ? '<small>' + iso + '</small>' + opt.value : 'ಇತರ';
   }
   F.cc.addEventListener('change', syncCC); syncCC();
 
@@ -230,7 +230,7 @@
     copyText('To: ' + TO + '\nSubject: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
       label.textContent = 'Copied';
       announce(formLive, 'Message copied. Paste it into a new email to ' + TO + '.');
-      setTimeout(function () { label.textContent = 'Copy message'; }, 2400);
+      setTimeout(function () { label.textContent = 'ಸಂದೇಶವನ್ನು ನಕಲಿಸಿ'; }, 2400);
     }, function () {
       announce(formLive, 'Copying did not work. Open “See the composed email” and select the text instead.');
     });

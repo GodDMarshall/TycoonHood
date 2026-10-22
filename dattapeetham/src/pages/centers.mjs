@@ -77,6 +77,10 @@ const navanatha = [
   { seed: 'Dam', syl: 'da', natha: 'Gahaneenatha', place: 'Guntur', slug: 'dam-dattanatha-kshetram-gahaneenatha' },
 ];
 
+// Two kshetras share the romanised seed "Nam" (ṇam for Nellore, nam for Eluru).
+// Naming the place keeps their headings distinct, so translations can spell each one.
+const dupSeed = (n) => navanatha.filter((m) => m.seed === n.seed).length > 1;
+
 // The twelve medicinal wells of Datta Rameshwaram, as named on its page.
 const wells = ['Audumbara', 'Amalaka', 'Nirvindhya', 'Padma', 'Sarva', 'Unmochana', 'Pampa', 'Mata Jayalakshmi', 'Narahari', 'Sri Ganapathy Sachchidananda', 'Sri Datta', 'Anagha'];
 
@@ -430,7 +434,7 @@ const navanathaSection = `<section id="navanatha" class="section section-dark ce
           <a class="ce-nv-link" href="${OFFICIAL}/page/view/${n.slug}">
             <span class="ce-nv-num" aria-hidden="true">${i + 1}</span>
             <span class="ce-nv-text">
-              <h3><span class="ce-nv-seed">${n.seed}</span> <span class="ce-nv-kind">Dattanatha Kshetram</span></h3>
+              <h3><span class="ce-nv-seed">${n.seed}</span> <span class="ce-nv-kind">Dattanatha Kshetram</span>${dupSeed(n) ? `<span class="visually-hidden"> (${n.place})</span>` : ''}</h3>
               <span class="ce-nv-meta"><b>${n.natha}</b><span class="ce-nv-place">${icon('pin', 13)}${n.place}</span></span>
             </span>
             ${icon('arrow-up-right', 16)}

@@ -26,7 +26,7 @@
       var ok = false;
       try { ok = doc.execCommand('copy'); } catch (e) { ok = false; }
       doc.body.removeChild(ta);
-      if (ok) resolve(); else reject(new Error('copy failed'));
+      if (ok) resolve(); else reject(new Error('कॉपी नहीं हो सका'));
     });
   }
   var copyLive = $('[data-copy-live]');
@@ -40,10 +40,10 @@
     b.addEventListener('click', function () {
       copyText(b.getAttribute('data-copy')).then(function () {
         b.classList.add('is-done'); if (label) label.textContent = 'Copied';
-        announce(copyLive, 'Copied the ' + b.getAttribute('data-copy-label') + '.');
+        announce(copyLive, 'कॉपी किया गया: ' + b.getAttribute('data-copy-label') + '.');
       }, function () {
-        if (label) label.textContent = 'Copy failed';
-        announce(copyLive, 'Sorry, copying did not work. Please select the text instead.');
+        if (label) label.textContent = 'कॉपी नहीं हो सका';
+        announce(copyLive, 'क्षमा करें, कॉपी नहीं हो सका। कृपया इसके बजाय टेक्स्ट को चुनें।');
       });
       clearTimeout(timer);
       timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = 'Copy'; }, 2400);
@@ -81,7 +81,7 @@
   var submitted = false, touched = {}, lastMail = null;
 
   // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'Email ID', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  var LABEL = { name: 'Name', email: 'ईमेल आईडी', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -90,28 +90,28 @@
     switch (key) {
       case 'name':
         v = F.name.value.trim();
-        if (!v) return 'Please enter your Name';
-        if (v.length < 3) return 'Please enter at least 3 characters';
+        if (!v) return 'कृपया अपना नाम लिखें';
+        if (v.length < 3) return 'कृपया कम से कम 3 अक्षर लिखें';
         return '';
       case 'email':
         v = F.email.value.trim();
-        if (!v) return 'Please enter your Email ID';
-        if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v)) return 'Please enter a valid Email ID, like name@example.com';
+        if (!v) return 'कृपया अपनी ईमेल आईडी लिखें';
+        if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v)) return 'कृपया एक मान्य ईमेल आईडी लिखें, जैसे name@example.com';
         return '';
       case 'phone':
         v = F.phone.value.trim();
         if (!v) return '';
         var digits = v.replace(/[\s-]/g, '');
-        if (/\D/.test(digits)) return 'Please use digits only';
-        if (digits.length < 8) return 'Please enter at least 8 digits';
-        if (digits.length > 15) return 'Please enter no more than 15 digits';
+        if (/\D/.test(digits)) return 'कृपया केवल अंकों का उपयोग करें';
+        if (digits.length < 8) return 'कृपया कम से कम 8 अंक लिखें';
+        if (digits.length > 15) return 'कृपया 15 से अधिक अंक न लिखें';
         return '';
       case 'purpose':
-        return F.purpose.value ? '' : 'Please select Purpose';
+        return F.purpose.value ? '' : 'कृपया उद्देश्य चुनें';
       case 'message':
         v = F.message.value.trim();
-        if (!v) return 'Please enter Message';
-        if (v.length < 10) return 'Please enter at least 10 characters';
+        if (!v) return 'कृपया संदेश लिखें';
+        if (v.length < 10) return 'कृपया कम से कम 10 अक्षर लिखें';
         return '';
     }
     return '';
@@ -167,7 +167,7 @@
   function refreshSummary(focus) {
     var bad = KEYS.map(function (k) { return [k, check(k)]; }).filter(function (x) { return x[1]; });
     if (!bad.length) { summary.hidden = true; return bad; }
-    summaryTitle.textContent = bad.length === 1 ? 'Please check 1 field before continuing' : 'Please check ' + bad.length + ' fields before continuing';
+    summaryTitle.textContent = bad.length === 1 ? 'आगे बढ़ने से पहले कृपया 1 फ़ील्ड जाँचें' : 'आगे बढ़ने से पहले कृपया ' + bad.length + ' फ़ील्ड जाँचें';
     summaryList.innerHTML = '';
     bad.forEach(function (x) {
       var li = doc.createElement('li'), a = doc.createElement('a');
@@ -183,18 +183,18 @@
   function compose() {
     var name = F.name.value.trim(), email = F.email.value.trim(), purpose = F.purpose.value;
     var digits = F.phone.value.trim().replace(/[\s-]/g, '');
-    var phone = digits ? ((F.cc.value ? '+' + F.cc.value.replace(/^\+/, '') + ' ' : '') + digits) : 'Not given';
-    var subject = purpose + ': message from ' + name;
+    var phone = digits ? ((F.cc.value ? '+' + F.cc.value.replace(/^\+/, '') + ' ' : '') + digits) : 'नहीं दिया गया';
+    var subject = purpose + ': संदेश — प्रेषक: ' + name;
     var body = [
       F.message.value.trim(),
       '',
       '----',
-      'Name: ' + name,
-      'Email ID: ' + email,
-      'Phone: ' + phone,
-      'Purpose: ' + purpose,
+      'नाम: ' + name,
+      'ईमेल आईडी: ' + email,
+      'फ़ोन: ' + phone,
+      'उद्देश्य: ' + purpose,
       '',
-      'Written on the Contact page of the Avadhoota Datta Peetham website.',
+      'अवधूत दत्त पीठम् वेबसाइट के संपर्क पृष्ठ पर लिखा गया।',
     ].join('\n');
     return {
       subject: subject, body: body,
@@ -214,7 +214,7 @@
     $('[data-preview-body]', form).textContent = lastMail.body;
     $('[data-mailto]', form).href = lastMail.href;
     result.hidden = false;
-    announce(formLive, 'Opening your email app with your message to ' + TO + '. It is not sent until you press Send there.');
+    announce(formLive, 'आपका ईमेल ऐप खुल रहा है, संदेश प्राप्तकर्ता: ' + TO + '. It is not sent until you press Send there.');
     // Open the visitor's email app. Nothing leaves this page by itself.
     window.location.href = lastMail.href;
     setTimeout(function () {
@@ -227,12 +227,12 @@
   $('[data-copy-message]', form).addEventListener('click', function () {
     if (!lastMail) return;
     var b = this, label = b.querySelector('span');
-    copyText('To: ' + TO + '\nSubject: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
+    copyText('प्रति: ' + TO + '\nविषय: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
       label.textContent = 'Copied';
-      announce(formLive, 'Message copied. Paste it into a new email to ' + TO + '.');
+      announce(formLive, 'संदेश कॉपी हो गया। इसे एक नए ईमेल में पेस्ट करके इस पते पर भेजें: ' + TO + '.');
       setTimeout(function () { label.textContent = 'संदेश कॉपी करें'; }, 2400);
     }, function () {
-      announce(formLive, 'Copying did not work. Open “See the composed email” and select the text instead.');
+      announce(formLive, 'कॉपी नहीं हो सका। “तैयार ईमेल देखें” खोलें और इसके बजाय टेक्स्ट चुनें।');
     });
   });
 
@@ -252,7 +252,7 @@
       });
       summary.hidden = true; result.hidden = true;
       syncCC(); syncCount();
-      announce(formLive, 'The form has been cleared.');
+      announce(formLive, 'फ़ॉर्म साफ़ कर दिया गया है।');
     }, 0);
   });
 })();

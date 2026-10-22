@@ -26,16 +26,16 @@
   }
   function status(h, now) {
     var c = h.caution;
-    if (h.closed.indexOf(now.day) !== -1) return { open: false, text: c ? 'Weekly holiday today' : 'Closed today' };
+    if (h.closed.indexOf(now.day) !== -1) return { open: false, text: c ? 'आज साप्ताहिक अवकाश' : 'आज बंद' };
     for (var i = 0; i < h.sessions.length; i++) {
       var s = toMins(h.sessions[i][0]), e = toMins(h.sessions[i][1]);
-      if (now.mins >= s && now.mins < e) return { open: true, text: (c ? 'Within listed hours · until ' : 'Open now · until ') + fmt12(h.sessions[i][1]) };
-      if (now.mins < s) return { open: false, text: (c ? 'Listed hours from ' : 'Closed · opens ') + fmt12(h.sessions[i][0]) };
+      if (now.mins >= s && now.mins < e) return { open: true, text: (c ? 'सूचीबद्ध समय के भीतर · समाप्ति ' : 'अभी खुला है · बंद होगा ') + fmt12(h.sessions[i][1]) };
+      if (now.mins < s) return { open: false, text: (c ? 'सूचीबद्ध समय का आरंभ ' : 'बंद · खुलेगा ') + fmt12(h.sessions[i][0]) };
     }
-    return { open: false, text: c ? 'Outside listed hours' : 'Closed · opens tomorrow' };
+    return { open: false, text: c ? 'सूचीबद्ध समय के बाहर' : 'बंद · कल खुलेगा' };
   }
   // Daily rituals at the Karya Siddhi Hanuman temple (from dattapeetham.org).
-  var RITUALS = [[420, 'Hanuman Abhisheka'], [1080, 'Hanuman Aarti']];
+  var RITUALS = [[420, 'हनुमान अभिषेक'], [1080, 'हनुमान आरती']];
   function nextRitual(now) {
     for (var i = 0; i < RITUALS.length; i++) if (now.mins < RITUALS[i][0]) return RITUALS[i][1] + ' · ' + fmt12(RITUALS[i][0]);
     return RITUALS[0][1] + ' · ' + fmt12(RITUALS[0][0]) + ' tomorrow';
@@ -114,7 +114,7 @@
     var hb = header.getBoundingClientRect().bottom;
     navEl.style.setProperty('--nav-top', Math.max(hb, 0) + 'px');
     body.classList.add('nav-open');
-    burger.setAttribute('aria-expanded', 'true'); burger.setAttribute('aria-label', 'Close menu');
+    burger.setAttribute('aria-expanded', 'true'); burger.setAttribute('aria-label', 'मेनू बंद करें');
     if (main) main.setAttribute('inert', '');
     if (DP.lenis) DP.lenis.stop();
     var first = $('a, button', navEl); if (first) setTimeout(function () { first.focus(); }, 60);
@@ -296,7 +296,7 @@
     if (lb) return;
     lb = doc.createElement('dialog');
     lb.className = 'lightbox-dialog';
-    lb.setAttribute('aria-label', 'Image viewer');
+    lb.setAttribute('aria-label', 'चित्र दर्शक');
     lb.innerHTML = '<figure><img alt=""><figcaption></figcaption></figure>' +
       '<button type="button" class="lb-btn lb-close" aria-label="Close"><svg class="ico" width="20" height="20"><use href="#i-close"/></svg></button>' +
       '<button type="button" class="lb-btn lb-prev" aria-label="Previous image"><svg class="ico" width="20" height="20"><use href="#i-arrow-left"/></svg></button>' +

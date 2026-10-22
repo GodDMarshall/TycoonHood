@@ -1,6 +1,6 @@
 /* Temples & Darshan — page behaviour (no dependencies).
    1. Sticky shrine navigator: follows the header, lights the current shrine.
-   2. "A day at the Ashram": a sun marks the time in Mysuru; next ritual flagged.
+   2. "ಆಶ್ರಮದಲ್ಲಿ ಒಂದು ದಿನ": a sun marks the time in Mysuru; next ritual flagged.
    3. Next weekend laser show at the Karya Siddhi Hanuman temple, and an
       open/closed status for the two temples that publish their own hours.
    4. Birth Date Pillars: today's pillar, and a picker for the visitor's day.
@@ -12,7 +12,7 @@
   var $ = function (s, c) { return (c || doc).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var MONTHS = ['ಜನವರಿ', 'ಫೆಬ್ರವರಿ', 'ಮಾರ್ಚ್', 'ಏಪ್ರಿಲ್', 'ಮೇ', 'ಜೂನ್', 'ಜುಲೈ', 'ಆಗಸ್ಟ್', 'ಸೆಪ್ಟೆಂಬರ್', 'ಅಕ್ಟೋಬರ್', 'ನವೆಂಬರ್', 'ಡಿಸೆಂಬರ್'];
   var DAYS_IN = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   var WEEK = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
 

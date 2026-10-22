@@ -3,7 +3,7 @@
    2. "आश्रम में एक दिन": a sun marks the time in Mysuru; next ritual flagged.
    3. Next weekend laser show at the Karya Siddhi Hanuman temple, and an
       open/closed status for the two temples that publish their own hours.
-   4. Birth Date Pillars: today's pillar, and a picker for the visitor's day.
+   4. Birth Date Pillars: today'का स्तंभ, और आगंतुक के लिए तिथि-चयन's day.
    5. Dated festival entries disappear once they have passed.
    Everything is readable without this script; it only adds live state. */
 (function () {
@@ -12,7 +12,7 @@
   var $ = function (s, c) { return (c || doc).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var MONTHS = ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
   var DAYS_IN = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   var WEEK = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
 
@@ -92,9 +92,9 @@
       var inDay = now.mins >= start && now.mins <= end;
       sun.hidden = !inDay;
       if (inDay) sun.style.left = ((now.mins - start) / (end - start) * 100).toFixed(3) + '%';
-      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = 'Now ' + now.label + ' IST';
+      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = 'अभी ' + now.label + ' IST';
     }
-    if (wrap && text) { wrap.hidden = false; text.textContent = 'Now in Mysuru · ' + now.label + ' IST'; }
+    if (wrap && text) { wrap.hidden = false; text.textContent = 'अभी मैसूरु में · ' + now.label + ' IST'; }
     var weekend = now.day === 0 || now.day === 6, nextSet = false;
     $$('.dn-day-events li', track).forEach(function (li) {
       var m = +li.getAttribute('data-m'), skip = li.hasAttribute('data-weekend') && !weekend;
@@ -112,10 +112,10 @@
   /* ---------------- 3. next laser show ---------------- */
   function laserText(now) {
     if (now.day === 0 || now.day === 6) {
-      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return 'Today · ' + fmt12(LASER[i]);
-      return now.day === 6 ? 'Tomorrow · ' + fmt12(LASER[0]) : 'Saturday · ' + fmt12(LASER[0]);
+      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return 'आज · ' + fmt12(LASER[i]);
+      return now.day === 6 ? 'कल · ' + fmt12(LASER[0]) : 'शनिवार · ' + fmt12(LASER[0]);
     }
-    return 'Saturday · ' + fmt12(LASER[0]);
+    return 'शनिवार · ' + fmt12(LASER[0]);
   }
 
   // Hours as published on each temple's own page (minutes after midnight IST).
@@ -127,11 +127,11 @@
   function templeStatus(t, now) {
     var s = now.day === 0 || now.day === 6 ? t.we : t.wk;
     for (var i = 0; i < s.length; i++) {
-      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: 'Open now · until ' + short12(s[i][1]) };
-      if (now.mins < s[i][0]) return { open: false, text: 'Closed · opens ' + short12(s[i][0]) };
+      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: 'अभी खुला है · बंद होगा ' + short12(s[i][1]) };
+      if (now.mins < s[i][0]) return { open: false, text: 'बंद · खुलेगा ' + short12(s[i][0]) };
     }
     var tomorrow = (now.day + 1) % 7, first = (tomorrow === 0 || tomorrow === 6 ? t.we : t.wk)[0][0];
-    return { open: false, text: 'Closed · opens ' + short12(first) + ' tomorrow' };
+    return { open: false, text: 'बंद · खुलेगा ' + short12(first) + ' tomorrow' };
   }
   function updateTemples(now) {
     Object.keys(TEMPLES).forEach(function (k) {
@@ -181,11 +181,11 @@
     };
     var pick = function () {
       fitDays();
-      if (!touched) { out.textContent = 'Choose a birth date to find its pillar.'; return; }
+      if (!touched) { out.textContent = 'उसका स्तंभ खोजने के लिए कोई जन्मतिथि चुनें।'; return; }
       $$('.is-picked', grid).forEach(function (i) { i.classList.remove('is-picked'); });
       var key = month.value + '-' + day.value, el = $('[data-md="' + key + '"]', grid);
       if (el) el.classList.add('is-picked');
-      out.textContent = 'Along the pathway, look for the pillar of ' + day.value + ' ' + MONTHS[+month.value - 1] + ' — it carries the deity and demigod for that day.';
+      out.textContent = 'पथ के किनारे इस तिथि का स्तंभ देखें: ' + day.value + ' ' + MONTHS[+month.value - 1] + ' — उस पर उस दिन के देवता और उपदेवता अंकित हैं।';
     };
     form.addEventListener('change', function () { touched = true; pick(); });
     form.addEventListener('submit', function (e) { e.preventDefault(); });

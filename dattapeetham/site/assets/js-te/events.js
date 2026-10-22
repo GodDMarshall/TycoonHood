@@ -3,7 +3,7 @@
       date in Mysuru (IST). The markup already lists every entry; this only labels.
    2. Month by month: marks this month and the next entry; per-month counts
       follow the filter chips (filtering itself is site.js). On phones the
-      months already past fold behind a "Show earlier months" button.
+      months already past fold behind a "గత నెలలను చూపించండి" button.
    3. Festival year: lunar-month radiogroup (arrow keys, Home/End) driving the
       wheel and the month panels; "today" on the Gregorian ring. Without JS all
       twelve panels are listed and the wheel is drawn in its finished state.
