@@ -181,13 +181,15 @@
   /* ---------------- reveal on scroll ---------------- */
   var revealSel = '[data-reveal], [data-stagger], [data-split], [data-draw], .divider-light, .tl-item, [data-count]';
   var revealEls = $$(revealSel);
-  function showAll() { revealEls.forEach(function (el) { el.classList.add('is-in'); }); }
+  function showAll() { revealEls.forEach(function (el) { el.classList.add('is-in', 'is-done'); }); }
   if (reduced || !('IntersectionObserver' in window)) showAll();
   else {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
         en.target.classList.add('is-in'); io.unobserve(en.target);
+        // once a clip reveal has finished, drop the clip so outlines and shadows show
+        if (en.target.getAttribute('data-reveal') === 'clip') setTimeout(function () { en.target.classList.add('is-done'); }, 1500);
         if (en.target.hasAttribute('data-count')) runCounter(en.target);
       });
     }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });

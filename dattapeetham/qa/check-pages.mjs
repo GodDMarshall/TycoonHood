@@ -20,8 +20,10 @@ const BASE = (process.env.BASE_URL || 'http://127.0.0.1:4321/').replace(/\/?$/, 
 const exe = ['/opt/pw-browsers/chromium', process.env.PW_CHROMIUM_PATH].find((p) => p && existsSync(p));
 const AXE = require.resolve('axe-core/axe.min.js');
 
-const sitemap = await (await fetch(BASE + 'sitemap.xml')).text();
-const paths = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname.replace(/^\//, '') || 'index.html');
+// Pass page files to check only those, e.g. `node qa/check-pages.mjs visit.html`.
+const only = process.argv.slice(2).filter((a) => a.endsWith('.html'));
+const sitemap = only.length ? '' : await (await fetch(BASE + 'sitemap.xml')).text();
+const paths = only.length ? only : [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname.replace(/^\//, '') || 'index.html');
 const browser = await chromium.launch({ executablePath: exe, args: ['--no-sandbox'] });
 const problems = [];
 
@@ -64,7 +66,7 @@ for (const path of paths) {
   errs.forEach((e) => { console.log('   ' + e); problems.push(`${path} ${e}`); });
 }
 
-const missing = await fetch(BASE + 'this-page-does-not-exist-' + Math.random().toString(36).slice(2)).catch(() => null);
+const missing = only.length ? { status: 404 } : await fetch(BASE + 'this-page-does-not-exist-' + Math.random().toString(36).slice(2)).catch(() => null);
 if (!missing || missing.status !== 404) problems.push(`unknown URL returned ${missing && missing.status}, expected 404`);
 
 await browser.close();

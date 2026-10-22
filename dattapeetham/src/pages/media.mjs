@@ -68,13 +68,8 @@ const films = [
     text: 'Composed and sung by Sri Bala Swamiji, a singer-lyricist with compositions in Sanskrit, Telugu, Kannada, Tamil and English.' },
 ];
 
-// Datta Charitram: episodes 1–7 from data.mjs, 8–10 from the same source list.
-const episodes = [
-  ...dattaCharitram,
-  ['A9RoyfXcAyE', 'Datta Charitram · Episode 8'],
-  ['-q0bAHSPGsA', 'Datta Charitram · Episode 9'],
-  ['qRCpMqrPd4Y', 'Datta Charitram · Episode 10'],
-];
+// Datta Charitram episodes 1–10 (data.mjs, from the Guru Parampara and Adi Guru source pages).
+const episodes = [...dattaCharitram];
 const epData = { tag: 'Discourse · Telugu', poster: P.dattaShrine, pos: '50% 34%' };
 
 // Official video albums on dattapeetham.org/videos/albums, largest first.

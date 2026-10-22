@@ -17,10 +17,7 @@ const P = {
   swamijiWithDatta: `${PAGE_IMG}525/525_d7f028c3d9b430b0.JPG`, // "Sri Swamiji & Lord Dattatreya"
 };
 
-// Episodes 8–10 are listed on the source pages but not yet in data.dattaCharitram.
 const episodes = [...dattaCharitram];
-[['A9RoyfXcAyE', 'Datta Charitram · Episode 8'], ['-q0bAHSPGsA', 'Datta Charitram · Episode 9'], ['qRCpMqrPd4Y', 'Datta Charitram · Episode 10']]
-  .forEach((e) => { if (!episodes.some(([id]) => id === e[0])) episodes.push(e); });
 
 const pad = (n) => String(n).padStart(2, '0');
 
