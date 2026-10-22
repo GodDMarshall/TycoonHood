@@ -99,14 +99,14 @@ function collections() {
   ${one({
     n: 'I', name: 'Datta Vaakya', sub: 'Discourses of His Holiness Sri Ganapathy Sachchidananda Swamiji',
     text: 'Anugraha bhashanas and benedictory messages given across India and abroad: through Navaratri, on the Srisaila Kanda during the Atirudra Yaga, and after Sri Chakra Puja in Chicago and in Germany.',
-    facts: ['<b>18</b> discourses in 2023', 'Latest in this collection: <b>15 Oct</b> 2023'],
+    facts: ['<b>18</b> discourses in 2023', 'Latest in this collection: <span class="dv-nw"><b>15 Oct</b> 2023</span>'],
     image: photos.swamijiGarland, alt: 'Sri Ganapathy Sachchidananda Swamiji, garlanded, seated on a silver throne', pos: '42% 30%',
     href: links.dattaVaakya, cta: 'Open Datta Vaakya',
   })}
   ${one({
     n: 'II', name: 'Vijaya Vyakhya', sub: 'Discourses of Pujya Sri Datta Vijayananda Teertha Swamiji',
     text: 'Sri Bala Swamiji gives regular discourses on the Vedas, Shastras, Upanishads and Puranas, explaining their deep spiritual essence in simple words. Here: messages from Solapur and Ganagapura, and from the Atirudra Yaga at Srisailam.',
-    facts: ['<b>3</b> discourses in 2023', 'Latest in this collection: <b>2 Oct</b> 2023'],
+    facts: ['<b>3</b> discourses in 2023', 'Latest in this collection: <span class="dv-nw"><b>2 Oct</b> 2023</span>'],
     image: photos.balaSwamijiSpeech, alt: 'Sri Datta Vijayananda Teertha Swamiji smiling as he speaks into a microphone', pos: '30% 30%',
     href: links.vijayaVyakhya, cta: 'Open Vijaya Vyakhya',
   })}

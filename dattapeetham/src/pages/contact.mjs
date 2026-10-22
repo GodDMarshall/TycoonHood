@@ -108,14 +108,17 @@ const reach = [
   },
 ];
 
-// Short list of dialling codes, taken from the contact page's own list:
-// its four pinned entries, then countries where Datta Kriya Yoga camps were
-// held (homepage), alphabetically.
+// Short list of dialling codes (codes as the contact page's own dropdown gives
+// them): its four pinned entries (India, United States, Canada, United
+// Kingdom), then the other countries the homepage names where Datta Kriya
+// Yoga camps were held (Australia, Belgium, France, Germany, Holland,
+// Malaysia, Singapore, Switzerland, Trinidad), alphabetically. Anyone else
+// picks "Other" and types their own code.
 const countries = [
   ['IN', 'India', '+91'], ['US', 'United States', '+1'], ['CA', 'Canada', '+1'], ['GB', 'United Kingdom', '+44'],
   ['AU', 'Australia', '+61'], ['BE', 'Belgium', '+32'], ['FR', 'France', '+33'], ['DE', 'Germany', '+49'],
-  ['MY', 'Malaysia', '+60'], ['NL', 'Netherlands', '+31'], ['NZ', 'New Zealand', '+64'], ['SG', 'Singapore', '+65'],
-  ['CH', 'Switzerland', '+41'], ['TT', 'Trinidad and Tobago', '+1-868'], ['AE', 'United Arab Emirates', '+971'],
+  ['MY', 'Malaysia', '+60'], ['NL', 'Netherlands', '+31'], ['SG', 'Singapore', '+65'],
+  ['CH', 'Switzerland', '+41'], ['TT', 'Trinidad and Tobago', '+1-868'],
 ];
 
 // Purposes exactly as the live form lists them.
@@ -138,10 +141,14 @@ const socials = [
 ];
 
 // FAQ: only facts the Peetham publishes.
-const templeHoursText = sessions.map(([a, b]) => `${fmt(a)} – ${fmt(b)}`).join(' and ');
+// Temple hours: the homepage's single "Temple Timings" block (site.mjs
+// hours.temple) and its Hanuman Temple line. The Karya Siddhi Hanuman and Sri
+// Datta Venkateshwara temple pages list their own weekday and weekend hours,
+// so the answer keeps the homepage's scope and points to the darshan page.
+const [morning, evening] = sessions.map(([a, b]) => `${fmt(a)} – ${fmt(b)}`);
 const faq = [
   ['What are the temple darshan timings?',
-    `<p>The temples are open every day, ${templeHoursText}. At the Karya Siddhi Hanuman temple, Abhisheka is at 7 AM and Aarti at 6 PM daily.</p><p><a class="link-arrow" href="darshan.html#timings">All temple timings ${icon('arrow', 15)}</a></p>`],
+    `<p>The Peetham’s homepage gives the Temple Timings as ${morning} in the morning and ${evening} in the evening, and lists Abhisheka at 7 AM and Aarti at 6 PM daily at the Hanuman temple.</p><p>Some shrines keep their own hours: the Karya Siddhi Hanuman and Sri Datta Venkateshwara temple pages list different weekday and weekend timings. Please check the temple you plan to visit.</p><p><a class="link-arrow" href="darshan.html#timings">All temple timings ${icon('arrow', 15)}</a></p>`],
   ['Can I stay at the Ashram?',
     `<p>Persons of all faiths are welcome, but facilities are limited and are primarily maintained for devotees of Sri Swamiji. Visitors are requested to stay in hotels in Mysuru and visit the Ashram daily for its programmes.</p><p>Those seeking a brief stay should first attend Ashram programmes consistently for at least a week; the Ashram Administrator handles such inquiries. No visitors may stay while Sri Swamiji or Sri Bala Swamiji are out of station, and during major functions all newcomers must find accommodation elsewhere.</p><p><a class="link-arrow" href="visit.html#stay">Hotels near the Ashram ${icon('arrow', 15)}</a></p>`],
   ['Whom do I ask for permission to visit and stay?',
@@ -299,7 +306,7 @@ const form = `<form class="ct-form panel" id="contact-form" action="mailto:${sit
 
 const writeSection = `<section id="write" class="section section-sand ct-write" aria-labelledby="write-h">
   <div class="wrap ct-write-grid">
-    <aside class="ct-guide panel panel-dark grain" data-reveal="left">
+    <div class="ct-guide panel panel-dark grain" data-reveal="left">
       <svg class="ct-guide-mandala" viewBox="0 0 104 104" aria-hidden="true"><use href="#i-mandala"/></svg>
       <span class="eyebrow">Write to the Ashram</span>
       <h2 id="write-h" data-split>Send a <span class="em-light">message</span></h2>
@@ -316,7 +323,7 @@ const writeSection = `<section id="write" class="section section-sand ct-write" 
         <p><b>Website or app issue?</b> For all website application and programme issues, kindly use <a href="${links.techSupport}">Feedback / Support</a>.</p>
         <p><b>Prefer to write directly?</b> <a href="mailto:${site.email}">${site.email}</a></p>
       </div>
-    </aside>
+    </div>
     ${form}
   </div>
 </section>`;
@@ -368,9 +375,9 @@ const visitSection = `<section id="visit-info" class="section section-dark ct-vi
           ${dayBar}
           <dl class="ct-hours">
             ${sessions.map(([a, b], i) => `<div><dt>${i === 0 ? 'Morning' : 'Evening'}</dt><dd>${fmt(a)} – ${fmt(b)}</dd></div>`).join('')}
-            <div><dt>Karya Siddhi Hanuman</dt><dd>Abhisheka 7 AM · Aarti 6 PM<span class="ct-js-only ct-next">Next: <b data-next-ritual></b></span></dd></div>
+            <div><dt>Hanuman Temple</dt><dd>Abhisheka 7 AM · Aarti 6 PM<span class="ct-js-only ct-next">Next: <b data-next-ritual></b></span></dd></div>
           </dl>
-          <p class="ct-live-note">Temples open daily. The Ashram gates close at 11 PM.</p>
+          <p class="ct-live-note">Temple darshan hours as listed on the Peetham’s homepage; individual shrines may keep their own hours. The Ashram gates close at 11 PM.</p>
           <a class="link-arrow" href="darshan.html#timings">All temple timings ${icon('arrow', 15)}</a>
         </article>
 
@@ -422,9 +429,9 @@ const faqSection = `<section id="faq" class="section ct-faq" aria-labelledby="fa
 
 const cta = ctaBand({
   title: 'Stay close to the <span class="em-light">Ashram</span>',
-  text: 'Subscribe for the Peetham’s updates, join Live Darshan, or plan your visit to Mysuru.',
+  text: 'Subscribe for the Peetham’s updates, watch its YouTube channels, or plan your visit to Mysuru.',
   image: P.cta,
-  actions: `${btn('Subscribe for updates', links.subscribe, 'gold', 'arrow-up-right', ' data-magnetic')}${btn('Live Darshan', links.youtube, 'ghost', 'live')}${btn('Plan your visit', 'visit.html', 'ghost', 'arrow')}`,
+  actions: `${btn('Subscribe for updates', links.subscribe, 'gold', 'arrow-up-right', ' data-magnetic')}${btn('YouTube channels', links.youtube, 'ghost', 'yt')}${btn('Plan your visit', 'visit.html', 'ghost', 'arrow')}`,
 });
 
 /* ===========================================================================

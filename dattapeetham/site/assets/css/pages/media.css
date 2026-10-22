@@ -75,8 +75,9 @@ html:not(.js) .page-media .reel-nav { display: none; }
 /* series + archive under the reel */
 .page-media .videos-more { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(24px, 3vw, 40px); margin-top: clamp(56px, 7vw, 88px); }
 .page-media .series { display: flex; flex-direction: column; }
-.page-media .series-art { position: relative; margin: calc(clamp(26px, 3vw, 38px) * -1) calc(clamp(26px, 3vw, 38px) * -1) 26px; height: clamp(160px, 16vw, 220px); overflow: hidden; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-.page-media .series-art img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.9); }
+.page-media .series-art { position: relative; flex: 1 0 auto; margin: calc(clamp(26px, 3vw, 38px) * -1) calc(clamp(26px, 3vw, 38px) * -1) 26px; min-height: clamp(160px, 16vw, 220px); overflow: hidden; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+/* the artwork absorbs any spare height when the archive card beside it is taller */
+.page-media .series-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.9); }
 .page-media .series-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(15, 28, 24, .96), rgba(15, 28, 24, .2) 55%, rgba(15, 28, 24, .35)); }
 .page-media .series .ep-grid { margin-top: auto; }
 .page-media .series, .page-media .archive { padding: clamp(26px, 3vw, 38px); border-radius: var(--radius-lg); border: 1px solid rgba(226, 200, 142, .16); background: linear-gradient(160deg, rgba(27, 49, 41, .55), rgba(10, 19, 16, .35)); }
@@ -318,7 +319,7 @@ html:not(.js) .page-media .reel-nav { display: none; }
 .page-media .channel header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 .page-media .ch-icon { width: 42px; height: 42px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--forest); color: var(--gold-3); }
 .page-media .channel h3 { font-size: 1.45rem; margin: 0; }
-.page-media .ch-count { margin-left: auto; font: 600 .66rem/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); }
+.page-media .ch-count { margin-left: auto; white-space: nowrap; font: 600 .66rem/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); }
 .page-media .channel ul { list-style: none; margin: 0; padding: 0; }
 .page-media .channel li a { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 8px 2px; border-top: 1px solid var(--line); text-decoration: none; font-size: .9rem; color: var(--ink-2); transition: color .25s, padding .35s var(--ease-out); }
 .page-media .channel li a .ico { flex: none; color: var(--gold); opacity: .6; transition: opacity .25s, transform .3s var(--ease-out); }
@@ -354,11 +355,29 @@ html:not(.js) .page-media .reel-nav { display: none; }
 /* ---------- responsive ---------- */
 @media (max-width: 1180px) {
   .page-media .reel-rail { grid-auto-columns: minmax(220px, calc((100% - 3 * 18px) / 4)); }
-  .page-media .app-grid { grid-template-columns: repeat(4, 1fr); }
+  /* 18 apps: six across keeps every row full (4 across left a row of two) */
+  .page-media .app-grid { grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .page-media .app { padding: 18px 6px 14px; }
+  .page-media .app b { font-size: .98rem; }
+  .page-media .channel { padding: 20px 18px 12px; }
+  .page-media .channel header { gap: 10px; }
+  .page-media .channel h3 { font-size: 1.3rem; }
+  .page-media .ch-count { letter-spacing: .1em; }
   .page-media .bhajan-links { grid-template-columns: repeat(2, 1fr); }
   .page-media .ep-grid { grid-template-columns: repeat(5, 1fr); }
   .page-media .ep { min-height: 84px; padding: 12px 10px 10px; }
   .page-media .ep-num { font-size: 1.7rem; }
+  /* keep the fanned magazines inside their half-width column */
+  .page-media .mag-stack { height: 360px; }
+  .page-media .mag { width: 190px; margin-left: -95px; }
+  .page-media .mag-1 { transform: translateX(-96px) rotate(-8deg); }
+  .page-media .mag-3 { transform: translateX(96px) rotate(8deg); }
+  .page-media .mag a { padding: 20px 14px 16px; }
+  .page-media .mag-mast { font-size: 1.12rem; letter-spacing: .12em; white-space: nowrap; }
+  .page-media .mag-orn { width: 60px; height: 60px; }
+  .page-media .mag-lang { font-size: 1.5rem; }
+  .page-media .mag-stack:hover .mag-1 { transform: translateX(-108px) rotate(-10deg); }
+  .page-media .mag-stack:hover .mag-3 { transform: translateX(108px) rotate(10deg); }
 }
 @media (max-width: 980px) {
   .page-media .quick-tiles { grid-template-columns: repeat(3, 1fr); }

@@ -141,6 +141,23 @@
   });
   $$('a', navEl).forEach(function (a) { a.addEventListener('click', function () { if (!a.hash || a.pathname !== location.pathname) closeMenu(); }); });
 
+  /* ---------------- language switcher ---------------- */
+  $$('[data-lang-switch]').forEach(function (box) {
+    var btn = $('.lang-btn', box);
+    function set(open) { box.classList.toggle('is-open', open); btn.setAttribute('aria-expanded', String(open)); }
+    btn.addEventListener('click', function (e) { e.stopPropagation(); set(!box.classList.contains('is-open')); if (box.classList.contains('is-open')) { var cur = $('[aria-current]', box) || $('a', box); cur.focus(); } });
+    doc.addEventListener('click', function (e) { if (!box.contains(e.target)) set(false); });
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { set(false); btn.focus(); }
+      var links = $$('a', box), i = links.indexOf(doc.activeElement);
+      if (e.key === 'ArrowDown' && i > -1) { e.preventDefault(); links[(i + 1) % links.length].focus(); }
+      if (e.key === 'ArrowUp' && i > -1) { e.preventDefault(); links[(i - 1 + links.length) % links.length].focus(); }
+    });
+    $$('a[data-lang]', box).forEach(function (a) {
+      a.addEventListener('click', function () { try { localStorage.setItem('dp-lang', a.dataset.lang); } catch (err) { /* private mode */ } });
+    });
+  });
+
   /* ---------------- external links ---------------- */
   $$('a[href^="http"]').forEach(function (a) {
     if (a.hostname !== location.hostname) { a.target = '_blank'; a.rel = 'noopener'; }

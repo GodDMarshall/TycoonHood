@@ -4,6 +4,16 @@
 import { site, links, nav, hours, OFFICIAL } from './site.mjs';
 import { sprite, icon } from './icons.mjs';
 
+// Languages (codes and native names); the build renders /kn/, /hi/, /ta/, /te/.
+const LANG_CODES = [['en', 'English'], ['kn', 'ಕನ್ನಡ'], ['hi', 'हिन्दी'], ['ta', 'தமிழ்'], ['te', 'తెలుగు']];
+
+function langSwitch() {
+  return `<div class="lang" data-lang-switch>
+  <button class="lang-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="lang-menu">${icon('globe', 18)}<span class="lang-current" translate="no">EN</span><span class="visually-hidden">Change language</span></button>
+  <ul class="lang-menu" id="lang-menu" role="list">${LANG_CODES.map(([code, name]) => `<li><a href="@@lang:${code}" hreflang="${code}" lang="${code}" data-lang="${code}" translate="no">${name}</a></li>`).join('')}</ul>
+</div>`;
+}
+
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const ext = (href) => /^https?:/.test(href);
 
@@ -44,7 +54,7 @@ function head(page) {
   const og = page.image || 'https://dattapeetham.s3.amazonaws.com/homepage_assets/site_1/front_page_images/sadguru-deva.jpg';
   const canonical = page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`;
   return `<!doctype html>
-<html lang="en">
+<html lang="en" data-root="">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -52,6 +62,8 @@ function head(page) {
 <meta name="description" content="${esc(page.description)}">
 <meta name="theme-color" content="#0f1c18">
 <link rel="canonical" href="${canonical}">
+${LANG_CODES.map(([code]) => `<link rel="alternate" hreflang="${code}" href="${site.origin}/${code === 'en' ? '' : code + '/'}${page.slug === 'index' ? '' : page.file}">`).join('\n')}
+<link rel="alternate" hreflang="x-default" href="${page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.name)}">
 <meta property="og:title" content="${esc(page.title)}">
@@ -69,7 +81,7 @@ ${page.preload ? `<link rel="preload" as="image" href="${page.preload}" fetchpri
 ${(page.features || []).map((f) => `<link rel="stylesheet" href="assets/css/features/${f}.css">`).join('\n')}
 ${page.css ? `<link rel="stylesheet" href="assets/css/pages/${page.slug}.css">` : ''}
 ${jsonLd(page)}
-<script>(function(d){d.classList.add('js');try{if(sessionStorage.getItem('dp-intro'))d.classList.add('intro-seen');else sessionStorage.setItem('dp-intro','1');}catch(e){d.classList.add('intro-seen');}})(document.documentElement);window.DP_HOURS=${JSON.stringify(hours)};</script>
+<script>(function(d){try{var pref=localStorage.getItem('dp-lang'),cur=d.lang||'en';if(pref&&pref!==cur&&/^(en|kn|hi|ta|te)$/.test(pref)&&!/[?&]lang=keep/.test(location.search)){var f=location.pathname.split('/').pop()||'index.html';location.replace((d.getAttribute('data-root')||'')+(pref==='en'?'':pref+'/')+f+location.hash);return;}}catch(e){}})(document.documentElement);(function(d){d.classList.add('js');try{if(sessionStorage.getItem('dp-intro'))d.classList.add('intro-seen');else sessionStorage.setItem('dp-intro','1');}catch(e){d.classList.add('intro-seen');}})(document.documentElement);window.DP_HOURS=${JSON.stringify(hours)};</script>
 </head>`;
 }
 
@@ -121,6 +133,7 @@ function header(page) {
       </div>
     </nav>
     <div class="header-actions">
+      ${langSwitch()}
       <button class="icon-btn" type="button" data-search-open aria-label="Search the site" aria-haspopup="dialog">${icon('search', 20)}</button>
       <a class="btn btn-gold btn-sm hide-md" href="${links.donations}">Donate</a>
       <button class="icon-btn burger" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false"><span></span></button>
@@ -180,6 +193,7 @@ function footer() {
     <div class="footer-tagline" aria-hidden="true">
       <span>A modern digital home for a timeless mission</span><i></i><span>Spirituality</span><b>•</b><span>Service</span><b>•</b><span>Harmony</span><b>•</b><span>A better humanity</span>
     </div>
+    <p class="i18n-note" data-i18n-note hidden>This page was translated from English. The translation is being reviewed by the Ashram; where it differs, the English page is authoritative.</p>
     <div class="footer-bottom">
       <span>© 2015 – <span data-year>2026</span> ${esc(site.trust)}. All rights reserved.</span>
       <nav aria-label="Legal">
@@ -212,7 +226,7 @@ ${sprite}
 <div class="scroll-progress" aria-hidden="true"><span></span></div>
 <div class="intro" aria-hidden="true">
   <svg class="intro-mark" viewBox="0 0 104 104"><use href="#i-mandala"/></svg>
-  <div class="intro-word">${INTRO_WORD}</div>
+  <div class="intro-word" translate="no">${INTRO_WORD}</div>
   <div class="intro-bar"><i></i></div>
   <div class="intro-label">Jaya Guru Datta</div>
 </div>

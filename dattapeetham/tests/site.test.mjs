@@ -15,7 +15,11 @@ import { site } from '../src/site.mjs';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = join(ROOT, 'site');
 const files = (await readdir(SITE)).filter((f) => f.endsWith('.html'));
-const pages = await Promise.all(files.map(async (f) => ({ f, html: await readFile(join(SITE, f), 'utf8') })));
+const LANG_DIRS = ['kn', 'hi', 'ta', 'te'];
+const pages = await Promise.all(files.map(async (f) => ({ f, lang: 'en', html: await readFile(join(SITE, f), 'utf8') })));
+for (const l of LANG_DIRS) {
+  for (const f of files) pages.push({ f: `${l}/${f}`, lang: l, html: await readFile(join(SITE, l, f), 'utf8') });
+}
 const main = (html) => (/<main[^>]*>([\s\S]*)<\/main>/.exec(html) || [, ''])[1];
 const text = (html) => html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<svg[\s\S]*?<\/svg>/g, ' ').replace(/<[^>]+>/g, ' ');
 
@@ -25,7 +29,17 @@ test('every page was built', () => {
   }
 });
 
-for (const { f, html } of pages) {
+for (const { f, lang, html } of pages) {
+  test(`${f}: language attributes`, () => {
+    assert.match(html, new RegExp(`<html lang="${lang}" data-root="${lang === 'en' ? '' : '../'}">`));
+    for (const code of ['en', ...LANG_DIRS]) assert.match(html, new RegExp(`hreflang="${code}"`), `missing hreflang ${code}`);
+    assert.ok(!html.includes('@@lang:'), 'unresolved language link');
+    if (lang !== 'en') {
+      assert.ok(!/(?:src|href)="assets\//.test(html), 'asset path not localised');
+      assert.match(html, new RegExp(`assets/js-${lang}/site\\.js`));
+    }
+  });
+
   test(`${f}: no template leaks`, () => {
     const t = text(main(html));
     for (const bad of ['undefined', 'NaN', '[object Object]', 'TODO', 'lorem ipsum', '${']) {
@@ -40,7 +54,6 @@ for (const { f, html } of pages) {
     assert.ok(desc.length >= 50 && desc.length <= 200, `description length ${desc.length}`);
     assert.match(html, /<link rel="canonical" href="https:\/\/www\.dattapeetham\.org\//);
     assert.match(html, /<meta property="og:image" content="https:\/\//);
-    assert.match(html, /<html lang="en">/);
   });
 
   test(`${f}: exactly one h1`, () => {

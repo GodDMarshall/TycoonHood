@@ -41,7 +41,7 @@
 .page-kriya-yoga .ky-verse-mark { font-family: var(--deva); font-size: 1.6rem; line-height: 1; color: var(--gold-2); margin-bottom: 16px; }
 .page-kriya-yoga .ky-verse-sk { font-family: var(--serif); font-style: italic; font-size: 1.24rem; line-height: 1.45; color: var(--gold-deep); margin-bottom: 14px; }
 .page-kriya-yoga .ky-verse-en { font-size: .93rem; color: var(--ink-2); margin-bottom: 18px; }
-.page-kriya-yoga .ky-verse footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); width: 84%; font: 600 .68rem/1.4 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+.page-kriya-yoga .ky-verse footer { margin-top: auto; padding-top: 14px; min-height: calc(2.8em + 14px); border-top: 1px solid var(--line); width: 84%; font: 600 .68rem/1.4 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-deep); }
 .page-kriya-yoga .ky-note-center { text-align: center; margin: 28px auto 0; max-width: 60ch; font-size: .92rem; color: var(--muted); }
 
 /* ---------- breath section ---------- */
@@ -136,12 +136,12 @@
 
 .page-kriya-yoga .ky-facets h3 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); }
 .page-kriya-yoga .ky-facets > p { color: var(--ink-2); }
-.page-kriya-yoga .ky-facet-list { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 4px; }
-.page-kriya-yoga .ky-facet-list li { display: flex; gap: 18px; align-items: flex-start; padding: 16px 0; border-top: 1px solid var(--line); }
+.page-kriya-yoga .ky-facets-lead { margin: 22px 0 0; font-family: var(--serif); font-style: italic; font-size: 1.14rem; line-height: 1.45; color: var(--gold-deep); }
+.page-kriya-yoga .ky-facet-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; }
+.page-kriya-yoga .ky-facet-list li { display: flex; gap: 16px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
 .page-kriya-yoga .ky-facet-list li:last-child { border-bottom: 1px solid var(--line); }
-.page-kriya-yoga .ky-facet-icon { width: 50px; height: 50px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); background: var(--ivory); }
-.page-kriya-yoga .ky-facet-list b { display: block; font-family: var(--serif); font-size: 1.35rem; font-weight: 600; line-height: 1.2; margin-bottom: 2px; }
-.page-kriya-yoga .ky-facet-list li > span:last-child { font-size: .94rem; color: var(--muted); }
+.page-kriya-yoga .ky-facet-icon { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); background: var(--ivory); }
+.page-kriya-yoga .ky-facet-list li > span:last-child { font-family: var(--serif); font-size: 1.22rem; font-weight: 500; line-height: 1.3; color: var(--ink); }
 
 .page-kriya-yoga .ky-sub { text-align: center; margin: clamp(80px, 10vw, 120px) 0 clamp(28px, 4vw, 44px); font-size: clamp(1.9rem, 3.4vw, 2.6rem); }
 .page-kriya-yoga .ky-sub .eyebrow { display: flex; justify-content: center; margin-bottom: 12px; }
@@ -153,7 +153,7 @@
 .page-kriya-yoga .ky-component::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: linear-gradient(90deg, var(--gold-3), var(--gold)); transform: scaleX(.18); transform-origin: left; transition: transform .7s var(--ease-out); }
 .page-kriya-yoga .ky-component:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); border-color: var(--line-strong); }
 .page-kriya-yoga .ky-component:hover::before { transform: scaleX(1); }
-.page-kriya-yoga .ky-num { display: block; font: 600 .72rem/1 var(--sans); letter-spacing: .2em; color: var(--gold); margin-bottom: 14px; }
+.page-kriya-yoga .ky-num { display: block; font: 600 .72rem/1 var(--sans); letter-spacing: .2em; color: var(--gold-deep); margin-bottom: 14px; }
 .page-kriya-yoga .ky-component h4 { font-size: 1.4rem; margin-bottom: 4px; }
 .page-kriya-yoga .ky-gloss { display: block; font-family: var(--serif); font-style: italic; font-size: 1.02rem; color: var(--gold-deep); margin-bottom: 12px; }
 .page-kriya-yoga .ky-component p { margin: 0; font-size: .9rem; color: var(--muted); }
@@ -172,13 +172,13 @@
 
 .page-kriya-yoga .ky-also { margin: clamp(36px, 5vw, 52px) auto 0; text-align: center; }
 .page-kriya-yoga .ky-also-title { display: block; font: 600 .7rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
-.page-kriya-yoga .ky-pills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.page-kriya-yoga .ky-pills { list-style: none; margin: 0 auto; padding: 0; max-width: 720px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .page-kriya-yoga .ky-pills li { padding: 8px 15px; border: 1px solid var(--line-strong); border-radius: 999px; background: rgba(255, 252, 246, .7); font-size: .86rem; color: var(--ink-2); }
 
 .page-kriya-yoga .ky-beyond { position: relative; max-width: 880px; margin: clamp(72px, 9vw, 112px) auto 0; text-align: center; }
 .page-kriya-yoga .ky-beyond-mark { width: 54px; height: 54px; margin: 0 auto 20px; color: var(--gold); }
 .page-kriya-yoga .ky-beyond blockquote { margin: 0 0 16px; }
-.page-kriya-yoga .ky-beyond figcaption { font: 600 .7rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+.page-kriya-yoga .ky-beyond figcaption { font: 600 .7rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--gold-deep); }
 
 /* ---------- worldwide (dark) ---------- */
 .page-kriya-yoga .ky-world { overflow: hidden; }
@@ -271,6 +271,8 @@
 .page-kriya-yoga .ky-om { display: block; font-size: 2.6rem; line-height: 1; color: var(--gold); margin-bottom: 14px; }
 .page-kriya-yoga .ky-sloka { margin: 4px 0 18px; padding: 4px 0 4px 18px; border-left: 2px solid var(--gold-3); font-family: var(--serif); font-style: italic; font-size: 1.16rem; line-height: 1.65; color: var(--gold-deep); }
 .page-kriya-yoga .ky-prayers .acc-body p:last-child { margin-bottom: 0; font-size: .95rem; }
+.page-kriya-yoga .ky-prayer-note { display: flex; gap: 10px; align-items: flex-start; justify-content: center; margin: 24px auto 0; max-width: 62ch; font-size: .84rem; line-height: 1.55; color: var(--muted); }
+.page-kriya-yoga .ky-prayer-note .ico { flex: none; margin-top: 3px; color: var(--gold-deep); }
 
 /* ---------- learn ---------- */
 .page-kriya-yoga .ky-learn .process { max-width: 1020px; margin: 0 auto clamp(56px, 7vw, 88px); }
@@ -332,6 +334,7 @@
   .page-kriya-yoga .ky-arc { stroke-width: .3; }
   .page-kriya-yoga .ky-pulse { stroke-width: .55; }
   .page-kriya-yoga .ky-verses, .page-kriya-yoga .ky-benefit-grid, .page-kriya-yoga .ky-ways, .page-kriya-yoga .ky-dkyic-grid { grid-template-columns: 1fr; }
+  .page-kriya-yoga .ky-verse footer { min-height: 0; }
   .page-kriya-yoga .ky-components { grid-template-columns: 1fr; gap: 12px; }
   .page-kriya-yoga .ky-component, .page-kriya-yoga .ky-component:nth-child(4) { grid-column: auto; padding: 20px 20px 18px; }
   .page-kriya-yoga .ky-component h4 { display: inline; font-size: 1.3rem; }
@@ -348,7 +351,8 @@
   .page-kriya-yoga .ky-record-media { aspect-ratio: 1 / 1; }
   .page-kriya-yoga .ky-statement .scroll-lit { font-size: 1.9rem; }
   .page-kriya-yoga .ky-facet-list li { gap: 14px; }
-  .page-kriya-yoga .ky-facet-icon { width: 44px; height: 44px; }
+  .page-kriya-yoga .ky-facet-list li > span:last-child { font-size: 1.12rem; }
+  .page-kriya-yoga .ky-prayer-note { justify-content: flex-start; }
 }
 
 /* ---------- reduced motion: everything rests in a finished, still state ---------- */

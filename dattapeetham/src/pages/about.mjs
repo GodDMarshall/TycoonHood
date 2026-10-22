@@ -24,6 +24,8 @@ const pic = {
   kriyaYoga: `${PAGE_IMG}515/515_47c13ada69bd6850.jpg`,
   sdhsParade: `${PAGE_IMG}512/512_2ba4f2446543d71a.jpg`,
   prakrutiPuja: `${PAGE_IMG}518/518_3afb42ae5333fe82.jpg`,
+  // page/view/karya-siddhi-hanuman-temple: the temple with the 70-ft monolith above it
+  hanumanTemple: `${PAGE_IMG}528/528_322ad0b196f6e909.jpg`,
 };
 
 // The Ashram's own milestones (Avatara Timeline, temple and attraction pages).
@@ -34,7 +36,7 @@ const chronicle = [
   { year: '1998', title: 'Nada Mantapa', text: 'Sri Swamiji inaugurates Nada Mantapa, the Hall of Musical Tones, on 31 May 1998. Sri Datta Venkateshwara Kshetram follows in 1999 and the Pillar of Dharma in 2000.', img: pic.nadaStage, alt: 'The stage of Nada Mantapa lit for a concert', pos: '50% 60%' },
   { year: '2002', title: 'The Datta idol re-consecrated', text: 'On Rama Navami, 21 April 2002, the idol of Lord Datta is relocated to the centre of the Prayer Hall and re-consecrated.' },
   { year: '2005', title: 'Gardens and a museum', text: 'The Kishkindha Moolika Bonsai Garden opens in 2005, followed in 2006 by the Vishwam Museum and Saptarshi Sarovara.' },
-  { year: '2012', title: 'Shuka Vana and Karya Siddhi Hanuman', text: 'In Sri Swamiji’s 70th year, Shuka Vana, the rehabilitation centre for birds, is founded and the 70-foot Karya Siddhi Hanuman statue is consecrated.', img: photos.hanumanStatue, alt: 'Karya Siddhi Hanuman idol adorned with flowers', pos: '50% 22%' },
+  { year: '2012', title: 'Shuka Vana and Karya Siddhi Hanuman', text: 'In Sri Swamiji’s 70th year, Shuka Vana, the rehabilitation centre for birds, is founded and the 70-foot Karya Siddhi Hanuman statue is consecrated.', img: pic.hanumanTemple, alt: 'The Karya Siddhi Hanuman Temple, Mysuru, with the monolithic Hanuman statue rising above it', pos: '44% 28%' },
   { year: '2016', title: 'Ashta Bhairava', text: 'On 14 December 2016 eight Bhairava idols are consecrated as per Shaiva Agama rites, where a tunnel once led towards Chamundi Hill when the Ashrama started in 1966.' },
   { year: '2023', title: 'Rajarajeshwari and Hari Sannidhi', text: 'On 28 December 2023 Sri Swamiji consecrates the temple of Mother Goddess Rajarajeshwari and unveils Hari Sannidhi, home to 2,108 rare Salagramas.', img: photos.rajarajeshwariSannidhi, alt: 'Sri Swamiji at the Rajarajeshwari Sannidhi', pos: '60% 40%' },
   { year: 'Today', title: 'An international institution', text: 'More than 80 branches across India — including 16 Ashrams for the 16 incarnations of Lord Dattatreya — and 15 centres abroad, in the UK, USA, Malaysia, Europe, Trinidad, Canada and Australia.' },
@@ -287,7 +289,7 @@ ${pageHero({
       ${stat(70, 'ft', 'Monolithic Karya Siddhi Hanuman')}
       ${stat(366, '', 'Birth Date Pillars along the pathway')}
       ${stat(486, '', 'Bird species in Shuka Vana')}
-      ${stat(8000, '', 'Seats in Nada Mantapa')}
+      ${stat(5000, '+', 'Seats in Nada Mantapa')}
     </dl>
 
     <div class="ab-bento" data-stagger>

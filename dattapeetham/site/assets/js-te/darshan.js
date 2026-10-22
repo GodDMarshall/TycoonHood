@@ -1,0 +1,169 @@
+/* Temples & Darshan — page behaviour (no dependencies).
+   1. Sticky shrine navigator: follows the header, lights the current shrine.
+   2. "A day at the Ashram": a sun marks the time in Mysuru; next ritual flagged.
+   3. Next weekend laser show at the Karya Siddhi Hanuman temple.
+   4. Birth Date Pillars: today's pillar, and a picker for the visitor's day.
+   5. Dated festival entries disappear once they have passed.
+   Everything is readable without this script; it only adds live state. */
+(function () {
+  'use strict';
+  var doc = document;
+  var $ = function (s, c) { return (c || doc).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var DAYS_IN = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  var WEEK = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+
+  // Date and time in Mysuru (IST), whatever the visitor's own time zone.
+  function ist() {
+    var o = {};
+    new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', weekday: 'short', hourCycle: 'h23' })
+      .formatToParts(new Date()).forEach(function (p) { o[p.type] = p.value; });
+    return { y: +o.year, m: +o.month, d: +o.day, day: WEEK[o.weekday], mins: +o.hour * 60 + +o.minute, label: o.hour + ':' + o.minute, iso: o.year + '-' + o.month + '-' + o.day };
+  }
+  function fmt12(m) {
+    var h = Math.floor(m / 60), mm = m % 60, ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return h + ':' + String(mm).padStart(2, '0') + ' ' + ap;
+  }
+
+  /* ---------------- 1. sticky shrine navigator ---------------- */
+  var nav = $('[data-dn-nav]');
+  if (nav) {
+    var header = $('[data-header]');
+    var scroller = $('[data-dn-nav-scroll]', nav), lamp = $('[data-dn-lamp]', nav);
+    var chips = $$('[data-dn-chip]', nav);
+    var sections = chips.map(function (c) { return doc.getElementById(c.getAttribute('data-dn-chip')); });
+    var current = null, raf = 0;
+
+    var syncHeader = function () { nav.classList.toggle('is-raised', !!header && header.classList.contains('is-hidden')); };
+    if (header && 'MutationObserver' in window) new MutationObserver(syncHeader).observe(header, { attributes: true, attributeFilter: ['class'] });
+    syncHeader();
+
+    var placeLamp = function (chip) {
+      if (!chip) { lamp.style.opacity = '0'; return; }
+      lamp.style.opacity = '1';
+      lamp.style.width = chip.offsetWidth + 'px';
+      lamp.style.transform = 'translateX(' + chip.offsetLeft + 'px)';
+    };
+    var setActive = function (id, force) {
+      if (id === current && !force) return;
+      current = id;
+      var active = null;
+      chips.forEach(function (c) {
+        var on = c.getAttribute('data-dn-chip') === id;
+        if (on) { c.setAttribute('aria-current', 'true'); active = c; } else c.removeAttribute('aria-current');
+      });
+      placeLamp(active);
+      // keep the lit chip in view when the row scrolls sideways (phones)
+      if (active && scroller.scrollWidth > scroller.clientWidth + 2) {
+        var left = active.offsetLeft - (scroller.clientWidth - active.offsetWidth) / 2;
+        scroller.scrollTo({ left: Math.max(0, left), behavior: reduced ? 'auto' : 'smooth' });
+      }
+    };
+    var update = function () {
+      raf = 0;
+      var line = innerHeight * 0.42, id = null;
+      for (var i = 0; i < sections.length; i++) {
+        var s = sections[i];
+        if (!s) continue;
+        var r = s.getBoundingClientRect();
+        if (r.top <= line) id = s.id;
+        if (i === sections.length - 1 && r.bottom < line * 0.5) id = null; // past the Mandir Nagari
+      }
+      setActive(id);
+    };
+    var schedule = function () { if (!raf) raf = requestAnimationFrame(update); };
+    addEventListener('scroll', schedule, { passive: true });
+    addEventListener('resize', function () { setActive(current, true); schedule(); });
+    update();
+  }
+
+  /* ---------------- 2. a day at the Ashram ---------------- */
+  var track = $('[data-dn-day]');
+  var LASER = [1150, 1180, 1210]; // 7:10, 7:40, 8:10 PM, Saturdays and Sundays
+  function updateDay(now) {
+    if (!track) return;
+    var start = +track.getAttribute('data-start'), end = +track.getAttribute('data-end');
+    var sun = $('[data-dn-now]', track), wrap = $('[data-dn-now-wrap]'), text = $('[data-dn-now-text]');
+    if (sun) {
+      var inDay = now.mins >= start && now.mins <= end;
+      sun.hidden = !inDay;
+      if (inDay) sun.style.left = ((now.mins - start) / (end - start) * 100).toFixed(3) + '%';
+      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = 'Now ' + now.label + ' IST';
+    }
+    if (wrap && text) { wrap.hidden = false; text.textContent = 'Now in Mysuru · ' + now.label + ' IST'; }
+    var weekend = now.day === 0 || now.day === 6, nextSet = false;
+    $$('.dn-day-events li', track).forEach(function (li) {
+      var m = +li.getAttribute('data-m'), skip = li.hasAttribute('data-weekend') && !weekend;
+      li.classList.toggle('is-past', m <= now.mins);
+      var isNext = !nextSet && !skip && m > now.mins;
+      li.classList.toggle('is-next', isNext);
+      if (isNext) nextSet = true;
+    });
+    $$('.dn-week li').forEach(function (li) {
+      var days = (li.getAttribute('data-days') || '').split(' ').map(Number);
+      li.classList.toggle('is-today', days.length < 7 && days.indexOf(now.day) !== -1);
+    });
+  }
+
+  /* ---------------- 3. next laser show ---------------- */
+  function laserText(now) {
+    if (now.day === 0 || now.day === 6) {
+      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return 'Today · ' + fmt12(LASER[i]);
+      return now.day === 6 ? 'Tomorrow · ' + fmt12(LASER[0]) : 'Saturday · ' + fmt12(LASER[0]);
+    }
+    return 'Saturday · ' + fmt12(LASER[0]);
+  }
+
+  /* ---------------- 5. dated festival entries ---------------- */
+  function pruneUpcoming(now) {
+    var box = $('[data-dn-upcoming]');
+    if (!box) return;
+    var shown = 0;
+    $$('[data-until]', box).forEach(function (li) {
+      var past = li.getAttribute('data-until') < now.iso;
+      li.hidden = past;
+      if (!past) shown++;
+    });
+    box.hidden = shown === 0;
+  }
+
+  function tick() {
+    var now = ist();
+    updateDay(now);
+    $$('[data-dn-laser]').forEach(function (el) { el.textContent = laserText(now); });
+    pruneUpcoming(now);
+    return now;
+  }
+  var now = tick();
+  setInterval(tick, 30000);
+
+  /* ---------------- 4. Birth Date Pillars ---------------- */
+  var grid = $('[data-dn-bp]'), form = $('[data-dn-bp-form]');
+  if (grid) {
+    var today = $('[data-md="' + now.m + '-' + now.d + '"]', grid);
+    if (today) today.classList.add('is-today');
+  }
+  if (grid && form) {
+    var month = form.elements.month, day = form.elements.day, out = $('[data-dn-bp-out]', form), touched = false;
+    month.value = String(now.m); day.value = String(now.d);
+    var fitDays = function () {
+      var max = DAYS_IN[+month.value - 1];
+      Array.prototype.forEach.call(day.options, function (o) { o.disabled = o.hidden = +o.value > max; });
+      if (+day.value > max) day.value = String(max);
+    };
+    var pick = function () {
+      fitDays();
+      if (!touched) { out.textContent = 'Choose a birth date to find its pillar.'; return; }
+      $$('.is-picked', grid).forEach(function (i) { i.classList.remove('is-picked'); });
+      var key = month.value + '-' + day.value, el = $('[data-md="' + key + '"]', grid);
+      if (el) el.classList.add('is-picked');
+      out.textContent = 'Along the pathway, look for the pillar of ' + day.value + ' ' + MONTHS[+month.value - 1] + ' — it carries the deity and demigod for that day.';
+    };
+    form.addEventListener('change', function () { touched = true; pick(); });
+    form.addEventListener('submit', function (e) { e.preventDefault(); });
+    pick();
+  }
+})();

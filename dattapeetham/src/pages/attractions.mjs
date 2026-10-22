@@ -13,7 +13,10 @@
 // (Wednesday holiday) and says it is "temporarily closed for public due to
 // Maintenance Works". The shared live badge follows hours.shukaVana in
 // site.mjs (9:00 – 12:00, 15:30 – 18:00). The page shows both, labelled, plus a
-// visible "please check before visiting" notice.
+// visible "please check before visiting" notice. The Bonsai Garden block shows
+// its own page's hours with the "Timings vary across official sources" note.
+// Guinness certificate (6 May 2017) reads 468 species; the Shuka Vana pages say
+// 486. The stat strip uses 486 (PAGE-GUIDE); the record card names both.
 
 import { pageHero, sectionHead, frame, gallery, video, cards, ctaBand, scrollLit, hoursCard, btn, img, icon } from '../components.mjs';
 import { site, links, PAGE_IMG, OFFICIAL } from '../site.mjs';
@@ -81,7 +84,7 @@ const socialRow = (items, label) => `<ul class="at-social" aria-label="${label}"
 const record = ({ date, title, text, image, alt }) => `<article class="at-record">
   ${image ? `<span class="at-record-img">${img(image, alt)}</span>` : `<span class="at-record-seal" aria-hidden="true">${icon('sparkle', 26)}</span>`}
   <div>
-    <span class="tag">Guinness World Records <span class="at-date">· ${date}</span></span>
+    <span class="tag">Guinness World Records · <span class="at-date">${date}</span></span>
     <h4>${title}</h4>
     <p>${text}</p>
   </div>
@@ -679,10 +682,10 @@ ${pageHero({
   pos: 'center 38%',
   crumb: 'Ashram Attractions',
   tiles: [
-    { icon: 'bird', title: 'Shuka Vana', note: 'Birds · since 2012', href: '#shuka-vana' },
-    { icon: 'tree', title: 'Bonsai Garden', note: 'Miniature trees · since 2005', href: '#bonsai' },
-    { icon: 'globe', title: 'Vishwam Museum', note: 'World treasures · since 2006', href: '#vishwam' },
-    { icon: 'veena', title: 'Nada Mantapa', note: 'Hall of music · since 1998', href: '#nada-mantapa' },
+    { icon: 'bird', title: 'Shuka Vana', note: 'Birds · since&nbsp;2012', href: '#shuka-vana' },
+    { icon: 'tree', title: 'Bonsai Garden', note: 'Miniature trees · since&nbsp;2005', href: '#bonsai' },
+    { icon: 'globe', title: 'Vishwam Museum', note: 'World treasures · since&nbsp;2006', href: '#vishwam' },
+    { icon: 'veena', title: 'Nada Mantapa', note: 'Hall of music · since&nbsp;1998', href: '#nada-mantapa' },
   ],
 })}
 

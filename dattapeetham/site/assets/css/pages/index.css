@@ -69,9 +69,10 @@
 .page-index .ix-hero .hero-actions { margin-top: 30px; }
 
 /* live readout (Nature-Care): real hours, next ritual, Mysuru time — one calm line */
-.page-index .ix-readout { display: inline-flex; flex-wrap: wrap; align-items: center; max-width: 100%; margin-top: 30px; padding: 11px 6px; border-radius: 999px; }
-.page-index .ix-readout p { display: inline-flex; align-items: center; gap: 9px; margin: 0; padding: 2px 18px; font-size: .86rem; font-weight: 500; color: #fbf3e2; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.page-index .ix-readout p + p { border-left: 1px solid rgba(239, 228, 204, .16); }
+.page-index .ix-readout { display: inline-block; max-width: 100%; margin-top: 30px; padding: 7px 6px; border-radius: 26px; }
+/* every item carries a separator; the row clips the one that starts each line, so a wrapped readout never begins with a stray rule */
+.page-index .ix-ro-row { display: flex; flex-wrap: wrap; align-items: center; row-gap: 6px; padding: 4px 0; overflow: hidden; }
+.page-index .ix-readout p { display: inline-flex; align-items: center; gap: 9px; margin: 0 0 0 -1px; padding: 2px 18px; border-left: 1px solid rgba(239, 228, 204, .16); font-size: .86rem; font-weight: 500; color: #fbf3e2; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .page-index .ix-readout .ico { color: var(--gold-3); }
 .page-index .ix-ro-k { font: 600 .62rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-3); }
 .page-index .ix-readout .live-dot { flex: none; }
@@ -326,6 +327,8 @@
 
 /* ---------- 14 · mobile experience ---------- */
 .page-index .ix-apps { overflow: hidden; }
+/* no bottom-left glow here: it would end in a hard edge against the closing panel's night top */
+.page-index .ix-apps.section-dark { background: radial-gradient(900px 520px at 85% 0%, rgba(201, 164, 92, .13), transparent 60%), linear-gradient(180deg, var(--forest) 0%, var(--night) 100%); }
 .page-index .ix-apps-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
 .page-index .ix-badges { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .page-index .ix-badges a { display: block; border-radius: 9px; transition: transform .4s var(--ease-out), box-shadow .4s; }
@@ -377,6 +380,12 @@
   .page-index .ix-pillars { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .page-index .ix-events-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .page-index .ix-app-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  /* three hours cards in ~300px columns: put the emblem above the text so times stay on one line */
+  .page-index .ix-timings .hours-card { flex-direction: column; gap: 12px; }
+  .page-index .ix-timings .hc-img { width: 52px; height: 52px; }
+  .page-index .ix-timings .hours-card dd { white-space: nowrap; }
+  /* the readout may wrap to two lines here; the centred scroll cue would collide with it */
+  .page-index .ix-scroll-cue { display: none; }
 }
 @media (max-width: 980px) {
   .page-index { --chrome-h: 110px; }
@@ -392,7 +401,6 @@
   .page-index .ix-hero-quote { display: none; }
   .page-index .ix-br { display: none; }
   .page-index .ix-hero h1 { max-width: 15ch; }
-  .page-index .ix-scroll-cue { bottom: 70px; }
   .page-index .ix-tiles .quick-tile:nth-child(2n) { border-right: 1px solid var(--line); }
   .page-index .ix-tiles .quick-tile:nth-child(3n) { border-right: 0; }
   .page-index .ix-tiles .quick-tile { flex-direction: column; text-align: center; align-items: center; padding: 20px 12px; gap: 10px; }
@@ -400,6 +408,8 @@
   .page-index .ix-comp-main { max-width: 520px; width: calc(100% - 18px); margin: 0 auto; }
   .page-index .ix-comp-img { aspect-ratio: 5 / 4; }
   .page-index .ix-timings-head { align-items: flex-start; }
+  .page-index .ix-timings .hours-card { flex-direction: row; gap: 16px; }
+  .page-index .ix-timings .hc-img { width: 60px; height: 60px; }
   .page-index .ix-seva-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .page-index .ix-seva:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .page-index .ix-seva:last-child:nth-child(odd) .card-media { aspect-ratio: 21 / 9; }
@@ -413,16 +423,17 @@
   .page-index .ix-phone img { width: min(360px, 100%); }
 }
 @media (max-width: 640px) {
+  /* long eyebrows wrap at phone width; the shared line-height of 1 would make the two lines touch */
+  .page-index .eyebrow { line-height: 1.6; }
   .page-index .ix-hero-inner { padding-top: 168px; padding-bottom: 120px; }
   .page-index .ix-hero-eyebrow { gap: 4px 9px; font-size: .62rem; letter-spacing: .2em; margin-bottom: 18px; }
   .page-index .ix-hero h1 { font-size: clamp(2.2rem, 9.4vw, 2.8rem); line-height: 1.05; }
   .page-index .ix-hero .lead { font-size: 1rem; }
   .page-index .ix-hero .hero-actions { gap: 10px; margin-top: 24px; }
   .page-index .ix-hero .hero-actions .btn { padding: 14px 18px; flex: 1 1 auto; }
-  .page-index .ix-readout { display: grid; gap: 6px; margin-top: 22px; padding: 12px 14px; border-radius: 16px; }
-  .page-index .ix-readout p { padding: 0; white-space: normal; font-size: .84rem; }
-  .page-index .ix-readout p + p { border-left: 0; }
-  .page-index .ix-scroll-cue { display: none; }
+  .page-index .ix-readout { display: block; margin-top: 22px; padding: 8px 14px; border-radius: 16px; }
+  .page-index .ix-ro-row { display: grid; gap: 6px; }
+  .page-index .ix-readout p { margin: 0; padding: 0; border-left: 0; white-space: normal; font-size: .84rem; }
   .page-index .quick-tiles.ix-tiles { margin-top: -48px; }
   .page-index .ix-tiles { --cols: 2; }
   .page-index .ix-tiles .quick-tile, .page-index .ix-tiles .quick-tile:nth-child(3n) { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }

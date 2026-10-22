@@ -395,8 +395,8 @@ html:not(.js) .page-attractions .nm-swaras li { --on: 1; }
   .page-attractions .sv-units { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 981px) and (max-width: 1180px) {
-  .page-attractions .page-hero .quick-tile { padding: 20px 16px; gap: 12px; }
-  .page-attractions .page-hero .qt-icon { width: 46px; height: 46px; }
+  .page-attractions .quick-tiles.overlap .quick-tile { padding: 20px 14px; gap: 12px; }
+  .page-attractions .quick-tiles.overlap .qt-icon { width: 46px; height: 46px; }
 }
 @media (max-width: 980px) {
   .page-attractions { --nav-h: 62px; }

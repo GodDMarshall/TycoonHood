@@ -64,6 +64,45 @@ function optimizeHtml(html, man, prefix = '') {
   });
   return html.replace(/\u0000(\d+)\u0000/g, (_, i) => keep[+i]);
 }
+// ---------- translations ----------
+async function loadDicts(langs) {
+  const dicts = {};
+  for (const l of langs) {
+    dicts[l.code] = {};
+    const dir = join(SRC, 'i18n', l.code);
+    for (const f of (await readdir(dir).catch(() => [])).filter((x) => x.endsWith('.json')).sort()) {
+      try { Object.assign(dicts[l.code], JSON.parse(await readFile(join(dir, f), 'utf8'))); }
+      catch (e) { console.error(`✗ src/i18n/${l.code}/${f}: ${e.message}`); process.exitCode = 1; }
+    }
+  }
+  return dicts;
+}
+
+// Point a page at its language: switcher links, asset paths, scripts, fonts.
+function localizePage(html, page, lang, langs) {
+  const sub = lang.code !== 'en';
+  let out = html.replace(/href="@@lang:(\w+)"/g, (_, c) => {
+    const to = c === 'en' ? '' : c + '/';
+    return `href="${sub ? '../' : ''}${to}${page.file}"`;
+  });
+  out = out.replace(/(<span class="lang-current"[^>]*>)EN(<\/span>)/, `$1${lang.code.toUpperCase()}$2`);
+  out = out.replace(/(<a [^>]*data-lang="(\w+)"[^>]*)>/g, (all, a, c) => c === lang.code ? `${a} aria-current="true">` : all);
+  if (!sub) return out;
+  out = out.replace('<html lang="en" data-root="">', `<html lang="${lang.code}" data-root="../">`);
+  // assets live at the site root
+  out = out.replace(/((?:src|href|data-full|poster|content)=")assets\//g, '$1../assets/');
+  out = out.replace(/(srcset=")([^"]+)"/g, (all, a, v) => a + v.replace(/(^|,\s*)assets\//g, '$1../assets/') + '"');
+  out = out.replace(/url\((['"]?)assets\//g, 'url($1../assets/');
+  out = out.replace(/(<script src=")\.\.\/assets\/js\//g, `$1../assets/js-${lang.code}/`);
+  // canonical and og:url for this language
+  out = out.replace(/(<link rel="canonical" href="https:\/\/[^"/]+\/)/, `$1${lang.code}/`);
+  // script fonts for this language
+  const fam = lang.fonts.map((f) => `family=${f.replace(/ /g, '+')}:wght@400;500;600`).join('&');
+  out = out.replace('<link rel="stylesheet" href="../assets/css/site.css">', `<link href="https://fonts.googleapis.com/css2?${fam}&display=swap" rel="stylesheet">\n<link rel="stylesheet" href="../assets/css/site.css">`);
+  out = out.replace('<p class="i18n-note" data-i18n-note hidden>', '<p class="i18n-note" data-i18n-note>');
+  return out;
+}
+
 async function load(rel, bust) {
   return import(pathToFileURL(join(SRC, rel)).href + `?v=${bust}`);
 }
@@ -102,7 +141,7 @@ function checkLinks(pages) {
   }
   for (const p of pages) {
     for (const [, href] of p.html.matchAll(/\shref="([^"]+)"/g)) {
-      if (/^(https?:|mailto:|tel:|data:)/.test(href) || href.startsWith('assets/')) continue;
+      if (/^(https?:|mailto:|tel:|data:)/.test(href) || href.startsWith('assets/') || /^(kn|hi|ta|te)\//.test(href)) continue;
       const [file, hash] = href.split('#');
       const target = file || p.file;
       if (!ids.has(target)) { problems.push(`${p.file}: link to missing page "${href}"`); continue; }
@@ -153,9 +192,62 @@ export async function build() {
   }
 
   await writeFile(join(TMP, 'assets', 'search-index.json'), JSON.stringify(search));
+
+  // ---- other languages: /kn/, /hi/, /ta/, /te/ ----
+  const { LANGS, translate, extract, extractJs, translateJs } = await load('i18n/engine.mjs', bust);
+  const others = LANGS.filter((l) => l.code !== 'en');
+  const dicts = await loadDicts(others);
+  const jsFiles = await listFiles(join(TMP, 'assets', 'js'));
+  const report = {};
+  for (const p of pages) p.htmlLocal = localizePage(p.html, p, LANGS[0], LANGS);
+  for (const lang of others) {
+    const dict = dicts[lang.code];
+    // page scripts with their UI strings translated
+    for (const f of jsFiles) {
+      const rel = f.slice(join(TMP, 'assets', 'js').length + 1);
+      const dest = join(TMP, 'assets', `js-${lang.code}`, rel);
+      await mkdir(dirname(dest), { recursive: true });
+      let code = translateJs(await readFile(f, 'utf8'), dict, lang);
+      code = code.replace(/(['"])assets\/search-index\.json\1/g, `$1../assets/search-index.${lang.code}.json$1`)
+        .replace(/(['"`])assets\//g, '$1../assets/');
+      await writeFile(dest, code);
+    }
+    await mkdir(join(TMP, lang.code), { recursive: true });
+    const lsearch = [];
+    const stats = { total: 0, hit: 0, missing: new Set(), rejected: [] };
+    for (const p of pages) {
+      const r = translate(p.html, dict, lang);
+      stats.total += r.total; stats.hit += r.hit; r.missing.forEach((m) => stats.missing.add(m)); stats.rejected.push(...r.rejected);
+      const html = localizePage(r.html, p, lang, LANGS);
+      await writeFile(join(TMP, lang.code, p.file), html);
+      if (p.slug !== '404') {
+        const body = (/<main id="main">([\s\S]*)<\/main>/.exec(r.html) || [, ''])[1];
+        const t = (/<title>([^<]*)<\/title>/.exec(r.html) || [, p.title])[1].split(' · ')[0];
+        lsearch.push(...indexPage({ ...p, title: t }, body));
+      }
+    }
+    await writeFile(join(TMP, 'assets', `search-index.${lang.code}.json`), JSON.stringify(lsearch));
+    report[lang.code] = { coverage: stats.total ? +(stats.hit / stats.total * 100).toFixed(1) : 0, missing: stats.missing.size, rejected: stats.rejected.length };
+    await mkdir(join(ROOT, '.cache', 'i18n'), { recursive: true });
+    await writeFile(join(ROOT, '.cache', 'i18n', `report-${lang.code}.json`), JSON.stringify({ missing: [...stats.missing], rejected: stats.rejected }, null, 1));
+  }
+  for (const p of pages) { p.html = p.htmlLocal; await writeFile(join(TMP, p.file), p.html); }
+
+  // `node build.mjs --extract`: every English segment, for the translators
+  if (process.argv.includes('--extract')) {
+    const all = new Map();
+    for (const p of pages) for (const [k] of extract(p.html)) { if (!all.has(k)) all.set(k, new Set()); all.get(k).add(p.file); }
+    for (const f of jsFiles) for (const k of extractJs(await readFile(f, 'utf8'))) { if (!all.has(k)) all.set(k, new Set()); all.get(k).add('js:' + f.split('/assets/js/')[1]); }
+    const list = [...all].map(([k, pg]) => ({ k, pages: [...pg] }));
+    await mkdir(join(SRC, 'i18n'), { recursive: true });
+    await writeFile(join(SRC, 'i18n', 'segments.json'), JSON.stringify(list, null, 1));
+    console.log(`Extracted ${list.length} segments → src/i18n/segments.json`);
+  }
+  const LCODES = ['en', 'kn', 'hi', 'ta', 'te'];
+  const urlFor = (code, p) => `${site.origin}/${code === 'en' ? '' : code + '/'}${p.slug === 'index' ? '' : p.file}`;
   await writeFile(join(TMP, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages.filter((p) => p.slug !== '404').map((p) => `  <url><loc>${site.origin}/${p.slug === 'index' ? '' : p.file}</loc></url>`).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${pages.filter((p) => p.slug !== '404').flatMap((p) => LCODES.map((c) => `  <url><loc>${urlFor(c, p)}</loc>${LCODES.map((h) => `<xhtml:link rel="alternate" hreflang="${h}" href="${urlFor(h, p)}"/>`).join('')}</url>`)).join('\n')}
 </urlset>
 `);
   await writeFile(join(TMP, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${site.origin}/sitemap.xml\n`);
@@ -167,7 +259,8 @@ ${pages.filter((p) => p.slug !== '404').map((p) => `  <url><loc>${site.origin}/$
 
   const problems = checkLinks(pages);
   const ms = Math.round(performance.now() - t0);
-  console.log(`Built ${pages.length} pages, ${search.length} search entries in ${ms} ms → ${OUT}`);
+  console.log(`Built ${pages.length} pages × 5 languages, ${search.length} search entries in ${ms} ms → ${OUT}`);
+  console.log('Translation coverage: ' + Object.entries(report).map(([c, r]) => `${c} ${r.coverage}% (${r.missing} missing, ${r.rejected} rejected)`).join(' · '));
   if (problems.length) {
     console.error(`\n${problems.length} link/id problem(s):\n  ` + problems.join('\n  '));
     process.exitCode = 1;

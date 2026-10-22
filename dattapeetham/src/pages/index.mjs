@@ -60,11 +60,11 @@ const hero = `<section class="hero ix-hero" id="welcome" aria-labelledby="ix-tit
         ${btn('Take a Virtual Tour', '#tour', 'gold', 'arrow', ' data-magnetic')}
         ${videoLink(VIDEO.intro, `${icon('play-circle', 16)}<span>Watch Video</span>`, 'btn btn-ghost')}
       </div>
-      <div class="ix-readout glass" role="group" aria-label="Live from the Ashram" data-reveal="up">
+      <div class="ix-readout glass" role="group" aria-label="Live from the Ashram" data-reveal="up"><div class="ix-ro-row">
         <p><i class="live-dot" data-dot="temple" aria-hidden="true"></i><span class="visually-hidden">Temple: </span><span class="ix-ro-k" aria-hidden="true">Temple</span><span data-status-long="temple">6 AM – 12 PM · 4 – 8 PM</span></p>
         <p>${icon('diya', 16)}<span class="visually-hidden">Next ritual: </span><span data-next-ritual>Hanuman Abhisheka · 7 AM</span></p>
         <p>${icon('clock', 16)}<span class="visually-hidden">Time in Mysuru: </span><span data-clock>IST</span><span class="ix-ro-k" aria-hidden="true">Mysuru</span></p>
-      </div>
+      </div></div>
     </div>
     <figure class="ix-hero-quote" data-reveal="fade">
       <blockquote><p>May all beings be happy.<br>May all beings be healthy.<br>May all beings experience peace.</p></blockquote>
@@ -383,7 +383,7 @@ const musicSection = `<section id="music" class="section ix-music" aria-labelled
     <div class="ix-music-copy">
       <span class="eyebrow">Nada Chikitsa</span>
       <h2 id="music-h" data-split>Healing through <span class="em-light">music</span></h2>
-      <p data-reveal="up">Dr. Sri Ganapathy Sachchidananda Swamiji is a renowned composer, singer and musician. He understands the ancient music system of Raga-Ragini and has created many new ragas using it. Because His compositions are so prolific, the title <em>Sagara</em>, “ocean”, was given to express this form of Raga-Ragini, and His concerts of music for meditation and healing are known as <em>Raga Sagara</em>.</p>
+      <p data-reveal="up">Dr. Sri Ganapathy Sachchidananda Swamiji is a renowned composer, singer and musician. He understands the ancient music system of Raga-Ragini and has created many new ragas using it. Because His compositions are so prolific, the title <em>Sagara</em>, “ocean”, was given to express this form of Raga-Ragini, and His concerts of music for meditation and healing carry the name <em>Raga Sagara</em>.</p>
       <div class="ix-wave" aria-hidden="true">${wave}</div>
       <div class="btn-row" data-reveal="up">
         ${btn('Explore Nada Chikitsa', 'music.html', 'gold', 'arrow')}

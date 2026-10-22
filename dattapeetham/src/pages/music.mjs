@@ -68,7 +68,7 @@ const swaras = [['Sa', 'Agni'], ['Ri', 'Brahma'], ['Ga', 'Saraswati'], ['Ma', 'P
 
 const honours = [
   ['2013', 'Honorary Doctorate in Music', 'Vijayanagara Sri Krishna Devaraya University, Bellary — presented at the Mysuru Ashram on 22 June 2013.', P.drSkdu, 'Sri Swamiji receiving the honorary doctorate from Sri Krishna Devaraya University'],
-  ['2016', 'Honorary Doctorate', 'World Classical Tamil University, London — conferred on 23 May 2016. The Peetham’s awards page records it as a doctorate in music; the certificate pictured reads Doctor of Letters (honoris causa).', P.drTamil, 'Sri Swamiji receiving the honorary doctorate from the World Classical Tamil University'],
+  ['2016', 'Honorary Doctorate', 'World Classical Tamil University, London — 23 May 2016. The awards page calls it a doctorate in music; the certificate pictured reads Doctor of Letters (honoris causa).', P.drTamil, 'Sri Swamiji receiving the honorary doctorate from the World Classical Tamil University'],
   ['2022', 'Piteelu Chowdaiah Lifetime Award', 'Sri Nadabrahma Sangeetha Sabha and Sangeetha Ratna Mysuru T. Chowdaiah Samsmarana Vedike, Mysuru — 19 January 2022.', P.chowdaiah, 'Sri Swamiji receiving the Piteelu Chowdaiah Award in Mysuru'],
   ['2023', 'Honorary Doctorate', 'Karnataka State Dr. Gangubai Hanagal Music and Performing Arts University, at its 6th convocation, Raj Bhavan, Bengaluru — 31 October 2023.', P.drGangubai, 'Sri Swamiji receiving the honorary doctorate at Raj Bhavan, Bengaluru'],
   ['2025', 'Guinness World Record — largest Carnatic band', '955 artists, vocalists and instrumentalists in the Nama Sankeertana “Sri Venkateshwara Vaibhavam”, CUTX Event Center, Allen, Texas — 9 July 2025.', P.bandRecord, 'Sri Swamiji holding the Guinness World Records certificate for the largest Carnatic band'],
@@ -367,7 +367,7 @@ ${quickTiles([
         <p>The fan-shaped design was inspired by an episode Sri Swamiji narrates: Lord Rama, seeking Seetha in the forest, was fanned by Hanuman with a palm leaf. The auditorium takes the shape of that palm-leaf fan, with its entrance facing east towards the sacred Chamundi hills.</p>
         <h3>A hall that listens</h3>
         <p>Large portraits of the great composers line the walls. When a composer’s work is performed, the lights before that portrait illuminate — when Saint Tyagaraja’s “Samaja Varagamana” is sung, Tyagaraja’s portrait glows.</p>
-        <p>Twenty-two colossal sculpted Tamburas stand against its pillars, representing the 22 Shrutis (microtones) of the Sangeeta Shastra; the hall is supported by 72 pillars symbolising the 72 melakarta ragas.</p>
+        <p>Twenty-two colossal sculpted Tamburas stand against its pillars, representing the 22 Shrutis (microtones) of the Sangeeta Shastra.</p>
         <p>At the entrance stand sculpted deities associated with music: Chaitanya Maha Prabhu, Narada Muni, Garuda, Vishwaksena, Anjaneya, Tumburu, Hayagreeva, Nandi, Bhringi and Ganapati.</p>
       </div>
     </div>

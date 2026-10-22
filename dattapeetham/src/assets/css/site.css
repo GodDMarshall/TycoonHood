@@ -699,3 +699,40 @@ html:not(.js) .process-track i { transform: none; }
   .story-scene { align-items: flex-end; padding-bottom: 12vh; }
   .story-progress { right: 12px; }
 }
+
+/* ==========================================================================
+   Languages: switcher + script typography (Kannada, Hindi, Tamil, Telugu)
+   ========================================================================== */
+.lang { position: relative; }
+.lang-btn { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 12px 0 10px; border-radius: 999px; border: 1px solid transparent; background: transparent; cursor: pointer; font: 600 .78rem/1 var(--sans); letter-spacing: .08em; color: var(--ink-2); transition: background .25s, border-color .25s; }
+.lang-btn:hover, .lang.is-open .lang-btn { background: var(--ivory-2); border-color: var(--line); }
+.lang-btn .ico { color: var(--gold-deep); }
+.lang-menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 180px; list-style: none; margin: 0; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .25s, transform .35s var(--ease-out), visibility .25s; z-index: 70; }
+.lang.is-open .lang-menu { opacity: 1; visibility: visible; transform: none; }
+.lang-menu a { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; text-decoration: none; font-size: 1rem; line-height: 1.3; }
+.lang-menu a:hover, .lang-menu a:focus-visible { background: var(--ivory-2); color: var(--gold-deep); }
+.lang-menu a[aria-current] { color: var(--gold-deep); font-weight: 600; }
+.lang-menu a[aria-current]::after { content: "✓"; font-size: .85rem; }
+.lang-menu a[lang="kn"] { font-family: "Noto Sans Kannada", var(--sans); }
+.lang-menu a[lang="hi"] { font-family: "Noto Sans Devanagari", var(--sans); }
+.lang-menu a[lang="ta"] { font-family: "Noto Sans Tamil", var(--sans); }
+.lang-menu a[lang="te"] { font-family: "Noto Sans Telugu", var(--sans); }
+.i18n-note { text-align: center; font-size: .84rem; color: var(--muted-on-dark); margin: 0 auto 20px; max-width: 72ch; }
+
+html[lang="kn"] { --sans: "Noto Sans Kannada", Inter, system-ui, sans-serif; --serif: "Noto Serif Kannada", "Cormorant Garamond", Georgia, serif; --display: "Noto Serif Kannada", "Marcellus", Georgia, serif; }
+html[lang="hi"] { --sans: "Noto Sans Devanagari", Inter, system-ui, sans-serif; --serif: "Noto Serif Devanagari", "Cormorant Garamond", Georgia, serif; --display: "Noto Serif Devanagari", "Marcellus", Georgia, serif; }
+html[lang="ta"] { --sans: "Noto Sans Tamil", Inter, system-ui, sans-serif; --serif: "Noto Serif Tamil", "Cormorant Garamond", Georgia, serif; --display: "Noto Serif Tamil", "Marcellus", Georgia, serif; }
+html[lang="te"] { --sans: "Noto Sans Telugu", Inter, system-ui, sans-serif; --serif: "Noto Serif Telugu", "Cormorant Garamond", Georgia, serif; --display: "Noto Serif Telugu", "Marcellus", Georgia, serif; }
+html:not([lang="en"]) body { line-height: 1.85; font-size: 16px; }
+html:not([lang="en"]) h1, html:not([lang="en"]) h2, html:not([lang="en"]) h3, html:not([lang="en"]) h4 { line-height: 1.38; letter-spacing: 0; font-weight: 600; overflow-wrap: break-word; }
+html:not([lang="en"]) h1 { font-size: clamp(2rem, 4.4vw, 3.5rem); font-weight: 500; }
+html:not([lang="en"]) h2 { font-size: clamp(1.65rem, 3.1vw, 2.55rem); }
+html:not([lang="en"]) h3 { font-size: clamp(1.15rem, 1.7vw, 1.4rem); }
+html:not([lang="en"]) .eyebrow, html:not([lang="en"]) .tag, html:not([lang="en"]) .footer-h, html:not([lang="en"]) .process-num,
+html:not([lang="en"]) .crumbs, html:not([lang="en"]) .footer-tagline, html:not([lang="en"]) .badge { letter-spacing: .03em; line-height: 1.5; }
+html:not([lang="en"]) .em-light, html:not([lang="en"]) .serif-quote, html:not([lang="en"]) .mq-track, html:not([lang="en"]) .footer-mantra p { font-style: normal; }
+html:not([lang="en"]) .brand-word { letter-spacing: .02em; text-transform: none; }
+html:not([lang="en"]) .js [data-split] .w, html:not([lang="en"]) .scroll-lit .w { padding-bottom: .15em; }
+html:not([lang="en"]) .nav-top { font-size: .86rem; padding: 12px 8px; }
+html:not([lang="en"]) .btn { line-height: 1.3; }
+@media (max-width: 640px) { .lang-btn { padding: 0 8px; } .lang-btn .lang-current { font-size: .72rem; } }

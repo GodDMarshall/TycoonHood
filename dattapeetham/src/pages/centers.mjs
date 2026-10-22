@@ -51,9 +51,16 @@ const pad = (n) => String(n).padStart(2, '0');
 --------------------------------------------------------------------------- */
 
 // Alt text for the sixteen Shodasha thumbnails (photographs of the shrines).
-const kshetraAlt = (k) => (k.n === 1
-  ? 'Arati being offered to Kaalaagni Shamana Dattatreya, the main deity of the Peetham, in Mysuru'
-  : `The flower-garlanded idol of ${k.name} at ${k.place.split(',')[0]}`);
+// Each describes what its own photograph shows; four of the idols are dressed
+// in cloth and bead malas rather than flower garlands.
+const kshetraAltBy = {
+  1: 'Arati being offered to Kaalaagni Shamana Dattatreya, the main deity of the Peetham, in Mysuru',
+  7: 'The idol of Samskaara Heena Shivaroopa Dattatreya at Jayalakshmipuram, draped in red with bead malas',
+  10: 'The idol of Vishwambaravadhoota Dattatreya at Akividu, in white and purple robes with bead malas',
+  11: 'The copper-toned idol of Deva Deva Dattatreya at Nuzvid, under a golden arch',
+  14: 'The black multi-armed idol of Siddha Raja Dattatreya at Kochi, dressed in yellow and red silk',
+};
+const kshetraAlt = (k) => kshetraAltBy[k.n] || `The flower-garlanded idol of ${k.name} at ${k.place.split(',')[0]}`;
 
 // Navanatha Datta Kshetras (dattapeetham.org/navanatha-datta-kshetras), in
 // the published order, beside the nine syllables of Sri Swamiji's name as the
@@ -181,11 +188,17 @@ const countryName = Object.fromEntries(countries.map((c) => [c.code, c.name]));
 const shortName = { US: 'United States', GB: 'United Kingdom', AE: 'UAE', TT: 'Trinidad & Tobago' };
 const label = (cc) => shortName[cc] || countryName[cc];
 
+const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 const india = centres.filter((c) => c.cc === 'IN');
 const abroad = centres.filter((c) => c.cc !== 'IN');
 const byCount = (name) => (a, b) => b[1].length - a[1].length || name(a[0]).localeCompare(name(b[0]));
 const groupBy = (list, key, name = (k) => k) => [...list.reduce((m, c) => m.set(c[key], [...(m.get(c[key]) || []), c]), new Map())].sort(byCount(name));
 const states = groupBy(india, 'state');
+// Delhi (the National Capital Territory) is grouped with the states but is not one.
+const UT = new Set(['Delhi']);
+const stateCount = states.filter(([s]) => !UT.has(s)).length;
+const utNames = states.filter(([s]) => UT.has(s)).map(([s]) => s);
+const indiaSpread = `${plural(india.length, 'centre')} in ${plural(stateCount, 'state')}${utNames.length ? ` and ${utNames.join(', ')}` : ''}`;
 const nations = groupBy(abroad, 'cc', (cc) => countryName[cc]);
 
 // tel: href — digits only, keeping a leading + and dropping the trunk "(0)".
@@ -209,7 +222,6 @@ function centreCard(c) {
     </li>`;
 }
 
-const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 // town names for a collapsed group: the first part of each place line
 const towns = (list) => [...new Set(list.map((c) => c.place.replace(/\s*\(.*\)/, '').split(',')[0].trim()))].sort().join(' · ');
 const toggle = `<span class="ce-toggle" aria-hidden="true">${icon('plus', 18)}</span>`;
@@ -235,7 +247,7 @@ const directory = `<div class="ce-dir" data-filter-scope data-ce-dir>
   </div>
 
   <div class="ce-region" data-filter-item="IN" data-ce-region>
-    <h3 class="ce-region-title"><span>India</span><small>${plural(india.length, 'centre')} in ${plural(states.length, 'state')}</small></h3>
+    <h3 class="ce-region-title"><span>India</span><small>${indiaSpread}</small></h3>
     <div class="ce-states">
       ${states.map(([state, list]) => `<details class="ce-state" data-ce-group>
         <summary>
@@ -302,10 +314,17 @@ const overview = `<section id="overview" class="section ce-overview" aria-labell
   </div>
 </section>`;
 
+// The shared map's origin card quotes "over one hundred Ashram branches"
+// (sri-swamiji page) while the overview above quotes "Over 80 branches"
+// (sanatana-dharma-parirakshana page). Keep one figure on this page: the
+// card names the Ashram as the headquarters, without a count.
+const reachMap = worldMap({ id: 'reach-map', findHref: '#centres' })
+  .replace(/(<span class="wm-ro-note" data-wm-note>)[^<]*(<\/span>)/, '$1Sri Ganapathy Sachchidananda Ashram, headquarters of Sri Swamiji’s mission.$2');
+
 const reach = `<section id="global-reach" class="section section-dark ce-reach grain">
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Global Reach', title: 'Golden threads from <span class="em-light">Mysuru</span>', lead: 'The Peetham’s directory lists centres in eleven countries beyond India. Choose a country to trace its thread from the Ashram.', light: true })}
-    ${worldMap({ id: 'reach-map', findHref: '#centres' })}
+    ${reachMap}
     <p class="ce-reach-cta" data-reveal="up">${btn('Browse the centres by country', '#centres', 'ghost', 'arrow')}</p>
 
     <div class="ce-moments-wrap">
@@ -366,7 +385,7 @@ const special = `<div class="ce-special">
           <div><dt>Three rivers</dt><dd>Kaveri, Arkavati, Guptagamini</dd></div>
           <div><dt>Also enshrined</dt><dd>Panchamukha Anjaneya, Ganapathy, Vana Durga, Sadguru Padukas</dd></div>
         </dl>
-        <a class="link-arrow" href="${kashi.href}">Datta Kashi on dattapeetham.org ${icon('arrow-up-right', 15)}</a>
+        <a class="link-arrow" href="${kashi.href}">${tail('Datta Kashi on dattapeetham.org', icon('arrow-up-right', 15))}</a>
       </div>
     </article>
     <article class="ce-sp" data-reveal="up">
@@ -378,7 +397,7 @@ const special = `<div class="ce-special">
         <p>To protect Manginapudi (Tallapalem) from severe cyclones and strong tidal waves, Sri Swamiji consecrated Lord Dattatreya at the seaside temple of Lord Nagareswara in 1991, and had twelve wells dug, each with healing waters of different constituents. A bath at these medicinal wells destroys sins; hence the name Datta Rameswaram.</p>
         <p class="ce-wells-label">The twelve wells</p>
         <ul class="ce-wells">${wells.map((w) => `<li>${w}</li>`).join('')}</ul>
-        <a class="link-arrow" href="${rameshwaram.href}">Datta Rameshwaram on dattapeetham.org ${icon('arrow-up-right', 15)}</a>
+        <a class="link-arrow" href="${rameshwaram.href}">${tail('Datta Rameshwaram on dattapeetham.org', icon('arrow-up-right', 15))}</a>
       </div>
     </article>
   </div>
@@ -435,7 +454,7 @@ const navanathaSection = `<section id="navanatha" class="section section-dark ce
 
 const centresSection = `<section id="centres" class="section ce-centres">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Ashram Centres', title: 'Find a centre <span class="em-light">near you</span>', lead: 'Ashrams, Datta Yoga Centres, temples and satsang groups, grouped by country as the Peetham’s directory lists them. Open a centre for its full address, map and programmes.' })}
+    ${sectionHead({ eyebrow: 'Ashram Centres', title: 'Find a centre <span class="em-light">near you</span>', lead: 'Ashrams, Datta Yoga Centres, temples and satsang groups from the Peetham’s directory, grouped here by country and, within India, by state or territory. Open a centre for its full address, map and programmes.' })}
     <p class="notice ce-notice" data-reveal="up">${icon('info', 18)}<span><b>A partial list.</b> ${centres.length} of the ${DIRECTORY_TOTAL} centres in the official directory are shown here, with contacts as published. Please confirm timings with the centre before you visit, and see the <a href="${links.ashramCenters}">official Ashram Centres directory</a> for the complete, current list.</span></p>
     ${directory}
   </div>
@@ -445,7 +464,7 @@ const kaalaagniThumb = kshetras[0];
 const mysuru = `<section id="mysuru" class="section section-sand ce-my" aria-labelledby="mysuru-title">
   <div class="wrap ce-my-grid">
     <div class="ce-my-media" data-reveal="clip">
-      ${frame(P.prayerHall, 'Devotees seated in the Universal Prayer Hall of the Mysuru Ashram, facing the main shrine', { ratio: '4/5', pos: '74% 55%', badge: 'Since 1966', caption: '<b>Universal Prayer Hall</b>Home of Kaalaagni Shamana Dattatreya, the Peetham’s main deity' })}
+      ${frame(P.prayerHall, 'Devotees seated in the Universal Prayer Hall of the Mysuru Ashram, facing the main shrine', { ratio: '4/5', pos: '74% 55%', badge: 'Unveiled 1984', caption: '<b>Universal Prayer Hall</b>Home of Kaalaagni Shamana Dattatreya, the Peetham’s main deity' })}
       <figure class="ce-my-deity">
         ${img(kaalaagniThumb.img, kshetraAlt(kaalaagniThumb), { w: 250, h: 250 })}
         <figcaption><b>Kshetra No. 1</b>Kaalaagni Shamana Dattatreya</figcaption>

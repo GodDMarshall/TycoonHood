@@ -31,16 +31,20 @@ const app = apps.find((a) => a.name === 'Datta Kriya Yoga');
 const verses = [
   ['Kathopanishad', 'Adhyaatma yogaadhigamena devam / Matvaamdheero harshashokau jahaati', 'The intelligent man, having known the Effulgent One by means of Adhyatma Yoga (meditation on the inner self), abandons both joy and sorrow.'],
   ['Shvetaashvatara Upanishad', 'Te dhyaana yogaanugataa apashyan / Devaatmashaktim svagunaairnigoodham', 'The Rishis (seers) absorbed in Dhyana Yoga (the yoga of meditation) realized the Soul Power of the Supreme concealed by the gunas (qualities).'],
-  ['Srimad Bhagavad Gita', 'Dhyaanaavasthita tadgatena manasaa pashyanti yam yoginah', 'Whom the Yogis behold with their minds engrossed in THAT, through meditation.'],
+  ['Concluding Dhyana Shloka, Srimad Bhagavad Gita', 'Dhyaanaavasthita tadgatena manasaa pashyanti yam yoginah', 'Whom the Yogis behold with their minds engrossed in THAT, through meditation.'],
 ];
 
 /* ---------------------------------------------------------------------------
-   Practice: mental, pranic and physical techniques, and the five components.
+   Practice: what Datta Kriya Yoga "deals with", in the source's own order and
+   wording (the source names no mental/pranic/physical grouping), and the five
+   components. Icons are decorative.
 --------------------------------------------------------------------------- */
 const facets = [
-  ['lotus', 'Mental', 'Withdrawal of the sense organs, and fixing one’s attention on a deity or object for concentration and contemplation.'],
-  ['sun', 'Pranic', 'Restraint of breath and various techniques of breathing, with mudras that direct vital energy to specific areas of the body.'],
-  ['yoga', 'Physical', 'Asanas and Naadi Shuddhi exercises, with relaxation, to build strength and flexibility.'],
+  ['sun', 'Restraint of breath'],
+  ['sparkle', 'Various techniques of breathing'],
+  ['moon', 'Relaxation'],
+  ['lotus', 'Withdrawal of the sense organs'],
+  ['compass', 'Fixing one’s attention on a particular deity or object, for concentration and contemplation'],
 ];
 
 const components = [
@@ -155,15 +159,18 @@ function breathVisual() {
 }
 
 /* ---------------------------------------------------------------------------
-   Datta Kriya Yoga prayers, from the Peetham's page (transliteration as
-   published; obvious encoding slips such as ü/ä for ū/ā corrected).
+   Datta Kriya Yoga prayers, from the Peetham's page. Transliteration as
+   published; only diacritic encoding slips are corrected (ü, ä, ş for ū, ā,
+   ṣ) and the spacing before "|" evened. Spellings such as "svādhishthāne",
+   "dhratavidhitanum" and "vikti" are kept as published. The meanings have
+   obvious typos ("efu", "and and") removed. A visible note says so.
 --------------------------------------------------------------------------- */
 const prayers = [
   ['Guru Paduka Dhyana Shlokam', `<p class="ky-sloka">śrī bhūyuta śrī hari cihnitābhyām agastya rekhādibhirancitābhyām |<br>nigūdha bījākṣara mudritābhyām namo namah(s) sadguru pādukābhyām ||</p>
 <p><b>Meaning.</b> I salute those sacred Sadguru padukas on which are depicted symbolically Lord Vishnu along with Sree Devi (Goddess of Wealth) and Bhoodevi (Goddess of Earth), Agastya (Saint) and other lines, and also several seed letters of occult nature.</p>`],
   ['Devi Prarthana', `<p class="ky-sloka">mūlādhāraṁ tathā svādhiṣṭhānaṁ ca manipūrakam<br>anāhatam viśuddhākhyam ājñācakram vidurbudhāh<br>tavādhāra svarūpāṇī konacakrani pārvāti<br>trikona rupini śaktih bindurūpaḥ(s) śivassmrtah<br>avinābhāva sambandhah tasmāt bindu trikonayoh ||</p>
 <p><b>Meaning.</b> The learned Seers say that the transcendental spiritual energy called ‘Kundalini’ resides in Moolaadhaara and pervades the Swadhishtana, Manipooraka, Anahata, Vishuddha and Ajna Chakras (pranic energy distribution centres in the body). The Goddess Parvati, based in these chakras in the form of triangles, energises the chakras. The energy in the form of a triangle has at its centre the Bindu (dot), the form of Siva. Therefore an inseparable relationship exists between Shiva and Shakti.</p>`],
-  ['Guru Prarthana', `<p class="ky-sloka">mūlādhāre ganapati vapurdhārinam deśikendram |<br>svādhiṣṭhāne dhratavidhitanum sādhakoddāra dakşam |<br>jvālāvarṇam rucira manipūrāntare rudramūrtim |<br>nādātmānam vitata mahitānāhatākāśa purnām |<br>bhāmārdhāngam paramapuruşākāra gamyam viśuddhe |<br>jyotīrūpam vikti rahitam tattvamajñātārāle |<br>svātmārāmam dvayavirahitam tam sahasrāra padme |<br>dhyāyāmi tvām ganapati gurum saccidānanda rūpam |</p>
+  ['Guru Prarthana', `<p class="ky-sloka">mūlādhāre ganapati vapurdhārinam deśikendram |<br>svādhishthāne dhratavidhitanum sādhakoddāra dakṣam |<br>jvālāvarṇam rucira manipūrāntare rudramūrtim |<br>nādātmānam vitata mahitānāhatākāśa purnām |<br>bhāmārdhāngam paramapuruṣākāra gamyam viśuddhe |<br>jyotīrūpam vikti rahitam tattvamajñātārāle |<br>svātmārāmam dvayavirahitam tam sahasrāra padme |<br>dhyāyāmi tvām ganapati gurum saccidānanda rūpam |</p>
 <p><b>Meaning.</b> To that Supreme Master who resides in the Moolaadhaara Chakra in the form of Lord Ganapathy; who resides in the Swadhishtana Chakra in the form of Lord Brahma, elevating the sadhaka (spiritual practitioner); who abides in the Manipooraka Chakra radiating the redness of fire in the form of Lord Rudra (Shiva); who dwells in the Anahata Chakra and fills all space (akash) with sound; who is resplendent like Lord Ardhanarishwara (Shiva) as the ultimate Purusha (Supreme Soul) in the Vishuddha Chakra; who, located in the Ajna Chakra, illumines without change as the principles of light and wisdom; who, beyond duality, as one without a second, exists in the absolute state of Atman (Self) and Universal Consciousness in the thousand-petal lotus — to Him, the Ganapati Guru, the embodiment of sat-chit-ananda (truth-knowledge-bliss), I offer my prayers again and again.</p>`],
 ];
 
@@ -299,8 +306,9 @@ ${pageHero({
       <div class="ky-facets">
         <h3 data-reveal="up">Mental, pranic and physical</h3>
         <p data-reveal="up">Sri Swamiji selects specific mental, pranic and physical techniques to address the imbalances of modern lifestyles and to promote unity in diversity. The purpose: to minimise afflictions of body and mind and improve single-pointed concentration.</p>
+        <p class="ky-facets-lead" data-reveal="up">For the ordinary householder, the way to know and learn Yoga is Datta Kriya Yoga. It deals with:</p>
         <ul class="ky-facet-list" data-stagger>
-          ${facets.map(([ic, t, x]) => `<li><span class="ky-facet-icon">${icon(ic, 24)}</span><span><b>${t}</b>${x}</span></li>`).join('')}
+          ${facets.map(([ic, t]) => `<li><span class="ky-facet-icon" aria-hidden="true">${icon(ic, 22)}</span><span>${t}</span></li>`).join('')}
         </ul>
       </div>
     </div>
@@ -421,6 +429,7 @@ ${pageHero({
       <p class="lead" data-reveal="up">Three prayers from the Datta Kriya Yoga tradition, with their meanings.</p>
     </header>
     <div data-reveal="up">${accordion(prayers)}</div>
+    <p class="ky-prayer-note" data-reveal="up">${icon('info', 14)}<span>Text as published on the Peetham’s Datta Kriya Yoga page. Diacritic encoding slips (ü, ä, ş for ū, ā, ṣ) and obvious typos in the meanings have been corrected; spellings are otherwise unchanged.</span></p>
   </div>
 </section>
 

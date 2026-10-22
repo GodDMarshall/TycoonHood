@@ -253,6 +253,11 @@
 .page-sri-swamiji .sgs-bala-two h3 { font-size: clamp(1.7rem, 2.6vw, 2.2rem); }
 .page-sri-swamiji .sgs-causes li { margin: .25em 0; }
 .page-sri-swamiji .sgs-bala-two .btn-row { margin-top: 22px; }
+/* the Padayatra film stays beside the long text instead of floating mid-column */
+@media (min-width: 981px) {
+  .page-sri-swamiji .sgs-bala-two { align-items: start; }
+  .page-sri-swamiji .sgs-bala-two .split-media { position: sticky; top: calc(var(--header-h) + 28px); margin-top: 8px; }
+}
 
 /* ---------- official social media ---------- */
 .page-sri-swamiji .sgs-social { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
@@ -276,6 +281,7 @@
 /* ---------- responsive ---------- */
 @media (max-width: 1180px) {
   .page-sri-swamiji .sgs-sayings { grid-template-columns: repeat(2, 1fr); }
+  .page-sri-swamiji .sgs-bala-two .btn-row .btn { flex: 1 1 auto; justify-content: center; }
   .page-sri-swamiji .sgs-social { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 980px) {
