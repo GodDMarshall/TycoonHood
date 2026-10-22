@@ -71,7 +71,10 @@ export const links = {
 // (0 = Sunday). Serialised into the page for the live open/closed badges.
 export const hours = {
   temple: { label: 'Temple', sessions: [['06:00', '12:00'], ['16:00', '20:00']], closed: [] },
-  shukaVana: { label: 'Shuka Vana', sessions: [['09:00', '12:00'], ['15:30', '18:00']], closed: [3] },
+  // Official sources disagree on Shuka Vana's hours and its own page says it
+  // is temporarily closed for maintenance, so the live badge speaks of the
+  // listed hours rather than promising it is open.
+  shukaVana: { label: 'Shuka Vana', sessions: [['09:00', '12:00'], ['15:30', '18:00']], closed: [3], caution: true },
 };
 
 export const nav = [

@@ -124,8 +124,8 @@ const svSpecies = ['Blue-throated macaw', 'Bolivian military macaw', 'Lesser sul
 
 const svGallery = [
   [photos.shukaVanaAviary, 'Aerial view of the Shuka Vana aviary, a tall meshed enclosure among trees, with the Shuka Vana logo', 'The Shuka Vana aviary at Sri Ganapathy Sachchidananda Ashram'],
-  [P.svBanner, 'Shuka Vana banner reading “Paradise for birds, Mysore, India” over an aerial view of the aviary', 'Shuka Vana, Mysuru'],
   [P.svRecord, 'Sri Swamiji holding the Guinness World Records certificate, with a green parrot on his shoulder', 'Sri Swamiji with the Guinness World Record for Shuka Vana'],
+  [P.svBanner, 'Shuka Vana banner reading “Paradise for birds, Mysore, India” over an aerial view of the aviary', 'Shuka Vana, Mysuru'],
 ];
 
 const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelledby="shuka-vana-title">
@@ -145,7 +145,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
         <div class="btn-row" data-reveal="up">${btn('Watch Varam chant', '#sv-varam', 'gold', 'play-circle')}${btn('Timings &amp; notice', '#sv-visit', 'ghost', 'clock')}</div>
       </div>
       <div class="sv-opener-media" data-reveal="clip">
-        ${frame(photos.shukaVana1, 'Sri Swamiji seated with black and white cockatoos perched on his arms and shoulders', { ratio: '3/2', caption: '<b>Sri Swamiji at Shuka Vana</b>He personally feeds, cajoles and nurtures the birds', badge: 'Founded 2012' })}
+        ${frame(photos.shukaVana1, 'Sri Swamiji seated with black and white cockatoos perched on his arms and shoulders', { ratio: '4/3', pos: 'center 35%', caption: '<b>Sri Swamiji at Shuka Vana</b>He personally feeds, cajoles and nurtures the birds', badge: 'Founded 2012' })}
       </div>
     </div>
   </div>
@@ -153,7 +153,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
   <div class="ch-body section">
     <div class="wrap sv-about">
       <div class="prose" data-reveal="up">
-        <span class="eyebrow">A sanctuary, not a showcase</span>
+        <span class="eyebrow">A sanctuary for birds</span>
         <h3>Shelter for birds that were abused, injured or abandoned</h3>
         <p class="dropcap">Shuka Vana houses hundreds of colourful, exotic species of parrots, including many critically endangered and endangered species. His Holiness Sri Sri Sri Ganapathy Sachchidananda Swamiji has taken a serious resolve to rehabilitate injured birds, and Shuka Vana compassionately gives shelter to neglected and abandoned birds.</p>
         <p>It provides a restored natural habitat in which endangered and critically endangered species can thrive and reproduce. The aviary’s healthy, safe and clean environment is instrumental in their protection and conservation, and the enclosure spans an entire acre within the Ashram grounds.</p>
@@ -177,7 +177,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
   <div class="ch-body section section-sand" id="sv-care">
     <div class="wrap">
       ${subhead({ eyebrow: 'How the birds are cared for', title: 'Four units, one <span class="em-light">promise</span> of care', lead: 'The parrots are arranged according to their nativity and behaviour inside a well-protected, two-layered meshed aviary, planted with selected plants and trees, with food stations, water pots and nest boxes.', center: true })}
-      <div class="sv-units" data-stagger>
+      <div class="sv-units at-snap" data-snap="Shuka Vana care units" data-stagger>
         ${svUnits.map((u) => `<article class="sv-unit">
           <span class="sv-unit-icon">${icon(u.icon, 26)}</span>
           <span class="tag">${u.role}</span>
@@ -186,6 +186,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
           ${u.equip ? `<details class="sv-equip"><summary><span>Inside the labs</span>${icon('plus', 16)}</summary><dl>${u.equip.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></details>` : ''}
         </article>`).join('')}
       </div>
+      <p class="snap-hint" aria-hidden="true">Swipe for more ${icon('arrow', 14)}</p>
       <div class="sv-care-grid">
         <article class="panel sv-diet" data-reveal="up">
           <span class="eyebrow">Phala Shala · the diet</span>
@@ -195,7 +196,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
         </article>
         <article class="panel sv-team" data-reveal="up">
           <span class="eyebrow">The care team</span>
-          <h4>About seventy caretakers</h4>
+          <h4>The people behind the care</h4>
           ${statRow([
             ['70', 'caretakers (approx.)', { count: 70 }],
             ['2', 'resident vets', { count: 2 }],
@@ -219,14 +220,14 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
         </div>
         <p class="sv-scale-note">Both are part of Shuka Vana’s family, as the Peetham describes them.</p>
       </div>
-      <aside class="panel panel-dark sv-top10" data-reveal="up" aria-labelledby="sv-top10-title">
+      <div class="panel panel-dark sv-top10" data-reveal="up">
         <span class="sv-top10-num" aria-hidden="true">10</span>
         <span class="eyebrow eyebrow-light">Every year</span>
         <h3 id="sv-top10-title">The Top 10 Birds</h3>
         <p>To build awareness of these feathered friends, ten parrot species at Shuka Vana that are in the endangered zone in the wild are selected every year. The results of the Top 10 Birds list are based on voting by thousands of Shuka Vana members from across the globe.</p>
         <p class="sv-top10-follow">Follow Shuka Vana</p>
         ${socialRow(SV.social, 'Shuka Vana on social media')}
-      </aside>
+      </div>
     </div>
   </div>
 
@@ -251,15 +252,15 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
     <div class="wrap ch-close">
       <div class="ch-gallery">
         <h3 class="ch-mini">${icon('photo', 18)}From the aviary</h3>
-        ${gallery(svGallery, 'at-gallery g3')}
+        ${gallery(svGallery, 'at-gallery g3 sv-gal')}
       </div>
-      <aside class="ch-visit" id="sv-visit" aria-labelledby="sv-visit-title">
+      <div class="ch-visit" id="sv-visit">
         <h3 class="ch-mini" id="sv-visit-title">${icon('clock', 18)}Visiting Shuka Vana</h3>
         <div class="notice sv-notice" role="note">
           ${icon('info', 22)}
           <div>
             <b>Temporarily closed for maintenance</b>
-            <p>The Peetham’s Shuka Vana page states: “Shuka Vana is temporarily closed for public due to Maintenance Works.” The hours published for Shuka Vana also differ between the Peetham’s pages. <strong>Please check before visiting.</strong></p>
+            <p>The Peetham’s Shuka Vana page states: “Shuka Vana is temporarily closed for public due to Maintenance Works.” The hours listed on that page also differ from the standard Shuka Vana hours shown elsewhere on this site. <strong>Please check before visiting.</strong></p>
             <p class="sv-notice-actions">${telLink}<a href="${SV.page}">${icon('external', 16)}<span>Shuka Vana page</span></a></p>
           </div>
         </div>
@@ -276,7 +277,7 @@ const chShuka = `<section id="shuka-vana" class="chapter ch-shuka" aria-labelled
             </div>
           </div>
         </article>
-      </aside>
+      </div>
     </div>
   </div>
 </section>`;
@@ -347,9 +348,10 @@ const chBonsai = `<section id="bonsai" class="chapter ch-bonsai" aria-labelledby
   <div class="ch-body section section-sand">
     <div class="wrap">
       ${subhead({ eyebrow: 'Every tree has a history', title: 'Three stories the garden <span class="em-light">keeps</span>', center: true })}
-      <ol class="bonsai-stories" data-stagger>
-        ${treeStories.map(([t, x], i) => `<li><span class="bs-num" aria-hidden="true">${['i', 'ii', 'iii'][i]}</span><h4>${t}</h4><p>${x}</p></li>`).join('')}
-      </ol>
+      <div class="bonsai-stories at-snap" data-snap="Three stories of the Bonsai Garden" data-stagger>
+        ${treeStories.map(([t, x], i) => `<article><span class="bs-num" aria-hidden="true">${['i', 'ii', 'iii'][i]}</span><h4>${t}</h4><p>${x}</p></article>`).join('')}
+      </div>
+      <p class="snap-hint" aria-hidden="true">Swipe for more ${icon('arrow', 14)}</p>
     </div>
   </div>
 
@@ -377,14 +379,14 @@ const chBonsai = `<section id="bonsai" class="chapter ch-bonsai" aria-labelledby
         <h3 class="ch-mini">${icon('photo', 18)}From the garden</h3>
         ${gallery(bonsaiGallery, 'at-gallery g5')}
       </div>
-      <aside class="ch-visit" aria-labelledby="bonsai-visit-title">
+      <div class="ch-visit">
         <h3 class="ch-mini" id="bonsai-visit-title">${icon('clock', 18)}Visiting the garden</h3>
         ${hoursCard(null, 'Timings for public visit', [['Morning', '10:00 AM – 12:30 PM'], ['Evening', '3:30 PM – 5:30 PM'], ['Holiday', 'Every Wednesday']], { note: 'As listed on the Peetham’s Bonsai Garden page.' })}
         <div class="ch-visit-more">
           <p>Follow the garden</p>
           ${socialRow(BONSAI.social, 'Bonsai Garden on social media')}
         </div>
-      </aside>
+      </div>
     </div>
   </div>
 </section>`;
@@ -490,7 +492,7 @@ const chVishwam = `<section id="vishwam" class="chapter ch-vishwam" aria-labelle
         <h3 class="ch-mini">${icon('photo', 18)}From the museum</h3>
         ${gallery(vishwamGallery, 'at-gallery g3')}
       </div>
-      <aside class="ch-visit" aria-labelledby="vishwam-visit-title">
+      <div class="ch-visit">
         <h3 class="ch-mini" id="vishwam-visit-title">${icon('clock', 18)}Visiting the museum</h3>
         <div class="panel ch-visit-panel">
           <p>The Peetham’s Vishwam Museum page does not list visiting hours. Please confirm with the Ashram before you go.</p>
@@ -498,7 +500,7 @@ const chVishwam = `<section id="vishwam" class="chapter ch-vishwam" aria-labelle
           <h4>In the press</h4>
           <ul class="at-press">${vishwamPress.map(([t, src, href]) => `<li><a href="${href}"><span><b>${t}</b><small>${src}</small></span>${icon('arrow-up-right', 16)}</a></li>`).join('')}</ul>
         </div>
-      </aside>
+      </div>
     </div>
   </div>
 </section>`;
@@ -589,14 +591,14 @@ const chNada = `<section id="nada-mantapa" class="chapter ch-nada" aria-labelled
         <h3 class="ch-mini">${icon('photo', 18)}From the hall</h3>
         ${gallery(nadaGallery, 'at-gallery g3')}
       </div>
-      <aside class="ch-visit" aria-labelledby="nada-visit-title">
+      <div class="ch-visit">
         <h3 class="ch-mini" id="nada-visit-title">${icon('calendar', 18)}Attending a programme</h3>
         <div class="panel ch-visit-panel">
           <p>Concerts, festival celebrations and Sri Swamiji’s Music for Meditation and Healing sessions are held in Nada Mantapa through the year. The Nada Mantapa page lists no separate visiting hours; see the Peetham’s calendar for upcoming programmes.</p>
           <div class="btn-row">${btn('Events &amp; festivals', 'events.html', 'gold', 'calendar')}${btn('Official calendar', links.calendar, 'line', 'external')}</div>
           <p class="ch-visit-actions"><a class="link-arrow" href="music.html">${icon('music', 16)}<span>Nada Chikitsa: healing through music</span></a></p>
         </div>
-      </aside>
+      </div>
     </div>
   </div>
 </section>`;
@@ -633,7 +635,7 @@ export default {
   file: 'attractions.html',
   title: 'Ashram Attractions',
   crumb: 'Ashram Attractions',
-  description: 'Tour the Mysuru Ashram’s landmarks: Shuka Vana bird sanctuary, Kishkindha Moolika Bonsai Garden, Vishwam Museum and the Nada Mantapa music hall.',
+  description: 'Tour the Mysuru Ashram’s landmarks: the Shuka Vana bird sanctuary, Kishkindha Moolika Bonsai Garden, Vishwam Museum and Nada Mantapa, with visiting notes.',
   nav: 'Visit',
   image: P.hero,
   preload: P.hero,

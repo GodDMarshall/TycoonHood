@@ -19,6 +19,7 @@
     var update = function () {
       raf = 0;
       var line = nav.getBoundingClientRect().bottom + 1, vh = innerHeight, active = -1;
+      var reading = line + Math.min(160, (vh - line) * 0.3); // a chapter is "current" once it crosses this line
       for (var i = 0; i < chapters.length; i++) {
         var ch = chapters[i];
         if (!ch) continue;
@@ -26,7 +27,7 @@
         var span = Math.max(1, r.height - (vh - line));
         var p = Math.min(1, Math.max(0, (line - r.top) / span));
         links[i].style.setProperty('--cp', p.toFixed(3));
-        if (r.top <= line + 2 && r.bottom > line + 2) active = i;
+        if (r.top <= reading && r.bottom > reading) active = i;
       }
       if (active !== current) {
         current = active;
@@ -43,6 +44,47 @@
     update();
   }
 
+  /* ---------------- in-page links into the tour ----------------
+     The shared smooth-scroll offsets by the header only; here the sticky
+     chapter navigator sits below it, so land each target just under the
+     navigator (and under the header too when travelling upwards, because the
+     header slides back in on the way up). Focus follows for keyboard users. */
+  var tour = doc.querySelector('.tour');
+  var header = doc.querySelector('[data-header]');
+  if (tour) {
+    Array.prototype.slice.call(doc.querySelectorAll('main a[href^="#"]')).forEach(function (a) {
+      var id = decodeURIComponent(a.getAttribute('href').slice(1)), el = id && doc.getElementById(id);
+      if (!el || !tour.contains(el)) return;
+      a.addEventListener('click', function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+        e.preventDefault(); e.stopPropagation();
+        var y = el.getBoundingClientRect().top + scrollY, up = y < scrollY;
+        var off = (nav ? nav.offsetHeight : 0) + (up && header ? header.offsetHeight : 0) + (el.classList.contains('chapter') ? -1 : 16);
+        var target = Math.max(0, Math.round(y - off));
+        if (DP.lenis) DP.lenis.scrollTo(target, { immediate: reduced });
+        else scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' });
+        if (history.pushState) history.pushState(null, '', '#' + id);
+        if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+        el.focus({ preventScroll: true });
+      });
+    });
+  }
+
+  /* ---------------- swipeable card rows (phones) ----------------
+     When a row actually scrolls sideways it becomes a labelled, focusable
+     region so keyboard users can scroll it too; otherwise it stays a grid. */
+  var snaps = Array.prototype.slice.call(doc.querySelectorAll('[data-snap]'));
+  var snapCheck = function () {
+    snaps.forEach(function (el) {
+      if (el.scrollWidth > el.clientWidth + 2) {
+        el.setAttribute('tabindex', '0'); el.setAttribute('role', 'region'); el.setAttribute('aria-label', el.getAttribute('data-snap'));
+      } else {
+        el.removeAttribute('tabindex'); el.removeAttribute('role'); el.removeAttribute('aria-label');
+      }
+    });
+  };
+  if (snaps.length) { snapCheck(); addEventListener('resize', snapCheck); addEventListener('load', snapCheck); }
+
   /* ---------------- Shuka Vana: gold birds & feathers ---------------- */
   var cv = doc.querySelector('[data-sv-birds]');
   if (!cv || !cv.getContext) return;
@@ -50,25 +92,27 @@
   function prng(a) {
     return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   }
-  function makeBird(rnd, w, h, small, anywhere) {
+  // Birds keep to two bands of sky: above the copy and photo, and low near the foot.
+  function makeBird(rnd, w, h, small, anywhere, band) {
+    var low = band === undefined ? rnd() < 0.35 : band === 1;
     return {
-      x: anywhere ? rnd() * w : -80 - rnd() * w * 0.35,
-      base: h * (0.08 + rnd() * 0.5),
-      amp: 8 + rnd() * 22,
-      k: 0.0028 + rnd() * 0.0036,
+      x: anywhere ? rnd() * w : -90 - rnd() * w * 0.3,
+      base: h * (low ? 0.8 + rnd() * 0.12 : 0.05 + rnd() * 0.3),
+      amp: 10 + rnd() * 22,
+      k: 0.0026 + rnd() * 0.0034,
       ph: rnd() * 6.283,
-      v: 16 + rnd() * 18,
-      s: (small ? 0.6 : 0.78) + rnd() * 0.5,
-      flap: 1.4 + rnd() * 1.1,
+      v: 18 + rnd() * 18,
+      s: (small ? 0.95 : 1.15) + rnd() * 0.6,
+      flap: 1.3 + rnd() * 1,
       fp: rnd() * 6.283,
-      a: 0.34 + rnd() * 0.34,
+      a: 0.42 + rnd() * 0.32,
     };
   }
   function pathY(b, x) { return b.base + Math.sin(x * b.k + b.ph) * b.amp; }
 
   // A parrot in profile, flying right: long tail, hooked beak, two wings.
   function drawBird(ctx, x, y, ang, s, wing, a) {
-    var up = -15 * wing;
+    var up = -17 * wing;
     ctx.save();
     ctx.translate(x, y); ctx.rotate(ang); ctx.scale(s, s);
     ctx.fillStyle = 'rgba(226,200,142,' + a + ')';
@@ -95,7 +139,7 @@
 
   function setup(w, h) {
     var rnd = prng(2012), small = w < 760, birds = [], feathers = [], i;
-    for (i = 0; i < (small ? 4 : 7); i++) birds.push(makeBird(rnd, w, h, small, true));
+    for (i = 0; i < (small ? 4 : 6); i++) birds.push(makeBird(rnd, w, h, small, true, i % 3 === 2 ? 1 : 0));
     for (i = 0; i < (small ? 2 : 4); i++) feathers.push({ x: rnd() * w, y: rnd() * h, s: 0.7 + rnd() * 0.6, ph: rnd() * 6.283, vy: 8 + rnd() * 9, a: 0.22 + rnd() * 0.22 });
     return { birds: birds, feathers: feathers, rnd: rnd, small: small };
   }
@@ -112,12 +156,12 @@
       if (b.x > w + 90) { var nb = makeBird(s.rnd, w, h, s.small, false); for (var key in nb) b[key] = nb[key]; }
       var y = pathY(b, b.x), ang = Math.atan(Math.cos(b.x * b.k + b.ph) * b.amp * b.k) * 0.8;
       // thread of light trailing the bird along its own path
-      var x0 = b.x - 14 * b.s, x1 = x0 - 150 * b.s;
+      var x0 = b.x - 12 * b.s, x1 = x0 - 90 * b.s;
       var g = ctx.createLinearGradient(x0, pathY(b, x0), x1, pathY(b, x1));
-      g.addColorStop(0, 'rgba(240,210,150,' + (b.a * 0.5) + ')'); g.addColorStop(1, 'rgba(240,210,150,0)');
+      g.addColorStop(0, 'rgba(240,210,150,' + (b.a * 0.34) + ')'); g.addColorStop(1, 'rgba(240,210,150,0)');
       ctx.strokeStyle = g; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x0, pathY(b, x0));
-      for (var q = 1; q <= 12; q++) { var px = x0 - q * 12.5 * b.s; ctx.lineTo(px, pathY(b, px)); }
+      for (var q = 1; q <= 9; q++) { var px = x0 - q * 10 * b.s; ctx.lineTo(px, pathY(b, px)); }
       ctx.stroke();
       // soft halo
       var hr = 24 * b.s, hg = ctx.createRadialGradient(b.x, y, 0, b.x, y, hr);

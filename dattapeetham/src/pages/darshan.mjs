@@ -10,7 +10,7 @@
 
 import { pageHero, sectionHead, split, frame, card, ctaBand, processSteps, scrollLit, hoursCard, shareRow, btn, icon, img, esc } from '../components.mjs';
 import { links, hours, site, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
-import { photos, timings, latestSevas, timeline } from '../data.mjs';
+import { photos, timings, latestSevas } from '../data.mjs';
 
 const view = (slug) => `${OFFICIAL}/page/view/${slug}`;
 
@@ -33,8 +33,6 @@ const pic = {
   hanumanExterior: `${PAGE_IMG}528/528_322ad0b196f6e909.jpg`,
   swamijiAtHanuman: `${PAGE_IMG}528/528_c68ebdc62bc6a30b.jpeg`,
 };
-
-const unveiled = (year) => (timeline.find(([y]) => y === year) || [])[0];
 
 // --- small pieces ---------------------------------------------------------
 
@@ -134,7 +132,7 @@ const liveCard = `<article class="dn-live" id="live" aria-labelledby="live-h" da
 // rituals from data.timings and the Kaalaagni, Ashram Life and Hanuman pages.
 const DAY_START = 300, DAY_END = 1260;
 const dayEvents = [
-  [360, '6:00 AM', 'Datta temple opens', 'Daily Abhishekam, Archana and Ashtottara Seva to Lord Dattatreya'],
+  [360, '6:00 AM', 'Datta temple opens', 'Kaalaagni Shamana Dattatreya, in the Universal Prayer Hall'],
   [420, '7:00 AM', 'Hanuman Abhisheka', 'Karya Siddhi Hanuman, daily'],
   [480, '~8:00 AM', 'Sri Chakra Puja', 'When Sri Swamiji or Sri Bala Swamiji is in town; Teertha follows'],
   [720, '12:00 PM', 'Midday close', 'Temple darshan pauses for the afternoon'],
@@ -144,7 +142,6 @@ const dayEvents = [
   [1200, '8:00 PM', 'Temple closes', 'Until 6 AM tomorrow'],
 ];
 const pct = (m) => (((m - DAY_START) / (DAY_END - DAY_START)) * 100).toFixed(3);
-const hoursTicks = [6, 9, 12, 15, 18, 21].map((h) => `<span style="left:${pct(h * 60)}%">${h === 12 ? '12 PM' : h > 12 ? `${h - 12} PM` : `${h} AM`}</span>`).join('');
 
 const dayTrack = `<div class="dn-day panel" data-reveal="up">
   <header class="dn-day-head">
@@ -152,7 +149,7 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
       <span class="eyebrow">A day at the Ashram</span>
       <h3>From the first Abhishekam to the evening lamps</h3>
     </div>
-    <p class="dn-day-legend"><i aria-hidden="true"></i>Temple darshan · ${templeHours}</p>
+    <p class="dn-day-legend"><span><i aria-hidden="true"></i>Temple darshan · ${templeHours}</span><span data-dn-now-wrap hidden><i class="dn-now-key" aria-hidden="true"></i><span data-dn-now-text></span></span></p>
   </header>
   <div class="dn-day-track" data-dn-day data-start="${DAY_START}" data-end="${DAY_END}">
     <div class="dn-day-rail" aria-hidden="true">
@@ -162,7 +159,6 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
       }).join('')}
       <span class="dn-day-now" data-dn-now hidden><b data-dn-now-label></b></span>
     </div>
-    <div class="dn-day-hours" aria-hidden="true">${hoursTicks}</div>
     <ol class="dn-day-events">
       ${dayEvents.map(([m, t, title, note], i) => `<li class="${i % 2 ? 'is-low' : 'is-high'}" style="--x:${pct(m)}%" data-m="${m}"${m === 1150 ? ' data-weekend' : ''}>
         <time>${t}</time><b>${title}</b><small>${note}</small>
@@ -183,10 +179,10 @@ const timingsSection = `<section id="timings" class="section section-paper dn-ti
       ${liveCard}
       <div class="dn-hours">
         ${timings.map((t) => hoursCard(t.key, t.title, t.rows, { img: t.img, note: t.note })).join('')}
+        <p class="notice dn-notice" data-reveal="up">${icon('info', 18)}<span>Please remove footwear, observe silence in the temples and wear decent, non-provocative attire. Timings can change on festival days — check the <a href="${links.calendar}">official calendar</a> or <a href="visit.html">plan your visit</a>.</span></p>
       </div>
     </div>
     ${dayTrack}
-    <p class="notice dn-notice" data-reveal="up">${icon('info', 18)}<span>Please remove footwear, observe silence in the temples and wear decent, non-provocative attire. Timings can change on festival days — check the <a href="${links.calendar}">official calendar</a> or <a href="visit.html">plan your visit</a>.</span></p>
   </div>
 </section>`;
 
@@ -194,7 +190,7 @@ const timingsSection = `<section id="timings" class="section section-paper dn-ti
 
 const mandirIntro = `<section id="mandir" class="section dn-mandir-intro">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Learn · Significance', title: 'Datta Peetham <span class="em-light">Mandir Nagari</span>', lead: 'At the heart of the Peetham is Lord Dattatreya, the presiding deity who embodies the Sadguru — the Master Teacher principle. Around Him stand six shrines, each with its own sanctity.' })}
+    ${sectionHead({ eyebrow: 'Learn · Significance', title: 'Datta Peetham <span class="em-light">Mandir Nagari</span>', lead: 'At the heart of the Peetham is Lord Dattatreya, the presiding deity who embodies the Sadguru — the Master Teacher principle. The Mysuru Ashram is home to six shrines and a pathway of 366 Birth Date Pillars.' })}
     <div class="dn-lit">${scrollLit('Lord Dattatreya guides seekers from the shadows of the material world to the *illumination* of the inner *soul.*')}</div>
     <div class="dn-arrive">
       <h3 class="dn-arrive-h"><span class="eyebrow">As you enter</span></h3>
@@ -227,7 +223,7 @@ const prayerHall = `<section id="prayer-hall" class="dn-shrine" aria-labelledby=
   <div class="wrap">
     ${split({
       media: `<div class="dn-media">
-        ${frame(photos.prayerHall, 'Devotees seated before Sri Swamiji in the Universal Prayer Hall', { ratio: '5/4', pos: '78% 55%', badge: `Unveiled ${unveiled('1984') || '1984'}` })}
+        ${frame(photos.prayerHall, 'Devotees seated before Sri Swamiji in the Universal Prayer Hall', { ratio: '5/4', pos: '78% 55%', badge: 'Unveiled 1984' })}
         <figure class="dn-inset">
           ${img(pic.kaalaagni, 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the main deity of the Peetham')}
           <figcaption>Kaalaagni Shamana Dattatreya</figcaption>
@@ -282,7 +278,7 @@ const rajarajeshwari = `<section id="rajarajeshwari" class="dn-shrine is-paper" 
 const hariSannidhi = `<section id="hari-sannidhi" class="dn-shrine" aria-labelledby="hari-sannidhi-h" data-dn-shrine>
   <div class="wrap">
     ${split({
-      media: `<div class="dn-media">${frame(photos.hariSannidhi, 'Salagramas arranged as Ananthanaga Shayana beneath a great serpent hood at Hari Sannidhi', { ratio: '1/1', pos: '50% 60%', badge: 'Unveiled 2023' })}</div>`,
+      media: `<div class="dn-media">${frame(photos.hariSannidhi, 'Salagramas arranged as Ananthanaga Shayana beneath a great serpent hood at Hari Sannidhi', { ratio: '5/4', pos: '50% 60%', badge: 'Unveiled 2023' })}</div>`,
       body: `${shrineHead('03', 'Lord Hari · 28 December 2023', 'Hari Sannidhi', 'hari-sannidhi')}
         <div class="dn-salagrama"><span data-count="2108">2,108</span><small>rare Salagramas, in the form of Ananthanaga Shayana</small></div>
         <p>The most spectacular Hari Sannidhi stands to the immediate right of the Rajarajeshwari temple, unveiled by Sri Swamiji on 28 December 2023.</p>
@@ -309,7 +305,7 @@ const venkateshwara = `<section id="venkateshwara" class="dn-shrine is-paper" ar
   <div class="wrap">
     ${split({
       reverse: true,
-      media: `<div class="dn-media">${frame(pic.sdvtAerial, 'Aerial view of the Sri Datta Venkateshwara Temple complex, its gopuram rising above devotees in the courtyard', { ratio: '4/5', pos: '46% 50%', badge: 'Consecrated 1999' })}</div>`,
+      media: `<div class="dn-media">${frame(pic.sdvtAerial, 'Aerial view of the Sri Datta Venkateshwara Temple complex, its gopuram rising above devotees in the courtyard', { ratio: '1/1', pos: '47% 50%', badge: 'Consecrated 1999' })}</div>`,
       body: `${shrineHead('04', 'Sri Datta Venkateswara Kshetram · 1999', 'Sri Datta Venkateshwara Temple', 'venkateshwara')}
         <p>For those seeking spirituality and peace, a visit to Sri Datta Venkateswara Kshetram is a must. Pilgrims say that this temple for Lord Venkateswara pulsates with Divine Energy. Its architecture is much like the one in holy Tirumala, and it is the firm belief of Datta devotees that the Lord of the seven hills has Himself come to Datta Peetham.</p>
         <p>Before the temple stands a huge <strong>Dhwaja Stambha</strong> — the sacred flag post — made from a 150-year-old teak tree, brought from the deep forests of Kerala. Several thousands throng the temple on Vaikuntha Ekadashi every year, and Annadanam is conducted for the needy on every Purnima.</p>
@@ -407,16 +403,17 @@ const hanuman = `<section id="hanuman" class="section section-dark dn-hanuman" a
 
 // 06 — Kalabhairava (no photograph published: an honest illustration instead)
 const niches = Array.from({ length: 7 }, (_, i) => {
-  const a = (-90 + (360 / 7) * i) * Math.PI / 180, r = 128, cx = 200 + r * Math.cos(a), cy = 200 + r * Math.sin(a);
+  const a = (-90 + (360 / 7) * i) * Math.PI / 180, r = 132, cx = 200 + r * Math.cos(a), cy = 200 + r * Math.sin(a);
   const rot = (360 / 7) * i;
-  return `<g transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${rot.toFixed(1)})"><path d="M-15 16V-2a15 15 0 0 1 30 0v18Z"/><circle cx="0" cy="3" r="3.2"/></g>`;
+  return `<g transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${rot.toFixed(1)})"><path d="M-16 19V-2a16 16 0 0 1 32 0v21Z"/><path class="kb-flame" d="M0-7c3.4 4.6 5.2 7.6 5.2 10.6a5.2 5.2 0 0 1-10.4 0C-5.2.6-3.4-2.4 0-7Z"/><path d="M-21 25h42"/></g>`;
 }).join('');
 const bhairavaArt = `<figure class="dn-bhairava-art" data-reveal="scale">
   <svg viewBox="0 0 400 400" role="img" aria-labelledby="kb-art-t" data-draw>
     <title id="kb-art-t">Illustration: one main shrine for the Pradhana Bhairava with seven niches around it</title>
     <circle cx="200" cy="200" r="182" class="kb-ring"/>
     <circle cx="200" cy="200" r="160" class="kb-ring kb-faint"/>
-    <circle cx="200" cy="200" r="96" class="kb-ring kb-faint"/>
+    <circle cx="200" cy="200" r="92" class="kb-ring kb-faint"/>
+    ${Array.from({ length: 7 }, (_, i) => { const a = (-90 + (360 / 7) * i) * Math.PI / 180; return `<path class="kb-faint" d="M${(200 + 92 * Math.cos(a)).toFixed(1)} ${(200 + 92 * Math.sin(a)).toFixed(1)}L${(200 + 104 * Math.cos(a)).toFixed(1)} ${(200 + 104 * Math.sin(a)).toFixed(1)}"/>`; }).join('')}
     ${niches}
     <g class="kb-main">
       <path d="M168 238V178a32 32 0 0 1 64 0v60Z"/>
@@ -496,7 +493,7 @@ const sevaCards = latestSevas.map((s) => card({
 })).join('');
 
 const ways = [
-  ['sun', 'Sri Chakra Puja', 'Every morning, at around 8 AM when Sri Swamiji or Sri Bala Swamiji is in town; Teertha is offered after.'],
+  ['sun', 'Sri Chakra Puja', 'Every morning — performed at around 8 AM by Sri Swamiji or Sri Bala Swamiji when in town. Teertha is offered after.'],
   ['flame', 'Homa &amp; Tailabhishekam', 'Morning rituals that devotees can join and sponsor for divine blessings.'],
   ['lotus', 'Kumkum Archana', 'Offered personally at the big Sri Chakra in the Rajarajeshwari temple.'],
   ['heart-hand', 'Poorna Phala Deeksha', 'Tie a whole dry coconut at the Karya Siddhi Hanuman temple, for wish fulfilment.'],
@@ -537,8 +534,8 @@ const upcoming = [
 ];
 const festivals = [
   { img: photos.dattatreya, alt: 'Sri Swamiji offers arati to Lord Dattatreya', when: 'December · three days', title: 'Datta Jayanti', text: 'The incarnation day of Adi Guru Dattatreya: Abhisheka in the Universal Prayer Hall, bhajans and a Shastra Sadas — and the one day in the year devotees may offer oil ablutions to the Moola virat.' },
-  { img: pic.deviArati, alt: 'Sri Swamiji offers arati to Sri Rajarajeshwari Devi', when: 'September or October · nine days', title: 'Navaratri', text: 'Sri Swamiji honours Mother Goddess Raja Rajeshwari through the Nava Avarana Puja, with Kumari Puja, Sri Chakra Puja, Devi Homa and concerts at Nada Mantapa.' },
-  { img: pic.doshaHaraShiva, alt: 'Sri Swamiji worships Sarva Dosha Hara Shiva', when: 'Maha Shivaratri', title: 'Maha Shivaratri', text: 'Rudra Abhishekam to the Sachchidanandeshwara Shiva Lingam, Sahasra Kalasha Abhishekam by devotees, and a vigil of music until Sri Swamiji’s discourse at 3 AM.' },
+  { img: pic.deviArati, alt: 'Sri Swamiji offers arati to Sri Rajarajeshwari Devi', when: 'Sep or Oct · nine days', title: 'Navaratri', text: 'Sri Swamiji honours Mother Goddess Raja Rajeshwari through the Nava Avarana Puja, with Kumari Puja, Sri Chakra Puja, Devi Homa and concerts at Nada Mantapa.' },
+  { img: pic.doshaHaraShiva, alt: 'Sri Swamiji worships Sarva Dosha Hara Shiva', when: 'A night of vigil', title: 'Maha Shivaratri', text: 'Rudra Abhishekam to the Sachchidanandeshwara Shiva Lingam and Sahasra Kalasha Abhishekam by devotees; musicians offer Sangeeta Seva through the vigil, and at 3 AM Sri Swamiji gives His discourse on Shiva.' },
   { img: photos.swamijiGarland, alt: 'Sri Ganapathy Sachchidananda Swamiji, garlanded', when: '26 May', title: 'Sri Swamiji’s Birthday', text: 'Sri Bala Swamiji performs Pratyaksha Paada Pooja to Sri Swamiji; mobility aids are given to the physically challenged and Annadaana is offered on a large scale.' },
 ];
 const festivalsSection = `<section id="festivals" class="section section-sand dn-festivals">

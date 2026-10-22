@@ -53,7 +53,6 @@ export const photos = {
   hospitalSeva: `${IMG}hospitalseva-67f4b197b5e90.png`,
   narasimhaKalyana: `${IMG}pooja_1189_b7bd843d77efb493.jpg`,
   ganapathyHoma: `${IMG}pooja_1007_97003de666a7ddda.jpeg`,
-  worldRecords: `${IMG}13WorldRecords%E2%80%A2CelebratingUniversalHarmony-696eec5ad8b37.png`,
   appMockup: `${IMG}dp-app.png`,
   appStoreBadge: `${IMG}app-store.jpg`,
   playStoreBadge: `${IMG}playstore.png`,

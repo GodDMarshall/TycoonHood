@@ -77,11 +77,11 @@ export function eyebrow(text, cls = '') {
   return `<span class="eyebrow ${cls}">${text}</span>`;
 }
 
-export function sectionHead({ eyebrow: eb, title, lead, align = 'center', light = false, ornament: orn = true, id }) {
+export function sectionHead({ eyebrow: eb, title, lead, align = 'center', light = false, ornament: orn = true, id, headingId }) {
   return `<header class="section-head ${align === 'left' ? 'is-left' : ''} ${light ? 'is-light' : ''}"${id ? ` id="${id}"` : ''}>
   ${orn && align !== 'left' ? ornament() : ''}
   ${eb ? eyebrow(eb) : ''}
-  <h2 data-split>${title}</h2>
+  <h2 data-split${headingId ? ` id="${headingId}"` : ''}>${title}</h2>
   ${lead ? `<p class="lead" data-reveal="up">${lead}</p>` : ''}
 </header>`;
 }
@@ -89,7 +89,7 @@ export function sectionHead({ eyebrow: eb, title, lead, align = 'center', light 
 // Inner-page hero modelled on the reference "inner page concepts": full-bleed
 // photograph, serif title, lead line, and a row of ivory quick tiles that
 // overlap the bottom edge.
-export function pageHero({ eyebrow: eb, title, lead, image, pos = 'center', tiles = [], crumb, actions = '' }) {
+export function pageHero({ eyebrow: eb, title, lead, image, pos = 'center', tiles = [], crumb, actions = '', tilesLabel, tilesCols }) {
   return `<section class="page-hero" data-hero>
   <div class="page-hero-media">${img(image, '', { eager: true, pos, cls: 'kenburns' })}</div>
   <div class="page-hero-glow" aria-hidden="true"></div>
@@ -103,12 +103,12 @@ export function pageHero({ eyebrow: eb, title, lead, image, pos = 'center', tile
   </div>
   ${thread()}
 </section>
-${tiles.length ? quickTiles(tiles, 'overlap') : ''}`;
+${tiles.length ? quickTiles(tiles, 'overlap', { label: tilesLabel, cols: tilesCols || (tiles.length > 4 ? tiles.length : undefined) }) : ''}`;
 }
 
 // Icon tiles row (reference: "Darshan & Puja / Events / Teachings / ...").
-export function quickTiles(items, variant = '') {
-  return `<div class="wrap"><nav class="quick-tiles ${variant}" aria-label="Quick links" data-stagger>
+export function quickTiles(items, variant = '', { label = 'On this page', cols } = {}) {
+  return `<div class="wrap"><nav class="quick-tiles ${variant}" aria-label="${esc(label)}"${cols ? ` style="--cols:${cols}"` : ''} data-stagger>
   ${items.map((t) => `<a class="quick-tile" href="${t.href}"${isExt(t.href) ? ' data-external' : ''}>
     <span class="qt-icon">${icon(t.icon, 28)}</span>
     <span class="qt-text"><b>${t.title}</b>${t.note ? `<small>${t.note}</small>` : ''}</span>
@@ -189,10 +189,10 @@ export function gallery(items, cls = '') {
 }
 
 // Click-to-load YouTube (no iframe until the visitor asks for it).
-export function video({ id, title, thumb, cls = '' }) {
+export function video({ id, title, thumb, cls = '', pos }) {
   const poster = thumb || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
   return `<div class="video ${cls}" data-yt="${id}" data-title="${esc(title)}">
-  ${img(poster, '')}
+  ${img(poster, '', { pos })}
   <button type="button" class="video-play" aria-label="Play video: ${esc(title)}">${icon('play', 28)}</button>
   <span class="video-title">${title}</span>
 </div>`;

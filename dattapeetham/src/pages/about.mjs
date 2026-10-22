@@ -29,7 +29,7 @@ const pic = {
 // The Ashram's own milestones (Avatara Timeline, temple and attraction pages).
 const chronicle = [
   { year: '1966', title: 'A straw hut in a field', text: 'Sri Swamiji moves to the present site on Ooty Road — then only a straw hut in a field, on barren land. The Ashram is established and Sri Sachchidanandeshwara is installed.' },
-  { year: '1978', title: 'The Datta Temple', text: 'On 9 June 1978, during a week-long ceremony, Lord Datta is installed as Sri Kaalaagni Shamana Dattatreya. After the Datta Temple was built, the Ashrama began to be called Avadhoota Datta Peetham. The SGS Hospital opens for free medical services.', img: pic.kaalaagni, alt: 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the main deity of the Peetham', pos: '50% 30%' },
+  { year: '1978', title: 'The Datta Temple', text: 'On 9 June 1978, during a week-long ceremony, Lord Datta is installed as Sri Kaalaagni Shamana Dattatreya. After the Datta Temple was built, the Ashrama began to be called Avadhoota Datta Peetham. The SGS Hospital opens for free medical services.', img: pic.kaalaagni, alt: 'Sri Swamiji before Kaalaagni Shamana Dattatreya, the main deity of the Peetham', pos: '50% 30%' },
   { year: '1984', title: 'Prayer Hall and Pathashala', text: 'The Universal Prayer Hall is unveiled; in 1985 the SGS Veda Pathashala is founded to teach the Vedas in the traditional Gurukula system.' },
   { year: '1998', title: 'Nada Mantapa', text: 'Sri Swamiji inaugurates Nada Mantapa, the Hall of Musical Tones, on 31 May 1998. Sri Datta Venkateshwara Kshetram follows in 1999 and the Pillar of Dharma in 2000.', img: pic.nadaStage, alt: 'The stage of Nada Mantapa lit for a concert', pos: '50% 60%' },
   { year: '2002', title: 'The Datta idol re-consecrated', text: 'On Rama Navami, 21 April 2002, the idol of Lord Datta is relocated to the centre of the Prayer Hall and re-consecrated.' },
@@ -47,7 +47,7 @@ const principles = [
   { icon: 'heart-hand', title: 'Service to mankind is service to God', text: 'Sri Swamiji reminds us time and again that service to mankind is service to God — through hospitals and medical camps, schools, and Annadanam, by which all Ashram visitors are fed free.', href: 'seva.html', cta: 'Seva' },
   { icon: 'namaste', title: 'Open to all', text: 'Sri Swamiji welcomes everyone, including agnostics, atheists and people of any faith. The motto is to serve humanity without the barricades of caste, creed, race or religion.', href: 'visit.html', cta: 'Visit the Ashram' },
   { icon: 'veena', title: 'Music and devotion', text: 'Bhajan singing is one of the main methods Sri Swamiji propagates, so Divya Naama Sankeertana is a daily part of Ashram life — and music, practised with deep concentration, becomes a therapy.', href: 'music.html', cta: 'Nada Chikitsa' },
-  { icon: 'tree', title: 'Reverence for nature', text: '“Bonsai trees and birds are my two eyes. Naada is my voice. My breath is the Veda.” — Sri Swamiji. Shuka Vana for birds, the Bonsai garden, the Gau Shala and gardens of trees linked to the Rashis and Nakshatras follow from it.', href: 'attractions.html', cta: 'Attractions' },
+  { icon: 'tree', title: 'Reverence for nature', text: '“Bonsai trees and birds are my two eyes. Naada is my voice. My breath is the Veda.” — Sri Swamiji. Sri Swamiji promotes with zeal the preservation of flora and fauna: the Ashram houses Shuka Vana, the Bonsai garden, a Gau Shala and gardens of trees linked to the Rashis and Nakshatras.', href: 'attractions.html', cta: 'Attractions' },
 ];
 
 // Campus highlights: what stands on the 40 acres, grouped by where to read more.
@@ -56,7 +56,7 @@ const highlights = [
     ['Universal Prayer Hall', 'Kaalaagni Shamana Dattatreya, the main deity'],
     ['Sri Datta Venkateshwara Temple', 'In the model of Tirumala'],
     ['Karya Siddhi Hanuman', 'A 70-foot monolithic statue'],
-    ['Rajarajeshwari & Hari Sannidhi', 'Consecrated 28 December 2023'],
+    ['Rajarajeshwari & Hari Sannidhi', 'Consecrated and unveiled 28 December 2023'],
   ] },
   { cls: 'is-attractions', icon: 'sparkle', tag: 'Visit', title: 'Ashram Attractions', href: 'attractions.html', cta: 'Explore the attractions', img: pic.nadaStage, alt: 'The stage of Nada Mantapa during a concert', pos: '50% 55%', items: [
     ['Nada Mantapa', 'An auditorium dedicated to Nada'],
@@ -88,7 +88,7 @@ const lineage = [
 // The four great festivals (page/view/ashram-life). Dates follow the Hindu
 // calendar, so they are described by season, never by a fixed date.
 const festivals = [
-  { icon: 'moon', name: 'Maha Shivaratri', when: 'Set by the Hindu calendar', text: 'Rudra Abhishekam to Sri Sachchidanandeshwara, a night-long vigil of music, and at 3 AM Sri Swamiji’s discourse on Shiva.' },
+  { icon: 'moon', name: 'Maha Shivaratri', when: 'Set by the Hindu calendar', text: 'Rudra Abhishekam to Sri Sachchidanandeshwara, music until late night as devotees keep vigil, and at 3 AM Sri Swamiji’s discourse on Shiva.' },
   { icon: 'flame', name: 'Sri Swamiji’s Birthday', when: '26 May', text: 'Pratyaksha Paada Pooja by Sri Balaswamiji, wheelchairs and walkers for the physically challenged, and Annadana on a large scale.' },
   { icon: 'lotus', name: 'Navaratri', when: 'Sep or Oct · nine days', text: 'Nava Avarana Puja to Mother Raja Rajeshwari, Kumari Puja, Devi Homa and concerts in Nada Mantapa.' },
   { icon: 'diya', name: 'Datta Jayanti', when: 'December · three days', text: 'The incarnation day of Adi Guru Dattatreya — the one day of the year devotees may offer oil ablutions to the Moola virat.' },
@@ -206,13 +206,13 @@ ${pageHero({
     </div>
 
     <div class="ab-chron">
-      <aside class="ab-chron-aside" data-reveal="up">
+      <div class="ab-chron-aside" data-reveal="up">
         ${eyebrow('The Ashram through the years')}
         <h3 class="ab-chron-title">1966 <span aria-hidden="true">—</span> <em>today</em></h3>
         <p>Milestones from the Peetham’s own records, from the first installation to the newest shrines.</p>
         <svg class="ab-chron-mandala" viewBox="0 0 104 104" aria-hidden="true" data-spin="140"><use href="#i-mandala"/></svg>
         <a class="link-arrow" href="sri-swamiji.html#timeline">Sri Swamiji’s Avatara Timeline ${icon('arrow', 16)}</a>
-      </aside>
+      </div>
       <div class="ab-chron-track" data-progress="0.75,0.4">
         <span class="ab-chron-line" aria-hidden="true"><i></i></span>
         <ol class="ab-chron-list">

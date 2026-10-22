@@ -25,13 +25,14 @@
     return h + (mm ? ':' + String(mm).padStart(2, '0') : '') + ' ' + ap;
   }
   function status(h, now) {
-    if (h.closed.indexOf(now.day) !== -1) return { open: false, text: 'Closed today' };
+    var c = h.caution;
+    if (h.closed.indexOf(now.day) !== -1) return { open: false, text: c ? 'Weekly holiday today' : 'Closed today' };
     for (var i = 0; i < h.sessions.length; i++) {
       var s = toMins(h.sessions[i][0]), e = toMins(h.sessions[i][1]);
-      if (now.mins >= s && now.mins < e) return { open: true, text: 'Open now · until ' + fmt12(h.sessions[i][1]) };
-      if (now.mins < s) return { open: false, text: 'Closed · opens ' + fmt12(h.sessions[i][0]) };
+      if (now.mins >= s && now.mins < e) return { open: true, text: (c ? 'Within listed hours · until ' : 'Open now · until ') + fmt12(h.sessions[i][1]) };
+      if (now.mins < s) return { open: false, text: (c ? 'Listed hours from ' : 'Closed · opens ') + fmt12(h.sessions[i][0]) };
     }
-    return { open: false, text: 'Closed · opens tomorrow' };
+    return { open: false, text: c ? 'Outside listed hours' : 'Closed · opens tomorrow' };
   }
   // Daily rituals at the Karya Siddhi Hanuman temple (from dattapeetham.org).
   var RITUALS = [[420, 'Hanuman Abhisheka'], [1080, 'Hanuman Aarti']];

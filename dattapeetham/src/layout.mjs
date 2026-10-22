@@ -99,10 +99,10 @@ function header(page) {
   <div class="wrap">
     <div class="util-status" aria-live="polite">
       <span class="status-pill"><i class="dot" data-dot="temple"></i>Temple <b data-status="temple">·</b></span>
-      <span class="status-pill hide-sm"><i class="dot" data-dot="shukaVana"></i>Shuka Vana <b data-status="shukaVana">·</b></span>
+      <span class="status-pill hide-sm">${icon('diya', 13)}Next <b data-next-ritual>·</b></span>
       <span class="status-pill hide-sm">${icon('clock', 13)}Mysuru <b data-clock>--:--</b></span>
     </div>
-    <nav class="util-links" aria-label="Quick links">
+    <nav class="util-links" aria-label="Utility links">
       <a href="${links.youtube}" class="live-link">${icon('live', 14)}Live Darshan</a>
       <a href="events.html">Events</a>
       <a href="contact.html">Contact</a>
@@ -151,7 +151,7 @@ function searchDialog() {
 }
 
 function footer() {
-  const col = (title, items) => `<div><h4>${title}</h4><ul>${items.map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></div>`;
+  const col = (title, items) => `<div><h2 class="footer-h">${title}</h2><ul>${items.map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('')}</ul></div>`;
   return `<footer class="site-footer">
   <div class="footer-glow" aria-hidden="true"></div>
   <svg class="footer-watermark" viewBox="0 0 104 104" aria-hidden="true"><use href="#i-mandala"/></svg>

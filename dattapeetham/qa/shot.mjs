@@ -37,7 +37,7 @@ for (const [name, viewport, extra] of [
   if (res.status() !== 200) report.problems.push(`${name}: HTTP ${res.status()}`);
   if (scroll || full) {
     // walk the page so lazy images load and scroll reveals fire
-    await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += innerHeight * 0.7) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); } scrollTo(0, 0); });
+    await p.evaluate(async () => { if (window.__lenis) { window.__lenis.destroy(); window.DP && (DP.lenis = null); } for (let y = 0; y < document.body.scrollHeight; y += innerHeight * 0.7) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); } scrollTo(0, 0); });
     await p.evaluate(() => window.DP && DP.reveal && DP.reveal(document));
   }
   await p.waitForTimeout(1600);

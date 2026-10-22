@@ -1,0 +1,395 @@
+/* ==========================================================================
+   Temples & Darshan — the "Spirituality" inner page
+   Page-only styles, scoped under .page-darshan. Tokens from site.css.
+   ========================================================================== */
+
+/* ---------- hero ---------- */
+.page-darshan .page-hero h1 { max-width: 12ch; }
+.page-darshan .page-hero .lead { max-width: 52ch; }
+
+/* ---------- shared bits ---------- */
+.page-darshan .dn-mini { display: block; font: 600 .7rem/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin: 26px 0 12px; }
+.page-darshan .dn-h3-lg { font-size: clamp(1.9rem, 3.2vw, 2.6rem); }
+.page-darshan .dn-small { font-size: .93rem; color: var(--muted); }
+.page-darshan .dn-center { justify-content: center; }
+.page-darshan .dn-source { margin-top: 20px; font-size: .9rem; }
+.page-darshan .dn-source .ico { opacity: .8; }
+/* small gold labels on light grounds use the deeper gold for legible contrast
+   (WCAG AA); dark sections keep the pale gold of the design system */
+.page-darshan .eyebrow:not(.eyebrow-light), .page-darshan .tag:not(.tag-light), .page-darshan .dn-arrive .process-num { color: var(--gold-deep); }
+.page-darshan .section-dark .eyebrow, .page-darshan .glass .eyebrow { color: var(--gold-3); }
+
+/* ---------- 1. daily darshan ---------- */
+.page-darshan .dn-timings { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(18px, 2.4vw, 28px); align-items: stretch; }
+.page-darshan .dn-hours { display: flex; flex-direction: column; gap: 16px; }
+.page-darshan .dn-hours .hours-card { align-items: center; }
+
+.page-darshan .dn-live { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 26px; padding: clamp(26px, 3.4vw, 40px); border-radius: var(--radius-lg); background: var(--forest); color: var(--cream-on-dark); box-shadow: var(--shadow); }
+.page-darshan .dn-live-bg { position: absolute; inset: 0; z-index: -2; }
+.page-darshan .dn-live-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 40%; opacity: .5; filter: blur(3px) saturate(1.15); transform: scale(1.08); }
+.page-darshan .dn-live::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(520px 320px at 18% 0%, rgba(201, 164, 92, .28), transparent 70%), linear-gradient(170deg, rgba(10, 19, 16, .55) 0%, rgba(10, 19, 16, .9) 62%, var(--night) 100%); }
+.page-darshan .dn-live-pill { display: inline-flex; align-items: center; gap: 9px; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255, 180, 143, .45); background: rgba(217, 87, 43, .14); color: #ffc6aa; font: 600 .7rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 18px; }
+.page-darshan .dn-live-pill .live-dot { background: var(--live); box-shadow: 0 0 10px var(--live); }
+.page-darshan .dn-live h3 { color: #fbf3e2; font-size: clamp(1.9rem, 3vw, 2.5rem); margin-bottom: 10px; }
+.page-darshan .dn-live-top p { color: var(--muted-on-dark); max-width: 46ch; }
+.page-darshan .dn-live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+.page-darshan .dn-live .readout { width: auto; padding: 18px 20px; }
+.page-darshan .dn-live .readout dl { grid-template-columns: 1fr; gap: 0; }
+.page-darshan .dn-live .readout dt { font: 600 .62rem/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--muted-on-dark); padding-top: 9px; border-top: 1px solid rgba(239, 228, 204, .1); }
+.page-darshan .dn-live .readout dt:first-child { padding-top: 0; border-top: 0; }
+.page-darshan .dn-live .readout dd { text-align: left; padding: 3px 0 9px; font-size: .92rem; font-variant-numeric: tabular-nums; }
+.page-darshan .dn-live .readout dd:last-child { padding-bottom: 0; }
+.page-darshan .dn-tv { padding: 18px 20px; border-radius: var(--radius-lg); border: 1px solid rgba(239, 228, 204, .14); background: rgba(10, 19, 16, .35); font-size: .84rem; }
+.page-darshan .dn-tv h4 { font: 600 .7rem/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-3); margin: 0 0 12px; }
+.page-darshan .dn-tv ul { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.page-darshan .dn-tv li { display: flex; gap: 12px; }
+.page-darshan .dn-tv b { min-width: 62px; color: #fbf3e2; font-weight: 500; font-variant-numeric: tabular-nums; }
+.page-darshan .dn-tv span { color: var(--muted-on-dark); }
+.page-darshan .dn-tv small { font-size: .74rem; opacity: .8; }
+.page-darshan .dn-tv-src { display: inline-flex; align-items: center; gap: 6px; font-size: .76rem; color: var(--gold-3); text-decoration: none; }
+.page-darshan .dn-tv-src:hover { color: #fff; }
+
+/* the day at the Ashram: a track from 5 AM to 9 PM */
+.page-darshan .dn-day { margin-top: clamp(18px, 2.4vw, 28px); padding: clamp(24px, 3.2vw, 40px); }
+.page-darshan .dn-day-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 28px; }
+.page-darshan .dn-day-head .eyebrow { margin-bottom: 10px; }
+.page-darshan .dn-day-head h3 { margin: 0; font-size: clamp(1.6rem, 2.6vw, 2.1rem); }
+.page-darshan .dn-day-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin: 0; font-size: .84rem; color: var(--muted); }
+.page-darshan .dn-day-legend > span { display: inline-flex; align-items: center; gap: 8px; }
+.page-darshan .dn-day-legend i { display: inline-block; width: 26px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, var(--gold-3), var(--gold-2)); }
+.page-darshan .dn-day-legend .dn-now-key { width: 12px; height: 12px; background: radial-gradient(circle, #fff3d6 0 30%, var(--gold) 70%); box-shadow: 0 0 10px rgba(201, 164, 92, .8); }
+.page-darshan .dn-day-legend [data-dn-now-text] { color: var(--ink-2); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.page-darshan .dn-day-track { position: relative; height: 10px; margin: 112px 8px 108px; }
+.page-darshan .dn-day-rail { position: absolute; inset: 0; border-radius: 999px; background: var(--ivory-2); box-shadow: inset 0 0 0 1px var(--line); }
+.page-darshan .dn-day-band { position: absolute; top: 0; bottom: 0; border-radius: 999px; background: linear-gradient(90deg, var(--gold-3), var(--gold-2) 50%, var(--gold-3)); overflow: hidden; }
+.page-darshan .dn-day-band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 246, 224, .9), transparent); width: 30%; transform: translateX(-120%); animation: dn-glint 6s var(--ease-in-out) infinite; }
+.page-darshan .dn-day-band + .dn-day-band::after { animation-delay: 3s; }
+@keyframes dn-glint { 0% { transform: translateX(-120%); } 55%, 100% { transform: translateX(420%); } }
+.page-darshan .dn-day-now { position: absolute; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: radial-gradient(circle, #fff6e0 0 28%, var(--gold-2) 62%, var(--gold-deep) 100%); box-shadow: 0 0 0 6px rgba(226, 200, 142, .28), 0 0 24px rgba(232, 180, 92, .9); z-index: 3; transition: left 1s var(--ease-out); }
+.page-darshan .dn-day-now[hidden] { display: none; }
+.page-darshan .dn-day-now b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.page-darshan .dn-day-events { list-style: none; margin: 0; padding: 0; }
+.page-darshan .dn-day-events li { position: absolute; left: var(--x); width: 132px; margin-left: -66px; text-align: center; display: grid; gap: 1px; }
+.page-darshan .dn-day-events li.is-high { bottom: calc(100% + 18px); }
+.page-darshan .dn-day-events li.is-low { top: calc(100% + 18px); }
+.page-darshan .dn-day-events li::after { content: ""; position: absolute; left: 50%; width: 1px; height: 18px; background: var(--line-strong); }
+.page-darshan .dn-day-events li.is-high::after { top: 100%; }
+.page-darshan .dn-day-events li.is-low::after { bottom: 100%; }
+.page-darshan .dn-day-events li::before { content: ""; position: absolute; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--paper); border: 2px solid var(--gold); z-index: 2; transition: background .4s, box-shadow .4s, transform .4s var(--ease-out); }
+.page-darshan .dn-day-events li.is-high::before { top: calc(100% + 17px); }
+.page-darshan .dn-day-events li.is-low::before { bottom: calc(100% + 17px); }
+.page-darshan .dn-day-events li.is-low { grid-template-rows: auto; }
+.page-darshan .dn-day-events time { font-family: var(--serif); font-size: 1.22rem; line-height: 1.1; color: var(--gold-deep); font-variant-numeric: lining-nums; }
+.page-darshan .dn-day-events b { font-size: .86rem; font-weight: 600; line-height: 1.25; color: var(--ink); }
+.page-darshan .dn-day-events small { font-size: .72rem; line-height: 1.35; color: var(--muted); }
+.page-darshan .dn-day-events li.is-past time { color: var(--muted); }
+.page-darshan .dn-day-events li.is-past b { color: var(--ink-2); font-weight: 500; }
+.page-darshan .dn-day-events li.is-past::before { background: var(--gold-3); border-color: var(--gold-2); }
+.page-darshan .dn-day-events li.is-next::before { background: var(--gold); box-shadow: 0 0 0 5px rgba(201, 164, 92, .22); transform: scale(1.2); }
+.page-darshan .dn-day-events li.is-next b::after { content: "Next"; display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: var(--gold); color: #fffaf0; font: 600 .58rem/1.4 var(--sans); letter-spacing: .12em; text-transform: uppercase; vertical-align: 2px; }
+
+.page-darshan .dn-week { list-style: none; margin: 0; padding: 24px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 28px; }
+.page-darshan .dn-week li { position: relative; padding-left: 16px; border-left: 1px solid var(--line-strong); transition: border-color .4s; }
+.page-darshan .dn-week li.is-today { border-left-color: var(--gold); }
+.page-darshan .dn-week li.is-today .dn-week-day::after { content: "Today"; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: rgba(201, 164, 92, .18); color: var(--gold-deep); letter-spacing: .1em; }
+.page-darshan .dn-week-day { display: block; font: 600 .7rem/1.6 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 4px; }
+.page-darshan .dn-week p { margin: 0; font-size: .9rem; color: var(--ink-2); }
+.page-darshan .dn-notice { margin: auto 0 0; }
+.page-darshan .dn-notice a { color: var(--gold-deep); }
+
+/* ---------- 2. Mandir Nagari ---------- */
+.page-darshan .dn-mandir { position: relative; }
+.page-darshan .dn-mandir-intro { padding-bottom: clamp(48px, 6vw, 72px); }
+.page-darshan .dn-lit { margin: clamp(8px, 2vw, 24px) auto clamp(56px, 7vw, 88px); }
+.page-darshan .dn-lit .scroll-lit { max-width: 22ch; font-size: clamp(1.9rem, 3.8vw, 3.2rem); }
+.page-darshan .dn-arrive { max-width: 1040px; margin: 0 auto; }
+.page-darshan .dn-arrive-h { text-align: center; margin: 0 0 18px; }
+.page-darshan .dn-arrive-h .eyebrow { margin: 0; }
+
+/* sticky shrine navigator */
+.page-darshan .dn-nav { position: sticky; top: calc(var(--header-h) + 10px); z-index: 40; pointer-events: none; transition: transform .45s var(--ease-out); }
+.page-darshan .dn-nav.is-raised { transform: translateY(calc(-1 * var(--header-h))); }
+.page-darshan .dn-nav-inner { pointer-events: auto; display: flex; align-items: center; gap: 12px; padding: 6px 8px 6px 20px; border-radius: 999px; background: rgba(255, 252, 246, .9); border: 1px solid var(--line); box-shadow: 0 16px 36px -22px rgba(48, 34, 14, .55); backdrop-filter: saturate(1.3) blur(14px); -webkit-backdrop-filter: saturate(1.3) blur(14px); }
+.page-darshan .dn-nav-label { display: inline-flex; align-items: center; gap: 8px; flex: none; color: var(--gold-deep); font: 400 .78rem/1 var(--display); letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; padding-right: 14px; border-right: 1px solid var(--line); }
+.page-darshan .dn-nav-scroll { position: relative; flex: 1; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); }
+.page-darshan .dn-nav-scroll::-webkit-scrollbar { display: none; }
+.page-darshan .dn-nav-list { list-style: none; margin: 0; padding: 0 10px; display: flex; gap: 2px; width: max-content; }
+.page-darshan .dn-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px; font-size: .86rem; font-weight: 500; color: var(--muted); text-decoration: none; white-space: nowrap; transition: color .3s, background .3s; }
+.page-darshan .dn-chip:hover { color: var(--gold-deep); background: var(--ivory); }
+.page-darshan .dn-chip-n { font: 600 .64rem/1 var(--sans); letter-spacing: .08em; color: var(--gold-deep); font-variant-numeric: tabular-nums; }
+.page-darshan .dn-chip[aria-current="true"] { color: var(--ink); background: var(--ivory-2); }
+.page-darshan .dn-chip[aria-current="true"] .dn-chip-n { color: var(--gold-deep); }
+.page-darshan .dn-nav-lamp { position: absolute; left: 0; bottom: 3px; height: 2px; width: 0; border-radius: 2px; opacity: 0; pointer-events: none; background: linear-gradient(90deg, transparent, var(--gold-2) 20%, #fff3d6 50%, var(--gold-2) 80%, transparent); box-shadow: 0 0 10px rgba(232, 180, 92, .9); transition: transform .7s var(--ease-k), width .7s var(--ease-k), opacity .4s; }
+
+/* shrine sections */
+.page-darshan .dn-shrine { position: relative; padding: clamp(64px, 9vw, 112px) 0; }
+.page-darshan .dn-shrine.is-paper { background: var(--paper); }
+.page-darshan .dn-shrine.is-sand { background: linear-gradient(180deg, var(--ivory) 0%, var(--ivory-2) 100%); }
+.page-darshan .dn-shrine + .dn-shrine::before { content: ""; position: absolute; top: 0; left: 50%; width: min(var(--wrap), 100%); transform: translateX(-50%); height: 1px; background: linear-gradient(90deg, transparent, var(--line-strong), transparent); }
+.page-darshan .dn-shrine .split,
+.page-darshan .dn-hanuman .split { align-items: start; }
+/* the shared clip reveal ends at inset(0), which would cut the frame's gold
+   offset outline and the inset portrait; end with a generous negative inset */
+.page-darshan .dn-shrine .split-media[data-reveal].is-in,
+.page-darshan .dn-hanuman .split-media[data-reveal].is-in { clip-path: inset(-60px -60px -90px -60px round 0); }
+@media (min-width: 981px) {
+  .page-darshan .dn-shrine .split-media,
+  .page-darshan .dn-hanuman .split-media { position: sticky; top: calc(var(--header-h) + 92px); }
+}
+.page-darshan .dn-num { display: block; font: 400 clamp(4.4rem, 7.5vw, 6.6rem)/.8 var(--serif); color: transparent; -webkit-text-stroke: 1px var(--gold-2); opacity: .6; margin-bottom: 14px; font-variant-numeric: lining-nums; }
+.page-darshan .dn-kicker { display: block; font: 600 .72rem/1.5 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 12px; }
+.page-darshan .dn-shrine h2,
+.page-darshan .dn-hanuman h2 { font-size: clamp(2.2rem, 3.8vw, 3.2rem); margin-bottom: .5em; }
+
+.page-darshan .dn-deities ul { list-style: none; margin: 0 0 6px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.page-darshan .dn-deities li { margin: 0; display: inline-flex; align-items: center; gap: 9px; padding: 7px 15px 7px 13px; border-radius: 999px; border: 1px solid var(--line-strong); background: linear-gradient(180deg, var(--paper), var(--ivory)); font: 500 1.06rem/1.25 var(--serif); color: var(--ink-2); transition: border-color .3s, transform .4s var(--ease-out); }
+.page-darshan .dn-deities li::before { content: ""; width: 5px; height: 5px; flex: none; transform: rotate(45deg); background: var(--gold); }
+.page-darshan .dn-deities li:hover { border-color: var(--gold); transform: translateY(-2px); }
+
+.page-darshan .dn-facts { margin: 24px 0; border-top: 1px solid var(--line); }
+.page-darshan .dn-facts div { display: grid; grid-template-columns: 160px 1fr; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.page-darshan .dn-facts dt { font: 600 .68rem/1.6 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--gold-deep); }
+.page-darshan .dn-facts dd { margin: 0; font-size: .95rem; color: var(--ink-2); }
+
+.page-darshan .dn-greeting { margin: 24px 0; padding: 18px 22px; border-left: 2px solid var(--gold); border-radius: 0 12px 12px 0; background: linear-gradient(90deg, rgba(226, 200, 142, .22), rgba(226, 200, 142, 0)); }
+.page-darshan .dn-greeting span { display: block; font: 400 1.05rem/1.2 var(--display); letter-spacing: .22em; text-transform: uppercase; color: var(--gold-deep); }
+.page-darshan .dn-greeting p { margin: 8px 0 0; font-size: .93rem; color: var(--ink-2); }
+
+.page-darshan .dn-time { display: flex; gap: 14px; align-items: flex-start; margin-top: 22px; padding: 16px 18px; border-radius: var(--radius); background: var(--ivory); border: 1px solid var(--line); }
+.page-darshan .dn-shrine.is-sand .dn-time, .page-darshan .dn-shrine:not(.is-paper) .dn-time { background: var(--paper); }
+.page-darshan .dn-time-ic { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); }
+.page-darshan .dn-time p { margin: 0; font-size: .93rem; }
+.page-darshan .dn-time .badge { margin-top: 10px; }
+.page-darshan .dn-time dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: .93rem; }
+.page-darshan .dn-time dt { font-weight: 600; color: var(--ink); }
+.page-darshan .dn-time dd { margin: 0; color: var(--muted); }
+.page-darshan .dn-contact { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 10px 0 0 !important; font-size: .86rem !important; }
+.page-darshan .dn-contact a { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; color: var(--gold-deep); text-decoration: none; }
+.page-darshan .dn-contact a:hover { text-decoration: underline; }
+
+/* media: frame + inset portrait */
+.page-darshan .dn-media { position: relative; }
+.page-darshan .dn-media .frame-img img { min-height: 118%; }
+.page-darshan .dn-inset { position: absolute; left: -26px; bottom: -44px; width: 40%; margin: 0; padding: 6px 6px 0; border-radius: 16px; background: var(--paper); box-shadow: var(--shadow); z-index: 2; }
+.page-darshan .dn-inset img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 11px; }
+.page-darshan .dn-inset figcaption { padding: 8px 4px 10px; text-align: center; font: 500 .98rem/1.2 var(--serif); color: var(--ink-2); }
+.page-darshan #prayer-hall .dn-media { margin-bottom: 44px; }
+
+/* Rajarajeshwari moments */
+.page-darshan .dn-moments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 24px 0 4px; }
+.page-darshan .dn-moment, .page-darshan .dn-strip-item { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; padding: 0; border: 0; background: none; text-align: left; cursor: zoom-in; color: inherit; font: inherit; }
+.page-darshan .dn-moment img { width: 100%; aspect-ratio: 4/3; object-fit: cover; object-position: 50% 30%; border-radius: 10px; transition: transform .9s var(--ease-out), filter .4s; }
+.page-darshan .dn-moment:hover img { transform: scale(1.03); filter: brightness(1.06); }
+.page-darshan .dn-moment span { display: block; margin-top: 6px; font-size: .76rem; line-height: 1.35; color: var(--muted); }
+
+/* Hari Sannidhi & Birth pillars: big number */
+.page-darshan .dn-salagrama { display: flex; align-items: center; gap: 16px; margin: 0 0 20px; }
+.page-darshan .dn-salagrama span { font: 400 clamp(3.4rem, 6vw, 4.8rem)/1 var(--serif); color: var(--gold-deep); font-variant-numeric: lining-nums tabular-nums; }
+.page-darshan .dn-salagrama small { max-width: 22ch; font-size: .95rem; line-height: 1.4; color: var(--muted); padding-left: 16px; border-left: 1px solid var(--gold-2); }
+
+/* Venkateshwara sannidhi strip */
+.page-darshan .dn-strip-wrap { margin-top: clamp(52px, 7vw, 84px); }
+.page-darshan .dn-strip-wrap .dn-mini { margin-top: 0; }
+.page-darshan .dn-strip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(128px, 1fr); gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.page-darshan .dn-strip-item { scroll-snap-align: start; }
+.page-darshan .dn-strip-item img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 12px; transition: transform .9s var(--ease-out), box-shadow .5s; }
+.page-darshan .dn-strip-item:hover img { transform: translateY(-4px); box-shadow: var(--shadow); }
+.page-darshan .dn-strip-item span { display: block; margin-top: 10px; font: 500 1.02rem/1.2 var(--serif); color: var(--ink-2); }
+
+/* ---------- 05 · Karya Siddhi Hanuman (dark) ---------- */
+.page-darshan .dn-hanuman { position: relative; overflow: hidden; overflow: clip; isolation: isolate; }
+.page-darshan .dn-hanuman::before { content: ""; position: absolute; left: 50%; top: -260px; width: 1100px; height: 640px; margin-left: -550px; background: radial-gradient(closest-side, rgba(232, 180, 92, .16), transparent); pointer-events: none; z-index: -1; }
+.page-darshan .dn-embers { opacity: .6; }
+.page-darshan .dn-hanuman .dn-num { -webkit-text-stroke-color: var(--gold-3); opacity: .45; }
+.page-darshan .dn-hanuman .dn-kicker { color: var(--gold-3); }
+.page-darshan .dn-hanuman .dn-mini { color: var(--muted-on-dark); }
+.page-darshan .dn-hanuman .dn-deities li { background: rgba(255, 255, 255, .03); border-color: rgba(226, 200, 142, .3); color: var(--cream-on-dark); }
+.page-darshan .dn-hanuman .dn-deities li:hover { border-color: var(--gold-3); }
+.page-darshan .dn-hanuman .dn-time { background: rgba(255, 255, 255, .04); border-color: rgba(226, 200, 142, .18); }
+.page-darshan .dn-hanuman .dn-time-ic { border-color: rgba(226, 200, 142, .35); color: var(--gold-3); }
+.page-darshan .dn-hanuman .dn-time dt { color: #fbf3e2; }
+.page-darshan .dn-hanuman .dn-time dd { color: var(--muted-on-dark); }
+.page-darshan .dn-stats { margin: 24px 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.page-darshan .dn-stats .stat dt { white-space: nowrap; }
+.page-darshan .dn-hanuman .link-arrow { color: var(--gold-3); }
+
+.page-darshan .dn-forms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: clamp(56px, 7vw, 92px); }
+.page-darshan .dn-forms article { position: relative; padding: 26px 26px 24px; border-radius: var(--radius-lg); border: 1px solid rgba(226, 200, 142, .2); background: linear-gradient(160deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .01)); overflow: hidden; }
+.page-darshan .dn-forms article::after { content: ""; position: absolute; left: 26px; right: 26px; top: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-3), transparent); opacity: .6; }
+.page-darshan .dn-form-n { display: block; font: italic 400 1.7rem/1 var(--serif); color: var(--gold-3); margin-bottom: 14px; }
+.page-darshan .dn-forms h3 { font-size: 1.5rem; margin-bottom: 6px; }
+.page-darshan .dn-forms p { margin: 0; font-size: .93rem; }
+
+.page-darshan .dn-deeksha { margin-top: clamp(72px, 9vw, 120px); }
+.page-darshan .dn-deeksha .section-head { margin-bottom: clamp(28px, 4vw, 44px); }
+.page-darshan .dn-deeksha .section-head .eyebrow { color: var(--gold-3); }
+.page-darshan .dn-hanuman .process-track { background: rgba(226, 200, 142, .25); }
+.page-darshan .dn-hanuman .process-dot { background: var(--forest); border-color: var(--gold-3); }
+.page-darshan .dn-hanuman .process-num { color: var(--gold-3); }
+.page-darshan .dn-hanuman .process-step h3 { color: #fbf3e2; font-size: 1.3rem; }
+.page-darshan .dn-hanuman .process-step p { color: var(--muted-on-dark); }
+@supports (color: color-mix(in srgb, red, blue)) {
+  .page-darshan .dn-hanuman .process-dot { background: color-mix(in srgb, var(--gold-3) calc(var(--on) * 100%), var(--forest)); box-shadow: 0 0 calc(var(--on) * 18px) color-mix(in srgb, var(--gold-2) 80%, transparent); }
+  .page-darshan .dn-hanuman .process-step h3 { color: color-mix(in srgb, #fbf3e2 calc(var(--on) * 100%), var(--muted-on-dark)); }
+}
+
+.page-darshan .dn-hanuman-foot { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(18px, 2.4vw, 28px); margin-top: clamp(64px, 8vw, 104px); align-items: stretch; }
+.page-darshan .dn-laser { padding: clamp(24px, 3vw, 36px); }
+.page-darshan .dn-laser .eyebrow { margin-bottom: 14px; }
+.page-darshan .dn-laser h3 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); }
+.page-darshan .dn-laser-times { list-style: none; margin: 20px 0 16px; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.page-darshan .dn-laser-times time { display: inline-block; padding: 9px 18px; border-radius: 999px; border: 1px solid rgba(226, 200, 142, .4); font: 500 1.35rem/1 var(--serif); color: #fbf3e2; font-variant-numeric: lining-nums; }
+.page-darshan .dn-laser-next { display: flex; align-items: center; gap: 8px; margin: 0; font-size: .9rem; color: var(--gold-3) !important; }
+.page-darshan .dn-mantra { margin: 0; padding: clamp(24px, 3vw, 36px); border-radius: var(--radius-lg); border: 1px solid rgba(226, 200, 142, .2); background: radial-gradient(420px 220px at 100% 0%, rgba(201, 164, 92, .14), transparent 70%); }
+.page-darshan .dn-mantra .eyebrow { margin-bottom: 10px; }
+.page-darshan .dn-mantra blockquote { margin: 0 0 14px; }
+.page-darshan .dn-mantra blockquote p { margin: 0; font: italic 400 clamp(1.35rem, 2.2vw, 1.75rem)/1.45 var(--serif); color: #fbf3e2; }
+.page-darshan .dn-mantra figcaption { font-size: .92rem; color: var(--muted-on-dark); margin-bottom: 20px; }
+.page-darshan .dn-mantra .btn-row { align-items: center; gap: 12px 22px; }
+.page-darshan .dn-abroad { max-width: 780px; margin: clamp(40px, 5vw, 56px) auto 0; text-align: center; font-size: .95rem; }
+.page-darshan .dn-abroad .dn-source { display: inline-flex; margin: 6px 0 0 6px; }
+
+/* ---------- 06 · Kalabhairava illustration ---------- */
+.page-darshan .dn-bhairava-art { position: relative; margin: 0 auto; max-width: 440px; }
+.page-darshan .dn-bhairava-art::before { content: ""; position: absolute; inset: 8%; border-radius: 50%; background: radial-gradient(closest-side, rgba(226, 200, 142, .4), rgba(226, 200, 142, 0)); z-index: 0; }
+.page-darshan .dn-bhairava-art svg { position: relative; width: 100%; height: auto; display: block; fill: none; stroke: var(--gold); stroke-width: 1.3; stroke-linejoin: round; stroke-linecap: round; }
+.page-darshan .dn-bhairava-art .kb-faint { opacity: .45; }
+.page-darshan .dn-bhairava-art .kb-main { stroke: var(--gold-deep); stroke-width: 1.7; }
+.page-darshan .dn-bhairava-art svg circle:not(.kb-ring) { fill: var(--gold-3); stroke: none; }
+.page-darshan .dn-bhairava-art figcaption { position: relative; margin-top: 10px; text-align: center; font-size: .8rem; font-style: italic; color: var(--muted); }
+
+/* ---------- 07 · Birth Date Pillars ---------- */
+.page-darshan .dn-bp-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(36px, 6vw, 80px); align-items: center; }
+.page-darshan .dn-bp-copy p { color: var(--ink-2); }
+.page-darshan .dn-bp-figure { margin: 0; }
+.page-darshan .dn-bp-grid { position: relative; overflow: hidden; display: grid; gap: 7px; padding: clamp(18px, 2.4vw, 26px); border-radius: var(--radius-lg); background: linear-gradient(180deg, var(--ivory), var(--ivory-2)); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+.page-darshan .dn-bp-grid::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(100deg, transparent 42%, rgba(255, 246, 224, .75) 50%, transparent 58%); transform: translateX(-100%); animation: dn-sweep 9s var(--ease-in-out) 1.5s infinite; }
+@keyframes dn-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
+.page-darshan .dn-bp-row { display: grid; grid-template-columns: 34px 1fr; align-items: end; gap: 10px; }
+.page-darshan .dn-bp-row > span { font: 600 .64rem/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding-bottom: 2px; }
+.page-darshan .dn-bp-days { display: grid; grid-template-columns: repeat(31, minmax(0, 1fr)); gap: 3px; }
+.page-darshan .dn-bp-days i, .page-darshan .dn-bp-key { display: block; height: 18px; border-radius: 3px 3px 1px 1px; background: linear-gradient(180deg, var(--gold-3), var(--line-strong)); opacity: .6; transform-origin: bottom; transition: transform .5s var(--ease-out), opacity .3s, background .3s, box-shadow .3s; }
+.page-darshan .dn-bp-days i.is-today, .page-darshan .dn-bp-key.is-today { opacity: 1; background: linear-gradient(180deg, #fff3d6, var(--gold)); box-shadow: 0 0 10px rgba(201, 164, 92, .9); }
+.page-darshan .dn-bp-days i.is-today { transform: scaleY(1.3); }
+.page-darshan .dn-bp-days i.is-picked, .page-darshan .dn-bp-key.is-picked { opacity: 1; background: linear-gradient(180deg, var(--forest-3), var(--forest)); box-shadow: 0 0 0 1.5px var(--gold-2); }
+.page-darshan .dn-bp-days i.is-picked { transform: scaleY(1.45); }
+.page-darshan .dn-bp-figure figcaption { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 14px; font-size: .78rem; color: var(--muted); }
+.page-darshan .dn-bp-figure figcaption span { display: inline-flex; align-items: center; gap: 8px; }
+.page-darshan .dn-bp-figure figcaption span:last-child { margin-left: auto; font-style: italic; }
+.page-darshan .dn-bp-key { display: inline-block; width: 7px; height: 14px; }
+.page-darshan .dn-bp-find { margin-top: 26px; padding: 18px 20px; border-radius: var(--radius); background: var(--ivory); border: 1px solid var(--line); }
+html:not(.js) .page-darshan .dn-bp-find { display: none; }
+.page-darshan .dn-bp-find .dn-mini { margin: 0 0 10px; }
+.page-darshan .dn-bp-fields { display: flex; flex-wrap: wrap; gap: 10px; }
+.page-darshan .dn-bp-fields select { min-height: 46px; padding: 10px 40px 10px 14px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23b48a43' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 14px center; -webkit-appearance: none; appearance: none; font: 400 1rem var(--sans); color: var(--ink); cursor: pointer; }
+.page-darshan .dn-bp-fields select:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.page-darshan .dn-bp-out { display: block; margin-top: 12px; font: 500 1.15rem/1.4 var(--serif); color: var(--ink-2); min-height: 1.4em; }
+
+/* ---------- 3. sevas ---------- */
+.page-darshan .dn-seva-cards .card-meta { align-items: center; gap: 10px; margin: auto 0 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.page-darshan .dn-seva-cards .card-cta { margin-top: 0; }
+.page-darshan .dn-share-label { font: 600 .66rem/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.page-darshan .dn-sevas-lower { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(28px, 5vw, 64px); margin-top: clamp(64px, 8vw, 96px); align-items: start; }
+.page-darshan .dn-ways ul { list-style: none; margin: 26px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; }
+.page-darshan .dn-ways li { display: flex; gap: 14px; align-items: flex-start; }
+.page-darshan .dn-way-ic { width: 48px; height: 48px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); background: var(--paper); transition: background .3s, color .3s, transform .5s var(--ease-out); }
+.page-darshan .dn-ways li:hover .dn-way-ic { background: var(--gold); color: #fffaf0; transform: rotate(-8deg); }
+.page-darshan .dn-ways b { display: block; font: 600 1.22rem/1.2 var(--serif); }
+.page-darshan .dn-ways p { margin: 4px 0 0; font-size: .9rem; color: var(--muted); }
+.page-darshan .dn-book .eyebrow { margin-bottom: 10px; }
+.page-darshan .dn-book h3 { font-size: clamp(1.6rem, 2.4vw, 2rem); }
+.page-darshan .dn-book-steps { list-style: none; margin: 18px 0 24px; padding: 0; counter-reset: bk; display: grid; gap: 16px; }
+.page-darshan .dn-book-steps li { position: relative; padding-left: 44px; counter-increment: bk; }
+.page-darshan .dn-book-steps li::before { content: counter(bk); position: absolute; left: 0; top: 0; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--gold-2); font: 500 1rem/1 var(--serif); color: var(--gold-deep); }
+.page-darshan .dn-book-steps b { display: block; font-weight: 600; }
+.page-darshan .dn-book-steps span { display: block; font-size: .9rem; color: var(--muted); }
+.page-darshan .dn-book-note { display: flex; gap: 8px; align-items: flex-start; margin: 16px 0 0; font-size: .8rem; color: var(--muted); }
+.page-darshan .dn-book-note .ico { margin-top: 3px; color: var(--gold); }
+
+/* ---------- 4. festivals ---------- */
+.page-darshan .dn-upcoming { display: grid; grid-template-columns: 210px 1fr; grid-template-areas: "label list" "link list"; align-items: start; gap: 14px 32px; margin-bottom: clamp(28px, 4vw, 40px); padding: 24px 28px; border-radius: var(--radius-lg); background: var(--paper); border: 1px solid var(--line-strong); box-shadow: var(--shadow-sm); }
+.page-darshan .dn-upcoming[hidden] { display: none; }
+.page-darshan .dn-upcoming-label { grid-area: label; display: inline-flex; align-items: center; gap: 8px; font: 600 .7rem/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--gold-deep); white-space: nowrap; }
+.page-darshan .dn-upcoming ul { grid-area: list; list-style: none; margin: 0; padding: 0; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px 32px; }
+.page-darshan .dn-upcoming > .link-arrow { grid-area: link; font-size: .9rem; }
+.page-darshan .dn-upcoming li { display: grid; gap: 4px; min-width: 0; padding-left: 18px; border-left: 1px solid var(--gold-2); }
+.page-darshan .dn-upcoming li[hidden] { display: none; }
+.page-darshan .dn-upcoming time { flex: none; font: 500 1.25rem/1.2 var(--serif); color: var(--gold-deep); white-space: nowrap; font-variant-numeric: lining-nums; }
+.page-darshan .dn-upcoming b { display: block; font-weight: 600; }
+.page-darshan .dn-upcoming li span { display: block; font-size: .84rem; color: var(--muted); line-height: 1.45; }
+.page-darshan .dn-fest { display: flex; flex-direction: column; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out); }
+.page-darshan .dn-fest:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+.page-darshan .dn-fest-media { aspect-ratio: 4/3; overflow: hidden; background: var(--sand); }
+.page-darshan .dn-fest-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.1s var(--ease-out); }
+.page-darshan .dn-fest:hover .dn-fest-media img { transform: scale(1.06); }
+.page-darshan .dn-fest-body { padding: 18px 20px 22px; }
+.page-darshan .dn-fest-body h3 { font-size: 1.5rem; margin-bottom: 8px; }
+.page-darshan .dn-fest-body p { margin: 0; font-size: .9rem; color: var(--muted); }
+.page-darshan .dn-festivals .btn-row { margin-top: clamp(32px, 4vw, 44px); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .page-darshan .dn-fest-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 1100px) {
+  /* the day track becomes a vertical list */
+  .page-darshan .dn-day-track { height: auto; margin: 28px 0 26px; }
+  .page-darshan .dn-day-rail, .page-darshan .dn-day-now { display: none; }
+  .page-darshan .dn-day-events { position: relative; display: grid; gap: 0; padding-left: 24px; }
+  .page-darshan .dn-day-events::before { content: ""; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(180deg, var(--gold-3), var(--gold-2)); }
+  .page-darshan .dn-day-events li, .page-darshan .dn-day-events li.is-high, .page-darshan .dn-day-events li.is-low { position: relative; left: auto; top: auto; bottom: auto; width: auto; margin: 0; text-align: left; grid-template-columns: 92px 1fr; grid-template-rows: auto auto; column-gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .page-darshan .dn-day-events li:last-child { border-bottom: 0; }
+  .page-darshan .dn-day-events li::after { display: none; }
+  .page-darshan .dn-day-events li::before, .page-darshan .dn-day-events li.is-high::before, .page-darshan .dn-day-events li.is-low::before { top: 15px; bottom: auto; left: -24px; margin-left: 0; width: 11px; height: 11px; }
+  .page-darshan .dn-day-events time { grid-row: 1 / span 2; font-size: 1.15rem; padding-top: 1px; }
+  .page-darshan .dn-day-events b { font-size: .95rem; }
+  .page-darshan .dn-day-events small { font-size: .8rem; }
+}
+@media (max-width: 980px) {
+  .page-darshan .dn-timings { grid-template-columns: 1fr; }
+  .page-darshan .dn-hours { grid-template-columns: 1fr; }
+  .page-darshan .dn-week { grid-template-columns: 1fr; }
+  .page-darshan .dn-nav-label { display: none; }
+  .page-darshan .dn-nav-inner { padding: 4px; }
+  .page-darshan .dn-nav-list { padding: 0 8px; }
+  .page-darshan .dn-shrine .split-media, .page-darshan .dn-hanuman .split-media { max-width: none; }
+  .page-darshan .dn-media { max-width: 560px; }
+  .page-darshan .dn-inset { left: auto; right: 14px; bottom: -36px; width: 36%; }
+  .page-darshan .dn-hanuman-foot, .page-darshan .dn-sevas-lower, .page-darshan .dn-bp-layout { grid-template-columns: 1fr; }
+  .page-darshan .dn-forms { grid-template-columns: 1fr; gap: 12px; }
+  .page-darshan .dn-upcoming { grid-template-columns: 1fr; grid-template-areas: "label" "list" "link"; }
+}
+@media (max-width: 640px) {
+  .page-darshan .dn-live-grid { grid-template-columns: 1fr; }
+  .page-darshan .dn-live .btn-row .btn { flex: 1 1 auto; }
+  .page-darshan .dn-day { padding: 22px 18px; }
+  .page-darshan .dn-day-events li, .page-darshan .dn-day-events li.is-high, .page-darshan .dn-day-events li.is-low { grid-template-columns: 76px 1fr; column-gap: 10px; }
+  .page-darshan .dn-num { font-size: 3.8rem; margin-bottom: 10px; }
+  .page-darshan .dn-facts div { grid-template-columns: 1fr; gap: 2px; }
+  .page-darshan .dn-deities li { font-size: 1rem; padding: 6px 13px 6px 11px; }
+  .page-darshan .dn-moments { gap: 8px; }
+  .page-darshan .dn-moment span { font-size: .7rem; }
+  .page-darshan .dn-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .page-darshan .dn-stats .stat { padding-left: 12px; }
+  .page-darshan .dn-stats .stat dt { font-size: 1.9rem; }
+  .page-darshan .dn-stats .stat dd { font-size: .76rem; }
+  .page-darshan .dn-ways ul { grid-template-columns: 1fr; }
+  .page-darshan .dn-bp-grid { gap: 5px; padding: 14px 12px; }
+  .page-darshan .dn-bp-row { grid-template-columns: 26px 1fr; gap: 6px; }
+  .page-darshan .dn-bp-row > span { font-size: .56rem; letter-spacing: .06em; }
+  .page-darshan .dn-bp-days { gap: 2px; }
+  .page-darshan .dn-bp-days i { height: 14px; }
+  .page-darshan .dn-bp-figure figcaption span:last-child { margin-left: 0; }
+  .page-darshan .dn-upcoming { padding: 18px; }
+  .page-darshan .dn-strip { grid-auto-columns: 46%; }
+  .page-darshan .dn-laser-times time { font-size: 1.2rem; padding: 8px 14px; }
+  .page-darshan .dn-fest-grid { grid-template-columns: 1fr; }
+  .page-darshan .dn-fest-media { aspect-ratio: 16/10; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-darshan .dn-bp-grid::after, .page-darshan .dn-day-band::after { display: none; }
+  .page-darshan .dn-nav, .page-darshan .dn-nav-lamp { transition: none; }
+}
+.page-darshan .dn-bhairava-art .kb-flame { fill: rgba(226, 200, 142, .55); stroke: var(--gold); stroke-width: 1; }

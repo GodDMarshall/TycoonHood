@@ -20,13 +20,14 @@
     }
     function frame(t) {
       raf = 0;
+      if (!w || !h) return;
       var dt = Math.min(0.05, (t - (last || t)) / 1000); last = t;
       draw(ctx, w, h, dt, t / 1000, state);
       if (visible && !doc.hidden && !reduced) raf = requestAnimationFrame(frame);
     }
     function start() { if (!raf && visible && !doc.hidden) { last = 0; raf = requestAnimationFrame(frame); } }
     resize();
-    if (reduced) { draw(ctx, w, h, 0, 0, state); return; }
+    if (reduced) { if (w && h) draw(ctx, w, h, 0, 0, state); return; }
     new IntersectionObserver(function (en) { visible = en[0].isIntersecting; start(); }).observe(canvas);
     doc.addEventListener('visibilitychange', start);
     var rt; addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(resize, 150); });
@@ -48,7 +49,7 @@
       s.ps.forEach(function (p) {
         p.y -= p.vy * dt; p.x += Math.sin(t * p.sp + p.sway) * 0.25;
         if (p.y < -10) { p.y = h + 10; }
-        var fade = Math.min(1, p.y / (h * 0.35)) * p.a * (0.6 + 0.4 * Math.sin(t * 2 + p.sway));
+        var fade = Math.max(0, Math.min(1, p.y / (h * 0.35)) * p.a * (0.6 + 0.4 * Math.sin(t * 2 + p.sway)));
         var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5);
         g.addColorStop(0, 'rgba(255,214,140,' + fade + ')'); g.addColorStop(1, 'rgba(232,160,70,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 5, 0, 6.283); ctx.fill();
