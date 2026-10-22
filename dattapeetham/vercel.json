@@ -1,0 +1,69 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node build.mjs",
+  "installCommand": "echo no-install",
+  "outputDirectory": "site",
+  "framework": null,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://dattapeetham.s3.amazonaws.com https://dev-dattapeetham.s3.amazonaws.com https://i.ytimg.com; frame-src https://www.youtube-nocookie.com https://www.google.com; connect-src 'self'; upgrade-insecure-requests" }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }]
+    }
+  ],
+  "redirects": [
+    { "source": "/sriswamiji", "destination": "/sri-swamiji", "permanent": true },
+    { "source": "/page/view/sri-swamiji", "destination": "/sri-swamiji", "permanent": true },
+    { "source": "/page/view/sri-ganapathy-sachchidananda-swamiji", "destination": "/sri-swamiji", "permanent": true },
+    { "source": "/page/view/sri-bala-swamiji", "destination": "/sri-swamiji#bala-swamiji", "permanent": true },
+    { "source": "/page/view/sri-swamijis-avatara-timeline", "destination": "/sri-swamiji#timeline", "permanent": true },
+    { "source": "/page/view/awards-honors", "destination": "/sri-swamiji#honours", "permanent": true },
+    { "source": "/page/view/datta-peetha-guru-parampara", "destination": "/guru-parampara", "permanent": true },
+    { "source": "/page/view/adi-guru-dattatreya", "destination": "/guru-parampara#dattatreya", "permanent": true },
+    { "source": "/page/view/datta-avadhoota", "destination": "/guru-parampara#dattatreya", "permanent": true },
+    { "source": "/page/view/sri-jayalakshmi-maata", "destination": "/guru-parampara#jayalakshmi-maata", "permanent": true },
+    { "source": "/dattapeetham", "destination": "/about", "permanent": true },
+    { "source": "/page/view/about-us", "destination": "/about", "permanent": true },
+    { "source": "/page/view/ashram-life", "destination": "/about#ashram-life", "permanent": true },
+    { "source": "/page/view/ashram-shrines", "destination": "/darshan", "permanent": true },
+    { "source": "/page/view/kaalaagni-shamana-dattatreya", "destination": "/darshan#prayer-hall", "permanent": true },
+    { "source": "/page/view/rajarajeshwari-temple", "destination": "/darshan#rajarajeshwari", "permanent": true },
+    { "source": "/page/view/sri-datta-venkateshwara-temple", "destination": "/darshan#venkateshwara", "permanent": true },
+    { "source": "/page/view/karya-siddhi-hanuman-temple", "destination": "/darshan#hanuman", "permanent": true },
+    { "source": "/page/view/shuka-vana", "destination": "/attractions#shuka-vana", "permanent": true },
+    { "source": "/page/view/bonsai-garden", "destination": "/attractions#bonsai", "permanent": true },
+    { "source": "/page/view/vishwam-museum", "destination": "/attractions#vishwam", "permanent": true },
+    { "source": "/page/view/nada-mantapa", "destination": "/attractions#nada-mantapa", "permanent": true },
+    { "source": "/page/view/sgs-hospital", "destination": "/seva#hospital", "permanent": true },
+    { "source": "/page/view/sgs-veda-pathashala", "destination": "/seva#pathashala", "permanent": true },
+    { "source": "/page/view/social-activities", "destination": "/seva", "permanent": true },
+    { "source": "/page/view/contribution-towards-nature", "destination": "/seva#nature", "permanent": true },
+    { "source": "/page/view/sdhs-volunteers", "destination": "/seva#volunteer", "permanent": true },
+    { "source": "/page/view/bhajans-and-healing-music", "destination": "/music", "permanent": true },
+    { "source": "/page/view/datta-kriya-yoga", "destination": "/kriya-yoga", "permanent": true },
+    { "source": "/page/view/datta-kriya-yoga-international-center", "destination": "/kriya-yoga#dkyic", "permanent": true },
+    { "source": "/page/view/guidelines-for-visitors", "destination": "/visit#guidelines", "permanent": true },
+    { "source": "/page/view/devotee-etiquette", "destination": "/visit#etiquette", "permanent": true },
+    { "source": "/page/view/datta-peetham-glossary", "destination": "/teachings#glossary", "permanent": true },
+    { "source": "/page/view/literary-contributions", "destination": "/teachings#literature", "permanent": true },
+    { "source": "/page/view/sanatana-dharma-parirakshana", "destination": "/teachings", "permanent": true },
+    { "source": "/page/view/ask-dattaji", "destination": "/teachings#ask-dattaji", "permanent": true },
+    { "source": "/page/view/social-media-pages", "destination": "/media#social", "permanent": true },
+    { "source": "/page/view/dattapeetham-telecast-timing-of-sri-swamijis-programs", "destination": "/events#tv", "permanent": true },
+    { "source": "/shodasha-datta-kshetras", "destination": "/centers#kshetras", "permanent": true },
+    { "source": "/navanatha-datta-kshetras", "destination": "/centers#navanatha", "permanent": true },
+    { "source": "/ashrams/avadhoota-datta-peetham-mysore-main", "destination": "/centers#mysuru", "permanent": true }
+  ]
+}

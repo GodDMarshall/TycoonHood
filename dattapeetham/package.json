@@ -1,0 +1,19 @@
+{
+  "name": "dattapeetham-site",
+  "private": true,
+  "type": "module",
+  "description": "Avadhoota Datta Peetham website \u2014 zero-dependency static build",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --serve",
+    "qa": "node qa/check-pages.mjs",
+    "shot": "node qa/shot.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "1.49.1",
+    "axe-core": "4.10.2"
+  }
+}
