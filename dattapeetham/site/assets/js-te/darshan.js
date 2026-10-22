@@ -1,6 +1,6 @@
 /* Temples & Darshan — page behaviour (no dependencies).
    1. Sticky shrine navigator: follows the header, lights the current shrine.
-   2. "A day at the Ashram": a sun marks the time in Mysuru; next ritual flagged.
+   2. "ఆశ్రమంలో ఒక రోజు": a sun marks the time in Mysuru; next ritual flagged.
    3. Next weekend laser show at the Karya Siddhi Hanuman temple, and an
       open/closed status for the two temples that publish their own hours.
    4. Birth Date Pillars: today's pillar, and a picker for the visitor's day.
