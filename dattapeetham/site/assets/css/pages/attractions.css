@@ -125,7 +125,8 @@
 .page-attractions .ch-sub { max-width: 760px; margin: 0 0 clamp(32px, 5vw, 52px); }
 .page-attractions .ch-sub.is-center { margin-inline: auto; text-align: center; }
 .page-attractions .ch-sub.is-center .lead { margin-inline: auto; }
-.page-attractions .ch-sub h3 { font-size: clamp(2rem, 3.6vw, 2.9rem); font-weight: 400; line-height: 1.08; }
+.page-attractions .ch-sub h3 { font-size: clamp(2rem, 3.6vw, 2.9rem); font-weight: 400; line-height: 1.08; text-wrap: balance; }
+.page-attractions .ch-title, .page-attractions .prose h3, .page-attractions .section-head h2, .page-attractions .at-record h4 { text-wrap: balance; }
 .page-attractions .ch-sub.is-light h3 { color: #fbf3e2; }
 .page-attractions .ch-sub.is-light .lead { color: var(--muted-on-dark); }
 .page-attractions .prose h3 { margin-top: 0; font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 400; line-height: 1.1; }
@@ -157,6 +158,8 @@
 .page-attractions .at-record h4 { font-size: 1.32rem; margin: 2px 0 6px; }
 .page-attractions .at-record p { margin: 0; font-size: .92rem; color: var(--muted); }
 .page-attractions .at-record .tag { margin-bottom: 4px; color: var(--gold-deep); }
+.page-attractions .tag { line-height: 1.5; }
+.page-attractions .at-date { white-space: nowrap; }
 .page-attractions .at-record-seal { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); background: var(--ivory); }
 .page-attractions .at-record-img { width: 92px; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--sand); }
 .page-attractions .at-record-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
@@ -388,12 +391,16 @@ html:not(.js) .page-attractions .nm-swaras li { --on: 1; }
    ========================================================================== */
 @media (max-width: 1180px) {
   .page-attractions .ch-nav-label { display: none; }
+  .page-attractions .ch-nav a[data-ch] > .ico { display: none; }
   .page-attractions .sv-units { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 981px) and (max-width: 1180px) {
+  .page-attractions .page-hero .quick-tile { padding: 20px 16px; gap: 12px; }
+  .page-attractions .page-hero .qt-icon { width: 46px; height: 46px; }
 }
 @media (max-width: 980px) {
   .page-attractions { --nav-h: 62px; }
   .page-attractions .ch-nav-cta { display: none; }
-  .page-attractions .ch-nav a[data-ch] > .ico { display: none; }
   .page-attractions .ch-plate-foot .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .page-attractions .sv-opener-grid,
   .page-attractions .sv-about,
@@ -423,9 +430,9 @@ html:not(.js) .page-attractions .nm-swaras li { --on: 1; }
   .page-attractions .nm-fan-arc, .page-attractions .nm-pivot, .page-attractions .nm-rib { display: none; }
   .page-attractions .nm-swaras { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .page-attractions .nm-swaras li { position: static; width: auto; height: auto; transform: none; }
-  .page-attractions .nm-note { position: static; width: auto; flex-direction: row; justify-content: flex-start; gap: 12px; padding: 10px 12px; border: 1px solid rgba(226, 200, 142, .18); border-radius: 12px; transform: none; opacity: 1; text-align: left; }
-  .page-attractions .nm-note b { width: 44px; height: 44px; flex: none; font-size: 1.25rem; }
-  .page-attractions .nm-note > span { font-size: .66rem; letter-spacing: .12em; }
+  .page-attractions .nm-note { position: static; width: auto; min-width: 0; flex-direction: row; justify-content: flex-start; gap: 10px; padding: 10px; border: 1px solid rgba(226, 200, 142, .18); border-radius: 12px; transform: none; opacity: 1; text-align: left; }
+  .page-attractions .nm-note b { width: 42px; height: 42px; flex: none; font-size: 1.2rem; }
+  .page-attractions .nm-note > span { min-width: 0; font-size: .64rem; letter-spacing: .08em; }
   .page-attractions .nm-fan figcaption { position: static; margin-top: 16px; }
   .page-attractions .nada-arch { margin-top: 44px; }
 }
@@ -464,8 +471,12 @@ html:not(.js) .page-attractions .nm-swaras li { --on: 1; }
   .page-attractions .at-snap:focus-visible { outline-offset: -2px; }
   .page-attractions .snap-hint { display: flex; }
   .page-attractions .ch-plate::before {
-    background: linear-gradient(0deg, rgba(10, 19, 16, .96) 0%, rgba(10, 19, 16, .8) 46%, rgba(10, 19, 16, .42) 76%, rgba(10, 19, 16, .5) 100%);
+    background: linear-gradient(0deg, rgba(10, 19, 16, .96) 0%, rgba(10, 19, 16, .82) 46%, rgba(10, 19, 16, .6) 76%, rgba(10, 19, 16, .58) 100%);
   }
+  .page-attractions .ch-plate .ch-kicker, .page-attractions .ch-plate .ch-title { text-shadow: 0 1px 14px rgba(10, 19, 16, .75); }
+  .page-attractions .sv-varam-video .video::after { background: linear-gradient(0deg, rgba(10, 19, 16, .9), transparent 50%); }
+  .page-attractions .sv-varam-video .video-title { left: 14px; right: 14px; bottom: 10px; font-size: 1.02rem; line-height: 1.3; }
+  .page-attractions .sv-varam-video .video-play { width: 62px; height: 62px; margin: -42px 0 0 -31px; }
   .page-attractions .sv-species { grid-template-columns: 1fr; }
   .page-attractions .sv-diet dl { grid-template-columns: 1fr; gap: 6px; }
   .page-attractions .sv-diet dt { padding-top: 10px; max-width: none; }

@@ -33,7 +33,8 @@ const yt = (id) => `https://www.youtube.com/watch?v=${id}`;
 const VIDEO = {
   intro: { id: dattaCharitram[0][0], title: dattaCharitram[0][1] },
   swamiji: { id: 'DW0ebzb8vs4', title: 'Sri Swamiji unveiled' },
-  varam: { id: varamVideo[0], title: varamVideo[1] },
+  // harvest/ashram--shuka-vana.md: Varam “chants the first line of the Hanuman Chalisa”
+  varam: { id: varamVideo[0], title: 'Varam the parrot chants the first line of the Hanuman Chalisa' },
   nada: { id: 'bXM2CqyWqYI', title: 'Glimpses of Nada Mantapa’s construction' },
 };
 
@@ -118,6 +119,12 @@ const compassion = `<section id="compassion" class="section ix-compassion" aria-
    4 · Live timings
 --------------------------------------------------------------------------- */
 
+// Shuka Vana: the homepage hours above differ from its own page (10 AM – 12:30 PM,
+// 3:30 – 5:30 PM), which also says it is temporarily closed for maintenance.
+const notes = {
+  shukaVana: `Closed on Wednesdays. Timings vary across official sources, and <a href="attractions.html#shuka-vana">Shuka Vana’s own page</a> says it is temporarily closed for maintenance; please check with the Ashram before visiting.`,
+};
+
 const timingsSection = `<section id="timings" class="section-tight ix-timings" aria-labelledby="timings-h">
   <div class="wrap">
     <div class="ix-timings-head">
@@ -128,7 +135,7 @@ const timingsSection = `<section id="timings" class="section-tight ix-timings" a
       <p class="ix-clock">${icon('clock', 18)}<span>It is <b data-clock>IST</b> in Mysuru</span></p>
     </div>
     <div class="hours-grid">
-      ${timings.map((t) => hoursCard(t.key, t.title, t.rows, { img: t.img, note: t.key ? t.note : `Next ritual: <b data-next-ritual>Abhisheka · 7 AM</b>` })).join('')}
+      ${timings.map((t) => hoursCard(t.key, t.title, t.rows, { img: t.img, note: t.key ? (notes[t.key] || t.note) : `Next ritual: <b data-next-ritual>Abhisheka · 7 AM</b>` })).join('')}
     </div>
     <p class="ix-note">${icon('info', 16)}<span>All timings are in Indian Standard Time and may change on festival days; please check the <a href="${links.calendar}">official calendar</a> or call the Ashram before you travel. <a class="link-arrow" href="darshan.html#timings">Full darshan guide ${icon('arrow', 14)}</a></span></p>
   </div>
@@ -207,7 +214,7 @@ const sevasSection = `<section id="sevas" class="section section-sand ix-sevas" 
 const temples = [
   { img: pic.kaalaagni, tag: 'Presiding deity', title: 'Universal Prayer Hall', text: 'Home of Kaalaagni Shamana Dattatreya Swami, the main deity of the Peetham.', href: 'darshan.html#prayer-hall', pos: '50% 35%' },
   { img: photos.rajarajeshwariSannidhi, tag: 'Consecrated 28 Dec 2023', title: 'Rajarajeshwari Temple', text: 'Mother Goddess Rajarajeshwari, amid the forms of the Nava Durgas.', href: 'darshan.html#rajarajeshwari', pos: '58% 40%' },
-  { img: pic.venkateshwara, tag: 'Since 1999', title: 'Sri Datta Venkateshwara', text: 'Modelled on the Tirumala Sri Venkateswara Temple.', href: 'darshan.html#venkateshwara', pos: '62% 40%' },
+  { img: pic.venkateshwara, tag: 'Since 1999', title: 'Sri Datta Venkateshwara', text: 'Its architecture is much like the temple at holy Tirumala.', href: 'darshan.html#venkateshwara', pos: '62% 40%' },
   { img: photos.hanumanStatue, tag: '70-ft monolith · 2012', title: 'Karya Siddhi Hanuman', text: 'The tallest stone statue of Hanuman in India.', href: 'darshan.html#hanuman', pos: '50% 25%' },
 ];
 
@@ -241,7 +248,7 @@ const stops = [
     text: 'The 70-foot monolithic statue consecrated in 2012 is the tallest stone statue of Hanuman in India. On weekends, 3D projection mapping is synchronised with the Hanuman Chalisa.',
     href: 'darshan.html#hanuman', cta: 'The temple' },
   { place: 'Attraction', title: 'Shuka Vana', img: photos.shukaVana2, alt: 'Sri Swamiji, smiling and waving, surrounded by green parrots at Shuka Vana', print: true,
-    text: 'Founded by Sri Swamiji in 2012: a free-flight, walk-in aviary and bird hospital, home to more than 2,000 birds of 486 species and a Guinness World Record holder.',
+    text: 'Founded by Sri Swamiji in 2012: a free-flight, walk-in aviary and bird hospital, home to more than 2,000 birds of 486 species and a Guinness World Record holder. (Its official page currently notes that it is temporarily closed to the public for maintenance.)',
     href: 'attractions.html#shuka-vana', cta: 'Shuka Vana', video: VIDEO.varam, videoLabel: 'Varam the parrot' },
   { place: 'Attraction', title: 'Bonsai Garden', img: pic.bonsaiGarden, alt: 'A pagoda pavilion among bonsai trees, rocks and a stream in the Kishkindha Moolika Bonsai Garden', pos: '50% 55%',
     text: 'More than 450 carefully shaped miniaturised trees in an oriental garden setting: the Kishkindha Moolika Bonsai Garden, passionately developed and nurtured by Sri Swamiji Himself.',
@@ -376,11 +383,11 @@ const musicSection = `<section id="music" class="section ix-music" aria-labelled
     <div class="ix-music-copy">
       <span class="eyebrow">Nada Chikitsa</span>
       <h2 id="music-h" data-split>Healing through <span class="em-light">music</span></h2>
-      <p data-reveal="up">Dr. Sri Ganapathy Sachchidananda Swamiji is a renowned composer, singer and musician. Drawing on the ancient Raga-Ragini system, He has created many new ragas, so many that His concerts carry the title <em>Raga Sagara</em>, “ocean of ragas”.</p>
+      <p data-reveal="up">Dr. Sri Ganapathy Sachchidananda Swamiji is a renowned composer, singer and musician. He understands the ancient music system of Raga-Ragini and has created many new ragas using it. Because His compositions are so prolific, the title <em>Sagara</em>, “ocean”, was given to express this form of Raga-Ragini, and His concerts of music for meditation and healing are known as <em>Raga Sagara</em>.</p>
       <div class="ix-wave" aria-hidden="true">${wave}</div>
       <div class="btn-row" data-reveal="up">
         ${btn('Explore Nada Chikitsa', 'music.html', 'gold', 'arrow')}
-        ${btn('Concerts', links.concerts, 'line', 'arrow-up-right')}
+        ${btn('Concerts', 'music.html#concerts', 'line', 'arrow')}
       </div>
     </div>
     <div class="ix-albums" data-rail>

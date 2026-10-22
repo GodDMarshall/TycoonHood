@@ -35,6 +35,7 @@ const EXT = {
   apple: 'https://music.apple.com/in/artist/sri-ganapathy-sachchidananda-swamiji/418448608',
   bhajanmala: 'https://www.bhajanmala.com/',
   store: 'https://ragaraginistore.com/',
+  ragasagara: 'https://www.sgsragasagara.com/',
 };
 
 const bhajanApp = apps.find((a) => a.name === 'Bhajan Mala');
@@ -67,10 +68,9 @@ const swaras = [['Sa', 'Agni'], ['Ri', 'Brahma'], ['Ga', 'Saraswati'], ['Ma', 'P
 
 const honours = [
   ['2013', 'Honorary Doctorate in Music', 'Vijayanagara Sri Krishna Devaraya University, Bellary — presented at the Mysuru Ashram on 22 June 2013.', P.drSkdu, 'Sri Swamiji receiving the honorary doctorate from Sri Krishna Devaraya University'],
-  ['2016', 'Honorary Doctorate in Music', 'World Classical Tamil University, London — conferred on 23 May 2016.', P.drTamil, 'Sri Swamiji receiving the honorary doctorate from the World Classical Tamil University'],
+  ['2016', 'Honorary Doctorate', 'World Classical Tamil University, London — conferred on 23 May 2016. The Peetham’s awards page records it as a doctorate in music; the certificate pictured reads Doctor of Letters (honoris causa).', P.drTamil, 'Sri Swamiji receiving the honorary doctorate from the World Classical Tamil University'],
   ['2022', 'Piteelu Chowdaiah Lifetime Award', 'Sri Nadabrahma Sangeetha Sabha and Sangeetha Ratna Mysuru T. Chowdaiah Samsmarana Vedike, Mysuru — 19 January 2022.', P.chowdaiah, 'Sri Swamiji receiving the Piteelu Chowdaiah Award in Mysuru'],
   ['2023', 'Honorary Doctorate', 'Karnataka State Dr. Gangubai Hanagal Music and Performing Arts University, at its 6th convocation, Raj Bhavan, Bengaluru — 31 October 2023.', P.drGangubai, 'Sri Swamiji receiving the honorary doctorate at Raj Bhavan, Bengaluru'],
-  ['2024', 'Guinness World Record — largest special stamp', 'A 13.104 m² stamp depicting Nada Mantapa, recognised at the Mysuru Ashram on 13 December 2024.', P.stampRecord, 'Sri Swamiji with the Guinness World Records certificate before the giant Nada Mantapa stamp'],
   ['2025', 'Guinness World Record — largest Carnatic band', '955 artists, vocalists and instrumentalists in the Nama Sankeertana “Sri Venkateshwara Vaibhavam”, CUTX Event Center, Allen, Texas — 9 July 2025.', P.bandRecord, 'Sri Swamiji holding the Guinness World Records certificate for the largest Carnatic band'],
   ['2026', 'Nada Yoga Sarvabhauma', 'Title and Honorary Doctorate (Acharya) in Nada Yoga from Vedic Wellness University, Florida, conferred in Nada Mantapa — 15 February 2026.', P.sarvabhauma, 'Sri Swamiji seated with the Nada Yoga Sarvabhauma citation, surrounded by dignitaries'],
 ];
@@ -271,7 +271,7 @@ ${quickTiles([
 
 <section class="section concerts" id="concerts">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Raga Sagara concerts', title: 'Music for Meditation &amp; <span class="em-light">Healing</span>', lead: 'Sri Swamiji has been giving Healing Music Concerts — Music for Meditation — for several decades, accompanied by world-renowned musicians. Each concert carries its own Raga Sagara name.' })}
+    ${sectionHead({ eyebrow: 'Raga Sagara concerts', title: 'Music for Meditation &amp; <span class="em-light">Healing</span>', lead: 'Sri Swamiji has been giving Healing Music Concerts — Music for Meditation — for several decades, accompanied by world-renowned musicians. Many concerts carry their own Raga Sagara name.' })}
 
     <div class="relief" data-reveal="up">
       <span class="relief-icon">${icon('heart-hand', 30)}</span>
@@ -279,7 +279,11 @@ ${quickTiles([
         <h3>Every ticket also serves the world</h3>
         <p>Sri Swamiji, in His boundless compassion, has resolved to donate the proceeds from all upcoming concert ticket sales towards relief efforts for natural calamities. Attending a Music for Meditation &amp; Healing session brings a dual benefit: personal healing, and support for natural disaster relief.</p>
       </div>
-      ${btn('Concert details &amp; tickets', links.concerts, 'gold', 'arrow-up-right')}
+      <div class="relief-actions">
+        ${btn('Sign in for concert tickets', links.concerts, 'gold', 'arrow-up-right')}
+        ${btn('SGS Raaga Sagara site', EXT.ragasagara, 'line', 'arrow-up-right')}
+        <small>Concert listings and tickets on dattapeetham.org open after you sign in.</small>
+      </div>
     </div>
 
     <div class="rail-head">
@@ -293,7 +297,7 @@ ${quickTiles([
       ${concerts.map((c) => `<li class="concert">
         <a class="concert-link" href="${c.href}">
           <span class="concert-media">${img(c.img, `Concert poster: ${c.name}`)}</span>
-          <span class="concert-body"><span class="tag">Meditation &amp; Healing</span><b>${c.name}</b><span class="concert-cta">Details on dattapeetham.org ${icon('arrow-up-right', 14)}</span></span>
+          <span class="concert-body"><span class="tag">Meditation &amp; Healing</span><b>${c.name}</b><span class="concert-cta">Sign in on dattapeetham.org ${icon('arrow-up-right', 14)}</span></span>
         </a>
       </li>`).join('')}
     </ul>
@@ -304,7 +308,7 @@ ${quickTiles([
       </div>
       <div class="world-venues" data-reveal="up">
         <span class="eyebrow">Around the world</span>
-        <h3>A few of the halls that have heard Raga Sagara</h3>
+        <h3>A few of the halls where Sri Swamiji has performed</h3>
         <ul class="venues">
           ${venues.map(([v, c]) => `<li><b>${v}</b><span>${c}</span></li>`).join('')}
         </ul>
@@ -363,6 +367,7 @@ ${quickTiles([
         <p>The fan-shaped design was inspired by an episode Sri Swamiji narrates: Lord Rama, seeking Seetha in the forest, was fanned by Hanuman with a palm leaf. The auditorium takes the shape of that palm-leaf fan, with its entrance facing east towards the sacred Chamundi hills.</p>
         <h3>A hall that listens</h3>
         <p>Large portraits of the great composers line the walls. When a composer’s work is performed, the lights before that portrait illuminate — when Saint Tyagaraja’s “Samaja Varagamana” is sung, Tyagaraja’s portrait glows.</p>
+        <p>Twenty-two colossal sculpted Tamburas stand against its pillars, representing the 22 Shrutis (microtones) of the Sangeeta Shastra; the hall is supported by 72 pillars symbolising the 72 melakarta ragas.</p>
         <p>At the entrance stand sculpted deities associated with music: Chaitanya Maha Prabhu, Narada Muni, Garuda, Vishwaksena, Anjaneya, Tumburu, Hayagreeva, Nandi, Bhringi and Ganapati.</p>
       </div>
     </div>
@@ -380,9 +385,9 @@ ${quickTiles([
     ${gallery([
     [P.mantapaConcert, 'A concert in Nada Mantapa: musicians on stage before a full hall, with portraits of composers lining the walls', 'Composers’ portraits line the walls of Nada Mantapa'],
     [P.mantapaStage, 'The ornate stage of Nada Mantapa beneath its sweeping ceiling, with screens on either side', 'Nada Mantapa’s stage'],
-    [photos.nadaMantapaInterior, 'Seen from the stage of Nada Mantapa: a full hall of devotees facing the performers', 'A full hall, seen from the stage'],
+    [photos.nadaMantapaInterior, 'Seen from the stage of Nada Mantapa: a full hall of devotees facing swamijis and others seated in armchairs on the stage', 'A full hall, seen from the stage'],
     [photos.nadaMantapaChandra, 'A packed Nada Mantapa seen from above, devotees seated in rows', 'Devotees gathered in Nada Mantapa'],
-    [P.stampRecord, 'Sri Swamiji with a Guinness World Records adjudicator before the giant stamp depicting Nada Mantapa', 'The largest special stamp, depicting Nada Mantapa (2024)'],
+    [P.stampRecord, 'Sri Swamiji with a Guinness World Records adjudicator before the giant stamp depicting Nada Mantapa', 'Guinness World Record: the largest special stamp, 13.104 m², depicting Nada Mantapa — Mysuru, 13 December 2024'],
   ], 'mantapa-gallery')}
 
     <div class="btn-row mantapa-actions" data-reveal="up">
@@ -419,7 +424,7 @@ ${ctaBand({
     title: 'Sit with the music',
     text: 'Attend a Music for Meditation &amp; Healing session, or begin at home with an album. Proceeds from upcoming concert tickets go towards natural calamity relief.',
     image: photos.nadaMantapa,
-    actions: `${btn('Concerts &amp; tickets', links.concerts, 'gold', 'arrow-up-right')}${btn('Listen on Spotify', EXT.spotify, 'ghost', 'spotify')}`,
+    actions: `${btn('Sign in for concert tickets', links.concerts, 'gold', 'arrow-up-right')}${btn('Listen on Spotify', EXT.spotify, 'ghost', 'spotify')}`,
   })}
 `,
 };

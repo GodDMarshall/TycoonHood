@@ -7,7 +7,14 @@
 
 import { pageHero, sectionHead, split, frame, cards, stats, ctaBand, gallery, video, timeline, processSteps, scrollLit, marquee, btn, icon, img, eyebrow } from '../components.mjs';
 import { links, OFFICIAL, PAGE_IMG } from '../site.mjs';
-import { photos, timeline as avataraTimeline } from '../data.mjs';
+import { photos, timeline as sharedTimeline } from '../data.mjs';
+
+// The shared timeline paraphrases one 2022 record title; the Avatara Timeline
+// and awards pages name it "Largest simultaneous Hindu text recital".
+const avataraTimeline = sharedTimeline.map(([y, t]) => [y, t.replace(
+  'the largest simultaneous recital of the Bhagavad Gita',
+  'the Largest simultaneous Hindu text recital (the Bhagavad Gita)',
+)]);
 
 const page = (slug) => `${OFFICIAL}/page/view/${slug}`;
 
@@ -53,7 +60,7 @@ const records = [
   ['10 Jul 2016', 'Largest breathing lesson', 'India Community Center, Milpitas, California, USA.'],
   ['31 Jul 2016', 'Largest online video album of people chanting', '40,976 videos of the Hanuman Chalisa, announced at Carapichaima, Trinidad and Tobago.'],
   ['21 Dec 2016', 'Largest display of bonsai trees', '2,649 trees at the World Bonsai Convention, Mysuru Ashram.'],
-  ['6 May 2017', 'Most bird species in an aviary', '486 species at Shuka Vana, SGS Ashram, Mysuru.'],
+  ['6 May 2017', 'Most bird species in an aviary', '468 species, as the certificate states — Shuka Vana, SGS Ashram, Mysuru. Some Peetham pages give 486.'],
   ['26 May 2017', 'Largest Hindu Smriti', 'The Bhagavad Gita in 18 languages: 2.24 m × 1.56 m, 742 pages, 800 kg.'],
   ['26 May 2018', 'World’s largest special stamp', '2.87 m², depicting the Vishwam Museum.'],
   ['10 Jun 2022', 'Largest online video album of birthday wishes/greetings', '7,651 wishes from devotees in many countries, for Sri Swamiji’s 80th birthday.'],

@@ -29,6 +29,41 @@ const strip = (html) => html
   .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, '’').replace(/&quot;/g, '"')
   .replace(/\s+/g, ' ').trim();
 
+// Responsive images: tools/optimize-images.mjs writes WebP variants of the
+// Peetham's S3 photos plus a manifest. Here every <img> (and lightbox source,
+// script or stylesheet reference) to a manifest URL is pointed at the local
+// copies with srcset, sizes and intrinsic dimensions. Unknown URLs are left on S3.
+async function loadImageManifest() {
+  try { return JSON.parse(await readFile(join(SRC, 'assets/img/opt/manifest.json'), 'utf8')); } catch { return {}; }
+}
+const amp = (u) => u.replace(/&amp;/g, '&');
+function pick(entry, max = 960) {
+  const fit = entry.srcs.filter(([w]) => w <= max);
+  return (fit.length ? fit[fit.length - 1] : entry.srcs[0])[1];
+}
+function optimizeHtml(html, man, prefix = '') {
+  if (!Object.keys(man).length) return html;
+  html = html.replace(/<img\b[^>]*>/g, (tag) => {
+    const m = /\ssrc="([^"]+)"/.exec(tag);
+    const e = m && man[amp(m[1])];
+    if (!e) return tag;
+    const lazy = /\sloading="lazy"/.test(tag);
+    let out = tag.replace(m[0], ` src="${prefix}${pick(e)}"`);
+    if (!/\ssrcset=/.test(out)) out = out.replace(/^<img/, `<img srcset="${e.srcs.map(([w, f]) => `${prefix}${f} ${w}w`).join(', ')}" sizes="${lazy ? 'auto, 100vw' : '100vw'}"`);
+    if (!/\swidth=/.test(out) && !/\sheight=/.test(out)) out = out.replace(/^<img/, `<img width="${e.w}" height="${e.h}"`);
+    return out;
+  });
+  // lightbox sources, inline style backgrounds and data attributes: largest variant
+  // Leave <meta> (og:image) and JSON-LD alone: share previews need absolute JPEG URLs.
+  const keep = [];
+  html = html.replace(/<meta\b[^>]*>|<script type="application\/ld\+json">[\s\S]*?<\/script>/g, (m) => { keep.push(m); return `\u0000${keep.length - 1}\u0000`; });
+  html = html.replace(/(data-full="|url\((?:&quot;|['"])?|data-[a-z-]*(?:img|src|photo|poster|image|bg)="|")(https:\/\/(?:dev-)?dattapeetham\.s3\.amazonaws\.com\/[^"')\s&]+(?:&amp;[^"')\s&]+)*)/g, (all, lead, url) => {
+    const e = man[amp(url)];
+    if (!e) return all;
+    return lead + prefix + (lead.startsWith('data-full') ? e.srcs[e.srcs.length - 1][1] : pick(e));
+  });
+  return html.replace(/\u0000(\d+)\u0000/g, (_, i) => keep[+i]);
+}
 async function load(rel, bust) {
   return import(pathToFileURL(join(SRC, rel)).href + `?v=${bust}`);
 }
@@ -44,6 +79,15 @@ function indexPage(page, body) {
     entries.push({ t: page.title, s: strip(heading[1]), u: `${page.file}#${m[1]}`, x: text.slice(0, 600) });
   }
   return entries;
+}
+
+async function listFiles(dir) {
+  const out = [];
+  for (const e of await readdir(dir, { withFileTypes: true }).catch(() => [])) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) out.push(...(await listFiles(p))); else out.push(p);
+  }
+  return out;
 }
 
 function checkLinks(pages) {
@@ -74,12 +118,25 @@ export async function build() {
   const { layout } = await load('layout.mjs', bust);
   const { site } = await load('site.mjs', bust);
   const files = (await readdir(join(SRC, 'pages'))).filter((f) => f.endsWith('.mjs')).sort();
+  const imgMan = await loadImageManifest();
 
   // Build into a private temp dir, then swap it in, so a running dev server
   // (or a parallel build) never serves a half-written site.
   const TMP = join(ROOT, `.site-tmp-${process.pid}-${bust}`);
   await mkdir(TMP, { recursive: true });
   await cp(join(SRC, 'assets'), join(TMP, 'assets'), { recursive: true });
+
+  for (const dir of ['js', 'css']) {
+    for (const rel of await listFiles(join(TMP, 'assets', dir))) {
+      const text = await readFile(rel, 'utf8');
+      if (!/dattapeetham\.s3\.amazonaws\.com/.test(text)) continue;
+      // CSS urls resolve against the stylesheet; JS strings against the page
+      const depth = dir === 'css' ? rel.slice(join(TMP, 'assets').length + 1).split('/').length : 0;
+      const prefix = dir === 'css' ? '../'.repeat(depth) : '';
+      const out = text.replace(/https:\/\/(?:dev-)?dattapeetham\.s3\.amazonaws\.com\/[^"'`)\s]+?\.(?:jpe?g|png|webp|gif)/gi, (u) => imgMan[u] ? prefix + pick(imgMan[u]) : u);
+      await writeFile(rel, out);
+    }
+  }
 
   const pages = [];
   const search = [];
@@ -89,7 +146,7 @@ export async function build() {
     if (!page?.file || typeof page.render !== 'function') throw new Error(`src/pages/${f}: default export needs { file, render }`);
     let body;
     try { body = await page.render(); } catch (e) { console.error(`✗ ${page.file}: render failed — ${e.stack}`); process.exitCode = 1; continue; }
-    const html = layout(page, body);
+    const html = optimizeHtml(layout(page, body), imgMan);
     await writeFile(join(TMP, page.file), html);
     pages.push({ ...page, html });
     if (page.slug !== '404') search.push(...indexPage(page, body));

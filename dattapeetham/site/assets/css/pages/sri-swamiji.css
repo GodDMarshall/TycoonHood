@@ -135,7 +135,7 @@
 .page-sri-swamiji .sgs-life .split-media { padding: 0 22px 22px 0; }
 .page-sri-swamiji .sgs-ch-kicker {
   display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
-  font: 600 .72rem/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--gold);
+  font: 600 .72rem/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--gold-deep);
 }
 .page-sri-swamiji .sgs-ch-kicker i { display: inline-block; width: 34px; height: 1px; background: var(--gold-2); }
 .page-sri-swamiji .sgs-chapter h3 { font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 400; margin-bottom: .55em; }
@@ -267,7 +267,7 @@
 .page-sri-swamiji .sgs-social-card a:hover .ico { transform: translate(2px, -2px); }
 .page-sri-swamiji .sgs-listen {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px;
-  margin-top: 26px; padding: 22px 26px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--ivory-2);
+  margin-top: 26px; padding: 22px 26px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper);
 }
 .page-sri-swamiji .sgs-listen-label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 1.35rem; color: var(--ink); }
 .page-sri-swamiji .sgs-listen-label .ico { color: var(--gold); }

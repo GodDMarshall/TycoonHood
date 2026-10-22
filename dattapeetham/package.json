@@ -7,13 +7,15 @@
     "build": "node build.mjs",
     "dev": "node build.mjs --serve",
     "qa": "node qa/check-pages.mjs",
-    "shot": "node qa/shot.mjs"
+    "shot": "node qa/shot.mjs",
+    "images": "node build.mjs && node tools/optimize-images.mjs && node build.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "axe-core": "4.10.2",
     "playwright": "1.49.1",
-    "axe-core": "4.10.2"
+    "sharp": "^0.33.5"
   }
 }

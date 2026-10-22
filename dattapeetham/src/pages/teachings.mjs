@@ -99,14 +99,14 @@ function collections() {
   ${one({
     n: 'I', name: 'Datta Vaakya', sub: 'Discourses of His Holiness Sri Ganapathy Sachchidananda Swamiji',
     text: 'Anugraha bhashanas and benedictory messages given across India and abroad: through Navaratri, on the Srisaila Kanda during the Atirudra Yaga, and after Sri Chakra Puja in Chicago and in Germany.',
-    facts: ['<b>18</b> discourses in 2023', 'Latest <b>15 Oct</b> 2023'],
+    facts: ['<b>18</b> discourses in 2023', 'Latest in this collection: <b>15 Oct</b> 2023'],
     image: photos.swamijiGarland, alt: 'Sri Ganapathy Sachchidananda Swamiji, garlanded, seated on a silver throne', pos: '42% 30%',
     href: links.dattaVaakya, cta: 'Open Datta Vaakya',
   })}
   ${one({
     n: 'II', name: 'Vijaya Vyakhya', sub: 'Discourses of Pujya Sri Datta Vijayananda Teertha Swamiji',
     text: 'Sri Bala Swamiji gives regular discourses on the Vedas, Shastras, Upanishads and Puranas, explaining their deep spiritual essence in simple words. Here: messages from Solapur and Ganagapura, and from the Atirudra Yaga at Srisailam.',
-    facts: ['<b>3</b> discourses in 2023', 'Latest <b>2 Oct</b> 2023'],
+    facts: ['<b>3</b> discourses in 2023', 'Latest in this collection: <b>2 Oct</b> 2023'],
     image: photos.balaSwamijiSpeech, alt: 'Sri Datta Vijayananda Teertha Swamiji smiling as he speaks into a microphone', pos: '30% 30%',
     href: links.vijayaVyakhya, cta: 'Open Vijaya Vyakhya',
   })}
@@ -118,7 +118,7 @@ function recentRail() {
   <div class="tc-recent-head" data-reveal="up">
     <div>
       <h3>Recent discourses</h3>
-      <p>The latest speeches published on dattapeetham.org, all from 2023. Each opens in full on the official archive.</p>
+      <p>The latest speeches in dattapeetham.org’s full speeches archive, all from 2023, including discourses not filed under either collection. Each opens in full on the official archive.</p>
     </div>
     <div class="rail-btns" data-rail-btns hidden>
       <button type="button" class="rail-btn" data-rail-prev aria-controls="tc-rail" aria-label="Scroll to earlier cards">${icon('arrow-left', 18)}</button>
@@ -753,7 +753,7 @@ ${pageHero({
   crumb: 'Teachings',
   tiles: [
     { icon: 'mic', title: 'Discourses', note: 'Two collections', href: '#discourses' },
-    { icon: 'sparkle', title: 'Sri Swamiji Says', note: 'Daily sayings', href: '#swamiji-says' },
+    { icon: 'sparkle', title: 'Sri Swamiji Says', note: 'Sayings archive', href: '#swamiji-says' },
     { icon: 'book', title: 'Literature', note: `${books.length} titles`, href: '#literature' },
     { icon: 'article', title: 'Bhaktimala', note: 'Monthly since 1976', href: '#bhaktimala' },
     { icon: 'namaste', title: 'Ask Dattaji', note: '100,000 questions', href: '#ask-dattaji' },
@@ -818,7 +818,7 @@ ${pageHero({
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Wisdom in practice', title: 'Teachings you can <span class="em-light">live</span>', lead: 'Two of Sri Swamiji’s paths to put the teachings into daily practice: healing through music, and breath, body and mind.' })}
     <div class="tc-paths-grid" data-stagger>
-      ${photoTile({ img: photos.nadaMantapaInterior, tag: 'Nada Chikitsa', title: 'Healing through music', text: '1989 saw the revival of Raga Ragini and Dhyana Chikitsa Kacheri, and research and development on Nada Chikitsa.', href: 'music.html' })}
+      ${photoTile({ img: photos.nadaMantapaInterior, tag: 'Nada Chikitsa', title: 'Healing through music', text: '1989 saw the study of Raga Ragini and Dhyana Chikitsa Kacheri restored, and an R&amp;D branch on Nada Chikitsa set up.', href: 'music.html' })}
       ${photoTile({ img: P.kriyaTeach, tag: 'Datta Kriya Yoga', title: 'Breath, body, mind', text: 'Datta Kriya Yoga facilities were introduced at the Mysuru Ashram in 1981.', href: 'kriya-yoga.html' })}
     </div>
   </div>

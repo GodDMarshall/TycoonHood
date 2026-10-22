@@ -126,6 +126,9 @@ html:not(.js) .page-music .rs-track i { clip-path: none; }
 .page-music .relief-icon { width: 66px; height: 66px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); color: var(--gold); background: var(--paper); }
 .page-music .relief h3 { font-size: clamp(1.45rem, 2.2vw, 1.8rem); margin-bottom: 6px; }
 .page-music .relief p { margin: 0; color: var(--ink-2); max-width: 64ch; }
+.page-music .relief-actions { display: flex; flex-direction: column; gap: 10px; width: min(100%, 272px); }
+.page-music .relief-actions .btn { justify-content: center; }
+.page-music .relief-actions small { font-size: .8rem; line-height: 1.45; color: var(--muted); }
 
 .page-music .rail-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: clamp(56px, 7vw, 80px) 0 22px; }
 .page-music .rail-head h3 { margin: 0; font-size: clamp(1.6rem, 2.6vw, 2.1rem); }
@@ -292,6 +295,9 @@ html:not(.js) .page-music .rs-track i { clip-path: none; }
   .page-music .rs-fret { top: 4px; left: -31px; width: 28px; height: 9px; margin-left: 0; }
   .page-music .rs-year { margin-top: 0; font-size: 1.9rem; }
   .page-music .honour-roll { grid-template-columns: 1fr; }
+  .page-music .relief { grid-template-columns: auto 1fr; }
+  .page-music .relief-actions { grid-column: 2; flex-direction: row; flex-wrap: wrap; width: auto; }
+  .page-music .relief-actions small { flex-basis: 100%; }
   .page-music .swara-row { grid-template-columns: repeat(4, 1fr); row-gap: 22px; }
 }
 @media (max-width: 640px) {
@@ -299,7 +305,8 @@ html:not(.js) .page-music .rs-track i { clip-path: none; }
   .page-music .nada-hero .lead { font-size: 1.04rem; }
   .page-music .nada-portrait { width: min(250px, 66vw); }
   .page-music .relief { grid-template-columns: 1fr; }
-  .page-music .relief .btn { justify-self: start; }
+  .page-music .relief-actions { grid-column: auto; flex-direction: column; align-items: flex-start; }
+  .page-music .relief-actions small { flex-basis: auto; }
   .page-music .rail { grid-auto-columns: 82%; }
   .page-music .venues { columns: 1; }
   .page-music .world-cave .frame figcaption { position: static; margin-top: 16px; padding: 0; background: none; backdrop-filter: none; color: var(--muted); }

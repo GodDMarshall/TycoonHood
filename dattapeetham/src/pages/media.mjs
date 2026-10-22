@@ -53,7 +53,8 @@ const films = [
     text: 'The first of Sri Swamiji’s discourses on Datta Charitram, in Telugu. All ten episodes are listed below the films.' },
   { id: '8C9eOM4zEcU', title: 'The amazing Vana of Shuka Vana', tag: 'Shuka Vana · 4:41', poster: photos.shukaVanaAviary, pos: '50% 50%',
     text: 'Founded by Sri Swamiji in 2012, Shuka Vana houses around 2,100 birds of 486 species beneath an aviary that spans an entire acre.' },
-  { id: varamVideo[0], title: varamVideo[1], tag: 'Shuka Vana', poster: photos.shukaVana2, pos: '50% 30%',
+  // Page-local title: data.varamVideo's says "chants the Hanuman Chalisa"; the source says the first line.
+  { id: varamVideo[0], title: 'Varam the parrot chants the Hanuman Chalisa’s first line', tag: 'Shuka Vana', poster: photos.shukaVana2, pos: '50% 30%',
     text: 'Varam, the Double Yellow-headed Amazon from Shuka Vana, chants the first line of the Hanuman Chalisa with devotion.' },
   { id: 'jI2j6_HzXb0', title: 'Hanuman Chalisa Parayana by Sri Swamiji (40 times)', tag: 'Parayana', poster: photos.hanumanStatue, pos: '50% 18%',
     text: 'Recite the Hanuman Chalisa with Sri Swamiji, forty times over, then submit your own parayana count to the Peetham.',
@@ -270,11 +271,11 @@ function bookshelf() {
   return `<div class="books-shelf">
   <div class="shelf-head" data-reveal="up">
     <span class="tag">Literary works</span>
-    <h3>From Sri Swamiji’s pen</h3>
-    <p>Besides composing keertanas and bhajans in many languages, Sri Swamiji has penned books on spirituality, chiefly in Telugu and Kannada. Scholars associated with the Peetham have translated his texts into other languages. The Peetham lists 168 published titles in Kannada, Telugu, English, Hindi, Marathi, Tamil, Gujarati and Sanskrit.</p>
+    <h3>Books from the Peetham</h3>
+    <p>Besides composing keertanas and bhajans in many languages, Sri Swamiji has penned books on spirituality, chiefly in Telugu and Kannada. Scholars associated with the Peetham have translated his texts into other languages, and some have authored books of their own under its aegis. The Peetham lists 168 published titles in Kannada, Telugu, English, Hindi, Marathi, Tamil, Gujarati and Sanskrit.</p>
   </div>
   <div class="shelf-wrap" data-reveal="fade">
-    <ul class="shelf" aria-label="A selection of books published by Avadhoota Datta Peetham">
+    <ul class="shelf" tabindex="0" aria-label="A selection of books published by Avadhoota Datta Peetham">
       ${shelf.map(([t, lang], i) => {
         const long = t.length > 19;
         return `<li class="spine sp-${spineTones[i % spineTones.length]}${long ? ' is-long' : ''}" style="--h:${(0.8 + 0.2 * Math.abs(Math.sin(i * 1.7))).toFixed(2)};--w:${long ? 64 : 44 + (i * 7) % 14}px"><span class="spine-title">${t}</span><span class="spine-lang">${lang}</span></li>`;
@@ -295,7 +296,7 @@ function downloads() {
   <div class="dl-intro" data-reveal="up">
     <span class="tag">Downloads library</span>
     <h3>Free to read, print and share</h3>
-    <p>Sixty-seven files on dattapeetham.org: puja vidhis, stotrams, invitations, music and back issues of the Peetham’s magazines.</p>
+    <p>Sixty-seven files on dattapeetham.org: puja vidhis, stotrams, invitations, music and back issues of Bhakti Mala, the Peetham’s magazine.</p>
     <ul class="dl-cats" aria-label="Download categories">${dlCategories.map((c) => `<li>${c}</li>`).join('')}</ul>
     ${btn('Browse all downloads', links.downloads, 'line', 'arrow')}
   </div>
@@ -333,19 +334,19 @@ function articles() {
 // ---------------------------------------------------------------- photos
 const pictures = [
   [photos.hanumanStatue, 'A garlanded idol of Lord Hanuman at the Karya Siddhi Hanuman Temple', 'Karya Siddhi Hanuman'],
-  [photos.shukaVana1, 'Sri Swamiji seated with black and white cockatoos perched on his arms and shoulders', 'Sri Swamiji at Shuka Vana'],
+  [photos.shukaVana1, 'Sri Swamiji with black palm cockatoos perched on his arms and shoulders, white cockatoos on perches beside him', 'Sri Swamiji at Shuka Vana'],
   [photos.hariSannidhi, 'Salagramas arranged as Ananthanaga Shayana beneath a great serpent hood at Hari Sannidhi', 'Hari Sannidhi'],
   [photos.bonsai, 'A pagoda pavilion beside a pool among bonsai trees', 'Kishkindha Moolika Bonsai Garden'],
   [photos.medicalCamp, 'A doctor examines a boy at a free medical camp', 'Seva: a free medical camp'],
   [photos.lordDattatreya, 'Lord Dattatreya, adorned with garlands', 'Lord Dattatreya'],
   [photos.nadaMantapaInterior, 'Seen from the stage of Nada Mantapa: a full hall of devotees facing the performers', 'Nada Mantapa'],
-  [photos.feedingCow, 'Sri Swamiji feeding a calf at the Goshala', 'Gau seva at the Goshala'],
+  [photos.feedingCow, 'Sri Swamiji feeding a calf', 'Gau seva'],
   [photos.sdvt, 'Gopurams of the Sri Datta Venkateshwara Temple Complex', 'Sri Datta Venkateshwara Temple'],
   [photos.prayerHall, 'Devotees seated before Sri Swamiji in the Universal Prayer Hall', 'The Universal Prayer Hall'],
   [photos.rajarajeshwariSannidhi, 'Sri Swamiji worships Goddess Rajarajeshwari at her Sannidhi', 'Rajarajeshwari Sannidhi'],
   [photos.students, 'Senior students of the Veda Pathashala seated together', 'Veda Pathashala'],
   [photos.shukaVana2, 'Sri Swamiji smiling among green parrots at Shuka Vana', 'The parrots of Shuka Vana'],
-  [photos.hospitalSeva, 'SGS Hospital doctors and volunteers beside an early cancer detection van', 'Early cancer detection seva'],
+  [photos.hospitalSeva, 'Staff and volunteers gathered beside a mobile cancer detection unit, a saffron-robed swami on its steps', 'Cancer detection camp'],
   [photos.kamadhenu, 'The long Goshala shed at the Mysuru Ashram', 'The Goshala'],
 ];
 
@@ -369,7 +370,7 @@ function mobile() {
   <div class="mobile-copy" data-reveal="up">
     <span class="eyebrow">Mobile experience</span>
     <h2 data-split>The Peetham in your <span class="em-light">pocket</span></h2>
-    <p class="lead">The official Datta Peetham app is on the App Store and Google Play. Beside it stands a family of devotional apps from the Peetham, for chanting, scripture and practice.</p>
+    <p class="lead">The official Datta Peetham app is on the App Store and Google Play. Beside it stands a family of apps from the Peetham, for chanting, scripture and practice.</p>
     <div class="dp-app">
       ${img(dp.icon, '', { cls: 'dp-icon', w: 72, h: 72 })}
       <span><b>Datta Peetham</b><small>Official app · iPhone and Android</small></span>
@@ -382,7 +383,7 @@ function mobile() {
 </div>
 <div class="apps-block">
   <div class="apps-head" data-reveal="up">
-    <h3>Eighteen devotional apps</h3>
+    <h3>Eighteen apps from the Peetham</h3>
     <p>Store links open Apple’s App Store; seven of the apps are also made for iPad. The Peetham keeps the full list at <a href="${links.mobileApps}">dattapeetham.org/mobileapps</a>.</p>
   </div>
   <ul class="app-grid" data-stagger>
@@ -453,7 +454,7 @@ function channelCard(c) {
 </article>`;
 }
 
-// Telecast timings in IST, as published (sorted by time of day).
+// Telecast timings as published (no time zone is given; these are Indian channels). Sorted by time of day.
 const telecasts = [
   [340, '5:40 AM', 'Sakshi TV', 'Telugu'],
   [370, '6:10 AM', 'ETV', 'Telugu'],
@@ -475,7 +476,7 @@ function tvPanel() {
   <ol class="tv-list">
     ${telecasts.map(([, t, ch, lang]) => `<li><time>${t}</time><span><b>${ch}</b><small>${lang}</small></span></li>`).join('')}
   </ol>
-  <p class="tv-note">Timings in Indian Standard Time, as listed by the Peetham. Schedules can change; please check with the channel. <a href="${EXT.tv}">Source</a></p>
+  <p class="tv-note">Timings as listed by the Peetham, which gives no time zone; these are Indian channels, and the marker shows the current time in India. Schedules can change; please check with the channel. <a href="${EXT.tv}">Source: TV timings on dattapeetham.org</a></p>
 </aside>`;
 }
 
@@ -522,7 +523,7 @@ ${pageHero({
     { icon: 'book', title: 'Books', note: 'Bhaktimala & books', href: '#books' },
     { icon: 'photo', title: 'Photos', note: 'Temples & seva', href: '#photos' },
     { icon: 'article', title: 'Articles', note: 'Writings & speeches', href: '#articles' },
-    { icon: 'mobile', title: 'Apps', note: '18 devotional apps', href: '#apps' },
+    { icon: 'mobile', title: 'Apps', note: '18 Peetham apps', href: '#apps' },
   ],
 })}
 
@@ -532,7 +533,7 @@ ${pageHero({
     ${scrollLit('Sri Swamiji teaches and heals through *music,* speeches, stories, jokes and *poems.*')}
     <p class="lit-source" data-reveal="up">From the life of Sri Ganapathy Sachchidananda Swamiji · dattapeetham.org</p>
     <div class="intro-stats" data-reveal="up">
-      ${stats([['515', 'Videos on YouTube'], ['2,971', 'Videos on Vimeo'], ['980', 'Photographs'], ['67', 'Free downloads'], ['18', 'Devotional apps']])}
+      ${stats([['515', 'Videos on YouTube'], ['2,971', 'Videos on Vimeo'], ['980', 'Photographs'], ['67', 'Free downloads'], ['18', 'Peetham apps']])}
       <p class="stats-note">Counts from the Peetham’s official archive at dattapeetham.org, October 2026.</p>
     </div>
   </div>

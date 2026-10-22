@@ -81,7 +81,7 @@ const socialRow = (items, label) => `<ul class="at-social" aria-label="${label}"
 const record = ({ date, title, text, image, alt }) => `<article class="at-record">
   ${image ? `<span class="at-record-img">${img(image, alt)}</span>` : `<span class="at-record-seal" aria-hidden="true">${icon('sparkle', 26)}</span>`}
   <div>
-    <span class="tag">Guinness World Records · ${date}</span>
+    <span class="tag">Guinness World Records <span class="at-date">· ${date}</span></span>
     <h4>${title}</h4>
     <p>${text}</p>
   </div>
