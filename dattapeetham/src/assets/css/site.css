@@ -943,3 +943,6 @@ html:not([lang="en"]) .dropcap::first-letter { float: none; font-family: inherit
   .share a { width: 44px; height: 44px; }
   .search-hints button { min-height: 44px; }
 }
+
+/* The search dialog has its own close button: hide the browser's built-in clear (x) button. */
+.search-field input::-webkit-search-cancel-button, .search-field input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }

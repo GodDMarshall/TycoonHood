@@ -1,7 +1,7 @@
 // Page shell shared by every page: <head>, utility bar, header with mega menu,
 // search dialog, page-transition veil and footer.
 
-import { site, links, nav, hours, OFFICIAL } from './site.mjs';
+import { site, links, nav, hours } from './site.mjs';
 import { sprite, icon } from './icons.mjs';
 
 // Languages (codes and native names); the build renders /kn/, /hi/, /ta/, /te/.
@@ -13,6 +13,10 @@ function langSwitch() {
   <ul class="lang-menu" id="lang-menu" role="list">${LANG_CODES.map(([code, name]) => `<li><a href="@@lang:${code}" hreflang="${code}" lang="${code}" data-lang="${code}" translate="no">${name}</a></li>`).join('')}</ul>
 </div>`;
 }
+
+// The browser chrome colour (--forest in site.css). site.webmanifest uses the
+// same token; tests/site.test.mjs checks the two agree.
+export const THEME_COLOR = '#0f1c18';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const ext = (href) => /^https?:/.test(href);
@@ -64,7 +68,7 @@ function head(page) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(page.description)}">
-<meta name="theme-color" content="#0f1c18">
+<meta name="theme-color" content="${THEME_COLOR}">
 <link rel="canonical" href="${canonical}">
 ${is404 ? '<meta name="robots" content="noindex">' : `${LANG_CODES.map(([code]) => `<link rel="alternate" hreflang="${code}" href="${site.origin}/${code === 'en' ? '' : code + '/'}${page.slug === 'index' ? '' : page.file}">`).join('\n')}
 <link rel="alternate" hreflang="x-default" href="${page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`}">`}
@@ -74,7 +78,10 @@ ${is404 ? '<meta name="robots" content="noindex">' : `${LANG_CODES.map(([code]) 
 <meta property="og:description" content="${esc(page.description)}">
 <meta property="og:image" content="${og}">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/icons/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/icons/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://dattapeetham.s3.amazonaws.com">
@@ -201,7 +208,7 @@ function footer() {
     <div class="footer-bottom">
       <span>© 2015 – <span data-year>2026</span> ${esc(site.trust)}. All rights reserved.</span>
       <nav aria-label="Legal">
-        <a href="${OFFICIAL}/page/view/about-us">About Us</a>
+        <a href="about.html">About Us</a>
         <a href="${links.disclaimer}">Disclaimer</a>
         <a href="${links.privacy}">Privacy</a>
         <a href="${links.terms}">Terms</a>

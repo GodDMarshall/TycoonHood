@@ -12,7 +12,7 @@
 // Every YouTube id below appears in one of those sources.
 
 import { pageHero, sectionHead, stats, gallery, video, ctaBand, btn, img, icon, scrollLit, esc } from '../components.mjs';
-import { links, OFFICIAL, PAGE_IMG } from '../site.mjs';
+import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, albums, apps, dattaCharitram, varamVideo } from '../data.mjs';
 
 const P = {
@@ -497,7 +497,7 @@ export default {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: 'Media & Teachings',
-      url: 'https://www.dattapeetham.org/media.html',
+      url: `${site.origin}/media.html`,
       about: { '@type': 'Organization', name: 'Avadhoota Datta Peetham' },
       mainEntity: {
         '@type': 'ItemList',

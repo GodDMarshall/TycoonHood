@@ -6,7 +6,7 @@
 // literary-contributions, social-media-pages) or from src/data.mjs.
 
 import { pageHero, sectionHead, split, frame, cards, stats, ctaBand, gallery, video, timeline, processSteps, scrollLit, marquee, btn, icon, img, eyebrow } from '../components.mjs';
-import { links, OFFICIAL, PAGE_IMG } from '../site.mjs';
+import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, timeline as avataraTimeline } from '../data.mjs';
 
 const page = (slug) => `${OFFICIAL}/page/view/${slug}`;
@@ -131,9 +131,9 @@ export default {
       birthDate: '1942-05-26',
       birthPlace: { '@type': 'Place', name: 'Mekedatu, Karnataka, India' },
       jobTitle: 'Founder-Pontiff, Avadhoota Datta Peetham',
-      worksFor: { '@type': 'Organization', name: 'Avadhoota Datta Peetham', url: 'https://www.dattapeetham.org/' },
+      worksFor: { '@type': 'Organization', name: 'Avadhoota Datta Peetham', url: `${site.origin}/` },
       image: photos.swamijiGarland,
-      url: 'https://www.dattapeetham.org/sri-swamiji.html',
+      url: `${site.origin}/sri-swamiji.html`,
       award: honours.map(([, t, d]) => `${t} — ${d.split(' — ')[0]}`),
       sameAs: ['https://www.facebook.com/SriSwamiji', 'https://www.youtube.com/@sgsswamiji', 'https://www.instagram.com/sgsswamiji/', 'https://x.com/SgsSwamiji'],
     },

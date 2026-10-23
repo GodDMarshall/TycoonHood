@@ -386,7 +386,7 @@
   var base = body.getAttribute('data-base') || '';
   function loadIndex() {
     if (index) return Promise.resolve(index);
-    return fetch(base + '../assets/search-index.hi.json').then(function (r) { return r.json(); }).then(function (d) { index = d; return d; })
+    return fetch(base + ('../assets/search-index.hi.json?v=' + (document.body && document.body.getAttribute('data-search-v') || ''))).then(function (r) { return r.json(); }).then(function (d) { index = d; return d; })
       .catch(function () { index = []; return index; });
   }
   function openSearch() {

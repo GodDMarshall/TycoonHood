@@ -16,7 +16,7 @@
 //   language suffix because the language is shown alongside.
 
 import { pageHero, sectionHead, stats, ctaBand, btn, img, icon, scrollLit, chips, photoTile, esc } from '../components.mjs';
-import { links, OFFICIAL, PAGE_IMG } from '../site.mjs';
+import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos } from '../data.mjs';
 
 const P = {
@@ -740,7 +740,7 @@ export default {
       '@context': 'https://schema.org',
       '@type': 'DefinedTermSet',
       name: 'Datta Peetham Glossary',
-      url: 'https://www.dattapeetham.org/teachings.html#glossary',
+      url: `${site.origin}/teachings.html#glossary`,
       hasDefinedTerm: terms.map((t) => ({ '@type': 'DefinedTerm', name: t.term, description: t.def })),
     },
   ],

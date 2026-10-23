@@ -1,0 +1,38 @@
+{
+  "name": "Avadhoota Datta Peetham",
+  "short_name": "Datta Peetham",
+  "description": "Guiding humanity towards a more conscious, compassionate world",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "theme_color": "#0f1c18",
+  "background_color": "#f8f3e9",
+  "icons": [
+    {
+      "src": "assets/img/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/img/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/img/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/img/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

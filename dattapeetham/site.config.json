@@ -1,0 +1,9 @@
+{
+  "_comment": {
+    "siteUrl": "Where THIS website is served. Used for canonical links, hreflang, the sitemap, robots.txt, JSON-LD and share previews. An https origin with no path or trailing slash.",
+    "legacyPlatformUrl": "Where the Peetham's EXISTING platform runs: puja booking, donations, the store, sign-in, subscriptions, concert bookings, legal pages and the old pages the site cites as sources. Every one of those links is built from this address. While it equals siteUrl, all of them point at this site itself, so before the new site takes over the domain, move the platform to its own host (for example https://seva.dattapeetham.org) and put that address here. See docs/handover/DOMAIN-CUTOVER.md.",
+    "overrides": "Without editing this file: node build.mjs --site-url=https://... --legacy-url=https://... or the environment variables DP_SITE_URL and DP_LEGACY_URL. Command-line flags win over environment variables, which win over this file."
+  },
+  "siteUrl": "https://www.dattapeetham.org",
+  "legacyPlatformUrl": "https://www.dattapeetham.org"
+}

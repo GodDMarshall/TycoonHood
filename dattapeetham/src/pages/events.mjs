@@ -14,7 +14,7 @@
 // each festival, are general knowledge; the wheel is labelled illustrative.
 
 import { pageHero, sectionHead, chips, processSteps, ctaBand, btn, img, icon } from '../components.mjs';
-import { links, OFFICIAL, PAGE_IMG } from '../site.mjs';
+import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, concerts, latestSevas, apps } from '../data.mjs';
 
 const P = {
@@ -633,7 +633,7 @@ const eventLd = COMING.filter((c) => c.where).map((c) => ({
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   location: { '@type': 'Place', name: c.where },
-  organizer: { '@type': 'Organization', name: 'Avadhoota Datta Peetham', url: 'https://www.dattapeetham.org/' },
+  organizer: { '@type': 'Organization', name: 'Avadhoota Datta Peetham', url: `${site.origin}/` },
   url: links.calendar,
 }));
 

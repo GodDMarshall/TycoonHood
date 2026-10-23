@@ -1,7 +1,83 @@
 // Site-wide facts, links and navigation. Facts were taken from the live
 // dattapeetham.org (October 2026). Change a fact here and every page follows.
 
-export const OFFICIAL = 'https://www.dattapeetham.org';
+import { readFileSync } from 'node:fs';
+
+// ---------- the two addresses (site.config.json) ----------
+// siteUrl            where this website is served (canonical, sitemap, JSON-LD)
+// legacyPlatformUrl  where the existing platform runs (bookings, donations,
+//                    store, sign-in, legal pages, cited source pages)
+// Highest first: --site-url= / --legacy-url= on the command line, then the
+// DP_SITE_URL / DP_LEGACY_URL environment variables, then site.config.json.
+export const CONFIG_FILE = new URL('../site.config.json', import.meta.url);
+const configError = (msg) => Object.assign(new Error(msg), { name: 'ConfigError' });
+const FIELDS = {
+  siteUrl: { flag: '--site-url', env: 'DP_SITE_URL' },
+  legacyPlatformUrl: { flag: '--legacy-url', env: 'DP_LEGACY_URL' },
+};
+
+// An https origin, normalised: lower-case host, default port and trailing
+// slash dropped. Paths, queries, fragments and credentials are refused: the
+// site is served from the root of its host, and the platform's links are
+// built as `${address}/poojas?...`.
+export function normaliseUrl(value, name = 'URL') {
+  const raw = String(value ?? '').trim();
+  const eg = name === 'legacyPlatformUrl' ? 'https://seva.dattapeetham.org' : 'https://www.dattapeetham.org';
+  if (!raw) throw configError(`${name} is empty: give an https address such as ${eg}`);
+  let u;
+  try { u = new URL(raw); } catch { throw configError(`${name} "${raw}" is not an absolute URL: give an https address such as ${eg}`); }
+  if (u.protocol !== 'https:') throw configError(`${name} "${raw}" must use https:// (for example ${eg})`);
+  if (!u.hostname) throw configError(`${name} "${raw}" has no host name`);
+  if (u.username || u.password) throw configError(`${name} "${raw}" must not contain a user name or password`);
+  if (u.search || u.hash || /[?#]/.test(raw)) throw configError(`${name} "${raw}" must not contain a query or fragment`);
+  if (u.pathname.replace(/\/+$/, '') !== '') throw configError(`${name} "${raw}" must be a bare address with no path (for example ${eg}): the site is served from the root of its host`);
+  return u.origin;
+}
+
+function flagValue(argv, flag) {
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i].startsWith(flag + '=')) return argv[i].slice(flag.length + 1);
+    if (argv[i] === flag) {
+      if (i + 1 < argv.length && !argv[i + 1].startsWith('--')) return argv[i + 1];
+      throw configError(`${flag} needs an address, e.g. ${flag}=https://seva.dattapeetham.org`);
+    }
+  }
+  return undefined;
+}
+
+// Pure, so the tests can check precedence and validation. `file` may be a
+// path/URL to read, or the parsed object itself.
+export function resolveConfig({ argv = process.argv.slice(2), env = process.env, file = CONFIG_FILE } = {}) {
+  let json = {};
+  let fileError = null;
+  if (file && typeof file === 'object' && !(file instanceof URL)) json = file;
+  else {
+    try { json = JSON.parse(readFileSync(file, 'utf8')); } catch (e) { fileError = e; }
+  }
+  const out = { sources: {} };
+  for (const [key, { flag, env: envName }] of Object.entries(FIELDS)) {
+    const cli = flagValue(argv, flag);
+    const fromEnv = env[envName];
+    let value, source;
+    if (cli !== undefined) { value = cli; source = flag; }
+    else if (fromEnv !== undefined && fromEnv !== '') { value = fromEnv; source = envName; }
+    else if (json[key] !== undefined) { value = json[key]; source = 'site.config.json'; }
+    else if (fileError) throw configError(`site.config.json could not be read (${fileError.message}) and ${key} was not given by ${flag}= or ${envName}`);
+    else throw configError(`site.config.json has no "${key}" (and neither ${flag}= nor ${envName} is set)`);
+    out[key] = normaliseUrl(value, key);
+    out.sources[key] = source;
+  }
+  const site = new URL(out.siteUrl), legacy = new URL(out.legacyPlatformUrl);
+  out.sameHost = site.host === legacy.host;
+  // www.example.org and example.org are different hosts, but one usually
+  // redirects to the other, which would send platform links to this site.
+  out.siblingHost = !out.sameHost && site.host.replace(/^www\./, '') === legacy.host.replace(/^www\./, '');
+  return Object.freeze(out);
+}
+
+export const config = resolveConfig();
+
+export const OFFICIAL = config.legacyPlatformUrl;
 export const S3 = 'https://dattapeetham.s3.amazonaws.com/';
 export const IMG = `${S3}homepage_assets/site_1/front_page_images/`;
 export const PAGE_IMG = `${S3}content/page_images/`;
@@ -12,7 +88,7 @@ export const site = {
   shortName: 'Datta Peetham',
   trust: 'Sri Ganapathy Sachchidananda Avadhoota Datta Peetha Trust',
   ashram: 'Sri Ganapathy Sachchidananda Ashram',
-  origin: 'https://www.dattapeetham.org',
+  origin: config.siteUrl,
   tagline: 'Guiding humanity towards a more conscious, compassionate world',
   address: {
     lines: ['Sri Ganapathy Sachchidananda Ashram', 'Datta Nagar, Ooty Road', 'Mysuru, Karnataka 570 025, India'],

@@ -4,22 +4,32 @@
 //   node build.mjs            build into ./site
 //   node build.mjs --serve    build, serve on http://localhost:4321, rebuild on change
 //
+// Options (any command):
+//   --site-url=https://…      where this site is served      (else DP_SITE_URL, else site.config.json)
+//   --legacy-url=https://…    where the existing platform is (else DP_LEGACY_URL, else site.config.json)
+//   --out=<dir>               build somewhere other than ./site
+//
 // Every page module in src/pages exports { slug, file, title, description,
 // nav?, image?, preload?, scripts?, render() }. The build wraps each in the
-// shared layout, copies assets, writes a search index, sitemap and robots.txt,
-// then verifies every internal link and #anchor resolves.
+// shared layout, copies assets, writes a search index, sitemap, robots.txt,
+// icons and site.webmanifest, versions every CSS/JS/JSON reference by content
+// hash, then verifies every internal link and #anchor resolves.
 
-import { readdir, readFile, writeFile, mkdir, cp, rm, stat, rename } from 'node:fs/promises';
+import { readdir, readFile, writeFile, mkdir, cp, rm, stat, rename, copyFile } from 'node:fs/promises';
 import { watch } from 'node:fs';
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
-import { join, extname, dirname } from 'node:path';
+import { createHash } from 'node:crypto';
+import { join, extname, dirname, resolve, relative, sep, isAbsolute, posix } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const SRC = join(ROOT, 'src');
-const OUT = join(ROOT, 'site');
+const argValue = (name) => { const a = process.argv.find((x) => x.startsWith(name + '=')); return a === undefined ? undefined : a.slice(name.length + 1); };
+const OUT = argValue('--out') ? resolve(argValue('--out')) : join(ROOT, 'site');
 const PORT = Number(process.env.PORT) || 4321;
+// Flags a dev-server rebuild must repeat (it runs in a fresh process).
+const FORWARD = process.argv.slice(2).filter((a) => /^--(?:site-url|legacy-url|out)=/.test(a));
 
 const strip = (html) => html
   .replace(/<script[\s\S]*?<\/script>/g, ' ')
@@ -94,6 +104,8 @@ function localizePage(html, page, lang, langs) {
   out = out.replace(/(srcset=")([^"]+)"/g, (all, a, v) => a + v.replace(/(^|,\s*)assets\//g, '$1../assets/') + '"');
   out = out.replace(/url\((['"]?)assets\//g, 'url($1../assets/');
   out = out.replace(/(<script src=")\.\.\/assets\/js\//g, `$1../assets/js-${lang.code}/`);
+  // root files: the web manifest
+  out = out.replace(/(\shref=")(site\.webmanifest")/g, '$1../$2');
   // canonical and og:url for this language
   out = out.replace(/(<link rel="canonical" href="https:\/\/[^"/]+\/)/, `$1${lang.code}/`);
   // script fonts for this language
@@ -140,7 +152,8 @@ async function listFiles(dir) {
   return out;
 }
 
-function checkLinks(pages) {
+// `rootFiles`: non-page files at the site root (site.webmanifest, favicon.ico …)
+function checkLinks(pages, rootFiles = new Set()) {
   const ids = new Map(pages.map((p) => [p.file, new Set([...p.html.matchAll(/\sid="([^"]+)"/g)].map((x) => x[1]))]));
   const problems = [];
   for (const p of pages) {
@@ -154,7 +167,12 @@ function checkLinks(pages) {
     for (const [, href] of p.html.matchAll(/\shref="([^"]+)"/g)) {
       const rel = href.replace(/^\//, '');
       if (/^(https?:|mailto:|tel:|data:)/.test(href) || rel.startsWith('assets/') || /^(kn|hi|ta|te)\//.test(rel)) continue;
-      const [file, hash] = rel.split('#');
+      const [fileQ, hash] = rel.split('#');
+      const file = fileQ.split('?')[0];
+      if (file && !file.endsWith('.html')) {
+        if (!rootFiles.has(file)) problems.push(`${p.file}: link to missing file "${href}"`);
+        continue;
+      }
       const target = file || p.file;
       if (!ids.has(target)) { problems.push(`${p.file}: link to missing page "${href}"`); continue; }
       if (hash && !ids.get(target).has(hash)) problems.push(`${p.file}: link to missing anchor "${href}"`);
@@ -163,26 +181,180 @@ function checkLinks(pages) {
   return [...new Set(problems)];
 }
 
+// ---------- addresses ----------
+export function printAddresses(config) {
+  const src = (k) => config.sources[k] === 'site.config.json' ? 'site.config.json' : `from ${config.sources[k]}`;
+  console.log(`Site address:     ${config.siteUrl}  (${src('siteUrl')})`);
+  console.log(`Legacy platform:  ${config.legacyPlatformUrl}  (${src('legacyPlatformUrl')})`);
+  const bar = '!'.repeat(78);
+  if (config.sameHost) {
+    console.warn(`${bar}
+WARNING: legacyPlatformUrl has the same host as siteUrl (${new URL(config.siteUrl).host}).
+  Booking, donation, sign-in, store and source links will point at this site
+  itself — set legacyPlatformUrl before the site takes over the domain, see
+  docs/handover/DOMAIN-CUTOVER.md
+  (edit site.config.json, or build with --legacy-url=https://… / DP_LEGACY_URL)
+${bar}`);
+  } else if (config.siblingHost) {
+    console.warn(`NOTE: ${new URL(config.legacyPlatformUrl).host} and ${new URL(config.siteUrl).host} differ only by "www.".
+  If one redirects to the other, platform links will land on this site; make sure
+  ${config.legacyPlatformUrl} serves the existing platform itself.`);
+  }
+}
+
+// Refuse output folders a swap would destroy: the project or anything above
+// it, the sources, or a non-empty folder that is not a previous build.
+async function assertSafeOut() {
+  const fail = (msg) => Object.assign(new Error(msg), { name: 'ConfigError' });
+  if (process.argv.includes('--out')) throw fail('write the output folder as --out=<dir>');
+  const inside = (child, parent) => { const r = relative(parent, child); return r === '' || (!r.startsWith('..') && !isAbsolute(r)); };
+  if (inside(ROOT, OUT)) throw fail(`--out=${OUT} would replace the project folder (or a folder containing it)`);
+  if (inside(OUT, SRC)) throw fail(`--out=${OUT} is inside src/, which the dev server watches`);
+  const entries = await readdir(OUT).catch(() => null);
+  if (entries && entries.length && !entries.includes('index.html')) throw fail(`--out=${OUT} is not empty and holds no previous build (no index.html); refusing to replace it`);
+}
+
+// ---------- cache-busting ----------
+// Every local .css/.js/.json the HTML references gets ?v=<first 8 hex chars of
+// the file's SHA-256>, so the server can cache /assets/ for a long time and a
+// changed file still reaches visitors at once. Unchanged files keep their
+// version, so a rebuild only moves the hashes of files that changed.
+const VERSIONED = /\.(?:css|js|json)$/;
+const hash8 = (buf) => createHash('sha256').update(buf).digest('hex').slice(0, 8);
+
+// The search index is fetched by site.js at runtime, so its version cannot be
+// in the HTML's script tag. Each page carries it as <body data-search-v>, and
+// the build points the fetch at it: the literal 'assets/search-index….json'
+// becomes ('assets/search-index….json?v=' + <that attribute>). Keeping the
+// version out of site.js means site.js's own hash only changes with its code.
+const SEARCH_LITERAL = /(['"])((?:\.\.\/)?assets\/search-index(?:\.[a-z]{2})?\.json)\1/g;
+const searchFetch = (q, path) => `(${q}${path}?v=${q} + (document.body && document.body.getAttribute('data-search-v') || ''))`;
+
+async function versionAssets(TMP, htmlFiles, LANGS) {
+  // 1. runtime fetches in JS (en + every js-<lang> copy)
+  for (const f of await listFiles(join(TMP, 'assets'))) {
+    if (!f.endsWith('.js') || f.includes(`${sep}vendor${sep}`)) continue;
+    const code = await readFile(f, 'utf8');
+    const out = code.replace(SEARCH_LITERAL, (all, q, path) => searchFetch(q, path));
+    if (out !== code) await writeFile(f, out);
+  }
+  // 2. content hashes of everything versionable
+  const hashes = new Map();
+  for (const f of await listFiles(join(TMP, 'assets'))) {
+    if (VERSIONED.test(f)) hashes.set(relative(TMP, f).split(sep).join('/'), hash8(await readFile(f)));
+  }
+  // 3. every src/href in every page, resolved against the page's folder
+  //    (root-absolute on the 404); plus the page's search-index version
+  const codes = new Set(LANGS.map((l) => l.code));
+  const out = new Map();
+  for (const rel of htmlFiles) {
+    const dir = posix.dirname(rel) === '.' ? '' : posix.dirname(rel);
+    let html = await readFile(join(TMP, rel), 'utf8');
+    html = html.replace(/(\s(?:src|href)=")([^"]+)"/g, (all, attr, url) => {
+      if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(url)) return all;
+      const [pathQ, frag] = url.split('#');
+      const [path, query] = pathQ.split('?');
+      if (!VERSIONED.test(path) || (query && /(?:^|&)v=/.test(query))) return all;
+      const target = path.startsWith('/') ? path.slice(1) : posix.normalize(posix.join(dir, path));
+      const h = hashes.get(target);
+      if (!h) return all;
+      return `${attr}${path}?${query ? query + '&' : ''}v=${h}${frag !== undefined ? '#' + frag : ''}"`;
+    });
+    const lang = codes.has(dir) ? dir : 'en';
+    const idx = lang === 'en' ? 'assets/search-index.json' : `assets/search-index.${lang}.json`;
+    if (hashes.has(idx)) html = html.replace(/<body\b([^>]*)>/, (m, attrs) => /\sdata-search-v=/.test(attrs) ? m : `<body${attrs} data-search-v="${hashes.get(idx)}">`);
+    await writeFile(join(TMP, rel), html);
+    out.set(rel, html);
+  }
+  return out;
+}
+
+// ---------- icons and web manifest ----------
+// tools/make-icons.mjs renders src/assets/img/icons/ from favicon.svg (run it
+// once, commit the PNGs/ICO); the build copies them with the other assets,
+// puts favicon.ico at the root (browsers ask for /favicon.ico blindly) and
+// writes site.webmanifest with colours from the design tokens in site.css.
+const ICONS = 'assets/img/icons';
+async function writeIconsAndManifest(TMP, site) {
+  const missing = [];
+  for (const f of ['favicon.ico', 'favicon-16.png', 'favicon-32.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png']) {
+    if (!(await stat(join(TMP, ICONS, f)).catch(() => null))) missing.push(f);
+  }
+  if (missing.length) {
+    console.error(`✗ ${ICONS}/ is missing ${missing.join(', ')}: run node tools/make-icons.mjs`);
+    process.exitCode = 1;
+  } else {
+    await copyFile(join(TMP, ICONS, 'favicon.ico'), join(TMP, 'favicon.ico'));
+  }
+  const css = await readFile(join(TMP, 'assets/css/site.css'), 'utf8').catch(() => '');
+  const token = (name, fallback) => (new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{3,8})\\b`).exec(css) || [, fallback])[1];
+  const manifest = {
+    name: site.name,
+    short_name: site.shortName,
+    description: site.tagline,
+    lang: 'en',
+    dir: 'ltr',
+    start_url: '/',
+    scope: '/',
+    // A website, not an app: no offline mode, and bookings, donations and
+    // sign-in open on the existing platform's own host.
+    display: 'browser',
+    theme_color: token('forest', '#0f1c18'),
+    background_color: token('ivory', '#f8f3e9'),
+    icons: [
+      { src: `${ICONS}/icon-192.png`, sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: `${ICONS}/icon-512.png`, sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: `${ICONS}/icon-maskable-512.png`, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: 'assets/img/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+    ],
+  };
+  await writeFile(join(TMP, 'site.webmanifest'), JSON.stringify(manifest, null, 2) + '\n');
+}
+
+// ---------- server configs (tools/server-configs.mjs, optional) ----------
+async function serverConfigs(TMP, config, pages) {
+  const mod = join(ROOT, 'tools', 'server-configs.mjs');
+  if (!(await stat(mod).catch(() => null))) return;
+  try {
+    const { writeServerConfigs } = await import(pathToFileURL(mod).href);
+    if (typeof writeServerConfigs !== 'function') throw new Error('does not export writeServerConfigs()');
+    await writeServerConfigs({ siteDir: TMP, siteUrl: config.siteUrl, legacyUrl: config.legacyPlatformUrl, pages });
+  } catch (e) {
+    console.error(`✗ tools/server-configs.mjs: ${e.stack || e.message}`);
+    process.exitCode = 1;
+  }
+}
+
 export async function build() {
   const t0 = performance.now();
   const bust = Date.now();
   const { layout } = await load('layout.mjs', bust);
-  const { site } = await load('site.mjs', bust);
+  const { site, config } = await load('site.mjs', bust);
+  printAddresses(config);
+  await assertSafeOut();
   const files = (await readdir(join(SRC, 'pages'))).filter((f) => f.endsWith('.mjs')).sort();
   const imgMan = await loadImageManifest();
 
-  // Build into a private temp dir, then swap it in, so a running dev server
-  // (or a parallel build) never serves a half-written site.
-  const TMP = join(ROOT, `.site-tmp-${process.pid}-${bust}`);
+  // Build into a private temp dir beside the output, then swap it in, so a
+  // running dev server (or a parallel build) never serves a half-written site.
+  const TMP = join(dirname(OUT), `.site-tmp-${process.pid}-${bust}`);
   await mkdir(TMP, { recursive: true });
-  await cp(join(SRC, 'assets'), join(TMP, 'assets'), { recursive: true });
+  // Everything in src/assets except build-only files: the image optimiser's
+  // manifest (read above, never fetched by a page) and dotfiles.
+  const ASSETS = join(SRC, 'assets');
+  const DEV_ONLY = new Set(['img/opt/manifest.json']);
+  await cp(ASSETS, join(TMP, 'assets'), { recursive: true, filter: (from) => {
+    const rel = relative(ASSETS, from).split(sep).join('/');
+    return !DEV_ONLY.has(rel) && !/(?:^|\/)\./.test(rel);
+  } });
+  await writeIconsAndManifest(TMP, site);
 
   for (const dir of ['js', 'css']) {
     for (const rel of await listFiles(join(TMP, 'assets', dir))) {
       const text = await readFile(rel, 'utf8');
       if (!/dattapeetham\.s3\.amazonaws\.com/.test(text)) continue;
       // CSS urls resolve against the stylesheet; JS strings against the page
-      const depth = dir === 'css' ? rel.slice(join(TMP, 'assets').length + 1).split('/').length : 0;
+      const depth = dir === 'css' ? relative(join(TMP, 'assets'), rel).split(sep).length : 0;
       const prefix = dir === 'css' ? '../'.repeat(depth) : '';
       const out = text.replace(/https:\/\/(?:dev-)?dattapeetham\.s3\.amazonaws\.com\/[^"'`)\s]+?\.(?:jpe?g|png|webp|gif)/gi, (u) => imgMan[u] ? prefix + pick(imgMan[u]) : u);
       await writeFile(rel, out);
@@ -211,6 +383,7 @@ export async function build() {
   const dicts = await loadDicts(others);
   const jsFiles = await listFiles(join(TMP, 'assets', 'js'));
   const report = {};
+  const htmlFiles = []; // every page written, relative to the site root
   for (const p of pages) p.htmlLocal = localizePage(p.html, p, LANGS[0], LANGS);
   for (const lang of others) {
     const dict = dicts[lang.code];
@@ -232,6 +405,7 @@ export async function build() {
       stats.total += r.total; stats.hit += r.hit; r.missing.forEach((m) => stats.missing.add(m)); stats.rejected.push(...r.rejected);
       const html = localizePage(r.html, p, lang, LANGS);
       await writeFile(join(TMP, lang.code, p.file), html);
+      htmlFiles.push(`${lang.code}/${p.file}`);
       if (p.slug !== '404') {
         const body = (/<main id="main">([\s\S]*)<\/main>/.exec(r.html) || [, ''])[1];
         // the <title> text is HTML ('கோயில்கள் &amp; தரிசனம்'): decode it like the rest of the index
@@ -248,12 +422,13 @@ export async function build() {
     p.html = p.slug === '404' ? rootAbsolute(p.htmlLocal) : p.htmlLocal;
     await writeFile(join(TMP, p.file), p.html);
   }
+  htmlFiles.unshift(...pages.map((p) => p.file));
 
   // `node build.mjs --extract`: every English segment, for the translators
   if (process.argv.includes('--extract')) {
     const all = new Map();
     for (const p of pages) for (const [k] of extract(p.html)) { if (!all.has(k)) all.set(k, new Set()); all.get(k).add(p.file); }
-    for (const f of jsFiles) for (const k of extractJs(await readFile(f, 'utf8'))) { if (!all.has(k)) all.set(k, new Set()); all.get(k).add('js:' + f.split('/assets/js/')[1]); }
+    for (const f of jsFiles) for (const k of extractJs(await readFile(f, 'utf8'))) { if (!all.has(k)) all.set(k, new Set()); all.get(k).add('js:' + relative(join(TMP, 'assets', 'js'), f).split(sep).join('/')); }
     const list = [...all].map(([k, pg]) => ({ k, pages: [...pg] }));
     await mkdir(join(SRC, 'i18n'), { recursive: true });
     await writeFile(join(SRC, 'i18n', 'segments.json'), JSON.stringify(list, null, 1));
@@ -268,12 +443,19 @@ ${pages.filter((p) => p.slug !== '404').flatMap((p) => LCODES.map((c) => `  <url
 `);
   await writeFile(join(TMP, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${site.origin}/sitemap.xml\n`);
 
+  // Last: version asset references (needs every file final), then let the
+  // deployment tooling add its server files to the finished site.
+  const versioned = await versionAssets(TMP, htmlFiles, LANGS);
+  for (const p of pages) p.html = versioned.get(p.file) ?? p.html;
+  const rootFiles = new Set((await readdir(TMP, { withFileTypes: true })).filter((e) => e.isFile()).map((e) => e.name));
+  await serverConfigs(TMP, config, htmlFiles);
+
   const OLD = `${OUT}-old-${process.pid}-${bust}`;
   await rename(OUT, OLD).catch(() => {});
   await rename(TMP, OUT).catch(async () => { await cp(TMP, OUT, { recursive: true }); await rm(TMP, { recursive: true, force: true }); });
   await rm(OLD, { recursive: true, force: true });
 
-  const problems = checkLinks(pages);
+  const problems = checkLinks(pages, rootFiles);
   const ms = Math.round(performance.now() - t0);
   console.log(`Built ${pages.length} pages × 5 languages, ${search.length} search entries in ${ms} ms → ${OUT}`);
   console.log('Translation coverage: ' + Object.entries(report).map(([c, r]) => `${c} ${r.coverage}% (${r.missing} missing, ${r.rejected} rejected)`).join(' · '));
@@ -284,14 +466,21 @@ ${pages.filter((p) => p.slug !== '404').flatMap((p) => LCODES.map((c) => `  <url
   return problems;
 }
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.xml': 'application/xml', '.txt': 'text/plain' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.xml': 'application/xml', '.txt': 'text/plain' };
+
+// Development server only: nothing here is written into the site.
 
 function serve() {
   createServer(async (req, res) => {
     let path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     if (path.endsWith('/')) path += 'index.html';
     let file = join(OUT, path);
-    if (!file.startsWith(OUT)) { res.writeHead(403).end(); return; }
+    if (file !== OUT && !file.startsWith(OUT + sep)) { res.writeHead(403).end(); return; }
+    // like production: /about → 301 /about.html
+    if (!extname(path) && !(await stat(file).catch(() => null)) && (await stat(file + '.html').catch(() => null))) {
+      res.writeHead(301, { location: path + '.html' + new URL(req.url, 'http://x').search }).end();
+      return;
+    }
     try {
       if ((await stat(file)).isDirectory()) file = join(file, 'index.html');
       res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream', 'cache-control': 'no-store' });
@@ -308,15 +497,21 @@ function serve() {
   const rebuild = () => {
     if (running) { again = true; return; }
     running = true;
-    spawn(process.execPath, [fileURLToPath(import.meta.url)], { stdio: 'inherit' }).on('exit', () => {
+    spawn(process.execPath, [fileURLToPath(import.meta.url), ...FORWARD], { stdio: 'inherit' }).on('exit', () => {
       running = false;
       if (again) { again = false; rebuild(); }
     });
   };
-  watch(SRC, { recursive: true }, () => { clearTimeout(timer); timer = setTimeout(rebuild, 150); });
+  const later = () => { clearTimeout(timer); timer = setTimeout(rebuild, 150); };
+  watch(SRC, { recursive: true }, later);
+  try { watch(join(ROOT, 'site.config.json'), later); } catch { /* no config file: flags or env give the addresses */ }
 }
 
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {
-  build().then(() => { if (process.argv.includes('--serve')) serve(); }).catch((e) => { console.error(e); process.exit(1); });
+  build().then(() => { if (process.argv.includes('--serve')) serve(); }).catch((e) => {
+    // a wrong address or --out is a usage problem, not a crash: no stack trace
+    console.error(e && e.name === 'ConfigError' ? `✗ ${e.message}` : e);
+    process.exit(1);
+  });
 }

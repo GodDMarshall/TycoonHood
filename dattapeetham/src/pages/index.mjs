@@ -10,7 +10,7 @@
 // official calendar states; past ones hide themselves (assets/js/index.js).
 
 import { quickTiles, pillarsPanel, hoursCard, photoTile, scrollLit, marquee, shareRow, horizon, ornament, thread, stats, btn, icon, img, esc } from '../components.mjs';
-import { links, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
+import { site, links, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
 import { photos, pillars, timings, latestSevas, albums, apps, kshetras, countries, dattaCharitram, varamVideo } from '../data.mjs';
 
 // Official photographs, by the dattapeetham.org page they appear on.
@@ -530,7 +530,7 @@ export default {
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     eventStatus: 'https://schema.org/EventScheduled',
     location: ashram,
-    organizer: { '@type': 'Organization', name: 'Avadhoota Datta Peetham', url: 'https://www.dattapeetham.org/' },
+    organizer: { '@type': 'Organization', name: 'Avadhoota Datta Peetham', url: `${site.origin}/` },
     description: e.text,
   })),
   render: async () => {
