@@ -1,0 +1,78 @@
+{
+  "credit": "Flute: original raga composition for this website",
+  "raga": "Mohanam (S R2 G3 P D2)",
+  "sa": "D",
+  "saHz": 293.66,
+  "sampleRate": 44100,
+  "music": {
+    "file": "flute-mohanam.mp3",
+    "samples": 9366673,
+    "seconds": 212.3962,
+    "fluteStart": 8,
+    "fluteEnd": 204.9,
+    "gainDb": -11.13,
+    "excerptFrom": 83.66,
+    "loop": {
+      "start": 0,
+      "end": 212.3962,
+      "samples": 9366673,
+      "note": "The whole file is one seamless loop. Web Audio: decode, then loop the buffer; if the decoded length exceeds `samples`, the decoder kept the MP3 priming: set loopStart to the excess at the start (1105 samples for this LAME encode) and loopEnd = loopStart + samples / sampleRate."
+    }
+  },
+  "sfx": [
+    {
+      "file": "sfx/ghanta.mp3",
+      "seconds": 3,
+      "note": "small brass hand-bell, struck (Sa = D6, Ga ringing above)",
+      "kb": 36
+    },
+    {
+      "file": "sfx/chime-s.mp3",
+      "seconds": 1.7,
+      "swara": "S",
+      "hz": 587.32,
+      "kb": 21
+    },
+    {
+      "file": "sfx/chime-r.mp3",
+      "seconds": 1.7,
+      "swara": "R",
+      "hz": 660.74,
+      "kb": 21
+    },
+    {
+      "file": "sfx/chime-g.mp3",
+      "seconds": 1.7,
+      "swara": "G",
+      "hz": 734.15,
+      "kb": 21
+    },
+    {
+      "file": "sfx/chime-p.mp3",
+      "seconds": 1.7,
+      "swara": "P",
+      "hz": 880.98,
+      "kb": 21
+    },
+    {
+      "file": "sfx/chime-d.mp3",
+      "seconds": 1.7,
+      "swara": "D",
+      "hz": 978.87,
+      "kb": 21
+    },
+    {
+      "file": "sfx/chime-s2.mp3",
+      "seconds": 1.7,
+      "swara": "S2",
+      "hz": 1174.64,
+      "kb": 21
+    },
+    {
+      "file": "sfx/shankha.mp3",
+      "seconds": 1.9,
+      "note": "soft conch swell on Sa (D4); optional",
+      "kb": 23
+    }
+  ]
+}

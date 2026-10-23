@@ -1,0 +1,470 @@
+/* Datta Peetham — devotional sound (no dependencies).
+   The flute music (an original composition in Raga Mohanam made for this
+   website) and the temple sounds while scrolling.
+
+   - Preference in localStorage 'dp-sound' = {music, sfx, v: 1, vol}; absent
+     means a first visit, when the intro curtain offers the choice.
+   - Nothing is downloaded and no AudioContext exists until sound is on.
+   - Music: <audio preload="none"> → MediaElementSource → per-element gain →
+     music bus (fades) → analyser (level) → master (volume) → speakers. Two
+     elements crossfade at the loop point: Chromium's <audio loop> leaves a
+     ~20 ms silent gap at an MP3 loop seam, the crossfade leaves none.
+   - Position carries across pages through sessionStorage 'dp-sound-pos'.
+   - Temple sounds: decoded buffers → panner → SFX bus (−8 dB) → master.
+   - API: DP.sound = {musicOn, sfxOn, setMusic, setSfx, setVolume, volume,
+     level, state, onChange}; 'dp:sound' CustomEvent on document. */
+(function () {
+  'use strict';
+  var W = window, doc = document, root = doc.documentElement;
+  var DP = W.DP = W.DP || {};
+  if (DP.sound) return; // idempotent: a second copy of this script does nothing
+  // Whole sentences with numbered slots (%1, %2) so translations can reorder them.
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
+  var $ = function (s, c) { return (c || doc).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
+  var noop = function () {};
+  var AC = W.AudioContext || W.webkitAudioContext;
+  var box = $('[data-sound]');
+  var subs = [];
+  var S = { music: false, sfx: false, vol: 0.6 };
+
+  if (!AC || !W.Audio || !W.Promise) { // no Web Audio: stay silent, keep the API
+    DP.sound = { musicOn: function () { return false; }, sfxOn: function () { return false; }, setMusic: noop, setSfx: noop, setVolume: noop, volume: function () { return 0; }, level: function () { return 0; }, state: function () { return { music: false, sfx: false, playing: false, volume: 0, status: 'off' }; }, onChange: function () { return noop; } };
+    return;
+  }
+
+  /* ---------------- configuration ---------------- */
+  var cfg = box ? box.dataset : {};
+  var me = doc.currentScript || $('script[src*="devotion-sound"]');
+  var base;
+  try { base = new URL('../audio/', me.src).href; } catch (e) { base = (doc.body.getAttribute('data-base') || root.getAttribute('data-root') || '') + 'assets' + '/audio/'; }
+  var SRC = base + 'flute-mohanam.mp3';
+  // data-sfx (written by the build from the files that exist) lists the temple sounds to load
+  var FX = (cfg.sfx != null ? cfg.sfx : 'ghanta chime-s chime-r chime-g chime-p chime-d chime-s2 shankha').split(/\s+/).filter(Boolean);
+  var SWARA = ['chime-s', 'chime-r', 'chime-g', 'chime-p', 'chime-d', 'chime-s2'];
+  var XF = +cfg.xfade || 3, FX_GAIN = Math.pow(10, (cfg.sfxDb ? +cfg.sfxDb : -8) / 20);
+  var FADE_IN = 1.8, FADE_OUT = 0.6, FLING = 3500; // seconds, seconds, px/s
+
+  /* ---------------- storage (private mode safe) ---------------- */
+  function load(store, k) { try { return JSON.parse(W[store].getItem(k)); } catch (e) { return null; } }
+  function save(store, k, v) { try { W[store].setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } }
+  var KEY = 'dp-sound', POS = 'dp-sound-pos';
+  function readPref() {
+    var p = load('localStorage', KEY);
+    if (!p || p.v !== 1) return null;
+    S.music = !!p.music; S.sfx = !!p.sfx;
+    if (typeof p.vol === 'number') S.vol = Math.max(0, Math.min(1, p.vol));
+    return p;
+  }
+  var pref = readPref();
+  if (!pref && cfg.volume) S.vol = Math.max(0, Math.min(1, cfg.volume / 100));
+  function savePref() { pref = { music: S.music, sfx: S.sfx, v: 1, vol: S.vol }; save('localStorage', KEY, pref); }
+
+  /* ---------------- audio graph (created on first need) ---------------- */
+  var ctx, master, bus, an, fx, unlocked = false, gesture = false;
+  function inGesture() { return gesture || !!(navigator.userActivation && navigator.userActivation.isActive); }
+  function ensure() {
+    if (ctx) return ctx;
+    try { ctx = new AC(); } catch (e) { return null; }
+    master = ctx.createGain(); master.gain.value = S.vol * S.vol; master.connect(ctx.destination);
+    bus = ctx.createGain(); bus.gain.value = 0;
+    an = ctx.createAnalyser(); an.fftSize = 2048; bus.connect(an); an.connect(master);
+    fx = ctx.createGain(); fx.gain.value = FX_GAIN; fx.connect(master);
+    ctx.onstatechange = function () { if (ctx.state === 'running' && !unlocked) { unlocked = true; disarm(); reconcile(); } };
+    if (ctx.state === 'running') unlocked = true;
+    doc.addEventListener('visibilitychange', onVis);
+    W.addEventListener('pagehide', onHide);
+    W.addEventListener('pageshow', onShow);
+    W.addEventListener('focus', onFocus);
+    ['play', 'pause', 'ended', 'emptied', 'error'].forEach(function (t) { doc.addEventListener(t, onMedia, true); });
+    $$('audio, video').forEach(function (el) { if (!el.paused && !el.muted) media.push(el); });
+    if (navigator.mediaSession) { // lock-screen and media-key controls
+      try {
+        navigator.mediaSession.setActionHandler('play', function () { setMusic(true); });
+        navigator.mediaSession.setActionHandler('pause', function () { setMusic(false); });
+      } catch (e) { /* unsupported action */ }
+    }
+    return ctx;
+  }
+  function fadeTo(g, v, dur) {
+    var t = ctx.currentTime, p = g.gain;
+    p.cancelScheduledValues(t); p.setValueAtTime(p.value, t); p.linearRampToValueAtTime(v, t + dur);
+  }
+  var idleT;
+  function idle() { // let the audio thread sleep when nothing is sounding
+    clearTimeout(idleT);
+    idleT = setTimeout(function () { if (ctx && !on && ctx.state === 'running') ctx.suspend(); }, 4000);
+  }
+
+  /* ---------------- autoplay: wait for the first gesture ---------------- */
+  var GESTURES = ['pointerdown', 'keydown', 'touchend', 'click'], armed = false;
+  function arm() { if (armed) return; armed = true; GESTURES.forEach(function (t) { doc.addEventListener(t, onGesture, true); }); }
+  function disarm() { if (!armed) return; armed = false; GESTURES.forEach(function (t) { doc.removeEventListener(t, onGesture, true); }); }
+  function onGesture(e) {
+    if (e.key === 'Escape' || !ctx) return;
+    act(function () { ctx.resume().then(function () { if (ctx.state === 'running') { unlocked = true; disarm(); reconcile(); } }, noop); reconcile(); });
+  }
+  function act(fn) { gesture = true; try { fn(); } finally { gesture = false; } }
+
+  /* ---------------- music: two elements crossfading at the loop point ---------------- */
+  var P = [], cur = 0, on = false, live = false, err = false, xfading = false, started = false, stopT, leaveT;
+  var UP = new Float32Array(48), DOWN = new Float32Array(48);
+  for (var k = 0; k < 48; k++) { UP[k] = Math.sin(k / 47 * Math.PI / 2); DOWN[k] = Math.cos(k / 47 * Math.PI / 2); }
+  function startAt() {
+    var p = load('sessionStorage', POS);
+    if (!p || typeof p.t !== 'number') return 0;
+    var gap = Date.now() - p.at, t = p.t + (gap > 0 && gap < 8000 ? gap / 1000 : 0); // the walk to the next page
+    return p.d ? t % p.d : t;
+  }
+  function player(i) {
+    if (P[i]) return P[i];
+    var a = new Audio(); a.preload = 'none'; a.loop = true; // loop: a safety net if a crossfade cannot start
+    var g = ctx.createGain(); g.gain.value = i === cur ? 1 : 0;
+    ctx.createMediaElementSource(a).connect(g); g.connect(bus);
+    a.addEventListener('playing', function () { if (a === P[cur].a) { live = true; err = false; if (on) fadeTo(bus, 1, FADE_IN); render(); } });
+    a.addEventListener('waiting', function () { if (a === P[cur].a) { live = false; render(); } });
+    a.addEventListener('timeupdate', onTime);
+    a.addEventListener('error', function () { if (a === P[cur].a) { err = true; on = live = false; render(); } });
+    return (P[i] = { a: a, g: g });
+  }
+  function go() {
+    clearTimeout(stopT);
+    var p = player(cur), a = p.a;
+    on = true; started = true;
+    if (!a.src) { var t = startAt(); a.src = SRC + (t > 0.5 ? '#t=' + t.toFixed(2) : ''); }
+    if (a.paused) {
+      var pr = a.play();
+      if (pr && pr.then) pr.then(null, function (e) { if (e && e.name === 'AbortError') return; on = live = false; arm(); render(); });
+    } else fadeTo(bus, 1, FADE_IN); // turned back on during a fade-out
+    if (bc) bc.postMessage(TAB);
+    W.addEventListener('beforeunload', onLeave);
+  }
+  function stop() {
+    on = false;
+    W.removeEventListener('beforeunload', onLeave);
+    if (!ctx) return;
+    fadeTo(bus, 0, FADE_OUT);
+    clearTimeout(stopT);
+    stopT = setTimeout(function () { finishX(); P.forEach(function (p) { p.a.pause(); }); live = false; render(); idle(); }, FADE_OUT * 1000 + 60);
+  }
+  function onTime() {
+    var A = P[cur]; if (!A || this !== A.a || !on || xfading) return;
+    var d = A.a.duration; if (!d || !isFinite(d)) return;
+    var xf = Math.min(XF, d / 4), left = d - A.a.currentTime;
+    if (left < xf + 9) { // warm the other element a few seconds early
+      var B = player(1 - cur);
+      if (!B.a.src) { B.a.src = SRC; B.a.preload = 'auto'; B.a.load(); }
+    }
+    if (left <= xf + 0.35) crossfade(xf);
+  }
+  function crossfade(xf) {
+    var A = P[cur], B = P[1 - cur];
+    xfading = true;
+    if (B.a.currentTime > 0.05) B.a.currentTime = 0;
+    var pr = B.a.play();
+    var begin = function () {
+      var t = ctx.currentTime;
+      [[B.g, UP], [A.g, DOWN]].forEach(function (x) { x[0].gain.cancelScheduledValues(0); x[0].gain.setValueCurveAtTime(x[1], t, xf); });
+      cur = 1 - cur;
+      setTimeout(finishX, xf * 1000 + 60);
+    };
+    if (pr && pr.then) pr.then(begin, function () { xfading = false; }); else begin();
+  }
+  function finishX() {
+    if (!xfading) return;
+    xfading = false;
+    var A = P[1 - cur], B = P[cur];
+    A.g.gain.cancelScheduledValues(0); A.g.gain.value = 0; A.a.pause();
+    B.g.gain.cancelScheduledValues(0); B.g.gain.value = 1;
+  }
+  function onLeave() { // soft exit while the next page loads; back up if the page stays
+    if (!live) return;
+    fadeTo(bus, 0, 0.25);
+    clearTimeout(leaveT); leaveT = setTimeout(function () { if (on && live) fadeTo(bus, 1, 0.5); }, 1500);
+  }
+  function onHide() {
+    if (started && P[cur]) save('sessionStorage', POS, { t: P[cur].a.currentTime, at: Date.now(), d: P[cur].a.duration || 0 });
+    closeChannel();
+  }
+  function onShow(e) { // back/forward cache: the other page may have changed things
+    if (!e.persisted) return;
+    readPref();
+    if (P[cur] && P[cur].a.paused) { on = live = false; finishX(); }
+    if (S.music && P[cur] && P[cur].a.duration) { var t = startAt(); if (t) P[cur].a.currentTime = t; }
+    reconcile();
+  }
+  function onVis() { if (!doc.hidden) tabHeld = false; reconcile(); }
+
+  /* ---------------- being a good guest ---------------- */
+  var media = [], frames = [], tabHeld = false, mo, bc, TAB = Math.random().toString(36).slice(2);
+  function mine(el) { return P.some(function (p) { return p.a === el; }); }
+  function onMedia(e) { // any other <audio>/<video> on the page (the chant player…)
+    var el = e.target;
+    if (!el || mine(el) || !/^(AUDIO|VIDEO)$/.test(el.tagName)) return;
+    var i = media.indexOf(el);
+    if (e.type === 'play') { if (i < 0 && !el.muted) media.push(el); }
+    else if (i > -1) media.splice(i, 1);
+    reconcile();
+  }
+  function watchFrames(onOff) { // click-to-load YouTube players
+    if (!onOff) { if (mo) mo.disconnect(); mo = null; return; }
+    if (mo || !W.MutationObserver) return;
+    mo = new MutationObserver(function (list) {
+      var n = frames.length;
+      list.forEach(function (m) {
+        Array.prototype.forEach.call(m.addedNodes, function (el) {
+          if (el.nodeType !== 1) return;
+          (el.tagName === 'IFRAME' ? [el] : $$('iframe', el)).forEach(function (f) { if (/youtube/.test(f.src) && frames.indexOf(f) < 0) frames.push(f); });
+        });
+      });
+      frames = frames.filter(function (f) { return doc.contains(f); });
+      if (frames.length !== n) reconcile();
+    });
+    mo.observe(doc.body, { childList: true, subtree: true });
+  }
+  function openChannel() {
+    if (bc || !W.BroadcastChannel) return;
+    bc = new BroadcastChannel('dp-sound');
+    bc.onmessage = function (e) { if (e.data !== TAB && on) { tabHeld = true; reconcile(); } };
+  }
+  function closeChannel() { if (bc) { bc.close(); bc = null; } }
+  function onFocus() { if (tabHeld) { tabHeld = false; reconcile(); } }
+  function held() { return media.length > 0 || frames.length > 0 || tabHeld; }
+
+  /* ---------------- temple sounds while scrolling ---------------- */
+  var buf = {}, fxLoaded = false, fxT = 0, listening = false, io, lastY = 0, lastT = 0, vel = 0, travel = 0, dir = 0;
+  var step = 800, swara = -1, lastBell = 0, lastChime = 0, shankhaDone = false, panelOpen = false, sample = false;
+  var rnd = function (a, b) { return a + Math.random() * (b - a); };
+  function loadFx() {
+    if (fxLoaded) return; fxLoaded = true;
+    FX.forEach(function (n) {
+      if (!n) return;
+      fetch(base + 'sfx/' + n + '.mp3').then(function (r) { if (!r.ok) throw r.status; return r.arrayBuffer(); })
+        .then(function (ab) { ctx.decodeAudioData(ab, function (b) { buf[n] = b; if (sample && n === 'chime-s') playSample(); }, noop); }).then(null, noop);
+    });
+  }
+  function hit(n, gain, pan, rate, force) {
+    var b = buf[n];
+    if (!b || !S.sfx || !unlocked || doc.hidden || (panelOpen && !force)) return false;
+    if (ctx.state !== 'running') ctx.resume();
+    var s = ctx.createBufferSource(), g = ctx.createGain(), out = g;
+    s.buffer = b; s.playbackRate.value = rate || 1; g.gain.value = gain;
+    s.connect(g);
+    if (ctx.createStereoPanner) { out = ctx.createStereoPanner(); out.pan.value = pan || 0; g.connect(out); }
+    out.connect(fx);
+    s.start();
+    if (!on) idle();
+    return true;
+  }
+  function onScroll() {
+    var y = W.scrollY || W.pageYOffset, t = performance.now(), dy = y - lastY, dt = Math.max(8, t - lastT);
+    lastY = y; lastT = t;
+    vel = vel * 0.5 + Math.abs(dy) / dt * 500; // smoothed px/s
+    if (!shankhaDone && dy > 0 && y + innerHeight >= root.scrollHeight - 8) { shankhaDone = true; if (vel < FLING) hit('shankha', 0.7, 0, 1); }
+    if (!dy) return;
+    var d = dy > 0 ? 1 : -1;
+    if (d !== dir || vel > FLING || panelOpen) { dir = d; travel = 0; return; } // reversals and flings don't chime
+    travel += Math.abs(dy);
+    if (travel < step) return;
+    travel = 0; step = rnd(700, 900);
+    if (t - lastChime < 350 || t - lastBell < 500) return;
+    swara = swara < 0 ? (d > 0 ? 0 : 5) : (swara + d + 6) % 6; // arohana going down the page, avarohana going up
+    if (hit(SWARA[swara], rnd(0.45, 0.6), rnd(-0.3, 0.3), rnd(0.996, 1.004))) lastChime = t;
+  }
+  function listen(onOff) {
+    if (onOff === listening) return;
+    listening = onOff;
+    if (!onOff) { W.removeEventListener('scroll', onScroll); if (io) io.disconnect(); io = null; return; }
+    lastY = W.scrollY || W.pageYOffset; lastT = performance.now(); vel = 0; travel = 0;
+    W.addEventListener('scroll', onScroll, { passive: true });
+    if (!W.IntersectionObserver) return;
+    var secs = $$('main > section[id]'); if (!secs.length) secs = $$('main section[id]');
+    var first = true;
+    io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        var el = en.target;
+        if (!en.isIntersecting || el.sndSeen) return;
+        el.sndSeen = 1; // once per section per page view; never for what is on screen at the start
+        var t = performance.now();
+        if (first || vel > FLING || t - lastBell < 1500) return;
+        var h = $('h2', el) || el, r = h.getBoundingClientRect();
+        var pan = Math.max(-0.6, Math.min(0.6, ((r.left + r.width / 2) / innerWidth - 0.5) * 1.2));
+        if (hit('ghanta', rnd(0.75, 0.9), pan, rnd(0.96, 1.04))) lastBell = t;
+      });
+      first = false;
+    }, { rootMargin: '0px 0px -30% 0px' });
+    secs.forEach(function (s) { io.observe(s); });
+  }
+
+  /* ---------------- the one place that decides what should sound ---------------- */
+  function reconcile() {
+    if (!S.music && !S.sfx) { if (on) stop(); listen(false); watchFrames(false); disarm(); closeChannel(); render(); return; }
+    if (!ensure()) return;
+    var want = S.music && !doc.hidden && !held() && !err;
+    if (S.music) openChannel(); else closeChannel();
+    if (want && !on) {
+      // allowed: running already, unlocked earlier in this page (resume works), or inside a gesture
+      if (ctx.state === 'running' || unlocked || inGesture()) { if (ctx.state !== 'running') ctx.resume(); go(); }
+      else arm();
+    } else if (!want && on) stop();
+    watchFrames(S.music);
+    if (S.sfx && unlocked) {
+      if (!fxLoaded && !fxT) fxT = setTimeout(loadFx, on && !live ? 1500 : 0); // let the flute start first
+      listen(true);
+    } else { listen(false); if (S.sfx) arm(); }
+    if (!on) idle();
+    render();
+  }
+
+  /* ---------------- level of the music (for other features' visuals) ---------------- */
+  var lv = 0, lvT = 0, td;
+  function level() {
+    if (!on || !live || !an) { lv = 0; return 0; }
+    var now = performance.now(), dt = Math.min(0.5, (now - lvT) / 1000), s = 0, i;
+    lvT = now;
+    if (!td) td = an.getFloatTimeDomainData ? new Float32Array(an.fftSize) : new Uint8Array(an.fftSize);
+    if (td instanceof Float32Array) { an.getFloatTimeDomainData(td); for (i = 0; i < td.length; i++) s += td[i] * td[i]; }
+    else { an.getByteTimeDomainData(td); for (i = 0; i < td.length; i++) { var x = (td[i] - 128) / 128; s += x * x; } }
+    var x2 = Math.min(1, Math.sqrt(s / td.length) / (+cfg.levelRef || 0.2));
+    lv += (x2 - lv) * (1 - Math.exp(-dt / (x2 > lv ? 0.06 : 0.25)));
+    return lv;
+  }
+
+  /* ---------------- control panel ---------------- */
+  var btn = box && $('[data-sound-toggle]', box), panel = box && $('[data-sound-panel]', box);
+  var switches = box ? $$('[data-sound-switch]', box) : [], volEl = box && $('[data-sound-volume]', box), statusEl = box && $('[data-sound-status]', box);
+  function status() {
+    if (!S.music) return ['off', fmt('Music is off.')];
+    if (err) return ['wait', fmt('The music could not be loaded.')];
+    if (tabHeld) return ['wait', fmt('The music is playing in another tab.')];
+    if (media.length || frames.length) return ['wait', fmt('The music is paused while another recording or video plays.')];
+    if (!on && armed) return ['wait', fmt('The music will begin when you tap or press a key.')];
+    if (on && !live) return ['wait', fmt('The music is loading.')];
+    return [on ? 'on' : 'wait', fmt('The flute music is playing.')];
+  }
+  var lastKey = '';
+  function render() {
+    var st = status();
+    if (box) {
+      box.setAttribute('data-state', st[0]);
+      switches.forEach(function (b) { b.setAttribute('aria-checked', String(!!S[b.getAttribute('data-sound-switch')])); });
+      if (statusEl && statusEl.textContent !== st[1]) statusEl.textContent = st[1];
+      if (volEl) { volEl.value = Math.round(S.vol * 100); volEl.style.setProperty('--v', Math.round(S.vol * 100) + '%'); }
+    }
+    var s = state(st[0]), key = [s.music, s.sfx, s.playing, s.volume, s.status].join();
+    if (key === lastKey) return;
+    lastKey = key;
+    subs.forEach(function (fn) { try { fn(s); } catch (e) { /* a listener's problem stays its own */ } });
+    var ev; try { ev = new CustomEvent('dp:sound', { detail: s }); } catch (e) { ev = doc.createEvent('CustomEvent'); ev.initCustomEvent('dp:sound', false, false, s); }
+    doc.dispatchEvent(ev);
+  }
+  function state(code) { return { music: S.music, sfx: S.sfx, playing: on && live, volume: S.vol, status: code || status()[0] }; }
+  function setMusic(v) { v = !!v; err = false; if (v) tabHeld = false; S.music = v; savePref(); reconcile(); }
+  function setSfx(v) {
+    v = !!v; var was = S.sfx; S.sfx = v; savePref(); reconcile();
+    if (v && !was) { sample = true; if (buf['chime-s']) setTimeout(playSample, 150); } // a soft sample of what is to come
+  }
+  function playSample() { sample = false; hit('chime-s', 0.5, 0, 1, true); }
+  function setVolume(v) {
+    S.vol = Math.max(0, Math.min(1, +v || 0));
+    if (master) master.gain.setTargetAtTime(S.vol * S.vol, ctx.currentTime, 0.05);
+    render();
+  }
+  function openPanel(o) {
+    if (!panel) return;
+    panelOpen = o; panel.hidden = !o; btn.setAttribute('aria-expanded', String(o));
+    var m = o ? 'addEventListener' : 'removeEventListener';
+    doc[m]('click', onOutside, true); doc[m]('keydown', onEsc);
+    if (o) render();
+  }
+  function onOutside(e) { if (!box.contains(e.target)) openPanel(false); }
+  function onEsc(e) { if (e.key === 'Escape') { openPanel(false); btn.focus(); } }
+  if (box) {
+    btn.addEventListener('click', function () { openPanel(panel.hidden); });
+    box.addEventListener('focusout', function (e) { if (e.relatedTarget && !box.contains(e.relatedTarget)) openPanel(false); });
+    switches.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var which = b.getAttribute('data-sound-switch');
+        act(function () { if (which === 'music') setMusic(!S.music); else setSfx(!S.sfx); });
+      });
+    });
+    if (volEl) {
+      volEl.addEventListener('input', function () { setVolume(volEl.value / 100); });
+      volEl.addEventListener('change', savePref);
+    }
+    if (!FX.length) switches.forEach(function (b) { if (b.getAttribute('data-sound-switch') === 'sfx') b.hidden = true; });
+    box.hidden = false;
+    root.classList.add('has-sound');
+  }
+
+  /* ---------------- first visit: the choice inside the intro curtain ---------------- */
+  function invite() {
+    var intro = $('.intro'), inv = $('[data-sound-invite]');
+    if (pref || !intro || !inv || root.classList.contains('intro-seen') || getComputedStyle(intro).display === 'none') return;
+    var lift = (intro.getAnimations ? intro.getAnimations() : []).filter(function (a) { return a.animationName === 'intro-lift'; })[0];
+    var elapsed = lift ? +lift.currentTime || 0 : performance.now();
+    if (elapsed > 1450) return; // the curtain is already lifting: the control is there instead
+    var showIn = Math.max(0, 1500 - elapsed), timer, done = false, label = $('.intro-label', intro);
+    var choices = $$('[data-sound-enter]', inv);
+    root.style.setProperty('--snd-in', showIn + 'ms');
+    root.style.setProperty('--snd-hold', (showIn + 11000) + 'ms'); // CSS lifts the curtain even if this script stops
+    inv.hidden = false;
+    root.classList.add('snd-inviting');
+    // while the choice is offered the curtain is a small modal dialog
+    if (label && !label.id) label.id = 'snd-invite-label';
+    intro.removeAttribute('aria-hidden');
+    intro.setAttribute('role', 'dialog'); intro.setAttribute('aria-modal', 'true');
+    if (label) intro.setAttribute('aria-labelledby', label.id);
+    intro.setAttribute('aria-describedby', 'snd-invite-note');
+    $$('.intro-mark, .intro-word, .intro-bar', intro).forEach(function (el) { el.setAttribute('aria-hidden', 'true'); });
+    function wait(ms) { clearTimeout(timer); timer = setTimeout(function () { close(); }, ms); }
+    function close(withMusic) {
+      if (done) return; done = true;
+      clearTimeout(timer);
+      doc.removeEventListener('keydown', onKey, true);
+      W.removeEventListener('wheel', onIntent, true); W.removeEventListener('touchmove', onIntent, true);
+      if (withMusic !== undefined) act(function () { S.music = S.sfx = withMusic; savePref(); reconcile(); });
+      if (inv.contains(doc.activeElement)) doc.activeElement.blur();
+      root.classList.remove('snd-inviting'); root.classList.add('snd-entering');
+      intro.setAttribute('aria-hidden', 'true');
+      ['role', 'aria-modal', 'aria-labelledby', 'aria-describedby'].forEach(function (a) { intro.removeAttribute(a); });
+      setTimeout(function () { intro.style.display = 'none'; inv.hidden = true; }, 1000);
+    }
+    function onIntent() { close(); } // scrolling means "let me read": continue in silence
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key === 'Tab') { // keep focus on the two choices while they are offered
+        e.preventDefault();
+        var i = choices.indexOf(doc.activeElement), n = choices.length;
+        choices[i < 0 ? 0 : (i + (e.shiftKey ? n - 1 : 1)) % n].focus();
+        return;
+      }
+      if (/^(PageDown|PageUp|ArrowDown|ArrowUp|End|Home)$/.test(e.key) || (e.key === ' ' && choices.indexOf(doc.activeElement) < 0)) close();
+    }
+    choices.forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); close(b.getAttribute('data-sound-enter') === 'music'); }); });
+    intro.addEventListener('click', function () { close(); }); // a tap on the curtain: in, quietly
+    inv.addEventListener('pointerenter', function () { clearTimeout(timer); });
+    inv.addEventListener('pointerleave', function () { if (!done) wait(4000); });
+    inv.addEventListener('focusin', function () { clearTimeout(timer); });
+    inv.addEventListener('focusout', function () { if (!done) wait(4000); });
+    doc.addEventListener('keydown', onKey, true);
+    W.addEventListener('wheel', onIntent, { capture: true, passive: true });
+    W.addEventListener('touchmove', onIntent, { capture: true, passive: true });
+    wait(showIn + 8000); // nothing chosen: continue in silence, and ask again next session
+  }
+
+  /* ---------------- start ---------------- */
+  DP.sound = {
+    musicOn: function () { return S.music; },
+    sfxOn: function () { return S.sfx; },
+    setMusic: setMusic,
+    setSfx: setSfx,
+    setVolume: function (v) { setVolume(v); savePref(); },
+    volume: function () { return S.vol; },
+    level: level,
+    state: function () { return state(); },
+    onChange: function (fn) { subs.push(fn); return function () { subs = subs.filter(function (f) { return f !== fn; }); }; },
+  };
+  if (S.music || S.sfx) reconcile(); else render();
+  invite();
+})();

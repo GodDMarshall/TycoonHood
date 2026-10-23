@@ -19,7 +19,8 @@
 //   deploy/cloudflare/wrangler.jsonc    Cloudflare Workers static assets
 //   vercel.json                         Vercel
 //
-// The build calls writeServerConfigs() after it writes the pages.
+// The build calls writeServerConfigs() after it writes the pages; it updates
+// the project files only when building with the addresses in site.config.json.
 
 import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
@@ -550,10 +551,11 @@ export function renderRedirects(m, { netlifyForce = false } = {}) {
 
 /**
  * _headers: security headers on every path; long-lived Cache-Control only on
- * the asset folders that earn it. Both hosts join repeated headers with a
- * comma, so Cache-Control is never set on /* (pages and JSON keep the hosts'
- * default "public, max-age=0, must-revalidate", which revalidates like
- * "no-cache"). Cloudflare allows 100 rules.
+ * the asset folders that earn it. Both hosts apply every matching rule and
+ * Cloudflare appends a second value to the first, so Cache-Control is never
+ * set on /* (pages and JSON keep the hosts' default "public, max-age=0,
+ * must-revalidate", which revalidates like "no-cache"). Cloudflare allows
+ * 100 rules.
  */
 export function renderHeaders(m) {
   const L = [intro(m, 'Avadhoota Datta Peetham website: _headers (Netlify, Cloudflare).'), '', '/*'];
@@ -777,13 +779,17 @@ async function writeIfChanged(file, text) {
 
 /**
  * Writes every server's configuration. Into siteDir: .htaccess, _headers,
- * _redirects, web.config, .assetsignore. Into the project (unless
- * `projectFiles: false`): deploy/nginx/dattapeetham.conf,
- * deploy/cloudflare/wrangler.jsonc, vercel.json — or to the paths given as
- * `projectFiles: { nginx, wrangler, vercel }`.
+ * _redirects, web.config, .assetsignore. Into the project:
+ * deploy/nginx/dattapeetham.conf, deploy/cloudflare/wrangler.jsonc and
+ * vercel.json, according to `projectFiles`:
+ *   'auto' (default)  only when siteUrl and legacyUrl are the ones in
+ *                     site.config.json, so a test build with other addresses
+ *                     (--legacy-url=…, --out=…) never rewrites the committed files
+ *   true / false      always / never
+ *   { nginx, wrangler, vercel }  write to these paths instead (false skips one)
  * Returns { model, files, changed, warnings }.
  */
-export async function writeServerConfigs({ siteDir, siteUrl, legacyUrl, pages, langs, versionedAssets, netlifyForce = false, projectFiles = true } = {}) {
+export async function writeServerConfigs({ siteDir, siteUrl, legacyUrl, pages, langs, versionedAssets, netlifyForce = false, projectFiles = 'auto' } = {}) {
   if (!siteDir) throw new Error('writeServerConfigs: siteDir is required');
   if (!siteUrl || !legacyUrl) {
     const cfg = resolveAddresses();
@@ -791,6 +797,11 @@ export async function writeServerConfigs({ siteDir, siteUrl, legacyUrl, pages, l
     legacyUrl ||= cfg.legacyUrl;
   }
   const model = await buildModel({ siteDir, siteUrl, legacyUrl, pages, langs, versionedAssets });
+  if (projectFiles === 'auto') {
+    const committed = resolveAddresses({ env: {} });
+    projectFiles = toOrigin(committed.siteUrl, 'siteUrl') === model.siteUrl && toOrigin(committed.legacyUrl, 'legacyUrl') === model.legacyUrl;
+    if (!projectFiles) model.warnings.push('vercel.json, deploy/nginx and deploy/cloudflare left unchanged: these addresses are not the ones in site.config.json');
+  }
   const out = {
     [join(siteDir, '.htaccess')]: renderHtaccess(model),
     [join(siteDir, '_headers')]: renderHeaders(model),
