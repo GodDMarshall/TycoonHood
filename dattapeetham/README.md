@@ -90,6 +90,15 @@ English is the source. `node build.mjs` writes the four other languages to
   to English, so a page never breaks.
 - The language choice is remembered. Each page carries `hreflang` links, and
   the sitemap lists every language version.
+- Text that scripts write at runtime (live status, counts, times, labels)
+  goes through whole-sentence templates with numbered slots
+  (`fmt('Showing %1 of %2 centres', a, b)`), so each language can order the
+  words its own way. Times read naturally in Indian languages
+  ("ಬೆಳಿಗ್ಗೆ 6:00" rather than "6 AM").
+- Labels inside diagrams and maps (SVG text) are translated too.
+
+All four languages are complete: 4,647 of 4,647 segments each, with no
+problems reported by the checker.
 
 To add or change a translation:
 
@@ -99,9 +108,20 @@ To add or change a translation:
 4. Run `node tools/i18n-check.mjs <lang>`. It lists missing segments and
    problems.
 
-**The translations are machine-assisted.** They followed a glossary of names,
-deities, places and practices. Before launch, a fluent devotee in each language
-should read them, especially the Sanskrit verses and honorifics.
+Runtime text in JavaScript must be one whole sentence or label, passed
+through `fmt()`. Don't join English fragments, and don't put UI text inside
+an HTML string. The extractor can only pick up complete strings.
+
+**The translations are machine-assisted.** Six translators worked per
+language from a shared glossary of names, deities, places and practices. An
+editor then unified the spelling across their work and checked every page on
+desktop and phone.
+
+Before launch, a fluent devotee in each language should read the site,
+especially the Sanskrit verses, Sri Swamiji's quotations and the honorifics.
+Each language has a checklist in `docs/i18n/<lang>-review.md`. It lists the
+spelling decisions, the questions only the Ashram can answer, and the pages
+to read first.
 
 ## Deploy
 
@@ -175,3 +195,12 @@ and does not pick one silently:
   - The 2017 Guinness certificate says 468.
 - **Nada Mantapa.** One page says 22 pillars in one place and 72 in another. The site uses 72.
 - **Centre directory.** 86 of the 92 centres had published addresses. The centres page says the list is partial and links to the official directory.
+- **Wording copied from the official site that looks like a slip.** The site
+  keeps it as published:
+  - The K R Nagar centre is listed at "Krishnaraja Raga Sagara". This is
+    probably Krishnarajanagara.
+  - The quote "Bhajans heal the mind and bhajan (food) heals body" probably
+    means *bhojan*.
+  - The glossary entry "bahiraga" is probably *bahiranga*.
+  - "The Trivikrama Salagrama and the Manoratha Kurma Salagrama, weighing
+    300 kg" doesn't say whether the weight is for one stone or both.
