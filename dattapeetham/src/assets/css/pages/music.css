@@ -339,3 +339,6 @@ html:not(.js) .page-music .rs-track i { clip-path: none; }
   html:not([lang="en"]) .page-music .swara-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   html:not([lang="en"]) .page-music .swara-deity { font-size: .84rem; }
 }
+/* concert relief panel: the third 'auto' column grows to the one-line width of the translated note
+   under the button (Tamil 780px), squeezing the copy into a ribbon; it keeps the actions' 272px */
+@media (min-width: 981px) { html:not([lang="en"]) .page-music .relief { grid-template-columns: auto minmax(0, 1fr) 272px; } }

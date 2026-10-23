@@ -4132,7 +4132,8 @@
  {
   "k": "Varam the parrot chants the first line of the Hanuman Chalisa",
   "pages": [
-   "attractions.html"
+   "attractions.html",
+   "index.html"
   ]
  },
  {
@@ -5453,6 +5454,12 @@
   ]
  },
  {
+  "k": "Shuka Vana care units",
+  "pages": [
+   "attractions.html"
+  ]
+ },
+ {
   "k": "Shuka Vana on social media",
   "pages": [
    "attractions.html"
@@ -5520,6 +5527,12 @@
  },
  {
   "k": "Sri Swamiji seated among bonsai trees in the Kishkindha Moolika Bonsai Garden, with a rock waterfall and a moon gate behind him",
+  "pages": [
+   "attractions.html"
+  ]
+ },
+ {
+  "k": "Three stories of the Bonsai Garden",
   "pages": [
    "attractions.html"
   ]
@@ -9443,6 +9456,30 @@
  },
  {
   "k": "Contact the Ashram",
+  "pages": [
+   "contact.html"
+  ]
+ },
+ {
+  "k": "phone number",
+  "pages": [
+   "contact.html"
+  ]
+ },
+ {
+  "k": "email address",
+  "pages": [
+   "contact.html"
+  ]
+ },
+ {
+  "k": "postal address",
+  "pages": [
+   "contact.html"
+  ]
+ },
+ {
+  "k": "Bhaktimala email address",
   "pages": [
    "contact.html"
   ]
@@ -14766,6 +14803,7 @@
   "k": "Datta Charitram · Episode 1",
   "pages": [
    "guru-parampara.html",
+   "index.html",
    "media.html"
   ]
  },
@@ -14943,6 +14981,69 @@
   "k": "Now showing",
   "pages": [
    "guru-parampara.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 2",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 3",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 4",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 5",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 6",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 7",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 8",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 9",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
+  ]
+ },
+ {
+  "k": "Datta Charitram · Episode 10",
+  "pages": [
+   "guru-parampara.html",
+   "media.html"
   ]
  },
  {
@@ -16158,6 +16259,13 @@
   ]
  },
  {
+  "k": "Sri Swamiji unveiled",
+  "pages": [
+   "index.html",
+   "sri-swamiji.html"
+  ]
+ },
+ {
   "k": "Sri Datta Vijayananda Teertha Swamiji (Sri Bala Swamiji), smiling, with sacred marks on His forehead and a rudraksha mala",
   "pages": [
    "index.html"
@@ -16252,6 +16360,13 @@
   "k": "The stage of Nada Mantapa lit for a concert beneath the hall’s vast tiered ceiling",
   "pages": [
    "index.html"
+  ]
+ },
+ {
+  "k": "Glimpses of Nada Mantapa’s construction",
+  "pages": [
+   "index.html",
+   "media.html"
   ]
  },
  {
@@ -19057,7 +19172,19 @@
   ]
  },
  {
+  "k": "Healing music · 2015",
+  "pages": [
+   "media.html"
+  ]
+ },
+ {
   "k": "The largest music therapy lesson: 1,814 people, led by Sri Swamiji at the Sydney Opera House on 6 April 2015. The lesson lasted two and a half hours.",
+  "pages": [
+   "media.html"
+  ]
+ },
+ {
+  "k": "Discourse · Telugu",
   "pages": [
    "media.html"
   ]
@@ -19070,6 +19197,12 @@
  },
  {
   "k": "The amazing Vana of Shuka Vana",
+  "pages": [
+   "media.html"
+  ]
+ },
+ {
+  "k": "Shuka Vana · 4:41",
   "pages": [
    "media.html"
   ]
@@ -19099,13 +19232,19 @@
   ]
  },
  {
+  "k": "Parayana",
+  "pages": [
+   "media.html"
+  ]
+ },
+ {
   "k": "Recite the Hanuman Chalisa with Sri Swamiji, forty times over, then submit your own parayana count to the Peetham.",
   "pages": [
    "media.html"
   ]
  },
  {
-  "k": "Glimpses of Nada Mantapa’s construction",
+  "k": "Submit your parayana count",
   "pages": [
    "media.html"
   ]
@@ -19123,6 +19262,12 @@
   ]
  },
  {
+  "k": "Nature",
+  "pages": [
+   "media.html"
+  ]
+ },
+ {
   "k": "Sri Swamiji has always had a natural affinity for birds and animals, likely rooted in Mekedatu, his birthplace in the heart of a jungle.",
   "pages": [
    "media.html"
@@ -19130,6 +19275,13 @@
  },
  {
   "k": "Mekedatu Padayatra",
+  "pages": [
+   "media.html",
+   "sri-swamiji.html"
+  ]
+ },
+ {
+  "k": "Sri Bala Swamiji",
   "pages": [
    "media.html",
    "sri-swamiji.html"
@@ -19166,19 +19318,7 @@
   ]
  },
  {
-  "k": "Datta Charitram · Episode 2",
-  "pages": [
-   "media.html"
-  ]
- },
- {
   "k": "Episode 2 of Sri Swamiji’s discourses on Datta Charitram, in Telugu.",
-  "pages": [
-   "media.html"
-  ]
- },
- {
-  "k": "Datta Charitram · Episode 3",
   "pages": [
    "media.html"
   ]
@@ -19190,19 +19330,7 @@
   ]
  },
  {
-  "k": "Datta Charitram · Episode 4",
-  "pages": [
-   "media.html"
-  ]
- },
- {
   "k": "Episode 4 of Sri Swamiji’s discourses on Datta Charitram, in Telugu.",
-  "pages": [
-   "media.html"
-  ]
- },
- {
-  "k": "Datta Charitram · Episode 5",
   "pages": [
    "media.html"
   ]
@@ -19214,19 +19342,7 @@
   ]
  },
  {
-  "k": "Datta Charitram · Episode 6",
-  "pages": [
-   "media.html"
-  ]
- },
- {
   "k": "Episode 6 of Sri Swamiji’s discourses on Datta Charitram, in Telugu.",
-  "pages": [
-   "media.html"
-  ]
- },
- {
-  "k": "Datta Charitram · Episode 7",
   "pages": [
    "media.html"
   ]
@@ -19238,31 +19354,13 @@
   ]
  },
  {
-  "k": "Datta Charitram · Episode 8",
-  "pages": [
-   "media.html"
-  ]
- },
- {
   "k": "Episode 8 of Sri Swamiji’s discourses on Datta Charitram, in Telugu.",
   "pages": [
    "media.html"
   ]
  },
  {
-  "k": "Datta Charitram · Episode 9",
-  "pages": [
-   "media.html"
-  ]
- },
- {
   "k": "Episode 9 of Sri Swamiji’s discourses on Datta Charitram, in Telugu.",
-  "pages": [
-   "media.html"
-  ]
- },
- {
-  "k": "Datta Charitram · Episode 10",
   "pages": [
    "media.html"
   ]
@@ -22124,12 +22222,6 @@
   ]
  },
  {
-  "k": "Sri Swamiji unveiled",
-  "pages": [
-   "sri-swamiji.html"
-  ]
- },
- {
   "k": "Across the world",
   "pages": [
    "sri-swamiji.html"
@@ -22750,12 +22842,6 @@
  },
  {
   "k": "Sri Swamiji with Sri Bala Swamiji",
-  "pages": [
-   "sri-swamiji.html"
-  ]
- },
- {
-  "k": "Sri Bala Swamiji",
   "pages": [
    "sri-swamiji.html"
   ]
@@ -28970,7 +29056,13 @@
   ]
  },
  {
-  "k": "Copied the ",
+  "k": "Copied",
+  "pages": [
+   "js:contact.js"
+  ]
+ },
+ {
+  "k": "Copied the %1.",
   "pages": [
    "js:contact.js"
   ]
@@ -28988,7 +29080,37 @@
   ]
  },
  {
+  "k": "Copy",
+  "pages": [
+   "js:contact.js"
+  ]
+ },
+ {
+  "k": "Name",
+  "pages": [
+   "js:contact.js"
+  ]
+ },
+ {
   "k": "Email ID",
+  "pages": [
+   "js:contact.js"
+  ]
+ },
+ {
+  "k": "Phone",
+  "pages": [
+   "js:contact.js"
+  ]
+ },
+ {
+  "k": "Purpose",
+  "pages": [
+   "js:contact.js"
+  ]
+ },
+ {
+  "k": "Message",
   "pages": [
    "js:contact.js"
   ]
@@ -29273,6 +29395,18 @@
   ]
  },
  {
+  "k": "Concluded",
+  "pages": [
+   "js:events.js"
+  ]
+ },
+ {
+  "k": "Tomorrow",
+  "pages": [
+   "js:events.js"
+  ]
+ },
+ {
   "k": "In %1 days",
   "pages": [
    "js:events.js"
@@ -29327,10 +29461,28 @@
   ]
  },
  {
-  "k": "Play video: ",
+  "k": "Play video: %1",
   "pages": [
-   "js:guru-parampara.js",
-   "js:media.js"
+   "js:guru-parampara.js"
+  ]
+ },
+ {
+  "k": "Close video",
+  "pages": [
+   "js:index.js"
+  ]
+ },
+ {
+  "k": "Watch on YouTube",
+  "pages": [
+   "js:index.js"
+  ]
+ },
+ {
+  "k": "Video",
+  "pages": [
+   "js:index.js",
+   "js:site.js"
   ]
  },
  {
@@ -29355,6 +29507,12 @@
   "k": "Resume the circle",
   "pages": [
    "js:kriya-yoga.js"
+  ]
+ },
+ {
+  "k": "Play video: ",
+  "pages": [
+   "js:media.js"
   ]
  },
  {
@@ -29473,6 +29631,30 @@
  },
  {
   "k": "Image viewer",
+  "pages": [
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "Close",
+  "pages": [
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "Previous image",
+  "pages": [
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "Next image",
+  "pages": [
+   "js:site.js"
+  ]
+ },
+ {
+  "k": "No results for “%1”. Try “darshan”, “seva” or “Shuka Vana”.",
   "pages": [
    "js:site.js"
   ]

@@ -1,5 +1,5 @@
 /* Events & Festivals page (events.html).
-   1. Dated entries: "Concluded" / "अभी चल रहा है" / "N दिनों में", from today's
+   1. Dated entries: "संपन्न" / "अभी चल रहा है" / "N दिनों में", from today's
       date in Mysuru (IST). The markup already lists every entry; this only labels.
    2. Month by month: marks this month and the next entry; per-month counts
       follow the filter chips (filtering itself is site.js). On phones the
@@ -30,9 +30,9 @@
   /* ---------------- 1. statuses ---------------- */
   $$('[data-start][data-end]').forEach(function (el) {
     var s = el.getAttribute('data-start'), e = el.getAttribute('data-end'), st = $('[data-ev-status]', el), txt;
-    if (e < today) { el.classList.add('is-past'); txt = 'Concluded'; }
+    if (e < today) { el.classList.add('is-past'); txt = fmt('संपन्न'); }
     else if (s <= today) { el.classList.add('is-now'); txt = 'अभी चल रहा है'; }
-    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? 'Tomorrow' : fmt('In %1 days', n); }
+    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? fmt('कल') : fmt('%1 दिन में', n); }
     if (st) { st.textContent = txt; st.hidden = false; st.classList.toggle('is-now', el.classList.contains('is-now')); }
   });
   var feature = $$('.ev-fcard');
@@ -72,7 +72,7 @@
       list.classList.toggle('fold-past', folded);
       earlier.setAttribute('aria-expanded', String(!folded));
       var n = pastWithMatches().length;
-      earlierLabel.textContent = folded ? (n === 1 ? 'Show 1 earlier month' : fmt('Show %1 earlier months', n)) : 'पिछले महीने छिपाएँ';
+      earlierLabel.textContent = folded ? (n === 1 ? 'पिछला 1 महीना दिखाएँ' : fmt('पिछले %1 महीने दिखाएँ', n)) : 'पिछले महीने छिपाएँ';
       earlier.hidden = n === 0;
     };
     var opened = false;
@@ -116,6 +116,25 @@
     var cname = $('[data-fy-cname]', svg), csub = $('[data-fy-csub]', svg), wheelBits = $$('[data-month]', svg);
     box.classList.add('is-tabbed');
 
+    // Translated pages: the ribbon's short month labels read oddly inside a sentence, so once the fonts
+    // are in, the caption takes each month panel's own line (full month names) when every one of them
+    // fits the wheel's core; otherwise all months keep the short form.
+    var whole = false;
+    var wholeLine = function (id) { var p = whole && $('#fy-p-' + id, box), s = p && $('.fy-phead span', p); return s ? s.textContent : ''; };
+    if (doc.documentElement.lang !== 'en' && csub && csub.getComputedTextLength && doc.fonts) {
+      doc.fonts.ready.then(function () {
+        var keep = csub.textContent, fits = true;
+        panels.forEach(function (p) {
+          var s = $('.fy-phead span', p); csub.textContent = s ? s.textContent : '';
+          var w = csub.getComputedTextLength(); if (!s || !w || w > 236) fits = false;
+        });
+        csub.textContent = keep;
+        whole = fits;
+        var on = $('[aria-checked="true"]', ribbon);
+        if (whole && on) csub.textContent = wholeLine(on.getAttribute('data-month'));
+      });
+    }
+
     var centre = function (r) {
       if (ribbon.scrollWidth <= ribbon.clientWidth + 2) return;
       var to = r.offsetLeft - (ribbon.clientWidth - r.offsetWidth) / 2;
@@ -141,7 +160,7 @@
         cname.textContent = $('b', chosen).textContent;
         // the month span (Mar – Apr) becomes ABOUT MAR TO APR: one sentence with two slots
         var span = $('small', chosen).textContent.split(/\s*[–-]\s*/);
-        csub.textContent = span.length > 1 ? fmt('About %1 to %2', span[0], span.slice(1).join(' – ')) : span[0];
+        csub.textContent = wholeLine(id) || (span.length > 1 ? fmt('लगभग %1 से %2', span[0], span.slice(1).join(' – ')) : span[0]);
       }
       if (window.ScrollTrigger) ScrollTrigger.refresh();
     };
@@ -187,7 +206,7 @@
     var tick = function () {
       var t = DP.istNow(), x = t.mins / 1440;
       now.style.setProperty('--x', (x * 100).toFixed(2) + '%');
-      nowLabel.textContent = fmt('Now in Mysuru · %1 IST', t.label);
+      nowLabel.textContent = fmt('अभी मैसूरु में · %1 IST', t.label);
       // keep the label inside the ribbon at either end of the day
       var cw = now.parentNode.clientWidth, half = nowLabel.offsetWidth / 2, at = x * cw;
       now.classList.toggle('to-left', at + half > cw);
@@ -201,7 +220,7 @@
   if (crow) crow.classList.add('is-next');
   var card = $('.ec-next'), label = $('[data-ec-label]');
   if (card && label) {
-    if (card.classList.contains('is-now')) label.textContent = 'Today';
+    if (card.classList.contains('is-now')) label.textContent = 'आज';
     else if (card.classList.contains('is-past')) label.textContent = 'कैलेंडर पर नवीनतम';
   }
 })();

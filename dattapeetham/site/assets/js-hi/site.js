@@ -23,15 +23,15 @@
   function toMins(t) { var a = t.split(':'); return +a[0] * 60 + +a[1]; }
   // Times written by scripts: '7 AM', 'शाम 7:10' on English pages. Other
   // languages get the part of the day in words around the 12-hour clock
-  // ('morning %1' → 'ಬೆಳಿಗ್ಗೆ 7'), so each can word and order it its own way.
+  // ('सुबह %1 बजे' → 'ಬೆಳಿಗ್ಗೆ 7'), so each can word and order it its own way.
   var EN = (root.getAttribute('lang') || 'en').slice(0, 2) === 'en';
   function dayPart(h) {
-    if (h === 4) return 'early morning %1';
-    if (h >= 5 && h < 12) return 'morning %1';
-    if (h === 12) return 'noon %1';
-    if (h >= 13 && h < 16) return 'afternoon %1';
-    if (h >= 16 && h < 19) return 'evening %1';
-    return 'night %1';
+    if (h === 4) return 'तड़के %1 बजे';
+    if (h >= 5 && h < 12) return 'सुबह %1 बजे';
+    if (h === 12) return 'दोपहर %1 बजे';
+    if (h >= 13 && h < 16) return 'दोपहर %1 बजे';
+    if (h >= 16 && h < 19) return 'शाम %1 बजे';
+    return 'रात %1 बजे';
   }
   function fmt12(t) {
     var m = typeof t === 'number' ? t : toMins(t), h = Math.floor(m / 60), mm = m % 60;
@@ -43,8 +43,8 @@
     if (h.closed.indexOf(now.day) !== -1) return { open: false, text: c ? 'आज साप्ताहिक अवकाश' : 'आज बंद' };
     for (var i = 0; i < h.sessions.length; i++) {
       var s = toMins(h.sessions[i][0]), e = toMins(h.sessions[i][1]);
-      if (now.mins >= s && now.mins < e) return { open: true, text: fmt(c ? 'Within listed hours · until %1' : 'Open now · until %1', fmt12(h.sessions[i][1])) };
-      if (now.mins < s) return { open: false, text: fmt(c ? 'Listed hours from %1' : 'Closed · opens %1', fmt12(h.sessions[i][0])) };
+      if (now.mins >= s && now.mins < e) return { open: true, text: fmt(c ? 'सूचीबद्ध समय के भीतर · %1 तक' : 'अभी खुला है · %1 तक', fmt12(h.sessions[i][1])) };
+      if (now.mins < s) return { open: false, text: fmt(c ? 'सूचीबद्ध समय %1 से' : 'बंद · %1 खुलेगा', fmt12(h.sessions[i][0])) };
     }
     return { open: false, text: c ? 'सूचीबद्ध समय के बाहर' : 'बंद · कल खुलेगा' };
   }
@@ -52,7 +52,7 @@
   var RITUALS = [[420, 'हनुमान अभिषेक'], [1080, 'हनुमान आरती']];
   function nextRitual(now) {
     for (var i = 0; i < RITUALS.length; i++) if (now.mins < RITUALS[i][0]) return fmt('%1 · %2', RITUALS[i][1], fmt12(RITUALS[i][0]));
-    return fmt('%1 · %2 tomorrow', RITUALS[0][1], fmt12(RITUALS[0][0]));
+    return fmt('%1 · कल %2', RITUALS[0][1], fmt12(RITUALS[0][0]));
   }
   function tick() {
     var now = istNow(), hours = window.DP_HOURS || {};
@@ -61,7 +61,7 @@
     Object.keys(hours).forEach(function (k) {
       var st = status(hours[k], now);
       $$('[data-badge="' + k + '"]').forEach(function (el) { el.textContent = st.text; el.className = 'badge ' + (st.open ? 'open' : 'closed'); });
-      $$('[data-status="' + k + '"]').forEach(function (el) { el.textContent = st.open ? 'Open now' : 'Closed now'; });
+      $$('[data-status="' + k + '"]').forEach(function (el) { el.textContent = st.open ? 'अभी खुला है' : 'अभी बंद है'; });
       $$('[data-status-long="' + k + '"]').forEach(function (el) { el.textContent = st.text; });
       $$('[data-dot="' + k + '"]').forEach(function (el) { el.className = (el.classList.contains('live-dot') ? 'live-dot' : 'dot') + ' ' + (st.open ? 'open' : 'closed'); });
     });
@@ -328,9 +328,13 @@
     lb.className = 'lightbox-dialog';
     lb.setAttribute('aria-label', 'चित्र दर्शक');
     lb.innerHTML = '<figure><img alt=""><figcaption></figcaption></figure>' +
-      '<button type="button" class="lb-btn lb-close" aria-label="Close"><svg class="ico" width="20" height="20"><use href="#i-close"/></svg></button>' +
-      '<button type="button" class="lb-btn lb-prev" aria-label="Previous image"><svg class="ico" width="20" height="20"><use href="#i-arrow-left"/></svg></button>' +
-      '<button type="button" class="lb-btn lb-next" aria-label="Next image"><svg class="ico" width="20" height="20"><use href="#i-arrow"/></svg></button>';
+      '<button type="button" class="lb-btn lb-close"><svg class="ico" width="20" height="20"><use href="#i-close"/></svg></button>' +
+      '<button type="button" class="lb-btn lb-prev"><svg class="ico" width="20" height="20"><use href="#i-arrow-left"/></svg></button>' +
+      '<button type="button" class="lb-btn lb-next"><svg class="ico" width="20" height="20"><use href="#i-arrow"/></svg></button>';
+    // labels set apart from the markup, so the translation build can reach them
+    $('.lb-close', lb).setAttribute('aria-label', fmt('बंद करें'));
+    $('.lb-prev', lb).setAttribute('aria-label', 'पिछला चित्र');
+    $('.lb-next', lb).setAttribute('aria-label', 'अगला चित्र');
     body.appendChild(lb);
     lbImg = $('img', lb); lbCap = $('figcaption', lb);
     $('.lb-close', lb).addEventListener('click', function () { lb.close(); });
@@ -369,7 +373,7 @@
     v.dataset.loaded = '1';
     var f = doc.createElement('iframe');
     f.src = 'https://www.youtube-nocookie.com/embed/' + v.dataset.yt + '?autoplay=1&rel=0';
-    f.title = v.dataset.title || 'Video';
+    f.title = v.dataset.title || fmt('वीडियो');
     f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     f.allowFullscreen = true;
     v.appendChild(f);
@@ -418,7 +422,8 @@
         return { e: e, score: score };
       }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 8);
       var re = new RegExp('(' + terms.map(escRe).join('|') + ')', 'gi');
-      if (!scored.length) { results.innerHTML = '<li class="search-empty">No results for “' + escHtml(q) + '”. Try “darshan”, “seva” or “Shuka Vana”.</li>'; return; }
+      // one sentence with a slot (no markup inside), so each language can suggest its own search words
+      if (!scored.length) { results.innerHTML = '<li class="search-empty">' + escHtml(fmt('“%1” के लिए कोई परिणाम नहीं मिला। “दर्शन”, “सेवा” या “शुक वन” खोजकर देखें।', q)) + '</li>'; return; }
       results.innerHTML = scored.map(function (r, i) {
         var x = r.e.x, pos = x.toLowerCase().indexOf(terms[0]);
         var snip = (pos > 60 ? '…' : '') + x.slice(Math.max(0, pos - 60), pos + 140) + '…';

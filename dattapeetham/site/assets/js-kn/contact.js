@@ -41,14 +41,14 @@
     var label = $('[data-copy-text]', b), timer;
     b.addEventListener('click', function () {
       copyText(b.getAttribute('data-copy')).then(function () {
-        b.classList.add('is-done'); if (label) label.textContent = 'Copied';
-        announce(copyLive, 'ನಕಲಿಸಲಾಗಿದೆ: ' + b.getAttribute('data-copy-label') + '.');
+        b.classList.add('is-done'); if (label) label.textContent = fmt('ನಕಲಿಸಲಾಗಿದೆ');
+        announce(copyLive, fmt('%1 ನಕಲಿಸಲಾಗಿದೆ.', b.getAttribute('data-copy-label')));
       }, function () {
         if (label) label.textContent = 'ನಕಲು ವಿಫಲವಾಯಿತು';
         announce(copyLive, 'ಕ್ಷಮಿಸಿ, ನಕಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಬದಲಿಗೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ.');
       });
       clearTimeout(timer);
-      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = 'Copy'; }, 2400);
+      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = fmt('ನಕಲಿಸಿ'); }, 2400);
     });
   });
 
@@ -82,8 +82,8 @@
   var counter = $('[data-counter]', form), count = $('[data-msg-count]', form), ccFace = $('[data-cc-face]', form);
   var submitted = false, touched = {}, lastMail = null;
 
-  // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'ಇಮೇಲ್ ವಿಳಾಸ', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  // Field labels for the error summary (one-word labels go through fmt() so they reach the dictionaries).
+  var LABEL = { name: fmt('ಹೆಸರು'), email: 'ಇಮೇಲ್ ವಿಳಾಸ', phone: fmt('ದೂರವಾಣಿ'), purpose: fmt('ಉದ್ದೇಶ'), message: fmt('ಸಂದೇಶ') };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -230,7 +230,7 @@
     if (!lastMail) return;
     var b = this, label = b.querySelector('span');
     copyText('ಸ್ವೀಕರಿಸುವವರು: ' + TO + '\nವಿಷಯ: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
-      label.textContent = 'Copied';
+      label.textContent = fmt('ನಕಲಿಸಲಾಗಿದೆ');
       announce(formLive, fmt('ಸಂದೇಶವನ್ನು ನಕಲಿಸಲಾಗಿದೆ. %1 ವಿಳಾಸಕ್ಕೆ ಹೊಸ ಇಮೇಲ್‌ನಲ್ಲಿ ಅದನ್ನು ಅಂಟಿಸಿ.', TO));
       setTimeout(function () { label.textContent = 'ಸಂದೇಶವನ್ನು ನಕಲಿಸಿ'; }, 2400);
     }, function () {

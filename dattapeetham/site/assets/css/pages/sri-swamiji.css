@@ -330,3 +330,9 @@
   html[lang="ta"] .page-sri-swamiji .sgs-reach .stat { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
   html[lang="ta"] .page-sri-swamiji .sgs-reach .stat dd { margin: 0; }
 }
+/* key facts: a taller line for two-line translated values, and Tamil names (சத்யநாராயணா) fit a 150px column */
+html:not([lang="en"]) .page-sri-swamiji .sgs-facts dd { line-height: 1.4; }
+html[lang="ta"] .page-sri-swamiji .sgs-facts dd { font-size: 1.1rem; }
+/* chapter drop caps: the page's 4em size outranks the translated-page guard in site.css, so the opening
+   Indic letter (ಕ, श्, க, శ్) would sit in line at 64px; translated chapters open at text size */
+html:not([lang="en"]) .page-sri-swamiji .sgs-chapter .dropcap::first-letter { font-size: inherit; }

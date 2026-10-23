@@ -328,9 +328,13 @@
     lb.className = 'lightbox-dialog';
     lb.setAttribute('aria-label', 'Image viewer');
     lb.innerHTML = '<figure><img alt=""><figcaption></figcaption></figure>' +
-      '<button type="button" class="lb-btn lb-close" aria-label="Close"><svg class="ico" width="20" height="20"><use href="#i-close"/></svg></button>' +
-      '<button type="button" class="lb-btn lb-prev" aria-label="Previous image"><svg class="ico" width="20" height="20"><use href="#i-arrow-left"/></svg></button>' +
-      '<button type="button" class="lb-btn lb-next" aria-label="Next image"><svg class="ico" width="20" height="20"><use href="#i-arrow"/></svg></button>';
+      '<button type="button" class="lb-btn lb-close"><svg class="ico" width="20" height="20"><use href="#i-close"/></svg></button>' +
+      '<button type="button" class="lb-btn lb-prev"><svg class="ico" width="20" height="20"><use href="#i-arrow-left"/></svg></button>' +
+      '<button type="button" class="lb-btn lb-next"><svg class="ico" width="20" height="20"><use href="#i-arrow"/></svg></button>';
+    // labels set apart from the markup, so the translation build can reach them
+    $('.lb-close', lb).setAttribute('aria-label', fmt('Close'));
+    $('.lb-prev', lb).setAttribute('aria-label', 'Previous image');
+    $('.lb-next', lb).setAttribute('aria-label', 'Next image');
     body.appendChild(lb);
     lbImg = $('img', lb); lbCap = $('figcaption', lb);
     $('.lb-close', lb).addEventListener('click', function () { lb.close(); });
@@ -369,7 +373,7 @@
     v.dataset.loaded = '1';
     var f = doc.createElement('iframe');
     f.src = 'https://www.youtube-nocookie.com/embed/' + v.dataset.yt + '?autoplay=1&rel=0';
-    f.title = v.dataset.title || 'Video';
+    f.title = v.dataset.title || fmt('Video');
     f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     f.allowFullscreen = true;
     v.appendChild(f);
@@ -418,7 +422,8 @@
         return { e: e, score: score };
       }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 8);
       var re = new RegExp('(' + terms.map(escRe).join('|') + ')', 'gi');
-      if (!scored.length) { results.innerHTML = '<li class="search-empty">No results for “' + escHtml(q) + '”. Try “darshan”, “seva” or “Shuka Vana”.</li>'; return; }
+      // one sentence with a slot (no markup inside), so each language can suggest its own search words
+      if (!scored.length) { results.innerHTML = '<li class="search-empty">' + escHtml(fmt('No results for “%1”. Try “darshan”, “seva” or “Shuka Vana”.', q)) + '</li>'; return; }
       results.innerHTML = scored.map(function (r, i) {
         var x = r.e.x, pos = x.toLowerCase().indexOf(terms[0]);
         var snip = (pos > 60 ? '…' : '') + x.slice(Math.max(0, pos - 60), pos + 140) + '…';

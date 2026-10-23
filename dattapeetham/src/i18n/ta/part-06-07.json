@@ -81,7 +81,6 @@
  "Brindavan Gardens · ~21 km": "பிருந்தாவன் தோட்டம் · ~21 கி.மீ.",
  "KRS Dam (Krishnarajasagara Dam) · ~21 km": "கே.ஆர்.எஸ். அணை (கிருஷ்ணராஜசாகர் அணை) · ~21 கி.மீ.",
  "copy failed": "நகலெடுக்க இயலவில்லை",
- "Copied the ": "நகலெடுக்கப்பட்டது: ",
  "Copy failed": "நகலெடுக்க இயலவில்லை",
  "Sorry, copying did not work. Please select the text instead.": "மன்னிக்கவும், நகலெடுக்க இயலவில்லை. அதற்குப் பதிலாக உரையைத் தேர்ந்தெடுங்கள்.",
  "Email ID": "மின்னஞ்சல் முகவரி",
@@ -98,6 +97,6 @@
  "1. Hanumadwaram (Attraction)": "1. ஹனுமத்வாரம் (சிறப்பிடம்)",
  "2. Birth Date Pillars (Attraction)": "2. பிறந்த தேதித் தூண்கள் (சிறப்பிடம்)",
  "Showing all %1 centres listed here": "இங்கே பட்டியலிடப்பட்டுள்ள %1 மையங்களும் காட்டப்படுகின்றன",
- "Showing %1 of %2 centres matching “%3”": "%2 மையங்களில் “%3” உடன் பொருந்தும் %1 காட்டப்படுகின்றன",
+ "Showing %1 of %2 centres matching “%3”": "“%3”: %2 மையங்களில் பொருந்துபவை %1",
  "Showing %1 of %2 centres": "%2 மையங்களில் %1 காட்டப்படுகின்றன"
 }

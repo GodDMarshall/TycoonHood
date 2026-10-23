@@ -41,14 +41,14 @@
     var label = $('[data-copy-text]', b), timer;
     b.addEventListener('click', function () {
       copyText(b.getAttribute('data-copy')).then(function () {
-        b.classList.add('is-done'); if (label) label.textContent = 'Copied';
-        announce(copyLive, 'కాపీ అయింది: ' + b.getAttribute('data-copy-label') + '.');
+        b.classList.add('is-done'); if (label) label.textContent = fmt('కాపీ అయింది');
+        announce(copyLive, fmt('%1 కాపీ అయింది.', b.getAttribute('data-copy-label')));
       }, function () {
         if (label) label.textContent = 'కాపీ విఫలమైంది';
         announce(copyLive, 'క్షమించండి, కాపీ కాలేదు. దయచేసి బదులుగా పాఠ్యాన్ని ఎంచుకోండి.');
       });
       clearTimeout(timer);
-      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = 'Copy'; }, 2400);
+      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = fmt('కాపీ చేయండి'); }, 2400);
     });
   });
 
@@ -82,8 +82,8 @@
   var counter = $('[data-counter]', form), count = $('[data-msg-count]', form), ccFace = $('[data-cc-face]', form);
   var submitted = false, touched = {}, lastMail = null;
 
-  // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'ఈమెయిల్ ఐడీ', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  // Field labels for the error summary (one-word labels go through fmt() so they reach the dictionaries).
+  var LABEL = { name: fmt('పేరు'), email: 'ఈమెయిల్ ఐడీ', phone: fmt('ఫోన్'), purpose: fmt('ఉద్దేశం'), message: fmt('సందేశం') };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -169,7 +169,7 @@
   function refreshSummary(focus) {
     var bad = KEYS.map(function (k) { return [k, check(k)]; }).filter(function (x) { return x[1]; });
     if (!bad.length) { summary.hidden = true; return bad; }
-    summaryTitle.textContent = bad.length === 1 ? 'దయచేసి కొనసాగే ముందు 1 ఫీల్డ్‌ను సరిచూడండి' : fmt('Please check %1 fields before continuing', bad.length);
+    summaryTitle.textContent = bad.length === 1 ? 'దయచేసి కొనసాగే ముందు 1 ఫీల్డ్‌ను సరిచూడండి' : fmt('దయచేసి కొనసాగే ముందు %1 ఫీల్డ్‌లను సరిచూడండి', bad.length);
     summaryList.innerHTML = '';
     bad.forEach(function (x) {
       var li = doc.createElement('li'), a = doc.createElement('a');
@@ -216,7 +216,7 @@
     $('[data-preview-body]', form).textContent = lastMail.body;
     $('[data-mailto]', form).href = lastMail.href;
     result.hidden = false;
-    announce(formLive, fmt('Opening your email app with your message to %1. It is not sent until you press Send there.', TO));
+    announce(formLive, fmt('%1కు పంపే మీ సందేశంతో మీ ఈమెయిల్ యాప్‌ను తెరుస్తున్నాం. అక్కడ మీరు ‘పంపు’ (Send) నొక్కే వరకు సందేశం పంపబడదు.', TO));
     // Open the visitor's email app. Nothing leaves this page by itself.
     window.location.href = lastMail.href;
     setTimeout(function () {
@@ -230,8 +230,8 @@
     if (!lastMail) return;
     var b = this, label = b.querySelector('span');
     copyText('స్వీకర్త: ' + TO + '\nవిషయం: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
-      label.textContent = 'Copied';
-      announce(formLive, fmt('Message copied. Paste it into a new email to %1.', TO));
+      label.textContent = fmt('కాపీ అయింది');
+      announce(formLive, fmt('సందేశం కాపీ అయింది. దీన్ని %1కు పంపే కొత్త ఈమెయిల్‌లో అతికించండి.', TO));
       setTimeout(function () { label.textContent = 'సందేశాన్ని కాపీ చేయండి'; }, 2400);
     }, function () {
       announce(formLive, 'కాపీ కాలేదు. “సిద్ధమైన ఈమెయిల్‌ను చూడండి” తెరిచి, బదులుగా పాఠ్యాన్ని ఎంచుకోండి.');

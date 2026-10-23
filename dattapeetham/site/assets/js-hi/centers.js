@@ -74,9 +74,9 @@
       if (empty) empty.hidden = shown > 0;
       if (status) {
         status.textContent = shown === total
-          ? fmt('Showing all %1 centres listed here', total)
-          : q ? fmt('Showing %1 of %2 centres matching “%3”', shown, total, input.value.trim())
-          : fmt('Showing %1 of %2 centres', shown, total);
+          ? fmt('यहाँ सूचीबद्ध सभी %1 केंद्र दिखाए जा रहे हैं', total)
+          : q ? fmt('%2 में से “%3” से मेल खाते %1 केंद्र दिखाए जा रहे हैं', shown, total, input.value.trim())
+          : fmt('%2 में से %1 केंद्र दिखाए जा रहे हैं', shown, total);
       }
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     };

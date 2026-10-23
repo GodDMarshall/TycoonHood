@@ -111,7 +111,9 @@ Shared pieces added in the cross-site pass; use these rather than page copies:
   writes them, and `body[data-base]` marks the page.
 - **Runtime messages are whole sentences with numbered slots**
   (`fmt('Showing %1 of %2 centres', a, b)`). Concatenating English fragments
-  can't be translated.
+  can't be translated. One-word labels go through `fmt('Copied')` too, and UI
+  text never sits inside an HTML string literal (set it with `textContent` or
+  `setAttribute`), or the translation build cannot reach it.
 
 ## Page module contract
 

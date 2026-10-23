@@ -366,9 +366,21 @@ html:not(.js) .page-teachings .says-slide { grid-area: auto; opacity: 1; visibil
 
 /* ---------- translated pages: Indic scripts ---------- */
 /* clamped discourse quotes: a taller line keeps the first line's vowel signs inside the clip */
-html:not([lang="en"]) .page-teachings .tc-quote { line-height: 1.7; }
+html:not([lang="en"]) .page-teachings .tc-quote { line-height: 1.7; overflow-wrap: break-word; }
+html[lang="ta"] .page-teachings .tc-quote { font-size: 1rem; }
+@media (max-width: 640px) {
+  html:not([lang="en"]) .page-teachings .tc-quote { font-size: 1rem; }
+  html[lang="ta"] .page-teachings .tc-quote { font-size: .9rem; }
+}
 /* literature list: the language tag stays beside the title, and drops below it (still at the right)
    only when the title holds a compound too long to share the line (ஸ்ரீ லலிதாசஹஸ்ரநாமஸ்தோத்ர) */
 html:not([lang="en"]) .page-teachings .lit-list li { flex-wrap: wrap; }
 html:not([lang="en"]) .page-teachings .lit-t { flex: 1 1 55%; overflow-wrap: break-word; }
 html:not([lang="en"]) .page-teachings .lit-l { margin-left: auto; }
+/* small laptops (981–1180px): six Tamil tile labels do not fit one row, so the row becomes 3 × 2 as below 981px */
+@media (min-width: 981px) and (max-width: 1180px) {
+  html[lang="ta"] .page-teachings .quick-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  html[lang="ta"] .page-teachings .quick-tile { border-bottom: 1px solid var(--line); }
+  html[lang="ta"] .page-teachings .quick-tile:nth-child(3n) { border-right: 0; }
+  html[lang="ta"] .page-teachings .quick-tile:nth-last-child(-n + 3) { border-bottom: 0; }
+}

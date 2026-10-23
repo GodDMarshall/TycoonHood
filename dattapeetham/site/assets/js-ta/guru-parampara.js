@@ -10,6 +10,8 @@
   var reduced = DP.reduced || matchMedia('(prefers-reduced-motion: reduce)').matches;
   var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
   var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  // whole sentences with numbered slots (%1), so translations can reorder them
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
 
   /* ---------------- 1. golden thread ---------------- */
   var thread = doc.querySelector('[data-thread]');
@@ -112,7 +114,7 @@
       player.setAttribute('data-title', title);
       player.querySelector('.video-title').textContent = title;
       var play = player.querySelector('.video-play');
-      play.setAttribute('aria-label', 'வீடியோவை இயக்கு: ' + title);
+      play.setAttribute('aria-label', fmt('வீடியோவை இயக்கு: %1', title));
       var r = player.getBoundingClientRect();
       if (r.top < 0 || r.bottom > innerHeight) { if (DP.scrollTo) DP.scrollTo(player); }
       play.click(); // site.js swaps in the youtube-nocookie player

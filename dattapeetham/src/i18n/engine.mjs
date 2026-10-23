@@ -27,7 +27,10 @@ const BLOCK = new Set(('html head body main header footer nav section article as
   'template object embed map area menu hgroup search output progress meter').split(' '));
 const SKIP = new Set(['script', 'style', 'svg', 'template', 'textarea', 'code', 'pre', 'math']);
 const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
-export const ATTRS = ['alt', 'title', 'aria-label', 'placeholder', 'data-caption', 'data-title', 'data-note', 'data-name', 'data-q', 'aria-description', 'data-label', 'data-label-now', 'data-text'];
+// data-tag, data-ix-title, data-ep-title, data-extra, data-snap and data-copy-label hold text that page
+// scripts show or announce (reel tags, video dialog titles, rail labels, copy confirmations).
+export const ATTRS = ['alt', 'title', 'aria-label', 'placeholder', 'data-caption', 'data-title', 'data-note', 'data-name', 'data-q', 'aria-description', 'data-label', 'data-label-now', 'data-text',
+  'data-tag', 'data-ix-title', 'data-ep-title', 'data-extra', 'data-snap', 'data-copy-label'];
 
 const TOKEN = /<!--[\s\S]*?-->|<![^>]*>|<(\/?)([a-zA-Z][\w:-]*)((?:[^>"']|"[^"]*"|'[^']*')*?)(\/?)>|([^<]+)/g;
 const hasLetter = (s) => /\p{L}/u.test(s);
@@ -232,11 +235,14 @@ export function translate(html, dict, lang) {
 }
 
 // JS string literals that hold UI text (used to localise page scripts).
+// A literal passed straight to fmt() is always UI text, so it is extracted even when the heuristics
+// below would skip it: one-word labels such as fmt('Copied') or fmt('Tomorrow').
 const JS_STR = /(['"])((?:\\.|(?!\1)[^\\\n])*)\1/g;
 export function extractJs(code) {
   const out = new Set();
   for (const m of code.matchAll(JS_STR)) {
     const s = m[2];
+    if (/\bfmt\($/.test(code.slice(Math.max(0, m.index - 4), m.index)) && /\p{L}/u.test(s) && !/[<>{}]|\$\{/.test(s)) { out.add(s.replace(/\\'/g, "'").replace(/\\"/g, '"')); continue; }
     if (/\$\{|^\s*$|^[\w.#\[\]=:\-\/ >*,()"']+$/.test(s) && !/\s/.test(s)) continue;
     if (!/\p{Lu}\p{Ll}+|\p{Ll}{3,} \p{Ll}{2,}|%\d.*\p{Ll}{3,}|\p{Ll}{3,}.*%\d/u.test(s) || /^(?:[a-z-]+:|\.|#|\[)|https?:|\.(?:js|css|html|webp|jpe?g|png)\b|^[a-z]+(?:[-_][a-z]+)+$/.test(s)) continue;
     if (/[<>{}]|=>|;/.test(s) || s === 'use strict') continue;

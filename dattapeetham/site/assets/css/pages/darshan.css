@@ -443,3 +443,14 @@ html[lang="ta"] .page-darshan .dn-strip-item span { font-size: .9rem; }
   html:not([lang="en"]) .page-darshan .dn-stats .stat { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; column-gap: 16px; }
   html:not([lang="en"]) .page-darshan .dn-stats .stat dd { margin: 0; font-size: .84rem; }
 }
+/* the scroll-lit statement takes the wider translated measure (see site.css) */
+html:not([lang="en"]) .page-darshan .dn-lit .scroll-lit { max-width: 26ch; }
+/* day track (horizontal from 1101px): its labels hang above and below the rail from fixed margins, and
+   translated labels run taller (up to 106px above / 122px below in Kannada, 120 / 151px in Tamil with
+   the Next badge), so each language reserves its tallest label plus the English 14px of air, rather
+   than running the first stop into the legend and the second into the note below */
+@media (min-width: 1101px) {
+  html:is([lang="hi"], [lang="te"]) .page-darshan .dn-day-track { margin-top: 132px; margin-bottom: 124px; }
+  html[lang="kn"] .page-darshan .dn-day-track { margin-top: 140px; margin-bottom: 158px; }
+  html[lang="ta"] .page-darshan .dn-day-track { margin-top: 156px; margin-bottom: 186px; }
+}

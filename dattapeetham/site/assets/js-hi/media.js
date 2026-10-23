@@ -153,7 +153,7 @@
       wave.style.setProperty('--p', p.toFixed(4));
       if (!seeking) seek.value = Math.round(p * 1000);
       cur.textContent = t(audio.currentTime);
-      seek.setAttribute('aria-valuetext', d ? fmt('Played %1 of %2', t(audio.currentTime), t(d)) : t(audio.currentTime));
+      seek.setAttribute('aria-valuetext', d ? fmt('%2 में से %1 चल चुका', t(audio.currentTime), t(d)) : t(audio.currentTime));
     };
     var setState = function () {
       var playing = !audio.paused && !audio.ended;

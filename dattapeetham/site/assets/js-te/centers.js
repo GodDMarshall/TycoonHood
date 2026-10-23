@@ -74,9 +74,9 @@
       if (empty) empty.hidden = shown > 0;
       if (status) {
         status.textContent = shown === total
-          ? fmt('Showing all %1 centres listed here', total)
-          : q ? fmt('Showing %1 of %2 centres matching “%3”', shown, total, input.value.trim())
-          : fmt('Showing %1 of %2 centres', shown, total);
+          ? fmt('ఇక్కడ జాబితాలో ఉన్న మొత్తం %1 కేంద్రాలనూ చూపిస్తున్నాం', total)
+          : q ? fmt('“%3”కు సరిపోలే కేంద్రాలు: మొత్తం %2లో %1', shown, total, input.value.trim())
+          : fmt('చూపిస్తున్న కేంద్రాలు: మొత్తం %2లో %1', shown, total);
       }
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     };

@@ -25,19 +25,19 @@
       .formatToParts(new Date()).forEach(function (p) { o[p.type] = p.value; });
     return { y: +o.year, m: +o.month, d: +o.day, day: WEEK[o.weekday], mins: +o.hour * 60 + +o.minute, label: o.hour + ':' + o.minute, iso: o.year + '-' + o.month + '-' + o.day };
   }
-  // Times written by this script: 'शाम 7:10' / '6 AM' on English pages. Other
+  // Times written by this script: 'शाम 7:10' / 'सुबह 6' on English pages. Other
   // languages get the part of the day in words around the 12-hour clock
-  // ('evening %1' → 'ಸಂಜೆ 7:10'), so each can word and order it its own way.
+  // ('शाम %1 बजे' → 'ಸಂಜೆ 7:10'), so each can word and order it its own way.
   var EN = (doc.documentElement.getAttribute('lang') || 'en').slice(0, 2) === 'en';
   function dayPart(h) {
-    if (h === 4) return 'early morning %1';
-    if (h >= 5 && h < 12) return 'morning %1';
-    if (h === 12) return 'noon %1';
-    if (h >= 13 && h < 16) return 'afternoon %1';
-    if (h >= 16 && h < 19) return 'evening %1';
-    return 'night %1';
+    if (h === 4) return 'तड़के %1 बजे';
+    if (h >= 5 && h < 12) return 'सुबह %1 बजे';
+    if (h === 12) return 'दोपहर %1 बजे';
+    if (h >= 13 && h < 16) return 'दोपहर %1 बजे';
+    if (h >= 16 && h < 19) return 'शाम %1 बजे';
+    return 'रात %1 बजे';
   }
-  // short: drop ':00' on the hour ('6 AM' rather than '6:00 AM')
+  // short: drop ':00' on the hour ('सुबह 6' rather than '6:00 AM')
   function clock12(m, short) {
     var h = Math.floor(m / 60), mm = m % 60;
     var t = (h % 12 || 12) + (short && !mm ? '' : ':' + String(mm).padStart(2, '0'));
@@ -108,9 +108,9 @@
       var inDay = now.mins >= start && now.mins <= end;
       sun.hidden = !inDay;
       if (inDay) sun.style.left = ((now.mins - start) / (end - start) * 100).toFixed(3) + '%';
-      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = fmt('Now %1 IST', now.label);
+      var lbl = $('[data-dn-now-label]', sun); if (lbl) lbl.textContent = fmt('अभी %1 IST', now.label);
     }
-    if (wrap && text) { wrap.hidden = false; text.textContent = fmt('Now in Mysuru · %1 IST', now.label); }
+    if (wrap && text) { wrap.hidden = false; text.textContent = fmt('अभी मैसूरु में · %1 IST', now.label); }
     var weekend = now.day === 0 || now.day === 6, nextSet = false;
     $$('.dn-day-events li', track).forEach(function (li) {
       var m = +li.getAttribute('data-m'), skip = li.hasAttribute('data-weekend') && !weekend;
@@ -128,10 +128,10 @@
   /* ---------------- 3. next laser show ---------------- */
   function laserText(now) {
     if (now.day === 0 || now.day === 6) {
-      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return fmt('Today · %1', fmt12(LASER[i]));
-      return now.day === 6 ? fmt('Tomorrow · %1', fmt12(LASER[0])) : fmt('Saturday · %1', fmt12(LASER[0]));
+      for (var i = 0; i < LASER.length; i++) if (LASER[i] > now.mins) return fmt('आज · %1', fmt12(LASER[i]));
+      return now.day === 6 ? fmt('कल · %1', fmt12(LASER[0])) : fmt('शनिवार · %1', fmt12(LASER[0]));
     }
-    return fmt('Saturday · %1', fmt12(LASER[0]));
+    return fmt('शनिवार · %1', fmt12(LASER[0]));
   }
 
   // Hours as published on each temple's own page (minutes after midnight IST).
@@ -143,11 +143,11 @@
   function templeStatus(t, now) {
     var s = now.day === 0 || now.day === 6 ? t.we : t.wk;
     for (var i = 0; i < s.length; i++) {
-      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: fmt('Open now · until %1', short12(s[i][1])) };
-      if (now.mins < s[i][0]) return { open: false, text: fmt('Closed · opens %1', short12(s[i][0])) };
+      if (now.mins >= s[i][0] && now.mins < s[i][1]) return { open: true, text: fmt('अभी खुला है · %1 तक', short12(s[i][1])) };
+      if (now.mins < s[i][0]) return { open: false, text: fmt('बंद · %1 खुलेगा', short12(s[i][0])) };
     }
     var tomorrow = (now.day + 1) % 7, first = (tomorrow === 0 || tomorrow === 6 ? t.we : t.wk)[0][0];
-    return { open: false, text: fmt('Closed · opens %1 tomorrow', short12(first)) };
+    return { open: false, text: fmt('बंद · कल %1 खुलेगा', short12(first)) };
   }
   function updateTemples(now) {
     Object.keys(TEMPLES).forEach(function (k) {
@@ -201,7 +201,7 @@
       $$('.is-picked', grid).forEach(function (i) { i.classList.remove('is-picked'); });
       var key = month.value + '-' + day.value, el = $('[data-md="' + key + '"]', grid);
       if (el) el.classList.add('is-picked');
-      out.textContent = fmt('Along the pathway, look for the pillar of %1 %2 — it carries the deity and demigod for that day.', day.value, MONTHS[+month.value - 1]);
+      out.textContent = fmt('पथ के किनारे %1 %2 का स्तंभ देखें — उस पर उस दिन के देवता और उपदेवता अंकित हैं।', day.value, MONTHS[+month.value - 1]);
     };
     form.addEventListener('change', function () { touched = true; pick(); });
     form.addEventListener('submit', function (e) { e.preventDefault(); });

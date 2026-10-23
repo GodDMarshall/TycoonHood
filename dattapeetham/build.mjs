@@ -234,7 +234,8 @@ export async function build() {
       await writeFile(join(TMP, lang.code, p.file), html);
       if (p.slug !== '404') {
         const body = (/<main id="main">([\s\S]*)<\/main>/.exec(r.html) || [, ''])[1];
-        const t = (/<title>([^<]*)<\/title>/.exec(r.html) || [, p.title])[1].split(' · ')[0];
+        // the <title> text is HTML ('கோயில்கள் &amp; தரிசனம்'): decode it like the rest of the index
+        const t = strip((/<title>([^<]*)<\/title>/.exec(r.html) || [, p.title])[1].split(' · ')[0]);
         lsearch.push(...indexPage({ ...p, title: t }, body));
       }
     }

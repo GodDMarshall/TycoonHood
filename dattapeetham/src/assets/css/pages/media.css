@@ -483,3 +483,16 @@ html:not([lang="en"]) .page-media .spine.is-long .spine-title { line-height: 1.3
 html:not([lang="en"]) .page-media .tv-list { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 14px; }
 html:not([lang="en"]) .page-media .tv-list li { grid-column: 1 / -1; grid-template-columns: subgrid; }
 html:not([lang="en"]) .page-media .tv-list time { white-space: nowrap; }
+/* channel names: a Japanese edition name (日本版) moves to the next line whole rather than splitting */
+html:not([lang="en"]) .page-media .channel li a { word-break: keep-all; }
+/* small laptops (981–1180px): six Tamil tile labels do not fit one row, so the row becomes 3 × 2 as below 981px */
+@media (min-width: 981px) and (max-width: 1180px) {
+  html[lang="ta"] .page-media .quick-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  html[lang="ta"] .page-media .quick-tile { border-bottom: 1px solid var(--line); }
+  html[lang="ta"] .page-media .quick-tile:nth-child(3n) { border-right: 0; }
+  html[lang="ta"] .page-media .quick-tile:nth-last-child(-n + 3) { border-bottom: 0; }
+}
+@media (max-width: 1180px) { html[lang="ta"] .page-media .track-body b { font-size: 1.15rem; } }
+/* phones: the shelf is 250px tall and three Tamil titles (திரிபுர ரஹஸ்யம், சத்குரு சப்தசதி, தத்த தரிசனம்)
+   are longer than their short spines, so the Tamil shelf stands a little taller */
+@media (max-width: 640px) { html[lang="ta"] .page-media .shelf { height: 274px; } }

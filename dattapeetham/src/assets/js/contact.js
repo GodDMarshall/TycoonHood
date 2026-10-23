@@ -41,14 +41,14 @@
     var label = $('[data-copy-text]', b), timer;
     b.addEventListener('click', function () {
       copyText(b.getAttribute('data-copy')).then(function () {
-        b.classList.add('is-done'); if (label) label.textContent = 'Copied';
-        announce(copyLive, 'Copied the ' + b.getAttribute('data-copy-label') + '.');
+        b.classList.add('is-done'); if (label) label.textContent = fmt('Copied');
+        announce(copyLive, fmt('Copied the %1.', b.getAttribute('data-copy-label')));
       }, function () {
         if (label) label.textContent = 'Copy failed';
         announce(copyLive, 'Sorry, copying did not work. Please select the text instead.');
       });
       clearTimeout(timer);
-      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = 'Copy'; }, 2400);
+      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = fmt('Copy'); }, 2400);
     });
   });
 
@@ -82,8 +82,8 @@
   var counter = $('[data-counter]', form), count = $('[data-msg-count]', form), ccFace = $('[data-cc-face]', form);
   var submitted = false, touched = {}, lastMail = null;
 
-  // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'Email ID', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  // Field labels for the error summary (one-word labels go through fmt() so they reach the dictionaries).
+  var LABEL = { name: fmt('Name'), email: 'Email ID', phone: fmt('Phone'), purpose: fmt('Purpose'), message: fmt('Message') };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -230,7 +230,7 @@
     if (!lastMail) return;
     var b = this, label = b.querySelector('span');
     copyText('To: ' + TO + '\nSubject: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
-      label.textContent = 'Copied';
+      label.textContent = fmt('Copied');
       announce(formLive, fmt('Message copied. Paste it into a new email to %1.', TO));
       setTimeout(function () { label.textContent = 'Copy message'; }, 2400);
     }, function () {

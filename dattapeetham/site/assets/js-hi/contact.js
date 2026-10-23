@@ -41,14 +41,14 @@
     var label = $('[data-copy-text]', b), timer;
     b.addEventListener('click', function () {
       copyText(b.getAttribute('data-copy')).then(function () {
-        b.classList.add('is-done'); if (label) label.textContent = 'Copied';
-        announce(copyLive, 'कॉपी किया गया: ' + b.getAttribute('data-copy-label') + '.');
+        b.classList.add('is-done'); if (label) label.textContent = fmt('कॉपी हो गया');
+        announce(copyLive, fmt('%1 कॉपी हो गया।', b.getAttribute('data-copy-label')));
       }, function () {
         if (label) label.textContent = 'कॉपी नहीं हो सका';
         announce(copyLive, 'क्षमा करें, कॉपी नहीं हो सका। कृपया इसके बजाय टेक्स्ट को चुनें।');
       });
       clearTimeout(timer);
-      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = 'Copy'; }, 2400);
+      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = fmt('कॉपी करें'); }, 2400);
     });
   });
 
@@ -82,8 +82,8 @@
   var counter = $('[data-counter]', form), count = $('[data-msg-count]', form), ccFace = $('[data-cc-face]', form);
   var submitted = false, touched = {}, lastMail = null;
 
-  // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'ईमेल आईडी', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  // Field labels for the error summary (one-word labels go through fmt() so they reach the dictionaries).
+  var LABEL = { name: fmt('नाम'), email: 'ईमेल आईडी', phone: fmt('फ़ोन'), purpose: fmt('उद्देश्य'), message: fmt('संदेश') };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -169,7 +169,7 @@
   function refreshSummary(focus) {
     var bad = KEYS.map(function (k) { return [k, check(k)]; }).filter(function (x) { return x[1]; });
     if (!bad.length) { summary.hidden = true; return bad; }
-    summaryTitle.textContent = bad.length === 1 ? 'आगे बढ़ने से पहले कृपया 1 फ़ील्ड जाँचें' : fmt('Please check %1 fields before continuing', bad.length);
+    summaryTitle.textContent = bad.length === 1 ? 'आगे बढ़ने से पहले कृपया 1 फ़ील्ड जाँचें' : fmt('आगे बढ़ने से पहले कृपया %1 फ़ील्ड जाँचें', bad.length);
     summaryList.innerHTML = '';
     bad.forEach(function (x) {
       var li = doc.createElement('li'), a = doc.createElement('a');
@@ -216,7 +216,7 @@
     $('[data-preview-body]', form).textContent = lastMail.body;
     $('[data-mailto]', form).href = lastMail.href;
     result.hidden = false;
-    announce(formLive, fmt('Opening your email app with your message to %1. It is not sent until you press Send there.', TO));
+    announce(formLive, fmt('आपका ईमेल ऐप %1 के लिए आपके संदेश के साथ खुल रहा है। वहाँ ‘भेजें’ दबाने पर ही संदेश भेजा जाएगा।', TO));
     // Open the visitor's email app. Nothing leaves this page by itself.
     window.location.href = lastMail.href;
     setTimeout(function () {
@@ -230,8 +230,8 @@
     if (!lastMail) return;
     var b = this, label = b.querySelector('span');
     copyText('प्रति: ' + TO + '\nविषय: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
-      label.textContent = 'Copied';
-      announce(formLive, fmt('Message copied. Paste it into a new email to %1.', TO));
+      label.textContent = fmt('कॉपी हो गया');
+      announce(formLive, fmt('संदेश कॉपी हो गया। इसे %1 के लिए एक नए ईमेल में पेस्ट करें।', TO));
       setTimeout(function () { label.textContent = 'संदेश कॉपी करें'; }, 2400);
     }, function () {
       announce(formLive, 'कॉपी नहीं हो सका। “तैयार ईमेल देखें” खोलें और इसके बजाय टेक्स्ट चुनें।');

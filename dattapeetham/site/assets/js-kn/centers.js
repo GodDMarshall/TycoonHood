@@ -75,8 +75,8 @@
       if (status) {
         status.textContent = shown === total
           ? fmt('ಇಲ್ಲಿ ಪಟ್ಟಿ ಮಾಡಲಾದ ಎಲ್ಲ %1 ಕೇಂದ್ರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ', total)
-          : q ? fmt('ಒಟ್ಟು %2 ಕೇಂದ್ರಗಳಲ್ಲಿ “%3” ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವ %1 ಕೇಂದ್ರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ', shown, total, input.value.trim())
-          : fmt('ಒಟ್ಟು %2 ಕೇಂದ್ರಗಳಲ್ಲಿ %1 ಕೇಂದ್ರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ', shown, total);
+          : q ? fmt('“%3” ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವ ಕೇಂದ್ರಗಳು: ಒಟ್ಟು %2ರಲ್ಲಿ %1', shown, total, input.value.trim())
+          : fmt('ತೋರಿಸಲಾಗುತ್ತಿರುವ ಕೇಂದ್ರಗಳು: ಒಟ್ಟು %2ರಲ್ಲಿ %1', shown, total);
       }
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     };

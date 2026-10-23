@@ -23,15 +23,15 @@
   function toMins(t) { var a = t.split(':'); return +a[0] * 60 + +a[1]; }
   // Times written by scripts: '7 AM', 'இரவு 7:10' on English pages. Other
   // languages get the part of the day in words around the 12-hour clock
-  // ('morning %1' → 'ಬೆಳಿಗ್ಗೆ 7'), so each can word and order it its own way.
+  // ('காலை %1' → 'ಬೆಳಿಗ್ಗೆ 7'), so each can word and order it its own way.
   var EN = (root.getAttribute('lang') || 'en').slice(0, 2) === 'en';
   function dayPart(h) {
-    if (h === 4) return 'early morning %1';
-    if (h >= 5 && h < 12) return 'morning %1';
-    if (h === 12) return 'noon %1';
-    if (h >= 13 && h < 16) return 'afternoon %1';
-    if (h >= 16 && h < 19) return 'evening %1';
-    return 'night %1';
+    if (h === 4) return 'அதிகாலை %1';
+    if (h >= 5 && h < 12) return 'காலை %1';
+    if (h === 12) return 'மதியம் %1';
+    if (h >= 13 && h < 16) return 'மதியம் %1';
+    if (h >= 16 && h < 19) return 'மாலை %1';
+    return 'இரவு %1';
   }
   function fmt12(t) {
     var m = typeof t === 'number' ? t : toMins(t), h = Math.floor(m / 60), mm = m % 60;
@@ -328,9 +328,13 @@
     lb.className = 'lightbox-dialog';
     lb.setAttribute('aria-label', 'படக் காட்சியகம்');
     lb.innerHTML = '<figure><img alt=""><figcaption></figcaption></figure>' +
-      '<button type="button" class="lb-btn lb-close" aria-label="Close"><svg class="ico" width="20" height="20"><use href="#i-close"/></svg></button>' +
-      '<button type="button" class="lb-btn lb-prev" aria-label="Previous image"><svg class="ico" width="20" height="20"><use href="#i-arrow-left"/></svg></button>' +
-      '<button type="button" class="lb-btn lb-next" aria-label="Next image"><svg class="ico" width="20" height="20"><use href="#i-arrow"/></svg></button>';
+      '<button type="button" class="lb-btn lb-close"><svg class="ico" width="20" height="20"><use href="#i-close"/></svg></button>' +
+      '<button type="button" class="lb-btn lb-prev"><svg class="ico" width="20" height="20"><use href="#i-arrow-left"/></svg></button>' +
+      '<button type="button" class="lb-btn lb-next"><svg class="ico" width="20" height="20"><use href="#i-arrow"/></svg></button>';
+    // labels set apart from the markup, so the translation build can reach them
+    $('.lb-close', lb).setAttribute('aria-label', fmt('மூடு'));
+    $('.lb-prev', lb).setAttribute('aria-label', 'முந்தைய படம்');
+    $('.lb-next', lb).setAttribute('aria-label', 'அடுத்த படம்');
     body.appendChild(lb);
     lbImg = $('img', lb); lbCap = $('figcaption', lb);
     $('.lb-close', lb).addEventListener('click', function () { lb.close(); });
@@ -369,7 +373,7 @@
     v.dataset.loaded = '1';
     var f = doc.createElement('iframe');
     f.src = 'https://www.youtube-nocookie.com/embed/' + v.dataset.yt + '?autoplay=1&rel=0';
-    f.title = v.dataset.title || 'Video';
+    f.title = v.dataset.title || fmt('வீடியோ');
     f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     f.allowFullscreen = true;
     v.appendChild(f);
@@ -418,7 +422,8 @@
         return { e: e, score: score };
       }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 8);
       var re = new RegExp('(' + terms.map(escRe).join('|') + ')', 'gi');
-      if (!scored.length) { results.innerHTML = '<li class="search-empty">No results for “' + escHtml(q) + '”. Try “darshan”, “seva” or “Shuka Vana”.</li>'; return; }
+      // one sentence with a slot (no markup inside), so each language can suggest its own search words
+      if (!scored.length) { results.innerHTML = '<li class="search-empty">' + escHtml(fmt('“%1” என்பதற்கு முடிவுகள் இல்லை. “தரிசனம்”, “சேவை” அல்லது “சுக வனம்” எனத் தேடிப் பாருங்கள்.', q)) + '</li>'; return; }
       results.innerHTML = scored.map(function (r, i) {
         var x = r.e.x, pos = x.toLowerCase().indexOf(terms[0]);
         var snip = (pos > 60 ? '…' : '') + x.slice(Math.max(0, pos - 60), pos + 140) + '…';

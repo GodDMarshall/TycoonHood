@@ -495,3 +495,8 @@ html:not([lang="en"]) .page-index .ix-hero h1 { font-size: clamp(2.1rem, 3.7vw, 
 @media (max-width: 980px) { html:not([lang="en"]) .page-index .ix-hero h1 { max-width: 22ch; } }
 @media (max-width: 640px) { html:not([lang="en"]) .page-index .ix-hero h1 { font-size: clamp(1.8rem, 8.2vw, 2.4rem); line-height: 1.3; } }
 @media (max-width: 400px) { html[lang="ta"] .page-index .ix-hero h1 { font-size: clamp(1.5rem, 7.2vw, 1.8rem); } }
+/* the scroll-lit statement takes the wider translated measure (see site.css) */
+html:not([lang="en"]) .page-index .ix-teaching .scroll-lit { max-width: 26ch; }
+/* temple photo tiles: long Tamil temple names (வெங்கடேஸ்வரர்) at a smaller size, and two-up on small laptops */
+html[lang="ta"] .page-index .ix-mandir-grid .pt-body b { font-size: 1.36rem; }
+@media (min-width: 981px) and (max-width: 1180px) { html[lang="ta"] .page-index .ix-mandir-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

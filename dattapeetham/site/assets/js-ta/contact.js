@@ -41,14 +41,14 @@
     var label = $('[data-copy-text]', b), timer;
     b.addEventListener('click', function () {
       copyText(b.getAttribute('data-copy')).then(function () {
-        b.classList.add('is-done'); if (label) label.textContent = 'Copied';
-        announce(copyLive, 'நகலெடுக்கப்பட்டது: ' + b.getAttribute('data-copy-label') + '.');
+        b.classList.add('is-done'); if (label) label.textContent = fmt('நகலெடுக்கப்பட்டது');
+        announce(copyLive, fmt('%1 நகலெடுக்கப்பட்டது.', b.getAttribute('data-copy-label')));
       }, function () {
         if (label) label.textContent = 'நகலெடுக்க இயலவில்லை';
         announce(copyLive, 'மன்னிக்கவும், நகலெடுக்க இயலவில்லை. அதற்குப் பதிலாக உரையைத் தேர்ந்தெடுங்கள்.');
       });
       clearTimeout(timer);
-      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = 'Copy'; }, 2400);
+      timer = setTimeout(function () { b.classList.remove('is-done'); if (label) label.textContent = fmt('நகலெடு'); }, 2400);
     });
   });
 
@@ -82,8 +82,8 @@
   var counter = $('[data-counter]', form), count = $('[data-msg-count]', form), ccFace = $('[data-cc-face]', form);
   var submitted = false, touched = {}, lastMail = null;
 
-  // Field labels for the error summary.
-  var LABEL = { name: 'Name', email: 'மின்னஞ்சல் முகவரி', phone: 'Phone', purpose: 'Purpose', message: 'Message' };
+  // Field labels for the error summary (one-word labels go through fmt() so they reach the dictionaries).
+  var LABEL = { name: fmt('பெயர்'), email: 'மின்னஞ்சல் முகவரி', phone: fmt('தொலைபேசி'), purpose: fmt('நோக்கம்'), message: fmt('செய்தி') };
 
   // Validation messages: the first of each set is published on the official
   // contact page; the others cover the same limits in the same voice.
@@ -230,7 +230,7 @@
     if (!lastMail) return;
     var b = this, label = b.querySelector('span');
     copyText('பெறுநர்: ' + TO + '\nபொருள்: ' + lastMail.subject + '\n\n' + lastMail.body).then(function () {
-      label.textContent = 'Copied';
+      label.textContent = fmt('நகலெடுக்கப்பட்டது');
       announce(formLive, fmt('செய்தி நகலெடுக்கப்பட்டது. அதை %1 முகவரிக்கான புதிய மின்னஞ்சலில் ஒட்டுங்கள்.', TO));
       setTimeout(function () { label.textContent = 'செய்தியை நகலெடு'; }, 2400);
     }, function () {

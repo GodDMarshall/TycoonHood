@@ -273,3 +273,6 @@ html[lang="ta"] .page-about .ab-triad-word { font-size: 19px; }
   html[lang="ta"] .page-about .ab-principle h3 { font-size: 1.3rem; }
   html[lang="ta"] .page-about .ab-fest-card h4 { font-size: 1.25rem; }
 }
+/* small laptops: the bento lists go single-column and the festivals two-up, so long Tamil names stay whole */
+@media (min-width: 981px) and (max-width: 1239px) { html[lang="ta"] .page-about .ab-panel-list { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 981px) and (max-width: 1180px) { html[lang="ta"] .page-about .ab-fest { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

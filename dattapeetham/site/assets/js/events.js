@@ -30,9 +30,9 @@
   /* ---------------- 1. statuses ---------------- */
   $$('[data-start][data-end]').forEach(function (el) {
     var s = el.getAttribute('data-start'), e = el.getAttribute('data-end'), st = $('[data-ev-status]', el), txt;
-    if (e < today) { el.classList.add('is-past'); txt = 'Concluded'; }
+    if (e < today) { el.classList.add('is-past'); txt = fmt('Concluded'); }
     else if (s <= today) { el.classList.add('is-now'); txt = 'Happening now'; }
-    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? 'Tomorrow' : fmt('In %1 days', n); }
+    else { el.classList.add('is-ahead'); var n = dayDiff(today, s); txt = n === 1 ? fmt('Tomorrow') : fmt('In %1 days', n); }
     if (st) { st.textContent = txt; st.hidden = false; st.classList.toggle('is-now', el.classList.contains('is-now')); }
   });
   var feature = $$('.ev-fcard');
@@ -116,6 +116,25 @@
     var cname = $('[data-fy-cname]', svg), csub = $('[data-fy-csub]', svg), wheelBits = $$('[data-month]', svg);
     box.classList.add('is-tabbed');
 
+    // Translated pages: the ribbon's short month labels read oddly inside a sentence, so once the fonts
+    // are in, the caption takes each month panel's own line (full month names) when every one of them
+    // fits the wheel's core; otherwise all months keep the short form.
+    var whole = false;
+    var wholeLine = function (id) { var p = whole && $('#fy-p-' + id, box), s = p && $('.fy-phead span', p); return s ? s.textContent : ''; };
+    if (doc.documentElement.lang !== 'en' && csub && csub.getComputedTextLength && doc.fonts) {
+      doc.fonts.ready.then(function () {
+        var keep = csub.textContent, fits = true;
+        panels.forEach(function (p) {
+          var s = $('.fy-phead span', p); csub.textContent = s ? s.textContent : '';
+          var w = csub.getComputedTextLength(); if (!s || !w || w > 236) fits = false;
+        });
+        csub.textContent = keep;
+        whole = fits;
+        var on = $('[aria-checked="true"]', ribbon);
+        if (whole && on) csub.textContent = wholeLine(on.getAttribute('data-month'));
+      });
+    }
+
     var centre = function (r) {
       if (ribbon.scrollWidth <= ribbon.clientWidth + 2) return;
       var to = r.offsetLeft - (ribbon.clientWidth - r.offsetWidth) / 2;
@@ -141,7 +160,7 @@
         cname.textContent = $('b', chosen).textContent;
         // the month span (Mar – Apr) becomes ABOUT MAR TO APR: one sentence with two slots
         var span = $('small', chosen).textContent.split(/\s*[–-]\s*/);
-        csub.textContent = span.length > 1 ? fmt('About %1 to %2', span[0], span.slice(1).join(' – ')) : span[0];
+        csub.textContent = wholeLine(id) || (span.length > 1 ? fmt('About %1 to %2', span[0], span.slice(1).join(' – ')) : span[0]);
       }
       if (window.ScrollTrigger) ScrollTrigger.refresh();
     };

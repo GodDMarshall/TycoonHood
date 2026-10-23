@@ -467,5 +467,9 @@ html:not([lang="en"]) .page-visit .vs-place { grid-template-columns: 92px minmax
   html[lang="ta"] .page-visit .vs-rhythm-list li { padding-top: 0; }
   html[lang="ta"] .page-visit .vs-rhythm-list li::before { top: -24px; }
   html[lang="ta"] .page-visit .vs-rhythm-list li::after { content: ""; position: absolute; top: -18px; left: 20px; right: -26px; height: 1px; background: linear-gradient(90deg, var(--gold-2), rgba(226, 200, 142, .12)); }
-  html[lang="ta"] .page-visit .vs-trip h4 { font-size: 1.16rem; }
+  html[lang="ta"] .page-visit .vs-trip h4 { font-size: 1.1rem; }
 }
+@media (min-width: 1181px) and (max-width: 1239px) { html[lang="ta"] .page-visit .vs-etq-card h3 { font-size: 1.2rem; } }
+@media (min-width: 641px) and (max-width: 980px) { html[lang="ta"] .page-visit .vs-trip h4 { font-size: 1.15rem; } }
+/* the scroll-lit statement takes the wider translated measure (see site.css) */
+html:not([lang="en"]) .page-visit .vs-lit .scroll-lit { max-width: 26ch; }

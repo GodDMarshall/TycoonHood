@@ -9,6 +9,8 @@
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var $ = function (s, c) { return (c || doc).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
+  // UI text goes through fmt() as plain literals (never inside markup), so the translation build reaches it
+  var fmt = function (s) { var a = arguments; return s.replace(/%(\d)/g, function (m, i) { return a[+i]; }); };
 
   /* ---------------- video dialog ---------------- */
   var dlg, stage, heading, opener;
@@ -18,9 +20,11 @@
     dlg.setAttribute('aria-labelledby', 'ix-video-title');
     dlg.innerHTML = '<div class="ix-vd-panel">' +
       '<div class="ix-vd-head"><p id="ix-video-title" class="ix-vd-title"></p>' +
-      '<button type="button" class="ix-vd-close" aria-label="Close video"><svg class="ico" width="20" height="20" aria-hidden="true"><use href="#i-close"/></svg></button></div>' +
+      '<button type="button" class="ix-vd-close"><svg class="ico" width="20" height="20" aria-hidden="true"><use href="#i-close"/></svg></button></div>' +
       '<div class="ix-vd-stage"></div>' +
-      '<a class="ix-vd-yt" href="#">Watch on YouTube<svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></div>';
+      '<a class="ix-vd-yt" href="#"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></div>';
+    $('.ix-vd-close', dlg).setAttribute('aria-label', 'ವಿಡಿಯೊ ಮುಚ್ಚಿ');
+    $('.ix-vd-yt', dlg).insertBefore(doc.createTextNode('YouTubeನಲ್ಲಿ ವೀಕ್ಷಿಸಿ'), $('.ix-vd-yt svg', dlg));
     doc.body.appendChild(dlg);
     stage = $('.ix-vd-stage', dlg); heading = $('.ix-vd-title', dlg);
     $('.ix-vd-close', dlg).addEventListener('click', function () { dlg.close(); });
@@ -35,11 +39,11 @@
   function openVideo(id, title, from) {
     if (!dlg) buildDialog();
     opener = from;
-    heading.textContent = title || 'Video';
+    heading.textContent = title || fmt('ವಿಡಿಯೊ');
     $('.ix-vd-yt', dlg).href = 'https://www.youtube.com/watch?v=' + id;
     var f = doc.createElement('iframe');
     f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0';
-    f.title = title || 'Video';
+    f.title = title || fmt('ವಿಡಿಯೊ');
     f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     f.allowFullscreen = true;
     stage.innerHTML = '';
@@ -89,7 +93,7 @@
         // an event under way gets an On now note after its tag (the label is its own string to translate)
         var tag = $('.tag', li), now = tag && $('.ix-now', tag), on = li.dataset.start <= today && today <= li.dataset.end;
         if (on && tag && !now) {
-          var onNow = 'On now';
+          var onNow = 'ಈಗ ನಡೆಯುತ್ತಿದೆ';
           now = doc.createElement('span');
           now.className = 'ix-now';
           now.textContent = ' · ' + onNow;

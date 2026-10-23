@@ -380,3 +380,9 @@
 /* five components side by side: Tamil names and glosses (பிராணாயாமம், தூய்மைப்படுத்துதல்) step down to stay whole */
 html[lang="ta"] .page-kriya-yoga .ky-component h4 { font-size: 1.2rem; }
 html[lang="ta"] .page-kriya-yoga .ky-gloss { font-size: .9rem; }
+@media (max-width: 1239px) {
+  html[lang="ta"] .page-kriya-yoga .ky-component h4 { font-size: 1.1rem; }
+  html[lang="ta"] .page-kriya-yoga .ky-gloss { font-size: .84rem; }
+  html[lang="ta"] .page-kriya-yoga .ky-component p { font-size: .82rem; }
+}
+@media (max-width: 980px) { html[lang="ta"] .page-kriya-yoga .ky-component p { font-size: .8rem; } }
