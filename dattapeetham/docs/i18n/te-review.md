@@ -1,6 +1,8 @@
 # Telugu (తెలుగు) site: notes for the native reviewer
 
-The Telugu site lives at `/te/`. Six translators each did one sixth of the text in parallel; one
+The Telugu site lives at `/te/`. It was translated in six parallel machine-assisted passes, each
+one sixth of the text (the "translators" in this note; they are not six people), and no fluent
+speaker has reviewed it yet: that is your review. One
 editorial pass then made names, terms and UI labels consistent across all pages, settled the
 translators' questions and checked every page on desktop (1440 px) and phone (390 px). This note
 lists what was decided, what only the Ashram can confirm, and where to start reading.

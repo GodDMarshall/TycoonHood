@@ -30,8 +30,10 @@ a server must serve it is written once, as data, in `deploy/routes.mjs`:
 
 `tools/server-configs.mjs` turns those rules into each server's own format.
 The build runs it, so `site/` always carries the files for Apache, IIS,
-Netlify and Cloudflare. The project-level files are rewritten too, but only
-when the build uses the addresses in `site.config.json`.
+Netlify and Cloudflare. When the build writes `site/`, the project-level
+files (nginx, Cloudflare, `vercel.json`) are rewritten for the same
+addresses. A build into another folder (`--out=…`) leaves them alone. The
+build prints which files changed and how many platform rules they carry.
 
 | Host | File | Where it comes from |
 | --- | --- | --- |
@@ -56,15 +58,23 @@ The two addresses come from `--site-url=` / `--legacy-url=`, then
 
 ## Before the new site takes the domain
 
+The full checklist, with the checks to run after the switch, is
+[`docs/handover/DOMAIN-CUTOVER.md`](../docs/handover/DOMAIN-CUTOVER.md). In
+short:
+
 1. Move the existing platform to its own host, for example
    `https://seva.dattapeetham.org`, and check that it works there.
    - Its payment gateways and the mobile apps call it by address, so update
      their callback and API URLs. A 302 cannot carry a form POST across.
-   - It must serve HTTPS: the HSTS header covers every subdomain
-     (`includeSubDomains`).
+   - It must serve HTTPS (payments and sign-in need it). The site's HSTS
+     header has no `includeSubDomains`, so it does not reach the platform's
+     host or any other subdomain; adding it is the Peetham's decision (see
+     the comment in `routes.mjs`).
 2. Put that address in `site.config.json` as `legacyPlatformUrl`, then run
-   `node build.mjs`. Every platform link in the pages now points there, and
-   every server file carries the platform redirects.
+   `npm run build:production`. That is `node build.mjs --production`, which
+   refuses a platform address on the site's own host. Every platform link in
+   the pages now points there, and every server file carries the platform
+   redirects.
 3. Deploy `site/` (and the file for your server, see below), then point the
    domain at it.
 4. Check the live site:
@@ -182,8 +192,9 @@ Things to know:
 
 | What | Command |
 | --- | --- |
-| Data, generator and file syntax | `node --test tests/server-configs.test.mjs` |
-| Real nginx and Apache, same-host and split-host builds | `node deploy/test/docker-servers.mjs --work=/tmp/dp-servers` |
+| Data, generator and file syntax | `node --test tests/server-configs.test.mjs` (part of `npm test`) |
+| Real nginx and Apache, same-host and split-host builds | `node deploy/test/docker-servers.mjs --work=/tmp/dp-servers` (or `npm run verify:servers`) |
+| Every off-site link and file (run from an ordinary connection) | `node tools/check-external-links.mjs site` |
 | Any running server | `node deploy/test/verify-server.mjs --base=http://host:port/` |
 | Cloudflare's asset worker, locally | `deploy/test/cloudflare-local.mjs` (see its header) |
 

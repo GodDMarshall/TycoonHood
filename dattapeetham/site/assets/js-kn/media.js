@@ -158,6 +158,7 @@
     var setState = function () {
       var playing = !audio.paused && !audio.ended;
       box.classList.toggle('is-playing', playing);
+      if (box.classList.contains('is-failed')) return; // keeps "ಡೌನ್‌ಲೋಡ್ ಕೊಂಡಿಯನ್ನು ಬಳಸಿ"
       btn.setAttribute('aria-label', playing ? 'ಮಂತ್ರಪಠಣವನ್ನು ವಿರಾಮಗೊಳಿಸಿ' : 'ಜಪವನ್ನು ಪ್ಲೇ ಮಾಡಿ');
     };
 
@@ -172,7 +173,26 @@
     audio.addEventListener('ended', function () { setState(); audio.currentTime = 0; paint(); });
     audio.addEventListener('timeupdate', paint);
     audio.addEventListener('loadedmetadata', function () { dur.textContent = t(audio.duration); paint(); });
-    audio.addEventListener('error', function () { dur.textContent = 'ಡೌನ್‌ಲೋಡ್ ಕೊಂಡಿಯನ್ನು ಬಳಸಿ'; });
+    // A file that cannot load (offline, blocked, moved) must not leave the
+    // button saying "Pause" over silence: the error fires on the last <source>
+    // (or on the <audio> itself without one). Stop, disable the button and
+    // point to the download link, moving focus there if it was on the button.
+    var failed = function () {
+      if (box.classList.contains('is-failed')) return;
+      box.classList.add('is-failed');
+      if (!audio.paused) audio.pause();
+      box.classList.remove('is-playing');
+      dur.textContent = 'ಡೌನ್‌ಲೋಡ್ ಕೊಂಡಿಯನ್ನು ಬಳಸಿ';
+      var hadFocus = doc.activeElement === btn;
+      btn.disabled = true;
+      btn.setAttribute('aria-label', 'ಡೌನ್‌ಲೋಡ್ ಕೊಂಡಿಯನ್ನು ಬಳಸಿ');
+      seek.disabled = true;
+      var dl = $('.chant-dl', box);
+      if (hadFocus && dl) dl.focus();
+    };
+    audio.addEventListener('error', failed);
+    var sources = $$('source', audio);
+    if (sources.length) sources[sources.length - 1].addEventListener('error', failed);
 
     seek.addEventListener('input', function () {
       seeking = true;

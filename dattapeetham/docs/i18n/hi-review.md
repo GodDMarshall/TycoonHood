@@ -1,6 +1,6 @@
 # Hindi (हिन्दी) translation: notes for the native reviewer
 
-The Hindi site is built from the English pages and the dictionaries in `src/i18n/hi/part-*.json`. Six translators worked in parallel; a senior-editor pass then unified spellings and UI labels across all files (206 entries changed) and settled most of the translators' questions. This note lists the decisions already made, the questions only the Ashram can answer, and where to start reading.
+The Hindi site is built from the English pages and the dictionaries in `src/i18n/hi/part-*.json`. It was translated in six parallel machine-assisted passes (the "translators" in this note; they are not six people), and a senior-editor pass then unified spellings and UI labels across all files (206 entries changed) and settled most of the translators' questions. No fluent speaker has reviewed it yet: that is your review. This note lists the decisions already made, the questions only the Ashram can answer, and where to start reading.
 
 The rules every translator followed are in `src/i18n/glossary/hi.md` (style guide) and `src/i18n/glossary/hi.json` (1,008 terms).
 

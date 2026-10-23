@@ -10,7 +10,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { existsSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as R from '../deploy/routes.mjs';
 import {
@@ -20,7 +21,8 @@ import {
 import { links, OFFICIAL } from '../src/site.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = join(ROOT, 'site');
+// DP_SITE_DIR: test a build made elsewhere (node build.mjs --out=…), as tests/site.test.mjs does
+const SITE = process.env.DP_SITE_DIR ? resolve(process.env.DP_SITE_DIR) : join(ROOT, 'site');
 const SEVA = 'https://seva.dattapeetham.org';
 const WWW = 'https://www.dattapeetham.org';
 const scan = await scanSite(SITE);
@@ -34,9 +36,72 @@ const out = { same: render(same), split: render(split) };
 
 // ------------------------------------------------------------- the data ---
 
-test('security headers: the original vercel.json set, CSP unchanged', () => {
+test('security headers: the original vercel.json set, CSP fitted to what the site loads', () => {
   assert.deepEqual(Object.keys(R.securityHeaders), ['X-Content-Type-Options', 'X-Frame-Options', 'Referrer-Policy', 'Permissions-Policy', 'Strict-Transport-Security', 'Content-Security-Policy']);
-  assert.equal(R.securityHeaders['Content-Security-Policy'], "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://dattapeetham.s3.amazonaws.com https://dev-dattapeetham.s3.amazonaws.com https://i.ytimg.com; frame-src https://www.youtube-nocookie.com https://www.google.com; connect-src 'self'; upgrade-insecure-requests");
+  // v1.0.0: media-src added (the Media page's chant streams from S3; default-src
+  // 'self' blocked it), the unused dev bucket and i.ytimg.com dropped from img-src.
+  assert.equal(R.securityHeaders['Content-Security-Policy'], "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://dattapeetham.s3.amazonaws.com; media-src 'self' https://dattapeetham.s3.amazonaws.com; frame-src https://www.youtube-nocookie.com https://www.google.com; connect-src 'self'; upgrade-insecure-requests");
+});
+
+test('HSTS: two years for this host only, the same value on every server', () => {
+  // No includeSubDomains: Apache and IIS also send it from the bare domain,
+  // where it would pin every *.dattapeetham.org name to https for two years
+  // (DOMAIN-CUTOVER.md, step 2). Adding it back is the Peetham's decision.
+  assert.equal(R.securityHeaders['Strict-Transport-Security'], 'max-age=63072000');
+  for (const v of ['same', 'split']) {
+    const o = out[v];
+    assert.match(o.htaccess, /^ {2}Header always set Strict-Transport-Security "max-age=63072000"$/m, `${v}: .htaccess`);
+    assert.match(o.nginx, /add_header Strict-Transport-Security "max-age=63072000" always;/, `${v}: nginx`);
+    assert.match(o.headers, /^ {2}Strict-Transport-Security: max-age=63072000$/m, `${v}: _headers`);
+    assert.match(o.webConfig, /<add name="Strict-Transport-Security" value="max-age=63072000" \/>/, `${v}: web.config`);
+    assert.ok(JSON.parse(o.vercel).headers[0].headers.some((h) => h.key === 'Strict-Transport-Security' && h.value === 'max-age=63072000'), `${v}: vercel.json`);
+    for (const [name, text] of Object.entries(o)) assert.doesNotMatch(text, /includeSubDomains/i, `${v}: ${name}`);
+  }
+});
+
+// The CSP as { directive: [sources] }; a directive it does not set falls back to default-src.
+const policy = Object.fromEntries(R.securityHeaders['Content-Security-Policy'].split(';').map((d) => d.trim().split(/\s+/)).map(([k, ...v]) => [k, v]));
+const allows = (directive, url) => {
+  const list = policy[directive] || policy['default-src'];
+  const u = new URL(url);
+  return list.includes(u.origin) || list.includes(`${u.protocol}//${u.host}`) || (u.protocol === 'data:' && list.includes('data:'));
+};
+
+test('CSP allows every cross-origin image, media file, frame and stylesheet the built site loads', () => {
+  const found = { 'img-src': new Set(), 'media-src': new Set(), 'frame-src': new Set(), 'style-src': new Set() };
+  const abs = (u) => /^https?:\/\//.test(u);
+  for (const [f, text] of scan.text) {
+    if (f.endsWith('.html')) {
+      // JSON-LD and share tags are read by crawlers, not loaded by the page
+      const html = text.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>|<meta\b[^>]*>/g, '');
+      for (const [, tag, attrs] of html.matchAll(/<(img|source|audio|video|iframe|link)\b([^>]*)>/g)) {
+        const src = (/\s(?:src|href)="([^"]+)"/.exec(attrs) || [])[1];
+        const srcset = (/\s(?:srcset|imagesrcset)="([^"]+)"/.exec(attrs) || [])[1];
+        if (tag === 'img') { if (src && abs(src)) found['img-src'].add(src); for (const c of (srcset || '').split(',')) { const u = c.trim().split(/\s+/)[0]; if (abs(u)) found['img-src'].add(u); } }
+        if ((tag === 'source' || tag === 'audio' || tag === 'video') && src && abs(src)) found[/type="image/.test(attrs) ? 'img-src' : 'media-src'].add(src);
+        if (tag === 'video') { const poster = (/\sposter="([^"]+)"/.exec(attrs) || [])[1]; if (poster && abs(poster)) found['img-src'].add(poster); }
+        if (tag === 'iframe' && src && abs(src)) found['frame-src'].add(src);
+        if (tag === 'link' && /rel="stylesheet"/.test(attrs) && src && abs(src)) found['style-src'].add(src);
+        if (tag === 'link' && /rel="preload" as="image"/.test(attrs) && src && abs(src)) found['img-src'].add(src);
+      }
+      for (const [, u] of html.matchAll(/url\((?:&quot;|['"])?(https?:\/\/[^"')&]+)/g)) found['img-src'].add(u);
+    } else {
+      // scripts that build frames (click-to-load YouTube) or set media sources
+      for (const [, u] of text.matchAll(/['"](https:\/\/[a-z0-9.-]+\/)(?:embed\/)?/g)) if (/youtube-nocookie|google\.com\/maps/.test(u)) found['frame-src'].add(u);
+    }
+  }
+  assert.ok(found['media-src'].size >= 1 && found['frame-src'].size >= 1, 'found the chant and the embeds');
+  const blocked = Object.entries(found).flatMap(([d, set]) => [...set].filter((u) => !allows(d, u)).map((u) => `${d}: ${u}`));
+  assert.deepEqual(blocked, [], 'add these exact origins to the CSP in deploy/routes.mjs');
+  for (const host of ['https://dev-dattapeetham.s3.amazonaws.com', 'https://i.ytimg.com']) {
+    assert.ok(!R.securityHeaders['Content-Security-Policy'].includes(host) || [...found['img-src']].some((u) => u.startsWith(host)), `${host} is allowed but nothing loads from it`);
+  }
+});
+
+test('one version number: package.json and deploy/routes.mjs agree', async () => {
+  const pkg = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
+  assert.equal(pkg.version, R.VERSION);
+  assert.match(R.VERSION, /^\d+\.\d+\.\d+$/);
 });
 
 test('cache policy: revalidate by default, immutable code, 30-day media', () => {
@@ -208,6 +273,9 @@ test('.htaccess: balanced sections, modules guarded, 404 page, canonical block m
     assert.match(t, /^DirectoryIndex index\.html$/m);
     assert.match(t, /BEGIN canonical host and HTTPS[\s\S]+DP_CANONICAL[\s\S]+END canonical host and HTTPS/);
     assert.match(t, /RewriteCond %\{HTTP_HOST\} \^dattapeetham\\\.org/);
+    // both canonical rules leave the certificate paths alone, also in the
+    // internal request ErrorDocument makes for a missing challenge file
+    assert.equal((t.match(/RewriteCond %\{THE_REQUEST\} !\^\[A-Z\]\+\\s\+.*\/\\\.well-known\/\(\?:acme-challenge\|pki-validation\)\/ \[NC\]$/gm) || []).length, 2, 'THE_REQUEST exemption on both canonical rules');
     assert.match(t, /<IfModule mod_expires\.c>\s+ExpiresActive Off/);
     // every directive that needs a module sits inside its <IfModule>
     const outside = t.replace(/<IfModule[\s\S]*?<\/IfModule>\n/g, '');
@@ -318,18 +386,43 @@ test('wrangler.jsonc: Workers static assets serve files as named', () => {
   assert.deepEqual(json.assets, { directory: '../../site', html_handling: 'none', not_found_handling: '404-page' });
 });
 
-test('committed project files match a fresh render from site.config.json', async () => {
-  const { siteUrl, legacyUrl } = resolveAddresses({ env: {} });
-  const m = await buildModel({ siteUrl, legacyUrl, scan });
+test('committed project files match a fresh render for the addresses ./site was built with', async (t) => {
+  // node build.mjs rewrites vercel.json, deploy/nginx and deploy/cloudflare whenever it
+  // writes ./site (a --out=… build leaves them), so they must describe ./site: its
+  // addresses are the ones its own _redirects names.
+  const own = join(ROOT, 'site');
+  const head = await readFile(join(own, '_redirects'), 'utf8').catch(() => null);
+  if (!head) return t.skip('no ./site build');
+  const siteUrl = (/^#\s+site:\s+(\S+)/m.exec(head) || [])[1];
+  const legacyUrl = (/^#\s+legacy platform:\s+(\S+)/m.exec(head) || [])[1];
+  assert.ok(siteUrl && legacyUrl, 'site/_redirects names both addresses');
+  const m = await buildModel({ siteUrl, legacyUrl, scan: own === SITE ? scan : await scanSite(own) });
   assert.equal(await readFile(join(ROOT, 'vercel.json'), 'utf8'), renderVercel(m), 'vercel.json is stale: run node tools/server-configs.mjs site');
   assert.equal(await readFile(join(ROOT, 'deploy', 'nginx', 'dattapeetham.conf'), 'utf8'), renderNginx(m), 'deploy/nginx/dattapeetham.conf is stale');
   assert.equal(await readFile(join(ROOT, 'deploy', 'cloudflare', 'wrangler.jsonc'), 'utf8'), renderWrangler(m), 'deploy/cloudflare/wrangler.jsonc is stale');
 });
 
-test('the 404 page works at any depth (root-absolute links and assets)', async () => {
-  const html = await readFile(join(SITE, '404.html'), 'utf8');
-  const rel = [...html.matchAll(/\s(?:src|href)="([^"]*)"/g)].map((m) => m[1]).filter((u) => !/^(?:\/|#|[a-z]+:)/i.test(u));
-  assert.deepEqual(rel, []);
+test('the 404 pages work at any depth (root-absolute links and assets), in every language', async () => {
+  // Every host serves /404.html for unknown paths; Cloudflare's
+  // not_found_handling "404-page" serves the nearest folder's 404.html
+  // (/kn/a/b gets /kn/404.html). Either page must work at any depth.
+  for (const dir of ['', ...R.LANGUAGES.map((l) => `${l}/`)]) {
+    const html = await readFile(join(SITE, dir, '404.html'), 'utf8');
+    const refs = [...html.matchAll(/\s(?:src|href|poster|data-full)="([^"]*)"/g)].map((m) => m[1])
+      .concat([...html.matchAll(/\ssrcset="([^"]+)"/g)].flatMap((m) => m[1].split(/,\s*/).map((c) => c.trim().split(/\s+/)[0])));
+    const rel = refs.filter((u) => !/^(?:\/|#|[a-z][a-z0-9+.-]*:)/i.test(u));
+    assert.deepEqual(rel, [], `${dir}404.html has relative references`);
+    assert.doesNotMatch(html, /url\((?:['"]|&quot;)?(?:\.\.\/)*assets\//, `${dir}404.html has a relative url(assets/...)`);
+    assert.match(html, new RegExp(`<body class="[^"]*" data-base="/${dir}"`), `${dir}404.html: data-base`);
+    // its own pages stay in its language; assets come from the root
+    const local = refs.filter((u) => /^\/[^/]/.test(u)).map((u) => u.split(/[?#]/)[0]);
+    assert.ok(local.length > 20, `${dir}404.html: only ${local.length} root-absolute references`);
+    for (const u of local) assert.ok(existsSync(join(SITE, u)), `${dir}404.html: ${u} does not exist`);
+    if (dir) {
+      assert.ok(local.includes(`/${dir}about.html`), `${dir}404.html links to its own language's pages`);
+      assert.ok(local.some((u) => u.startsWith(`/assets/js-${dir.slice(0, -1)}/`)), `${dir}404.html loads its language's scripts`);
+    }
+  }
 });
 
 test('language folders exist for every language the rules cover', async () => {

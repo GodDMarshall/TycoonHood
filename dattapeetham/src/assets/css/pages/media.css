@@ -120,6 +120,9 @@ html:not(.js) .page-media .reel-nav { display: none; }
 .page-media .cp-pause i { width: 5px; height: 22px; border-radius: 2px; background: currentColor; }
 .page-media .chant.is-playing .chant-play .ico { display: none; }
 .page-media .chant.is-playing .cp-pause { display: flex; }
+/* the file could not load: media.js disables the controls and points to the download link */
+.page-media .chant.is-failed .chant-play { cursor: not-allowed; opacity: .45; box-shadow: none; transform: none; }
+.page-media .chant.is-failed .chant-seek { cursor: default; }
 .page-media .chant-track { position: relative; flex: 1; min-width: 0; }
 .page-media .chant-wave { position: relative; height: 64px; }
 .page-media .cw-base, .page-media .cw-fill { position: absolute; inset: 0; display: flex; align-items: center; gap: 2px; }

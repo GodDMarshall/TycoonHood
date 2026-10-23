@@ -521,7 +521,9 @@ export default {
   css: true,
   scripts: ['index'],
   features: ['ashram-map', 'world-map'],
-  jsonLd: events.filter((e) => e.place === 'Mysuru Ashram').map((e) => ({
+  // Mysuru events still ahead on the day of the build (Mysuru time); each links
+  // to its card on the Events page (src/pages/events.mjs gives it id="ev-<start>").
+  jsonLd: events.filter((e) => e.place === 'Mysuru Ashram' && e.end >= new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date())).map((e) => ({
     '@context': 'https://schema.org',
     '@type': 'Event',
     name: e.title.replace('&amp;', '&'),
@@ -532,6 +534,7 @@ export default {
     location: ashram,
     organizer: { '@type': 'Organization', name: 'Avadhoota Datta Peetham', url: `${site.origin}/` },
     description: e.text,
+    url: `${site.origin}/events.html#ev-${e.start}`,
   })),
   render: async () => {
     const [map, reach] = await Promise.all([

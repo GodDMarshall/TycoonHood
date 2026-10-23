@@ -17,7 +17,7 @@ import { join, dirname, resolve, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site, links, OFFICIAL, config, resolveConfig, normaliseUrl } from '../src/site.mjs';
 import { THEME_COLOR } from '../src/layout.mjs';
-import { printAddresses } from '../build.mjs';
+import { printAddresses, assertProduction } from '../build.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = process.env.DP_SITE_DIR ? resolve(process.env.DP_SITE_DIR) : join(ROOT, 'site');
@@ -138,7 +138,9 @@ for (const { f, lang, html } of pages) {
       touch: /<link rel="apple-touch-icon" href="([^"]+icons\/apple-touch-icon\.png)">/,
       manifest: /<link rel="manifest" href="([^"]*site\.webmanifest)">/,
     };
-    const prefix = f === '404.html' ? '/' : lang === 'en' ? '' : '../';
+    // the 404 pages are root-absolute (they are served at any depth)
+    const is404 = f.endsWith('404.html');
+    const prefix = is404 ? '/' : lang === 'en' ? '' : '../';
     for (const [k, re] of Object.entries(want)) {
       const m = re.exec(html);
       assert.ok(m, `missing ${k} link`);
@@ -148,10 +150,85 @@ for (const { f, lang, html } of pages) {
     // the footer's About Us is this site's own page; the legal pages stay on the platform
     const legal = (/<nav aria-label="[^"]*">\s*(<a href="[^"]*">[^<]*<\/a>\s*){4}<\/nav>\s*<\/div>\s*<\/div>\s*<\/footer>/.exec(html) || [''])[0];
     const hrefs = [...legal.matchAll(/href="([^"]+)"/g)].map((x) => x[1]);
-    assert.deepEqual(hrefs, [`${f === '404.html' ? '/' : ''}about.html`, links.disclaimer, links.privacy, links.terms], 'footer legal row');
+    const own = is404 ? `/${lang === 'en' ? '' : `${lang}/`}` : '';
+    assert.deepEqual(hrefs, [`${own}about.html`, links.disclaimer, links.privacy, links.terms], 'footer legal row');
     assert.ok(!html.includes('/page/view/about-us'), 'still links to the platform about-us page');
   });
+
+  test(`${f}: share preview (og:url, og:locale, a light og:image)`, async () => {
+    const meta = (p) => [...html.matchAll(new RegExp(`<meta property="${reEsc(p)}" content="([^"]*)">`, 'g'))].map((m) => m[1]);
+    const canonical = (/<link rel="canonical" href="([^"]+)"/.exec(html) || [])[1];
+    assert.deepEqual(meta('og:url'), [canonical], 'og:url is the canonical URL');
+    assert.deepEqual(meta('og:locale'), [`${lang}_IN`]);
+    assert.deepEqual(meta('og:locale:alternate').sort(), ['en', ...LANG_DIRS].filter((c) => c !== lang).map((c) => `${c}_IN`).sort());
+    const [image] = meta('og:image');
+    assert.match(image, /^https:\/\//);
+    if (image.startsWith(`${site.origin}/assets/img/og/`)) {
+      const file = join(SITE, image.slice(site.origin.length + 1));
+      assert.ok(await exists(file), `${image} is not in the build`);
+      const [, w, h] = /-(\d+)x(\d+)\.jpg$/.exec(image);
+      assert.deepEqual([meta('og:image:width')[0], meta('og:image:height')[0]], [w, h]);
+      assert.ok((await stat(file)).size <= 300 * 1024, `${image} is over 300 KB (share previews drop it)`);
+      const buf = await readFile(file);
+      assert.equal(buf.readUInt16BE(0), 0xffd8, 'not a JPEG');
+    }
+  });
+
+  test(`${f}: the hero preload asks for the file the hero image picks`, () => {
+    const pre = /<link rel="preload" as="image" href="[^"]+"([^>]*)>/.exec(html);
+    if (!pre) return;
+    const set = (/\simagesrcset="([^"]+)"/.exec(pre[1]) || [])[1];
+    const sizes = (/\simagesizes="([^"]+)"/.exec(pre[1]) || [])[1];
+    assert.ok(set && sizes, 'image preload without imagesrcset/imagesizes downloads a second copy on wide screens');
+    assert.ok((html.match(/<img\b[^>]*>/g) || []).some((t) => t.includes(` srcset="${set}"`) && t.includes(` sizes="${sizes}"`)), 'no <img> with the same srcset and sizes');
+  });
+
+  test(`${f}: JSON-LD links to this site resolve, in this language`, async () => {
+    const urls = [];
+    const walk = (v, k) => { if (Array.isArray(v)) v.forEach((x) => walk(x, k)); else if (v && typeof v === 'object') Object.entries(v).forEach(([kk, x]) => walk(x, kk)); else if (typeof v === 'string' && v.startsWith(site.origin + '/')) urls.push([k, v]); };
+    const lds = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+    lds.forEach((o) => walk(o));
+    for (const [, u] of urls) {
+      const [path, hash] = u.slice(site.origin.length + 1).split('#');
+      if (!/(?:^|\/|\.html)$/.test(path) || /^page\/view\//.test(path)) continue; // assets and the platform's pages
+      if (lang !== 'en' && /\.html$/.test(path)) assert.ok(path.startsWith(`${lang}/`), `${u} is not the ${lang} page`);
+      const file = join(SITE, path.endsWith('/') || !path ? path + 'index.html' : path);
+      assert.ok(await exists(file), `${u} does not exist`);
+      if (hash) assert.match(await readFile(file, 'utf8'), new RegExp(`\\sid="${reEsc(hash)}"`), `${u}: no such anchor`);
+    }
+    const crumbs = lds.find((o) => o['@type'] === 'BreadcrumbList');
+    if (f.endsWith('index.html') || f.endsWith('404.html')) { assert.ok(!crumbs, 'no breadcrumb on the home and 404 pages'); return; }
+    assert.ok(crumbs, 'BreadcrumbList missing');
+    const shown = /<nav class="crumbs"[^>]*>\s*<a [^>]*>([^<]+)<\/a>[\s\S]*?<span aria-current="page">([^<]+)<\/span>/.exec(html);
+    const dec = (s) => s.replace(/&amp;/g, '&').trim();
+    assert.deepEqual(crumbs.itemListElement.map((x) => x.name), [dec(shown[1]), dec(shown[2])], 'breadcrumb names match the visible breadcrumb');
+    assert.deepEqual(crumbs.itemListElement.map((x) => x.item), [`${site.origin}/${lang === 'en' ? '' : lang + '/'}`, (/<link rel="canonical" href="([^"]+)"/.exec(html) || [])[1]]);
+  });
 }
+
+test('events: structured data for upcoming events only, each with a venue address and its own card', async () => {
+  for (const f of ['events.html', 'index.html', ...LANG_DIRS.map((l) => `${l}/events.html`)]) {
+    const html = pages.find((p) => p.f === f).html;
+    const built = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format((await stat(join(SITE, f))).mtime);
+    const events = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1])).filter((o) => o['@type'] === 'Event');
+    for (const e of events) {
+      assert.ok(e.endDate >= built, `${f}: ${e.name} ended ${e.endDate}, before the build (${built})`);
+      assert.ok(e.location?.address?.addressCountry, `${f}: ${e.name} has no venue address`);
+      assert.match(e.url, /\/events\.html#ev-\d{4}-\d\d-\d\d$/, `${f}: ${e.name} url`);
+    }
+  }
+});
+
+test('no dev-bucket URLs and no dangling source-map comments in the build', async () => {
+  const walk = async (dir) => (await Promise.all((await readdir(dir, { withFileTypes: true })).map((e) => (e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)])))).flat();
+  for (const file of (await walk(SITE)).filter((p) => /\.(?:html|js|css|json|xml|txt)$|(?:^|[\\/])(?:\.htaccess|_headers|web\.config)$/.test(p))) {
+    const text = await readFile(file, 'utf8');
+    assert.ok(!text.includes('dev-dattapeetham.s3'), `${file.slice(SITE.length + 1)} references the dev bucket (blocked by the CSP)`);
+    for (const [, map] of text.matchAll(/[#@] sourceMappingURL=(\S+?)(?:\s|\*\/|$)/g)) {
+      assert.ok(await exists(join(dirname(file), map)), `${file.slice(SITE.length + 1)} points at ${map}, which is not shipped`);
+    }
+  }
+});
 
 test('sitemap lists every public page', async () => {
   const xml = await readFile(join(SITE, 'sitemap.xml'), 'utf8');
@@ -164,6 +241,26 @@ test('sitemap lists every public page', async () => {
 test('search index has an entry for every public page', async () => {
   const idx = JSON.parse(await readFile(join(SITE, 'assets/search-index.json'), 'utf8'));
   for (const f of files.filter((x) => x !== '404.html')) assert.ok(idx.some((e) => e.u.startsWith(f)), `${f} not searchable`);
+});
+
+test('no half-written files in the site (a photo run writes name.webp.tmp-<pid>, then renames it)', async () => {
+  const left = (await readdir(SITE, { recursive: true })).filter((f) => /\.(?:tmp|part)(?:-\d+)?$/i.test(f));
+  assert.deepEqual(left, []);
+});
+
+test('language pages: Latin-script queries also search the English index, and its hits exist in every language', async () => {
+  // site.js on a language page loads the English index for a query in Latin
+  // letters ("Hanuman" on /kn/) and opens the hit's section on this
+  // language's page, so every English entry must have the same address there.
+  const en = JSON.parse(await readFile(join(SITE, 'assets/search-index.json'), 'utf8'));
+  for (const l of LANG_DIRS) {
+    const own = new Set(JSON.parse(await readFile(join(SITE, `assets/search-index.${l}.json`), 'utf8')).map((e) => e.u));
+    const missing = en.map((e) => e.u).filter((u) => !own.has(u));
+    assert.deepEqual(missing, [], `${l}: English search entries with no section in /${l}/`);
+    const js = await readFile(join(SITE, 'assets', `js-${l}`, 'site.js'), 'utf8');
+    assert.ok(js.includes("fetch(base + '../assets/' + 'search-index.json')"), `assets/js-${l}/site.js does not load the English index from the site root`);
+  }
+  assert.ok((await readFile(join(SITE, 'assets/js/site.js'), 'utf8')).includes('var both = !EN && /[a-z]/i.test(q);'), 'English pages search their own index only');
 });
 
 // ---------------------------------------------------------------------------
@@ -222,6 +319,23 @@ test('addresses: same-host warning', () => {
   const ok = capture(split);
   assert.match(ok, /seva\.dattapeetham\.org/);
   assert.doesNotMatch(ok, /WARNING/);
+});
+
+test('a --production build refuses a platform address on this site\'s own host', () => {
+  const same = resolveConfig({ argv: [], env: {}, file: FILE });
+  const sibling = resolveConfig({ argv: ['--legacy-url=https://dattapeetham.org'], env: {}, file: FILE });
+  const split = resolveConfig({ argv: ['--legacy-url=https://seva.dattapeetham.org'], env: {}, file: FILE });
+  const prod = { argv: ['--production'], env: {} };
+  assert.throws(() => assertProduction(same, prod), (e) => e.name === 'ConfigError' && /DOMAIN-CUTOVER\.md/.test(e.message));
+  assert.throws(() => assertProduction(sibling, prod), /www\./);
+  assert.throws(() => assertProduction(same, { argv: [], env: { DP_PRODUCTION: '1' } }), /own host/);
+  assert.doesNotThrow(() => assertProduction(split, prod));
+  assert.doesNotThrow(() => assertProduction(same, { argv: [], env: {} }), 'an ordinary build only warns');
+});
+
+test('docs/handover/DOMAIN-CUTOVER.md exists (the build and site.config.json point to it)', async () => {
+  const doc = await readFile(join(ROOT, 'docs/handover/DOMAIN-CUTOVER.md'), 'utf8');
+  for (const need of ['legacyPlatformUrl', 'site.config.json', 'build:production', 'verify-server.mjs']) assert.ok(doc.includes(need), `DOMAIN-CUTOVER.md does not mention ${need}`);
 });
 
 test('site.config.json holds both addresses, normalised and explained', async () => {
@@ -344,8 +458,12 @@ test('nothing dev-only in the built site', async () => {
   const walk = async (dir) => (await Promise.all((await readdir(dir, { withFileTypes: true })).map((e) => (e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)])))).flat();
   const all = (await walk(SITE)).map((p) => p.slice(SITE.length + 1).split('\\').join('/'));
   assert.ok(!all.includes('assets/img/opt/manifest.json'), 'image optimiser manifest copied');
-  // .htaccess (Apache) and .well-known/ are legitimate server files; any other dotfile is not
-  assert.deepEqual(all.filter((p) => p.split('/').some((seg) => seg.startsWith('.') && seg !== '.htaccess' && seg !== '.well-known')), [], 'dotfiles in the site');
+  // .htaccess (Apache), .assetsignore (Cloudflare Workers) and .well-known/ are
+  // legitimate server files (tools/server-configs.mjs; every generated config
+  // keeps them private); any other dotfile is not
+  const SERVER_DOTFILES = new Set(['.htaccess', '.assetsignore', '.well-known']);
+  assert.deepEqual(all.filter((p) => p.split('/').some((seg) => seg.startsWith('.') && !SERVER_DOTFILES.has(seg))), [], 'dotfiles in the site');
+  assert.deepEqual(all.filter((p) => p.includes('/') && /(?:^|\/)\.(?:htaccess|assetsignore)$/.test(p)), [], 'server dotfiles belong at the site root only');
   assert.deepEqual(all.filter((p) => /\.(?:map|mjs|md|log)$|(?:^|\/)(?:node_modules|src|tests?)\//.test(p)), [], 'source or tooling files in the site');
   for (const { f, html } of pages) {
     assert.ok(!/localhost|127\.0\.0\.1|:4321|livereload|EventSource\(/.test(html), `${f} references the dev server`);

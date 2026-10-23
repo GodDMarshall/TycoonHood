@@ -8,7 +8,14 @@
 .snd { position: fixed; left: max(16px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 56; font: 400 .92rem/1.45 var(--sans); color: var(--cream-on-dark); }
 @media (min-width: 700px) { .snd { left: 20px; bottom: 20px; } }
 .snd[hidden], .snd-panel[hidden], .snd-invite[hidden], .snd-switch[hidden] { display: none; }
+/* at the top of a page on phones and tablets, while nothing sounds, the button keeps clear
+   of the page's own buttons (the script sets .is-tucked); a keyboard still reaches it */
+.snd { transition: opacity .3s, transform .3s var(--ease-out); }
+.snd.is-tucked:not(:focus-within) { opacity: 0; transform: translateY(12px); pointer-events: none; }
 .nav-open .snd { visibility: hidden; }
+/* where the footer's text column reaches the screen edge, leave room under it for the
+   floating sound and back-to-top buttons so the last line is never covered */
+@media (max-width: 1360px) { .has-sound .site-footer { padding-bottom: 92px; } }
 
 .snd-btn { position: relative; width: 48px; height: 48px; padding: 0; border-radius: 50%; border: 1px solid rgba(226, 200, 142, .62); background: radial-gradient(circle at 50% 30%, var(--forest-3) 0%, var(--forest) 72%); color: var(--gold-3); display: grid; place-items: center; cursor: pointer; box-shadow: 0 12px 26px -12px rgba(5, 10, 8, .75); transition: transform .35s var(--ease-out), border-color .3s; }
 .snd-btn:hover { transform: translateY(-2px); border-color: var(--gold-3); }
@@ -35,14 +42,16 @@
 @keyframes snd-pop { from { opacity: 0; transform: translateY(10px) scale(.97); } }
 .snd-panel :focus-visible { outline: 2px solid var(--gold-3); outline-offset: 2px; border-radius: 8px; }
 .snd-title { margin: 0 4px 6px; font: 600 .7rem/1.2 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--gold-3); }
-.snd-switch { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; min-height: 48px; margin: 0; padding: 8px 4px; border: 0; border-bottom: 1px solid rgba(226, 200, 142, .16); border-radius: 0; background: transparent; color: inherit; font: 500 .95rem/1.3 var(--sans); text-align: left; cursor: pointer; }
-.snd-switch:hover .snd-label { color: #fff8ea; }
-.snd-track { flex: none; position: relative; width: 44px; height: 26px; border-radius: 13px; border: 1px solid rgba(239, 228, 204, .62); background: rgba(239, 228, 204, .08); transition: background .3s, border-color .3s; }
-.snd-track i { position: absolute; left: 4px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--cream-on-dark); transition: transform .35s var(--ease-out), background .3s; }
-.snd-switch[aria-checked="true"] .snd-track { background: var(--gold-2); border-color: var(--gold-2); }
-.snd-switch[aria-checked="true"] .snd-track i { transform: translateX(18px); background: var(--forest); }
+/* the switch is the button's own text; the track (::after) and knob (::before) are drawn,
+   so each label stays one clean translation segment */
+.snd-switch { position: relative; display: flex; align-items: center; width: 100%; min-height: 48px; margin: 0; padding: 8px 64px 8px 4px; border: 0; border-bottom: 1px solid rgba(226, 200, 142, .16); border-radius: 0; background: transparent; color: inherit; font: 500 .95rem/1.3 var(--sans); text-align: left; cursor: pointer; }
+.snd-switch:hover { color: #fff8ea; }
+.snd-switch::after { content: ""; position: absolute; right: 4px; top: 50%; width: 44px; height: 26px; margin-top: -13px; box-sizing: border-box; border-radius: 13px; border: 1px solid rgba(239, 228, 204, .62); background: rgba(239, 228, 204, .08); transition: background .3s, border-color .3s; }
+.snd-switch::before { content: ""; position: absolute; z-index: 1; right: 27px; top: 50%; width: 16px; height: 16px; margin-top: -8px; border-radius: 50%; background: var(--cream-on-dark); transition: transform .35s var(--ease-out), background .3s; }
+.snd-switch[aria-checked="true"]::after { background: var(--gold-2); border-color: var(--gold-2); }
+.snd-switch[aria-checked="true"]::before { transform: translateX(18px); background: var(--forest); }
 .snd-vol { display: flex; align-items: center; gap: 14px; min-height: 48px; padding: 4px 4px 0; font-weight: 500; }
-.snd-vol input { --v: 60%; flex: 1; min-width: 0; height: 44px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.snd-vol input { --v: 80%; flex: 1; min-width: 0; height: 44px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
 .snd-vol input::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--gold-2) var(--v), rgba(239, 228, 204, .45) var(--v)); }
 .snd-vol input::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; border-radius: 50%; border: 2px solid var(--gold-2); background: var(--cream-on-dark); box-shadow: 0 2px 8px rgba(0, 0, 0, .45); }
 .snd-vol input::-moz-range-track { height: 4px; border-radius: 2px; background: rgba(239, 228, 204, .45); }
@@ -64,11 +73,24 @@
 .snd-invite-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 .snd-enter { min-height: 48px; padding: 14px 24px; }
 .snd-enter:focus-visible { outline: 2px solid var(--gold-3); outline-offset: 3px; }
+/* the site's gold button starts at #a07a35, where its ivory text is 3.8:1; the invitation's
+   choice starts at --gold-deep instead, so every part of the label is ≥ 4.5:1 */
+.snd-enter.btn-gold { background: linear-gradient(135deg, #8a6628 0%, #7f5e25 45%, #6d4f1b 100%); }
 .snd-enter-ico { flex: none; }
 .snd-invite-note { margin: 0; max-width: 36ch; font-size: .8rem; line-height: 1.5; color: var(--muted-on-dark); }
 @media (max-width: 480px) {
   .snd-invite-actions { flex-direction: column; align-items: stretch; width: min(320px, 100%); }
 }
+
+/* ---------- the same choice as a card above the button ----------
+   When the script arrives after the curtain has lifted (a slow connection), the
+   invitation moves into the control as a small non-modal card. */
+.snd-invite--card { position: absolute; left: 0; bottom: calc(100% + 12px); width: min(300px, calc(100vw - 32px)); max-width: none; margin: 0; padding: 14px 14px 14px; display: grid; justify-items: start; gap: 10px; text-align: left; border-radius: 18px; border: 1px solid rgba(226, 200, 142, .3); background: linear-gradient(180deg, var(--forest-2) 0%, var(--forest) 100%); color: var(--cream-on-dark); box-shadow: 0 26px 50px -22px rgba(5, 10, 8, .8); transform-origin: 24px 100%; animation: snd-pop .4s var(--ease-k) both; }
+.snd-invite-q { margin: 0 2px; font: italic 500 1.08rem/1.3 var(--serif); color: var(--cream-on-dark); }
+.snd-invite--card .snd-invite-actions { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: center; width: auto; gap: 8px; }
+.snd-invite--card .snd-enter { min-height: 44px; padding: 10px 14px; gap: 8px; font-size: .84rem; }
+.snd-invite--card .snd-enter-ico { width: 18px; height: 18px; }
+.snd-invite--card .snd-invite-note { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .snd-btn::before, .snd-bars i, .snd-panel, .snd-invite { animation: none !important; }

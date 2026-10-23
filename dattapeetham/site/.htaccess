@@ -63,8 +63,8 @@ Options -Indexes -MultiViews
   Header always set X-Frame-Options "DENY"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
-  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
-  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://dattapeetham.s3.amazonaws.com https://dev-dattapeetham.s3.amazonaws.com https://i.ytimg.com; frame-src https://www.youtube-nocookie.com https://www.google.com; connect-src 'self'; upgrade-insecure-requests"
+  Header always set Strict-Transport-Security "max-age=63072000"
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://dattapeetham.s3.amazonaws.com; media-src 'self' https://dattapeetham.s3.amazonaws.com; frame-src https://www.youtube-nocookie.com https://www.google.com; connect-src 'self'; upgrade-insecure-requests"
   Header always unset X-Powered-By
 </IfModule>
 
@@ -81,12 +81,17 @@ Options -Indexes -MultiViews
   # left alone. To switch this block off, delete it, or add to the virtual
   # host:  SetEnvIf Request_URI "^" DP_CANONICAL=off
   # Behind a proxy or CDN that ends TLS, it trusts X-Forwarded-Proto: https.
+  # The certificate paths are checked in the request line as well: a missing
+  # challenge file triggers ErrorDocument, whose internal request for the 404
+  # page would otherwise be redirected to https (a 301 instead of a 404).
   RewriteCond %{ENV:DP_CANONICAL} !=off
   RewriteCond %{REQUEST_URI} !^/\.well-known/(?:acme-challenge|pki-validation)/
+  RewriteCond %{THE_REQUEST} !^[A-Z]+\s+(?:[a-z][a-z0-9+.-]*://[^/\s]*)?/\.well-known/(?:acme-challenge|pki-validation)/ [NC]
   RewriteCond %{HTTP_HOST} ^dattapeetham\.org\.?(?::\d+)?$ [NC]
   RewriteRule ^ https://www.dattapeetham.org%{REQUEST_URI} [R=301,L]
   RewriteCond %{ENV:DP_CANONICAL} !=off
   RewriteCond %{REQUEST_URI} !^/\.well-known/(?:acme-challenge|pki-validation)/
+  RewriteCond %{THE_REQUEST} !^[A-Z]+\s+(?:[a-z][a-z0-9+.-]*://[^/\s]*)?/\.well-known/(?:acme-challenge|pki-validation)/ [NC]
   RewriteCond %{HTTP_HOST} ^www\.dattapeetham\.org\.?(?::\d+)?$ [NC]
   RewriteCond %{HTTPS} !=on
   RewriteCond %{HTTP:X-Forwarded-Proto} !^https$ [NC]

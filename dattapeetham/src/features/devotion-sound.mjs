@@ -69,17 +69,17 @@ export function soundInvite() {
 // Optional tuning attributes on the wrapper, read by the script:
 //   data-xfade="3"   seconds of crossfade at the loop point
 //   data-sfx-db="-8" temple-sound level relative to the music, in dB
-//   data-volume="60" default volume (0–100) before the visitor sets one
-//   data-level-ref="0.2" music RMS that DP.sound.level() reports as 1
+//   data-volume="80" default volume (0–100) before the visitor sets one
+//   data-level-ref="0.12" music RMS that DP.sound.level() reports as 1
 // data-sfx lists the temple sounds to load; it is written from the files present.
 export function soundControl({ sfx = sfxPresent() } = {}) {
   return `<div class="snd" data-sound data-state="off" data-sfx="${sfx.join(' ')}" hidden>
   <button class="snd-btn" type="button" aria-label="Sound settings" aria-expanded="false" aria-controls="snd-panel" data-sound-toggle>${fluteIcon(22)}<span class="snd-bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
   <div class="snd-panel" id="snd-panel" role="group" aria-labelledby="snd-title" data-sound-panel hidden>
     <p class="snd-title" id="snd-title">Sound</p>
-    <button class="snd-switch" type="button" role="switch" aria-checked="false" data-sound-switch="music"><span class="snd-label">Flute music</span><span class="snd-track" aria-hidden="true"><i></i></span></button>
-    <button class="snd-switch" type="button" role="switch" aria-checked="false" data-sound-switch="sfx"><span class="snd-label">Temple sounds while scrolling</span><span class="snd-track" aria-hidden="true"><i></i></span></button>
-    <label class="snd-vol"><span class="snd-label">Volume</span><input type="range" min="0" max="100" step="5" value="60" data-sound-volume></label>
+    <button class="snd-switch" type="button" role="switch" aria-checked="false" data-sound-switch="music">Flute music</button>
+    <button class="snd-switch" type="button" role="switch" aria-checked="false" data-sound-switch="sfx">Temple sounds while scrolling</button>
+    <label class="snd-vol"><span>Volume</span><input type="range" min="0" max="100" step="5" value="80" data-sound-volume></label>
     <p class="snd-status" data-sound-status aria-live="polite"></p>
     <p class="snd-credit">Flute: original raga composition (Raga Mohanam) for this website</p>
   </div>
@@ -109,5 +109,10 @@ export const SOUND_STRINGS = {
     'The music is paused while another recording or video plays.',
     'The music is playing in another tab.',
     'The music could not be loaded.',
+    // the first-visit choice as a card above the sound button, when the script arrives
+    // after the curtain has lifted (a slow connection)
+    'Would you like flute music while you read?',
+    'Play flute music',
+    'Not now',
   ],
 };

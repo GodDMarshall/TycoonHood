@@ -1,6 +1,8 @@
 // Page shell shared by every page: <head>, utility bar, header with mega menu,
 // search dialog, page-transition veil and footer.
 
+import { readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { site, links, nav, hours } from './site.mjs';
 import { sprite, icon } from './icons.mjs';
 
@@ -21,7 +23,9 @@ export const THEME_COLOR = '#0f1c18';
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const ext = (href) => /^https?:/.test(href);
 
-// Self-hosted, pinned: gsap 3.12.5, ScrollTrigger 3.12.5, lenis 1.1.13.
+// Self-hosted, pinned: gsap 3.12.5, ScrollTrigger 3.12.5, lenis 1.1.13 (its
+// sourceMappingURL comment removed: the .map is not shipped, and browsers
+// would request it and log a 404).
 export const VENDOR = {
   gsap: 'assets/vendor/gsap.min.js',
   scrollTrigger: 'assets/vendor/ScrollTrigger.min.js',
@@ -41,7 +45,8 @@ function jsonLd(page) {
     openingHoursSpecification: hours.temple.sessions.map(([o, c]) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: o, closes: c })),
     sameAs: ['https://www.facebook.com/SriSwamiji'],
   };
-  const crumbs = page.slug === 'index' ? null : {
+  // No breadcrumb on the home page, or on the 404 page (it answers every unknown URL).
+  const crumbs = page.slug === 'index' || page.slug === '404' ? null : {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
@@ -53,9 +58,40 @@ function jsonLd(page) {
     .map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n');
 }
 
-function head(page) {
+// ---------- share previews (og:image) ----------
+// tools/make-og.mjs crops each page's `image` to a light 1.91:1 JPEG in
+// src/assets/img/og/<ogKey(url)>-<w>x<h>.jpg. When that file exists the page
+// shares it (absolute, with its size); otherwise the S3 original.
+export const DEFAULT_OG_IMAGE = 'https://dattapeetham.s3.amazonaws.com/homepage_assets/site_1/front_page_images/sadguru-deva.jpg';
+export const ogKey = (url) => createHash('sha1').update(url).digest('hex').slice(0, 12);
+let ogFiles;
+function shareImage(url) {
+  ogFiles ??= (() => { try { return readdirSync(new URL('./assets/img/og/', import.meta.url)); } catch { return []; } })();
+  const f = ogFiles.find((x) => x.startsWith(ogKey(url) + '-') && /-\d+x\d+\.jpg$/.test(x));
+  if (!f) return { url };
+  const [, w, h] = /-(\d+)x(\d+)\.jpg$/.exec(f);
+  return { url: `${site.origin}/assets/img/og/${f}`, w, h, type: 'image/jpeg' };
+}
+// The alt text the page itself gives that photo (decorative heroes have none).
+function shareAlt(url, body = '') {
+  for (const [tag] of body.matchAll(/<img\b[^>]*>/g)) {
+    if (!tag.includes(`src="${url}"`)) continue;
+    const alt = (/\salt="([^"]+)"/.exec(tag) || [])[1];
+    if (alt) return alt;
+  }
+  return '';
+}
+// og:locale for each language (all pages are written for readers in India);
+// build.mjs swaps the primary one on the language pages.
+export const OG_LOCALES = { en: 'en_IN', kn: 'kn_IN', hi: 'hi_IN', ta: 'ta_IN', te: 'te_IN' };
+export const ogLocaleTags = (code) => [`<meta property="og:locale" content="${OG_LOCALES[code]}">`,
+  ...Object.entries(OG_LOCALES).filter(([c]) => c !== code).map(([, l]) => `<meta property="og:locale:alternate" content="${l}">`)].join('\n');
+
+function head(page, body) {
   const title = page.slug === 'index' ? `${site.name} · ${site.ashram}, Mysuru` : `${page.title} · ${site.name}`;
-  const og = page.image || 'https://dattapeetham.s3.amazonaws.com/homepage_assets/site_1/front_page_images/sadguru-deva.jpg';
+  const ogSource = page.image || DEFAULT_OG_IMAGE;
+  const og = shareImage(ogSource);
+  const ogAlt = shareAlt(ogSource, body);
   const canonical = page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`;
   // The 404 page answers unknown URLs: not indexed, no language alternates, and no
   // remembered-language redirect (it would loop, every unknown URL is this page).
@@ -74,10 +110,14 @@ ${is404 ? '<meta name="robots" content="noindex">' : `${LANG_CODES.map(([code]) 
 <link rel="alternate" hreflang="x-default" href="${page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`}">`}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.name)}">
+<meta property="og:url" content="${canonical}">
+${ogLocaleTags('en')}
 <meta property="og:title" content="${esc(page.title)}">
 <meta property="og:description" content="${esc(page.description)}">
-<meta property="og:image" content="${og}">
-<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="${og.url}">
+${og.w ? `<meta property="og:image:type" content="${og.type}">
+<meta property="og:image:width" content="${og.w}">
+<meta property="og:image:height" content="${og.h}">\n` : ''}${ogAlt ? `<meta property="og:image:alt" content="${ogAlt}">\n` : ''}<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/img/icons/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/img/icons/apple-touch-icon.png">
@@ -230,7 +270,7 @@ export function layout(page, body) {
     ...(page.features || []).map((f) => `<script src="assets/js/features/${f}.js" defer></script>`),
     ...(page.scripts || []).map((s) => /^https?:/.test(s) ? `<script src="${s}" defer></script>` : `<script src="assets/js/${s}.js" defer></script>`),
   ].join('\n');
-  return `${head(page)}
+  return `${head(page, body)}
 <body class="page-${page.slug}${page.bodyClass ? ' ' + page.bodyClass : ''}">
 <a class="skip" href="#main">Skip to content</a>
 ${sprite}

@@ -178,7 +178,7 @@ export function extract(html) {
   });
   for (const tk of tokens) {
     if (tk.t !== 'open') continue;
-    if (tk.name === 'meta' && /(?:name="description"|property="og:(?:title|description)")/.test(tk.attrs)) {
+    if (tk.name === 'meta' && /(?:name="description"|property="og:(?:title|description|image:alt)")/.test(tk.attrs)) {
       const c = /content="([^"]*)"/.exec(tk.attrs); if (c && hasLetter(c[1])) segs.set(norm(decodeEntities(c[1])), 1);
     }
     eachAttr(tk.raw, (v) => { segs.set(v, (segs.get(v) || 0) + 1); return undefined; });
@@ -222,7 +222,7 @@ export function translate(html, dict, lang) {
   // attributes and meta content
   out = out.replace(/<[a-zA-Z][^>]*>/g, (tag) => {
     let t = eachAttr(tag, (v) => lookup(v));
-    if (/^<meta\b/.test(t) && /(?:name="description"|property="og:(?:title|description)")/.test(t)) {
+    if (/^<meta\b/.test(t) && /(?:name="description"|property="og:(?:title|description|image:alt)")/.test(t)) {
       t = t.replace(/(content=")([^"]*)(")/, (all, a, v, b) => {
         const r = hasLetter(v) ? lookup(norm(decodeEntities(v))) : undefined;
         return r === undefined ? all : a + encodeAttr(r) + b;

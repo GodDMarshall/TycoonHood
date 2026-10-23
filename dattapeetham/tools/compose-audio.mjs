@@ -8,12 +8,18 @@
 //   node tools/compose-audio.mjs --wav      render the WAV files but do not encode them
 //   node tools/compose-audio.mjs --work <dir>   where WAVs and stems go
 //                                               (default: <system temp>/dattapeetham-audio)
+//   node tools/compose-audio.mjs --xfade-tail 3.35   also write flute-mohanam-xfade.mp3: the same
+//        loop followed by its own first 3.35 s, for a player that crossfades two <audio>
+//        elements (crossfade inside the tail into a second element started at 0, and the
+//        two play identical audio). Not made unless asked for.
 //
 // Nothing is sampled or recorded: the flute, the tanpura, the bells and the
 // temple acoustics are all synthesised below from well-known DSP (additive and
 // modal synthesis, resonant filters, a synthetic room impulse response and FFT
-// convolution). A seeded random generator drives every human detail, so each
-// render is identical and editing one phrase changes only that phrase.
+// convolution). Seeded random generators drive every human detail, so each
+// render is identical. Each phrase has its own stream: editing one phrase leaves
+// the nuances of every other phrase as they were (later phrases only move in
+// time), and the score never changes the tanpura or the bells.
 //
 // Needs Node 20+ and nothing else to render. Encoding needs ffmpeg with
 // libmp3lame on the PATH.
@@ -33,7 +39,7 @@
 // itself. The flute is silent for SCORE.intro seconds at the start and
 // SCORE.outro seconds at the end, so the seam always falls on drone alone.
 
-import { writeFile, mkdir, stat } from 'node:fs/promises';
+import { writeFile, readFile, mkdir, stat } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -51,7 +57,7 @@ import os from 'node:os';
 //   P.  D.         a dot after a swara: mandra sthayi (the octave below)
 //   S'  R'  G'     a quote after it: tara sthayi (the octave above); S'' is ati-tara Sa
 //   :1.5           how long the swara is held, in seconds (an alapana has no tala)
-//   G~             kampita: the swara oscillates up toward the next swara and settles back
+//   G~             kampita: the swara oscillates, touching the next swara above, and settles back on it
 //   /D             jaru: a slow slide into this swara from the one before it
 //   (D)P           kan: a quick grace touch of D just before landing on P
 //   -:0.3          a short silence inside the phrase (no breath is taken)
@@ -77,18 +83,20 @@ export const SCORE = {
     { notes: 'G:0.6 P:2.0 (D)P:0.8 G~:1.4 R:0.6 G:0.8 /P:2.4', gap: 1.6, level: 0.82 },
     { notes: 'P:0.5 D~:2.2 P:0.6 G:0.6 /P:1.0 D:0.6 P:2.4', gap: 1.8, level: 0.82 },
     { notes: "G:0.5 P:0.5 D:0.6 S':2.6 /D:1.2 P:0.8 G~:1.6 R:0.6 S:2.4", gap: 2.0, level: 0.85 },
-    { notes: 'P:0.4 G:0.4 R:0.4 S:0.6 R:0.4 G~:1.8 P:0.9 G:0.5 R:0.5 S:1.0 D.:0.6 S:2.0', gap: 2.2, level: 0.8 },
+    { notes: 'P:0.6 G:0.4 R:0.3 S:0.7 R:0.4 G~:1.8 P:0.9 G:0.5 R:0.5 S:1.0 D.:0.6 S:2.0', gap: 2.2, level: 0.8 },
     // III. Rising to tara sthayi
-    { notes: "G:0.5 P:0.5 D:0.5 S':0.9 R':0.6 S':2.8", gap: 1.6, level: 0.86 },
-    { notes: "D:0.6 P:0.5 G:0.5 P:0.5 D~:1.8 S':2.6", gap: 1.8, level: 0.86 },
+    { notes: "G:0.6 P:0.4 D:0.5 S':0.9 R':0.6 S':2.8", gap: 1.6, level: 0.86 },
+    { notes: "D:0.6 P:0.5 G:0.5 P:0.5 D~:1.8 S':1.4 /D:2.2", gap: 1.8, level: 0.86 }, // (review) rests on Dha: S' sliding down to D
     { notes: "S':1.2 (R')S':0.8 D~:1.4 P:0.6 D:0.5 S':0.7 R':0.8 G'~:2.0 R':0.6 S':2.4", gap: 2.0, level: 0.88 },
-    { notes: "S:0.3 R:0.3 G:0.3 P:0.3 D:0.3 S':0.9 R':0.5 G':1.2 /P':1.4 G':0.6 R':0.6 S':2.0", gap: 2.2, level: 0.88 },
-    // IV. The peak: tara Pa, touching ati-tara Sa
-    { notes: "G':0.8 P':2.8 (D')P':0.8 G'~:1.4 R':0.6 S':1.8", gap: 2.0, level: 0.86 },
-    { notes: "S':0.4 R':0.4 G':0.4 P':0.6 D'~:1.8 S'':3.0 /D':1.2 P':1.0 G':0.8 R':0.6 S':2.4", gap: 2.4, level: 0.84 },
+    // (review: no straight runs of the scale at an even pace; climbs and descents
+    // turn back on themselves — G P D P D S', R' S' R' G', P' G' P' G' — as alapana does)
+    { notes: "G:0.4 P:0.5 D:0.4 P:0.4 D:0.5 S':1.0 R':0.5 S':0.4 R':0.5 G':1.2 /P':1.4 G':0.6 R':0.6 S':2.0", gap: 2.2, level: 0.88 },
+    // IV. The peak: tara Pa, touching ati-tara Sa (briefly and not at full breath: it is background music)
+    { notes: "G':0.8 P':2.8 (D')P':0.8 G'~:1.4 R':0.4 G':1.8", gap: 2.0, level: 0.86 }, // (review) rests on tara Ga, a jiva swara
+    { notes: "S':0.5 R':0.4 G':0.7 R':0.4 G':0.4 P':0.7 D'~:1.6 S'':2.4 /D':1.2 P':0.9 G':0.5 P':0.4 G':0.8 R':0.5 S':2.4", gap: 2.4, level: 0.8 },
     // V. Descent and resolution to Sa
-    { notes: "D':0.6 P':0.6 G':0.6 R':0.6 S':0.24 D:0.24 S':0.24 R':0.24 S':1.2 D:0.8 P:1.1 /D:0.9 S':2.2", gap: 2.0, level: 0.84 },
-    { notes: "S':0.5 D:0.5 P:0.5 G:0.5 R:0.6 S:2.0", gap: 1.8, level: 0.8 },
+    { notes: "S':0.6 R':0.4 S':0.3 D:0.25 S':0.25 R':0.3 S':1.2 D:0.8 P:1.1 /D:0.9 S':2.2", gap: 2.0, level: 0.84 },
+    { notes: "S':0.6 D~:1.3 P:0.7 G:0.4 P:0.5 D:0.4 P:0.5 G:0.6 R:0.5 S:2.2", gap: 1.8, level: 0.8 },
     { notes: 'P:1.0 /D:1.4 P:0.6 G~:1.8 R:0.6 G:0.6 P:0.8 G:0.5 R:0.5 S:2.2', gap: 2.0, level: 0.8 },
     { notes: 'G:0.6 R:0.6 S:0.7 D.:1.0 S:0.6 R:0.5 S:0.6 D.:0.6 P.:2.0 /D.:1.1 S:2.4', gap: 2.4, level: 0.76 },
     { notes: 'S:0.8 R:0.6 G~:1.8 R:0.7 S:1.0 D.:0.9 S:6.0', gap: 0, level: 0.74 },
@@ -192,6 +200,7 @@ class Biquad {
     return this.set(A * (A + 1 + (A - 1) * c + s), -2 * A * (A - 1 + (A + 1) * c), A * (A + 1 + (A - 1) * c - s),
       A + 1 - (A - 1) * c + s, 2 * (A - 1 - (A + 1) * c), A + 1 - (A - 1) * c - s);
   }
+  reset() { this.z1 = this.z2 = 0; return this; }
   tick(x) {
     const y = this.b0 * x + this.z1;
     this.z1 = this.b1 * x - this.a1 * y + this.z2;
@@ -301,9 +310,9 @@ function below(c) {
 }
 
 export function schedule(score = SCORE) {
-  const R = rng(score.seed, 'rubato');
   let t = score.intro;
   const phrases = score.phrases.map((ph, pi) => {
+    const R = rng(score.seed, `rubato-${pi + 1}`);
     const notes = parsePhrase(ph.notes, `phrase ${pi + 1}`);
     const ev = [];
     for (const n of notes) {
@@ -333,7 +342,6 @@ export function schedule(score = SCORE) {
 // (the airy halo of a bamboo flute), a weaker band on the octave, and a soft
 // high hiss. Onsets carry a breathy chiff; gaps carry a faint inhale.
 function renderFlute(plan, N, score) {
-  const R = rng(score.seed, 'flute');
   const SA = score.sa;
   const cents = new Float32Array(N), lvl = new Float32Array(N), env = new Float32Array(N);
   const air = new Float32Array(N), vib = new Float32Array(N), inh = new Float32Array(N);
@@ -341,6 +349,7 @@ function renderFlute(plan, N, score) {
   const ranges = [];
 
   for (const ph of plan.phrases) {
+    const R = rng(score.seed, `flute-${ph.index}`);
     const ev = ph.ev, baseDb = 20 * Math.log10(ph.level), pdur = ph.t1 - ph.t0;
     const lastI = ev.length - 1;
     // 1. how each swara is reached
@@ -453,7 +462,7 @@ function renderFlute(plan, N, score) {
   }
   // 6. faint inhales in most breathing gaps
   for (let i = 0; i < plan.phrases.length; i++) {
-    const nextT0 = plan.phrases[i].t0, prevT1 = i ? plan.phrases[i - 1].t1 : 0;
+    const nextT0 = plan.phrases[i].t0, prevT1 = i ? plan.phrases[i - 1].t1 : 0, R = rng(score.seed, `inhale-${i + 1}`);
     if (nextT0 - prevT1 < 1.3 || R() > 0.75) continue;
     const d = 0.3 + 0.22 * R(), t1 = nextT0 - 0.1 - 0.06 * R(), t0 = t1 - d;
     for (let n = at(t0); n < at(t1); n++) {
@@ -477,7 +486,11 @@ function renderFlute(plan, N, score) {
   const bpNorm = (f, q) => 1 / Math.sqrt(((Math.PI / 2) * (f / q)) / (SR / 2)); // unit-RMS output for white input
   const HISS_NORM = 1 / Math.sqrt((9000 - 3200) / (SR / 2)), AIR_NORM = bpNorm(2200, 0.6), IN_NORM = bpNorm(1500, 0.8);
   let ph = 0, vph = 0, n1 = 1, n2 = 1, h2 = 0, h3 = 0, h4 = 0, h5 = 0;
+  const filters = [bp1, bp2, airBP, hissHP, hissLP, inBP, inLP];
   for (const [a, b] of ranges) {
+    // every breath starts afresh, so a phrase depends only on its own notes
+    ph = 0; vph = 0;
+    for (const f of filters) f.reset();
     for (let n = a; n < b; n++) {
       const t = n / SR, e = env[n], w = noise();
       let y = 0;
@@ -535,11 +548,14 @@ function renderTanpura(N, score) {
     { name: 'Sa', f: sa * Math.pow(2, 1.4 / 1200), at: 0.455, pan: 0.02, gain: 0.8, tau1: 4.0, p: 0.23, c0: 3800, c1: 900 },
     { name: 'Kharaj Sa', f: (sa / 2) * Math.pow(2, 0.6 / 1200), at: 0.675, pan: -0.22, gain: 1.0, tau1: 5.2, p: 0.17, c0: 2800, c1: 600 },
   ];
+  // A whole number of cycles fits the loop exactly, and each cycle begins with Pa
+  // on the loop point, so the seam falls on a pluck like every other bar.
   const L = N / SR, cycles = Math.max(1, Math.round(L / MUSIC.tanpuraCycle)), C = L / cycles;
-  const outL = new Float32Array(N), outR = new Float32Array(N);
+  const outL = new Float32Array(N), outR = new Float32Array(N), plucks = [];
   for (const st of strings) {
     const times = [], vel = [];
     for (let k = 0; k < cycles; k++) { times.push((k + st.at) * C + 0.018 * G()); vel.push(dbToGain(1.0 * G())); }
+    times.forEach((t, k) => plucks.push({ string: st.name, k, t, phase: t - k * C }));
     const [gl, gr] = panGains(st.pan);
     for (let k = 0; k < cycles; k++) {
       const next = k + 1 < cycles ? times[k + 1] : times[0] + L;
@@ -554,7 +570,7 @@ function renderTanpura(N, score) {
   }
   // the gourd and the room: a little body warmth, softened top
   for (const ch of [outL, outR]) filterLoop(ch, [new Biquad().peaking(200, 0.8, 2), new Biquad().peaking(900, 1, 1.5), new Biquad().highshelf(5500, -4)]);
-  return { L: outL, R: outR };
+  return { L: outL, R: outR, cycles, C, plucks };
 }
 
 function renderPluck(st, ring, amp, R) {
@@ -816,12 +832,70 @@ function linearGain(m, I, TP) {
   if (m.input_tp + gain > TP) { console.warn(`  ! true peak would reach ${(m.input_tp + gain).toFixed(2)} dBTP; lowering the gain`); gain = TP - m.input_tp; }
   return gain;
 }
+// EBU R128 integrated loudness and true peak of a finished file (ffmpeg ebur128)
+function ebur128(file) {
+  const err = ffmpeg(['-nostats', '-i', file, '-af', 'ebur128=peak=true', '-f', 'null', '-']);
+  const s = err.slice(err.lastIndexOf('Summary:'));
+  return { lufs: +/I:\s+(-?[\d.]+) LUFS/.exec(s)[1], lra: +/LRA:\s+(-?[\d.]+) LU/.exec(s)[1], truePeak: +/Peak:\s+(-?[\d.]+) dBFS/.exec(s)[1] };
+}
+// Encode, measure the MP3 itself, and re-encode once with the residual
+// corrected: libmp3lame scales its input by 0.95 (-0.45 dB), and the codec
+// shifts loudness a little more, so the target is checked on the real file.
+function encodeTo(target, mp3, encode, gain = 0) {
+  encode(gain);
+  let m = ebur128(mp3);
+  if (Math.abs(target - m.lufs) > 0.05) { gain += target - m.lufs; encode(gain); m = ebur128(mp3); }
+  return { gain, ...m };
+}
 const kb = async (f) => Math.round((await stat(f)).size / 1024);
+// The gapless fields of the Xing/Info header ffmpeg writes: encoder delay and
+// end padding, which decoders use to return exactly the original samples.
+async function gapless(file) {
+  const d = await readFile(file);
+  const i = d.subarray(0, 3).toString() === 'ID3' ? 10 + ((d[6] << 21) | (d[7] << 14) | (d[8] << 7) | d[9]) : 0;
+  const first = d.subarray(i, i + 64); // the tag sits in the first frame, after the side information
+  const at = Math.max(first.indexOf('Info'), first.indexOf('Xing'));
+  if (at < 0) return null;
+  const tag = i + at;
+  const flags = d.readUInt32BE(tag + 4);
+  let p = tag + 8, frames = null;
+  if (flags & 1) { frames = d.readUInt32BE(p); p += 4; }
+  if (flags & 2) p += 4;
+  if (flags & 4) p += 100;
+  if (flags & 8) p += 4;
+  const delay = (d[p + 21] << 4) | (d[p + 22] >> 4), padding = ((d[p + 22] & 15) << 8) | d[p + 23];
+  return { encoder: d.subarray(p, p + 9).toString().replace(/\0/g, ''), encoderDelay: delay, padding, frames, samples: frames * 1152 - delay - padding };
+}
 
 // ============================================================================
 // Main
 // ============================================================================
-async function renderMusic(work, encode) {
+// The tanpura's pluck grid, for a player that loops with two <audio> elements and
+// cannot hit the loop point to the sample. Every cycle has the same shape (Pa, Sa,
+// Sa, kharaj Sa, then a quiet stretch while the strings ring), so crossfading the
+// last cycle into the first at the same point of the cycle, inside that quiet
+// stretch, keeps the plucks in their rhythm. One cycle of drone is skipped per loop;
+// the flute is silent there (it ends long before the last cycle and starts after
+// the first). Crossfading the end of the file into its start (B at 0) instead lays
+// two different stretches of the pattern over each other: extra and missing plucks.
+function tanpuraGrid(tan, plan) {
+  const { cycles: K, C, plucks } = tan;
+  const kharaj = Math.max(...plucks.filter((p) => p.string === 'Kharaj Sa').map((p) => p.phase));
+  const nextPa = C + Math.min(...plucks.filter((p) => p.string === 'Pa').map((p) => p.phase));
+  const quiet = [kharaj + 0.2, nextPa - 0.05]; // after the last pluck's attack has settled, before the next Pa
+  const xf = Math.min(0.6, Math.max(0.2, quiet[1] - quiet[0] - 0.5));
+  const bAt = quiet[0] + 0.1, aFrom = (K - 1) * C + bAt;
+  if (aFrom < plan.fluteEnd + 4 || bAt + xf > plan.fluteStart) console.warn('  ! the cycle-aligned crossfade would overlap the flute');
+  const r = (x) => +x.toFixed(4);
+  return {
+    cycles: K, cycleSeconds: r(C), plucksPerCycle: ['Pa', 'Sa', 'Sa', 'Kharaj Sa'],
+    quietInCycle: quiet.map(r),
+    crossfade: { aFrom: r(aFrom), bAt: r(bAt), seconds: xf,
+      note: 'For a two-<audio> player: when A reaches aFrom, start B at bAt (better: at A.currentTime - (cycles - 1) * cycleSeconds) and crossfade with equal-power curves over `seconds`. Both are drone only and at the same point of the tanpura cycle; anywhere inside quietInCycle works.' },
+  };
+}
+
+async function renderMusic(work, encode, xfadeTail = 0) {
   const t0 = Date.now();
   const plan = schedule(SCORE);
   const N = Math.round(plan.length * SR);
@@ -864,22 +938,35 @@ async function renderMusic(work, encode) {
     phrases: plan.phrases.map((p) => ({ index: p.index, t0: +p.t0.toFixed(3), t1: +p.t1.toFixed(3), notes: p.notes,
       swaras: p.ev.filter((e) => !e.rest).map((e) => ({ s: e.swara, cents: +e.cents.toFixed(1), t0: +e.t0.toFixed(3), t1: +e.t1.toFixed(3), kampita: !!e.kampita, jaru: !!e.jaru, grace: !!e.grace })) })),
   }, null, 1));
-  const info = { file: 'flute-mohanam.mp3', samples: N, seconds: +(N / SR).toFixed(4), fluteStart: +plan.fluteStart.toFixed(2), fluteEnd: +plan.fluteEnd.toFixed(2) };
+  const info = { file: 'flute-mohanam.mp3', samples: N, seconds: +(N / SR).toFixed(4), fluteStart: +plan.fluteStart.toFixed(2), fluteEnd: +plan.fluteEnd.toFixed(2), tanpura: tanpuraGrid(tan, plan) };
   if (!encode) return info;
 
+  // pass 1: loudnorm measures the master; pass 2: its linear gain, checked on the MP3
   const m = measure(wav, MUSIC.lufs, MUSIC.truePeak);
-  const gain = linearGain(m, MUSIC.lufs, MUSIC.truePeak);
   const mp3 = join(OUT, 'flute-mohanam.mp3');
   await mkdir(OUT, { recursive: true });
-  ffmpeg(['-i', wav, '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
+  const enc = encodeTo(MUSIC.lufs, mp3, (gain) => ffmpeg(['-i', wav, '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
     '-metadata', 'title=Mohanam (flute alapana with tanpura)', '-metadata', 'artist=Original composition for dattapeetham.org',
-    '-metadata', `comment=${CREDIT}. Raga Mohanam, Sa = D.`, mp3]);
+    '-metadata', `comment=${CREDIT}. Raga Mohanam, Sa = D.`, mp3]), linearGain(m, MUSIC.lufs, MUSIC.truePeak));
+  if (enc.truePeak > MUSIC.truePeak) throw new Error(`true peak ${enc.truePeak} dBTP exceeds ${MUSIC.truePeak}`);
   const ex = plan.phrases[SCORE.excerptFrom - 1].t0 - 1.5;
-  ffmpeg(['-ss', ex.toFixed(3), '-t', '30', '-i', wav, '-af', `volume=${gain.toFixed(3)}dB,afade=t=in:st=0:d=1.2,afade=t=out:st=27.5:d=2.5`,
+  ffmpeg(['-ss', ex.toFixed(3), '-t', '30', '-i', wav, '-af', `volume=${enc.gain.toFixed(3)}dB,afade=t=in:st=0:d=1.2,afade=t=out:st=27.5:d=2.5`,
     '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-metadata', 'title=Mohanam (30 s excerpt)', join(work, 'flute-excerpt.mp3')]);
-  console.log(`  encoded ${mp3} (${await kb(mp3)} KB): loudnorm measured ${m.input_i} LUFS / ${m.input_tp} dBTP, gain ${gain.toFixed(2)} dB`);
+  console.log(`  encoded ${mp3} (${await kb(mp3)} KB): master ${m.input_i} LUFS / ${m.input_tp} dBTP; gain ${enc.gain.toFixed(2)} dB → ${enc.lufs} LUFS, ${enc.truePeak} dBTP, LRA ${enc.lra} LU`);
   console.log(`  excerpt ${join(work, 'flute-excerpt.mp3')} from ${ex.toFixed(1)} s`);
-  return { ...info, gainDb: +gain.toFixed(3), excerptFrom: +ex.toFixed(2) };
+  const out = { ...info, gainDb: +enc.gain.toFixed(3), lufs: enc.lufs, truePeakDbtp: enc.truePeak, lraLU: enc.lra, kb: await kb(mp3), excerptFrom: +ex.toFixed(2) };
+  if (xfadeTail > 0) { // the loop, then its own beginning again: continuous across N by construction
+    const T = Math.round(xfadeTail * SR), xL = new Float32Array(N + T), xR = new Float32Array(N + T);
+    xL.set(L); xL.set(L.subarray(0, T), N); xR.set(Rt); xR.set(Rt.subarray(0, T), N);
+    const xwav = join(work, 'flute-mohanam-xfade.wav'), xmp3 = join(OUT, 'flute-mohanam-xfade.mp3');
+    await writeFile(xwav, wavFloat([xL, xR]));
+    ffmpeg(['-i', xwav, '-af', `volume=${enc.gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
+      '-metadata', 'title=Mohanam (flute alapana with tanpura), crossfade tail', '-metadata', `comment=${CREDIT}.`, xmp3]);
+    out.xfade = { file: 'flute-mohanam-xfade.mp3', samples: N + T, loopSamples: N, loopSeconds: +(N / SR).toFixed(4), tailSeconds: +(T / SR).toFixed(4), kb: await kb(xmp3),
+      note: 'Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play identical audio.' };
+    console.log(`  crossfade variant ${xmp3} (${out.xfade.kb} KB, tail ${out.xfade.tailSeconds} s)`);
+  }
+  return out;
 }
 
 async function renderSfx(work, encode) {
@@ -902,11 +989,12 @@ async function renderSfx(work, encode) {
     const rec = { file: `sfx/${it.name}.mp3`, seconds: +(it.buf.length / SR).toFixed(3), ...(it.swara ? { swara: it.swara, hz: it.hz } : {}), ...(it.note ? { note: it.note } : {}) };
     if (encode) {
       const mp3 = join(OUT, 'sfx', it.name + '.mp3');
-      ffmpeg(['-i', wav, '-c:a', 'libmp3lame', '-b:a', '96k', '-ac', '1', '-ar', String(SR), '-metadata', `title=${it.name}`, '-metadata', 'artist=Original sound for dattapeetham.org', mp3]);
-      rec.kb = await kb(mp3);
+      const enc = encodeTo(SFX_LUFS[it.kind], mp3, (gain) => ffmpeg(['-i', wav, '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', '96k', '-ac', '1', '-ar', String(SR),
+        '-metadata', `title=${it.name}`, '-metadata', 'artist=Original sound for dattapeetham.org', mp3]));
+      Object.assign(rec, { lufs: enc.lufs, truePeakDbtp: enc.truePeak, kb: await kb(mp3) });
     }
     out.push(rec);
-    console.log(`  ${it.name}: ${rec.seconds} s${rec.kb ? `, ${rec.kb} KB` : ''}`);
+    console.log(`  ${it.name}: ${rec.seconds} s${rec.kb ? `, ${rec.kb} KB, ${rec.lufs} LUFS, ${rec.truePeakDbtp} dBTP` : ''}`);
   }
   return out;
 }
@@ -924,15 +1012,23 @@ async function main() {
   }
   const doMusic = !args.includes('--sfx') || args.includes('--music'), doSfx = !args.includes('--music') || args.includes('--sfx');
   const manifest = { credit: CREDIT, raga: 'Mohanam (S R2 G3 P D2)', sa: 'D', saHz: SCORE.sa, sampleRate: SR };
-  if (doMusic) manifest.music = await renderMusic(work, encode);
+  const xi = args.indexOf('--xfade-tail');
+  if (doMusic) manifest.music = await renderMusic(work, encode, xi >= 0 ? +args[xi + 1] : 0);
   if (doSfx) { console.log('temple sounds:'); manifest.sfx = await renderSfx(work, encode); }
   if (encode && doMusic && doSfx) {
-    manifest.music.loop = { start: 0, end: manifest.music.seconds, samples: manifest.music.samples,
-      note: 'The whole file is one seamless loop. Web Audio: decode, then loop the buffer; if the decoded length exceeds `samples`, the decoder kept the MP3 priming: set loopStart to the excess at the start (1105 samples for this LAME encode) and loopEnd = loopStart + samples / sampleRate.' };
+    const gl = await gapless(join(OUT, 'flute-mohanam.mp3'));
+    if (!gl || gl.samples !== manifest.music.samples) console.warn(`  ! gapless header says ${gl && gl.samples} samples, the master has ${manifest.music.samples}`);
+    manifest.music.loop = {
+      start: 0, end: manifest.music.seconds, samples: manifest.music.samples, gapless: gl,
+      note: 'The whole file is one seamless loop. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true). A decoder that ignores the header returns more, usually 1105 extra at the start (576 encoder + 529 decoder delay): then set loopStart = 1105 / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skips 12–23 ms at the wrap (measured), an audible hiccup in the drone. A player that crossfades two <audio> elements should use music.tanpura.crossfade (same point of the tanpura cycle) rather than fade the end of the file into B started at 0.',
+    };
     await writeFile(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
   }
   console.log(`work files in ${work}`);
 }
+
+// for tests and analysis: `import { makeIR } from './compose-audio.mjs'` renders nothing by itself
+export { renderFlute, renderTanpura, makeIR, convolveLoop, renderGhanta, renderChime, renderShankha, lufs, SR };
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   main().catch((e) => { console.error(e.message || e); process.exit(1); });

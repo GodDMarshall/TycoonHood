@@ -1,6 +1,8 @@
 # Tamil (தமிழ்) site: notes for the native reviewer
 
-The Tamil site lives at `/ta/`. Six translators each did one sixth of the site in parallel. One
+The Tamil site lives at `/ta/`. It was translated in six parallel machine-assisted passes, each
+one sixth of the site (the "translators" in this note; they are not six people), and no fluent
+speaker has reviewed it yet: that is your review. One
 editorial pass then made names, terms and UI labels consistent across all pages, translated the
 English segments that changed after the first pass, and checked every page in a browser at desktop
 (1440 px) and phone (390 px) width. This note lists what was decided, what only the Ashram can

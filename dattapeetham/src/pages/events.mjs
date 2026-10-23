@@ -147,6 +147,9 @@ const COMING = [
   },
 ];
 
+// Each coming-up card has an anchor; the JSON-LD events below link to it.
+const eventId = (c) => `ev-${c.s}`;
+
 function featureCard(c) {
   const a = parse(c.s), b = parse(c.e);
   const to = c.s === c.e ? WD[a.wd] : `to ${b.m === a.m ? b.d : `${b.d} ${MON[b.m]}`}`;
@@ -154,7 +157,7 @@ function featureCard(c) {
     ? `<div class="ev-fmedia">${img(c.img, c.alt)}${c.note ? `<small class="ev-fnote">${c.note}</small>` : ''}</div>`
     : `<div class="ev-fmedia ev-plate" aria-hidden="true">${icon('mandala', 220)}<span>${c.plate}</span></div>`;
   const more = c.more ? `<a class="ev-more" href="${c.more[0]}"${/^https?:/.test(c.more[0]) ? ext : ''}>${c.more[1]} ${icon(/^https?:/.test(c.more[0]) ? 'arrow-up-right' : 'arrow', 14)}</a>` : '';
-  return `<article class="ev-fcard" data-filter-item="${c.kinds.join(' ')}" data-start="${c.s}" data-end="${c.e}">
+  return `<article class="ev-fcard" id="${eventId(c)}" data-filter-item="${c.kinds.join(' ')}" data-start="${c.s}" data-end="${c.e}">
   ${media}
   <div class="ev-fdate"><time datetime="${c.s}"><b>${a.d}</b><span>${MON[a.m]}</span></time><small>${to}</small></div>
   <div class="ev-fbody">
@@ -624,7 +627,20 @@ const staySection = `<section id="updates" class="section section-sand ev-stay">
 
 // ---------------------------------------------------------------------------
 
-const eventLd = COMING.filter((c) => c.where).map((c) => ({
+// Event structured data, for the events still ahead on the day of the build
+// (Mysuru time): rebuild after the calendar changes or an event passes, and
+// past events drop out. Each venue's address is as the sources give it: the
+// Ashram's own (src/site.mjs), "Nara, Japan" from the calendar, and
+// "Ganagapura, Karnataka, India" from the centre directory.
+const ASHRAM_ADDRESS = { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.city, addressRegion: site.address.region, postalCode: site.address.postal, addressCountry: site.address.country };
+const VENUE_ADDRESS = {
+  'Nara, Japan': { '@type': 'PostalAddress', addressLocality: 'Nara', addressCountry: 'JP' },
+  'Vishwaroopa Datta Kshetra, Ganagapura': { '@type': 'PostalAddress', addressLocality: 'Ganagapura', addressRegion: 'Karnataka', addressCountry: 'IN' },
+};
+const venueAddress = (where) => VENUE_ADDRESS[where] || (/,\s*Mysuru$/.test(where) ? ASHRAM_ADDRESS : undefined);
+const TODAY = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+
+const eventLd = COMING.filter((c) => c.where && c.e >= TODAY).map((c) => ({
   '@context': 'https://schema.org',
   '@type': 'Event',
   name: c.title.replace(/&amp;/g, '&'),
@@ -632,9 +648,9 @@ const eventLd = COMING.filter((c) => c.where).map((c) => ({
   endDate: c.e,
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-  location: { '@type': 'Place', name: c.where },
+  location: { '@type': 'Place', name: c.where.replace(/&amp;/g, '&'), ...(venueAddress(c.where) ? { address: venueAddress(c.where) } : {}) },
   organizer: { '@type': 'Organization', name: 'Avadhoota Datta Peetham', url: `${site.origin}/` },
-  url: links.calendar,
+  url: `${site.origin}/events.html#${eventId(c)}`,
 }));
 
 export default {

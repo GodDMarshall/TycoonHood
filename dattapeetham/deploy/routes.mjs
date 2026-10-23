@@ -18,19 +18,38 @@ export const LANGUAGES = ['kn', 'hi', 'ta', 'te'];
 
 // Unknown paths, at any depth and in any language folder, get this page with
 // HTTP status 404. It is the English page: its links are root-absolute, so it
-// works at /kn/a/b/c as well as at /x.
+// works at /kn/a/b/c as well as at /x. (Cloudflare instead serves the nearest
+// folder's 404.html, /kn/404.html for /kn/a/b; the build makes the language
+// 404 pages root-absolute too.)
 export const NOT_FOUND_PAGE = '/404.html';
 
 // ---------------------------------------------------------------------------
 // Security headers, sent on every response (pages, assets, redirects, 404s).
-// Carried over unchanged from the original vercel.json.
+// From the original vercel.json, with the Content Security Policy fitted to
+// what the built site actually loads (v1.0.0 launch audit):
+//   media-src  added: the chant on the Media page streams from the Peetham's
+//              S3 bucket, and without it default-src 'self' blocked it; the
+//              site's own audio stays allowed by 'self'
+//   img-src    https://dev-dattapeetham.s3.amazonaws.com removed (the one photo
+//              there is now self-hosted) and https://i.ytimg.com removed (every
+//              video has a Peetham poster; no page loads a YouTube thumbnail)
+// tests/server-configs.test.mjs checks every cross-origin host the build
+// loads is allowed here, so a new one fails the tests, not the live site.
 // ---------------------------------------------------------------------------
 export const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
+  // Two years, for this site's own host name only. No includeSubDomains:
+  // Apache and IIS also send this header from the bare dattapeetham.org
+  // (on its redirect to www), and from there includeSubDomains would make
+  // browsers refuse plain http:// on EVERY *.dattapeetham.org name for two
+  // years, including names the agency does not know about (mail, webmail,
+  // older services). Add "; includeSubDomains" here, and rebuild, only once
+  // the Peetham has confirmed that every name in the zone works over https://
+  // (docs/handover/DOMAIN-CUTOVER.md, step 2).
+  'Strict-Transport-Security': 'max-age=63072000',
   'Content-Security-Policy': [
     "default-src 'self'",
     "base-uri 'self'",
@@ -40,7 +59,8 @@ export const securityHeaders = {
     "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https://dattapeetham.s3.amazonaws.com https://dev-dattapeetham.s3.amazonaws.com https://i.ytimg.com",
+    "img-src 'self' data: https://dattapeetham.s3.amazonaws.com",
+    "media-src 'self' https://dattapeetham.s3.amazonaws.com",
     'frame-src https://www.youtube-nocookie.com https://www.google.com',
     "connect-src 'self'",
     'upgrade-insecure-requests',

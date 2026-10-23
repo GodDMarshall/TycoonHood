@@ -158,6 +158,7 @@
     var setState = function () {
       var playing = !audio.paused && !audio.ended;
       box.classList.toggle('is-playing', playing);
+      if (box.classList.contains('is-failed')) return; // keeps "डाउनलोड लिंक का उपयोग करें"
       btn.setAttribute('aria-label', playing ? 'जप रोकें' : 'जप चलाएँ');
     };
 
@@ -172,7 +173,26 @@
     audio.addEventListener('ended', function () { setState(); audio.currentTime = 0; paint(); });
     audio.addEventListener('timeupdate', paint);
     audio.addEventListener('loadedmetadata', function () { dur.textContent = t(audio.duration); paint(); });
-    audio.addEventListener('error', function () { dur.textContent = 'डाउनलोड लिंक का उपयोग करें'; });
+    // A file that cannot load (offline, blocked, moved) must not leave the
+    // button saying "Pause" over silence: the error fires on the last <source>
+    // (or on the <audio> itself without one). Stop, disable the button and
+    // point to the download link, moving focus there if it was on the button.
+    var failed = function () {
+      if (box.classList.contains('is-failed')) return;
+      box.classList.add('is-failed');
+      if (!audio.paused) audio.pause();
+      box.classList.remove('is-playing');
+      dur.textContent = 'डाउनलोड लिंक का उपयोग करें';
+      var hadFocus = doc.activeElement === btn;
+      btn.disabled = true;
+      btn.setAttribute('aria-label', 'डाउनलोड लिंक का उपयोग करें');
+      seek.disabled = true;
+      var dl = $('.chant-dl', box);
+      if (hadFocus && dl) dl.focus();
+    };
+    audio.addEventListener('error', failed);
+    var sources = $$('source', audio);
+    if (sources.length) sources[sources.length - 1].addEventListener('error', failed);
 
     seek.addEventListener('input', function () {
       seeking = true;

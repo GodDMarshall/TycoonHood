@@ -6,8 +6,9 @@ Read this before you touch any file. It is the contract every page follows.
 
 This is the full rebuild of www.dattapeetham.org for Avadhoota Datta Peetham
 (Sri Ganapathy Sachchidananda Ashram, Mysuru). The client supplied a design
-reference: `/root/.claude/uploads/b1182561-ec52-585b-bacd-dba9ee5740a3/e730c538-image.png`.
-**Open it with the Read tool and study it before designing your page.**
+reference image during the build (it is not part of this repository; ask the
+agency for it). Study it before designing a page; the qualities below sum it
+up.
 
 The reference has these qualities:
 
@@ -31,14 +32,14 @@ effects.
 ## Non-negotiable honesty rules
 
 1. **No invented facts.** Every date, number, timing, name, address, quote and
-   claim must come from dattapeetham.org (the harvest files below, or a page
-   you fetch), from `src/data.mjs` or `src/site.mjs`. If you don't have a fact,
+   claim must come from dattapeetham.org (the official pages, see below),
+   from `src/data.mjs` or `src/site.mjs`. If you don't have a fact,
    leave it out. Don't write "15 Dec 2026"-style festival dates unless the
    source states them; describe festivals by their lunar month instead and link
    to the official calendar.
 2. **Real photographs only.** Use images from the Peetham's S3 bucket
    (`https://dattapeetham.s3.amazonaws.com/...`), already listed in `photos` in
-   `src/data.mjs` or found in the harvest files. Never use the concept-art
+   `src/data.mjs` or found on the official pages. Never use the concept-art
    images in the reference, stock photos or AI images. Every `<img>` needs an
    honest `alt` (empty `alt=""` only when it is decorative).
 3. **Transactions stay on the existing system.** Puja booking, donations, the
@@ -52,21 +53,13 @@ effects.
 
 ## Content sources
 
-- **Harvest files:**
-  `/tmp/claude-0/-home-user-TycoonHood/b1182561-ec52-585b-bacd-dba9ee5740a3/scratchpad/harvest/*.md`
-  hold the verbatim text of dattapeetham.org pages. They may still be
-  arriving.
-- **Fetching a page yourself.** If a file you need is missing, fetch the page
-  with Nimble:
-  1. Run ToolSearch with `select:mcp__Nimble__nimble_extract`.
-  2. Make the first call without a `conversation_id`, then reuse the one it
-     returns.
-  3. Use `output_format: "markdown"`.
-
-  Direct `curl` or WebFetch to dattapeetham.org is blocked here. Every fetched
-  page carries a huge navigation menu and a footer that starts "Avadhoota Datta
-  Peetham / Sri Ganapathy Sachchidananda Avadhoota Datta Peetha Trust"; ignore
-  both.
+- **The official pages.** The site's text was taken from the verbatim text
+  of the dattapeetham.org pages, collected in October 2026 (those working
+  files are not part of this repository). For a new fact, open the official
+  page on dattapeetham.org in a browser and copy from it. Every page there
+  carries a large navigation menu and a footer that starts "Avadhoota Datta
+  Peetham / Sri Ganapathy Sachchidananda Avadhoota Datta Peetha Trust";
+  ignore both.
 - **`src/data.mjs`:** shared collections, including `photos`, `timeline`,
   `concerts`, `albums`, `apps`, `kshetras`, `countries`, `latestSevas`,
   `timings` and `dattaCharitram` videos.
@@ -93,8 +86,8 @@ dattapeetham/
 ```
 
 Only create or edit **your own** files. If you need a change in a shared file,
-don't make it. Put a page-scoped equivalent in your page CSS or JS, and list
-the request under `shared_change_requests` in your result.
+don't make it. Put a page-scoped equivalent in your page CSS or JS, and pass
+the request to whoever looks after the shared files.
 
 Shared pieces added in the cross-site pass; use these rather than page copies:
 
@@ -237,16 +230,17 @@ fb, tg, yt, ig, spotify, apple, mandala.
 
 ## Verify before you finish
 
-1. `cd /home/user/TycoonHood/dattapeetham && node build.mjs`. It must build.
+1. In the project folder, run `node build.mjs`. It must build.
    Your page must cause **no broken links of its own**. Links to sibling pages
    that don't exist yet are fine; the planned pages are index, about,
    sri-swamiji, guru-parampara, darshan, events, teachings, music, kriya-yoga,
    seva, visit, attractions, media, centers and contact. Anchors that other
-   pages rely on must exist on your page; your brief lists them.
+   pages (and the old-site redirects in `deploy/routes.mjs`) rely on must
+   exist on your page; the build reports any that are missing.
 2. A dev server may already be running on port 4321 (`node build.mjs --serve`
    rebuilds on change). If `curl -s localhost:4321` fails, start one in the
    background yourself.
-3. `node qa/shot.mjs <your-file>.html /tmp/claude-0/-home-user-TycoonHood/b1182561-ec52-585b-bacd-dba9ee5740a3/scratchpad/shots/<slug> --full`.
+3. `node qa/shot.mjs <your-file>.html <a folder outside the project>/<slug> --full`.
    Then **Read the screenshots and look at them**. Compare with the reference
    image. Fix what looks wrong: spacing, contrast, broken images, awkward
    wrapping, empty areas. Repeat until it is genuinely excellent on both
@@ -315,6 +309,6 @@ and must be keyboard operable.
 - **2016 honorary doctorate (World Classical Tamil University).** The
   certificate reads Doctor of Letters (honoris causa), not a doctorate in
   music.
-- **Centre directory.** `harvest/centers--ashramcenters.md` holds 86 of the
-  92 centres with addresses. Use it on the centres page and say the list is
-  partial, linking the official directory.
+- **Centre directory.** The official directory (`/ashramcenters` on the
+  platform) gave addresses for 86 of the 92 centres. The centres page uses
+  them, says the list is partial and links the official directory.

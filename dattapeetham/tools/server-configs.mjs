@@ -19,8 +19,9 @@
 //   deploy/cloudflare/wrangler.jsonc    Cloudflare Workers static assets
 //   vercel.json                         Vercel
 //
-// The build calls writeServerConfigs() after it writes the pages; it updates
-// the project files only when building with the addresses in site.config.json.
+// The build calls writeServerConfigs() after it writes the pages. A build into
+// ./site also rewrites the project files for the addresses it used (flags,
+// environment or site.config.json); a build elsewhere (--out=…) leaves them.
 
 import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
@@ -259,6 +260,11 @@ const pageRules = (m) => m.redirects.filter((r) => r.kind !== 'old-site');
 
 // ---------------------------------------------------------------- Apache ---
 
+// The original request line ("GET /.well-known/acme-challenge/x HTTP/1.1",
+// also in absolute form) does not name a certificate path. Unlike REQUEST_URI,
+// THE_REQUEST keeps its value in the internal request ErrorDocument makes.
+const ACME_REQUEST_LINE = '!^[A-Z]+\\s+(?:[a-z][a-z0-9+.-]*://[^/\\s]*)?/\\.well-known/(?:acme-challenge|pki-validation)/ [NC]';
+
 export function renderHtaccess(m) {
   const L = [];
   const push = (...x) => L.push(...x);
@@ -331,12 +337,17 @@ export function renderHtaccess(m) {
       '  # left alone. To switch this block off, delete it, or add to the virtual',
       '  # host:  SetEnvIf Request_URI "^" DP_CANONICAL=off',
       '  # Behind a proxy or CDN that ends TLS, it trusts X-Forwarded-Proto: https.',
+      '  # The certificate paths are checked in the request line as well: a missing',
+      '  # challenge file triggers ErrorDocument, whose internal request for the 404',
+      '  # page would otherwise be redirected to https (a 301 instead of a 404).',
       '  RewriteCond %{ENV:DP_CANONICAL} !=off',
       '  RewriteCond %{REQUEST_URI} !^/\\.well-known/(?:acme-challenge|pki-validation)/',
+      `  RewriteCond %{THE_REQUEST} ${ACME_REQUEST_LINE}`,
       `  RewriteCond %{HTTP_HOST} ^${alias}\\.?(?::\\d+)?$ [NC]`,
       `  RewriteRule ^ https://${m.canonicalHost}%{REQUEST_URI} [R=301,L]`,
       '  RewriteCond %{ENV:DP_CANONICAL} !=off',
       '  RewriteCond %{REQUEST_URI} !^/\\.well-known/(?:acme-challenge|pki-validation)/',
+      `  RewriteCond %{THE_REQUEST} ${ACME_REQUEST_LINE}`,
       `  RewriteCond %{HTTP_HOST} ^${host}\\.?(?::\\d+)?$ [NC]`,
       '  RewriteCond %{HTTPS} !=on',
       '  RewriteCond %{HTTP:X-Forwarded-Proto} !^https$ [NC]',
@@ -406,8 +417,10 @@ export function renderNginx(m, { root = '/var/www/dattapeetham/site' } = {}) {
     '# certificate paths on the lines marked [tls], run `nginx -t`, reload.',
     '# Needs nginx 1.11.8+ (absolute_redirect). For nginx 1.25.1+ you may replace',
     '# "listen 443 ssl http2" with "listen 443 ssl" plus "http2 on;".',
-    '# Delete the lines marked [ipv6] if the server has no IPv6 (nginx will not',
-    '# start: "socket() [::]:80 failed (97: Address family not supported)").',
+    '# [ipv6] No IPv6 on the server? Delete every line marked [ipv6], these',
+    '# [ipv6] four included, or nginx will not start ("Address family not',
+    '# [ipv6] supported"):  sudo sed -i \'/\\[ipv6\\]/d\' /etc/nginx/conf.d/dattapeetham.conf',
+    '# [ipv6] A rebuild writes them again: repeat this for every new copy.',
     '',
     '# Cache-Control by request path: first match wins.',
     'map $uri $dp_cache_control {',
@@ -783,9 +796,9 @@ async function writeIfChanged(file, text) {
  * deploy/nginx/dattapeetham.conf, deploy/cloudflare/wrangler.jsonc and
  * vercel.json, according to `projectFiles`:
  *   'auto' (default)  only when siteUrl and legacyUrl are the ones in
- *                     site.config.json, so a test build with other addresses
- *                     (--legacy-url=…, --out=…) never rewrites the committed files
- *   true / false      always / never
+ *                     site.config.json
+ *   true / false      always / never (build.mjs passes true when it writes
+ *                     ./site, false for --out=… builds)
  *   { nginx, wrangler, vercel }  write to these paths instead (false skips one)
  * Returns { model, files, changed, warnings }.
  */

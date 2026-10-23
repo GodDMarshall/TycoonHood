@@ -404,23 +404,47 @@
   }
   function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   function escHtml(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // On a language page, a query in Latin letters also searches the English
+  // index, because devotees often type names in English. A hit there opens
+  // the same section of the page in this language, under its title here.
+  var enIndex = null;
+  function loadEnIndex() {
+    if (enIndex) return Promise.resolve(enIndex);
+    return fetch(base + '../assets/' + 'search-index.json').then(function (r) { return r.json(); }).then(function (d) { enIndex = d; return d; })
+      .catch(function () { enIndex = []; return enIndex; });
+  }
+  function score(idx, terms) {
+    return idx.map(function (e) {
+      var hay = (e.t + ' ' + e.s + ' ' + e.x).toLowerCase(), score = 0;
+      for (var i = 0; i < terms.length; i++) {
+        var t = terms[i];
+        if (hay.indexOf(t) === -1) return null;
+        if ((e.s || '').toLowerCase().indexOf(t) !== -1) score += 6;
+        if (e.t.toLowerCase().indexOf(t) !== -1) score += 4;
+        score += Math.min(3, hay.split(t).length - 1);
+      }
+      return { e: e, score: score };
+    }).filter(Boolean);
+  }
   function runSearch(q) {
     q = q.trim();
     hints.hidden = !!q;
     if (!q) { results.innerHTML = ''; return; }
-    loadIndex().then(function (idx) {
-      var terms = q.toLowerCase().split(/\s+/).filter(Boolean);
-      var scored = idx.map(function (e) {
-        var hay = (e.t + ' ' + e.s + ' ' + e.x).toLowerCase(), score = 0;
-        for (var i = 0; i < terms.length; i++) {
-          var t = terms[i];
-          if (hay.indexOf(t) === -1) return null;
-          if ((e.s || '').toLowerCase().indexOf(t) !== -1) score += 6;
-          if (e.t.toLowerCase().indexOf(t) !== -1) score += 4;
-          score += Math.min(3, hay.split(t).length - 1);
-        }
-        return { e: e, score: score };
-      }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 8);
+    var both = !EN && /[a-z]/i.test(q);
+    Promise.all([loadIndex(), both ? loadEnIndex() : []]).then(function (got) {
+      if (input.value.trim() !== q) return; // a newer query is already shown
+      var idx = got[0], terms = q.toLowerCase().split(/\s+/).filter(Boolean), own = {}, seen = {};
+      idx.forEach(function (e) { own[e.u] = e; });
+      var hits = score(idx, terms);
+      hits.forEach(function (h) { seen[h.e.u] = true; });
+      score(got[1], terms).forEach(function (h) {
+        var mine = own[h.e.u];
+        if (seen[h.e.u] || !mine) return;
+        seen[h.e.u] = true;
+        // the title and heading in this language, the English text that matched
+        hits.push({ e: { u: h.e.u, t: mine.t, s: mine.s, x: h.e.x }, score: h.score - 0.5 });
+      });
+      var scored = hits.sort(function (a, b) { return b.score - a.score; }).slice(0, 8);
       var re = new RegExp('(' + terms.map(escRe).join('|') + ')', 'gi');
       // one sentence with a slot (no markup inside), so each language can suggest its own search words
       if (!scored.length) { results.innerHTML = '<li class="search-empty">' + escHtml(fmt('“%1” के लिए कोई परिणाम नहीं मिला। “दर्शन”, “सेवा” या “शुक वन” खोजकर देखें।', q)) + '</li>'; return; }

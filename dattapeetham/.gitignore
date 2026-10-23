@@ -2,3 +2,4 @@ node_modules/
 .site-tmp-*
 site-old-*
 .cache/
+release/

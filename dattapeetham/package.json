@@ -1,16 +1,21 @@
 {
   "name": "dattapeetham-site",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Avadhoota Datta Peetham website \u2014 zero-dependency static build",
+  "description": "Avadhoota Datta Peetham website — zero-dependency static build",
   "scripts": {
     "build": "node build.mjs",
+    "build:production": "node build.mjs --production",
     "dev": "node build.mjs --serve",
     "qa": "node qa/check-pages.mjs",
     "shot": "node qa/shot.mjs",
     "images": "node build.mjs && node tools/optimize-images.mjs && node build.mjs",
-    "test": "node --test tests/site.test.mjs",
-    "verify": "node build.mjs && node --test tests/site.test.mjs && node qa/check-pages.mjs"
+    "test": "node --test tests/site.test.mjs tests/server-configs.test.mjs tests/preview.test.mjs tests/package.test.mjs tests/handover-docs.test.mjs",
+    "verify": "node build.mjs && node --test tests/site.test.mjs tests/server-configs.test.mjs tests/preview.test.mjs tests/package.test.mjs tests/handover-docs.test.mjs && node qa/check-pages.mjs",
+    "verify:servers": "node deploy/test/docker-servers.mjs --work=.cache/server-test",
+    "preview": "node preview/serve.mjs site",
+    "package": "node tools/package.mjs"
   },
   "engines": {
     "node": ">=20"

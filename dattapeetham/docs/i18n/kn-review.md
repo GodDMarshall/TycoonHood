@@ -1,6 +1,8 @@
 # Kannada (ಕನ್ನಡ) site: notes for the native reviewer
 
-The Kannada site lives at `/kn/`. It was translated in six parallel chunks, then put through one
+The Kannada site lives at `/kn/`. It was translated in six parallel machine-assisted chunks (the
+"translators" in this note; they are not six people), and no fluent speaker has reviewed it yet:
+that is your review. It was then put through one
 editorial pass that made names, terms and UI labels consistent across all pages. This note
 lists what was decided, what only the Ashram can confirm, and where to start reading.
 

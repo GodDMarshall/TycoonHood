@@ -36,7 +36,8 @@ npx playwright install chromium
 | --- | --- |
 | `npm run build` | Builds all pages in every language into `site/`, checks every internal link and anchor, and prints translation coverage |
 | `npm run dev` | Builds, serves on port 4321 and rebuilds on change |
-| `npm test` | Checks the built HTML: language attributes, metadata, one h1 per page, image alt text and sizes, JSON-LD, safe external links, contact details, sitemap and search index |
+| `npm run build:production` | The build for the live domain: refuses a `legacyPlatformUrl` on the site's own host (see `docs/handover/DOMAIN-CUTOVER.md`) |
+| `npm test` | Checks the built HTML (language attributes, metadata and share previews, one h1 per page, image alt text and sizes, JSON-LD, safe external links, contact details, sitemap, search index, asset versions, icons) and the server configurations (redirects, headers, the Content Security Policy against what the pages load) |
 | `npm run qa` | Opens every page in Chromium at desktop and phone sizes and with reduced motion, then runs axe accessibility checks and reports console errors and horizontal overflow (`npm run qa -- visit.html` checks one page) |
 | `npm run shot -- index.html out --scroll` | Takes desktop and phone screenshots of a page |
 | `npm run images` | Downloads any new Peetham photos and makes responsive WebP copies (480/960/1600 px) in `src/assets/img/opt/` |
@@ -96,6 +97,9 @@ English is the source. `node build.mjs` writes the four other languages to
   words its own way. Times read naturally in Indian languages
   ("ಬೆಳಿಗ್ಗೆ 6:00" rather than "6 AM").
 - Labels inside diagrams and maps (SVG text) are translated too.
+- Site search on a language page searches that language. A query in Latin
+  letters ("Hanuman" on a Kannada page) also searches the English text, and
+  each result opens that section of the page in the visitor's language.
 
 All four languages are complete: 4,647 of 4,647 segments each, with no
 problems reported by the checker.
@@ -112,10 +116,11 @@ Runtime text in JavaScript must be one whole sentence or label, passed
 through `fmt()`. Don't join English fragments, and don't put UI text inside
 an HTML string. The extractor can only pick up complete strings.
 
-**The translations are machine-assisted.** Six translators worked per
-language from a shared glossary of names, deities, places and practices. An
-editor then unified the spelling across their work and checked every page on
-desktop and phone.
+**The translations are machine-assisted.** Each language was translated in
+six parallel machine-assisted passes (each one sixth of the site) from a
+shared glossary of names, deities, places and practices, then one editorial
+pass unified the spelling across them and checked every page on desktop and
+phone. No fluent speaker has reviewed them yet.
 
 Before launch, a fluent devotee in each language should read the site,
 especially the Sanskrit verses, Sri Swamiji's quotations and the honorifics.
@@ -125,51 +130,61 @@ to read first.
 
 ## Deploy
 
-`vercel.json` holds the whole deployment: the build command, the `site`
-output folder, security headers and a Content Security Policy. It also
-redirects old `/page/view/...` addresses to the matching new pages with 301s.
+Version 1.0.0. The Peetham owns www.dattapeetham.org and connects the site to
+its own server and domain. **The hand-over documents are in
+[`docs/handover/`](docs/handover/HANDOVER.md); start with
+[`HANDOVER.md`](docs/handover/HANDOVER.md).**
 
-**Vercel:**
+| Document | Covers |
+| --- | --- |
+| [`HANDOVER.md`](docs/handover/HANDOVER.md) | What the product is, the package, previewing it, the five steps to go live, what stays on the existing platform |
+| [`DEPLOY.md`](docs/handover/DEPLOY.md) | Each host step by step (Apache/cPanel, nginx, IIS, Netlify, Cloudflare, Vercel, plain static hosting) and the server check |
+| [`DOMAIN-CUTOVER.md`](docs/handover/DOMAIN-CUTOVER.md) | Moving www.dattapeetham.org without breaking bookings: the platform move, the production build, DNS, HTTPS, checks, Search Console, rollback |
+| [`LAUNCH-CHECKLIST.md`](docs/handover/LAUNCH-CHECKLIST.md) | Tick-boxes: before launch, launch day, the first week |
+| [`MAINTENANCE.md`](docs/handover/MAINTENANCE.md) | Changing hours, events, photos, text and translations; rebuilding and redeploying |
+| [`PRIVACY-DATA-INVENTORY.md`](docs/handover/PRIVACY-DATA-INVENTORY.md) | What the site stores in the browser and which other services it contacts, for the Peetham's legal team |
+| [`README-FIRST.html`](docs/handover/README-FIRST.html) | A one-page summary for non-technical readers (copied to the top of the package) |
 
-1. Import the repository.
-2. Set **Root Directory** to `dattapeetham`.
-3. Deploy. There is nothing to install.
+In short:
 
-**Any other static host:** upload the contents of `site/`.
-
-**Before the new site takes over www.dattapeetham.org:** booking poojas,
-donations, the store, sign-in and the concert bookings still run on the
-existing platform. The new site links to those pages on www.dattapeetham.org
-and does not rebuild payments or accounts. Before pointing the domain at the
-new site, choose one of these:
-
-- Move the existing platform to a subdomain (for example
-  `seva.dattapeetham.org`) and update `OFFICIAL` and `links` in `src/site.mjs`.
-- Or proxy those paths (`/poojas`, `/donations`, `/login`, `/store` and the
-  others) from the new host to the existing platform.
-
-The pages also cite the Peetham's own pages as sources ("As published on the
-temple's own page", "The full timeline on dattapeetham.org", the glossary and
-so on). They are built from `OFFICIAL` too, as `${OFFICIAL}/page/view/...`, and
-`vercel.json` redirects exactly those `/page/view/...` paths into the new pages.
-With the subdomain option the citations follow `OFFICIAL` to the old pages. With
-the proxy option they would loop back to the section that cites them, so point
-`OFFICIAL` at a host that keeps the old pages, or remove those citation links.
+- **Two addresses** live in `site.config.json`: `siteUrl` (this site) and
+  `legacyPlatformUrl` (the Peetham's existing platform: puja booking,
+  donations, the store, sign-in, the concert bookings, the legal pages and
+  the old pages the site cites). The site links to the platform; it does not
+  rebuild payments or accounts. At hand-over both are
+  `https://www.dattapeetham.org`, so the build prints a warning.
+- **Before the new site takes the domain**, the platform must answer at its
+  own host (for example `https://seva.dattapeetham.org`), `legacyPlatformUrl`
+  must name it, and the site is built with `node build.mjs --production`
+  (`npm run build:production`), which refuses a platform address on the
+  site's own host.
+- **Any server.** The build writes each server's files from one set of rules
+  (`deploy/routes.mjs`): `site/` carries `.htaccess` (Apache, cPanel),
+  `web.config` (IIS) and `_headers`/`_redirects` (Netlify, Cloudflare); the
+  project carries `deploy/nginx/dattapeetham.conf`,
+  `deploy/cloudflare/wrangler.jsonc` and `vercel.json`. The rules and the
+  server tests are described in [`deploy/README.md`](deploy/README.md).
+- **Check a deployed server** with
+  `node deploy/test/verify-server.mjs --base=https://www.dattapeetham.org/ --no-canonical`
+  (about 800 requests; see `DEPLOY.md` for the options per host).
 
 ## How it is organised
 
 ```
-build.mjs              build, link check, search index, languages, dev server
+build.mjs              build, link check, search index, languages, server files, dev server
+site.config.json       the two addresses: this site, and the existing platform
 src/site.mjs           facts in one place: address, phones, hours, official links
 src/data.mjs           shared content: timings, timeline, apps, kshetras, countries
 src/layout.mjs         head, utility bar, header, mega menu, footer, intro
 src/components.mjs     hero, tiles, cards, timeline, tabs, gallery, video, CTA ...
 src/pages/<page>.mjs   one module per page (plus <page>.css / <page>.js)
 src/features/          shared interactive features: ashram map, world map
-src/assets/            CSS, JS, icons, vendored GSAP + Lenis, optimised images
+src/assets/            CSS, JS, icons, vendored GSAP + Lenis, optimised images, share images
 src/i18n/              translation engine, segments, glossaries, dictionaries
 docs/PAGE-GUIDE.md     the content rules: sources, honesty, page contract
-tests/ qa/ tools/      tests, browser QA, image and translation tools
+docs/handover/         the hand-over: start with HANDOVER.md (deploy, domain move, checklist, maintenance, privacy)
+deploy/                server rules (routes.mjs), nginx/Apache/Cloudflare files, server tests
+tests/ qa/ tools/      tests, browser QA, image, icon, share-image, link and translation tools
 ```
 
 All content comes from the official dattapeetham.org pages (October 2026),

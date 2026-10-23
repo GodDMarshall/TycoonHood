@@ -8,6 +8,8 @@
 //   --site-url=https://…      where this site is served      (else DP_SITE_URL, else site.config.json)
 //   --legacy-url=https://…    where the existing platform is (else DP_LEGACY_URL, else site.config.json)
 //   --out=<dir>               build somewhere other than ./site
+//   --production              the build for the live domain: refuses a legacyPlatformUrl on
+//                             this site's own host (also DP_PRODUCTION=1; npm run build:production)
 //
 // Every page module in src/pages exports { slug, file, title, description,
 // nav?, image?, preload?, scripts?, render() }. The build wraps each in the
@@ -53,6 +55,7 @@ function pick(entry, max = 960) {
 }
 function optimizeHtml(html, man, prefix = '') {
   if (!Object.keys(man).length) return html;
+  const chosen = new Map(); // original URL → the srcset and sizes its first <img> got
   html = html.replace(/<img\b[^>]*>/g, (tag) => {
     const m = /\ssrc="([^"]+)"/.exec(tag);
     const e = m && man[amp(m[1])];
@@ -61,7 +64,18 @@ function optimizeHtml(html, man, prefix = '') {
     let out = tag.replace(m[0], ` src="${prefix}${pick(e)}"`);
     if (!/\ssrcset=/.test(out)) out = out.replace(/^<img/, `<img srcset="${e.srcs.map(([w, f]) => `${prefix}${f} ${w}w`).join(', ')}"${/\ssizes=/.test(out) ? '' : ` sizes="${lazy ? 'auto, 100vw' : '100vw'}"`}`);
     if (!/\swidth=/.test(out) && !/\sheight=/.test(out)) out = out.replace(/^<img/, `<img width="${e.w}" height="${e.h}"`);
+    const srcset = (/\ssrcset="([^"]*)"/.exec(out) || [])[1];
+    if (!chosen.has(amp(m[1])) && srcset) chosen.set(amp(m[1]), { srcset, sizes: (/\ssizes="([^"]*)"/.exec(out) || [])[1] });
     return out;
+  });
+  // The hero preload must ask for the very file the hero <img> will pick, or
+  // a wide screen downloads the image twice: give it the img's own srcset and
+  // sizes (imagesrcset / imagesizes); href stays as the fallback.
+  html = html.replace(/<link rel="preload" as="image" href="([^"]+)"([^>]*)>/g, (tag, href, rest) => {
+    const e = man[amp(href)];
+    if (!e) return tag;
+    const img = chosen.get(amp(href));
+    return `<link rel="preload" as="image" href="${prefix}${pick(e)}"${img ? ` imagesrcset="${img.srcset}"${img.sizes ? ` imagesizes="${img.sizes}"` : ''}` : ''}${rest}>`;
   });
   // lightbox sources, inline style backgrounds and data attributes: largest variant
   // Leave <meta> (og:image) and JSON-LD alone: share previews need absolute JPEG URLs.
@@ -74,6 +88,24 @@ function optimizeHtml(html, man, prefix = '') {
   });
   return html.replace(/\u0000(\d+)\u0000/g, (_, i) => keep[+i]);
 }
+
+// The Peetham's dev bucket is a staging store, and the CSP does not allow it.
+// A photo the optimiser holds a copy of is served from this site wherever its
+// dev-bucket URL survives (JSON-LD, share tags), as an absolute URL; one with
+// no copy stops the build.
+const DEV_BUCKET = /https:\/\/dev-dattapeetham\.s3\.amazonaws\.com\/[^"'\s)<>\\]+/g;
+function selfHostDevBucket(html, man, origin, file) {
+  return html.replace(DEV_BUCKET, (u) => {
+    const e = man[amp(u)];
+    if (e) return `${origin}/${e.srcs[e.srcs.length - 1][1]}`;
+    console.error(`✗ ${file}: ${u} is on the dev bucket, which the CSP blocks, and has no self-hosted copy: run npm run images`);
+    process.exitCode = 1;
+    return u;
+  });
+}
+// Helpers from src/layout.mjs and facts about this build, set by build().
+let LAYOUT = {};
+
 // ---------- translations ----------
 async function loadDicts(langs) {
   const dicts = {};
@@ -106,8 +138,10 @@ function localizePage(html, page, lang, langs) {
   out = out.replace(/(<script src=")\.\.\/assets\/js\//g, `$1../assets/js-${lang.code}/`);
   // root files: the web manifest
   out = out.replace(/(\shref=")(site\.webmanifest")/g, '$1../$2');
-  // canonical and og:url for this language
+  // canonical, og:url and og:locale for this language
   out = out.replace(/(<link rel="canonical" href="https:\/\/[^"/]+\/)/, `$1${lang.code}/`);
+  out = out.replace(/(<meta property="og:url" content="https:\/\/[^"/]+\/)/, `$1${lang.code}/`);
+  out = out.replace(/<meta property="og:locale" content="[^"]*">(?:\n<meta property="og:locale:alternate" content="[^"]*">)*/, LAYOUT.ogLocaleTags(lang.code));
   // script fonts for this language
   const fam = lang.fonts.map((f) => `family=${f.replace(/ /g, '+')}:wght@400;500;600`).join('&');
   out = out.replace('<link rel="stylesheet" href="../assets/css/site.css">', `<link href="https://fonts.googleapis.com/css2?${fam}&display=swap" rel="stylesheet">\n<link rel="stylesheet" href="../assets/css/site.css">`);
@@ -115,15 +149,73 @@ function localizePage(html, page, lang, langs) {
   return out;
 }
 
-// The 404 page is served for unknown URLs at any depth (old links such as
-// /ashrams/.../events/2016/...), so its links and assets must be root-absolute.
-function rootAbsolute(html) {
-  const abs = (u) => (/^(?:[a-z]+:|#|\/)/i.test(u) ? u : '/' + u);
+// JSON-LD on a language page (it is skipped by the translator): links to this
+// site's pages point at this language's versions, the breadcrumb carries the
+// translated labels the page itself shows, and names and descriptions use the
+// page's own reviewed translations (a string with none stays English). The
+// organisation's name and its home URL stay as they are.
+function localizeJsonLd(html, page, lang, dict, origin, check) {
+  const pageUrl = new RegExp(`^${origin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/([a-z0-9-]+\\.html)(#[\\w-]*)?$`);
+  const files = LAYOUT.pageFiles;
+  const toLang = (v) => v.replace(pageUrl, (all, f, h = '') => files.has(f) ? `${origin}/${lang.code}/${f}${h}` : all);
+  const decode = (s) => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&rsquo;/g, '’').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  const tr = (s) => {
+    for (const k of [s, s.replace(/&/g, '&amp;')]) {
+      const t = dict[k];
+      if (t !== undefined && !check(k, t, lang)) return decode(t);
+    }
+    return s;
+  };
+  const crumbs = /<nav class="crumbs"[^>]*>\s*<a [^>]*>([^<]+)<\/a>[\s\S]*?<span aria-current="page">([^<]+)<\/span>/.exec(html);
+  const walk = (v, key, parent) => {
+    if (Array.isArray(v)) return v.map((x) => walk(x, key, parent));
+    if (v && typeof v === 'object') {
+      const o = {};
+      for (const [k, x] of Object.entries(v)) o[k] = walk(x, k, v);
+      return o;
+    }
+    if (typeof v !== 'string') return v;
+    if (key === 'url' || key === 'item' || key === '@id') {
+      if (key === 'item' && v === `${origin}/`) return `${origin}/${lang.code}/`;
+      return toLang(v);
+    }
+    if ((key === 'name' || key === 'description') && v !== LAYOUT.siteName && !/Organization/.test([].concat(parent['@type'] || '').join())) return tr(v);
+    return v;
+  };
+  return html.replace(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g, (all, json) => {
+    let o = walk(JSON.parse(json));
+    if (o['@type'] === 'BreadcrumbList' && crumbs) {
+      const names = [decode(crumbs[1]).trim(), decode(crumbs[2]).trim()];
+      o = { ...o, itemListElement: o.itemListElement.map((it, i) => (names[i] ? { ...it, name: names[i] } : it)) };
+    }
+    return `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, '\\u003c')}</script>`;
+  });
+}
+
+// The 404 pages are served for unknown URLs at any depth (old links such as
+// /ashrams/.../events/2016/...), so their links and assets must be
+// root-absolute. nginx, Apache, IIS and the preview always serve /404.html;
+// Cloudflare serves the nearest folder's 404.html, so /kn/a/b gets
+// /kn/404.html. `dir` is the page's own folder ('/' or '/kn/'): relative
+// references are resolved against it, and body[data-base] tells site.js where
+// the page's search results live.
+export function rootAbsolute(html, dir = '/') {
+  const abs = (u) => {
+    if (/^(?:[a-z][a-z0-9+.-]*:|#|\/)/i.test(u)) return u;
+    const folders = dir.split('/').filter(Boolean);
+    let rest = u;
+    for (;;) {
+      if (rest.startsWith('./')) rest = rest.slice(2);
+      else if (rest.startsWith('../')) { folders.pop(); rest = rest.slice(3); } else break;
+    }
+    return `/${folders.map((f) => `${f}/`).join('')}${rest}`;
+  };
   return html
     .replace(/(\s(?:src|href|poster|data-full)=")([^"]*)"/g, (all, a, u) => `${a}${abs(u)}"`)
     .replace(/(\ssrcset=")([^"]+)"/g, (all, a, v) => a + v.split(/,\s*/).map((c) => abs(c.trim())).join(', ') + '"')
-    .replace(/url\((['"]?|&quot;)assets\//g, 'url($1/assets/')
-    .replace(/<body class="([^"]*)"/, '<body class="$1" data-base="/"');
+    // assets live at the site root, whichever folder the page is in
+    .replace(/url\((['"]?|&quot;)(?:\.\.\/)*assets\//g, 'url($1/assets/')
+    .replace(/<body class="([^"]*)"/, `<body class="$1" data-base="${dir}"`);
 }
 
 async function load(rel, bust) {
@@ -200,6 +292,18 @@ ${bar}`);
   If one redirects to the other, platform links will land on this site; make sure
   ${config.legacyPlatformUrl} serves the existing platform itself.`);
   }
+}
+
+// `--production` (or DP_PRODUCTION=1): the build that goes live on the
+// domain. It refuses addresses that would send bookings, donations, sign-in
+// and the store back to this site: the same host, or a host that differs only
+// by "www." (the generated server configs redirect that name to siteUrl).
+export function assertProduction(config, { argv = process.argv, env = process.env } = {}) {
+  if (!argv.includes('--production') && env.DP_PRODUCTION !== '1') return;
+  if (!config.sameHost && !config.siblingHost) return;
+  throw Object.assign(new Error(`--production: legacyPlatformUrl (${config.legacyPlatformUrl}) ${config.sameHost ? 'is this site\'s own host' : 'differs from siteUrl only by "www."'}.
+  Move the existing platform to its own host first and set legacyPlatformUrl in
+  site.config.json; see docs/handover/DOMAIN-CUTOVER.md`), { name: 'ConfigError' });
 }
 
 // Refuse output folders a swap would destroy: the project or anything above
@@ -312,25 +416,46 @@ async function writeIconsAndManifest(TMP, site) {
 }
 
 // ---------- server configs (tools/server-configs.mjs, optional) ----------
+// Writes .htaccess, _headers, _redirects, web.config and .assetsignore into
+// the site, for the addresses this build uses. The project-level files
+// (deploy/nginx/dattapeetham.conf, deploy/cloudflare/wrangler.jsonc,
+// vercel.json) describe ./site, so they follow the same addresses whenever
+// the build writes ./site; a build into another folder (--out=…) leaves them
+// alone.
 async function serverConfigs(TMP, config, pages) {
   const mod = join(ROOT, 'tools', 'server-configs.mjs');
   if (!(await stat(mod).catch(() => null))) return;
   try {
     const { writeServerConfigs } = await import(pathToFileURL(mod).href);
     if (typeof writeServerConfigs !== 'function') throw new Error('does not export writeServerConfigs()');
-    await writeServerConfigs({ siteDir: TMP, siteUrl: config.siteUrl, legacyUrl: config.legacyPlatformUrl, pages });
+    const projectFiles = OUT === join(ROOT, 'site');
+    const { model, changed, warnings } = await writeServerConfigs({ siteDir: TMP, siteUrl: config.siteUrl, legacyUrl: config.legacyPlatformUrl, pages, projectFiles });
+    const own = (f) => relative(ROOT, f).split(sep).join('/');
+    const project = projectFiles
+      ? (changed.filter((f) => !f.startsWith(TMP)).map(own).join(', ') || 'unchanged') : 'left unchanged (--out build)';
+    const platform = model.platform
+      ? `${model.platform.paths.length + model.platform.prefixes.length} platform rules → ${model.platform.origin}`
+      : 'no platform redirects (same host)';
+    console.log(`Server configs v${model.version}: .htaccess, _headers, _redirects, web.config in the site; ${platform}; CSS/JS ${model.versioning.versioned ? 'immutable' : 'revalidated'}`);
+    console.log(`  project files (nginx, Cloudflare, vercel.json): ${project}`);
+    for (const w of warnings.filter((x) => !/left unchanged/.test(x))) console.warn(`  ! ${w}`);
   } catch (e) {
     console.error(`✗ tools/server-configs.mjs: ${e.stack || e.message}`);
     process.exitCode = 1;
   }
 }
 
+// The temp folder of a build in progress, so a failed build can remove it.
+let pendingTmp = null;
+
 export async function build() {
   const t0 = performance.now();
   const bust = Date.now();
-  const { layout } = await load('layout.mjs', bust);
+  const layoutModule = await load('layout.mjs', bust);
+  const { layout } = layoutModule;
   const { site, config } = await load('site.mjs', bust);
   printAddresses(config);
+  assertProduction(config);
   await assertSafeOut();
   const files = (await readdir(join(SRC, 'pages'))).filter((f) => f.endsWith('.mjs')).sort();
   const imgMan = await loadImageManifest();
@@ -338,14 +463,16 @@ export async function build() {
   // Build into a private temp dir beside the output, then swap it in, so a
   // running dev server (or a parallel build) never serves a half-written site.
   const TMP = join(dirname(OUT), `.site-tmp-${process.pid}-${bust}`);
+  pendingTmp = TMP; // removed if the build fails (a full disk left ~170 MB each time)
   await mkdir(TMP, { recursive: true });
   // Everything in src/assets except build-only files: the image optimiser's
-  // manifest (read above, never fetched by a page) and dotfiles.
+  // manifest (read above, never fetched by a page), dotfiles, and the
+  // half-written files of a photo run still in progress (name.webp.tmp-<pid>).
   const ASSETS = join(SRC, 'assets');
   const DEV_ONLY = new Set(['img/opt/manifest.json']);
   await cp(ASSETS, join(TMP, 'assets'), { recursive: true, filter: (from) => {
     const rel = relative(ASSETS, from).split(sep).join('/');
-    return !DEV_ONLY.has(rel) && !/(?:^|\/)\./.test(rel);
+    return !DEV_ONLY.has(rel) && !/(?:^|\/)\./.test(rel) && !/\.(?:tmp|part)(?:-\d+)?$/i.test(rel);
   } });
   await writeIconsAndManifest(TMP, site);
 
@@ -369,7 +496,7 @@ export async function build() {
     if (!page?.file || typeof page.render !== 'function') throw new Error(`src/pages/${f}: default export needs { file, render }`);
     let body;
     try { body = await page.render(); } catch (e) { console.error(`✗ ${page.file}: render failed — ${e.stack}`); process.exitCode = 1; continue; }
-    const html = optimizeHtml(layout(page, body), imgMan);
+    const html = selfHostDevBucket(optimizeHtml(layout(page, body), imgMan), imgMan, site.origin, page.file);
     await writeFile(join(TMP, page.file), html);
     pages.push({ ...page, html });
     if (page.slug !== '404') search.push(...indexPage(page, body));
@@ -378,7 +505,8 @@ export async function build() {
   await writeFile(join(TMP, 'assets', 'search-index.json'), JSON.stringify(search));
 
   // ---- other languages: /kn/, /hi/, /ta/, /te/ ----
-  const { LANGS, translate, extract, extractJs, translateJs } = await load('i18n/engine.mjs', bust);
+  const { LANGS, translate, extract, extractJs, translateJs, checkTranslation } = await load('i18n/engine.mjs', bust);
+  LAYOUT = { ogLocaleTags: layoutModule.ogLocaleTags, siteName: site.name, pageFiles: new Set(pages.map((p) => p.file)) };
   const others = LANGS.filter((l) => l.code !== 'en');
   const dicts = await loadDicts(others);
   const jsFiles = await listFiles(join(TMP, 'assets', 'js'));
@@ -403,7 +531,8 @@ export async function build() {
     for (const p of pages) {
       const r = translate(p.html, dict, lang);
       stats.total += r.total; stats.hit += r.hit; r.missing.forEach((m) => stats.missing.add(m)); stats.rejected.push(...r.rejected);
-      const html = localizePage(r.html, p, lang, LANGS);
+      let html = localizeJsonLd(localizePage(r.html, p, lang, LANGS), p, lang, dict, site.origin, checkTranslation);
+      if (p.slug === '404') html = rootAbsolute(html, `/${lang.code}/`);
       await writeFile(join(TMP, lang.code, p.file), html);
       htmlFiles.push(`${lang.code}/${p.file}`);
       if (p.slug !== '404') {
@@ -453,6 +582,7 @@ ${pages.filter((p) => p.slug !== '404').flatMap((p) => LCODES.map((c) => `  <url
   const OLD = `${OUT}-old-${process.pid}-${bust}`;
   await rename(OUT, OLD).catch(() => {});
   await rename(TMP, OUT).catch(async () => { await cp(TMP, OUT, { recursive: true }); await rm(TMP, { recursive: true, force: true }); });
+  pendingTmp = null;
   await rm(OLD, { recursive: true, force: true });
 
   const problems = checkLinks(pages, rootFiles);
@@ -509,9 +639,10 @@ function serve() {
 
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {
-  build().then(() => { if (process.argv.includes('--serve')) serve(); }).catch((e) => {
+  build().then(() => { if (process.argv.includes('--serve')) serve(); }).catch(async (e) => {
     // a wrong address or --out is a usage problem, not a crash: no stack trace
     console.error(e && e.name === 'ConfigError' ? `✗ ${e.message}` : e);
+    if (pendingTmp) await rm(pendingTmp, { recursive: true, force: true }).catch(() => {});
     process.exit(1);
   });
 }

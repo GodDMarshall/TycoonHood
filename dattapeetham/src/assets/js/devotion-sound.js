@@ -3,7 +3,10 @@
    website) and the temple sounds while scrolling.
 
    - Preference in localStorage 'dp-sound' = {music, sfx, v: 1, vol}; absent
-     means a first visit, when the intro curtain offers the choice.
+     means a first visit, when the intro curtain offers the choice (a modal
+     dialog that takes focus). If this script arrives after the curtain has
+     lifted (a slow connection), the same choice is offered instead as a small
+     non-modal card above the sound button.
    - Nothing is downloaded and no AudioContext exists until sound is on.
    - Music: <audio preload="none"> → MediaElementSource → per-element gain →
      music bus (fades) → analyser (level) → master (volume) → speakers. Two
@@ -11,8 +14,14 @@
      ~20 ms silent gap at an MP3 loop seam, the crossfade leaves none.
    - Position carries across pages through sessionStorage 'dp-sound-pos'.
    - Temple sounds: decoded buffers → panner → SFX bus (−8 dB) → master.
+     A chime every ~800 px of reading (≥ 0.9 s apart), a bell as each section
+     arrives (≥ 1.5 s apart, never within 0.7 s of a chime: it waits).
    - API: DP.sound = {musicOn, sfxOn, setMusic, setSfx, setVolume, volume,
-     level, state, onChange}; 'dp:sound' CustomEvent on document. */
+     level, state, onChange}; 'dp:sound' CustomEvent on document.
+   - With devotion-motion.js: a section bell dispatches 'dp:bell' {section}
+     (the hanging bell there swings); a hanging bell that swings on its own
+     dispatches 'dp:ghanta' {el, cause: 'enter'|'touch'|'bell'}, and is sounded
+     here for 'enter' (in place of its section's bell) and 'touch'. */
 (function () {
   'use strict';
   var W = window, doc = document, root = doc.documentElement;
@@ -26,7 +35,7 @@
   var AC = W.AudioContext || W.webkitAudioContext;
   var box = $('[data-sound]');
   var subs = [];
-  var S = { music: false, sfx: false, vol: 0.6 };
+  var S = { music: false, sfx: false, vol: 0.8 }; // the flute is mastered at −23 LUFS: 80 % (gain 0.64) is a calm default
 
   if (!AC || !W.Audio || !W.Promise) { // no Web Audio: stay silent, keep the API
     DP.sound = { musicOn: function () { return false; }, sfxOn: function () { return false; }, setMusic: noop, setSfx: noop, setVolume: noop, volume: function () { return 0; }, level: function () { return 0; }, state: function () { return { music: false, sfx: false, playing: false, volume: 0, status: 'off' }; }, onChange: function () { return noop; } };
@@ -39,9 +48,9 @@
   var base;
   try { base = new URL('../audio/', me.src).href; } catch (e) { base = (doc.body.getAttribute('data-base') || root.getAttribute('data-root') || '') + 'assets' + '/audio/'; }
   var SRC = base + 'flute-mohanam.mp3';
-  // data-sfx (written by the build from the files that exist) lists the temple sounds to load
-  var FX = (cfg.sfx != null ? cfg.sfx : 'ghanta chime-s chime-r chime-g chime-p chime-d chime-s2 shankha').split(/\s+/).filter(Boolean);
   var SWARA = ['chime-s', 'chime-r', 'chime-g', 'chime-p', 'chime-d', 'chime-s2'];
+  // data-sfx (written by the build from the files that exist) lists the temple sounds to load
+  var FX = cfg.sfx != null ? cfg.sfx.split(/\s+/).filter(Boolean) : ['ghanta'].concat(SWARA, ['shankha']);
   var XF = +cfg.xfade || 3, FX_GAIN = Math.pow(10, (cfg.sfxDb ? +cfg.sfxDb : -8) / 20);
   var FADE_IN = 1.8, FADE_OUT = 0.6, FLING = 3500; // seconds, seconds, px/s
 
@@ -76,7 +85,7 @@
     W.addEventListener('pagehide', onHide);
     W.addEventListener('pageshow', onShow);
     W.addEventListener('focus', onFocus);
-    ['play', 'pause', 'ended', 'emptied', 'error'].forEach(function (t) { doc.addEventListener(t, onMedia, true); });
+    ['playing', 'pause', 'ended', 'emptied', 'error'].forEach(function (t) { doc.addEventListener(t, onMedia, true); });
     $$('audio, video').forEach(function (el) { if (!el.paused && !el.muted) media.push(el); });
     if (navigator.mediaSession) { // lock-screen and media-key controls
       try {
@@ -132,6 +141,7 @@
     var p = player(cur), a = p.a;
     on = true; started = true;
     if (!a.src) { var t = startAt(); a.src = SRC + (t > 0.5 ? '#t=' + t.toFixed(2) : ''); }
+    else if (a.error) a.load(); // the file failed before: try it again
     if (a.paused) {
       var pr = a.play();
       if (pr && pr.then) pr.then(null, function (e) { if (e && e.name === 'AbortError') return; on = live = false; arm(); render(); });
@@ -198,11 +208,14 @@
   /* ---------------- being a good guest ---------------- */
   var media = [], frames = [], tabHeld = false, mo, bc, TAB = Math.random().toString(36).slice(2);
   function mine(el) { return P.some(function (p) { return p.a === el; }); }
-  function onMedia(e) { // any other <audio>/<video> on the page (the chant player…)
+  // Any other <audio>/<video> on the page (the chant player…). Held on 'playing' (sound has
+  // really started), so a player whose source fails never leaves the flute paused.
+  function onMedia(e) {
     var el = e.target;
+    if (el && el.tagName === 'SOURCE') el = el.parentNode; // a failed <source> reports here
     if (!el || mine(el) || !/^(AUDIO|VIDEO)$/.test(el.tagName)) return;
     var i = media.indexOf(el);
-    if (e.type === 'play') { if (i < 0 && !el.muted) media.push(el); }
+    if (e.type === 'playing') { if (i < 0 && !el.muted) media.push(el); }
     else if (i > -1) media.splice(i, 1);
     reconcile();
   }
@@ -232,9 +245,30 @@
   function held() { return media.length > 0 || frames.length > 0 || tabHeld; }
 
   /* ---------------- temple sounds while scrolling ---------------- */
-  var buf = {}, fxLoaded = false, fxT = 0, listening = false, io, lastY = 0, lastT = 0, vel = 0, travel = 0, dir = 0;
-  var step = 800, swara = -1, lastBell = 0, lastChime = 0, shankhaDone = false, panelOpen = false, sample = false;
+  var buf = {}, fxLoaded = false, fxT = 0, listening = false, io, lastY = 0, lastT = 0, vel = 0, travel = 0, back = 0, dir = 0;
+  var step = 800, swara = -1, lastBell = 0, lastChime = 0, flungAt = -1e4, shankhaDone = false, panelOpen = false, sample = false, movedAt = 0;
+  // spacing, ms: chime after chime, chime after bell, bell after chime (a bell waits rather than clash)
+  var CHIME_GAP = 900, AFTER_BELL = 900, BELL_AFTER_CHIME = 700, BELL_GAP = 1500;
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
+  function emit(name, detail) {
+    var ev; try { ev = new CustomEvent(name, { detail: detail }); } catch (e) { ev = doc.createEvent('CustomEvent'); ev.initCustomEvent(name, false, false, detail); }
+    doc.dispatchEvent(ev);
+  }
+  function panOf(el) { var r = el.getBoundingClientRect(); return Math.max(-0.6, Math.min(0.6, ((r.left + r.width / 2) / innerWidth - 0.5) * 1.2)); }
+  // a bell: never within BELL_AFTER_CHIME of a chime (it waits), never during a fling
+  function bell(el, sec, force) {
+    var wait = force ? 0 : Math.max(0, lastChime + BELL_AFTER_CHIME - performance.now());
+    var ring = function () {
+      var t = performance.now();
+      if (!force && (t - flungAt < 600 || t - lastBell < BELL_GAP)) return;
+      if (hit('ghanta', rnd(0.85, 1), panOf(el), rnd(0.96, 1.04))) {
+        lastBell = t;
+        // the bell hanging in that section (devotion-motion's ghanta) swings with it
+        if (sec) emit('dp:bell', { section: sec });
+      }
+    };
+    if (wait) setTimeout(ring, wait); else ring();
+  }
   function loadFx() {
     if (fxLoaded) return; fxLoaded = true;
     FX.forEach(function (n) {
@@ -260,16 +294,22 @@
     var y = W.scrollY || W.pageYOffset, t = performance.now(), dy = y - lastY, dt = Math.max(8, t - lastT);
     lastY = y; lastT = t;
     vel = vel * 0.5 + Math.abs(dy) / dt * 500; // smoothed px/s
-    if (!shankhaDone && dy > 0 && y + innerHeight >= root.scrollHeight - 8) { shankhaDone = true; if (vel < FLING) hit('shankha', 0.7, 0, 1); }
+    if (vel > FLING) flungAt = t;
+    var calm = t - flungAt > 600; // a fling and its momentum tail stay silent
+    if (!shankhaDone && dy > 0 && calm && y + innerHeight >= root.scrollHeight - 8) shankhaDone = hit('shankha', 0.9, 0, 1);
     if (!dy) return;
+    movedAt = t;
     var d = dy > 0 ? 1 : -1;
-    if (d !== dir || vel > FLING || panelOpen) { dir = d; travel = 0; return; } // reversals and flings don't chime
-    travel += Math.abs(dy);
-    if (travel < step) return;
+    if (!calm || panelOpen) { travel = back = 0; return; } // flings and an open panel don't chime
+    if (d !== dir) { // a real reversal only after 48 px the other way (ignores jitter)
+      back += Math.abs(dy);
+      if (back < 48) return;
+      dir = d; travel = back; back = 0;
+    } else { back = 0; travel += Math.abs(dy); }
+    if (travel < step || t - lastChime < CHIME_GAP || t - lastBell < AFTER_BELL) return; // keep the travel until it may sound
     travel = 0; step = rnd(700, 900);
-    if (t - lastChime < 350 || t - lastBell < 500) return;
     swara = swara < 0 ? (d > 0 ? 0 : 5) : (swara + d + 6) % 6; // arohana going down the page, avarohana going up
-    if (hit(SWARA[swara], rnd(0.45, 0.6), rnd(-0.3, 0.3), rnd(0.996, 1.004))) lastChime = t;
+    if (hit(SWARA[swara], rnd(0.65, 0.8), rnd(-0.3, 0.3), rnd(0.996, 1.004))) lastChime = t;
   }
   function listen(onOff) {
     if (onOff === listening) return;
@@ -278,7 +318,7 @@
     lastY = W.scrollY || W.pageYOffset; lastT = performance.now(); vel = 0; travel = 0;
     W.addEventListener('scroll', onScroll, { passive: true });
     if (!W.IntersectionObserver) return;
-    var secs = $$('main > section[id]'); if (!secs.length) secs = $$('main section[id]');
+    var secs = $$('main > section[id]'); if (!secs.length) secs = $$('section[id]', $('main') || doc);
     var first = true;
     io = new IntersectionObserver(function (es) {
       es.forEach(function (en) {
@@ -286,15 +326,24 @@
         if (!en.isIntersecting || el.sndSeen) return;
         el.sndSeen = 1; // once per section per page view; never for what is on screen at the start
         var t = performance.now();
-        if (first || vel > FLING || t - lastBell < 1500) return;
-        var h = $('h2', el) || el, r = h.getBoundingClientRect();
-        var pan = Math.max(-0.6, Math.min(0.6, ((r.left + r.width / 2) / innerWidth - 0.5) * 1.2));
-        if (hit('ghanta', rnd(0.75, 0.9), pan, rnd(0.96, 1.04))) lastBell = t;
+        if (first || vel > FLING || t - flungAt < 600 || t - lastBell < BELL_GAP) return;
+        bell($('h2', el) || el, el);
       });
       first = false;
     }, { rootMargin: '0px 0px -30% 0px' });
     secs.forEach(function (s) { io.observe(s); });
   }
+  // devotion-motion's hanging bells ('dp:ghanta'): the bell you see is the bell you hear.
+  // 'enter': it swung as the reader's scrolling brought it into view, and it stands in for
+  // its section's bell; 'touch': a pointer rang it; 'bell': we rang it ourselves.
+  doc.addEventListener('dp:ghanta', function (e) {
+    var d = e.detail || {}, b = d.el;
+    if (!b || !b.getBoundingClientRect || d.cause === 'bell') return;
+    if (d.cause === 'enter') {
+      for (var s = b; s; s = s.parentElement) if (s.tagName === 'SECTION') s.sndSeen = 1;
+      if (listening && performance.now() - movedAt < 1200 && vel <= FLING) bell(b, null); // never on load
+    } else if (listening) bell(b, null, true);
+  });
 
   /* ---------------- the one place that decides what should sound ---------------- */
   function reconcile() {
@@ -325,7 +374,7 @@
     if (!td) td = an.getFloatTimeDomainData ? new Float32Array(an.fftSize) : new Uint8Array(an.fftSize);
     if (td instanceof Float32Array) { an.getFloatTimeDomainData(td); for (i = 0; i < td.length; i++) s += td[i] * td[i]; }
     else { an.getByteTimeDomainData(td); for (i = 0; i < td.length; i++) { var x = (td[i] - 128) / 128; s += x * x; } }
-    var x2 = Math.min(1, Math.sqrt(s / td.length) / (+cfg.levelRef || 0.2));
+    var x2 = Math.min(1, Math.sqrt(s / td.length) / (+cfg.levelRef || 0.12)); // 0.12 ≈ the 95th-percentile RMS of the flute track
     lv += (x2 - lv) * (1 - Math.exp(-dt / (x2 > lv ? 0.06 : 0.25)));
     return lv;
   }
@@ -350,6 +399,7 @@
       switches.forEach(function (b) { b.setAttribute('aria-checked', String(!!S[b.getAttribute('data-sound-switch')])); });
       if (statusEl && statusEl.textContent !== st[1]) statusEl.textContent = st[1];
       if (volEl) { volEl.value = Math.round(S.vol * 100); volEl.style.setProperty('--v', Math.round(S.vol * 100) + '%'); }
+      tuck();
     }
     var s = state(st[0]), key = [s.music, s.sfx, s.playing, s.volume, s.status].join();
     if (key === lastKey) return;
@@ -364,7 +414,7 @@
     v = !!v; var was = S.sfx; S.sfx = v; savePref(); reconcile();
     if (v && !was) { sample = true; if (buf['chime-s']) setTimeout(playSample, 150); } // a soft sample of what is to come
   }
-  function playSample() { sample = false; hit('chime-s', 0.5, 0, 1, true); }
+  function playSample() { sample = false; hit('chime-s', 0.7, 0, 1, true); }
   function setVolume(v) {
     S.vol = Math.max(0, Math.min(1, +v || 0));
     if (master) master.gain.setTargetAtTime(S.vol * S.vol, ctx.currentTime, 0.05);
@@ -375,8 +425,19 @@
     panelOpen = o; panel.hidden = !o; btn.setAttribute('aria-expanded', String(o));
     var m = o ? 'addEventListener' : 'removeEventListener';
     doc[m]('click', onOutside, true); doc[m]('keydown', onEsc);
-    if (o) render();
+    if (o) render(); else tuck();
   }
+  // On phones and tablets the page's own links reach the bottom-left corner of the first
+  // screen (hero buttons, cards). While nothing is sounding, the button keeps out of the
+  // way at the top of the page, as back-to-top does, and comes back once the reader
+  // scrolls on (or tabs to it). Whenever music is on or waiting, it always shows.
+  var tucked = null, tuckRaf = 0, cardOpen = false;
+  function tuck() {
+    if (!box) return;
+    var t = W.innerWidth < 1100 && root.scrollHeight > innerHeight + 240 && (W.scrollY || 0) < Math.max(160, innerHeight * 0.35) && status()[0] === 'off' && !panelOpen && !cardOpen;
+    if (t !== tucked) { tucked = t; box.classList.toggle('is-tucked', t); }
+  }
+  function onTuckScroll() { if (!tuckRaf) tuckRaf = requestAnimationFrame(function () { tuckRaf = 0; tuck(); }); }
   function onOutside(e) { if (!box.contains(e.target)) openPanel(false); }
   function onEsc(e) { if (e.key === 'Escape') { openPanel(false); btn.focus(); } }
   if (box) {
@@ -395,6 +456,8 @@
     if (!FX.length) switches.forEach(function (b) { if (b.getAttribute('data-sound-switch') === 'sfx') b.hidden = true; });
     box.hidden = false;
     root.classList.add('has-sound');
+    W.addEventListener('scroll', onTuckScroll, { passive: true });
+    W.addEventListener('resize', onTuckScroll);
   }
 
   /* ---------------- first visit: the choice inside the intro curtain ---------------- */
@@ -403,8 +466,10 @@
     if (pref || !intro || !inv || root.classList.contains('intro-seen') || getComputedStyle(intro).display === 'none') return;
     var lift = (intro.getAnimations ? intro.getAnimations() : []).filter(function (a) { return a.animationName === 'intro-lift'; })[0];
     var elapsed = lift ? +lift.currentTime || 0 : performance.now();
-    if (elapsed > 1450) return; // the curtain is already lifting: the control is there instead
-    var showIn = Math.max(0, 1500 - elapsed), timer, done = false, label = $('.intro-label', intro);
+    // the curtain is already lifting (a slow connection: the script arrived late): ask in a
+    // small card beside the sound button instead, so a first visit is always offered the choice
+    if (elapsed > 1450) { offer(inv); return; }
+    var showIn = Math.max(0, 1500 - elapsed), timer, done = false, label = $('.intro-label', intro), auto = false;
     var choices = $$('[data-sound-enter]', inv);
     root.style.setProperty('--snd-in', showIn + 'ms');
     root.style.setProperty('--snd-hold', (showIn + 11000) + 'ms'); // CSS lifts the curtain even if this script stops
@@ -418,19 +483,21 @@
     intro.setAttribute('aria-describedby', 'snd-invite-note');
     $$('.intro-mark, .intro-word, .intro-bar', intro).forEach(function (el) { el.setAttribute('aria-hidden', 'true'); });
     function wait(ms) { clearTimeout(timer); timer = setTimeout(function () { close(); }, ms); }
-    function close(withMusic) {
+    function close(withMusic, lifted) {
       if (done) return; done = true;
       clearTimeout(timer);
       doc.removeEventListener('keydown', onKey, true);
       W.removeEventListener('wheel', onIntent, true); W.removeEventListener('touchmove', onIntent, true);
       if (withMusic !== undefined) act(function () { S.music = S.sfx = withMusic; savePref(); reconcile(); });
       if (inv.contains(doc.activeElement)) doc.activeElement.blur();
-      root.classList.remove('snd-inviting'); root.classList.add('snd-entering');
       intro.setAttribute('aria-hidden', 'true');
       ['role', 'aria-modal', 'aria-labelledby', 'aria-describedby'].forEach(function (a) { intro.removeAttribute(a); });
-      setTimeout(function () { intro.style.display = 'none'; inv.hidden = true; }, 1000);
+      var gone = function () { intro.style.display = 'none'; inv.hidden = true; };
+      if (lifted) { gone(); root.classList.remove('snd-inviting'); return; } // already lifted by the CSS: no second wipe
+      root.classList.remove('snd-inviting'); root.classList.add('snd-entering');
+      setTimeout(gone, 1000);
     }
-    function onIntent() { close(); } // scrolling means "let me read": continue in silence
+    function onIntent() { close(); } // scrolling means the visitor wants to read: continue in silence
     function onKey(e) {
       if (e.key === 'Escape') { e.preventDefault(); close(); return; }
       if (e.key === 'Tab') { // keep focus on the two choices while they are offered
@@ -443,14 +510,71 @@
     }
     choices.forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); close(b.getAttribute('data-sound-enter') === 'music'); }); });
     intro.addEventListener('click', function () { close(); }); // a tap on the curtain: in, quietly
+    // if the CSS fallback lifts the curtain first (a pointer resting on the choices), follow it:
+    // never leave the Tab trap and key handlers behind an invisible curtain
+    intro.addEventListener('animationend', function (e) { if (e.target === intro && e.animationName === 'snd-lift') close(undefined, true); });
     inv.addEventListener('pointerenter', function () { clearTimeout(timer); });
     inv.addEventListener('pointerleave', function () { if (!done) wait(4000); });
-    inv.addEventListener('focusin', function () { clearTimeout(timer); });
-    inv.addEventListener('focusout', function () { if (!done) wait(4000); });
+    inv.addEventListener('focusin', function () { if (!auto) clearTimeout(timer); });
+    inv.addEventListener('focusout', function () { if (!done && !auto) wait(4000); });
     doc.addEventListener('keydown', onKey, true);
     W.addEventListener('wheel', onIntent, { capture: true, passive: true });
     W.addEventListener('touchmove', onIntent, { capture: true, passive: true });
     wait(showIn + 8000); // nothing chosen: continue in silence, and ask again next session
+    // a modal dialog takes focus when it appears (a screen reader then announces it);
+    // this programmatic focus does not count as the visitor engaging with it
+    setTimeout(function () {
+      if (done || (doc.activeElement && doc.activeElement !== doc.body && !inv.contains(doc.activeElement))) return;
+      auto = true;
+      try { choices[0].focus({ preventScroll: true }); } catch (e) { choices[0].focus(); }
+      auto = false;
+    }, showIn + 60);
+  }
+
+  // The same choice when the curtain could not hold it: a small non-modal card above the
+  // sound button. It covers nothing important, never takes focus, and leaves on its own
+  // after a while (or once the reader is well into the page): ask again next session.
+  function offer(inv) {
+    if (!box || !btn) return;
+    var done = false, timer, y0 = W.scrollY || 0;
+    var choices = $$('[data-sound-enter]', inv), music = choices.filter(function (b) { return b.getAttribute('data-sound-enter') === 'music'; })[0];
+    var silence = choices.filter(function (b) { return b !== music; })[0];
+    var q = doc.createElement('p');
+    q.className = 'snd-invite-q'; q.id = 'snd-invite-q';
+    q.setAttribute('aria-live', 'polite');
+    inv.insertBefore(q, inv.firstChild);
+    var span = music && $('span', music);
+    if (span) span.textContent = fmt('Play flute music');
+    if (silence) silence.textContent = fmt('Not now');
+    inv.classList.add('snd-invite--card');
+    inv.setAttribute('role', 'group'); inv.setAttribute('aria-labelledby', 'snd-invite-q');
+    box.insertBefore(inv, btn);
+    function close(withMusic) {
+      if (done) return; done = true;
+      clearTimeout(timer);
+      W.removeEventListener('scroll', onScrollAway);
+      doc.removeEventListener('keydown', onKey);
+      if (withMusic !== undefined) act(function () { S.music = S.sfx = withMusic; savePref(); reconcile(); });
+      var hadFocus = inv.contains(doc.activeElement);
+      inv.hidden = true;
+      cardOpen = false; tuck();
+      if (hadFocus) btn.focus();
+    }
+    function onScrollAway() { if (Math.abs((W.scrollY || 0) - y0) > innerHeight * 2.5) close(); }
+    function onKey(e) { if (e.key === 'Escape' && inv.contains(doc.activeElement)) { e.preventDefault(); close(); } }
+    choices.forEach(function (b) { b.addEventListener('click', function () { close(b === music); }); });
+    btn.addEventListener('click', function () { close(); }); // opening the panel answers it there
+    setTimeout(function () {
+      if (done || pref) return;
+      inv.hidden = false;
+      cardOpen = true; tuck();
+      setTimeout(function () { q.textContent = fmt('Would you like flute music while you read?'); }, 80); // announced
+      W.addEventListener('scroll', onScrollAway, { passive: true });
+      doc.addEventListener('keydown', onKey);
+      timer = setTimeout(function () { close(); }, 16000);
+      inv.addEventListener('pointerenter', function () { clearTimeout(timer); });
+      inv.addEventListener('pointerleave', function () { if (!done) { clearTimeout(timer); timer = setTimeout(function () { close(); }, 6000); } });
+    }, 900);
   }
 
   /* ---------------- start ---------------- */

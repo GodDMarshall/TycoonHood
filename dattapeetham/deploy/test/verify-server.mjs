@@ -262,6 +262,12 @@ async function main() {
     if (has('fixtures')) {
       const acme = await request('/.well-known/acme-challenge/dp-test', { headers: { host: SITE.hostname } });
       check(acme.status === 200 && acme.body.includes('dp-acme'), `http://${SITE.hostname}/.well-known/acme-challenge/ is not redirected (certificates)`, `got ${acme.status} ${acme.headers.location || ''}`);
+      // A challenge file that does not exist is "not found" on both names, not
+      // a redirect (Apache's ErrorDocument must not re-enter the HTTPS rule).
+      for (const host of [SITE.hostname, ALIAS]) {
+        const miss = await request('/.well-known/acme-challenge/dp-missing', { headers: { host }, body: false });
+        check(miss.status === 404 && !miss.headers.location, `http://${host}/.well-known/acme-challenge/<missing> → 404, not redirected`, `got ${miss.status} ${miss.headers.location || ''}`);
+      }
     }
     if (has('forwarded-proto')) {
       const xf = await request('/about.html', { headers: { host: SITE.hostname, 'x-forwarded-proto': 'https' }, body: false });
