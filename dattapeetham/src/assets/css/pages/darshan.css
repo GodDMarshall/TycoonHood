@@ -450,6 +450,8 @@ html:not([lang="en"]) .page-darshan .dn-lit .scroll-lit { max-width: 26ch; }
    the Next badge), so each language reserves its tallest label plus the English 14px of air, rather
    than running the first stop into the legend and the second into the note below */
 @media (min-width: 1101px) {
+  /* room for the first stop's label when it carries the NEXT badge (it wraps to a third line) */
+  html[lang="en"] .page-darshan .dn-day-track { margin-top: 134px; }
   html:is([lang="hi"], [lang="te"]) .page-darshan .dn-day-track { margin-top: 132px; margin-bottom: 124px; }
   html[lang="kn"] .page-darshan .dn-day-track { margin-top: 140px; margin-bottom: 158px; }
   html[lang="ta"] .page-darshan .dn-day-track { margin-top: 156px; margin-bottom: 186px; }
