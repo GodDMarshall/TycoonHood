@@ -38,6 +38,22 @@ the Peetham for the camera originals** listed under "Ask the Peetham for
 camera originals of these", with the page and section each one is on;
 the portraits of the Gurus, the deities and the page heroes first.
 
+## The rule for every photo, from now on
+
+**No photo is used on the site until it has been through
+`node tools/enhance-photos.mjs`** (or `npm run images`, which now routes
+through it): a 3840 px master (512 px for an app icon), its WebP copies and
+its manifest entry, made before the page that uses it is published. Then
+**`node build.mjs && node --test tests/photos.test.mjs`** must pass. That test
+fails the check when a low-quality photo slips in: an `<img>`, background,
+lightbox source or script that still loads a photo straight from S3, a
+srcset (or hero preload) that stops below the photo's 4K master, a manifest
+entry without a 3840 px master or without its provenance, a copy that is
+missing or not as wide as it claims, a fidelity-flagged photo nobody has
+reviewed here, or a master made by the network without the face guard. (It
+is not part of `npm test` yet; see "Stage 2", item 6.) The steps are under
+"When a page gets a new photo".
+
 ## What runs, in order
 
 ```
@@ -373,6 +389,140 @@ the x4 route in 48 minutes; PSNR 25.8–38.7 dB, median 30.7; 10 flagged.
   `817f0c8ef0e3-2560.webp` 871 KB, `220ece1aebe7-3840.webp` 847 KB. Nothing
   is over 1 MB.
 
+## In the browser (23 October 2026)
+
+What a visitor's browser actually downloads and shows, measured in Chromium,
+against the site as it was before the enhanced photos.
+
+**How.** Two copies of the built site from the same snapshot of the code: one
+with the current photo copies (identical to `site/`), one with the previous
+copies (`src/assets/img/opt/` of commit `7f51385`, the last commit before the
+enhanced ones; `HEAD` already carries the new manifest, so `git show HEAD:`
+would compare the site with itself). Both served by a small static server on
+127.0.0.1:18800 and :18801; third-party hosts (Google Fonts, YouTube) made
+unreachable for both, so absolute times are a little optimistic and the
+comparison is fair. Chromium 141 (Playwright 1.49.1), headless, on the shared
+4-core build machine (load about 4), no CPU throttling. Seven pages (index,
+sri-swamiji, darshan, attractions, media with its gallery and lightbox, seva,
+kn/index) at three devices: **phone** 390×844 at 3×, **laptop** 1440×900 at
+2×, **4K monitor** 3840×2160 at 1×. For every `<img>`: the srcset candidate it
+loaded (`currentSrc`), its layout size and fit; for every file under
+`assets/img/`: its bytes (Resource Timing, encoded body). *First view* = after
+load and network quiet, no scrolling (it includes lazy images inside
+Chromium's loading margin); *full scroll* = the page scrolled top to bottom.
+LCP from a `PerformanceObserver`, median of 3 runs: laptop and 4K throttled
+to 20 Mbit/s down, 5 up, 20 ms; phone to DevTools' "Fast 4G" (8.1 Mbit/s,
+1.35 up, 165 ms). The rig (servers, measuring and lightbox scripts) was a
+working tool, not committed.
+
+**Which copy each screen gets.**
+
+- **4K monitor**: every one of the 21 images whose box needs 2000 screen
+  pixels or more loaded the **3840** copy (before: 620–1600 px copies,
+  stretched up to 6×). The home hero (2688×2038 box) now draws from 3840
+  instead of 1024.
+- **Laptop**: page heroes load 3840 (a 1440×~700 hero cropped by
+  `object-fit: cover` needs ~2880 px at 2×); cards 960, thumbnails 480.
+- **Phone**: heroes load **1600** (before 1024–1600). Of 253 image loads on
+  the seven pages: 55 app icons at 192, 34 at 480, 63 at 960, 72 at 1600, and
+  35 at 2560/3840. Those 35 are all `object-fit: cover` crops whose crop
+  really needs it at 3× (a 390×844 story plate of a landscape photo shows a
+  1266 px wide slice: 3797 screen px), sized by `site.js`.
+- With `sizes="auto"` (Chromium 126+) the picks are close to ideal: only
+  **3** of all images loaded a copy more than one step too large. One is a
+  real waste: the Sri Swamiji page hero on the 4K screen (a 460×684 box,
+  `sizes="100vw"`) loads 3840 (280 KB) where 1600 (108 KB) is enough. The
+  other two reuse a 3840 copy already loaded by the hero (no extra bytes).
+- **Double downloads**: 10 times over the 21 page loads, 476 KB in all
+  (before: 7, 215 KB). A lazy image near the top starts loading with
+  `sizes="auto"`, then `site.js` raises its `sizes` for the cover crop and the
+  browser fetches the larger copy as well (e.g. the home page's Sri Swamiji
+  portrait, 960 then 1600 on the laptop).
+
+**Image bytes, MB** (now, before in brackets):
+
+| page | phone: first view | phone: full scroll | laptop: first view | laptop: full scroll | 4K: first view | 4K: full scroll |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| index | 0.22 (0.11) | 5.96 (2.18) | 0.77 (0.23) | 5.52 (1.98) | 0.63 (0.24) | 4.54 (1.79) |
+| sri-swamiji | 0.30 (0.15) | 3.57 (2.26) | 0.48 (0.15) | 3.24 (2.02) | 0.84 (0.51) | 1.88 (1.39) |
+| darshan | 0.29 (0.25) | 5.47 (2.47) | 0.92 (0.28) | 4.54 (2.11) | 0.81 (0.28) | 2.47 (1.62) |
+| attractions | 0.24 (0.24) | 5.35 (2.47) | 1.08 (0.27) | 5.67 (2.34) | 0.91 (0.30) | 4.22 (1.95) |
+| media | 0.15 (0.08) | 3.59 (2.21) | 0.24 (0.08) | 3.80 (2.39) | 0.72 (0.47) | 1.94 (1.44) |
+| seva | 0.71 (0.58) | 3.45 (1.97) | 1.10 (0.46) | 3.59 (1.72) | 1.25 (0.54) | 2.37 (1.54) |
+| kn/index | 0.22 (0.11) | 5.96 (2.18) | 0.77 (0.23) | 5.47 (1.98) | 0.63 (0.24) | 4.54 (1.79) |
+| **7 pages** | **2.13** (1.52) | **33.35** (15.74) | **5.36** (1.70) | **31.83** (14.54) | **5.79** (2.58) | **21.96** (11.52) |
+
+So a full read of a page costs about twice the image bytes it did (phone
+4.8 MB instead of 2.2 on average), and the first screen 1.4× (phone) to 3.2×
+(laptop).
+
+**LCP** (median of 3; before in brackets):
+
+| page | phone, Fast 4G | laptop, 20 Mbit/s | 4K, 20 Mbit/s | LCP image now (phone / laptop / 4K) |
+| --- | ---: | ---: | ---: | --- |
+| index | 1.43 s (1.37) | 1.50 s (1.24) | 3.23 s (2.66) | hero 1600 / 3840 / 3840 |
+| sri-swamiji | 1.24 s (1.25) | 1.09 s (1.24) | 2.35 s (2.50) | hero 1600 / 3840; 4K: a 960 portrait |
+| darshan | 1.36 s (1.30) | 1.18 s (1.20) | 2.40 s (2.65) | hero 1600 / 3840 / 3840 |
+| attractions | 1.35 s (1.33) | 1.27 s (1.22) | 3.21 s (2.24) | hero 1600 / 3840 / 3840 |
+| media | 1.30 s (1.16) | 1.05 s (1.12) | 2.31 s (2.36) | hero 1600 / 3840 / 3840 |
+| seva | 0.87 s (0.94) | 1.09 s (1.32) | 1.96 s (2.37) | hero 1600 / 3840 / 3840 |
+| kn/index | 1.56 s (1.58) | 1.46 s (1.36) | 2.92 s (3.87) | hero 1600 / 3840 / 3840 |
+| **mean** | **1.30 s** (1.27) | **1.23 s** (1.24) | **2.63 s** (2.67) | |
+
+Every page stays under 2.5 s on the phone and the laptop, and the means do
+not move: the heroes are preloaded with the right candidate, the phone's
+hero copy grows only from 0.11 to 0.22 MB, and before the first paint the
+page's HTML, CSS and scripts weigh more than the photo (on the phone home
+page 574 KB against the hero's 224 KB, served uncompressed here; a real host
+compresses them, which helps old and new alike). The home
+page on the laptop is the one clear loss (+0.26 s: its 3840 hero is 397 KB
+where the 2560 one, 228 KB, would cover the box; see the `sizes` list below).
+The 4K numbers are dominated by painting a 3840×2160 screen on this shared CPU
+(runs of one page vary from 1.5 to 4.0 s), so read them as "no measurable
+change", not as a gain.
+
+**Browsers without `sizes="auto"`.** Every lazy `<img>` says
+`sizes="auto, 100vw"`. Browsers that do not implement `auto` use `100vw`:
+according to caniuse that is **Safari on macOS and iOS** (no version yet) and
+Firefox before 150. Emulated in Chromium (the attribute served as
+`"autox, 100vw"`, which Chromium skips as Safari skips `auto`; Safari's own
+choice between two candidates can differ a little):
+
+| 7 pages | first view now (before) | full scroll now (before) |
+| --- | ---: | ---: |
+| phone | 3.20 MB (1.95) | 38.87 MB (16.46) |
+| laptop | **12.37 MB** (2.56) | **63.53 MB** (16.43) |
+| 4K | **13.29 MB** (3.69) | **57.74 MB** (15.23) |
+
+On a Mac every card and thumbnail asks for the full window width: a 120×90
+thumbnail on attractions loads the 3840 copy (761 KB) where 480 (40 KB) is
+enough, a 220×124 media thumbnail the 2858 one (975 KB instead of 80 KB).
+434 images were loaded too large, 77 MB in all. This is the most important
+thing stage 2 has to fix (list below); it is not something the copies can
+fix, because the copies must go up to 3840 for the screens that need them.
+
+**Lightbox.** Opening a gallery photo on media.html:
+
+- On the **4K screen** it loads the 3840 copy (255–575 KB) and shows it
+  **1200 px wide**: `site.css` caps `.lightbox-dialog img` at
+  `max-width: min(1200px, 92vw)` and `max-height: 80vh`. With the cap lifted
+  (shot with `max-width: 92vw` injected, not changed in the site) it fills
+  2748×1728 px: the 4K view the copies were made for.
+- On a 4K monitor at 200 % (1920×1080 at 2×) it shows 2400 screen px from the
+  3840 copy: right.
+- On the **phone** it shows 359×226 px (1077 screen px) and still loads the
+  3840 copy (255–575 KB); the 1600 copy (99–217 KB) is enough. Over all 154
+  photos the largest copy averages 410 KB, the 1600 one 165 KB.
+- Detail crops at 1:1 screen pixels on the 4K screen, before (the previous
+  site's largest copy, enlarged by the browser to the same 2748 px display)
+  and after (the 3840 copy): the temple gopuram (source 1024 px), the
+  Rajarajeshwari Sannidhi with Sri Swamiji (source 1600 px) and Sri Swamiji
+  at Shuka Vana (source 620 px). The sculpture, the beard and the cockatoos'
+  crests are crisp where the previous copy is visibly blurred; Sri Swamiji's
+  face at Shuka Vana (kept out of the network by the face guard) is clean
+  but only as detailed as its 620 px source. Delivered with this report as
+  `crop-4k-*.png` (not committed).
+
 ## Review of flagged photos
 
 Each flagged photo was compared with its source (whole image, and crops at a
@@ -620,24 +770,80 @@ from the small web copies (never enlarged, so `sadguru-deva.jpg` gives
   master in `.cache/img-4k/` (the run report lists each photo's master), and
   drop the other set so both are not shipped (2.2 MB).
 
+## Stage 2: what the pages should change
+
+Measured in "In the browser" above. None of these is in the photo pipeline's
+files: they are in the components, `site.css` and `site.js`.
+
+1. **State a real `sizes` per component** (Safari, iOS, older Firefox; worth
+   up to 77 MB over the seven pages). `img()` in `src/components.mjs` already
+   takes a `sizes` option and `build.mjs` keeps a `sizes` it finds, but no
+   caller passes one, so every lazy image gets `auto, 100vw`. Keep `auto`
+   first (`sizes="auto, …"`): Chromium then still uses the layout width and
+   `site.js`'s cover fix still finds `[sizes^="auto"]`. The largest layout
+   widths measured (CSS px at 390 / 768 / 1024 / 1440 / 3840 wide windows;
+   wider than the box where `object-fit: cover` crops), and a value that never
+   asks for less:
+
+   | component | pages | extra MB without it | widths | `sizes="auto, …"` |
+   | --- | --- | ---: | --- | --- |
+   | `.gallery .g-item img` | media, sri-swamiji (attractions' `.ch-gallery` up to 768) | 11.3 | 462 / 588 / 648 / 648 / 648 | `(min-width: 1100px) 650px, (min-width: 700px) 590px, 120vw` |
+   | `article.card .card-media img` | sri-swamiji, darshan, attractions, seva, index | 12.0 | 434 / 705 / 367 / 452 / 452 | `(min-width: 1100px) 460px, (min-width: 700px) 92vw, 115vw` |
+   | `.dn-strip-item img` | darshan | 5.7 | 331 / 257 / 257 / 271 / 271 | `(min-width: 700px) 275px, 85vw` |
+   | `.hours-card .hc-img img` | index, darshan, attractions | 5.5 | 60 (darshan up to 130) | `130px` |
+   | `.dn-fest-media img` | darshan | 3.4 | 356 / 385 / 523 / 304 / 304 | `(min-width: 1100px) 305px, (min-width: 700px) 525px, 95vw` |
+   | `.dn-moment img` | darshan | 3.1 | 129 / 258 / 158 / 192 / 192 | `(min-width: 700px) 260px, 130px` |
+   | `.ix-album img` | index | 3.0 | 229 / 192 / 174 / 175 / 175 | `230px` |
+   | `.photo-tile img` | index | 2.6 | 601 / 571 / 571 / 721 / 721 | `(min-width: 1100px) 725px, (min-width: 700px) 575px, 155vw` |
+   | `.track-cover img` | media | 2.5 | 64 / 76 / 76 / 76 / 76 | `76px` |
+   | `.ix-app img`, `.app-icon img` | index, media | 2.9 | 60 | `60px` |
+   | `.cta-bg img` | sri-swamiji, darshan, attractions, media | 1.9 | 781 / 707 / 960 / 1176 / 1176 | `(min-width: 1240px) 1180px, (min-width: 700px) 95vw, 205vw` |
+   | `.series-art img` | media | 1.9 | 372 / 705 / 495 / 606 / 606 | `(min-width: 1100px) 610px, (min-width: 700px) 92vw, 100vw` |
+   | `.rt-media img` | media | 1.7 | 245 / 235 / 235 / 235 / 235 | `245px` |
+   | `.pa-img img` | media | 1.5 | 303 / 603 / 397 / 492 / 492 | `(min-width: 1100px) 495px, (min-width: 700px) 80vw, 80vw` |
+   | `.at-record-img img` | attractions | 1.9 | 312 / 135 / 135 / 135 / 135 | `(min-width: 700px) 135px, 80vw` |
+
+   Check the breakpoints against `site.css` (700 / 1100 px were read off the
+   measured widths, not the stylesheet). A test like the one in
+   `tests/photos.test.mjs` can then forbid a bare `auto, 100vw` on anything
+   that is not full-bleed.
+2. **Hero `sizes`.** The home hero (`.ix-hero-img`, `src/pages/index.mjs`)
+   says `100vw` but its crop needs 79–86 % of the window from 1440 px up
+   (1237 px at 1440, 3241 at 3840; 100 % at 1024):
+   `sizes="(min-width: 1440px) 86vw, 100vw"` gives the laptop the 2560 copy
+   (228 KB) instead of 3840 (397 KB) and should win back its +0.26 s LCP. The
+   Sri Swamiji page hero (`pageHero` in `src/components.mjs`; on that page a
+   portrait frame needing 1012–1026 px from 1440 up, 954 at 1024) needs a
+   `sizes` option: `(min-width: 1440px) 1030px, 100vw` (4K: the 1600 copy,
+   108 KB, instead of 3840, 280 KB). Full-bleed page heroes are right as they
+   are. (On phones the heroes' cover crops are up to 3× the window wide;
+   `100vw` gives them the 1600 copy, about 2 screen pixels per image pixel at
+   3× (before: 1024 or 1600 copies). Leave it: asking for more would cost the
+   phone's LCP.)
+3. **Lightbox** (`src/assets/css/site.css` `.lightbox-dialog img`,
+   `src/assets/js/site.js` `show()`): lift the 1200 px cap (`max-width:
+   92vw`, keep `max-height: 80vh`) so a 4K screen shows the 4K copy; and make
+   it pick by screen: give the dialog `<img>` the thumbnail's `srcset` (the
+   gallery `<img>` inside the button has it) and `sizes` set to the box it
+   will fill (`min(92vw, 80vh × aspect)` computed in `show()`), keeping
+   `data-full` as the fallback. Phones then load 1600 (165 KB on average)
+   instead of the largest copy (410 KB).
+4. **Double downloads from the cover fix** (476 KB over 21 page loads):
+   `site.js` raises `sizes` after Chromium has started loading the lazy images
+   near the top. Either let the component state the cover `sizes` (item 1
+   covers most), or run the cover fix before those images start (an inline
+   script right after them, or `loading="lazy"` images given their `sizes`
+   by the build from the layout).
+5. **Optional: cap phones at 2×.** `site.js` asks for the full 3× density on
+   cover crops. Capping the density at 2 (`need × min(devicePixelRatio, 2) /
+   devicePixelRatio`) would cut the phone's full-scroll bytes on the seven
+   pages from 33.3 MB to 20.9 MB (−37 %), with no difference anyone can see on
+   a phone. A decision for the lead.
+6. **Run the photo tests.** `npm test` does not run `tests/photos.test.mjs`;
+   add it to `test` and `verify` in `package.json`.
+
 ## Open issues for the build
 
-- **`sizes` and bandwidth.** `build.mjs` gives every lazy `<img>`
-  `sizes="auto, 100vw"`, and `src/assets/js/site.js` replaces it with the
-  width an `object-fit: cover` crop really needs (so a full-screen story
-  plate on a 390×844 phone asks for 1266 px and, at 3×, gets the 3840 copy:
-  the 4K masters are used on phones too). Checked in Chromium: no broken
-  image, no horizontal overflow, sensible picks on desktop (1440×900 @2×) and
-  phone (390×844 @3×) for index, sri-swamiji, centers, attractions and
-  kn/guru-parampara. The risk is browsers without `sizes="auto"`: for every
-  image the script leaves alone they fall back to `100vw`, and on a 1440 px
-  laptop at 2× now pick the 3840 copy for cards and thumbnails (before, the
-  largest on offer was 1600 or less). Each component should state its real
-  `sizes` (e.g. cards `(min-width: 1100px) 360px, (min-width: 700px) 45vw,
-  92vw`).
-- **Lightbox.** `data-full` takes the largest copy, now the 3840 one (often
-  0.5–1 MB): right for a 4K screen, heavy on a phone. A srcset-aware
-  lightbox, or 2560 for `data-full`, would be lighter.
 - **Size of the site.** The shipped photos grow from 21.5 MB to 149 MB
   (the built site from 45 MB to about 170 MB; all five languages share the
   copies). Check the host's deployment size limits and the repository's.
@@ -720,7 +926,8 @@ should add an entry; nothing in the pipeline writes this file.
 1. Use the S3 URL in the page as before.
 2. Run the three commands above (or `npm run images`). The tool finds the new
    URL in the built site, downloads it, renders its master and copies, and
-   the second build serves it from the copies. Until then it loads from S3.
+   the second build serves it from the copies. Until then it loads from S3,
+   and `tests/photos.test.mjs` fails on that page: do not publish it so.
 3. Look at it, at 1:1 against the source enlarged with bicubic: faces
    (the face guard has kept those under 130 px faithful; check the larger
    ones and any deity face or painting), lettering, crowds. Anything the
@@ -728,7 +935,10 @@ should add an entry; nothing in the pipeline writes this file.
    The summary prints its fidelity; a flagged photo needs a look and a line
    under "Review of flagged photos" before `tests/photos.test.mjs` passes.
 4. If the Peetham has the camera original, put it in `photos/originals/`.
-5. Commit `src/assets/img/opt/` (copies + manifest) and `src/assets/img/og/`.
+5. `node build.mjs && node --test tests/photos.test.mjs`: it must pass.
+6. Commit `src/assets/img/opt/` (copies + manifest) and `src/assets/img/og/`.
+7. If the photo goes into a new component, give that `img()` a real `sizes`
+   (see "Stage 2", item 1), or Safari loads its 3840 copy for any box.
 
 A photo on the dev bucket stops the build until it has a copy (the CSP blocks
 that bucket), exactly as before.
@@ -745,6 +955,8 @@ that bucket), exactly as before.
   srcset ending at the master's full width (≥ 3840w, or the master's width
   for portraits and icons), every candidate exists in the build, and its
   `width`/`height` match the master's proportions;
+- every hero preload (`<link rel="preload" imagesrcset>`) offers exactly the
+  srcset of an `<img>` on its page, so no screen preloads a smaller copy;
 - no `<img>`, background, lightbox source or script loads a photo straight
   from S3 (share tags and JSON-LD keep their S3 URLs on purpose);
 - every page has a 1200×630 share image under 300 KB;
@@ -753,3 +965,10 @@ that bucket), exactly as before.
   recorded), and no method names a face-restoration or generative model;
 - every entry of `photos/overrides.json` names a photo on the site, says why,
   and was applied (the Lanczos route, or at least as many protected regions).
+
+Checked on 23 October 2026 that it catches what it is for: a copy of the
+build with one `<img>` pointing straight at an S3 photo fails ("loads a photo
+straight from S3"), one with the home hero's srcset cut to 480/960 fails
+("largest candidate 960w is below 3840"), one with the hero preload cut the
+same way fails; the real build passes (91 tests). `npm test` does not run
+this file yet (`package.json` is the lead's; add it to `test` and `verify`).

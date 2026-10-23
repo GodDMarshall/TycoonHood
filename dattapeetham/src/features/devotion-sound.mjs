@@ -16,6 +16,18 @@
 // Every visible or announced English string is listed in SOUND_STRINGS so the
 // translation dictionaries can cover them (markup strings are picked up by
 // `node build.mjs --extract`; runtime strings come from fmt() calls in the JS).
+//
+// Behaviour worth knowing (review stage):
+// - The invitation takes focus when it appears (a modal dialog). If the script
+//   arrives after the CSS curtain has lifted (slow connections: measured at
+//   1.6 Mbps / 150 ms latency the deferred scripts run at ~5.3 s and at 3G
+//   speeds at ~12 s, long after the curtain), the same choice moves into the
+//   control as a small non-modal card ("Would you like flute music while you
+//   read?" · "Play flute music" · "Not now").
+// - On screens below 1100px the button tucks away at the top of a page while
+//   nothing sounds (at 360-768px it covered a page link or button on 10-14 of
+//   the 16 pages, e.g. "Donate" on Seva at 360px). It returns once the reader
+//   scrolls, when it gets keyboard focus, and whenever music is on or waiting.
 
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

@@ -384,5 +384,35 @@ why CPU time was used.
   and looked at.** Stage 2's build will differ only in how the strings are
   written into the modules, so look at each page once after wiring it.
 - **Guru Parampara has an existing layout-shift source.** `gp-bead` and
-  `gp-tip` animate `top`, which gives 0.08 CLS at 390 in the original page.
-  It is not caused by this work, but it is worth a separate fix.
+  `gp-tip` animate `top`. Scrolled through in screen-sized steps, the
+  original page measures CLS 0.20 at 360 and about 0.10–0.14 at 390 (the
+  injected page is the same or lower), above the 0.1 "good" limit. It is not
+  caused by this work, but it is worth a separate fix (animate `transform`).
+
+## 8. Review (stage 1)
+
+A reviewer wired the sound engine and this library together into copies of
+all 16 pages (plus `kn/index`, `kn/darshan`) and tested them at 360, 390, 768
+and 1440. The harness and logs are in
+`/tmp/claude-0/-home-user/b1182561-ec52-585b-bacd-dba9ee5740a3/scratchpad/devotion/review-ux/`
+(`node build.mjs`, then `t-*.mjs`; the server is `node serve.mjs site 4720`).
+
+**Fixed in this library:**
+
+| Defect | Measured | Fix |
+| --- | --- | --- |
+| The aarti widened the page on phones | Darshan at 390: the page scrolled sideways by 3–28px, varying as the flame went round. The arm and trail were squares rotating, so their bounding boxes grew by up to 41 %, and the flame's 5.6× halo box passed the screen edge. | The arm is now a zero-size point that turns, carrying the lamp at the radius (`--dv-ad`, or container units without the script). The trail turns inside a clip (`.dv-aarti-tclip`, new markup from `aarti()`). The circling flame's halo is a small core with a `box-shadow` glow. Near the edge of the screen the script closes the path in. |
+| The bell's hum ring widened the page | Darshan at 390 and 360, and Visit: 10–15px of sideways scroll while the ring grew (76px × 1.6 next to a bell 30px from the edge). Chromium then widened the layout viewport for the rest of the visit. | The hum is drawn by SVG past a 2px box (new markup from `ghanta()`). The bell keeps at least 22px from the screen edge so its lip never swings past it. |
+| A hanging bell rang out of step with its sound | The bell swung on entry (at about 86 % of the viewport), and the section bell sounded later (at 70 %). Scrolling slowly, the bell swung twice: once silently, then again with the sound. | The swing and the sound are now one event: see `dp:ghanta` and `dp:bell` in section 2, item 4. A touch on the bell also sounds it when temple sounds are on. |
+| The sounding nada repainted its rings | The music page with the flute playing had more frames over 33ms than without it. | `will-change: transform` is set on the pulse while it is sounding. |
+
+**Checked and fine:**
+- **Reduced motion.** All 16 pages at 1440 and 8 at 390, with the flute on. At every motif, nothing moved for 1.5s: no running animation, no rAF from either script, canvases and petals unchanged. A negative control, run with motion allowed, does fail this check.
+- **Layout shift.** At most 0.009 on every page except Guru Parampara (above).
+- **Long session.** Three minutes of wheel scrolling on the home page with flute and temple sounds on: heap, DOM nodes and listeners stayed flat, with no growth. After 10–16 temple sounds, every per-hit Web Audio node was destroyed (CDP WebAudio events).
+- **Cost.** The motifs add about 2ms of main-thread time per frame while scrolling through the busiest spots at 1440: 7.2 vs 4.8ms on the home page's offering, 6.9 vs 4.2ms on Guru Purnima. The 95th-percentile frame time was unchanged at 1440 and 390. These figures are headless, software-rendered and on a shared machine; with heavy load from other jobs, the same runs read 2–3 times worse for every variant.
+
+**Stage 2 must watch:**
+- The new markup in `aarti()` (`.dv-aarti-tclip`) and `ghanta()` (an SVG hum) comes from the helpers. Don't hand-write either motif.
+- After wiring, check every page at 360 and 390 for sideways scroll at several moments of each animation.
+- `devotion-motion.js` uses `setTimeout` once per scrolled frame for the reading flame's rest pose. It is harmless (about 30 calls a second while scrolling), but it shows up in timer counts.

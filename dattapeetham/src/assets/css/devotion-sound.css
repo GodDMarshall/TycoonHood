@@ -11,7 +11,7 @@
 /* at the top of a page on phones and tablets, while nothing sounds, the button keeps clear
    of the page's own buttons (the script sets .is-tucked); a keyboard still reaches it */
 .snd { transition: opacity .3s, transform .3s var(--ease-out); }
-.snd.is-tucked:not(:focus-within) { opacity: 0; transform: translateY(12px); pointer-events: none; }
+@media (max-width: 1099px) { .snd.is-tucked:not(:focus-within) { opacity: 0; transform: translateY(12px); pointer-events: none; } }
 .nav-open .snd { visibility: hidden; }
 /* where the footer's text column reaches the screen edge, leave room under it for the
    floating sound and back-to-top buttons so the last line is never covered */

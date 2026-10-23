@@ -190,6 +190,13 @@ for (const { f, html } of pages) {
       assert.ok(W > 0 && H > 0, `no width/height: ${short}`);
       assert.ok(Math.abs(W / H - e.w / e.h) / (e.w / e.h) < 0.01, `width/height ${W}x${H} do not match the master's shape ${e.w}x${e.h}: ${short}`);
     }
+    // the hero preload offers the very candidates its <img> does: a preload
+    // that stops at a small copy makes a wide screen load the soft one first
+    const srcsets = (html.match(/<img\b[^>]*>/g) || []).map((t) => attr(t, 'srcset'));
+    for (const link of html.match(/<link\b[^>]*\srel="preload"[^>]*>/g) || []) {
+      const iss = attr(link, 'imagesrcset');
+      if (iss) assert.ok(srcsets.includes(iss), `preload imagesrcset is not the srcset of any <img> on the page: ${link.slice(0, 160)}`);
+    }
     // backgrounds, lightbox sources and data attributes: no S3 photo either
     // (share tags and JSON-LD keep absolute S3 URLs on purpose)
     const rest = html.replace(/<meta\b[^>]*>|<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').replace(/<a\b[^>]*>/g, '');

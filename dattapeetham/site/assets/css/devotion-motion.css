@@ -210,6 +210,8 @@
 .dv-nada-still { position: absolute; inset: 22%; border-radius: 50%; border: 1px dotted rgba(226, 200, 142, .32); }
 .dv-nada-bindu { position: absolute; left: 50%; top: 50%; width: 24%; height: 24%; margin: -12% 0 0 -12%; border-radius: 50%; background: radial-gradient(circle, #fffaf0 0 9%, rgba(255, 232, 178, .85) 17%, rgba(246, 205, 125, .35) 40%, rgba(240, 190, 100, 0) 70%); transform: scale(calc(.92 + var(--lv) * .55)); animation: dv-nada-breathe 8s ease-in-out infinite; }
 .dv-nada.is-sounding .dv-nada-ring { border-color: rgba(246, 214, 146, .8); }
+/* while it follows the flute (--lv, ~30 times a second) the pulse is its own layer: a scale, never a repaint of the rings */
+.dv-nada.is-sounding .dv-nada-pulse, .dv-nada.is-sounding .dv-nada-bindu { will-change: transform; }
 @keyframes dv-nada-ring { 0% { transform: scale(.14); opacity: 0; } 14% { opacity: .85; } 100% { transform: scale(1); opacity: 0; } }
 @keyframes dv-nada-breathe { 0%, 100% { opacity: .78; } 50% { opacity: 1; } }
 .dv-on-light .dv-nada-ring, .section-sand .dv-nada-ring, .section-paper .dv-nada-ring { border-color: rgba(160, 122, 53, .7); box-shadow: 0 0 14px rgba(232, 180, 92, .22), inset 0 0 10px rgba(232, 180, 92, .14); }

@@ -314,9 +314,10 @@
   function listen(onOff) {
     if (onOff === listening) return;
     listening = onOff;
-    if (!onOff) { W.removeEventListener('scroll', onScroll); if (io) io.disconnect(); io = null; return; }
+    if (!onOff) { W.removeEventListener('scroll', onScroll); doc.removeEventListener('dp:ghanta', onGhanta); if (io) io.disconnect(); io = null; return; }
     lastY = W.scrollY || W.pageYOffset; lastT = performance.now(); vel = 0; travel = 0;
     W.addEventListener('scroll', onScroll, { passive: true });
+    doc.addEventListener('dp:ghanta', onGhanta);
     if (!W.IntersectionObserver) return;
     var secs = $$('main > section[id]'); if (!secs.length) secs = $$('section[id]', $('main') || doc);
     var first = true;
@@ -336,14 +337,14 @@
   // devotion-motion's hanging bells ('dp:ghanta'): the bell you see is the bell you hear.
   // 'enter': it swung as the reader's scrolling brought it into view, and it stands in for
   // its section's bell; 'touch': a pointer rang it; 'bell': we rang it ourselves.
-  doc.addEventListener('dp:ghanta', function (e) {
+  function onGhanta(e) {
     var d = e.detail || {}, b = d.el;
     if (!b || !b.getBoundingClientRect || d.cause === 'bell') return;
     if (d.cause === 'enter') {
       for (var s = b; s; s = s.parentElement) if (s.tagName === 'SECTION') s.sndSeen = 1;
       if (listening && performance.now() - movedAt < 1200 && vel <= FLING) bell(b, null); // never on load
     } else if (listening) bell(b, null, true);
-  });
+  }
 
   /* ---------------- the one place that decides what should sound ---------------- */
   function reconcile() {
@@ -431,13 +432,22 @@
   // screen (hero buttons, cards). While nothing is sounding, the button keeps out of the
   // way at the top of the page, as back-to-top does, and comes back once the reader
   // scrolls on (or tabs to it). Whenever music is on or waiting, it always shows.
-  var tucked = null, tuckRaf = 0, cardOpen = false;
+  // "At the top" is watched by an IntersectionObserver on a sentinel spanning the top of the
+  // page (no scroll listener, no per-frame work); the CSS applies it only below 1100px.
+  var tucked = null, atTop = false, cardOpen = false;
   function tuck() {
     if (!box) return;
-    var t = W.innerWidth < 1100 && root.scrollHeight > innerHeight + 240 && (W.scrollY || 0) < Math.max(160, innerHeight * 0.35) && status()[0] === 'off' && !panelOpen && !cardOpen;
+    var t = atTop && root.scrollHeight > innerHeight + 240 && status()[0] === 'off' && !panelOpen && !cardOpen;
     if (t !== tucked) { tucked = t; box.classList.toggle('is-tucked', t); }
   }
-  function onTuckScroll() { if (!tuckRaf) tuckRaf = requestAnimationFrame(function () { tuckRaf = 0; tuck(); }); }
+  function watchTop() {
+    if (!W.IntersectionObserver) return;
+    var s = doc.createElement('div');
+    s.setAttribute('aria-hidden', 'true');
+    s.style.cssText = 'position:absolute;left:0;top:0;width:1px;height:max(160px,35vh);visibility:hidden;pointer-events:none';
+    doc.body.appendChild(s);
+    new IntersectionObserver(function (es) { atTop = es[es.length - 1].isIntersecting; tuck(); }).observe(s);
+  }
   function onOutside(e) { if (!box.contains(e.target)) openPanel(false); }
   function onEsc(e) { if (e.key === 'Escape') { openPanel(false); btn.focus(); } }
   if (box) {
@@ -456,8 +466,7 @@
     if (!FX.length) switches.forEach(function (b) { if (b.getAttribute('data-sound-switch') === 'sfx') b.hidden = true; });
     box.hidden = false;
     root.classList.add('has-sound');
-    W.addEventListener('scroll', onTuckScroll, { passive: true });
-    W.addEventListener('resize', onTuckScroll);
+    watchTop();
   }
 
   /* ---------------- first visit: the choice inside the intro curtain ---------------- */
