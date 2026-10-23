@@ -112,6 +112,8 @@
       }
 
       energy *= Math.pow(0.3, dt || 0);
+      // while the site's flute music plays (devotion-sound.js), the rings swell with it
+      var S = window.DP && DP.sound; if (S && S.state && S.state().playing) energy = Math.max(energy, S.level() * 0.8);
     };
 
     var frame = function (t) {

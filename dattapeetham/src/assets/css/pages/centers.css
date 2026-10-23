@@ -489,3 +489,5 @@
   .page-centers .ce-moments { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 46%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; scrollbar-width: none; }
   .page-centers .ce-moments > li { scroll-snap-align: start; }
 }
+/* the sixteen lamps of the Shodasha Datta Kshetras, between the heading and the grid */
+.page-centers .ce-dv-lamps { margin: -8px auto clamp(28px, 4vw, 44px); }

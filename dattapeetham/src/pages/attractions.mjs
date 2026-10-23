@@ -21,6 +21,7 @@
 import { pageHero, sectionHead, frame, gallery, video, cards, ctaBand, scrollLit, hoursCard, btn, img, icon } from '../components.mjs';
 import { site, links, PAGE_IMG, OFFICIAL } from '../site.mjs';
 import { photos, timings, varamVideo } from '../data.mjs';
+import { nada, padmaOrnament, DV_HOST } from '../features/devotion-motion.mjs';
 
 /* ---------------------------------------------------------------------------
    Photographs (Peetham S3 bucket). Captions follow the source pages.
@@ -692,7 +693,8 @@ ${pageHero({
 <section id="overview" class="section at-intro">
   <div class="wrap wrap-narrow">
     ${sectionHead({ eyebrow: 'Within the Ashram', title: 'A tour in four <span class="em-light">chapters</span>', lead: 'Each landmark carries a part of Sri Swamiji’s mission: compassion for birds, reverence for trees, the world’s cultures gathered in one place, and music as a means of healing and meditation.' })}
-    <figure class="at-quote">
+    <figure class="at-quote ${DV_HOST}">
+      ${nada({ size: 380, layer: 'behind' })}
       <blockquote>${scrollLit('“*Bonsai* trees and *birds* are my two eyes. *Naada* is my voice. My breath is the *Veda*.”')}</blockquote>
       <figcaption>Sri Swamiji</figcaption>
     </figure>
@@ -709,7 +711,7 @@ ${chNada}
 
 <section id="more" class="section section-sand at-more">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Also within the Ashram', title: 'More to <span class="em-light">discover</span>', lead: 'Temples, a 70-foot monolithic Hanuman and a centre for the science of breath and meditation are a short walk away.' })}
+    ${padmaOrnament(sectionHead({ eyebrow: 'Also within the Ashram', title: 'More to <span class="em-light">discover</span>', lead: 'Temples, a 70-foot monolithic Hanuman and a centre for the science of breath and meditation are a short walk away.' }))}
     ${cards([
       { img: photos.dattatreya, alt: 'Nirajanam (aarti) offered to a garlanded idol of Lord Dattatreya', tag: 'Darshan daily', title: 'Temples &amp; shrines', text: `Shrines to Lord Dattatreya, Sri Raja Rajeshwari, Sri Datta Venkateshwara and more. General darshan ${temple.rows.map(([, b]) => b).join(' and ')}; individual temples keep their own hours, listed on the darshan page.`, href: 'darshan.html#timings', cta: 'Temples &amp; darshan' },
       { img: `${PAGE_IMG}528/528_322ad0b196f6e909.jpg`, alt: 'The 70-foot monolithic Karya Siddhi Hanuman statue rising above the carved stone temple', pos: '42% 40%', tag: 'Since 2012', title: 'Karya Siddhi Hanuman', text: 'The 70-foot monolithic statue consecrated by Sri Swamiji in 2012. On Saturdays and Sundays a short laser show is projected onto it at 7:10, 7:40 and 8:10 PM.', href: 'darshan.html', cta: 'Plan darshan' },

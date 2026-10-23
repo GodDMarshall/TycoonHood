@@ -35,6 +35,11 @@ export const DV_HOST = 'dv-host';
 const TONES = { light: 'dv-on-light', dark: 'dv-on-dark', auto: '' };
 const tone = (t = 'auto') => TONES[t] ?? '';
 const cx = (...c) => c.filter(Boolean).join(' ');
+// Every motif is decorative (aria-hidden, no text). translate="no" also keeps
+// it out of the translation build's text runs: an inline motif placed next to
+// text (the lotus before a section eyebrow) would otherwise turn that text's
+// segment into "<1><2></2>…</1> <5>A city of temples</5>".
+const HIDE = 'aria-hidden="true" translate="no"';
 const r2 = (v) => +v.toFixed(2);
 
 // Deterministic variation (same markup on every build): a small hash of an index.
@@ -75,7 +80,7 @@ export function deepaRow({ count = 5, order = 'center', tone: t, size = 'md', ru
   // ignition step for each lamp: centre first then pairs outward, or left to right
   const step = (i) => (order === 'ltr' ? i : Math.round(Math.abs(i - mid) * 2) - (n % 2 ? 0 : 1));
   const w = wrap && wrap < n ? wrap | 0 : 0;
-  return `<div class="${cx('dv', 'dv-deepa', rule && 'dv-deepa--rule', w && 'dv-deepa--wrap', align === 'start' && 'dv-deepa--start', tone(t), cls)}" data-devotion="deepa-row" data-order="${order === 'ltr' ? 'ltr' : 'center'}" style="--n:${n};${w ? `--dv-wrap:${w};` : ''}${sizeVar(size)}" aria-hidden="true">
+  return `<div class="${cx('dv', 'dv-deepa', rule && 'dv-deepa--rule', w && 'dv-deepa--wrap', align === 'start' && 'dv-deepa--start', tone(t), cls)}" data-devotion="deepa-row" data-order="${order === 'ltr' ? 'ltr' : 'center'}" style="--n:${n};${w ? `--dv-wrap:${w};` : ''}${sizeVar(size)}" ${HIDE}>
   ${rule ? '<span class="dv-rule"></span>' : ''}<span class="dv-deepa-lamps">${Array.from({ length: n }, (_, i) => lamp(i, ` data-step="${Math.max(0, step(i))}"`)).join('')}</span>${rule ? '<span class="dv-rule"></span>' : ''}
 </div>`;
 }
@@ -96,7 +101,7 @@ export function deepaDivider({ count = 3, tone: t, size = 'sm', cls = '' } = {})
  */
 export function lampChain({ count = 5, axis = 'x', tone: t, size = 'md', range, cls = '' } = {}) {
   const n = Math.max(2, Math.min(12, count | 0));
-  return `<div class="${cx('dv', 'dv-chain', axis === 'y' ? 'dv-chain--y' : 'dv-chain--x', tone(t), cls)}" data-devotion="lamp-chain"${range ? ` data-range="${range}"` : ''} style="--n:${n};${sizeVar(size)}" aria-hidden="true">
+  return `<div class="${cx('dv', 'dv-chain', axis === 'y' ? 'dv-chain--y' : 'dv-chain--x', tone(t), cls)}" data-devotion="lamp-chain"${range ? ` data-range="${range}"` : ''} style="--n:${n};${sizeVar(size)}" ${HIDE}>
   <span class="dv-chain-line"><i class="dv-chain-fill"></i><span class="dv-chain-run"><span class="dv-chain-tip">${flame({ i: 99, cls: 'dv-flame--taper' })}</span></span></span>
   ${Array.from({ length: n }, (_, i) => lamp(i)).join('')}
 </div>`;
@@ -133,7 +138,7 @@ export function lampChainAttrs({ nodes, line = 0.62, diya = false, at = 'center'
  * @param {'behind'|'front'} [o.layer='behind']  front only over imagery, never over body text
  */
 export function pushpanjali({ density = 1, shower = true, layer = 'behind', cls = '' } = {}) {
-  return `<span class="${cx('dv-layer', 'dv-pushpanjali', layer === 'front' && 'dv-front', cls)}" data-devotion="pushpanjali" data-density="${density}"${shower ? '' : ' data-shower="off"'} aria-hidden="true"></span>`;
+  return `<span class="${cx('dv-layer', 'dv-pushpanjali', layer === 'front' && 'dv-front', cls)}" data-devotion="pushpanjali" data-density="${density}"${shower ? '' : ' data-shower="off"'} ${HIDE}></span>`;
 }
 
 /**
@@ -150,7 +155,7 @@ export function pushpanjali({ density = 1, shower = true, layer = 'behind', cls 
 export function dhoopa({ from = 'left', wisps = 3, stick = true, at, height, width, cls = '' } = {}) {
   const css = [height && (at === 'top' ? 'top:0;bottom:auto' : 'top:auto;bottom:0'), height && `height:${height}`, width && `--dv-dw:${width}`].filter(Boolean).join(';');
   const box = css ? ` style="${css}"` : '';
-  return `<canvas class="${cx('dv-canvas', 'dv-dhoopa', cls)}" data-devotion="dhoopa" data-from="${from}" data-wisps="${wisps}"${stick ? '' : ' data-stick="off"'}${box} aria-hidden="true"></canvas>`;
+  return `<canvas class="${cx('dv-canvas', 'dv-dhoopa', cls)}" data-devotion="dhoopa" data-from="${from}" data-wisps="${wisps}"${stick ? '' : ' data-stick="off"'}${box} ${HIDE}></canvas>`;
 }
 
 /**
@@ -166,7 +171,7 @@ export function dhoopa({ from = 'left', wisps = 3, stick = true, at, height, wid
  * @param {number} [o.size=24]    lamp size the flame is drawn for (flame ≈ 0.3 × size wide)
  */
 export function aarti({ gap = 14, period = 8, size = 24, cls = '' } = {}) {
-  return `<span class="${cx('dv', 'dv-aarti', cls)}" data-devotion="aarti" style="--dv-gap:${gap}px;--dv-ap:${period}s" aria-hidden="true">
+  return `<span class="${cx('dv', 'dv-aarti', cls)}" data-devotion="aarti" style="--dv-gap:${gap}px;--dv-ap:${period}s" ${HIDE}>
   <span class="dv-aarti-orbit"><span class="dv-aarti-ring"></span><span class="dv-aarti-tclip"><span class="dv-aarti-trail"></span></span>
   <span class="dv-aarti-arm"><span class="dv-aarti-hold"><span class="dv-aarti-lamp">${flame({ i: 42, size })}</span></span></span></span>
 </span>`;
@@ -211,7 +216,7 @@ export function padma({ size = 72, variant = 'bloom', tone: t, cls = '' } = {}) 
     <path class="dv-padma-base" d="M-30 7.5C-16 12 16 12 30 7.5M-20 11.5C-8 14.5 8 14.5 20 11.5"/>
     <circle class="dv-padma-bindu" cx="0" cy="-45" r="2.2"/>
   </svg>`;
-  return `<span class="${cx('dv', 'dv-padma', variant === 'ornament' && 'dv-padma--ornament', tone(t), cls)}" data-devotion="padma" style="--dv-pw:${size}px" aria-hidden="true">${variant === 'ornament' ? `<span class="dv-rule"></span>${lotus}<span class="dv-rule"></span>` : lotus}</span>`;
+  return `<span class="${cx('dv', 'dv-padma', variant === 'ornament' && 'dv-padma--ornament', tone(t), cls)}" data-devotion="padma" style="--dv-pw:${size}px" ${HIDE}>${variant === 'ornament' ? `<span class="dv-rule"></span>${lotus}<span class="dv-rule"></span>` : lotus}</span>`;
 }
 
 /* ---------------- kolam geometry ----------------
@@ -299,7 +304,7 @@ export function kolam({ cols = 5, rows = 4, width, range, tone: t, cls = '' } = 
   const lines = loops.map((l) => splinePath(kolamRound(l, a, b), u, pad));
   const dots = [];
   for (let j = 0; j < b; j++) for (let i = 0; i < a; i++) dots.push(`<circle cx="${pad + (2 * i + 1) * u}" cy="${pad + (2 * j + 1) * u}" r="1.9" style="--i:${j * a + i}"/>`);
-  return `<div class="${cx('dv', 'dv-kolam', tone(t), cls)}" data-devotion="kolam"${range ? ` data-range="${range}"` : ''} data-loops="${loops.length}" style="--dv-kw:${width || a * 44}px;--dv-kn:${a * b}" aria-hidden="true">
+  return `<div class="${cx('dv', 'dv-kolam', tone(t), cls)}" data-devotion="kolam"${range ? ` data-range="${range}"` : ''} data-loops="${loops.length}" style="--dv-kw:${width || a * 44}px;--dv-kn:${a * b}" ${HIDE}>
   <svg viewBox="0 0 ${w} ${h}" focusable="false">
     <g class="dv-kolam-dots">${dots.join('')}</g>
     <g class="dv-kolam-line">${lines.map((d) => `<path pathLength="1000" d="${d}"/>`).join('')}</g>
@@ -320,9 +325,9 @@ kolam.isSingleLine = (cols, rows) => gcd(cols, rows) === 1;
  */
 export function nada({ size = 220, variant = 'rings', layer, tone: t, cls = '' } = {}) {
   if (variant === 'string') {
-    return `<canvas class="${cx('dv', 'dv-nada-string', tone(t), cls)}" data-devotion="nada" data-variant="string" aria-hidden="true"></canvas>`;
+    return `<canvas class="${cx('dv', 'dv-nada-string', tone(t), cls)}" data-devotion="nada" data-variant="string" ${HIDE}></canvas>`;
   }
-  return `<span class="${cx('dv', 'dv-nada', layer === 'behind' && 'dv-nada--behind', tone(t), cls)}" data-devotion="nada" style="--dv-nd:${size}px" aria-hidden="true">
+  return `<span class="${cx('dv', 'dv-nada', layer === 'behind' && 'dv-nada--behind', tone(t), cls)}" data-devotion="nada" style="--dv-nd:${size}px" ${HIDE}>
   <span class="dv-nada-pulse">${[0, 1, 2, 3, 4].map((i) => `<i class="dv-nada-ring" style="--i:${i}"></i>`).join('')}<i class="dv-nada-still"></i><i class="dv-nada-bindu"></i></span>
 </span>`;
 }
@@ -341,7 +346,7 @@ export const JYOTI_ATTR = ' data-devotion="jyoti-progress"';
  * @param {string} [o.inset]    CSS length from the side (default: the page gutter)
  */
 export function ghanta({ side = 'right', drop = 64, inset, tone: t, cls = '' } = {}) {
-  return `<span class="${cx('dv', 'dv-ghanta', side === 'left' ? 'dv-ghanta--left' : '', tone(t), cls)}" data-devotion="ghanta" style="--dv-drop:${drop}px${inset ? `;--dv-gi:${inset}` : ''}" aria-hidden="true">
+  return `<span class="${cx('dv', 'dv-ghanta', side === 'left' ? 'dv-ghanta--left' : '', tone(t), cls)}" data-devotion="ghanta" style="--dv-drop:${drop}px${inset ? `;--dv-gi:${inset}` : ''}" ${HIDE}>
   <span class="dv-ghanta-swing"><span class="dv-ghanta-chain"></span><span class="dv-ghanta-bell"><i class="dv-ghanta-clapper"></i></span></span><svg class="dv-ghanta-hum" viewBox="-1 -1 2 2" width="2" height="2" overflow="visible" focusable="false"><circle r="37.5"/></svg>
 </span>`;
 }

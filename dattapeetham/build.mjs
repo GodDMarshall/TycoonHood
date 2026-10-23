@@ -466,10 +466,12 @@ export async function build() {
   pendingTmp = TMP; // removed if the build fails (a full disk left ~170 MB each time)
   await mkdir(TMP, { recursive: true });
   // Everything in src/assets except build-only files: the image optimiser's
-  // manifest (read above, never fetched by a page), dotfiles, and the
-  // half-written files of a photo run still in progress (name.webp.tmp-<pid>).
+  // manifest (read above, never fetched by a page), the files layout.mjs names
+  // in DEV_ONLY_ASSETS (the audio manifest, and audio the sound engine does
+  // not request), dotfiles, and the half-written files of a photo run still
+  // in progress (name.webp.tmp-<pid>).
   const ASSETS = join(SRC, 'assets');
-  const DEV_ONLY = new Set(['img/opt/manifest.json']);
+  const DEV_ONLY = new Set(['img/opt/manifest.json', ...(layoutModule.DEV_ONLY_ASSETS || [])]);
   await cp(ASSETS, join(TMP, 'assets'), { recursive: true, filter: (from) => {
     const rel = relative(ASSETS, from).split(sep).join('/');
     return !DEV_ONLY.has(rel) && !/(?:^|\/)\./.test(rel) && !/\.(?:tmp|part)(?:-\d+)?$/i.test(rel);
@@ -596,9 +598,19 @@ ${pages.filter((p) => p.slug !== '404').flatMap((p) => LCODES.map((c) => `  <url
   return problems;
 }
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.xml': 'application/xml', '.txt': 'text/plain' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.xml': 'application/xml', '.txt': 'text/plain', '.mp3': 'audio/mpeg' };
 
 // Development server only: nothing here is written into the site.
+// It answers byte ranges (206) like every production server: without them
+// Chromium ignores an <audio> #t= start time and cannot seek, so the flute
+// would restart from 0 s on every page and never reach its crossfade.
+export function byteRange(header, size) {
+  const m = /^bytes=(\d*)-(\d*)$/.exec(String(header || '').trim());
+  if (!m || (!m[1] && !m[2])) return null; // absent, or a form we do not serve (several ranges): send it all
+  const start = m[1] ? +m[1] : Math.max(0, size - +m[2]);
+  const end = m[1] && m[2] ? Math.min(+m[2], size - 1) : size - 1;
+  return start < size && start <= end ? { start, end } : { unsatisfiable: true };
+}
 
 function serve() {
   createServer(async (req, res) => {
@@ -613,8 +625,17 @@ function serve() {
     }
     try {
       if ((await stat(file)).isDirectory()) file = join(file, 'index.html');
-      res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream', 'cache-control': 'no-store' });
-      res.end(await readFile(file));
+      const body = await readFile(file);
+      const head = { 'content-type': TYPES[extname(file)] || 'application/octet-stream', 'cache-control': 'no-store', 'accept-ranges': 'bytes' };
+      const r = byteRange(req.headers.range, body.length);
+      if (r && r.unsatisfiable) { res.writeHead(416, { ...head, 'content-range': `bytes */${body.length}` }).end(); return; }
+      if (r) {
+        res.writeHead(206, { ...head, 'content-range': `bytes ${r.start}-${r.end}/${body.length}`, 'content-length': r.end - r.start + 1 });
+        res.end(body.subarray(r.start, r.end + 1));
+        return;
+      }
+      res.writeHead(200, { ...head, 'content-length': body.length });
+      res.end(body);
     } catch {
       res.writeHead(404, { 'content-type': TYPES['.html'] });
       res.end(await readFile(join(OUT, '404.html')).catch(() => 'Not found'));

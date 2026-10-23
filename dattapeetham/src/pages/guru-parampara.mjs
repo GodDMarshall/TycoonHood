@@ -7,6 +7,7 @@
 import { pageHero, sectionHead, split, frame, btn, icon, img, eyebrow, ornament, scrollLit, processSteps, ctaBand, video, esc } from '../components.mjs';
 import { links, PAGE_IMG } from '../site.mjs';
 import { photos, dattaCharitram } from '../data.mjs';
+import { padmaOrnament, lampChainAttrs, dhoopa, DV_HOST } from '../features/devotion-motion.mjs';
 
 // Photographs from the Peetham's own pages (S3 bucket) not yet in data.photos.
 const P = {
@@ -253,11 +254,11 @@ ${pageHero({
 
 <section id="meaning" class="section gp-meaning">
   <div class="wrap">
-    ${sectionHead({
+    ${padmaOrnament(sectionHead({
       eyebrow: 'The meaning',
       title: 'What is <span class="em-light">Guru Parampara?</span>',
       lead: '“Guru Parampara” is the combination of two words, Guru and Parampara. As per the sacred text Guru Geeta, the dialog between Lord Shiva and Goddess Parvati, the word “Guru” comprises of two words, “Gu” and “Ru”.',
-    })}
+    }))}
 
     <div class="gp-guru" data-reveal="up">
       <div class="gp-syl is-gu">
@@ -378,7 +379,7 @@ ${pageHero({
       </div>
     </div>
 
-    <ol class="gp-thread" data-thread data-progress="0.62,0.62" aria-label="The lineage of Gurus">
+    <ol class="gp-thread" data-thread data-progress="0.62,0.62"${lampChainAttrs({ nodes: '.gn-medal', line: 0.62, diya: true, at: 'below', size: 40, gap: 30 })} aria-label="The lineage of Gurus">
       <span class="gp-track" aria-hidden="true"><span class="gp-fill"><i class="gp-bead"></i><i class="gp-bead b2"></i><b class="gp-tip"></b></span></span>
       ${lineage.map(threadNode).join('')}
     </ol>
@@ -437,7 +438,8 @@ ${pageHero({
   </div>
 </section>
 
-<section id="guru-purnima" class="section section-dark gp-purnima">
+<section id="guru-purnima" class="section section-dark gp-purnima ${DV_HOST}">
+  ${dhoopa({ from: 'left', wisps: 3, at: 'top', height: '780px' })}
   <div class="wrap">
     <div class="gp-moon" aria-hidden="true" data-progress="1,0.4"><i></i></div>
     ${sectionHead({

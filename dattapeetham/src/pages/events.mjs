@@ -16,6 +16,7 @@
 import { pageHero, sectionHead, chips, processSteps, ctaBand, btn, img, icon } from '../components.mjs';
 import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, concerts, latestSevas, apps } from '../data.mjs';
+import { pushpanjali, padmaOrnament, DV_HOST } from '../features/devotion-motion.mjs';
 
 const P = {
   hero: `${PAGE_IMG}506/506_575a490450b5a1d7.jpg`,
@@ -189,11 +190,11 @@ function monthCard(m) {
 
 const calendarSection = `<section id="calendar" class="section section-paper ev-cal">
   <div class="wrap">
-    ${sectionHead({
+    ${padmaOrnament(sectionHead({
       eyebrow: 'Events &amp; Programmes · 2026',
       title: 'What’s <span class="em-light">coming up</span>',
       lead: 'Festivals, concerts, discourses and Sri Swamiji’s programmes around the world — every date as published on the Peetham’s official calendar and events listing.',
-    })}
+    }))}
     <div class="ev-scope" data-filter-scope>
       <div class="ev-toolbar" data-reveal="up">
         ${chips('Show events of one kind', [['all', 'All'], ['festivals', 'Festivals'], ['music', 'Music'], ['discourses', 'Discourses &amp; Parayana'], ['seva-camps', 'Seva Camps'], ['vratas', 'Vratas'], ['tours', 'Tours']])}
@@ -403,7 +404,8 @@ function panel([id, name, greg]) {
 </article>`;
 }
 
-const festivalsSection = `<section id="festivals" class="section section-dark grain ev-year">
+const festivalsSection = `<section id="festivals" class="section section-dark grain ev-year ${DV_HOST}">
+  ${pushpanjali({ density: 0.8 })}
   <div class="wrap">
     ${sectionHead({
       eyebrow: 'The festival year',

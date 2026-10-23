@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Checks a running web server against deploy/routes.mjs with real HTTP
 // requests: redirects (status and Location), page URLs, the 404 page, security
-// and cache headers, content types, hidden files and the platform hand-off.
+// and cache headers, content types, byte ranges for the audio, hidden files and
+// the platform hand-off.
 // No dependencies; works against any host (nginx, Apache, IIS, Netlify,
 // Cloudflare, Vercel, a CDN in front of any of them).
 //
@@ -211,6 +212,24 @@ async function main() {
     check(type.test(res.headers['content-type'] || ''), `${path}: Content-Type ${type.source.replace(/\\/g, '')}`, `got ${res.headers['content-type']}`);
     const want = cacheExpect(path, versioned);
     check(cacheOk(one(res, 'cache-control'), want), `${path}: Cache-Control ${want}`, `got ${one(res, 'cache-control')}`);
+  }
+
+  // ---- the devotional audio: the music file the sound control names (data-music, with
+  //      its ?v= from data-audio-v), served as audio/mpeg with the media cache, and in
+  //      byte ranges (206): without ranges a browser cannot resume the flute on the
+  //      next page or reach its crossfade
+  const snd = /<div class="snd"[^>]*>/.exec(home.body);
+  const music = snd && (/\sdata-music="([^"]+)"/.exec(snd[0]) || [])[1];
+  check(Boolean(music), 'home page has the sound control and names its music file', snd ? 'no data-music' : 'no <div class="snd">');
+  if (music) {
+    const v = (new RegExp(`(?:^|\\s)${music.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=([0-9a-f]{8})`).exec((/\sdata-audio-v="([^"]*)"/.exec(snd[0]) || [])[1] || '') || [])[1];
+    const path = `/assets/audio/${music}${v ? `?v=${v}` : ''}`;
+    const res = await request(path, { body: false, headers: { range: 'bytes=0-1023' } });
+    check(res.status === 206 && /^bytes 0-1023\/\d+$/.test(res.headers['content-range'] || ''), `${path}: Range bytes=0-1023 → 206`, `got ${res.status} ${res.headers['content-range'] || '(no Content-Range)'}`);
+    check(/^audio\/mpeg/.test(res.headers['content-type'] || ''), `${path}: Content-Type audio/mpeg`, `got ${res.headers['content-type']}`);
+    const want = cacheExpect(path, versioned);
+    check(cacheOk(one(res, 'cache-control'), want), `${path}: Cache-Control ${want}`, `got ${one(res, 'cache-control')}`);
+    check(Boolean(v), `${path}: carries ?v=<content hash>`, 'no version for it in data-audio-v');
   }
 
   // ---- compression

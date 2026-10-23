@@ -29,7 +29,9 @@ export const NOT_FOUND_PAGE = '/404.html';
 // what the built site actually loads (v1.0.0 launch audit):
 //   media-src  added: the chant on the Media page streams from the Peetham's
 //              S3 bucket, and without it default-src 'self' blocked it; the
-//              site's own audio stays allowed by 'self'
+//              site's own audio stays allowed by 'self' (the flute music, an
+//              <audio> element; the temple sounds are fetched, connect-src
+//              'self', and played through Web Audio, which needs no directive)
 //   img-src    https://dev-dattapeetham.s3.amazonaws.com removed (the one photo
 //              there is now self-hosted) and https://i.ytimg.com removed (every
 //              video has a Peetham poster; no page loads a YouTube thumbnail)
@@ -77,7 +79,9 @@ export const CACHE = {
   // CSS and JS are referenced with a content hash (?v=…), so a changed file
   // gets a new URL and the old one can be kept forever.
   immutable: 'public, max-age=31536000, immutable',
-  // Photos, icons and fonts: 30 days.
+  // Photos, icons, fonts and the devotional audio (assets/audio/*.mp3): 30
+  // days. The sound engine asks for each audio file with ?v=<content hash>
+  // (data-audio-v on the page), so a re-rendered file still arrives at once.
   media: 'public, max-age=2592000',
 };
 
@@ -96,7 +100,7 @@ export const cacheRules = [
   {
     name: 'media',
     prefix: '/assets/',
-    extensions: ['webp', 'avif', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'woff', 'woff2', 'ttf', 'otf'],
+    extensions: ['webp', 'avif', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'woff', 'woff2', 'ttf', 'otf', 'mp3'],
     value: CACHE.media,
   },
 ];
@@ -113,6 +117,7 @@ export const contentTypes = {
   json: 'application/json',
   svg: 'image/svg+xml',
   woff2: 'font/woff2',
+  mp3: 'audio/mpeg',
 };
 
 // ---------------------------------------------------------------------------

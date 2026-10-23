@@ -29,6 +29,7 @@ import { pageHero, sectionHead, stats, btn, img, icon, esc, frame, chips, ctaBan
 import { site, links, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
 import { photos, kshetras, specialKshetras, countries } from '../data.mjs';
 import { worldMap } from '../features/world-map.mjs';
+import { deepaRow } from '../features/devotion-motion.mjs';
 
 /* ---------------------------------------------------------------------------
    Photographs (Peetham S3 bucket)
@@ -411,6 +412,7 @@ const special = `<div class="ce-special">
 const kshetraSection = `<section id="kshetras" class="section section-paper ce-ksh-section">
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Shodasha Datta Kshetras', title: 'Sixteen shrines for the sixteen <span class="em-light">manifestations</span> of Lord Datta', lead: 'Sri Swamiji has consecrated sixteen Datta Shrines, the Shodasha Datta Kshetras, representing the sixteen manifestations of Lord Datta, in different parts of India. The first, Kaalaagni Shamana Dattatreya, is in the main Ashrama at the foot of Chamundi Hill in Mysuru.' })}
+    ${deepaRow({ count: 16, size: 'sm', order: 'ltr', wrap: 8, cls: 'ce-dv-lamps' })}
     ${kshetraGrid}
     <p class="ce-ksh-note" data-reveal="up">${icon('info', 15)}<span>Each Kshetra opens its page on dattapeetham.org, with its history, address and contacts. <a href="${OFFICIAL}/shodasha-datta-kshetras">See the full Shodasha grid</a>.</span></p>
     ${special}

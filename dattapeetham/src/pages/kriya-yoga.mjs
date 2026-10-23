@@ -7,6 +7,7 @@
 import { pageHero, sectionHead, frame, scrollLit, processSteps, accordion, infoList, ctaBand, btn, img, icon } from '../components.mjs';
 import { links, site, PAGE_IMG } from '../site.mjs';
 import { photos, apps } from '../data.mjs';
+import { padma, dhoopa, DV_HOST } from '../features/devotion-motion.mjs';
 
 const IMG = {
   teach: `${PAGE_IMG}515/515_47c13ada69bd6850.jpg`,
@@ -261,7 +262,8 @@ ${pageHero({
   </div>
 </section>
 
-<section class="section section-dark ky-breath-section grain" id="breath" aria-labelledby="breath-title">
+<section class="section section-dark ky-breath-section grain ${DV_HOST}" id="breath" aria-labelledby="breath-title">
+  ${dhoopa({ from: 'left', wisps: 2, height: '560px' })}
   <div class="wrap ky-breath-grid">
     <div class="ky-breath-head">
       <span class="eyebrow">Breath awareness</span>
@@ -424,6 +426,7 @@ ${pageHero({
   <div class="wrap wrap-narrow">
     <header class="section-head">
       <span class="om ky-om" aria-hidden="true">ॐ</span>
+      ${padma({ size: 72 })}
       <span class="eyebrow">Datta Kriya Yoga prayers</span>
       <h2 id="prayers-title" data-split>Prayers to the <span class="em-light">Guru</span></h2>
       <p class="lead" data-reveal="up">Three prayers from the Datta Kriya Yoga tradition, with their meanings.</p>

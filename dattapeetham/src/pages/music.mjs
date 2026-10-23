@@ -6,6 +6,7 @@
 import { sectionHead, quickTiles, split, frame, stats, gallery, video, ctaBand, btn, img, icon, thread, esc } from '../components.mjs';
 import { links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, concerts, albums, apps } from '../data.mjs';
+import { nada, DV_HOST } from '../features/devotion-motion.mjs';
 
 const P = {
   veena: `${PAGE_IMG}513/513_104a06683924cef7.png`,
@@ -226,7 +227,8 @@ ${quickTiles([
   </div>
 </section>
 
-<div class="nada-quote section-tight section-paper">
+<div class="nada-quote section-tight section-paper ${DV_HOST}">
+  ${nada({ size: 460, layer: 'behind' })}
   <svg class="nada-quote-wave" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 C 100 20, 200 20, 300 60 S 500 100, 600 60 S 800 20, 900 60 S 1100 100, 1200 60"/><path d="M0 60 C 100 35, 200 35, 300 60 S 500 85, 600 60 S 800 35, 900 60 S 1100 85, 1200 60"/></svg>
   <figure class="wrap">
     ${litLines(['Music is my *religion*.', 'Music is my *language*.', 'Music is my *soul*.', 'Music is my *expression*.'])}
@@ -321,6 +323,7 @@ ${quickTiles([
   <div class="albums-glow" aria-hidden="true"></div>
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Listen at home', title: 'Albums of <span class="em-light">healing</span> music', lead: 'Live Raga Sagara recordings from Auckland, Carnegie Hall, Davos and Hyderabad, and an instrumental album — streaming on Spotify and Apple Music.', light: true })}
+    ${nada({ variant: 'string', cls: 'mu-dv-strings' })}
     <ol class="records" data-stagger>
       ${albums.map(albumSleeve).join('')}
     </ol>

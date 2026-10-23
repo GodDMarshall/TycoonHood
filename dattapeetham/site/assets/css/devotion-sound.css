@@ -59,6 +59,7 @@
 .snd-vol input::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--gold-2); background: var(--cream-on-dark); }
 .snd-status { min-height: 1.4em; margin: 0 4px 10px; font-size: .82rem; color: var(--muted-on-dark); }
 .snd-credit { margin: 0; padding: 10px 4px 0; border-top: 1px solid rgba(226, 200, 142, .16); font: italic 500 1rem/1.35 var(--serif); color: rgba(239, 228, 204, .88); }
+.snd-raga { margin: 4px 4px 0; font: 600 .68rem/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-3); }
 
 /* ---------- first-visit invitation inside the intro curtain ---------- */
 /* While the choice is offered the curtain holds; a CSS fallback still lifts it

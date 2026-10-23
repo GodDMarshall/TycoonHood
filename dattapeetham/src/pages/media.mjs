@@ -14,6 +14,7 @@
 import { pageHero, sectionHead, stats, gallery, video, ctaBand, btn, img, icon, scrollLit, esc } from '../components.mjs';
 import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, albums, apps, dattaCharitram, varamVideo } from '../data.mjs';
+import { nada, padmaOrnament, DV_HOST } from '../features/devotion-motion.mjs';
 
 const P = {
   sydney: `${PAGE_IMG}517/517_3c24d6f6884e527e.jpg`,
@@ -552,7 +553,7 @@ ${pageHero({
 
 <section class="section section-sand media-audio" id="audio">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Audio & music', title: 'Listen in <span class="em-light">stillness</span>', lead: 'Sri Swamiji has composed more than 3,000 bhajans in Sanskrit, Kannada, Telugu, Tamil, Marathi, Gujarati, Hindi and English. Begin with a chant, or stream the Raga Sagara albums.' })}
+    <div class="${DV_HOST}">${nada({ size: 360, layer: 'behind' })}${sectionHead({ eyebrow: 'Audio & music', title: 'Listen in <span class="em-light">stillness</span>', lead: 'Sri Swamiji has composed more than 3,000 bhajans in Sanskrit, Kannada, Telugu, Tamil, Marathi, Gujarati, Hindi and English. Begin with a chant, or stream the Raga Sagara albums.' })}</div>
     ${listeningRoom()}
   </div>
 </section>
@@ -569,7 +570,7 @@ ${pageHero({
 
 <section class="section media-photos" id="photos">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Photographs', title: 'Darshan in <span class="em-light">pictures</span>', lead: 'Temples, gardens and the seva of the Peetham. Select any photograph to see it full size.' })}
+    ${padmaOrnament(sectionHead({ eyebrow: 'Photographs', title: 'Darshan in <span class="em-light">pictures</span>', lead: 'Temples, gardens and the seva of the Peetham. Select any photograph to see it full size.' }))}
     ${gallery(pictures, 'media-gallery')}
     <div class="photo-albums">
       <div class="pa-head" data-reveal="up">

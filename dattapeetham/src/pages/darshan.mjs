@@ -11,6 +11,7 @@
 import { pageHero, sectionHead, split, frame, card, ctaBand, processSteps, scrollLit, shareRow, btn, icon, img, esc } from '../components.mjs';
 import { links, hours, site, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
 import { photos, latestSevas } from '../data.mjs';
+import { ghanta, aartiAround, deepaDivider } from '../features/devotion-motion.mjs';
 
 const view = (slug) => `${OFFICIAL}/page/view/${slug}`;
 
@@ -213,6 +214,7 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
 </div>`;
 
 const timingsSection = `<section id="timings" class="section section-paper dn-timings-sec">
+  ${ghanta({ side: 'right', drop: 72 })}
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Daily Darshan', title: 'Temple <span class="em-light">timings</span>', lead: 'Darshan is offered every morning and evening. The Peetham publishes general temple timings, and the Sri Datta Venkateshwara and Karya Siddhi Hanuman temples list their own hours. All timings are in Indian Standard Time.' })}
     <div class="dn-timings">
@@ -265,7 +267,7 @@ const prayerHall = `<section id="prayer-hall" class="dn-shrine" aria-labelledby=
       media: `<div class="dn-media">
         ${frame(photos.prayerHall, 'Devotees seated before Sri Swamiji in the Universal Prayer Hall', { ratio: '5/4', pos: '78% 55%', badge: 'Unveiled 1984' })}
         <figure class="dn-inset">
-          ${img(pic.kaalaagni, 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the main deity of the Peetham')}
+          ${aartiAround(img(pic.kaalaagni, 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the main deity of the Peetham'), { gap: 18, size: 30 })}
           <figcaption>Kaalaagni Shamana Dattatreya</figcaption>
         </figure>
       </div>`,
@@ -647,6 +649,7 @@ ${timingsSection}
 ${mandir}
 ${sevasSection}
 ${festivalsSection}
+${deepaDivider({ count: 5 })}
 ${ctaBand({
   title: 'Come for <span class="em-light">darshan</span>',
   text: `Sri Ganapathy Sachchidananda Ashram, Datta Nagar, Ooty Road, Mysuru. General temple timings, daily: ${templeHours}.`,

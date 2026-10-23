@@ -32,6 +32,7 @@
 
 import { pageHero, ornament, accordion, ctaBand, btn, icon, esc } from '../components.mjs';
 import { site, links, hours, OFFICIAL, PAGE_IMG } from '../site.mjs';
+import { padma } from '../features/devotion-motion.mjs';
 
 /* ---------------------------------------------------------------------------
    Photographs (Peetham S3 bucket) and source links
@@ -191,7 +192,7 @@ const hero = pageHero({
 const reachSection = `<section id="reach-us" class="section ct-reach" aria-labelledby="reach-h">
   <div class="wrap">
     <header class="section-head">
-      ${ornament()}
+      ${padma({ size: 56, variant: 'ornament' })}
       <span class="eyebrow">Reach us</span>
       <h2 id="reach-h" data-split>The right desk for <span class="em-light">every question</span></h2>
       <p class="lead" data-reveal="up">Please use these contacts for personal requests and messages to the Ashrama. For all website application and programme issues, kindly use <a href="${links.techSupport}">Feedback / Support</a>.</p>

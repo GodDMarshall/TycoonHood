@@ -49,6 +49,8 @@ look at *Application → Storage / Cookies* and at the *Network* tab
 | --- | --- | --- | --- | --- | --- |
 | `dp-lang` | `localStorage` | Only when the visitor picks a language in the language switcher | `en`, `kn`, `hi`, `ta` or `te` | On later visits, opens pages in that language | Until the visitor clears the site's data |
 | `dp-intro` | `sessionStorage` | On the first page viewed in a browser tab | `1` | Shows the opening intro animation only once per visit | Until the tab or window is closed |
+| `dp-sound` | `localStorage` | Only when the visitor answers the first-visit question about sound ("Enter with flute music" or "Enter in silence", or "Play flute music" / "Not now" on the small card), or changes a switch or the volume in the sound panel | Whether the flute music and the temple sounds are on, and the volume, for example `{"music":true,"sfx":true,"v":1,"vol":0.8}` | Asks the question only once, and keeps every page to the visitor's choice | Until the visitor clears the site's data |
+| `dp-sound-pos` | `sessionStorage` | When the visitor leaves a page on which the flute music has played | Where the music had reached, when, and the length of the music, for example `{"t":81.42,"at":1761212345678,"d":217.7497}` | The next page carries the music on from the same moment instead of starting again | Until the tab or window is closed |
 
 Nothing else is stored:
 
@@ -56,22 +58,25 @@ Nothing else is stored:
   configuration. After the full crawl, the browser held no cookies at all
   (but see the limits above for the embedded maps and videos).
 - No IndexedDB, no Cache Storage and no service worker.
-- Both values stay in the visitor's browser. The site has no server code and
+- These values stay in the visitor's browser. The site has no server code and
   never sends them anywhere.
+- **Sound is never played, and no audio is downloaded, without the visitor's
+  choice.** Until the visitor turns the flute music or the temple sounds on,
+  the page requests no audio file and creates no audio player. The audio
+  files (the flute music and the temple sounds, MP3) come from the site
+  itself, not from another host.
 - The language memory can be bypassed by adding `?lang=keep` to an address.
   The "page not found" page never redirects by it.
 
-*For completeness:* the project also contains a devotional sound feature
-(`src/assets/js/devotion-sound.js`). If it were used, it would store
-`dp-sound` (`localStorage`: whether music and temple sounds are on, and the
-volume) and `dp-sound-pos` (`sessionStorage`: where the music was, to carry
-on across pages). **In version 1.0.0 no page loads it**, so neither is ever
-set. If a later version switches it on, this inventory must be updated.
+The two sound values come from the devotional sound feature
+(`src/assets/js/devotion-sound.js`), which every page loads. The question is
+offered once, on the first page of a first visit; if the visitor does not
+answer it, nothing is stored and it is offered again in a later visit.
 
 ## 2. Other services the browser contacts
 
-Photos, icons, scripts, styles and the site's own search data are served by
-the site itself. These are the only other hosts contacted without a click,
+Photos, icons, scripts, styles, the site's own search data and the
+devotional audio are served by the site itself. These are the only other hosts contacted without a click,
 or by the embedded players:
 
 | Host | Operator | What | Pages | When |

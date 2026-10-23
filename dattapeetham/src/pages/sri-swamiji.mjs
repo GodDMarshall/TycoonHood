@@ -6,6 +6,7 @@
 // literary-contributions, social-media-pages) or from src/data.mjs.
 
 import { pageHero, sectionHead, split, frame, cards, stats, ctaBand, gallery, video, timeline, processSteps, scrollLit, marquee, btn, icon, img, eyebrow } from '../components.mjs';
+import { lampChainAttrs, padmaOrnament } from '../features/devotion-motion.mjs';
 import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, timeline as avataraTimeline } from '../data.mjs';
 
@@ -256,11 +257,11 @@ ${marquee(['Musician', 'Composer', 'Linguist', 'Poet', 'Doctor', 'Teacher', 'Wor
 
 <section id="mission" class="section section-paper sgs-mission">
   <div class="wrap">
-    ${sectionHead({
+    ${padmaOrnament(sectionHead({
       eyebrow: 'His Mission',
       title: 'Six streams of one <span class="em-light">mission</span>',
       lead: 'Avadhoota Datta Peetham was established by Sri Swamiji in 1966 as an international spiritual, cultural and social welfare organisation. Its projects revolve around the intrinsic worth of every single human life.',
-    })}
+    }))}
     ${cards([
       { img: pic.caveConcert, alt: 'Sri Swamiji’s Music for Healing & Meditation performed inside The Caverns, Pelham, Tennessee', icon: 'music', tag: 'Nada', title: 'Bhajans & Healing Music', text: 'More than 3,000 bhajans in eight languages, and Music for Meditation & Healing drawn from the ancient Raga Ragini Vidya — played on the synthesizer He calls the Datta Veena.', href: 'music.html', cta: 'Nada Chikitsa' },
       { img: pic.yaaga, alt: 'Sri Swamiji offering prayers before the sacred fire during the Sri Sukta Maha Yaaga', pos: 'center 22%', icon: 'flame', tag: 'Dharma', title: 'Sanatana Dharma Parirakshana', text: 'Temples and Ashrams, the SGS Veda Pathashala, homas and yaagas, care of Gomata and the Gita Mahayajna — keeping the eternal dharma alive.', href: page('sanatana-dharma-parirakshana'), cta: 'On dattapeetham.org' },
@@ -281,7 +282,7 @@ ${marquee(['Musician', 'Composer', 'Linguist', 'Poet', 'Doctor', 'Teacher', 'Wor
       lead: 'From a rock in the Kaveri to a concert in a cave: the milestones in the life of Sri Swamiji, as the Peetham records them.',
       light: true,
     })}
-    ${timeline(avataraTimeline)}
+    ${timeline(avataraTimeline).replace('<ol class="timeline" data-timeline>', `<ol class="timeline" data-timeline${lampChainAttrs({ nodes: '.tl-dot', line: 0.6, size: 30 })}>`)}
     <p class="sgs-tl-more" data-reveal="up">${btn('The full timeline on dattapeetham.org', page('sri-swamijis-avatara-timeline'), 'ghost', 'arrow-up-right')}</p>
   </div>
 </section>

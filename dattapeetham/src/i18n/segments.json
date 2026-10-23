@@ -27,7 +27,196 @@
   ]
  },
  {
+  "k": "Sound",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Flute music",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Temple sounds while scrolling",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Volume",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Flute: original raga composition for this website",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Raga Mohanam",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
   "k": "Jaya Guru Datta",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Enter with flute music",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Enter in silence",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "You can change this at any time with the sound button at the bottom of the page.",
   "pages": [
    "404.html",
    "about.html",
@@ -1584,6 +1773,27 @@
   "k": "Page not found",
   "pages": [
    "404.html"
+  ]
+ },
+ {
+  "k": "Sound settings",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
   ]
  },
  {
@@ -11451,6 +11661,13 @@
   ]
  },
  {
+  "k": "Devotees seated before Sri Swamiji in the Universal Prayer Hall",
+  "pages": [
+   "darshan.html",
+   "media.html"
+  ]
+ },
+ {
   "k": "Next",
   "pages": [
    "darshan.html",
@@ -11467,13 +11684,6 @@
   "k": "Shrines on this page",
   "pages": [
    "darshan.html"
-  ]
- },
- {
-  "k": "Devotees seated before Sri Swamiji in the Universal Prayer Hall",
-  "pages": [
-   "darshan.html",
-   "media.html"
   ]
  },
  {
@@ -17539,7 +17749,7 @@
   ]
  },
  {
-  "k": "<1>ॐ</1> <2>Datta Kriya Yoga prayers</2>",
+  "k": "Datta Kriya Yoga prayers",
   "pages": [
    "kriya-yoga.html"
   ]
@@ -20660,13 +20870,13 @@
   ]
  },
  {
-  "k": "Sri Swamiji seated in a forest, playing the veena (black-and-white photograph)",
+  "k": "A healing music concert in progress: musicians on a darkened stage, and above them a large screen showing Raga Saama with its zodiac sign, element, chakra and the part of the body it is said to affect",
   "pages": [
    "music.html"
   ]
  },
  {
-  "k": "A healing music concert in progress: musicians on a darkened stage, and above them a large screen showing Raga Saama with its zodiac sign, element, chakra and the part of the body it is said to affect",
+  "k": "Sri Swamiji seated in a forest, playing the veena (black-and-white photograph)",
   "pages": [
    "music.html"
   ]
@@ -21885,6 +22095,12 @@
   ]
  },
  {
+  "k": "Sri Swamiji serving a meal to rows of devotees seated before banana leaves",
+  "pages": [
+   "seva.html"
+  ]
+ },
+ {
   "k": "Sri Swamiji with garlanded cows at the Ashram Goshala",
   "pages": [
    "seva.html"
@@ -21922,12 +22138,6 @@
  },
  {
   "k": "A group gathered at a cancer detection unit van, with a saffron-robed Swamiji on its steps",
-  "pages": [
-   "seva.html"
-  ]
- },
- {
-  "k": "Sri Swamiji serving a meal to rows of devotees seated before banana leaves",
   "pages": [
    "seva.html"
   ]
@@ -29377,6 +29587,66 @@
   ]
  },
  {
+  "k": "Music is off.",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "The music could not be loaded.",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "The music is playing in another tab.",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "The music is paused while another recording or video plays.",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "The music will begin when you tap or press a key.",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "The music is loading.",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "The flute music is playing.",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "Play flute music",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "Not now",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
+  "k": "Would you like flute music while you read?",
+  "pages": [
+   "js:devotion-sound.js"
+  ]
+ },
+ {
   "k": "Happening now",
   "pages": [
    "js:events.js"
@@ -29528,13 +29798,13 @@
   ]
  },
  {
-  "k": "Pause the chant",
+  "k": "Use the download link",
   "pages": [
    "js:media.js"
   ]
  },
  {
-  "k": "Use the download link",
+  "k": "Pause the chant",
   "pages": [
    "js:media.js"
   ]

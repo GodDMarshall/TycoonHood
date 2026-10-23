@@ -5,6 +5,8 @@ import { readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { site, links, nav, hours } from './site.mjs';
 import { sprite, icon } from './icons.mjs';
+import { soundStyles, soundInvite, soundControl, soundScript, SOUND_DEV_ONLY } from './features/devotion-sound.mjs';
+import { deepaRow, JYOTI_ATTR, DEVOTION_CSS, DEVOTION_JS } from './features/devotion-motion.mjs';
 
 // Languages (codes and native names); the build renders /kn/, /hi/, /ta/, /te/.
 const LANG_CODES = [['en', 'English'], ['kn', 'ಕನ್ನಡ'], ['hi', 'हिन्दी'], ['ta', 'தமிழ்'], ['te', 'తెలుగు']];
@@ -129,6 +131,8 @@ ${og.w ? `<meta property="og:image:type" content="${og.type}">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500&text=%E0%A5%90&display=swap" rel="stylesheet">
 ${page.preload ? `<link rel="preload" as="image" href="${page.preload}" fetchpriority="high">` : ''}
 <link rel="stylesheet" href="assets/css/site.css">
+${soundStyles()}
+<link rel="stylesheet" href="${DEVOTION_CSS}">
 ${(page.features || []).map((f) => `<link rel="stylesheet" href="assets/css/features/${f}.css">`).join('\n')}
 ${page.css ? `<link rel="stylesheet" href="assets/css/pages/${page.slug}.css">` : ''}
 ${jsonLd(page)}
@@ -237,6 +241,7 @@ function footer() {
       ${col('Learn & Listen', [['Discourses', 'teachings.html'], ['Nada Chikitsa', 'music.html'], ['Datta Kriya Yoga', 'kriya-yoga.html'], ['Videos & Photos', 'media.html'], ['Mobile Apps', 'media.html#apps']])}
       ${col('Visit', [['Plan Your Visit', 'visit.html'], ['Ashram Map', 'visit.html#map'], ['Contact', 'contact.html'], ['Feedback / Support', links.techSupport], ['Subscribe for updates', links.subscribe]])}
     </div>
+    ${deepaRow({ count: 5, size: 'sm', rule: true, cls: 'dv-footer-lamps' })}
     <div class="footer-mantra" aria-label="Lokah samastah sukhino bhavantu">
       <span class="om" aria-hidden="true">ॐ</span>
       <p>May all beings be happy. May all beings be healthy. May all beings experience peace.</p>
@@ -267,19 +272,24 @@ export function layout(page, body) {
     `<script src="${VENDOR.lenis}" defer></script>`,
     `<script src="assets/js/site.js" defer></script>`,
     `<script src="assets/js/motion.js" defer></script>`,
+    // the devotional layer: the flute and temple sounds, then the motifs (docs/DEVOTION-PLAN.md)
+    soundScript(),
+    `<script src="${DEVOTION_JS}" defer></script>`,
     ...(page.features || []).map((f) => `<script src="assets/js/features/${f}.js" defer></script>`),
     ...(page.scripts || []).map((s) => /^https?:/.test(s) ? `<script src="${s}" defer></script>` : `<script src="assets/js/${s}.js" defer></script>`),
   ].join('\n');
   return `${head(page, body)}
 <body class="page-${page.slug}${page.bodyClass ? ' ' + page.bodyClass : ''}">
 <a class="skip" href="#main">Skip to content</a>
+${soundControl()}
 ${sprite}
-<div class="scroll-progress" aria-hidden="true"><span></span></div>
+<div class="scroll-progress" aria-hidden="true"${JYOTI_ATTR}><span></span></div>
 <div class="intro" aria-hidden="true">
   <svg class="intro-mark" viewBox="0 0 104 104"><use href="#i-mandala"/></svg>
   <div class="intro-word" translate="no">${INTRO_WORD}</div>
   <div class="intro-bar"><i></i></div>
   <div class="intro-label">Jaya Guru Datta</div>
+  ${soundInvite()}
 </div>
 ${header(page)}
 ${searchDialog()}
@@ -293,5 +303,9 @@ ${scripts}
 </html>
 `;
 }
+
+// Files under src/assets/ that no page requests (build-only data, audio the
+// sound engine does not use): build.mjs leaves them out of the site.
+export const DEV_ONLY_ASSETS = [...SOUND_DEV_ONLY];
 
 export { esc, ext };

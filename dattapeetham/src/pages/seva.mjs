@@ -13,6 +13,7 @@
 import { pageHero, pillarsPanel, sectionHead, split, frame, stats, card, btn, img, icon, scrollLit, thread } from '../components.mjs';
 import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, pillars, latestSevas } from '../data.mjs';
+import { lampChain, pushpanjali, DV_HOST } from '../features/devotion-motion.mjs';
 
 const P = {
   prakrutiPuja: `${PAGE_IMG}518/518_3afb42ae5333fe82.jpg`,
@@ -158,6 +159,7 @@ ${pageHero({
     <div class="wrap">
       ${scrollLit('Service to *mankind* is service to *God.*')}
       <p class="creed-note" data-reveal="up"><b>Sri Swamiji</b>Sri Swamiji emphasises that spiritual life includes service to those in need. This practice, called Karma Yoga, means working selflessly and surrendering the fruits of one’s actions to God.</p>
+      ${lampChain({ count: 5, cls: 'seva-dv-chain' })}
     </div>
   </div>
 </section>
@@ -364,7 +366,8 @@ ${pageHero({
   </div>
 </section>
 
-<section id="donate" class="section section-paper seva-donate">
+<section id="donate" class="section section-paper seva-donate ${DV_HOST}">
+  ${pushpanjali({ density: 0.6 })}
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Donate', title: 'Support the Peetham’s <span class="em-light">seva</span>', lead: 'Your offering sustains Annadana, Gau Seva, the Veda Pathashala, free medical care and the birds of Shuka Vana. Donations are made on the Peetham’s own system at dattapeetham.org, where you choose the fund to support.' })}
     <ul class="funds" data-stagger>

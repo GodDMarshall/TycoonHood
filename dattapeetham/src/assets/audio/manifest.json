@@ -36,6 +36,15 @@
     "lraLU": 8.7,
     "kb": 3403,
     "excerptFrom": 83.72,
+    "xfade": {
+      "file": "flute-mohanam-xfade.mp3",
+      "samples": 9805622,
+      "loopSamples": 9602762,
+      "loopSeconds": 217.7497,
+      "tailSeconds": 4.6,
+      "kb": 3475,
+      "note": "Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play identical audio."
+    },
     "loop": {
       "start": 0,
       "end": 217.7497,

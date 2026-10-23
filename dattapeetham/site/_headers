@@ -15,6 +15,9 @@
   Strict-Transport-Security: max-age=63072000
   Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://dattapeetham.s3.amazonaws.com; media-src 'self' https://dattapeetham.s3.amazonaws.com; frame-src https://www.youtube-nocookie.com https://www.google.com; connect-src 'self'; upgrade-insecure-requests
 
+/assets/audio/*
+  Cache-Control: public, max-age=2592000
+
 /assets/css/*
   Cache-Control: public, max-age=31536000, immutable
 

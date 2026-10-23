@@ -393,9 +393,8 @@ why CPU time was used.
 
 A reviewer wired the sound engine and this library together into copies of
 all 16 pages (plus `kn/index`, `kn/darshan`) and tested them at 360, 390, 768
-and 1440. The harness and logs are in
-`/tmp/claude-0/-home-user/b1182561-ec52-585b-bacd-dba9ee5740a3/scratchpad/devotion/review-ux/`
-(`node build.mjs`, then `t-*.mjs`; the server is `node serve.mjs site 4720`).
+and 1440. The harness and logs stayed in the agency's working folder; they are
+not part of this repository.
 
 **Fixed in this library:**
 

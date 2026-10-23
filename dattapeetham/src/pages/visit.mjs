@@ -32,6 +32,7 @@ import { pageHero, sectionHead, split, frame, processSteps, scrollLit, accordion
 import { site, links, hours, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos, timings } from '../data.mjs';
 import { ashramMap, ashramPlaces } from '../features/ashram-map.mjs';
+import { kolam, ghanta } from '../features/devotion-motion.mjs';
 
 /* ---------------------------------------------------------------------------
    Sources and photographs (Peetham S3 bucket)
@@ -299,6 +300,7 @@ const hero = pageHero({
 
 const welcome = `<section id="welcome" class="section vs-welcome" aria-labelledby="welcome-h">
   <div class="wrap">
+    ${kolam({ cols: 9, rows: 2, width: 440, cls: 'vs-dv-kolam' })}
     <div class="vs-lit">${scrollLit('Persons of *all faiths* are welcome at Avadhoota Datta Peetham.')}</div>
     ${split({
       media: frame(P.hanuman, 'The Karya Siddhi Hanuman temple at the Ashram, with the 70-ft monolithic statue of Hanuman rising above it', { ratio: '4/3', pos: '41% 50%', caption: '<b>Karya Siddhi Hanuman</b>One of the shrines you can visit within the Ashram', badge: 'Mysuru' }),
@@ -491,6 +493,7 @@ const mapSection = withPlaceFixes(placeFixes, () => ashramMap({
 }));
 
 const guidelinesSection = `<section id="guidelines" class="section vs-guidelines" aria-labelledby="guidelines-h">
+  ${ghanta({ side: 'right', drop: 64 })}
   <div class="wrap vs-guide-grid">
     <div class="vs-guide-side">
       <header class="section-head is-left">

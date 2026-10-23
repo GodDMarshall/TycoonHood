@@ -288,3 +288,5 @@ html:not(.js) .page-seva .milestones li { --on: 1; }
 }
 @media (min-width: 641px) and (max-width: 980px) { html[lang="ta"] .page-seva .card-body p { font-size: .86rem; } }
 @media (min-width: 641px) and (max-width: 800px) { html[lang="ta"] .page-seva .grid-3 { grid-template-columns: minmax(0, 1fr); } }
+/* the lamp chain under the creed: one act of service kindles the next */
+.page-seva .seva-dv-chain { margin-top: 28px; }

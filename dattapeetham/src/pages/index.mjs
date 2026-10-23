@@ -12,6 +12,7 @@
 import { quickTiles, pillarsPanel, hoursCard, photoTile, scrollLit, marquee, shareRow, horizon, ornament, thread, stats, btn, icon, img, esc } from '../components.mjs';
 import { site, links, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
 import { photos, pillars, timings, latestSevas, albums, apps, kshetras, countries, dattaCharitram, varamVideo } from '../data.mjs';
+import { padma, deepaRow, pushpanjali, DV_HOST } from '../features/devotion-motion.mjs';
 
 // Official photographs, by the dattapeetham.org page they appear on.
 const pic = {
@@ -196,7 +197,7 @@ const temples = [
 const mandirSection = `<section id="mandir" class="section ix-mandir" aria-labelledby="mandir-h">
   <div class="wrap">
     <header class="section-head">
-      ${ornament()}
+      ${padma({ size: 56, variant: 'ornament' })}
       <span class="eyebrow">A city of temples</span>
       <h2 id="mandir-h" data-split>Datta Peetham <span class="em-light">Mandir</span> <span class="em-light">Nagari</span></h2>
       <p class="lead" data-reveal="up">From the presiding Kaalaagni Shamana Dattatreya to the 70-foot Karya Siddhi Hanuman, every shrine in the Ashram is a doorway to the divine.</p>
@@ -278,6 +279,7 @@ const statement = `<section id="teaching" class="section ix-statement" aria-labe
     <h2 id="teaching-h" class="eyebrow">Sri Swamiji says</h2>
     <figure class="ix-teaching">
       <blockquote>${scrollLit('Just as *fire* cannot be separated from wood, similarly, a true devotee is not separate from the object of his *devotion* – the *Lord.*')}</blockquote>
+      ${deepaRow({ count: 5, cls: 'ix-dv-lamps' })}
       <figcaption><span>Pujya Sri Swamiji, <cite>Sadguru Sookti Sangraha</cite> (Devotion – The Most Difficult Path)</span><a class="link-arrow" href="${links.swamijiSays}">More sayings ${icon('arrow-up-right', 14)}</a></figcaption>
     </figure>
   </div>
@@ -489,8 +491,9 @@ const appsSection = `<section id="apps" class="section section-dark ix-apps" ari
    15 · Closing call to action
 --------------------------------------------------------------------------- */
 
-const closing = `<section id="support" class="ix-closing" aria-labelledby="support-h">
+const closing = `<section id="support" class="ix-closing ${DV_HOST}" aria-labelledby="support-h">
   ${horizon()}
+  ${pushpanjali()}
   <svg class="ix-closing-mandala" viewBox="0 0 104 104" aria-hidden="true"><use href="#i-mandala"/></svg>
   <div class="wrap ix-closing-inner">
     ${ornament()}

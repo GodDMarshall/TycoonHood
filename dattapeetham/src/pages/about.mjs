@@ -10,6 +10,7 @@
 import { pageHero, sectionHead, frame, processSteps, scrollLit, ctaBand, infoList, btn, icon, img, eyebrow, ornament, thread } from '../components.mjs';
 import { links, site, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
 import { photos, timings } from '../data.mjs';
+import { dhoopa, lampChainAttrs, DV_HOST } from '../features/devotion-motion.mjs';
 
 // Official photographs from the Peetham's own pages (S3 bucket).
 const pic = {
@@ -230,7 +231,8 @@ ${pageHero({
   </div>
 </section>
 
-<section class="section section-dark ab-statement grain" aria-label="The principles of the Peetham">
+<section class="section section-dark ab-statement grain ${DV_HOST}" aria-label="The principles of the Peetham">
+  ${dhoopa({ from: 'left', wisps: 2 })}
   <svg class="ab-statement-mandala" viewBox="0 0 104 104" aria-hidden="true" data-spin="60"><use href="#i-mandala"/></svg>
   <div class="wrap">
     <span class="om ab-om" aria-hidden="true">ॐ</span>
@@ -317,7 +319,7 @@ ${pageHero({
     })}
     <div class="ab-lineage-chain">
     ${thread('ab-lineage-thread')}
-    <ol class="ab-lineage-row" data-stagger>
+    <ol class="ab-lineage-row" data-stagger${lampChainAttrs({ nodes: '.ab-guru-ring', diya: true, at: 'below', size: 32, gap: 16, order: 'sequence' })}>
       ${lineage.map((g, i) => `<li class="ab-guru">
         <a href="${g.href}">
           <span class="ab-guru-ring"><span class="ab-guru-img">${img(g.img, g.alt, { pos: g.pos })}</span></span>

@@ -1,5 +1,6 @@
 import { btn, icon } from '../components.mjs';
 import { links } from '../site.mjs';
+import { deepaRow } from '../features/devotion-motion.mjs';
 
 export default {
   slug: '404',
@@ -12,6 +13,7 @@ export default {
   <svg class="mark-watermark" viewBox="0 0 104 104" aria-hidden="true"><use href="#i-mandala"/></svg>
   <canvas class="fx-canvas" data-constellation aria-hidden="true"></canvas>
   <div class="wrap" style="position:relative">
+    ${deepaRow({ count: 1, size: 'lg', align: 'start' })}
     <span class="eyebrow">404 · A different path</span>
     <h1 data-split style="max-width:14ch">This path leads <span class="em-light">elsewhere</span>.</h1>
     <p class="lead" data-reveal="up">The page you were looking for may have moved in our new website. Every road still leads to the Ashram.</p>

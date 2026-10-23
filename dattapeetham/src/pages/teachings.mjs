@@ -18,6 +18,7 @@
 import { pageHero, sectionHead, stats, ctaBand, btn, img, icon, scrollLit, chips, photoTile, esc } from '../components.mjs';
 import { site, links, OFFICIAL, PAGE_IMG } from '../site.mjs';
 import { photos } from '../data.mjs';
+import { deepaRow, padmaOrnament } from '../features/devotion-motion.mjs';
 
 const P = {
   preaching: `${PAGE_IMG}522/522_e6aadc94cb31b022.jpg`, // "Sri Swamiji preaches" (sri-swamiji page)
@@ -770,6 +771,7 @@ ${pageHero({
     ${archiveRow()}
     <figure class="tc-lit">
       ${scrollLit('A speech is an *inspiration!* It is a medicine in despair! It triggers the *enlightenment* from within!')}
+      ${deepaRow({ count: 5 })}
       <figcaption data-reveal="up">From the Peetham’s speeches archive</figcaption>
     </figure>
   </div>
@@ -796,7 +798,7 @@ ${pageHero({
 
 <section class="section tc-dharma" id="dharma">
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Sanatana Dharma Parirakshana', title: 'Protecting the <span class="em-light">eternal</span> way', lead: 'Inspired by Lord Dattatreya’s teachings, Sri Swamiji has toured India extensively to promote Sanatana Dharma, and welcomes everyone, of any faith or none.' })}
+    ${padmaOrnament(sectionHead({ eyebrow: 'Sanatana Dharma Parirakshana', title: 'Protecting the <span class="em-light">eternal</span> way', lead: 'Inspired by Lord Dattatreya’s teachings, Sri Swamiji has toured India extensively to promote Sanatana Dharma, and welcomes everyone, of any faith or none.' }))}
     ${dharma()}
   </div>
 </section>

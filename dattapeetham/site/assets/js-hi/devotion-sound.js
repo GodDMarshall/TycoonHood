@@ -11,11 +11,20 @@
    - Music: <audio preload="none"> → MediaElementSource → per-element gain →
      music bus (fades) → analyser (level) → master (volume) → speakers. Two
      elements crossfade at the loop point: Chromium's <audio loop> leaves a
-     ~20 ms silent gap at an MP3 loop seam, the crossfade leaves none.
+     12–23 ms gap at an MP3 loop seam, the crossfade leaves none. The build
+     writes the loop plan on [data-sound] (src/features/devotion-sound.mjs):
+     the file is the loop followed by its own first 4.6 s, so when element A
+     reaches loop + d, element B started at d plays the same music. B starts
+     early at gain 0, is put in step with A, and fades in over 0.6 s inside
+     the tanpura's quiet stretch: no pluck doubled or dropped, nothing skipped.
    - Position carries across pages through sessionStorage 'dp-sound-pos'.
    - Temple sounds: decoded buffers → panner → SFX bus (−8 dB) → master.
      A chime every ~800 px of reading (≥ 0.9 s apart), a bell as each section
-     arrives (≥ 1.5 s apart, never within 0.7 s of a chime: it waits).
+     arrives (≥ 1.5 s apart, never within 0.7 s of a chime: it waits). The
+     conch (shankha) at the end of a page plays only if the build lists it in
+     data-sfx, which it does not until the client has approved it.
+   - Audio URLs carry ?v=<content hash> from data-audio-v, so a re-rendered
+     file reaches visitors at once despite the 30-day cache.
    - API: DP.sound = {musicOn, sfxOn, setMusic, setSfx, setVolume, volume,
      level, state, onChange}; 'dp:sound' CustomEvent on document.
    - With devotion-motion.js: a section bell dispatches 'dp:bell' {section}
@@ -47,11 +56,18 @@
   var me = doc.currentScript || $('script[src*="devotion-sound"]');
   var base;
   try { base = new URL('../audio/', me.src).href; } catch (e) { base = (doc.body.getAttribute('data-base') || root.getAttribute('data-root') || '') + 'assets' + '/audio/'; }
-  var SRC = base + 'flute-mohanam.mp3';
+  // data-audio-v: "file=hash" pairs written by the build; ?v= keeps caches honest
+  var VER = {};
+  (cfg.audioV || '').split(/\s+/).forEach(function (t) { var i = t.lastIndexOf('='); if (i > 0) VER[t.slice(0, i)] = t.slice(i + 1); });
+  var url = function (f) { return base + f + (VER[f] ? '?v=' + VER[f] : ''); };
+  var SRC = url(cfg.music || 'flute-mohanam.mp3');
   var SWARA = ['chime-s', 'chime-r', 'chime-g', 'chime-p', 'chime-d', 'chime-s2'];
-  // data-sfx (written by the build from the files that exist) lists the temple sounds to load
-  var FX = cfg.sfx != null ? cfg.sfx.split(/\s+/).filter(Boolean) : ['ghanta'].concat(SWARA, ['shankha']);
-  var XF = +cfg.xfade || 3, FX_GAIN = Math.pow(10, (cfg.sfxDb ? +cfg.sfxDb : -8) / 20);
+  // data-sfx (written by the build from the files that exist) lists the temple sounds to load;
+  // the shankha is never assumed: it is optional and off until the client approves it
+  var FX = cfg.sfx != null ? cfg.sfx.split(/\s+/).filter(Boolean) : ['ghanta'].concat(SWARA);
+  // the loop plan: A at XFROM fades into B at XTO over XF seconds; the music's period is XFROM − XTO
+  var XFROM = +cfg.xfFrom || 0, XTO = +cfg.xfTo || 0, XF = +cfg.xfade || 0.6, PRE = 1.6;
+  var FX_GAIN = Math.pow(10, (cfg.sfxDb ? +cfg.sfxDb : -8) / 20);
   var FADE_IN = 1.8, FADE_OUT = 0.6, FLING = 3500; // seconds, seconds, px/s
 
   /* ---------------- storage (private mode safe) ---------------- */
@@ -115,29 +131,35 @@
   }
   function act(fn) { gesture = true; try { fn(); } finally { gesture = false; } }
 
-  /* ---------------- music: two elements crossfading at the loop point ---------------- */
-  var P = [], cur = 0, on = false, live = false, err = false, xfading = false, started = false, stopT, leaveT;
+  /* ---------------- music: two elements crossfading inside the loop's tail ---------------- */
+  var P = [], cur = 0, on = false, live = false, err = false, xfading = false, started = false, stopT, leaveT, prep = null;
   var UP = new Float32Array(48), DOWN = new Float32Array(48);
-  for (var k = 0; k < 48; k++) { UP[k] = Math.sin(k / 47 * Math.PI / 2); DOWN[k] = Math.cos(k / 47 * Math.PI / 2); }
+  for (var k = 0; k < 48; k++) { UP[k] = Math.sin(k / 47 * Math.PI / 2); DOWN[k] = Math.cos(k / 47 * Math.PI / 2); } // equal power
+  function period() { return XFROM - XTO; }
+  // any position in the file → the same moment of the music before the fade point
+  function inLoop(t) { var p = period(); if (p > 1) while (t >= XFROM) t -= p; return Math.max(0, t); }
   function startAt() {
     var p = load('sessionStorage', POS);
     if (!p || typeof p.t !== 'number') return 0;
     var gap = Date.now() - p.at, t = p.t + (gap > 0 && gap < 8000 ? gap / 1000 : 0); // the walk to the next page
-    return p.d ? t % p.d : t;
+    return inLoop(t);
   }
   function player(i) {
     if (P[i]) return P[i];
-    var a = new Audio(); a.preload = 'none'; a.loop = true; // loop: a safety net if a crossfade cannot start
+    var a = new Audio(); a.preload = 'none'; // no loop attribute: the crossfade carries the music round
     var g = ctx.createGain(); g.gain.value = i === cur ? 1 : 0;
     ctx.createMediaElementSource(a).connect(g); g.connect(bus);
     a.addEventListener('playing', function () { if (a === P[cur].a) { live = true; err = false; if (on) fadeTo(bus, 1, FADE_IN); render(); } });
     a.addEventListener('waiting', function () { if (a === P[cur].a) { live = false; render(); } });
     a.addEventListener('timeupdate', onTime);
     a.addEventListener('error', function () { if (a === P[cur].a) { err = true; on = live = false; render(); } });
+    // last safety net, if neither the crossfade nor the in-place seek happened: go round in place
+    a.addEventListener('ended', function () { if (a === P[cur].a && on && !xfading) { a.currentTime = inLoop(a.currentTime); a.play().then(null, noop); } });
     return (P[i] = { a: a, g: g });
   }
   function go() {
     clearTimeout(stopT);
+    if (prep && !xfading) finishX(); // turned back on before a stop finished: drop a half-prepared B
     var p = player(cur), a = p.a;
     on = true; started = true;
     if (!a.src) { var t = startAt(); a.src = SRC + (t > 0.5 ? '#t=' + t.toFixed(2) : ''); }
@@ -158,32 +180,66 @@
     stopT = setTimeout(function () { finishX(); P.forEach(function (p) { p.a.pause(); }); live = false; render(); idle(); }, FADE_OUT * 1000 + 60);
   }
   function onTime() {
-    var A = P[cur]; if (!A || this !== A.a || !on || xfading) return;
+    var A = P[cur]; if (!A || this !== A.a || !on || xfading || prep) return;
     var d = A.a.duration; if (!d || !isFinite(d)) return;
-    var xf = Math.min(XF, d / 4), left = d - A.a.currentTime;
-    if (left < xf + 9) { // warm the other element a few seconds early
-      var B = player(1 - cur);
-      if (!B.a.src) { B.a.src = SRC; B.a.preload = 'auto'; B.a.load(); }
-    }
-    if (left <= xf + 0.35) crossfade(xf);
+    // no plan in the markup (an old page): fade the end of the file into its start, as before
+    if (!(XFROM > XTO && XFROM < d)) { XF = Math.min(3, d / 4); XFROM = d - XF - 0.35; XTO = 0; }
+    var t = A.a.currentTime;
+    if (t > XFROM - 12) warm();
+    if (t >= XFROM - PRE) prepare();
   }
-  function crossfade(xf) {
-    var A = P[cur], B = P[1 - cur];
+  function warm() { var B = player(1 - cur); if (!B.a.src) { B.a.src = SRC; B.a.preload = 'auto'; B.a.load(); } } // from the cache
+  // B starts at gain 0 a little before the fade point, at A's moment of the music, and is
+  // put in step by seeking it while it is silent; at XFROM the two fade over (equal power)
+  // inside the tanpura's quiet stretch. B aims one MP3 frame (1152 samples) ahead of A by
+  // currentTime: recorded in Chromium (9 crossfades, every flow), the second element always
+  // sounded 26.1 ± 1 ms behind what currentTime said, and with this lead it lands within a
+  // few ms of A by ear. (Measuring it by ear at run time was tried: the drone is so periodic
+  // that snapshots alias by whole kharaj periods, 27 ms, so it cannot be told apart.)
+  var FRAME = 1152 / 44100;
+  function prepare() {
+    var A = P[cur], B = player(1 - cur), tries = 0, lag = FRAME + 0.004;
+    warm();
+    B.g.gain.cancelScheduledValues(0); B.g.gain.value = 0;
+    prep = { skew: null, tries: 0 };
+    var seek = function () { try { B.a.currentTime = Math.max(0, A.a.currentTime - period() + lag); } catch (e) { /* not seekable yet */ } };
+    seek();
+    var pr = B.a.play(); if (pr && pr.then) pr.then(null, noop);
+    (function tick() {
+      if (!prep || !on || P[cur] !== A || xfading) return;
+      var ta = A.a.currentTime, ready = !B.a.paused && !B.a.seeking && B.a.readyState > 2;
+      if (ready) {
+        var skew = B.a.currentTime + period() - ta; // > 0: B ahead by currentTime
+        prep.skew = skew;
+        if (Math.abs(skew - FRAME) > 0.006 && tries < 4 && ta < XFROM - 0.3) { tries++; prep.tries = tries; lag -= skew - FRAME; seek(); }
+      }
+      if (ready && ta >= XFROM) { crossfade(); return; }
+      if (ta >= XFROM + 0.5) { // B never got going (a slow network): carry A round by itself
+        finishX();
+        try { A.a.currentTime = inLoop(ta) + FRAME; } catch (e) { /* ignore */ }
+        return;
+      }
+      prep.t = setTimeout(tick, 40);
+    })();
+  }
+  function crossfade() {
+    var A = P[cur], B = P[1 - cur], t = ctx.currentTime;
+    clearTimeout(prep && prep.t);
     xfading = true;
-    if (B.a.currentTime > 0.05) B.a.currentTime = 0;
-    var pr = B.a.play();
-    var begin = function () {
-      var t = ctx.currentTime;
-      [[B.g, UP], [A.g, DOWN]].forEach(function (x) { x[0].gain.cancelScheduledValues(0); x[0].gain.setValueCurveAtTime(x[1], t, xf); });
-      cur = 1 - cur;
-      setTimeout(finishX, xf * 1000 + 60);
-    };
-    if (pr && pr.then) pr.then(begin, function () { xfading = false; }); else begin();
+    [[B.g, UP], [A.g, DOWN]].forEach(function (x) { x[0].gain.cancelScheduledValues(0); x[0].gain.setValueCurveAtTime(x[1], t, XF); });
+    lastX = { at: Date.now(), from: A.a.currentTime, to: B.a.currentTime, skew: prep ? prep.skew : null, tries: prep ? prep.tries : 0 };
+    cur = 1 - cur;
+    setTimeout(finishX, XF * 1000 + 60);
   }
+  var lastX = null; // the last crossfade, for testing: DP.sound.loop()
   function finishX() {
-    if (!xfading) return;
-    xfading = false;
+    if (prep) { clearTimeout(prep.t); prep = null; }
     var A = P[1 - cur], B = P[cur];
+    if (!xfading) { // a B prepared but never faded in: silence it again
+      if (A && A !== B) { A.g.gain.cancelScheduledValues(0); A.g.gain.value = 0; A.a.pause(); }
+      return;
+    }
+    xfading = false;
     A.g.gain.cancelScheduledValues(0); A.g.gain.value = 0; A.a.pause();
     B.g.gain.cancelScheduledValues(0); B.g.gain.value = 1;
   }
@@ -193,7 +249,7 @@
     clearTimeout(leaveT); leaveT = setTimeout(function () { if (on && live) fadeTo(bus, 1, 0.5); }, 1500);
   }
   function onHide() {
-    if (started && P[cur]) save('sessionStorage', POS, { t: P[cur].a.currentTime, at: Date.now(), d: P[cur].a.duration || 0 });
+    if (started && P[cur]) save('sessionStorage', POS, { t: inLoop(P[cur].a.currentTime), at: Date.now(), d: period() });
     closeChannel();
   }
   function onShow(e) { // back/forward cache: the other page may have changed things
@@ -273,7 +329,7 @@
     if (fxLoaded) return; fxLoaded = true;
     FX.forEach(function (n) {
       if (!n) return;
-      fetch(base + 'sfx/' + n + '.mp3').then(function (r) { if (!r.ok) throw r.status; return r.arrayBuffer(); })
+      fetch(url('sfx/' + n + '.mp3')).then(function (r) { if (!r.ok) throw r.status; return r.arrayBuffer(); })
         .then(function (ab) { ctx.decodeAudioData(ab, function (b) { buf[n] = b; if (sample && n === 'chime-s') playSample(); }, noop); }).then(null, noop);
     });
   }
@@ -334,9 +390,10 @@
     }, { rootMargin: '0px 0px -30% 0px' });
     secs.forEach(function (s) { io.observe(s); });
   }
-  // devotion-motion's hanging bells ('dp:ghanta'): the bell you see is the bell you hear.
-  // 'enter': it swung as the reader's scrolling brought it into view, and it stands in for
-  // its section's bell; 'touch': a pointer rang it; 'bell': we rang it ourselves.
+  // The hanging bells of devotion-motion.js (dp:ghanta events): the bell you see is the
+  // bell you hear. Cause enter: it swung as the reader’s scrolling brought it into view,
+  // and it stands in for its section’s bell; touch: a pointer rang it; bell: we rang it.
+  // (No quotes in these comments: the translation extractor reads quoted text.)
   function onGhanta(e) {
     var d = e.detail || {}, b = d.el;
     if (!b || !b.getBoundingClientRect || d.cause === 'bell') return;
@@ -375,7 +432,7 @@
     if (!td) td = an.getFloatTimeDomainData ? new Float32Array(an.fftSize) : new Uint8Array(an.fftSize);
     if (td instanceof Float32Array) { an.getFloatTimeDomainData(td); for (i = 0; i < td.length; i++) s += td[i] * td[i]; }
     else { an.getByteTimeDomainData(td); for (i = 0; i < td.length; i++) { var x = (td[i] - 128) / 128; s += x * x; } }
-    var x2 = Math.min(1, Math.sqrt(s / td.length) / (+cfg.levelRef || 0.12)); // 0.12 ≈ the 95th-percentile RMS of the flute track
+    var x2 = Math.min(1, Math.sqrt(s / td.length) / (+cfg.levelRef || 0.08)); // 0.08 ≈ the 95th-percentile frame RMS of the flute track (measured: 0.078)
     lv += (x2 - lv) * (1 - Math.exp(-dt / (x2 > lv ? 0.06 : 0.25)));
     return lv;
   }
@@ -384,13 +441,13 @@
   var btn = box && $('[data-sound-toggle]', box), panel = box && $('[data-sound-panel]', box);
   var switches = box ? $$('[data-sound-switch]', box) : [], volEl = box && $('[data-sound-volume]', box), statusEl = box && $('[data-sound-status]', box);
   function status() {
-    if (!S.music) return ['off', fmt('Music is off.')];
-    if (err) return ['wait', fmt('The music could not be loaded.')];
-    if (tabHeld) return ['wait', fmt('The music is playing in another tab.')];
-    if (media.length || frames.length) return ['wait', fmt('The music is paused while another recording or video plays.')];
-    if (!on && armed) return ['wait', fmt('The music will begin when you tap or press a key.')];
-    if (on && !live) return ['wait', fmt('The music is loading.')];
-    return [on ? 'on' : 'wait', fmt('The flute music is playing.')];
+    if (!S.music) return ['off', fmt('संगीत बंद है।')];
+    if (err) return ['wait', fmt('संगीत लोड नहीं हो सका।')];
+    if (tabHeld) return ['wait', fmt('संगीत किसी दूसरे टैब में बज रहा है।')];
+    if (media.length || frames.length) return ['wait', fmt('किसी दूसरी रिकॉर्डिंग या वीडियो के चलते समय संगीत रुका हुआ है।')];
+    if (!on && armed) return ['wait', fmt('स्क्रीन छूने या कोई कुंजी दबाने पर संगीत शुरू होगा।')];
+    if (on && !live) return ['wait', fmt('संगीत लोड हो रहा है।')];
+    return [on ? 'on' : 'wait', fmt('बाँसुरी संगीत बज रहा है।')];
   }
   var lastKey = '';
   function render() {
@@ -432,7 +489,7 @@
   // screen (hero buttons, cards). While nothing is sounding, the button keeps out of the
   // way at the top of the page, as back-to-top does, and comes back once the reader
   // scrolls on (or tabs to it). Whenever music is on or waiting, it always shows.
-  // "At the top" is watched by an IntersectionObserver on a sentinel spanning the top of the
+  // Being at the top is watched by an IntersectionObserver on a sentinel spanning the top of the
   // page (no scroll listener, no per-frame work); the CSS applies it only below 1100px.
   var tucked = null, atTop = false, cardOpen = false;
   function tuck() {
@@ -553,8 +610,8 @@
     q.setAttribute('aria-live', 'polite');
     inv.insertBefore(q, inv.firstChild);
     var span = music && $('span', music);
-    if (span) span.textContent = fmt('Play flute music');
-    if (silence) silence.textContent = fmt('Not now');
+    if (span) span.textContent = fmt('बाँसुरी संगीत चलाएँ');
+    if (silence) silence.textContent = fmt('अभी नहीं');
     inv.classList.add('snd-invite--card');
     inv.setAttribute('role', 'group'); inv.setAttribute('aria-labelledby', 'snd-invite-q');
     box.insertBefore(inv, btn);
@@ -577,7 +634,7 @@
       if (done || pref) return;
       inv.hidden = false;
       cardOpen = true; tuck();
-      setTimeout(function () { q.textContent = fmt('Would you like flute music while you read?'); }, 80); // announced
+      setTimeout(function () { q.textContent = fmt('क्या पढ़ते समय बाँसुरी संगीत सुनना चाहेंगे?'); }, 80); // announced
       W.addEventListener('scroll', onScrollAway, { passive: true });
       doc.addEventListener('keydown', onKey);
       timer = setTimeout(function () { close(); }, 16000);
@@ -597,6 +654,8 @@
     level: level,
     state: function () { return state(); },
     onChange: function (fn) { subs.push(fn); return function () { subs = subs.filter(function (f) { return f !== fn; }); }; },
+    // diagnostics: the loop plan and the last crossfade (its skew between the two elements, s)
+    loop: function () { return { from: XFROM, to: XTO, fade: XF, period: period(), last: lastX }; },
   };
   if (S.music || S.sfx) reconcile(); else render();
   invite();

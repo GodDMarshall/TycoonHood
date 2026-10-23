@@ -17,7 +17,8 @@ import { join, dirname, resolve, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site, links, OFFICIAL, config, resolveConfig, normaliseUrl } from '../src/site.mjs';
 import { THEME_COLOR } from '../src/layout.mjs';
-import { printAddresses, assertProduction } from '../build.mjs';
+import { printAddresses, assertProduction, byteRange } from '../build.mjs';
+import { SHANKHA, CREDIT } from '../src/features/devotion-sound.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = process.env.DP_SITE_DIR ? resolve(process.env.DP_SITE_DIR) : join(ROOT, 'site');
@@ -473,4 +474,57 @@ test('nothing dev-only in the built site', async () => {
 test('booking, donation, sign-in and store links follow legacyPlatformUrl', () => {
   const home = pages.find((p) => p.f === 'index.html').html;
   for (const k of ['poojas', 'donations', 'login', 'store']) assert.ok(home.includes(`href="${links[k].replace(/&/g, '&amp;')}"`), `index.html has no link to links.${k}`);
+});
+
+// ---------------------------------------------------------------------------
+// The devotional layer: wired on every page, audio shipped and versioned as used
+// ---------------------------------------------------------------------------
+
+for (const { f, lang, html } of pages) {
+  test(`${f}: the devotional layer is wired (sound control after the skip link, invitation in the curtain, scripts, reading lamp, footer lamps)`, () => {
+    const body = html.slice(html.indexOf('<body'));
+    assert.match(body, /^<body[^>]*>\s*<a class="skip" href="#main">[^<]*<\/a>\s*<div class="snd" data-sound /, 'the sound control comes right after the skip link');
+    const intro = (/<div class="intro"[\s\S]*?\n<\/div>/.exec(body) || [''])[0];
+    assert.match(intro, /<div class="snd-invite" data-sound-invite hidden>/, 'the first-visit invitation sits inside the intro curtain');
+    assert.match(body, /<div class="scroll-progress" aria-hidden="true" data-devotion="jyoti-progress">/);
+    assert.match(body, /<footer class="site-footer">[\s\S]*class="[^"]*dv-footer-lamps[^"]*"[\s\S]*<div class="footer-mantra"/);
+    const srcs = [...html.matchAll(/<script src="([^"?]+)/g)].map((m) => m[1].split('/').pop());
+    const at = (n) => srcs.indexOf(n);
+    assert.ok(at('motion.js') >= 0 && at('motion.js') < at('devotion-sound.js') && at('devotion-sound.js') < at('devotion-motion.js'), `script order: ${srcs.join(' ')}`);
+    assert.match(html, /<link rel="stylesheet" href="[^"]*devotion-sound\.css\?v=[0-9a-f]{8}">\n<link rel="stylesheet" href="[^"]*devotion-motion\.css\?v=[0-9a-f]{8}">/);
+    if (lang === 'en') assert.ok(html.includes(`<p class="snd-credit">${CREDIT}</p>`), 'the credit, word for word');
+  });
+}
+
+test('audio: the sound control names files that ship, each with its content hash; nothing else ships', async () => {
+  const shipped = [];
+  const walk = async (d) => { for (const e of await readdir(join(SITE, d), { withFileTypes: true })) (e.isDirectory() ? await walk(`${d}/${e.name}`) : shipped.push(`${d}/${e.name}`.replace(/^assets\/audio\//, ''))); };
+  await walk('assets/audio');
+  const used = new Map();
+  for (const { f, html } of pages) {
+    const tag = (/<div class="snd" data-sound [^>]*>/.exec(html) || [])[0];
+    assert.ok(tag, `${f}: no sound control`);
+    const attr = (n) => (new RegExp(`\\s${n}="([^"]*)"`).exec(tag) || [])[1];
+    const v = new Map(attr('data-audio-v').split(/\s+/).filter(Boolean).map((t) => t.split('=')));
+    const music = attr('data-music');
+    assert.ok(v.has(music), `${f}: no version for ${music}`);
+    for (const n of attr('data-sfx').split(/\s+/).filter(Boolean)) assert.ok(v.has(`sfx/${n}.mp3`), `${f}: no version for sfx/${n}.mp3`);
+    if (!SHANKHA) assert.ok(!/\bshankha\b/.test(attr('data-sfx')), `${f}: the shankha is listed while it is off`);
+    const from = +attr('data-xf-from'), to = +attr('data-xf-to'), fade = +attr('data-xfade');
+    assert.ok(from > to && to > 0 && fade > 0 && fade < 2, `${f}: loop plan ${from} ${to} ${fade}`);
+    for (const [file, h] of v) used.set(file, h);
+  }
+  for (const [file, h] of used) assert.equal(hash8(await readFile(join(SITE, 'assets/audio', file))), h, `${file}: data-audio-v does not match the file`);
+  assert.deepEqual(shipped.sort(), [...used.keys()].sort(), 'site/assets/audio holds exactly the files the pages use');
+  assert.ok(!shipped.includes('manifest.json'), 'the audio manifest is build-only');
+});
+
+test('dev server: byte ranges for the audio', () => {
+  assert.equal(byteRange(undefined, 100), null);
+  assert.deepEqual(byteRange('bytes=0-', 100), { start: 0, end: 99 });
+  assert.deepEqual(byteRange('bytes=10-19', 100), { start: 10, end: 19 });
+  assert.deepEqual(byteRange('bytes=-10', 100), { start: 90, end: 99 });
+  assert.deepEqual(byteRange('bytes=90-500', 100), { start: 90, end: 99 });
+  assert.deepEqual(byteRange('bytes=100-', 100), { unsatisfiable: true });
+  assert.equal(byteRange('bytes=0-1,5-9', 100), null, 'several ranges: the whole file');
 });
