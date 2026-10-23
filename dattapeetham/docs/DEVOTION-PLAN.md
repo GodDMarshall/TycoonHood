@@ -408,9 +408,12 @@ and 1440. The harness and logs are in
 
 **Checked and fine:**
 - **Reduced motion.** All 16 pages at 1440 and 8 at 390, with the flute on. At every motif, nothing moved for 1.5s: no running animation, no rAF from either script, canvases and petals unchanged. A negative control, run with motion allowed, does fail this check.
-- **Layout shift.** At most 0.009 on every page except Guru Parampara (above).
+- **Layout shift.** Scrolled through in screen-sized steps at 1440, 390 and 360, every page is at most 0.009, with three exceptions:
+  - Guru Parampara, from its own beads (see above).
+  - `kn/darshan` at 1440: 0.043, from the Kannada header's status pills. The original page does the same.
+  - Seva at 360: 0.046 in about one run in five; the original page measures 0.001. The source is the pushpanjali layer, `absolute; inset: 0` in `#donate`. When something above the scroll anchor reflows, scroll anchoring keeps the section's content still, but the layer is pinned to the section's top and is counted as moving. Nothing visibly jumps, because the petals are in motion anyway. If a page needs a clean CLS, put the flowers in a host whose top edge does not reflow.
 - **Long session.** Three minutes of wheel scrolling on the home page with flute and temple sounds on: heap, DOM nodes and listeners stayed flat, with no growth. After 10–16 temple sounds, every per-hit Web Audio node was destroyed (CDP WebAudio events).
-- **Cost.** The motifs add about 2ms of main-thread time per frame while scrolling through the busiest spots at 1440: 7.2 vs 4.8ms on the home page's offering, 6.9 vs 4.2ms on Guru Purnima. The 95th-percentile frame time was unchanged at 1440 and 390. These figures are headless, software-rendered and on a shared machine; with heavy load from other jobs, the same runs read 2–3 times worse for every variant.
+- **Cost.** At 1440, while scrolling through the busiest spots, the motifs add about 2ms of main-thread time per frame: 7.2 vs 4.8ms on the home page's offering, and 6.9 vs 4.2ms on Guru Purnima. With the flute playing, the music page was 8.1 vs 6.5ms. The 95th-percentile frame time did not change in these runs. At 390, the festival flowers on Events, measured on a quiet machine, held 16.8ms at the 95th percentile (10.9 vs 8.8ms of main-thread time per frame). Under heavy load from other jobs they read 33.2ms against 16.8ms for the original page, so check that spot on a low-end phone. All of these figures are headless, software-rendered and on a shared machine.
 
 **Stage 2 must watch:**
 - The new markup in `aarti()` (`.dv-aarti-tclip`) and `ghanta()` (an SVG hum) comes from the helpers. Don't hand-write either motif.
