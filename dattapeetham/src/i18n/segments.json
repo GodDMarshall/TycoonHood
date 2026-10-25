@@ -1776,6 +1776,13 @@
   ]
  },
  {
+  "k": "His Holiness Sri Ganapathy Sachchidananda Swamiji, smiling, seated with His hands clasped",
+  "pages": [
+   "404.html",
+   "index.html"
+  ]
+ },
+ {
   "k": "Sound settings",
   "pages": [
    "404.html",
@@ -3397,6 +3404,13 @@
   "k": "From a straw hut in 1966 to an international institution: the mission, 40-acre campus at the foot of Chamundi Hill and Ashram life of Avadhoota Datta Peetham.",
   "pages": [
    "about.html"
+  ]
+ },
+ {
+  "k": "Aerial view of the Sri Datta Venkateshwara Temple complex, its gopuram rising above devotees in the courtyard",
+  "pages": [
+   "about.html",
+   "darshan.html"
   ]
  },
  {
@@ -5646,6 +5660,13 @@
   ]
  },
  {
+  "k": "A pagoda pavilion among bonsai trees, rocks and a stream in the Kishkindha Moolika Bonsai Garden",
+  "pages": [
+   "attractions.html",
+   "index.html"
+  ]
+ },
+ {
   "k": "Attraction chapters",
   "pages": [
    "attractions.html"
@@ -5920,7 +5941,8 @@
  {
   "k": "A concert in Nada Mantapa: musicians on stage before a large seated audience, with portraits of composers along the walls",
   "pages": [
-   "attractions.html"
+   "attractions.html",
+   "events.html"
   ]
  },
  {
@@ -8055,6 +8077,13 @@
   ]
  },
  {
+  "k": "The Karya Siddhi Hanuman temple at the Ashram, with the 70-ft monolithic statue of Hanuman rising above it",
+  "pages": [
+   "centers.html",
+   "visit.html"
+  ]
+ },
+ {
   "k": "Eight Ashrams of Sri Swamiji, coordinated by Datta Yoga Center, USA",
   "pages": [
    "centers.html",
@@ -9668,6 +9697,13 @@
   "k": "Contact the Ashram",
   "pages": [
    "contact.html"
+  ]
+ },
+ {
+  "k": "Sri Swamiji, seated, speaks at a microphone with one hand raised",
+  "pages": [
+   "contact.html",
+   "teachings.html"
   ]
  },
  {
@@ -11743,12 +11779,6 @@
   ]
  },
  {
-  "k": "Aerial view of the Sri Datta Venkateshwara Temple complex, its gopuram rising above devotees in the courtyard",
-  "pages": [
-   "darshan.html"
-  ]
- },
- {
   "k": "Open photo: Sri Datta Venkateshwara Swamy",
   "pages": [
    "darshan.html"
@@ -13806,7 +13836,8 @@
  {
   "k": "Garlanded portraits of the Guru Parampara arranged for worship",
   "pages": [
-   "events.html"
+   "events.html",
+   "guru-parampara.html"
   ]
  },
  {
@@ -16463,12 +16494,6 @@
   ]
  },
  {
-  "k": "His Holiness Sri Ganapathy Sachchidananda Swamiji, smiling, seated with His hands clasped",
-  "pages": [
-   "index.html"
-  ]
- },
- {
   "k": "Sri Swamiji unveiled",
   "pages": [
    "index.html",
@@ -16556,12 +16581,6 @@
  },
  {
   "k": "Sri Swamiji, smiling and waving, surrounded by green parrots at Shuka Vana",
-  "pages": [
-   "index.html"
-  ]
- },
- {
-  "k": "A pagoda pavilion among bonsai trees, rocks and a stream in the Kishkindha Moolika Bonsai Garden",
   "pages": [
    "index.html"
   ]
@@ -17977,6 +17996,12 @@
   ]
  },
  {
+  "k": "Collage: Sri Swamiji teaching yoga, and halls full of people practising it",
+  "pages": [
+   "kriya-yoga.html"
+  ]
+ },
+ {
   "k": "Sri Swamiji, seated in orange robes and a white shawl, stretches both arms out wide while teaching Datta Kriya Yoga",
   "pages": [
    "kriya-yoga.html"
@@ -19355,6 +19380,13 @@
   "k": "Media & Teachings",
   "pages": [
    "media.html"
+  ]
+ },
+ {
+  "k": "Sri Datta Vijayananda Teertha Swamiji smiling as he speaks into a microphone",
+  "pages": [
+   "media.html",
+   "teachings.html"
   ]
  },
  {
@@ -23269,6 +23301,13 @@
   ]
  },
  {
+  "k": "Sri Ganapathy Sachchidananda Swamiji, garlanded, seated on a silver throne",
+  "pages": [
+   "sri-swamiji.html",
+   "teachings.html"
+  ]
+ },
+ {
   "k": "Sri Swamiji offering worship at the flower-garlanded Datta shrine of Datta Kashi, Mekedatu",
   "pages": [
    "sri-swamiji.html"
@@ -26587,18 +26626,6 @@
   ]
  },
  {
-  "k": "Sri Ganapathy Sachchidananda Swamiji, garlanded, seated on a silver throne",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
-  "k": "Sri Datta Vijayananda Teertha Swamiji smiling as he speaks into a microphone",
-  "pages": [
-   "teachings.html"
-  ]
- },
- {
   "k": "Scroll to earlier cards",
   "pages": [
    "teachings.html"
@@ -29014,12 +29041,6 @@
  },
  {
   "k": "Visit essentials",
-  "pages": [
-   "visit.html"
-  ]
- },
- {
-  "k": "The Karya Siddhi Hanuman temple at the Ashram, with the 70-ft monolithic statue of Hanuman rising above it",
   "pages": [
    "visit.html"
   ]

@@ -23,7 +23,6 @@ const P = {
   polyclinic: `${PAGE_IMG}507/507_3b84f66cd87e6c59.jpg`,
   annadana: `${PAGE_IMG}516/516_2d522eb6783cea2d.jpg`,
   foodGrains: `${PAGE_IMG}516/516_90f2ada10257f568.jpg`,
-  dallas: `${PAGE_IMG}516/516_583cfb7a3a724742.jpg`,
   shukaRecord: `${PAGE_IMG}518/518_dc50e08d3e9b68eb.png`,
   bonsaiGarden: `${PAGE_IMG}504/504_0ec527dbfb1dd0a2.jpg`,
   sdhsParade: `${PAGE_IMG}512/512_2ba4f2446543d71a.jpg`,

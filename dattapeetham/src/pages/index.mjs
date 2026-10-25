@@ -49,7 +49,7 @@ const videoLink = (v, inner, cls = '') => `<a class="${cls}" href="${yt(v.id)}" 
 const heroWords = ['Spirituality', 'Service', 'Music', 'Education', 'Universal Love'];
 
 const hero = `<section class="hero ix-hero" id="welcome" aria-labelledby="ix-title" data-hero>
-  <div class="hero-media ix-hero-media">${img(pic.hero, 'The sculpted golden gopurams of the Sri Datta Venkateshwara temple complex at the Mysuru Ashram, rising above tiled roofs and trees', { eager: true, cls: 'ix-hero-img' })}</div>
+  <div class="hero-media ix-hero-media">${img(pic.hero, 'The sculpted golden gopurams of the Sri Datta Venkateshwara temple complex at the Mysuru Ashram, rising above tiled roofs and trees', { eager: true, cls: 'ix-hero-img', sizes: '(min-width: 1181px) 86vw, 100vw' })}</div>
   <div class="ix-hero-shade" aria-hidden="true"></div>
   <canvas class="fx-canvas ix-embers" data-embers aria-hidden="true"></canvas>
   <div class="wrap ix-hero-inner">

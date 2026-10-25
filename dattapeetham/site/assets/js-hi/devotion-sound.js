@@ -138,6 +138,15 @@
   function period() { return XFROM - XTO; }
   // any position in the file → the same moment of the music before the fade point
   function inLoop(t) { var p = period(); if (p > 1) while (t >= XFROM) t -= p; return Math.max(0, t); }
+  // Measured in Chromium (headless 141, recording the output against the file): an MP3 element
+  // positioned by a seek (#t=, or currentTime before or during play) into the first half of the
+  // file sounds one MP3 frame (1152 samples, 26.1 ms) later than its currentTime says; seeked
+  // into the second half, or playing on from 0, it sounds where currentTime says. The split is
+  // at half the duration (110.8 s → late, 111.5 s → on time). late() is that frame for an
+  // element whose last seek (p.at) was into the first half; leads below make up for it.
+  var FRAME = 1152 / 44100;
+  function late(p, at) { at = at === undefined ? p.at : at; var d = p.a.duration || 2 * XFROM; return at != null && at < d / 2 ? FRAME : 0; }
+  function seekTo(p, t) { p.at = t; p.a.currentTime = t; }
   function startAt() {
     var p = load('sessionStorage', POS);
     if (!p || typeof p.t !== 'number') return 0;
@@ -154,15 +163,15 @@
     a.addEventListener('timeupdate', onTime);
     a.addEventListener('error', function () { if (a === P[cur].a) { err = true; on = live = false; render(); } });
     // last safety net, if neither the crossfade nor the in-place seek happened: go round in place
-    a.addEventListener('ended', function () { if (a === P[cur].a && on && !xfading) { a.currentTime = inLoop(a.currentTime); a.play().then(null, noop); } });
-    return (P[i] = { a: a, g: g });
+    a.addEventListener('ended', function () { var p = P[cur]; if (a === p.a && on && !xfading) { var t = inLoop(a.currentTime); seekTo(p, t + late(p, t) - late(p)); a.play().then(null, noop); } });
+    return (P[i] = { a: a, g: g, at: null });
   }
   function go() {
     clearTimeout(stopT);
     if (prep && !xfading) finishX(); // turned back on before a stop finished: drop a half-prepared B
     var p = player(cur), a = p.a;
     on = true; started = true;
-    if (!a.src) { var t = startAt(); a.src = SRC + (t > 0.5 ? '#t=' + t.toFixed(2) : ''); }
+    if (!a.src) { var t = startAt(); p.at = t > 0.5 ? +t.toFixed(2) : null; a.src = SRC + (p.at ? '#t=' + p.at : ''); }
     else if (a.error) a.load(); // the file failed before: try it again
     if (a.paused) {
       var pr = a.play();
@@ -191,19 +200,19 @@
   function warm() { var B = player(1 - cur); if (!B.a.src) { B.a.src = SRC; B.a.preload = 'auto'; B.a.load(); } } // from the cache
   // B starts at gain 0 a little before the fade point, at A's moment of the music, and is
   // put in step by seeking it while it is silent; at XFROM the two fade over (equal power)
-  // inside the tanpura's quiet stretch. B aims one MP3 frame (1152 samples) ahead of A by
-  // currentTime: recorded in Chromium (9 crossfades, every flow), the second element always
-  // sounded 26.1 ± 1 ms behind what currentTime said, and with this lead it lands within a
-  // few ms of A by ear. (Measuring it by ear at run time was tried: the drone is so periodic
-  // that snapshots alias by whole kharaj periods, 27 ms, so it cannot be told apart.)
-  var FRAME = 1152 / 44100;
+  // inside the tanpura’s quiet stretch. In step means by ear: B (always seeked near the start)
+  // aims ahead of A by currentTime by however much later it will sound than A (see late()).
   function prepare() {
-    var A = P[cur], B = player(1 - cur), tries = 0, lag = FRAME + 0.004;
+    var A = P[cur], B = player(1 - cur), tries = 0, want = 0, lag = 0;
     warm();
     B.g.gain.cancelScheduledValues(0); B.g.gain.value = 0;
-    prep = { skew: null, tries: 0 };
-    var seek = function () { try { B.a.currentTime = Math.max(0, A.a.currentTime - period() + lag); } catch (e) { /* not seekable yet */ } };
-    seek();
+    prep = { skew: null, tries: 0, lead: 0 };
+    var seek = function () {
+      var t = Math.max(0, A.a.currentTime - period() + lag + want);
+      want = late(B, t) - late(A); prep.lead = want; // the currentTime lead that puts them together by ear
+      try { seekTo(B, A.a.currentTime - period() + lag + want); } catch (e) { /* not seekable yet */ }
+    };
+    lag = 0.004; seek();
     var pr = B.a.play(); if (pr && pr.then) pr.then(null, noop);
     (function tick() {
       if (!prep || !on || P[cur] !== A || xfading) return;
@@ -211,12 +220,13 @@
       if (ready) {
         var skew = B.a.currentTime + period() - ta; // > 0: B ahead by currentTime
         prep.skew = skew;
-        if (Math.abs(skew - FRAME) > 0.006 && tries < 4 && ta < XFROM - 0.3) { tries++; prep.tries = tries; lag -= skew - FRAME; seek(); }
+        if (Math.abs(skew - want) > 0.006 && tries < 4 && ta < XFROM - 0.3) { tries++; prep.tries = tries; lag -= skew - want; seek(); }
       }
       if (ready && ta >= XFROM) { crossfade(); return; }
       if (ta >= XFROM + 0.5) { // B never got going (a slow network): carry A round by itself
         finishX();
-        try { A.a.currentTime = inLoop(ta) + FRAME; } catch (e) { /* ignore */ }
+        var t = inLoop(ta);
+        try { seekTo(A, t + late(A, t) - late(A)); } catch (e) { /* ignore */ }
         return;
       }
       prep.t = setTimeout(tick, 40);
@@ -227,7 +237,7 @@
     clearTimeout(prep && prep.t);
     xfading = true;
     [[B.g, UP], [A.g, DOWN]].forEach(function (x) { x[0].gain.cancelScheduledValues(0); x[0].gain.setValueCurveAtTime(x[1], t, XF); });
-    lastX = { at: Date.now(), from: A.a.currentTime, to: B.a.currentTime, skew: prep ? prep.skew : null, tries: prep ? prep.tries : 0 };
+    lastX = { at: Date.now(), from: A.a.currentTime, to: B.a.currentTime, skew: prep ? prep.skew : null, lead: prep ? prep.lead : 0, tries: prep ? prep.tries : 0 };
     cur = 1 - cur;
     setTimeout(finishX, XF * 1000 + 60);
   }
@@ -256,7 +266,7 @@
     if (!e.persisted) return;
     readPref();
     if (P[cur] && P[cur].a.paused) { on = live = false; finishX(); }
-    if (S.music && P[cur] && P[cur].a.duration) { var t = startAt(); if (t) P[cur].a.currentTime = t; }
+    if (S.music && P[cur] && P[cur].a.duration) { var t = startAt(); if (t) seekTo(P[cur], t); }
     reconcile();
   }
   function onVis() { if (!doc.hidden) tabHeld = false; reconcile(); }

@@ -22,6 +22,17 @@ Paths below are inside the project folder (`source\` in the package).
       right. The 2026 programme listed on the site ends on 23 December 2026;
       after that, add the next year's dates from the official calendar.
 
+- [ ] **The music and the temple sounds** have been heard and approved by
+      the Ashram, on a phone speaker and on headphones: open the site in a
+      new private window, choose "Enter with flute music", listen for a few
+      minutes, then scroll a page slowly (the bell and chimes). The flute is
+      an original composition in Raga Mohanam; ideally a musician of the
+      Peetham listens too. ([MAINTENANCE.md](MAINTENANCE.md), *Music and
+      temple sounds*.)
+- [ ] **The conch (shankha)** at the end of a page: switched off until the
+      Ashram has listened to it. Decide: keep it off, or switch it on
+      (`SHANKHA` in `src/features/devotion-sound.mjs`).
+
 The official pages disagree on the points below (README.md, *For the Ashram
 to confirm*). The site states them carefully and does not pick one silently.
 For each, the Ashram confirms the current wording or gives the correct fact:

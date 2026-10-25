@@ -178,6 +178,19 @@ This needs `npm install` and the photo enhancer set up once per machine
 `docs/PHOTOS.md`. If the enhancer is not set up, the command stops with an
 error before changing any photo, and the new photo keeps loading from S3.
 
+Then tell the browsers how wide the new photo is shown, and build again:
+
+```powershell
+node tools/measure-sizes.mjs --pages=seva.html
+node build.mjs
+```
+
+(name the page or pages the photo is on; without `--pages` it measures all
+of them in all five languages, 10 to 15 minutes). Safari, iPhone and iPad
+pick a photo's copy from this measurement; without it they load the largest
+copy for any box. `npm test` fails until it is done. Run it for the whole
+site after changing a page's layout too.
+
 Rules:
 
 - A photo on the Peetham's **dev** bucket (`dev-dattapeetham.s3…`) is
@@ -185,14 +198,38 @@ Rules:
   page uses one that has no self-hosted copy.
 - **Share previews.** Each page's `image` (in its file in `src/pages/`) is
   its picture when shared on WhatsApp or social media. After changing a
-  page's `image`, run `node tools/make-og.mjs` (needs `npm install`). It
-  writes a small copy, at most 1200 × 630, to `src/assets/img/og/`. Without
-  it, the page's preview uses the S3 original, which some apps drop when it
-  is large.
+  page's `image` to a photo the site already has, run
+  `node tools/make-og.mjs` (needs `npm install`). It cuts the photo's 4K copy
+  to 1200 × 630 in `src/assets/img/og/<page>.jpg`, which the page shares with
+  its size and the photo's alt text (a page whose hero has no alt text on the
+  page can give one as `imageAlt`). Without it, the page's preview uses the
+  S3 original, which some apps drop when it is large.
 - A page that starts loading anything from a **new host** (another image
   host, a new video service) needs that host added to the Content Security
   Policy in `deploy/routes.mjs`. `npm test` names the exact host that is
   missing.
+
+## Music and temple sounds
+
+The site has its own flute music (an original composition in Raga Mohanam,
+made for this website) and soft temple sounds (a bell and six chimes) while
+scrolling. Nothing plays until the visitor chooses it: the first visit asks,
+the answer is remembered, and the round sound button at the bottom left of
+every page switches both on or off. The files are in `src/assets/audio/`;
+the plan and the measurements are in `docs/DEVOTION-PLAN.md` (section 9).
+
+- **The credit** shown in the sound panel, "Flute: original raga composition
+  for this website", is `CREDIT` in `src/features/devotion-sound.mjs`.
+- **The conch (shankha)** at the end of a page is switched off until the
+  Peetham has listened to it. To switch it on, set `SHANKHA = true` in
+  `src/features/devotion-sound.mjs` and rebuild; the build then ships
+  `sfx/shankha.mp3` too.
+- **Changing the music** means re-rendering it with
+  `node tools/compose-audio.mjs --xfade-tail 4.6` (needs Node and ffmpeg; it
+  takes about a minute). Keep `--xfade-tail 4.6`: the site plays
+  `flute-mohanam-xfade.mp3`. Rebuild afterwards. Every audio address carries
+  a content version, so visitors get the new file at once even though the
+  server lets browsers keep audio for 30 days.
 
 ## Text on a page
 
@@ -316,7 +353,8 @@ once `legacyPlatformUrl` names the platform's own address. The version comes fro
 | Every off-site link and file | `node tools/check-external-links.mjs site` | an ordinary internet connection |
 | A running server, about 800 requests | `node deploy/test/verify-server.mjs --base=…` | the server's address |
 | Real nginx and Apache, in Docker | `npm run verify:servers` | Docker with `nginx:1.27-alpine` and `httpd:2.4-alpine` |
-| The photo pipeline | `node --test tests/photos.test.mjs` | the enhancer set-up (`docs/PHOTOS.md`) |
+| The photo pipeline: every photo from its 4K copies, each with its measured `sizes`, the share images | `npm test` (runs `tests/photos.test.mjs`) | a build |
+| Whether the measured `sizes` still match the layout | `node tools/measure-sizes.mjs --check` | `npm install` |
 
 The test files are in `tests/`, the browser checks in `qa/`, the server
 tests in `deploy/test/`, and the tools in `tools/`.

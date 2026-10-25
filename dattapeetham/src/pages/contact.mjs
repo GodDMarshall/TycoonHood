@@ -451,6 +451,9 @@ export default {
   crumb: 'Contact',
   description: 'Contact Avadhoota Datta Peetham, Mysuru: Ashram phone, email and address, directions and live temple status, plus a form that opens your own email app.',
   image: P.hero,
+  // the share preview's alt text (the hero is decorative on the page); the
+  // official site captions this photo "Sri Swamiji preaches"
+  imageAlt: 'Sri Swamiji, seated, speaks at a microphone with one hand raised',
   preload: P.hero,
   css: true,
   scripts: ['contact'],

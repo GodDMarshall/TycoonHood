@@ -197,6 +197,8 @@ export default {
   description: 'Datta Kriya Yoga, the science of breath and meditation taught by Sri Ganapathy Sachchidananda Swamiji since 1966: the practice, its benefits and DKYIC, Mysuru.',
   nav: 'Teachings',
   image: photos.kriyaYoga,
+  // the share preview's alt text (the hero is decorative on the page)
+  imageAlt: 'Collage: Sri Swamiji teaching yoga, and halls full of people practising it',
   preload: photos.kriyaYoga,
   css: true,
   scripts: ['kriya-yoga'],

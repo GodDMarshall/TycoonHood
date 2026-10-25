@@ -37,10 +37,12 @@ npx playwright install chromium
 | `npm run build` | Builds all pages in every language into `site/`, checks every internal link and anchor, and prints translation coverage |
 | `npm run dev` | Builds, serves on port 4321 and rebuilds on change |
 | `npm run build:production` | The build for the live domain: refuses a `legacyPlatformUrl` on the site's own host (see `docs/handover/DOMAIN-CUTOVER.md`) |
-| `npm test` | Checks the built HTML (language attributes, metadata and share previews, one h1 per page, image alt text and sizes, JSON-LD, safe external links, contact details, sitemap, search index, asset versions, icons) and the server configurations (redirects, headers, the Content Security Policy against what the pages load) |
+| `npm test` | Checks the built HTML (language attributes, metadata and share previews, one h1 per page, image alt text and sizes, JSON-LD, safe external links, contact details, sitemap, search index, asset versions, icons), the photos (every one from its 4K copies with its measured `sizes`, the share images) and the server configurations (redirects, headers, the Content Security Policy against what the pages load) |
 | `npm run qa` | Opens every page in Chromium at desktop and phone sizes and with reduced motion, then runs axe accessibility checks and reports console errors and horizontal overflow (`npm run qa -- visit.html` checks one page) |
 | `npm run shot -- index.html out --scroll` | Takes desktop and phone screenshots of a page |
-| `npm run images` | Downloads any new Peetham photos and makes responsive WebP copies (480/960/1600 px) in `src/assets/img/opt/` |
+| `npm run images` | Builds, then hands over to `tools/enhance-photos.mjs` (below), then builds again |
+| `npm run photos` | Downloads any new Peetham photo the built site uses, renders its 4K master and WebP copies (480 to 3840 px) in `src/assets/img/opt/` and the share images (`docs/PHOTOS.md`; needs the enhancer set-up) |
+| `npm run sizes` | Measures in Chromium how wide every lazy photo is shown on every page, for the `sizes` Safari and iOS need (`src/image-sizes.json`); run it after a layout change or a new photo, then build |
 | `npm run verify` | Runs the build, the tests and the QA crawl together |
 
 ## Pages
@@ -78,6 +80,18 @@ The pages also share a motion layer:
 
 All motion switches off when the visitor's system asks for reduced motion.
 
+And a devotional layer (plan and measurements: `docs/DEVOTION-PLAN.md`):
+
+- Flute music, an original composition in Raga Mohanam made for this
+  website, and soft temple sounds while scrolling. Nothing plays without the
+  visitor's choice: the first visit asks inside the opening curtain, the
+  answer is remembered, and a sound button on every page switches both.
+- One to three quiet motifs on each page drawn from acts of worship: lamps
+  lit one after another, a lamp lit from a lamp, flowers offered, incense,
+  the aarti, the lotus, the kolam, nada and the temple bell. A small flame
+  rides the reading-progress line, and lamps are lit before the closing
+  prayer in the footer. Under reduced motion they show their finished state.
+
 ## Languages
 
 English is the source. `node build.mjs` writes the four other languages to
@@ -101,7 +115,7 @@ English is the source. `node build.mjs` writes the four other languages to
   letters ("Hanuman" on a Kannada page) also searches the English text, and
   each result opens that section of the page in the visitor's language.
 
-All four languages are complete: 4,647 of 4,647 segments each, with no
+All four languages are complete: 4,669 of 4,669 segments each, with no
 problems reported by the checker.
 
 To add or change a translation:
@@ -178,7 +192,7 @@ src/data.mjs           shared content: timings, timeline, apps, kshetras, countr
 src/layout.mjs         head, utility bar, header, mega menu, footer, intro
 src/components.mjs     hero, tiles, cards, timeline, tabs, gallery, video, CTA ...
 src/pages/<page>.mjs   one module per page (plus <page>.css / <page>.js)
-src/features/          shared interactive features: ashram map, world map
+src/features/          shared interactive features: ashram map, world map, devotional sound and motifs
 src/assets/            CSS, JS, icons, vendored GSAP + Lenis, optimised images, share images
 src/i18n/              translation engine, segments, glossaries, dictionaries
 docs/PAGE-GUIDE.md     the content rules: sources, honesty, page contract

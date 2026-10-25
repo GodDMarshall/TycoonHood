@@ -39,6 +39,14 @@ addresses; then a video, the chant, search and the language switcher)
 found the same: the hosts in section 2, the two values in section 1, and no
 cookies.
 
+When the devotional sound was switched on in the build (the same day), it
+was checked on its own in the same browser: on a first visit no audio file
+was requested and no audio player existed until the visitor chose; after
+"Enter with flute music" the audio came only from the site itself
+(`/assets/audio/`) and `dp-sound` was stored; on the next page
+`dp-sound-pos` was used to carry the music on; after "Enter in silence", or
+with both sound switches off, further pages requested no audio at all.
+
 How to repeat the check in a normal browser: open the site, press F12, and
 look at *Application → Storage / Cookies* and at the *Network* tab
 (filter "third-party", or sort by domain), on the pages named below.
@@ -87,7 +95,6 @@ or by the embedded players:
 | `www.youtube-nocookie.com` | Google (YouTube) | The video player | Home, Sri Swamiji, Guru Parampara, Music, Attractions, Media | **Only after the visitor presses play.** Before that, each video is a poster image served by the site |
 | `dattapeetham.s3.amazonaws.com` | Amazon Web Services (the Peetham's own storage bucket) | The chant audio (MP3) | `media.html` | Only after the visitor presses play (the player is set to load nothing beforehand) |
 | `dattapeetham.s3.amazonaws.com` | Amazon Web Services | PDF books and the chant's download link | `media.html` | Only when the visitor clicks the download |
-| `dattapeetham.s3.amazonaws.com` | Amazon Web Services | A *preconnect* hint: the browser may open a connection on page load (name lookup and secure handshake), but requests no file | Every page | On page load |
 
 What each of these receives, as with any web request: the visitor's IP
 address, browser type and language, and the address requested. The site

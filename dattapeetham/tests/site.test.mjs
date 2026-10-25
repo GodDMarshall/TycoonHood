@@ -13,7 +13,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { join, dirname, resolve, posix } from 'node:path';
+import { join, dirname, resolve, posix, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site, links, OFFICIAL, config, resolveConfig, normaliseUrl } from '../src/site.mjs';
 import { THEME_COLOR } from '../src/layout.mjs';
@@ -162,17 +162,30 @@ for (const { f, lang, html } of pages) {
     assert.deepEqual(meta('og:url'), [canonical], 'og:url is the canonical URL');
     assert.deepEqual(meta('og:locale'), [`${lang}_IN`]);
     assert.deepEqual(meta('og:locale:alternate').sort(), ['en', ...LANG_DIRS].filter((c) => c !== lang).map((c) => `${c}_IN`).sort());
+    // the page's own share image: cut from the 4K master (tools/make-og.mjs),
+    // absolute on siteUrl, with its type, real size and alt text
     const [image] = meta('og:image');
-    assert.match(image, /^https:\/\//);
-    if (image.startsWith(`${site.origin}/assets/img/og/`)) {
-      const file = join(SITE, image.slice(site.origin.length + 1));
-      assert.ok(await exists(file), `${image} is not in the build`);
-      const [, w, h] = /-(\d+)x(\d+)\.jpg$/.exec(image);
-      assert.deepEqual([meta('og:image:width')[0], meta('og:image:height')[0]], [w, h]);
-      assert.ok((await stat(file)).size <= 300 * 1024, `${image} is over 300 KB (share previews drop it)`);
-      const buf = await readFile(file);
-      assert.equal(buf.readUInt16BE(0), 0xffd8, 'not a JPEG');
+    const [url, v] = image.split('?v=');
+    assert.equal(url, `${site.origin}/assets/img/og/${basename(f, '.html')}.jpg`);
+    const file = join(SITE, url.slice(site.origin.length + 1));
+    assert.ok(await exists(file), `${image} is not in the build`);
+    assert.ok((await stat(file)).size <= 300 * 1024, `${image} is over 300 KB (share previews drop it)`);
+    const buf = await readFile(file);
+    assert.equal(buf.readUInt16BE(0), 0xffd8, 'not a JPEG');
+    // versioned by content, so a new photo under the same name reaches share previews
+    assert.equal(v, createHash('sha256').update(buf).digest('hex').slice(0, 8), 'og:image ?v= is not the file\'s hash');
+    let size;
+    for (let i = 2; i < buf.length && !size;) {
+      const m = buf[i + 1];
+      if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) size = [String(buf.readUInt16BE(i + 7)), String(buf.readUInt16BE(i + 5))];
+      i += 2 + buf.readUInt16BE(i + 2);
     }
+    assert.deepEqual(size, ['1200', '630'], `${image} is not 1200x630`);
+    assert.deepEqual([meta('og:image:width')[0], meta('og:image:height')[0]], size, 'og:image:width/height are the file\'s');
+    assert.deepEqual(meta('og:image:type'), ['image/jpeg']);
+    const [alt] = meta('og:image:alt');
+    assert.ok(alt && alt.length > 10, 'no og:image:alt');
+    if (lang !== 'en') assert.ok(!/^[\x00-\x7f]+$/.test(alt), `og:image:alt is not translated: ${alt}`);
   });
 
   test(`${f}: the hero preload asks for the file the hero image picks`, () => {

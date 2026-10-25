@@ -1,7 +1,7 @@
 // Page shell shared by every page: <head>, utility bar, header with mega menu,
 // search dialog, page-transition veil and footer.
 
-import { readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { site, links, nav, hours } from './site.mjs';
 import { sprite, icon } from './icons.mjs';
@@ -61,27 +61,47 @@ function jsonLd(page) {
 }
 
 // ---------- share previews (og:image) ----------
-// tools/make-og.mjs crops each page's `image` to a light 1.91:1 JPEG in
-// src/assets/img/og/<ogKey(url)>-<w>x<h>.jpg. When that file exists the page
-// shares it (absolute, with its size); otherwise the S3 original.
+// Every page shares src/assets/img/og/<slug>.jpg: its `image` cut from the 4K
+// master to the 1200x630 frame share previews show (tools/enhance-photos.mjs
+// makes it with a new photo; tools/make-og.mjs re-cuts them all). It goes out
+// as an absolute URL on siteUrl with its type, size and the photo's alt text.
+// A page with no share image yet falls back to the S3 original.
 export const DEFAULT_OG_IMAGE = 'https://dattapeetham.s3.amazonaws.com/homepage_assets/site_1/front_page_images/sadguru-deva.jpg';
-export const ogKey = (url) => createHash('sha1').update(url).digest('hex').slice(0, 12);
-let ogFiles;
-function shareImage(url) {
-  ogFiles ??= (() => { try { return readdirSync(new URL('./assets/img/og/', import.meta.url)); } catch { return []; } })();
-  const f = ogFiles.find((x) => x.startsWith(ogKey(url) + '-') && /-\d+x\d+\.jpg$/.test(x));
-  if (!f) return { url };
-  const [, w, h] = /-(\d+)x(\d+)\.jpg$/.exec(f);
-  return { url: `${site.origin}/assets/img/og/${f}`, w, h, type: 'image/jpeg' };
+function jpegSize(buf) {
+  if (buf.readUInt16BE(0) !== 0xffd8) throw new Error('not a JPEG');
+  for (let i = 2; i < buf.length;) {
+    const m = buf[i + 1];
+    if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return { h: buf.readUInt16BE(i + 5), w: buf.readUInt16BE(i + 7) };
+    i += 2 + buf.readUInt16BE(i + 2);
+  }
+  throw new Error('no SOF marker');
 }
-// The alt text the page itself gives that photo (decorative heroes have none).
-function shareAlt(url, body = '') {
+// The URL carries ?v=<first 8 hex of the file's sha256>, as the CSS and JS
+// do: the name stays the same when a page's photo changes, and share
+// previews and the 30-day image cache would otherwise keep the old one.
+function shareImage(page) {
+  const name = `${page.slug}.jpg`;
+  try {
+    const buf = readFileSync(new URL(`./assets/img/og/${name}`, import.meta.url));
+    const { w, h } = jpegSize(buf);
+    const v = createHash('sha256').update(buf).digest('hex').slice(0, 8);
+    return { url: `${site.origin}/assets/img/og/${name}?v=${v}`, w, h, type: 'image/jpeg' };
+  } catch { return { url: page.image || DEFAULT_OG_IMAGE }; }
+}
+// The share image's alt text: the page's `imageAlt`, else the alt the page
+// gives that photo, else the one another page gives it (build.mjs collects
+// them before laying out the pages: setSiteImageAlts). Heroes are decorative
+// on their own page (alt=""), but a share preview stands alone.
+let siteAlts = new Map();
+export function setSiteImageAlts(map) { siteAlts = map; }
+function shareAlt(page, url, body = '') {
+  if (page.imageAlt) return page.imageAlt;
   for (const [tag] of body.matchAll(/<img\b[^>]*>/g)) {
     if (!tag.includes(`src="${url}"`)) continue;
     const alt = (/\salt="([^"]+)"/.exec(tag) || [])[1];
     if (alt) return alt;
   }
-  return '';
+  return siteAlts.get(url) || '';
 }
 // og:locale for each language (all pages are written for readers in India);
 // build.mjs swaps the primary one on the language pages.
@@ -92,8 +112,8 @@ export const ogLocaleTags = (code) => [`<meta property="og:locale" content="${OG
 function head(page, body) {
   const title = page.slug === 'index' ? `${site.name} · ${site.ashram}, Mysuru` : `${page.title} · ${site.name}`;
   const ogSource = page.image || DEFAULT_OG_IMAGE;
-  const og = shareImage(ogSource);
-  const ogAlt = shareAlt(ogSource, body);
+  const og = shareImage(page);
+  const ogAlt = shareAlt(page, ogSource, body);
   const canonical = page.slug === 'index' ? site.origin + '/' : `${site.origin}/${page.file}`;
   // The 404 page answers unknown URLs: not indexed, no language alternates, and no
   // remembered-language redirect (it would loop, every unknown URL is this page).
@@ -126,7 +146,6 @@ ${og.w ? `<meta property="og:image:type" content="${og.type}">
 <link rel="manifest" href="site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://dattapeetham.s3.amazonaws.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Marcellus&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500&text=%E0%A5%90&display=swap" rel="stylesheet">
 ${page.preload ? `<link rel="preload" as="image" href="${page.preload}" fetchpriority="high">` : ''}

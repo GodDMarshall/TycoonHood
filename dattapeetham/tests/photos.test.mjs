@@ -12,6 +12,7 @@ import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, dirname, resolve, posix, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { site } from '../src/site.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = process.env.DP_SITE_DIR ? resolve(process.env.DP_SITE_DIR) : join(ROOT, 'site');
@@ -197,13 +198,75 @@ for (const { f, html } of pages) {
       const iss = attr(link, 'imagesrcset');
       if (iss) assert.ok(srcsets.includes(iss), `preload imagesrcset is not the srcset of any <img> on the page: ${link.slice(0, 160)}`);
     }
-    // backgrounds, lightbox sources and data attributes: no S3 photo either
-    // (share tags and JSON-LD keep absolute S3 URLs on purpose)
-    const rest = html.replace(/<meta\b[^>]*>|<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').replace(/<a\b[^>]*>/g, '');
+    // backgrounds, lightbox sources, data attributes, the share image and
+    // structured data: no S3 photo either (links to S3 files are fine)
+    const rest = html.replace(/<a\b[^>]*>/g, '');
     const m = S3_IMAGE.exec(rest);
-    assert.ok(!m, `a photo still loads from S3: …${m && rest.slice(Math.max(0, m.index - 60), m.index + m[0].length)}`);
+    assert.ok(!m, `a photo still comes from S3: …${m && rest.slice(Math.max(0, m.index - 60), m.index + m[0].length)}`);
+  });
+  test(`${f}: structured data names this site's own 4K copies`, async () => {
+    const images = [];
+    const walk = (v, k) => { if (Array.isArray(v)) v.forEach((x) => walk(x, k)); else if (v && typeof v === 'object') Object.entries(v).forEach(([kk, x]) => walk(x, kk)); else if (k === 'image' && typeof v === 'string') images.push(v); };
+    for (const [, json] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) walk(JSON.parse(json));
+    for (const u of images) {
+      assert.ok(u.startsWith(`${site.origin}/assets/img/opt/`), `JSON-LD image is not this site's copy: ${u}`);
+      const v = byFile.get(basename(u));
+      assert.ok(v && v.w === v.e.w, `JSON-LD image ${u} is not the largest copy (the master's width)`);
+      assert.ok(await exists(join(SITE, u.slice(site.origin.length + 1))), `${u} is not in the build`);
+    }
   });
 }
+
+// Safari and iOS have no sizes="auto": a lazy photo whose sizes falls back to
+// the window width (the build's default "auto, 100vw") loads its 3840 copy for
+// any box. tools/measure-sizes.mjs measures every lazy photo on every page;
+// the build writes the result on the <img>.
+const SIZES_FILE = join(ROOT, 'src/image-sizes.json');
+const measured = JSON.parse(await readFile(SIZES_FILE, 'utf8').catch(() => '{}'));
+const photoKeys = (html) => {
+  const seen = new Map();
+  return (html.match(/<img\b[^>]*>/g) || []).map((tag) => {
+    const set = attr(tag, 'srcset') || '';
+    if (!/assets\/img\/opt\//.test(set)) return null;
+    const stem = basename(set.split(',')[0].trim().split(/\s+/)[0]).replace(/-\d+\.webp$/, '');
+    const n = seen.get(stem) || 0;
+    seen.set(stem, n + 1);
+    return { key: `${stem}#${n}`, tag };
+  }).filter(Boolean);
+};
+for (const { f, html } of pages) {
+  test(`${f}: every lazy photo carries its measured sizes, every hero its own`, () => {
+    const table = measured[basename(f)] || {};
+    const missing = [], wrong = [];
+    for (const { key, tag } of photoKeys(html)) {
+      const sizes = attr(tag, 'sizes');
+      if (attr(tag, 'loading') !== 'lazy') {
+        // eager (the page hero, preloaded): its page states the width, never "auto"
+        assert.ok(sizes && !/^auto/.test(sizes), `eager photo with sizes="${sizes}": ${tag.slice(0, 120)}`);
+        continue;
+      }
+      if (!table[key]) missing.push(key);
+      else if (sizes !== table[key]) wrong.push(`${key}: "${sizes}"`);
+    }
+    assert.deepEqual(missing, [], `lazy photos with no measured sizes in src/image-sizes.json (run node tools/measure-sizes.mjs, then node build.mjs)`);
+    assert.deepEqual(wrong, [], 'sizes differs from src/image-sizes.json (rebuild)');
+  });
+}
+test('src/image-sizes.json: every entry names a lazy photo on its page', () => {
+  assert.ok(Object.keys(measured).length > 1, 'src/image-sizes.json is missing: run node tools/measure-sizes.mjs');
+  for (const [file, table] of Object.entries(measured)) {
+    if (file.startsWith('_')) continue;
+    const page = pages.find((p) => p.f === file);
+    assert.ok(page, `src/image-sizes.json: no page ${file}`);
+    const lazy = new Set(photoKeys(page.html).filter((x) => attr(x.tag, 'loading') === 'lazy').map((x) => x.key));
+    const stale = Object.keys(table).filter((k) => !lazy.has(k));
+    assert.deepEqual(stale, [], `${file}: entries for photos no longer on the page (re-run node tools/measure-sizes.mjs)`);
+    for (const [k, v] of Object.entries(table)) {
+      // the tool's two forms: "auto, …" (drawn at its box width) or a cover crop's list
+      assert.match(v, /^(auto, )?((\(min-width: \d+px\) )?((and )?\(min-resolution: [\d.]+dppx\) )?(\d+px|[\d.]+vw|calc\([\d.]+vw [+-] \d+px\))(, |$))+$/, `${file} ${k}: "${v}"`);
+    }
+  }
+});
 
 test('built scripts and styles load no photo from S3', async () => {
   const walk = async (dir) => (await Promise.all((await readdir(dir, { withFileTypes: true })).map((e) => (e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)])))).flat();
@@ -213,7 +276,7 @@ test('built scripts and styles load no photo from S3', async () => {
   }
 });
 
-test('share images: a 1200x630 JPEG under 300 KB for every page', async () => {
+test('share images: a 1200x630 JPEG under 300 KB for every page, and nothing else', async () => {
   for (const f of files) {
     const file = join(OG, f.replace(/\.html$/, '.jpg'));
     assert.ok(await exists(file), `${f}: no share image ${file.slice(ROOT.length + 1)}`);
@@ -221,4 +284,7 @@ test('share images: a 1200x630 JPEG under 300 KB for every page', async () => {
     assert.deepEqual(jpegSize(buf), { w: 1200, h: 630 }, `${file.slice(ROOT.length + 1)}`);
     assert.ok(buf.length <= 300 * 1024, `${file.slice(ROOT.length + 1)} is ${(buf.length / 1024).toFixed(0)} KB (share previews drop images over 300 KB)`);
   }
+  // one share image per page: no other set shipped beside it
+  const extra = (await readdir(OG)).filter((n) => !files.includes(n.replace(/\.jpg$/, '.html')));
+  assert.deepEqual(extra, [], 'files in src/assets/img/og/ that no page shares (node tools/make-og.mjs removes them)');
 });

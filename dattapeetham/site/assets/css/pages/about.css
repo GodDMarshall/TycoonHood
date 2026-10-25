@@ -156,8 +156,11 @@ html[lang="ta"] .page-about .ab-triad-word { font-size: 19px; }
 .page-about .ab-guru a:hover .ab-guru-ring, .page-about .ab-guru a:focus-visible .ab-guru-ring { transform: translateY(-6px); box-shadow: 0 0 0 9px var(--forest), 0 0 46px rgba(226, 200, 142, .4); }
 .page-about .ab-guru a:hover img { transform: scale(1.06); }
 .page-about .ab-guru-num { margin: 22px 0 8px; font: 600 .7rem/1 var(--sans); letter-spacing: .26em; color: var(--gold-3); }
-/* room for the diya that stands under each Guru's portrait (devotion lamp chain) */
+/* room for the diya that stands under each Guru's portrait (devotion lamp chain), and the
+   positioned parent lampChainAttrs({ at: 'below' }) needs: without it the lamps are placed
+   against each <li> while the stagger reveal transforms it, then all fall to the first column */
 .page-about .ab-guru-num { margin-top: 50px; }
+.page-about .ab-guru > a { position: relative; }
 .page-about .ab-guru b { max-width: 15ch; font-family: var(--serif); font-size: 1.38rem; font-weight: 500; line-height: 1.15; color: #fbf3e2; }
 .page-about .ab-guru small { display: block; max-width: 22ch; margin-top: 6px; font-size: .84rem; line-height: 1.4; color: var(--muted-on-dark); }
 

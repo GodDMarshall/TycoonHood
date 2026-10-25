@@ -48,21 +48,39 @@ const strip = (html) => html
 async function loadImageManifest() {
   try { return JSON.parse(await readFile(join(SRC, 'assets/img/opt/manifest.json'), 'utf8')); } catch { return {}; }
 }
+// The `sizes` of every lazy photo, measured from the built pages by
+// tools/measure-sizes.mjs: page file → `<copy hash>#<occurrence>` → sizes.
+// Safari and iOS have no sizes="auto", so without it they take the whole
+// window (100vw) and load the 3840 copy for a thumbnail.
+async function loadImageSizes() {
+  try { return JSON.parse(await readFile(join(SRC, 'image-sizes.json'), 'utf8')); } catch { return {}; }
+}
+const unmeasured = []; // lazy photos with no measured sizes: page id
 const amp = (u) => u.replace(/&amp;/g, '&');
 function pick(entry, max = 960) {
   const fit = entry.srcs.filter(([w]) => w <= max);
   return (fit.length ? fit[fit.length - 1] : entry.srcs[0])[1];
 }
-function optimizeHtml(html, man, prefix = '') {
+function optimizeHtml(html, man, prefix = '', measured = null, file = '') {
   if (!Object.keys(man).length) return html;
   const chosen = new Map(); // original URL → the srcset and sizes its first <img> got
+  const seen = new Map(); // copy hash → how often the photo has appeared on this page so far
   html = html.replace(/<img\b[^>]*>/g, (tag) => {
     const m = /\ssrc="([^"]+)"/.exec(tag);
     const e = m && man[amp(m[1])];
     if (!e) return tag;
     const lazy = /\sloading="lazy"/.test(tag);
+    // the key tools/measure-sizes.mjs gives this <img>: the copies' hash and its occurrence
+    const stem = e.srcs[0][1].split('/').pop().replace(/-\d+\.webp$/, '');
+    const n = seen.get(stem) || 0;
+    seen.set(stem, n + 1);
+    let sizes = lazy ? 'auto, 100vw' : '100vw';
+    if (lazy && measured) {
+      if (measured[`${stem}#${n}`]) sizes = measured[`${stem}#${n}`];
+      else if (!/\ssizes=/.test(tag)) unmeasured.push(`${file} ${stem}#${n}`);
+    }
     let out = tag.replace(m[0], ` src="${prefix}${pick(e)}"`);
-    if (!/\ssrcset=/.test(out)) out = out.replace(/^<img/, `<img srcset="${e.srcs.map(([w, f]) => `${prefix}${f} ${w}w`).join(', ')}"${/\ssizes=/.test(out) ? '' : ` sizes="${lazy ? 'auto, 100vw' : '100vw'}"`}`);
+    if (!/\ssrcset=/.test(out)) out = out.replace(/^<img/, `<img srcset="${e.srcs.map(([w, f]) => `${prefix}${f} ${w}w`).join(', ')}"${/\ssizes=/.test(out) ? '' : ` sizes="${sizes}"`}`);
     if (!/\swidth=/.test(out) && !/\sheight=/.test(out)) out = out.replace(/^<img/, `<img width="${e.w}" height="${e.h}"`);
     const srcset = (/\ssrcset="([^"]*)"/.exec(out) || [])[1];
     if (!chosen.has(amp(m[1])) && srcset) chosen.set(amp(m[1]), { srcset, sizes: (/\ssizes="([^"]*)"/.exec(out) || [])[1] });
@@ -102,6 +120,17 @@ function selfHostDevBucket(html, man, origin, file) {
     process.exitCode = 1;
     return u;
   });
+}
+// Structured data (JSON-LD) names each photo by its largest copy on this site,
+// absolute, as the share image (og:image) is this site's own JPEG: the copies
+// are the 4K masters, where the S3 originals are often small web copies. A
+// photo with no copy keeps its S3 URL.
+const S3_PHOTO = /https:\/\/dattapeetham\.s3\.amazonaws\.com\/[^"\\\s<>]+?\.(?:jpe?g|png|webp|gif)/gi;
+function ldImages(html, man, origin) {
+  return html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, (block) => block.replace(S3_PHOTO, (u) => {
+    const e = man[u];
+    return e ? `${origin}/${e.srcs[e.srcs.length - 1][1]}` : u;
+  }));
 }
 // Helpers from src/layout.mjs and facts about this build, set by build().
 let LAYOUT = {};
@@ -459,6 +488,8 @@ export async function build() {
   await assertSafeOut();
   const files = (await readdir(join(SRC, 'pages'))).filter((f) => f.endsWith('.mjs')).sort();
   const imgMan = await loadImageManifest();
+  const imgSizes = await loadImageSizes();
+  unmeasured.length = 0;
 
   // Build into a private temp dir beside the output, then swap it in, so a
   // running dev server (or a parallel build) never serves a half-written site.
@@ -492,13 +523,27 @@ export async function build() {
 
   const pages = [];
   const search = [];
+  const rendered = [];
   for (const f of files) {
     let page;
     try { page = (await load(`pages/${f}`, bust)).default; } catch (e) { console.error(`✗ src/pages/${f}: ${e.message}`); process.exitCode = 1; continue; }
     if (!page?.file || typeof page.render !== 'function') throw new Error(`src/pages/${f}: default export needs { file, render }`);
     let body;
     try { body = await page.render(); } catch (e) { console.error(`✗ ${page.file}: render failed — ${e.stack}`); process.exitCode = 1; continue; }
-    const html = selfHostDevBucket(optimizeHtml(layout(page, body), imgMan), imgMan, site.origin, page.file);
+    rendered.push({ page, body });
+  }
+  // every photo's alt text on any page (the longest), for share previews of
+  // pages whose hero shows that photo without one (src/layout.mjs)
+  const alts = new Map();
+  for (const { body } of rendered) {
+    for (const [tag] of body.matchAll(/<img\b[^>]*>/g)) {
+      const src = (/\ssrc="([^"]+)"/.exec(tag) || [])[1], alt = (/\salt="([^"]+)"/.exec(tag) || [])[1];
+      if (src && alt && alt.length > (alts.get(src) || '').length) alts.set(src, alt);
+    }
+  }
+  layoutModule.setSiteImageAlts?.(alts);
+  for (const { page, body } of rendered) {
+    const html = ldImages(selfHostDevBucket(optimizeHtml(layout(page, body), imgMan, '', imgSizes[page.file] || {}, page.file), imgMan, site.origin, page.file), imgMan, site.origin);
     await writeFile(join(TMP, page.file), html);
     pages.push({ ...page, html });
     if (page.slug !== '404') search.push(...indexPage(page, body));
@@ -591,6 +636,10 @@ ${pages.filter((p) => p.slug !== '404').flatMap((p) => LCODES.map((c) => `  <url
   const ms = Math.round(performance.now() - t0);
   console.log(`Built ${pages.length} pages × 5 languages, ${search.length} search entries in ${ms} ms → ${OUT}`);
   console.log('Translation coverage: ' + Object.entries(report).map(([c, r]) => `${c} ${r.coverage}% (${r.missing} missing, ${r.rejected} rejected)`).join(' · '));
+  if (unmeasured.length) {
+    // not an error for the build (the photo still shows), but Safari would load its largest copy
+    console.warn(`! ${unmeasured.length} lazy photo(s) without a measured sizes (Safari loads them by the window width): ${unmeasured.slice(0, 6).join(', ')}${unmeasured.length > 6 ? ' …' : ''}\n  run node tools/measure-sizes.mjs, then node build.mjs (docs/PHOTOS.md)`);
+  }
   if (problems.length) {
     console.error(`\n${problems.length} link/id problem(s):\n  ` + problems.join('\n  '));
     process.exitCode = 1;

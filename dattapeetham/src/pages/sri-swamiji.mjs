@@ -156,6 +156,10 @@ ${pageHero({
   lead: 'Founder of Avadhoota Datta Peetham, Mysuru — renowned for His profound spiritual teachings, music therapy and dedication to humanitarian service.',
   image: photos.swamijiGarland,
   pos: '50% 28%',
+  // the portrait fills a temple arch, not the window (sri-swamiji.css): up to
+  // 460 x 716 px from 981 px up, 232 x 290 below; a 3:2 photo cropped to it is
+  // drawn at most ~1030 / ~440 px wide
+  sizes: '(min-width: 981px) 1030px, 440px',
   crumb: 'Sri Swamiji',
   actions: `${btn('Read His Life', '#life', 'gold', 'arrow', ' data-magnetic')}${btn('Avatara Timeline', '#timeline', 'ghost', 'calendar')}`,
   tiles: [

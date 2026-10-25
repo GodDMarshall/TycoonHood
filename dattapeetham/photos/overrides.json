@@ -1,6 +1,11 @@
 {
   "_about": "Per-photo decisions of the photo review (docs/PHOTOS.md, 'Photo review'). Key: the photo's S3 path (or file name, full URL or sha1(url)[:12]). Fields: route 'lanczos' = no network at all (Lanczos + gentle unsharp mask); protect = [[x, y, w, h], ...] regions in fractions of the photo kept out of the network (Lanczos + unsharp mask there, feathered into the enhanced rest); dni = denoise strength (default 0.25); faceMax = face-guard size limit in source px (default 130); usm = 'amount,threshold[,sigma]'; note = why. Every face under 130 px that the detector finds is protected automatically; the regions below are what it cannot find: deity faces, small lettering, crowds.",
 
+  "_retired": {
+    "_why": "Review decisions for photos no page shows any more (their copies were removed). Move an entry back to the top level if a page uses the photo again.",
+    "content/page_images/516/516_583cfb7a3a724742.jpg": { "protect": [[0.27, 0.53, 0.3, 0.28], [0.66, 0.48, 0.19, 0.14], [0.22, 0.48, 0.06, 0.12]], "note": "Food-drive banner: 'Service to Humanity is Service to God' became 'Sorvico ... Sorvloo' (reviewed while the photo was in the manifest; no page shows it, so its copies were removed in stage 2)." }
+  },
+
   "homepage_assets/site_1/front_page_images/nadamandapa-sahsrachandra.jpg": { "route": "lanczos", "note": "400 px crowd seen from above: every devotee is ~5 px and the network turns the hall into an invented mosaic of heads. Lanczos only." },
   "homepage_assets/site_1/front_page_images/album-67f4d7178d0d3.png": { "route": "lanczos", "note": "300 px album cover (Vadya Vaibhavam): small lettering ('musicians on traditional' became 'uuldonn ... Iradiii') and 113 musicians at 2-3 px each. Lanczos only." },
 
@@ -44,7 +49,6 @@
   "homepage_assets/site_1/front_page_images/students-1.jpg": { "protect": [[0.0, 0.41, 0.11, 0.19]], "note": "HUNDI box sign: 'HUNDI' became 'HUIIDI'." },
   "homepage_assets/site_1/front_page_images/sgs-hospital.jpg": { "protect": [[0.25, 0.76, 0.07, 0.1], [0.55, 0.79, 0.09, 0.1], [0.39, 0.44, 0.22, 0.09]], "note": "Hospital name board and NO PARKING signs: illegible glyphs invented." },
   "content/page_images/516/516_90f2ada10257f568.jpg": { "protect": [[0.45, 0.72, 0.1, 0.1]], "note": "Sack label: small print re-shaped." },
-  "content/page_images/516/516_583cfb7a3a724742.jpg": { "protect": [[0.27, 0.53, 0.3, 0.28], [0.66, 0.48, 0.19, 0.14], [0.22, 0.48, 0.06, 0.12]], "note": "Food-drive banner: 'Service to Humanity is Service to God' became 'Sorvico ... Sorvloo' (photo not on a page today)." },
   "content/page_images/508/508_445bbfeadfdd6504.jpg": { "protect": [[0.39, 0.19, 0.33, 0.31], [0.12, 0.47, 0.22, 0.15], [0.79, 0.5, 0.21, 0.14], [0.51, 0.53, 0.08, 0.15]], "note": "Yoga Day banner ('21 JUNE' became '1100116'), stage lettering, and the framed portrait on stage (became an abstract face)." },
   "content/page_images/514/514_6a747f84068c1524.jpg": { "protect": [[0.56, 0.17, 0.13, 0.11], [0.81, 0.14, 0.09, 0.12]], "note": "Veda Sabha banners: small English print invented." },
 

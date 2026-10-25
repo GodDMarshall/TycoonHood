@@ -1,5 +1,9 @@
 # Devotion motion: the plan for stage 2
 
+> **Status: wired (stage 2).** Every placement below is in the real pages, in
+> all five languages, together with the flute music and the temple sounds.
+> What stage 2 changed, measured and left open is in section 9.
+
 The client asked for "motion graphics on every page that plant the thought
 'this is devotion' in one's mind". This plan answers with motifs drawn from
 real acts of Hindu worship rather than generic decoration: lamps lit one
@@ -168,7 +172,11 @@ mandala stay underneath them.
 | `lamp-chain` (sequence) | `<ol class="ab-lineage-row" data-stagger${lampChainAttrs({ nodes: '.ab-guru-ring', diya: true, at: 'below', size: 32, gap: 16, order: 'sequence' })}>`, plus in `about.css`: `.page-about .ab-guru-num { margin-top: 50px; }` | The four Gurus of the row, lit one from the next, from Lord Dattatreya to Sri Swamiji |
 
 Tested at 1440 and 390. The incense stands at the left edge. The lineage
-lamps need the 50px margin: without it the lamp covers the "01" label.
+lamps need the 50px margin: without it the lamp covers the "01" label. They
+also need a positioned parent, as `at: 'below'` requires
+(`.page-about .ab-guru > a { position: relative; }`, added in stage 2):
+without it the four lamps were placed against each `<li>` while the stagger
+reveal transformed it, and then all fell under the first portrait.
 
 ### sri-swamiji — low
 
@@ -378,16 +386,18 @@ why CPU time was used.
 
 - **The sound engine** now dispatches `dp:bell` and sounds `dp:ghanta`
   (section 2, item 4); nothing is left to wire.
-- **About and Centres each need one line of page CSS** (section 4), so their
-  lamps have room.
-- **Every placement in section 4 has been injected into a copy of its page
-  and looked at.** Stage 2's build will differ only in how the strings are
-  written into the modules, so look at each page once after wiring it.
-- **Guru Parampara has an existing layout-shift source.** `gp-bead` and
-  `gp-tip` animate `top`. Scrolled through in screen-sized steps, the
-  original page measures CLS 0.20 at 360 and about 0.10–0.14 at 390 (the
-  injected page is the same or lower), above the 0.1 "good" limit. It is not
-  caused by this work, but it is worth a separate fix (animate `transform`).
+- **About, Centres and Seva page CSS**: added in stage 2 (section 9).
+- **Every placement in section 4 is wired and was looked at** at 1440 and 390
+  in stage 2 (section 9).
+- **Guru Parampara's layout shift: fixed in stage 2.** `gp-bead` and
+  `gp-tip` (the lineage thread, not a motif) moved by `top`/`bottom`, which
+  counted as layout shift on every frame. They now move by `transform` and
+  `translate`, measured against the lit thread with container units
+  (`.gp-fill` is a size container, `100cqh` its length). Scrolled through in
+  screen-sized steps, three runs each: CLS 0.106–0.117 at 360 and
+  0.104–0.107 at 390 before (all of it attributed to these three elements),
+  0 at both after. The tip still sits exactly at the end of the lit thread
+  and the beads still run its length.
 
 ## 8. Review (stage 1)
 
@@ -418,3 +428,167 @@ not part of this repository.
 - The new markup in `aarti()` (`.dv-aarti-tclip`) and `ghanta()` (an SVG hum) comes from the helpers. Don't hand-write either motif.
 - After wiring, check every page at 360 and 390 for sideways scroll at several moments of each animation.
 - `devotion-motion.js` uses `setTimeout` once per scrolled frame for the reading flame's rest pose. It is harmless (about 30 calls a second while scrolling), but it shows up in timer counts.
+
+## 9. Stage 2: wired into the site
+
+### What was wired
+
+- **`src/layout.mjs`, every page in every language** (the 404 pages with
+  root-absolute paths, which the build writes):
+  - in `<head>`, `devotion-sound.css` and `devotion-motion.css` right after
+    the unchanged `site.css` line;
+  - the sound control right after the skip link, so a keyboard or
+    screen-reader user reaches it, and can stop the music, first (it is
+    `position: fixed`, so nothing moves on screen);
+  - the first-visit invitation as the last child of the intro curtain;
+  - `JYOTI_ATTR` on `.scroll-progress`, the footer lamps before the closing
+    prayer;
+  - scripts in the order `motion.js`, `devotion-sound.js`,
+    `devotion-motion.js`, before features and page scripts.
+- **The 16 pages**, as in section 4, always through the helpers (the
+  stage-1 `aarti()` and `ghanta()` markup included). One to three motifs a
+  page, none in a hero. Page CSS: About (margin, and the positioned parent
+  above), Centres (margin) and Seva (margin). The optional `music.js` hook is
+  in: the music hero's rings swell with the flute while it plays.
+- **`translate="no"` on every motif's outer element** (in the helpers). An
+  inline motif placed next to text (the lotus before a section's eyebrow)
+  otherwise joined that text's translation segment, which became
+  `<1><2></2><3/><4></4></1> <5>A city of temples</5>` and lost its
+  translation in all four languages. The motifs hold no text, so nothing is
+  lost.
+- **The intro wordmark on phones.** At `.3em` tracking "AVADHOOTA DATTA
+  PEETHAM" ran past both screen edges below about 390px and was clipped
+  (measured: 14px each side at 360, 21px at 320). Since the first-visit choice
+  now holds the curtain for several seconds, site.css sets a slightly smaller
+  size and `.2em` below 480px: at least 23px clear at 320 to 414.
+
+### The sound, as delivered
+
+- **Consent.** Nothing plays and nothing audio is requested without the
+  visitor's choice: the first visit is asked in the curtain ("Enter with
+  flute music" / "Enter in silence"), the answer is remembered
+  (`localStorage` `dp-sound`), and the control on every page switches the
+  flute and the temple sounds. A page with both off requests no audio file
+  and creates no AudioContext or player.
+- **Credit**, the client's words exactly, everywhere: "Flute: original raga
+  composition for this website", with "Raga Mohanam" on the line beneath it
+  in the panel (`CREDIT` and `RAGA` in `src/features/devotion-sound.mjs`).
+- **The conch (shankha) is off** (`SHANKHA = false` in
+  `src/features/devotion-sound.mjs`): it has not been auditioned. While it is
+  off, the page does not list it and the build does not ship its file. Set
+  it to `true` after the Peetham has listened and approved it.
+- **Level reference** for `DP.sound.level()`: 0.08, the measured
+  95th-percentile frame RMS of the track (it was 0.12).
+
+### The loop
+
+The file is `flute-mohanam-xfade.mp3`, rendered with
+`node tools/compose-audio.mjs --xfade-tail 4.6`: the 217.75 s loop followed
+by its own first 4.6 s (decoded length exactly N + T; the tail correlates
+0.9993 with the head; the plain loop and the temple sounds re-rendered
+byte-identical). The build writes the loop plan on `[data-sound]` from
+`assets/audio/manifest.json`:
+
+- **When element A reaches 221.21 s (the loop plus 3.46 s), element B,
+  started at 3.46 s, plays the same music**, and the two cross over (equal
+  power, 0.6 s) inside the tanpura's quiet stretch after the kharaj pluck. No
+  pluck is doubled or dropped and no part of the loop is skipped. (The tail
+  is 4.6 s rather than the 3.35 s first suggested so that it holds that
+  quiet stretch, 3.36–4.55 s into each cycle.)
+- **B is put in step while it is silent.** It starts 1.6 s early at gain 0
+  and is seeked until its `currentTime` agrees with A's. Recording the
+  output in Chromium 141 against the file showed that `currentTime` is not
+  quite what is heard: **an MP3 element positioned by a seek into the first
+  half of the file (`#t=`, or `currentTime` before or during play) sounds one
+  MP3 frame, 1152 samples (26.1 ms), later than its `currentTime` says**;
+  seeked into the second half (the split is at half the duration, measured
+  between 110.8 and 111.5 s), or playing on from 0, it sounds where
+  `currentTime` says. B (always seeked near the start) therefore aims ahead
+  of A by that frame unless A was itself seeked into the first half. Matching
+  the two by their actual output at run time was tried and dropped: the
+  drone is so periodic that short snapshots alias by whole kharaj periods
+  (27 ms).
+- **Measured, by recording the speakers and matching them to the file**
+  (Chromium 141, headless): before the lead, every crossfade jumped the music
+  back 26.1 ms (nine of nine, every flow); with it, the jump is +1.9 to
+  +3.1 ms on a page resumed with `#t=` (three runs), and −4.7 ms on the second
+  loop of the same page. Through the fade the level stays within −0.9/+1.6 dB
+  of the uninterrupted file and no 10 ms frame drops out.
+- **If B cannot start** (a network failure), A goes round by itself with a
+  seek back by one loop at 221.7 s: a gap of a few milliseconds in the drone.
+  Tested by making B's `play()` fail.
+- **Across pages** the position travels in `sessionStorage` (`dp-sound-pos`,
+  mapped into the loop) and the next page starts the file with `#t=`.
+
+### Delivery
+
+- **Only the files the script uses are shipped**: the crossfade file and the
+  seven temple sounds. `manifest.json`, the plain `flute-mohanam.mp3` and,
+  while it is off, `sfx/shankha.mp3` stay in `src/assets/audio/` and out of
+  `site/` (`SOUND_DEV_ONLY`, read by `build.mjs` through layout's
+  `DEV_ONLY_ASSETS`).
+- **Versions**: each audio URL carries `?v=` and the first 8 hex characters
+  of the file's SHA-256, the build's scheme for CSS and JS. The script builds
+  the audio URLs itself, so the versions travel on `[data-sound]` as
+  `data-audio-v="file=hash …"`.
+- **Cache**: `.mp3` under `/assets/` gets the 30-day media rule
+  (`deploy/routes.mjs`), and every generated server config declares
+  `audio/mpeg`. `deploy/test/verify-server.mjs` now also checks the music
+  file: `206` for a byte range, `audio/mpeg`, the cache rule, the `?v=`.
+  The CSP needed no change: `media-src 'self'` for the `<audio>` element,
+  `connect-src 'self'` for the temple sounds' fetch, nothing for Web Audio.
+- **`node build.mjs --serve`** serves `.mp3` as `audio/mpeg` and answers byte
+  ranges (`206`, `416`). Without ranges Chromium ignores `#t=` and cannot
+  seek, so the flute restarted on every page and never reached its crossfade.
+
+### Verified in stage 2
+
+On the built `site/` over HTTP (the dev server), Chromium 141 headless:
+
+- First visit at 1440 and 390: the invitation appears in the curtain and
+  takes focus on "Enter with flute music"; nothing audio is requested and no
+  AudioContext exists before the choice; the click requests the versioned
+  flute only then, one running AudioContext, one playing element, the seven
+  versioned temple sounds and no shankha; the choice is stored.
+- Next page: no invitation; the music carries on from where it was
+  (`#t=`), one context, one player. A new tab with the choice stored: no
+  invitation, and the music waits for the first tap (no autoplay).
+- The control: switching the flute and the temple sounds off is remembered;
+  the next page, scrolled and clicked, requests no audio at all. "Enter in
+  silence": three more pages scrolled and tapped, nothing requested. No
+  answer: the curtain lifts by itself and nothing is stored.
+- Temple sounds while reading (index, darshan, visit, a calm 160px-a-step
+  read): 13, 3 and 2 bells (at most one per section), 22, 21 and 19 chimes;
+  the closest gaps measured were chime→chime 1.68 s, bell→chime 0.91 s,
+  chime→bell 0.70 s and bell→bell 1.67 s (the engine's floors: 0.9, 0.9, 0.7
+  and 1.5 s); a fling back to the top made no sound; no shankha.
+- No sideways scroll while the motifs animate: all 16 pages and five
+  language pages at 360 and 390, sampled at four moments at every
+  half-screen scroll step.
+- Every page 1–3 motifs plus the reading lamp and the footer lamps, none in
+  a hero; screenshots of every motif at 1440 and 390 looked at.
+- Reduced motion, all 16 pages at 1440: at every motif, two screenshots
+  1.2 s apart are identical and no animation is running; every lamp is shown
+  lit.
+- The QA crawl (`qa/check-pages.mjs`): all 80 pages (the 75 in the sitemap,
+  then the five 404 pages) clean at 1440, at 390 (no sideways scroll) and
+  under reduced motion with axe, with no console errors.
+- `npm test` (1219 tests, including new guards for the wiring, the audio
+  files, their versions and the byte ranges), the photo tests (91), the
+  build at 100% translation coverage in all four languages, and real nginx
+  and Apache in Docker (`deploy/test/docker-servers.mjs`, all checks).
+
+### Still open
+
+- **Listen on real devices.** Nobody has heard the music or the temple
+  sounds on speakers or headphones, and the shankha needs the Peetham's
+  approval before `SHANKHA` is switched on.
+- **iOS Safari and Firefox were not tested.** The one-frame seek offset was
+  measured in Chromium only; elsewhere the crossfade may sit up to 26 ms off,
+  as every crossfade did before (inaudible as a click, a brief phasing of the
+  drone at most). iOS Safari playing two media elements through Web Audio at
+  once during the 0.6 s fade is also untested.
+- **The floating sound button** (bottom left, like back-to-top on the right)
+  sits over page content as the reader scrolls on phones; it tucks away at
+  the top of each page while nothing sounds, and the footer leaves room for
+  it.

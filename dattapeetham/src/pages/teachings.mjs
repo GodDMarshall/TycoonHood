@@ -733,6 +733,9 @@ export default {
   nav: 'Teachings',
   description: 'Read the discourses of Sri Swamiji and Sri Bala Swamiji, Sri Swamiji’s sayings, 168 books, the Bhaktimala magazine, Ask Dattaji and a glossary of 121 terms.',
   image: P.preaching,
+  // the share preview's alt text (the hero is decorative on the page); the
+  // official site captions this photo "Sri Swamiji preaches"
+  imageAlt: 'Sri Swamiji, seated, speaks at a microphone with one hand raised',
   preload: P.preaching,
   css: true,
   scripts: ['teachings'],

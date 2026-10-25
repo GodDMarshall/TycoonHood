@@ -133,7 +133,8 @@ b, strong { font-weight: 600; }
 }
 .btn .ico { transition: transform .35s var(--ease-out); }
 .btn:hover .ico:last-child { transform: translateX(4px); }
-.btn-gold { background: linear-gradient(135deg, #a07a35 0%, #8f6c2c 38%, #84622a 62%, #6d4f1b 100%); color: #fffaf0; box-shadow: var(--shadow-gold), inset 0 1px 0 rgba(255, 236, 190, .35); text-shadow: 0 1px 0 rgba(60, 40, 10, .35); }
+/* ivory on gold: every stop keeps the text at 4.8:1 or more (the old #a07a35 start gave 3.8:1) */
+.btn-gold { background: linear-gradient(135deg, #8c692a 0%, #84622a 38%, #7a5b25 62%, #6d4f1b 100%); color: #fffaf0; box-shadow: var(--shadow-gold), inset 0 1px 0 rgba(255, 236, 190, .35); text-shadow: 0 1px 0 rgba(60, 40, 10, .35); }
 .btn-gold::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .35) 50%, transparent 70%); transform: translateX(-120%); transition: transform .9s var(--ease-out); }
 .btn-gold:hover::after { transform: translateX(120%); }
 .btn-line { border-color: var(--gold); color: var(--gold-deep); background: transparent; }
@@ -419,7 +420,7 @@ main > .wrap:has(> .quick-tiles.overlap):has(+ .section-paper) { border-image: l
 .lightbox-dialog:not([open]) { display: none; }
 .lightbox-dialog::backdrop { background: rgba(6, 12, 10, .93); backdrop-filter: blur(6px); }
 .lightbox-dialog figure { margin: 0; display: grid; justify-items: center; gap: 14px; }
-.lightbox-dialog img { max-width: min(1200px, 92vw); max-height: 80vh; border-radius: 12px; box-shadow: 0 30px 80px -20px #000; opacity: 0; transform: scale(.98); transition: opacity .5s var(--ease-k), transform .6s var(--ease-k); }
+.lightbox-dialog img { max-width: 92vw; max-height: 80vh; border-radius: 12px; box-shadow: 0 30px 80px -20px #000; opacity: 0; transform: scale(.98); transition: opacity .5s var(--ease-k), transform .6s var(--ease-k); }
 .lightbox-dialog img.is-loaded { opacity: 1; transform: none; }
 .lightbox-dialog figcaption { color: var(--cream-on-dark); text-align: center; font-family: var(--serif); font-size: 1.2rem; max-width: 60ch; }
 .lb-btn { position: fixed; width: 52px; height: 52px; border-radius: 50%; border: 1px solid rgba(226, 200, 142, .4); background: rgba(15, 28, 24, .6); color: var(--cream-on-dark); display: grid; place-items: center; cursor: pointer; }
@@ -636,6 +637,9 @@ main { animation: page-enter .7s var(--ease-k) backwards; }
 @keyframes intro-spin { from { transform: rotate(-360deg) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
 .intro-word { display: flex; gap: .02em; overflow: hidden; font-family: var(--display); font-size: clamp(1.1rem, 3.4vw, 1.7rem); letter-spacing: .3em; text-transform: uppercase; color: var(--gold-3); padding-bottom: 4px; }
 .intro-word span { display: inline-block; transform: translateY(110%); animation: intro-letter .8s var(--ease-k) forwards; }
+/* phones: the wordmark at .3em ran past both screen edges below ~390px and was clipped (measured:
+   -14px each side at 360, -21px at 320); the first-visit sound choice now holds this curtain on screen */
+@media (max-width: 480px) { .intro-word { font-size: clamp(.95rem, 4.4vw, 1.1rem); letter-spacing: .2em; } }
 @keyframes intro-letter { to { transform: none; } }
 .intro-bar { width: min(260px, 60vw); height: 1px; background: rgba(226, 200, 142, .2); overflow: hidden; }
 .intro-bar i { display: block; height: 100%; background: linear-gradient(90deg, transparent, var(--gold-3), var(--gold)); transform-origin: left; transform: scaleX(0); animation: intro-bar 1.4s var(--ease-k) .15s forwards; }

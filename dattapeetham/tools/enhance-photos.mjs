@@ -35,6 +35,7 @@ import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import { join, dirname, basename, extname, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { OG, cutShareImage } from './share-image.mjs';
 
 const run = promisify(execFile);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -92,16 +93,8 @@ const ALPHA_QUALITY = 70;
 // below the lowest score of any calibration sample approved by eye
 // (docs/PHOTOS.md): anything under them is flagged for a human look.
 const FLAG = { photo: { psnr: 26, ssim: 0.93 }, icon: { psnr: 25, ssim: 0.94 } };
-const OG = { w: 1200, h: 630, quality: 85, maxBytes: 300 * 1024 };
-// Share-image crops are chosen by sharp's attention strategy (faces, skin,
-// saturated colour); a page whose crop cut the subject gets a fixed one here:
-// a sharp gravity ('north', 'centre', ...) or { x, y } = the crop centre as a
-// fraction of the master. Checked by eye on every page (docs/PHOTOS.md).
-const OG_CROP = {
-  // sadguru-deva.jpg (also the default share image): attention picked the
-  // clasped hands and cut Sri Swamiji at the eyes; keep His head in frame
-  404: { x: 0.5, y: 0.35 },
-};
+// Share images: size, quality and the fixed crops are in tools/share-image.mjs
+// (shared with tools/make-og.mjs).
 const isIcon = (url) => /\/front_page_images\/app-[0-9a-f]+\.png$/i.test(url);
 
 // ---------- arguments ----------
@@ -432,29 +425,10 @@ if (!args['no-og']) {
     const masterFile = r?.master ? join(ROOT, r.master.file) : null;
     if (!masterFile) { if (!only) og.push({ ...p, error: 'no master' }); continue; }
     try {
-      const master = await readFile(masterFile);
-      const crop = OG_CROP[p.slug];
-      let img;
-      if (crop && typeof crop === 'object') {
-        // fixed centre: scale the master to cover the frame, then cut around (x, y)
-        const { w: mw, h: mh } = r.master;
-        const s = Math.max(OG.w / mw, OG.h / mh);
-        const W = Math.round(mw * s), H = Math.round(mh * s);
-        const left = Math.min(Math.max(0, Math.round(crop.x * W - OG.w / 2)), W - OG.w);
-        const top = Math.min(Math.max(0, Math.round(crop.y * H - OG.h / 2)), H - OG.h);
-        img = sharp(master).resize(W, H, { kernel: 'lanczos3' }).extract({ left, top, width: OG.w, height: OG.h });
-      } else {
-        img = sharp(master).resize(OG.w, OG.h, { fit: 'cover', position: crop || sharp.strategy.attention, kernel: 'lanczos3' });
-      }
-      const frame = await img.flatten({ background: '#f8f3e9' }).toBuffer();
-      let q = OG.quality, buf;
-      do {
-        buf = await sharp(frame).jpeg({ quality: q, mozjpeg: true, progressive: true }).toBuffer();
-        q -= 5;
-      } while (buf.length > OG.maxBytes && q >= 60);
+      const { buf, quality, crop } = await cutShareImage(sharp, await readFile(masterFile), r.master, p.slug);
       const name = `${p.slug}.jpg`;
       await writeAtomic(join(OG_OUT, name), buf);
-      og.push({ slug: p.slug, page: p.file, image: p.image, ogKey: urlHash(p.image), crop: crop ? JSON.stringify(crop) : 'attention', file: `src/assets/img/og/${name}`, w: OG.w, h: OG.h, quality: q + 5, bytes: buf.length });
+      og.push({ slug: p.slug, page: p.file, image: p.image, ogKey: urlHash(p.image), crop, file: `src/assets/img/og/${name}`, w: OG.w, h: OG.h, quality, bytes: buf.length });
     } catch (e) { og.push({ ...p, error: e.message.split('\n')[0] }); console.error(`✗ share image for ${p.file}: ${e.message.split('\n')[0]}`); }
   }
 }

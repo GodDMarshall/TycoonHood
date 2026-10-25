@@ -342,13 +342,22 @@
     $('.lb-next', lb).addEventListener('click', function () { show(lbIndex + 1); });
     lb.addEventListener('click', function (e) { if (e.target === lb) lb.close(); });
     lb.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') show(lbIndex + 1); if (e.key === 'ArrowLeft') show(lbIndex - 1); });
-    lb.addEventListener('close', function () { lbImg.src = ''; if (DP.lenis) DP.lenis.start(); if (opener) opener.focus(); });
+    lb.addEventListener('close', function () { lbImg.removeAttribute('srcset'); lbImg.src = ''; if (DP.lenis) DP.lenis.start(); if (opener) opener.focus(); });
   }
   function show(i) {
     lbIndex = (i + lbItems.length) % lbItems.length;
     var b = lbItems[lbIndex], thumb = $('img', b);
     lbImg.classList.remove('is-loaded');
     lbImg.onload = function () { lbImg.classList.add('is-loaded'); };
+    // The thumbnail's own copies (480 … 3840), picked for the box the photo
+    // will fill (at most 92vw wide and 80vh tall, site.css): a 4K screen shows
+    // the 3840 copy, a phone the 1600. data-full (the largest) is the fallback.
+    var set = thumb && thumb.getAttribute('srcset');
+    if (set) {
+      var ar = (+thumb.getAttribute('width') || 3) / (+thumb.getAttribute('height') || 2);
+      lbImg.sizes = Math.ceil(Math.min(innerWidth * 0.92, innerHeight * 0.8 * ar)) + 'px';
+      lbImg.srcset = set;
+    } else { lbImg.removeAttribute('srcset'); lbImg.removeAttribute('sizes'); }
     lbImg.src = b.dataset.full; lbImg.alt = thumb ? thumb.alt : '';
     lbCap.textContent = b.dataset.caption || '';
     var multi = lbItems.length > 1;
@@ -479,12 +488,20 @@
   }
 
   /* ---------------- photos cropped by object-fit: cover ----------------
-     sizes="auto" picks a file by the box width alone, so a tall crop of a wide
-     photograph got a file narrower than the crop it shows. Ask for that width. */
+     Every lazy photo carries the sizes tools/measure-sizes.mjs measured
+     (src/image-sizes.json), cover crops included. This is the safety net for a
+     photo it has not measured yet, or a layout that changed since: sizes="auto"
+     picks a file by the box width alone, so a tall crop of a wide photograph
+     would get a file narrower than the crop it shows. Ask for that width, at
+     most at 2x density (a 3x phone shows no difference and loads a third
+     less), and only for a photo the browser has not started to fetch: raising
+     sizes after that fetches a second copy. */
+  var dpr = window.devicePixelRatio || 1;
   $$('img[srcset][sizes^="auto"]').forEach(function (im) {
+    if (im.complete || im.currentSrc) return;
     var w = im.clientWidth, h = im.clientHeight, ar = (+im.getAttribute('width') || 0) / (+im.getAttribute('height') || 1);
     if (!w || !h || !ar || getComputedStyle(im).objectFit !== 'cover') return;
-    var need = Math.ceil(Math.max(w, h * ar));
+    var need = Math.ceil(Math.max(w, h * ar) * Math.min(dpr, 2) / dpr);
     if (need > w * 1.15) im.sizes = need + 'px';
   });
 

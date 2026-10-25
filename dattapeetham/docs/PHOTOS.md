@@ -50,9 +50,9 @@ lightbox source or script that still loads a photo straight from S3, a
 srcset (or hero preload) that stops below the photo's 4K master, a manifest
 entry without a 3840 px master or without its provenance, a copy that is
 missing or not as wide as it claims, a fidelity-flagged photo nobody has
-reviewed here, or a master made by the network without the face guard. (It
-is not part of `npm test` yet; see "Stage 2", item 6.) The steps are under
-"When a page gets a new photo".
+reviewed here, a master made by the network without the face guard, or a
+lazy photo without its measured `sizes` (below). It is part of `npm test`.
+The steps are under "When a page gets a new photo".
 
 ## What runs, in order
 
@@ -109,8 +109,9 @@ node build.mjs                      # the site again, now pointing at the new co
    `w`/`h` are the master's size. `build.mjs` reads only `w`, `h` and `srcs`
    (`loadImageManifest`, `pick`, `optimizeHtml`): every `<img>` gets the full
    srcset up to the master, `width`/`height` in the master's proportions,
-   and a 960 px `src` fallback; `og:image` and JSON-LD keep the absolute S3
-   URL. The other fields are provenance: the source size, how the master was
+   a 960 px `src` fallback and its `sizes` (measured, see "In the browser,
+   stage 2"); JSON-LD names the largest copy (absolute, on `siteUrl`) and
+   `og:image` the page's share image. The other fields are provenance: the source size, how the master was
    made (`method` names the faces and regions kept out of the network), the
    fidelity guard, the face guard (`faces`: faces found, faces under 130 px
    kept out of the network) and `protected`, the number of regions
@@ -118,8 +119,7 @@ node build.mjs                      # the site again, now pointing at the new co
 7. **Share images.** For every page, its `image` is cut from the master to a
    1200×630 JPEG (q85, mozjpeg, progressive, under 300 KB) in
    `src/assets/img/og/<slug>.jpg`, centred by sharp's *attention* strategy
-   (faces, skin, saturated colour). See "Share images" below for the mapping
-   and the wiring that is still to be done.
+   (faces, skin, saturated colour). See "Share images" below.
 8. **Report.** A JSON report and a text summary (counts, timings, sizes
    before and after, per-width totals, the largest files, the fidelity
    distribution, everything flagged or failed): `.cache/img-4k/report.json`
@@ -392,7 +392,9 @@ the x4 route in 48 minutes; PSNR 25.8–38.7 dB, median 30.7; 10 flagged.
 ## In the browser (23 October 2026)
 
 What a visitor's browser actually downloads and shows, measured in Chromium,
-against the site as it was before the enhanced photos.
+against the site as it was before the enhanced photos. (This is the state
+after stage 1; what stage 2 changed, with the same rig, is under "Stage 2:
+what the pages changed".)
 
 **How.** Two copies of the built site from the same snapshot of the code: one
 with the current photo copies (identical to `site/`), one with the previous
@@ -737,7 +739,7 @@ One per page, 1200×630, cut from the page's master (attention crop; 404 has a
 fixed one so Sri Swamiji's head stays in frame). Pages that share a photo
 share identical files.
 
-| slug | page | photo (S3 path) | `ogKey(url)` | crop | size |
+| slug | page | photo (S3 path) | copies | crop | size |
 | --- | --- | --- | --- | --- | --- |
 | 404 | 404.html | `homepage_assets/site_1/front_page_images/sadguru-deva.jpg` | `32ead86a6b9c` | centre (0.5, 0.35) | 98 KB |
 | about | about.html | `content/page_images/527/527_3e9d83aa1fdb79cf.png` | `0eb90facd8a7` | attention | 213 KB |
@@ -756,91 +758,138 @@ share identical files.
 | teachings | teachings.html | `content/page_images/522/522_e6aadc94cb31b022.jpg` | `be2e0bc4233f` | attention | 91 KB |
 | visit | visit.html | `content/page_images/502/502_43ac49e40550ce21.png` | `d9993ce6fb77` | attention | 100 KB |
 
-**Not wired yet (stage 2).** `src/layout.mjs` shares
-`src/assets/img/og/<ogKey(url)>-<w>x<h>.jpg`, which `tools/make-og.mjs` cuts
-from the small web copies (never enlarged, so `sadguru-deva.jpg` gives
-800×420). Two things to settle when wiring these:
+**Wired (stage 2).** Every page shares its own file: `src/layout.mjs` writes
+`og:image` = `<siteUrl>/assets/img/og/<slug>.jpg?v=<hash>` (absolute; the
+`?v=` is the file's content hash, as for the CSS and JS, so a new photo under
+the same name reaches share previews and caches at once), with
+`og:image:type` `image/jpeg`, `og:image:width`/`height` read from the file
+(1200 × 630) and `og:image:alt`: the page's `imageAlt` if it has one, else the
+alt text the page gives that photo, else the longest alt text any page gives
+it (the build collects them; heroes are decorative on their own page). Three
+heroes have no alt text anywhere on the site, so their pages state one:
+contact and teachings ("Sri Swamiji, seated, speaks at a microphone with one
+hand raised", after the official caption "Sri Swamiji preaches") and kriya-yoga
+(the collage). All are translated with the page.
 
-- `tools/make-og.mjs` deletes every `.jpg` in `src/assets/img/og/` it did not
-  write, so running it removes the `<slug>.jpg` files (re-run
-  `tools/enhance-photos.mjs` to restore them; `tests/photos.test.mjs` fails
-  while they are missing).
-- Pick one: have `shareImage()` in `src/layout.mjs` use `og/<slug>.jpg`
-  (absolute URL, 1200×630, `image/jpeg`), or have `make-og.mjs` crop from the
-  master in `.cache/img-4k/` (the run report lists each photo's master), and
-  drop the other set so both are not shipped (2.2 MB).
+- `tools/make-og.mjs` now re-cuts these same files (byte-identical to the
+  pipeline's: both use `tools/share-image.mjs`) from the 4K master in
+  `.cache/img-4k/` when the machine has it, else from the photo's 3840 copy
+  in `src/assets/img/opt/`, and removes any other `.jpg` in
+  `src/assets/img/og/`. The old set cut from the small web copies
+  (`<ogKey>-<w>x<h>.jpg`, 800–1200 px wide, 14 files, 1.7 MB) is gone.
+- **JSON-LD** (`image` of events, places, albums, the shrines) names the
+  photo's largest copy on this site, absolute
+  (`<siteUrl>/assets/img/opt/<hash>-3840.webp`), instead of the S3 original:
+  the copies are the 4K masters where the originals are often 250–800 px web
+  copies, and it is consistent with the share image (both on `siteUrl`). A
+  photo without a copy would keep its S3 URL; `tests/photos.test.mjs` fails
+  on it.
 
-## Stage 2: what the pages should change
+## Stage 2: what the pages changed (23 October 2026)
 
-Measured in "In the browser" above. None of these is in the photo pipeline's
-files: they are in the components, `site.css` and `site.js`.
+The six follow-ups "In the browser" asked for, done and measured with the
+same rig (Chromium 141, the same seven pages and three devices, Safari
+emulated by serving `sizes` with its `auto` made invalid; before = the
+stage-1 build, after = this one).
 
-1. **State a real `sizes` per component** (Safari, iOS, older Firefox; worth
-   up to 77 MB over the seven pages). `img()` in `src/components.mjs` already
-   takes a `sizes` option and `build.mjs` keeps a `sizes` it finds, but no
-   caller passes one, so every lazy image gets `auto, 100vw`. Keep `auto`
-   first (`sizes="auto, …"`): Chromium then still uses the layout width and
-   `site.js`'s cover fix still finds `[sizes^="auto"]`. The largest layout
-   widths measured (CSS px at 390 / 768 / 1024 / 1440 / 3840 wide windows;
-   wider than the box where `object-fit: cover` crops), and a value that never
-   asks for less:
+1. **Every lazy photo states its own `sizes`.** One `sizes` per component
+   could not meet "never more than one copy too large": a component shows
+   photos of different shapes (a 4:5 frame holding a 3:2 photo is drawn
+   1.9 times its box width, holding a 2:3 one, its box width), and the same
+   class sits in different grids on different pages (up to 6 times apart at
+   the same window width). So `tools/measure-sizes.mjs` measures every lazy
+   `<img>` on every page in every language in Chromium, at 46 window widths
+   (both sides of the stylesheets' breakpoints, desktop and touch, each as
+   tall as screens of that width get), takes the width it is drawn at (for
+   `object-fit: cover`, the scaled photo, not the box) and fits a short list
+   per photo: one length (px, vw or `calc`) per range between breakpoints,
+   never below what was measured and at most 30 % above it.
+   `src/image-sizes.json` holds the result (359 photos, keyed by page, copy
+   hash and occurrence) and the build writes it on the `<img>`. A photo drawn
+   at its box width keeps `auto` first (Chromium's own exact width); a cover
+   crop drawn wider than its box gets no `auto` (Chromium would take the box
+   width) but the measured width, so Chromium and Safari pick alike. The page
+   heroes are eager and preloaded and state their own: full-bleed `100vw`
+   (the phone's LCP, see below), the home hero `(min-width: 1181px) 86vw,
+   100vw` and Sri Swamiji's arch `(min-width: 981px) 1030px, 440px`.
+   `tests/photos.test.mjs` fails when a lazy photo has no measured entry or
+   the table names a photo no longer on its page; `node
+   tools/measure-sizes.mjs --check` tells whether the table still matches the
+   layout (it did after the run: 359 photos). Re-run the tool (10–15 minutes,
+   or `--pages=` for some pages) after a layout change or a new photo.
+2. **Hero `sizes`**: as above. The 4K screen now loads Sri Swamiji's
+   portrait at 1600 (108 KB) instead of 3840 (280 KB); the laptop the home
+   hero at 2560 instead of 3840.
+3. **Lightbox.** `max-width: 92vw` (was `min(1200px, 92vw)`), `max-height:
+   80vh`; `show()` gives the dialog image the thumbnail's `srcset` and
+   `sizes` = the box it fills (`min(92vw, 80vh × aspect)`), `data-full` stays
+   the fallback. Opening three gallery photos on media.html:
 
-   | component | pages | extra MB without it | widths | `sizes="auto, …"` |
-   | --- | --- | ---: | --- | --- |
-   | `.gallery .g-item img` | media, sri-swamiji (attractions' `.ch-gallery` up to 768) | 11.3 | 462 / 588 / 648 / 648 / 648 | `(min-width: 1100px) 650px, (min-width: 700px) 590px, 120vw` |
-   | `article.card .card-media img` | sri-swamiji, darshan, attractions, seva, index | 12.0 | 434 / 705 / 367 / 452 / 452 | `(min-width: 1100px) 460px, (min-width: 700px) 92vw, 115vw` |
-   | `.dn-strip-item img` | darshan | 5.7 | 331 / 257 / 257 / 271 / 271 | `(min-width: 700px) 275px, 85vw` |
-   | `.hours-card .hc-img img` | index, darshan, attractions | 5.5 | 60 (darshan up to 130) | `130px` |
-   | `.dn-fest-media img` | darshan | 3.4 | 356 / 385 / 523 / 304 / 304 | `(min-width: 1100px) 305px, (min-width: 700px) 525px, 95vw` |
-   | `.dn-moment img` | darshan | 3.1 | 129 / 258 / 158 / 192 / 192 | `(min-width: 700px) 260px, 130px` |
-   | `.ix-album img` | index | 3.0 | 229 / 192 / 174 / 175 / 175 | `230px` |
-   | `.photo-tile img` | index | 2.6 | 601 / 571 / 571 / 721 / 721 | `(min-width: 1100px) 725px, (min-width: 700px) 575px, 155vw` |
-   | `.track-cover img` | media | 2.5 | 64 / 76 / 76 / 76 / 76 | `76px` |
-   | `.ix-app img`, `.app-icon img` | index, media | 2.9 | 60 | `60px` |
-   | `.cta-bg img` | sri-swamiji, darshan, attractions, media | 1.9 | 781 / 707 / 960 / 1176 / 1176 | `(min-width: 1240px) 1180px, (min-width: 700px) 95vw, 205vw` |
-   | `.series-art img` | media | 1.9 | 372 / 705 / 495 / 606 / 606 | `(min-width: 1100px) 610px, (min-width: 700px) 92vw, 100vw` |
-   | `.rt-media img` | media | 1.7 | 245 / 235 / 235 / 235 / 235 | `245px` |
-   | `.pa-img img` | media | 1.5 | 303 / 603 / 397 / 492 / 492 | `(min-width: 1100px) 495px, (min-width: 700px) 80vw, 80vw` |
-   | `.at-record-img img` | attractions | 1.9 | 312 / 135 / 135 / 135 / 135 | `(min-width: 700px) 135px, 80vw` |
+   | device | shown (screen px) before → after | copies loaded before → after |
+   | --- | --- | --- |
+   | phone 390 @3x | 1076 → 1076 | 2858 / 3840 / 3840 (975 + 755 + 203 KB) → 1600 / 1600 / 1600 (480 + 240 + 76 KB) |
+   | laptop 1440 @2x | 1072–2163 → the same | 2858 / 3840 / 3840 → 1600 / 2560 / 2560 (480 + 445 + 122 KB) |
+   | 4K 3840 @1x | 1176 → 1260–2543 | 2858 / 3840 / 3840 → 1600 / 2560 / 3840 |
+   | 4K at 200 % | 1285–2400 → 1286–2594 | 2858 / 3840 / 3840 → 1600 / 2560 / 3840 |
 
-   Check the breakpoints against `site.css` (700 / 1100 px were read off the
-   measured widths, not the stylesheet). A test like the one in
-   `tests/photos.test.mjs` can then forbid a bare `auto, 100vw` on anything
-   that is not full-bleed.
-2. **Hero `sizes`.** The home hero (`.ix-hero-img`, `src/pages/index.mjs`)
-   says `100vw` but its crop needs 79–86 % of the window from 1440 px up
-   (1237 px at 1440, 3241 at 3840; 100 % at 1024):
-   `sizes="(min-width: 1440px) 86vw, 100vw"` gives the laptop the 2560 copy
-   (228 KB) instead of 3840 (397 KB) and should win back its +0.26 s LCP. The
-   Sri Swamiji page hero (`pageHero` in `src/components.mjs`; on that page a
-   portrait frame needing 1012–1026 px from 1440 up, 954 at 1024) needs a
-   `sizes` option: `(min-width: 1440px) 1030px, 100vw` (4K: the 1600 copy,
-   108 KB, instead of 3840, 280 KB). Full-bleed page heroes are right as they
-   are. (On phones the heroes' cover crops are up to 3× the window wide;
-   `100vw` gives them the 1600 copy, about 2 screen pixels per image pixel at
-   3× (before: 1024 or 1600 copies). Leave it: asking for more would cost the
-   phone's LCP.)
-3. **Lightbox** (`src/assets/css/site.css` `.lightbox-dialog img`,
-   `src/assets/js/site.js` `show()`): lift the 1200 px cap (`max-width:
-   92vw`, keep `max-height: 80vh`) so a 4K screen shows the 4K copy; and make
-   it pick by screen: give the dialog `<img>` the thumbnail's `srcset` (the
-   gallery `<img>` inside the button has it) and `sizes` set to the box it
-   will fill (`min(92vw, 80vh × aspect)` computed in `show()`), keeping
-   `data-full` as the fallback. Phones then load 1600 (165 KB on average)
-   instead of the largest copy (410 KB).
-4. **Double downloads from the cover fix** (476 KB over 21 page loads):
-   `site.js` raises `sizes` after Chromium has started loading the lazy images
-   near the top. Either let the component state the cover `sizes` (item 1
-   covers most), or run the cover fix before those images start (an inline
-   script right after them, or `loading="lazy"` images given their `sizes`
-   by the build from the layout).
-5. **Optional: cap phones at 2×.** `site.js` asks for the full 3× density on
-   cover crops. Capping the density at 2 (`need × min(devicePixelRatio, 2) /
-   devicePixelRatio`) would cut the phone's full-scroll bytes on the seven
-   pages from 33.3 MB to 20.9 MB (−37 %), with no difference anyone can see on
-   a phone. A decision for the lead.
-6. **Run the photo tests.** `npm test` does not run `tests/photos.test.mjs`;
-   add it to `test` and `verify` in `package.json`.
+   The 4K screen now shows the photo up to 2543 px wide from the copy that
+   covers it, a phone loads the 1600 copy.
+4. **No double downloads.** `site.js`'s cover fix raised `sizes` after
+   Chromium had started fetching the lazy photos near the top. The measured
+   cover `sizes` make it unnecessary; it stays as a safety net for a photo
+   not yet measured, and now only touches a photo the browser has not started
+   to fetch (`!complete && !currentSrc`). Files fetched that no element
+   shows, over the 21 page loads (full scroll): 10 files, 0.49 MB before →
+   0 after.
+5. **Phones capped at about 2x for cover crops (decided: yes).** On screens
+   denser than 2.5x below 981 px, every measured cover crop has a second
+   entry at 0.65 of its length (`(min-resolution: 2.5dppx)`), so a 3x phone
+   gets ~2x density: no visible difference on a phone, about a third fewer
+   bytes for those photos. Photos drawn at their box width (`auto`) keep the
+   full density, and the safety net in `site.js` caps the same way.
+6. **The photo tests run with `npm test` and `npm run verify`.**
+
+**Image bytes, MB, before → after** (seven pages; first view / full scroll):
+
+| browser | phone 390 @3x | laptop 1440 @2x | 4K 3840 @1x |
+| --- | --- | --- | --- |
+| Chromium | 2.12 → 1.80 / 33.34 → 23.91 | 5.36 → 4.68 / 31.88 → 31.20 | 5.66 → 5.41 / 21.85 → 21.68 |
+| Safari (emulated) | 3.21 → 1.80 / 39.68 → 24.47 | 12.27 → 4.68 / 64.74 → 31.27 | 16.19 → 5.41 / 60.08 → 22.11 |
+
+Per page (Chromium, full scroll, phone): index 5.96 → 3.94, sri-swamiji
+3.57 → 2.79, darshan 5.47 → 3.82, attractions 5.35 → 4.26, media 3.59 →
+2.84, seva 3.45 → 2.32, kn/index 5.96 → 3.94.
+
+**Copies more than one step larger than the photo's drawn width × the
+screen's density** (all images loaded, full scroll): Safari 417 → 2,
+Chromium 3 → 2. The two left are a frame on darshan.html showing the same
+photo as the page hero: the browser reuses the hero's 3840 copy, no extra
+byte. **More than one step smaller:** the four phone heroes (home, kn home,
+darshan, seva: the 1600 copy where the crop at 3x would take 3840), as
+before: asking for more would cost the phone's LCP. A decision for the
+client; at 2x the 2560 copy would do.
+
+**LCP** (median of 3; before → after; throttled as in "In the browser"):
+
+| page | phone, Fast 4G | laptop, 20 Mbit/s | 4K, 20 Mbit/s |
+| --- | ---: | ---: | ---: |
+| index | 0.78 → 0.81 s | 1.81 → 1.78 s | 2.99 → 0.98 s |
+| sri-swamiji | 1.87 → 1.86 s | 1.77 → 1.73 s | 1.86 → 1.78 s |
+| darshan | 1.86 → 1.89 s | 0.68 → 0.67 s | 2.38 → 1.97 s |
+| attractions | 0.82 → 0.82 s | 0.84 → 0.80 s | 1.50 → 1.52 s |
+| media | 1.89 → 1.87 s | 1.70 → 1.71 s | 1.70 → 1.76 s |
+| seva | 0.86 → 0.85 s | 0.87 → 0.87 s | 1.38 → 1.26 s |
+| kn/index | 2.11 → 0.93 s | 1.91 → 0.49 s | 1.01 → 1.16 s |
+
+No measurable change. In this run the largest element is mostly a heading
+(the outside fonts were blocked for both sites, so text paints at once in
+the fallback font) and a few pages swing between ~0.8 and ~3 s from run to
+run before and after alike (the heading's reveal), so read these as "no
+regression". Where a hero copy changed, its download finished earlier
+(median of 3, `responseEnd`): home hero on the laptop 0.33 → 0.24 s (3840
+398 KB → 2560 228 KB), Sri Swamiji's portrait on the laptop 0.24 → 0.20 s
+(3840 280 KB → 2560 174 KB) and on the 4K screen 0.27 → 0.18 s (→ 1600,
+108 KB); the phone heroes are unchanged (1600).
 
 ## Open issues for the build
 
@@ -856,20 +905,22 @@ files: they are in the components, `site.css` and `site.js`.
   `ENOSPC` on the shared box twice and those two photos were re-run. A failed
   photo keeps its previous copies and the run exits 1, so nothing broken
   ships, but the summary must be read.
-- **An unused photo.** `516_583cfb7a3a724742.jpg` (the Dallas food drive) is
-  in the manifest and named in `src/pages/seva.mjs`, but no page shows it
-  today; its copies (0.8 MB) ship for nothing until a page uses it or
-  its manifest entry is removed.
+- **An unused photo (removed in stage 2).** `516_583cfb7a3a724742.jpg` (the
+  Dallas food drive) was in the manifest and named in `src/pages/seva.mjs`
+  (an unused constant), but no page showed it. Its manifest entry, its five
+  copies (0.8 MB) and the constant are gone; its review decision is kept
+  under `_retired` in `photos/overrides.json`, to move back if a page uses
+  the photo again.
 - **Cache.** File names are unchanged for the widths that existed before
   (`<hash>-480/960/1600.webp`), and `/assets/img/*` is cached for 30 days, so
   a returning visitor can see the old, softer copy for up to a month.
 - **Not photos.** Logos and the two store badges go through the photo route
   (they enhance cleanly). The official App Store / Google Play badges exist
   as SVG and would be sharper and smaller.
-- **npm script.** `package.json` still runs `npm run images` →
-  `tools/optimize-images.mjs`, which now hands over to
-  `tools/enhance-photos.mjs`; a direct script (`"photos": "node build.mjs &&
-  node tools/enhance-photos.mjs && node build.mjs"`) is for the lead to add.
+- **npm scripts.** `npm run photos` runs `tools/enhance-photos.mjs` (after
+  a build), `npm run sizes` runs `tools/measure-sizes.mjs`; `npm run images`
+  still builds, hands over to it and builds again. `npm test` and
+  `npm run verify` run `tests/photos.test.mjs`.
 
 
 ## Running it
@@ -935,10 +986,14 @@ should add an entry; nothing in the pipeline writes this file.
    The summary prints its fidelity; a flagged photo needs a look and a line
    under "Review of flagged photos" before `tests/photos.test.mjs` passes.
 4. If the Peetham has the camera original, put it in `photos/originals/`.
-5. `node build.mjs && node --test tests/photos.test.mjs`: it must pass.
-6. Commit `src/assets/img/opt/` (copies + manifest) and `src/assets/img/og/`.
-7. If the photo goes into a new component, give that `img()` a real `sizes`
-   (see "Stage 2", item 1), or Safari loads its 3840 copy for any box.
+5. Measure how wide the page shows it: `node build.mjs`, then
+   `node tools/measure-sizes.mjs --pages=<page>.html` (all languages of that
+   page, a minute or two; without `--pages`, the whole site, 10 to 15
+   minutes). It writes the photo's `sizes` into `src/image-sizes.json`;
+   without it Safari, iPhone and iPad load the 3840 copy for any box.
+6. `node build.mjs && node --test tests/photos.test.mjs`: it must pass.
+7. Commit `src/assets/img/opt/` (copies + manifest), `src/assets/img/og/`
+   and `src/image-sizes.json`.
 
 A photo on the dev bucket stops the build until it has a copy (the CSP blocks
 that bucket), exactly as before.
@@ -957,9 +1012,14 @@ that bucket), exactly as before.
   `width`/`height` match the master's proportions;
 - every hero preload (`<link rel="preload" imagesrcset>`) offers exactly the
   srcset of an `<img>` on its page, so no screen preloads a smaller copy;
-- no `<img>`, background, lightbox source or script loads a photo straight
-  from S3 (share tags and JSON-LD keep their S3 URLs on purpose);
-- every page has a 1200×630 share image under 300 KB;
+- no `<img>`, background, lightbox source, script, share tag or JSON-LD
+  names a photo on S3; JSON-LD names the photo's largest copy, absolute on
+  `siteUrl`, and the copy is in the build;
+- every lazy photo carries the `sizes` `src/image-sizes.json` measured for it
+  (page, copy hash, occurrence), every eager hero states its own (never
+  "auto"), and the table names no photo that is no longer on its page;
+- every page has a 1200×630 share image under 300 KB, and
+  `src/assets/img/og/` holds nothing else;
 - every flagged photo is reviewed in this file;
 - every master the network made went through the face guard (`faces` is
   recorded), and no method names a face-restoration or generative model;
@@ -970,5 +1030,9 @@ Checked on 23 October 2026 that it catches what it is for: a copy of the
 build with one `<img>` pointing straight at an S3 photo fails ("loads a photo
 straight from S3"), one with the home hero's srcset cut to 480/960 fails
 ("largest candidate 960w is below 3840"), one with the hero preload cut the
-same way fails; the real build passes (91 tests). `npm test` does not run
-this file yet (`package.json` is the lead's; add it to `test` and `verify`).
+same way fails; the real build passes (91 tests). Stage 2 added the
+`sizes`, share-image and structured-data checks (252 tests) and checked them
+the same way: a copy with one lazy photo's `sizes` set back to `auto, 100vw`
+fails ("sizes differs from src/image-sizes.json"), one with an S3 photo in
+its JSON-LD fails twice ("a photo still comes from S3", "JSON-LD image is not
+this site's copy"). `npm test` and `npm run verify` run this file.

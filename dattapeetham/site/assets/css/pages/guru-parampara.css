@@ -169,11 +169,20 @@
 .page-guru-parampara .gp-track { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; margin-left: -1px; background: linear-gradient(180deg, rgba(226, 200, 142, .3), rgba(226, 200, 142, .3) 88%, transparent); }
 .page-guru-parampara .gp-fill { position: absolute; left: 0; top: 0; width: 100%; height: calc(var(--p, 0) * 100%); opacity: calc(var(--p, 0) * 40); border-radius: 2px; background: linear-gradient(180deg, rgba(246, 211, 138, .25), var(--gold-3) 18%, #fff3d6); box-shadow: 0 0 10px rgba(240, 200, 120, .75), 0 0 2px #fff3d6; }
 html:not(.js) .page-guru-parampara .gp-thread { --p: 1; }
-.page-guru-parampara .gp-tip { position: absolute; left: 50%; bottom: -16px; width: 32px; height: 32px; margin-left: -16px; border-radius: 50%; background: radial-gradient(circle, #fff6e0 0%, rgba(246, 211, 138, .9) 22%, rgba(232, 180, 92, .3) 50%, transparent 70%); animation: gp-tip 2.4s ease-in-out infinite alternate; }
+/* The tip rides the end of the lit thread and two beads run down it. All three
+   move by transform only (a size container gives them the thread's length in
+   cqh): moving them by `top`/`bottom` counted as layout shift on every frame
+   (CLS 0.11 at 360 and 390, all of it these three). */
+.page-guru-parampara .gp-fill { container-type: size; }
+.page-guru-parampara .gp-tip { position: absolute; left: 50%; top: 0; width: 32px; height: 32px; margin: -16px 0 0 -16px; border-radius: 50%; background: radial-gradient(circle, #fff6e0 0%, rgba(246, 211, 138, .9) 22%, rgba(232, 180, 92, .3) 50%, transparent 70%); translate: 0 100cqh; animation: gp-tip 2.4s ease-in-out infinite alternate; }
 @keyframes gp-tip { from { transform: scale(.8); opacity: .75; } to { transform: scale(1.15); opacity: 1; } }
 .page-guru-parampara .gp-bead { position: absolute; left: 50%; top: 0; width: 6px; height: 26px; margin: -13px 0 0 -3px; border-radius: 6px; background: linear-gradient(180deg, transparent, #fff6e0 55%, #fff); box-shadow: 0 0 12px 3px rgba(255, 222, 160, .8); animation: gp-bead 4.2s cubic-bezier(.45, 0, .2, 1) infinite; }
 .page-guru-parampara .gp-bead.b2 { animation-delay: -2.1s; height: 18px; width: 4px; margin-left: -2px; }
-@keyframes gp-bead { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 86% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+@keyframes gp-bead { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 86% { opacity: 1; } 100% { transform: translateY(100cqh); opacity: 0; } }
+@supports not (container-type: size) {
+  .page-guru-parampara .gp-tip { top: auto; bottom: -16px; margin-top: 0; translate: none; }
+  .page-guru-parampara .gp-bead { display: none; }
+}
 
 .page-guru-parampara .gn { position: relative; display: grid; grid-template-columns: 1fr var(--medal-w) 1fr; column-gap: clamp(28px, 4vw, 60px); align-items: start; padding-bottom: clamp(64px, 8vw, 104px); }
 .page-guru-parampara .gn:last-child { padding-bottom: 0; }

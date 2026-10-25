@@ -88,10 +88,12 @@ export function sectionHead({ eyebrow: eb, title, lead, align = 'center', light 
 
 // Inner-page hero modelled on the reference "inner page concepts": full-bleed
 // photograph, serif title, lead line, and a row of ivory quick tiles that
-// overlap the bottom edge.
-export function pageHero({ eyebrow: eb, title, lead, image, pos = 'center', tiles = [], crumb, actions = '', tilesLabel, tilesCols }) {
+// overlap the bottom edge. The photo is preloaded, so it states its own
+// `sizes` (no "auto"); the full-bleed default is the window width. A page that
+// frames its hero differently passes the width it is drawn at (Sri Swamiji's arch).
+export function pageHero({ eyebrow: eb, title, lead, image, pos = 'center', tiles = [], crumb, actions = '', tilesLabel, tilesCols, sizes }) {
   return `<section class="page-hero" data-hero>
-  <div class="page-hero-media">${img(image, '', { eager: true, pos, cls: 'kenburns' })}</div>
+  <div class="page-hero-media">${img(image, '', { eager: true, pos, cls: 'kenburns', sizes })}</div>
   <div class="page-hero-glow" aria-hidden="true"></div>
   <canvas class="embers" data-embers aria-hidden="true"></canvas>
   <div class="wrap page-hero-inner">
