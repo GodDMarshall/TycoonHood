@@ -158,7 +158,7 @@ ${pageHero({
     <div class="wrap">
       ${scrollLit('Service to *mankind* is service to *God.*')}
       <p class="creed-note" data-reveal="up"><b>Sri Swamiji</b>Sri Swamiji emphasises that spiritual life includes service to those in need. This practice, called Karma Yoga, means working selflessly and surrendering the fruits of one’s actions to God.</p>
-      ${lampChain({ count: 5, cls: 'seva-dv-chain' })}
+      ${lampChain({ count: 5, range: '0.9,0.62', cls: 'seva-dv-chain' })}
     </div>
   </div>
 </section>

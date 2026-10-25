@@ -153,6 +153,24 @@ The build rejects any Hindi string whose digit sequences differ from the English
 - **Labels that sit before a name filled in by the page** must agree with any noun: the top-bar "Next ·" before the next ritual is आगामी (gender-neutral, so it works before हनुमान आरती and हनुमान अभिषेक alike); the search-hint "Try" is सुझाव.
 - **External-link arrows** (`<2/>` inside the link pair, as in `Datta Kashi on <1>dattapeetham.org<2/></1>`) belong at the end of the link: दत्त काशी — `<1>dattapeetham.org<2/></1>`, not `<1>dattapeetham.org<2/></1>` पर दत्त काशी.
 - **Highlighted words** (gold, italic words inside headings) are drawn with a gradient that currently cuts off marks above and below the line (ि, ी, े, ं, र्). This is a CSS issue, not a translation issue; do not reword headings to avoid it.
+- **The devotional sound** (the opening-curtain invitation, the sound button and its panel; English in `src/features/devotion-sound.mjs`):
+  - Terms:
+    - Flute → बाँसुरी, the everyday Hindi word. वेणु stays only inside names: दत्त वेणु, एसजीएस दत्त वेणु, दत्त वेणु राग सागर.
+    - Raga Mohanam → राग मोहनम्, with the final halant as in पीठम् and अन्नदानम्. Keep the raga's name as the English gives it; do not swap in a Hindustani name.
+    - Tanpura / Tambura → तंबूरा (plural तंबूरे), as on the music and attractions pages.
+    - Shankha (conch) → शंख. The conch is not used yet: it stays off until the Peetham has listened to it.
+    - "Sound" as the name of the control → ध्वनि (Sound settings → ध्वनि सेटिंग्स, the sound button → ध्वनि बटन). Where the music and teachings pages speak of sound as Nada, keep their existing wording (नाद).
+  - Labels:
+    - Flute music → बाँसुरी संगीत
+    - Temple sounds while scrolling → स्क्रॉल करते समय मंदिर की ध्वनियाँ
+    - Volume → वॉल्यूम
+    - Enter with flute music → बाँसुरी संगीत के साथ प्रवेश करें
+    - Enter in silence → मौन में प्रवेश करें. The two choices are parallel: with flute music, or in silence. मौन is the devotional word for silence.
+    - Play flute music → बाँसुरी संगीत चलाएँ
+    - Not now → अभी नहीं
+  - The question on the late card is क्या पढ़ते समय बाँसुरी संगीत सुनना चाहेंगे? The honorific चाहेंगे already addresses the reader as आप, so the pronoun is left out. That keeps the question on one line in the 300px card, as the English is; with आप it wraps and leaves चाहेंगे? alone on the second line.
+  - The credit is the client's own wording, so translate it word for word: बाँसुरी: इस वेबसाइट के लिए मौलिक राग रचना. Do not add रची गई, which would repeat रचना.
+  - Status lines are whole short sentences ending in । (संगीत बंद है।). "Tap" is स्क्रीन छूना.
 
 ## 8. Technical rules (the build checks these)
 

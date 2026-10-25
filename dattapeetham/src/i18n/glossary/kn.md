@@ -258,3 +258,13 @@ These settle points on which the six translation chunks differed. They are alrea
   `…<3> (Eluru)</3>`): Nellore is ಣಂ, Eluru is ನಂ; (ನೆಲ್ಲೂರು), (ಏಲೂರು).
 - **Social-media page names** keep the page's own Kannada name where it has one:
   Datta Vijayam is ದತ್ತವಿಜಯಮ್ (as on the Facebook page).
+- **The sound layer** (intro invitation, the sound button and panel, its status lines). The
+  instrument is ಕೊಳಲು (flute music ಕೊಳಲಿನ ಸಂಗೀತ); ವೇಣು stays only inside names (ದತ್ತ ವೇಣು).
+  The raga is ಮೋಹನ ರಾಗ, tanpura ತಂಬೂರಿ, temple sounds ದೇವಸ್ಥಾನದ ಧ್ವನಿಗಳು, conch ಶಂಖ, bell ಘಂಟೆ.
+  Button and status verbs follow the UI forms above: Play is ಪ್ಲೇ ಮಾಡಿ (never ನುಡಿಸಿ, which
+  reads as "you play the flute"), "is playing" is ಕೇಳಿಬರುತ್ತಿದೆ or ಪ್ಲೇ ಆಗುತ್ತಿದೆ, scrolling is
+  ಪುಟ ಸರಿಸುವಾಗ (as in ಕೆಳಗೆ ಸರಿಸಿ), Sound settings is ಧ್ವನಿ ಆಯ್ಕೆಗಳು. The credit says
+  ಹೊಸದಾಗಿ ರಚಿಸಿದ ರಾಗ ಸಂಯೋಜನೆ for "original raga composition", because ಮೂಲ ರಾಗ could be read as
+  "the root raga". The invitation question is polite: ಆಲಿಸಲು ಬಯಸುವಿರಾ? Its button "Play flute
+  music" is ಕೊಳಲು ಪ್ಲೇ ಮಾಡಿ, short enough to sit on one row beside ಈಗ ಬೇಡ (Not now), as the
+  English does. ಕೊಳಲಿನ ಸಂಗೀತ ಪ್ಲೇ ಮಾಡಿ pushed ಈಗ ಬೇಡ onto a second row at 360, 390 and 1440 px.

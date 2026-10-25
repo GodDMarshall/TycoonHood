@@ -95,6 +95,9 @@
   .dv-deepa--wrap { --dv-rown: var(--dv-wrap); }
   .dv-deepa--wrap .dv-deepa-lamps { flex-wrap: wrap; row-gap: calc(var(--dv-s) * .45); max-width: calc(var(--dv-s) * (var(--dv-wrap) * 1.62 - .62) + 1px); }
 }
+/* lit beneath a saying (Home, Teachings): a breath of space between its last line and the flames,
+   which otherwise rose to within a few pixels of the descenders */
+figure > .dv-deepa:not(:first-child) { margin-top: clamp(10px, 1.3vw, 18px); }
 .dv-divider { padding: clamp(18px, 3vw, 28px) var(--gutter, 16px); }
 /* the footer's lamps, lit above the closing prayer (layout.mjs): the mantra's gap moves above them */
 .site-footer .dv-footer-lamps { margin-top: clamp(44px, 6vw, 64px); }
@@ -204,7 +207,6 @@
 .dv-nada-pulse { position: absolute; inset: 0; transform: scale(calc(1 + var(--lv) * .07)); }
 /* behind the host's words: centred, under the content */
 .dv-nada--behind { position: absolute; left: 50%; top: 50%; translate: -50% -50%; z-index: -1; margin: 0; }
-.dv-nada--behind .dv-nada-bindu { opacity: .72; }
 @media (max-width: 640px) { .dv-nada--behind { width: min(var(--dv-nd, 220px), 120vw); } }
 .dv-nada-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(232, 196, 120, .62); box-shadow: 0 0 16px rgba(240, 200, 120, .22), inset 0 0 12px rgba(240, 200, 120, .12); transform: scale(calc(.28 + var(--i) * .17)); opacity: calc(.62 - var(--i) * .12); animation: dv-nada-ring 10s cubic-bezier(.25, .55, .35, 1) calc(var(--i) * -2s) infinite; }
 .dv-nada-still { position: absolute; inset: 22%; border-radius: 50%; border: 1px dotted rgba(226, 200, 142, .32); }
@@ -217,6 +219,12 @@
 .dv-on-light .dv-nada-ring, .section-sand .dv-nada-ring, .section-paper .dv-nada-ring { border-color: rgba(160, 122, 53, .7); box-shadow: 0 0 14px rgba(232, 180, 92, .22), inset 0 0 10px rgba(232, 180, 92, .14); }
 .dv-on-light .dv-nada-still, .section-sand .dv-nada-still, .section-paper .dv-nada-still { border-color: rgba(160, 122, 53, .38); }
 .dv-on-light .dv-nada-bindu, .section-sand .dv-nada-bindu, .section-paper .dv-nada-bindu { background: radial-gradient(circle, #fff8e4 0 9%, rgba(250, 210, 130, .9) 18%, rgba(232, 172, 80, .35) 42%, rgba(232, 172, 80, 0) 70%); }
+/* Behind words (a heading, a quote) the bindu is a soft warmth, not a point of light: with its
+   white-hot core it sat on "in" of "Listen in stillness" (Media) and between the lines of the
+   Music and Attractions quotes like a glare on the text. The rings carry the motif. (The old
+   opacity: .72 here never applied: the breathing animation sets opacity.) */
+.dv-nada.dv-nada--behind .dv-nada-bindu { background: radial-gradient(circle, rgba(255, 226, 160, .5) 0, rgba(246, 205, 125, .2) 38%, rgba(240, 190, 100, 0) 70%); animation-name: dv-nada-breathe-soft; }
+@keyframes dv-nada-breathe-soft { 0%, 100% { opacity: .5; } 50% { opacity: .75; } }
 .dv-nada-string { display: block; width: 100%; height: 120px; }
 
 /* ---------------- 9 · jyoti progress (the reading lamp) ---------------- */

@@ -202,3 +202,31 @@ These settle questions the translators raised; the glossary has the matching ent
   compound. In the TV schedule, 5:40 AM is written **காலை 5:40** because அதிகாலை does not fit the time column.
 - **Runtime messages** are whole sentences with slots (%1, %2 …). Keep every slot; move them to fit Tamil word order
   ("%2 மையங்களில் %1 காட்டப்படுகின்றன").
+- **The devotional sound** (the opening-curtain invitation, the sound button and its panel; English in
+  `src/features/devotion-sound.mjs`):
+  - Terms:
+    - Flute (the instrument) → **புல்லாங்குழல்**. "Flute music" → **குழலிசை** (குழல் + இசை, as in குழலிசைக் கலைஞர்)
+      in every label, so the curtain choice, the panel switch, the status line and the late card all name it the same
+      way and each fits on one line at 390 px. With புல்லாங்குழல் இசையுடன் நுழைக the curtain button broke onto two lines.
+      வேணு stays only inside names: தத்த வேணு ராக சாகர, and the app SGS Datta Venu stays in Latin.
+    - Raga Mohanam → **மோகன ராகம்**, like வீணாவாதினி ராகம் and ஸாம ராகம் elsewhere on the site. Keep the raga's name
+      as the English gives it.
+    - Tanpura / Tambura → **தம்புரா** (plural தம்புராக்கள், as on the music and attractions pages).
+    - Shankha (conch) → **சங்கு**. The conch is not used yet: it stays off until the Peetham has listened to it.
+    - "Sound" as the name of the control → **ஒலி** (Sound settings → ஒலி அமைப்புகள், the sound button → ஒலி பொத்தான்,
+      Volume → ஒலி அளவு). Where the music and teachings pages speak of sound as Nada, keep their wording (நாதம்).
+  - Labels:
+    - Enter with flute music → **குழலிசையுடன் நுழைக**; Enter in silence → **அமைதியாக நுழைக**. The two choices are
+      parallel and take the respectful -க form, like காண்க, கேட்க, படிக்க.
+    - Flute music → குழலிசை; Temple sounds while scrolling → **உருட்டும்போது கோயில் ஒலிகள்** (scroll is உருட்டு on this
+      site; the English has no "page", and பக்கத்தை … made the switch three lines tall).
+    - Play flute music → **குழலிசையை இயக்கு** (control label, plain stem, as ஜபத்தை இயக்கு); Not now → **இப்போது வேண்டாம்**.
+  - The question on the late card is **குழலிசையுடன் படிக்க விரும்புகிறீர்களா?** ("would you like to read with flute
+    music?"): polite -ீர்களா, parallel to the curtain button, two lines in the 300 px card. The literal படிக்கும்போது
+    குழலிசையைக் கேட்க விரும்புகிறீர்களா? took three.
+  - The credit is the client's own wording, so keep it close to word for word:
+    **புல்லாங்குழல்: இந்த இணையதளத்துக்கான புதிய ராக இசையமைப்பு**. "Original" is புதிய (a new composition, not an
+    existing piece). Do not use மூல, which can read as "the root raga", and do not add இயற்றப்பட்ட, which repeats
+    இசையமைப்பு.
+  - Status lines are whole short sentences: இசை அணைக்கப்பட்டுள்ளது. · குழலிசை ஒலிக்கிறது. "Tap" is திரையைத் தொடுதல்,
+    a browser tab is **தாவல்**, and "paused" is **இடைநிறுத்தப்படுகிறது** (Pause → இடைநிறுத்து on the rest of the site).

@@ -11,7 +11,7 @@
 import { pageHero, sectionHead, split, frame, card, ctaBand, processSteps, scrollLit, shareRow, btn, icon, img, esc } from '../components.mjs';
 import { links, hours, site, OFFICIAL, PAGE_IMG, KSHETRA_IMG } from '../site.mjs';
 import { photos, latestSevas } from '../data.mjs';
-import { ghanta, aartiAround, deepaDivider } from '../features/devotion-motion.mjs';
+import { ghanta, aarti, deepaDivider } from '../features/devotion-motion.mjs';
 
 const view = (slug) => `${OFFICIAL}/page/view/${slug}`;
 
@@ -267,8 +267,9 @@ const prayerHall = `<section id="prayer-hall" class="dn-shrine" aria-labelledby=
       media: `<div class="dn-media">
         ${frame(photos.prayerHall, 'Devotees seated before Sri Swamiji in the Universal Prayer Hall', { ratio: '5/4', pos: '78% 55%', badge: 'Unveiled 1984' })}
         <figure class="dn-inset">
-          ${aartiAround(img(pic.kaalaagni, 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the main deity of the Peetham'), { gap: 18, size: 30 })}
+          ${img(pic.kaalaagni, 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the main deity of the Peetham')}
           <figcaption>Kaalaagni Shamana Dattatreya</figcaption>
+          ${aarti({ gap: 18, size: 30 })}
         </figure>
       </div>`,
       body: `${shrineHead('01', 'Datta Temple · Sachchidanandeshwara · Panchayatana Devasthana', 'Universal Prayer Hall', 'prayer-hall')}

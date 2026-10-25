@@ -83,9 +83,16 @@ All motion switches off when the visitor's system asks for reduced motion.
 And a devotional layer (plan and measurements: `docs/DEVOTION-PLAN.md`):
 
 - Flute music, an original composition in Raga Mohanam made for this
-  website, and soft temple sounds while scrolling. Nothing plays without the
-  visitor's choice: the first visit asks inside the opening curtain, the
-  answer is remembered, and a sound button on every page switches both.
+  website (credited "Flute: original raga composition for this website"),
+  and soft temple sounds while scrolling. Nothing plays, and no audio is
+  downloaded, without the visitor's choice: the first visit asks inside the
+  opening curtain ("Enter with flute music" / "Enter in silence"), the
+  answer is remembered, and a sound button on every page switches both. The
+  music carries on from page to page and loops seamlessly (two players hand
+  over in step to the sample). The conch (shankha) is off until the Peetham
+  has listened to it (`SHANKHA` in `src/features/devotion-sound.mjs`). The
+  music is re-rendered from its sargam score with
+  `node tools/compose-audio.mjs --xfade-tail 4.6` (`MAINTENANCE.md`).
 - One to three quiet motifs on each page drawn from acts of worship: lamps
   lit one after another, a lamp lit from a lamp, flowers offered, incense,
   the aarti, the lotus, the kolam, nada and the temple bell. A small flame
@@ -181,6 +188,18 @@ In short:
 - **Check a deployed server** with
   `node deploy/test/verify-server.mjs --base=https://www.dattapeetham.org/ --no-canonical`
   (about 800 requests; see `DEPLOY.md` for the options per host).
+- **The hand-over package:** `npm run package` builds and writes
+  `release/dattapeetham-website-v1.0.0/` (README-FIRST.html, VERSION.txt,
+  `website/`, `preview/`, `server-configs/`, `docs/`, `source/`) and three
+  zips: the whole package; `-deploy-only.zip` (the website files alone,
+  ready to upload); `-source-only.zip` (the project alone, without the built
+  website), with `SHA256SUMS.txt` for all three. Stop `npm run dev` first.
+- **Previewing a package on Windows:** open the extracted package folder,
+  type `powershell` in File Explorer's address bar, and run
+  `node preview\serve.mjs` (or open `website\index.html` directly; site
+  search needs the server). `preview\Start-Preview.cmd` does the same with a
+  double-click but is optional: Windows Smart App Control blocks `.cmd` files
+  downloaded from the internet.
 
 ## How it is organised
 

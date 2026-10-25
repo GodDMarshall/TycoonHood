@@ -319,7 +319,7 @@ ${pageHero({
     })}
     <div class="ab-lineage-chain">
     ${thread('ab-lineage-thread')}
-    <ol class="ab-lineage-row" data-stagger${lampChainAttrs({ nodes: '.ab-guru-ring', diya: true, at: 'below', size: 32, gap: 16, order: 'sequence' })}>
+    <ol class="ab-lineage-row" data-stagger${lampChainAttrs({ nodes: '.ab-guru-ring', diya: true, at: 'below', size: 32, gap: 22, order: 'sequence' })}>
       ${lineage.map((g, i) => `<li class="ab-guru">
         <a href="${g.href}">
           <span class="ab-guru-ring"><span class="ab-guru-img">${img(g.img, g.alt, { pos: g.pos })}</span></span>

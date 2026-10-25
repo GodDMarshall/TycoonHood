@@ -163,20 +163,38 @@ address in the page (or in `photos` in `src/data.mjs`) with an honest
 description in `alt`. It shows at once, loaded from S3 at its own size. The
 Content Security Policy allows that bucket.
 
-**Self-hosted, sized copies (recommended for large photos).** The site
-serves most photos from its own sized WebP copies in
-`src/assets/img/opt/`, listed in `src/assets/img/opt/manifest.json`. The
-build points every `<img>` at the copies when the manifest has the photo.
-To make copies for a new photo, run:
+**Self-hosted 4K copies (the rule for every photo on the site).** The site
+serves its photos from its own sized WebP copies in `src/assets/img/opt/`
+(from 480 pixels wide up to the full master: one master per photo, 3840
+pixels on its long edge),
+listed in `src/assets/img/opt/manifest.json`. The build points every
+`<img>` at the copies when the manifest has the photo. To make the master
+and the copies for a new photo, run:
 
 ```powershell
 npm run images
 ```
 
-This needs `npm install` and the photo enhancer set up once per machine
-(Python and its models: `tools/upscale/README.md`). The whole process is in
-`docs/PHOTOS.md`. If the enhancer is not set up, the command stops with an
-error before changing any photo, and the new photo keeps loading from S3.
+That builds the site, runs the photo tool (`tools/enhance-photos.mjs`) and
+builds again; `npm run photos` runs the photo tool alone, after a build.
+The tool downloads every photo the built pages use that has no copies yet,
+enlarges it to its 3840-pixel master with the AI enhancer (Real-ESRGAN,
+keeping small faces and marked regions as they are) and writes the copies
+and the share images. It needs `npm install` and the photo enhancer set up
+once per machine (Python and its models: `tools/upscale/README.md`). The
+whole process, and how to look at the result, is in `docs/PHOTOS.md`. If
+the enhancer is not set up, the command stops with an error before changing
+any photo, and the new photo keeps loading from S3 (and `npm test` fails
+until it has its copies).
+
+**Camera originals.** An enlarged web copy is not a 4K photograph. When the
+Peetham has the camera's original file of a photo, put it in
+`photos/originals/`, named after the S3 file it replaces (for example
+`sadguru-deva.jpg`; `photos/originals/README.md` explains how to map other
+names), and run `npm run images` again: the master is then made from the
+original instead (only resized, if it is 3840 pixels or more). The photos to
+ask for first are listed in `docs/PHOTOS.md`, under *Ask the Peetham for
+camera originals of these*.
 
 Then tell the browsers how wide the new photo is shown, and build again:
 
@@ -219,17 +237,74 @@ every page switches both on or off. The files are in `src/assets/audio/`;
 the plan and the measurements are in `docs/DEVOTION-PLAN.md` (section 9).
 
 - **The credit** shown in the sound panel, "Flute: original raga composition
-  for this website", is `CREDIT` in `src/features/devotion-sound.mjs`.
-- **The conch (shankha)** at the end of a page is switched off until the
-  Peetham has listened to it. To switch it on, set `SHANKHA = true` in
-  `src/features/devotion-sound.mjs` and rebuild; the build then ships
-  `sfx/shankha.mp3` too.
-- **Changing the music** means re-rendering it with
-  `node tools/compose-audio.mjs --xfade-tail 4.6` (needs Node and ffmpeg; it
-  takes about a minute). Keep `--xfade-tail 4.6`: the site plays
-  `flute-mohanam-xfade.mp3`. Rebuild afterwards. Every audio address carries
-  a content version, so visitors get the new file at once even though the
-  server lets browsers keep audio for 30 days.
+  for this website", is `CREDIT` in `src/features/devotion-sound.mjs` (and
+  "Raga Mohanam" beneath it is `RAGA`). Changing either changes a translated
+  sentence (see [Translations](#translations)).
+- **The conch (shankha)** at the end of a page has not been auditioned, so it
+  is switched off: the pages do not list it and the build does not ship its
+  file. To switch it on after the Peetham has listened to it (it is
+  `src/assets/audio/sfx/shankha.mp3`), set `SHANKHA = true` in
+  `src/features/devotion-sound.mjs` and rebuild. The build then lists it in
+  each page's sound control and ships `assets/audio/sfx/shankha.mp3`; it
+  sounds once, softly, when a reader with temple sounds on reaches the end of
+  a page. Set it back to `false` to switch it off again.
+- **The level.** The flute is mastered quietly (−23 LUFS), so the control's
+  default volume is 80 %; the temple sounds sit 8 dB under the music. To
+  change these defaults, add `data-volume="70"` (0 to 100) or
+  `data-sfx-db="-10"` to the `<div class="snd" data-sound …>` that
+  `soundControl()` writes in `src/features/devotion-sound.mjs`. A visitor's
+  own volume, once set, is kept.
+
+### Changing or re-rendering the music
+
+Nothing is recorded: the flute, the tanpura, the bells and the temple's
+acoustics are synthesised by `tools/compose-audio.mjs`, from a score written
+in sargam at the top of that file (`SCORE`). Each phrase is one line, for
+example:
+
+```js
+{ notes: 'S:0.7 R:0.6 G~:1.8 R:0.6 S:2.6', gap: 1.6, level: 0.78 },
+```
+
+- `S R G P D` are the five swaras of Mohanam; `P.` (a dot) is the octave
+  below, `S'` (a quote) the octave above, `S''` the one above that.
+- `:1.8` is how long the swara is held, in seconds; `G~` a kampita (the
+  swara oscillates up to the next one and settles); `/D` a slow slide into
+  the swara; `(D)P` a quick grace touch of D before P; `-:0.3` a short
+  silence.
+- `gap` is the breath after the phrase, in seconds (the tanpura carries on);
+  `level` (0 to 1) is how strongly the phrase is played. `tempo` above the
+  phrases slows the whole piece (1.1 is 10 % slower).
+- Keep to the five swaras: Ma and Ni are not in Mohanam. The comments at the
+  top of the file explain every symbol.
+
+To render it (needs Node.js 20 or newer and `ffmpeg` with `libmp3lame` on
+the PATH; about a minute; the same score always gives the same files):
+
+```powershell
+node tools/compose-audio.mjs --plan
+node tools/compose-audio.mjs --xfade-tail 4.6
+node build.mjs
+npm test
+```
+
+1. `--plan` prints when each phrase starts and the length of the loop, and
+   renders nothing.
+2. The second command renders and encodes everything into
+   `src/assets/audio/`: the music (`flute-mohanam.mp3`, and
+   `flute-mohanam-xfade.mp3`, the copy the site plays: the loop followed by
+   its own first 4.6 seconds, so that two players can hand over without a
+   seam), the temple sounds in `sfx/`, and `manifest.json` (the loop points
+   the site reads). **Always run it whole, with `--xfade-tail 4.6`**: the
+   manifest is written only by a full run, and without `--xfade-tail` the
+   site falls back to the plain file. It also writes a 30-second listening
+   excerpt, `flute-excerpt.mp3`, into a work folder it names at the end
+   (not part of the site).
+3. The build reads the new loop points from the manifest, gives every audio
+   address a new content version (so visitors get the new music at once,
+   although browsers keep audio for 30 days), and ships only the files the
+   pages use. `npm test` checks them.
+4. Listen to the result on speakers and on headphones before deploying.
 
 ## Text on a page
 
@@ -334,8 +409,10 @@ node tools/package.mjs --production
 
 (`npm run package` does the same without options.) It builds the site, then
 writes `release\dattapeetham-website-v<version>\` with the same layout as the
-package you received, its zip, a zip of the website files alone, and
-`release\SHA256SUMS.txt`. Stop `npm run dev` first: the packager stops if
+package you received, its zip, a zip of the website files alone
+(`…-deploy-only.zip`), a zip of the project alone without the built website
+(`…-source-only.zip`), and `release\SHA256SUMS.txt` with the fingerprints of
+all three. Stop `npm run dev` first: the packager stops if
 `site\` keeps changing while it copies. With `--production` it builds only
 once `legacyPlatformUrl` names the platform's own address. The version comes from
 `package.json` (and must match `VERSION` in `deploy/routes.mjs`).

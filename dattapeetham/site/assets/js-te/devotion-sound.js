@@ -15,8 +15,10 @@
      writes the loop plan on [data-sound] (src/features/devotion-sound.mjs):
      the file is the loop followed by its own first 4.6 s, so when element A
      reaches loop + d, element B started at d plays the same music. B starts
-     early at gain 0, is put in step with A, and fades in over 0.6 s inside
-     the tanpura's quiet stretch: no pluck doubled or dropped, nothing skipped.
+     early at gain 0, is put in step with A (by currentTime, then to the
+     sample by what the two actually play: see prepare()), and fades in over
+     0.6 s inside the tanpura's quiet stretch: no pluck doubled or dropped,
+     nothing skipped, no doubled drone.
    - Position carries across pages through sessionStorage 'dp-sound-pos'.
    - Temple sounds: decoded buffers → panner → SFX bus (−8 dB) → master.
      A chime every ~800 px of reading (≥ 0.9 s apart), a bell as each section
@@ -66,7 +68,8 @@
   // the shankha is never assumed: it is optional and off until the client approves it
   var FX = cfg.sfx != null ? cfg.sfx.split(/\s+/).filter(Boolean) : ['ghanta'].concat(SWARA);
   // the loop plan: A at XFROM fades into B at XTO over XF seconds; the music's period is XFROM − XTO
-  var XFROM = +cfg.xfFrom || 0, XTO = +cfg.xfTo || 0, XF = +cfg.xfade || 0.6, PRE = 1.6;
+  // PRE: B starts this long before the fade point, silent, to be put in step
+  var XFROM = +cfg.xfFrom || 0, XTO = +cfg.xfTo || 0, XF = +cfg.xfade || 0.6, PRE = 2.8;
   var FX_GAIN = Math.pow(10, (cfg.sfxDb ? +cfg.sfxDb : -8) / 20);
   var FADE_IN = 1.8, FADE_OUT = 0.6, FLING = 3500; // seconds, seconds, px/s
 
@@ -133,8 +136,18 @@
 
   /* ---------------- music: two elements crossfading inside the loop's tail ---------------- */
   var P = [], cur = 0, on = false, live = false, err = false, xfading = false, started = false, stopT, leaveT, prep = null;
-  var UP = new Float32Array(48), DOWN = new Float32Array(48);
-  for (var k = 0; k < 48; k++) { UP[k] = Math.sin(k / 47 * Math.PI / 2); DOWN[k] = Math.cos(k / 47 * Math.PI / 2); } // equal power
+  // Fade curves. Two elements in step to the sample play one signal, so their gains must add
+  // to one (equal gain: sin² and cos²; equal power would swell it by up to 3 dB). Two copies
+  // even 1 ms apart are, for this drone, as good as unrelated (measured on the file: their
+  // correlation falls to 0.2 at 1 ms and to 0 by 1.5 ms), and those need equal power.
+  var UP = new Float32Array(48), DOWN = new Float32Array(48), UPG = new Float32Array(48), DOWNG = new Float32Array(48);
+  for (var k = 0; k < 48; k++) {
+    UP[k] = Math.sin(k / 47 * Math.PI / 2); DOWN[k] = Math.cos(k / 47 * Math.PI / 2); // equal power
+    UPG[k] = UP[k] * UP[k]; DOWNG[k] = DOWN[k] * DOWN[k]; // equal gain
+  }
+  // B is first aimed this far ahead of A by ear, so that the measured lead is positive and a
+  // delay on B's path can take it up exactly (a DelayNode can hold back, not bring forward)
+  var MARGIN = 0.008, MAX_DELAY = 0.1, SETTLE = 300, TAP = 8192;
   function period() { return XFROM - XTO; }
   // any position in the file → the same moment of the music before the fade point
   function inLoop(t) { var p = period(); if (p > 1) while (t >= XFROM) t -= p; return Math.max(0, t); }
@@ -157,14 +170,18 @@
     if (P[i]) return P[i];
     var a = new Audio(); a.preload = 'none'; // no loop attribute: the crossfade carries the music round
     var g = ctx.createGain(); g.gain.value = i === cur ? 1 : 0;
-    ctx.createMediaElementSource(a).connect(g); g.connect(bus);
+    // element → delay (holds B back to the sample) → tap (what this element plays) → gain → bus
+    var node = ctx.createMediaElementSource(a), dl = null, tap = null;
+    try { dl = ctx.createDelay(MAX_DELAY); node.connect(dl); node = dl; } catch (e) { dl = null; }
+    try { tap = ctx.createAnalyser(); tap.fftSize = TAP; node.connect(tap); node = tap; } catch (e) { tap = null; }
+    node.connect(g); g.connect(bus);
     a.addEventListener('playing', function () { if (a === P[cur].a) { live = true; err = false; if (on) fadeTo(bus, 1, FADE_IN); render(); } });
     a.addEventListener('waiting', function () { if (a === P[cur].a) { live = false; render(); } });
     a.addEventListener('timeupdate', onTime);
     a.addEventListener('error', function () { if (a === P[cur].a) { err = true; on = live = false; render(); } });
     // last safety net, if neither the crossfade nor the in-place seek happened: go round in place
     a.addEventListener('ended', function () { var p = P[cur]; if (a === p.a && on && !xfading) { var t = inLoop(a.currentTime); seekTo(p, t + late(p, t) - late(p)); a.play().then(null, noop); } });
-    return (P[i] = { a: a, g: g, at: null });
+    return (P[i] = { a: a, g: g, dl: dl, tap: tap && tap.getFloatTimeDomainData ? tap : null, at: null });
   }
   function go() {
     clearTimeout(stopT);
@@ -199,18 +216,51 @@
   }
   function warm() { var B = player(1 - cur); if (!B.a.src) { B.a.src = SRC; B.a.preload = 'auto'; B.a.load(); } } // from the cache
   // B starts at gain 0 a little before the fade point, at A's moment of the music, and is
-  // put in step by seeking it while it is silent; at XFROM the two fade over (equal power)
-  // inside the tanpura’s quiet stretch. In step means by ear: B (always seeked near the start)
-  // aims ahead of A by currentTime by however much later it will sound than A (see late()).
+  // put in step while it is silent; at XFROM the two fade over inside the tanpura’s quiet
+  // stretch. In step means by ear, in two stages:
+  //  1. By currentTime: B is seeked until it leads A by MARGIN. B (always seeked near the
+  //     start) aims ahead by however much later it will sound than A (see late()), and by
+  //     whatever delay A's own path holds.
+  //  2. By what the two actually play: each element's path is tapped (an AnalyserNode before
+  //     its gain), B's lead over A is measured to the sample by cross-correlating the two taps,
+  //     and the DelayNode on B's path takes it up. A seek alone lands a few ms off at best,
+  //     and for this drone that is two unrelated copies (a comb filter through the fade).
+  //     B's lead is searched from -6 to +20 ms (the aim is MARGIN, 8 ms): a span shorter than
+  //     the 27 ms period of the drone, so the search cannot lock onto a period instead. A
+  //     measurement counts only when the next one repeats it (two taps read a render quantum
+  //     apart would differ by 128 samples). Once the residual is within 2 samples, the fade
+  //     uses equal-gain curves; if that is never reached (no taps, a busy machine), it falls
+  //     back to equal power, as before.
   function prepare() {
     var A = P[cur], B = player(1 - cur), tries = 0, want = 0, lag = 0;
     warm();
     B.g.gain.cancelScheduledValues(0); B.g.gain.value = 0;
-    prep = { skew: null, tries: 0, lead: 0 };
+    if (B.dl) B.dl.delayTime.value = 0;
+    var dA = A.dl ? A.dl.delayTime.value : 0, fine = !!(A.tap && B.tap && B.dl), margin = fine ? MARGIN : 0;
+    prep = { skew: null, tries: 0, lead: 0, fine: false, delay: 0, since: 0, next: 0, last: null, measures: 0 };
     var seek = function () {
       var t = Math.max(0, A.a.currentTime - period() + lag + want);
-      want = late(B, t) - late(A); prep.lead = want; // the currentTime lead that puts them together by ear
+      want = late(B, t) - late(A) - dA + margin; prep.lead = want; // the currentTime lead that puts B MARGIN ahead by ear
       try { seekTo(B, A.a.currentTime - period() + lag + want); } catch (e) { /* not seekable yet */ }
+      prep.since = 0; prep.last = null;
+    };
+    // stage 2, once per tick while B is ready: measure, and take up what repeats
+    var measure = function () {
+      var now = performance.now();
+      if (!prep.since) { prep.since = now; return; }
+      // the taps must hold only audio from after the last change; at most one measurement every
+      // 100 ms and 14 in all (each costs a few ms of main-thread time, on a phone tens of ms)
+      if (now - prep.since < SETTLE || now < prep.next || prep.measures >= 14) return;
+      prep.next = now + 100;
+      var m = leadOf(A.tap, B.tap);
+      prep.measures++;
+      if (m === null) return;
+      if (prep.last === null || Math.abs(m - prep.last) > 3) { prep.last = m; return; }
+      var v = Math.round((m + prep.last) / 2), sr = ctx.sampleRate, d = B.dl.delayTime.value + v / sr;
+      prep.last = null;
+      if (Math.abs(v) <= 2) { prep.fine = true; return; }
+      if (d >= 0 && d <= MAX_DELAY * 0.9) { B.dl.delayTime.value = d; prep.delay = d; prep.since = now; return; }
+      if (tries < 6) { tries++; prep.tries = tries; lag += margin - d; B.dl.delayTime.value = 0; prep.delay = 0; seek(); } // out of reach: seek again
     };
     lag = 0.004; seek();
     var pr = B.a.play(); if (pr && pr.then) pr.then(null, noop);
@@ -220,8 +270,9 @@
       if (ready) {
         var skew = B.a.currentTime + period() - ta; // > 0: B ahead by currentTime
         prep.skew = skew;
-        if (Math.abs(skew - want) > 0.006 && tries < 4 && ta < XFROM - 0.3) { tries++; prep.tries = tries; lag -= skew - want; seek(); }
-      }
+        if (!prep.delay && Math.abs(skew - want) > 0.006 && tries < 4 && ta < XFROM - 0.3) { tries++; prep.tries = tries; lag -= skew - want; seek(); }
+        else if (fine && !prep.fine && ta < XFROM - 0.05) measure();
+      } else prep.since = 0;
       if (ready && ta >= XFROM) { crossfade(); return; }
       if (ta >= XFROM + 0.5) { // B never got going (a slow network): carry A round by itself
         finishX();
@@ -232,12 +283,31 @@
       prep.t = setTimeout(tick, 40);
     })();
   }
+  // B's lead over A in samples, by what their taps hold now (b[i] ≈ a[i + lead]), or null
+  // when the two do not clearly play the same music (a correlation under 0.9)
+  var TA = null, TB = null;
+  function leadOf(ta, tb) {
+    var n = ta.fftSize, sr = ctx.sampleRate, lo = -Math.round(0.006 * sr), hi = Math.round(0.02 * sr), best = -2, bl = 0, fb = -2, fl = 0, l, c;
+    if (!TA || TA.length !== n) { TA = new Float32Array(n); TB = new Float32Array(n); }
+    ta.getFloatTimeDomainData(TA); tb.getFloatTimeDomainData(TB);
+    // coarse: every 4th lag over every 4th sample (the drone keeps 0.92 of its correlation 2
+    // samples off the peak, above the 0.75 of its nearest false peak); then every lag near it
+    for (l = lo; l <= hi; l += 4) { c = xcorr(TA, TB, l, 4); if (c > best) { best = c; bl = l; } }
+    for (l = bl - 3; l <= bl + 3; l++) { c = xcorr(TA, TB, l, 1); if (c > fb) { fb = c; fl = l; } }
+    return fb >= 0.9 ? fl : null;
+  }
+  function xcorr(a, b, l, step) {
+    var x = 0, ea = 0, eb = 0, i0 = Math.max(0, -l), i1 = Math.min(a.length, a.length - l), u, v;
+    for (var i = i0; i < i1; i += step) { u = a[i + l]; v = b[i]; x += u * v; ea += u * u; eb += v * v; }
+    return x / Math.sqrt(ea * eb + 1e-20);
+  }
   function crossfade() {
-    var A = P[cur], B = P[1 - cur], t = ctx.currentTime;
+    var A = P[cur], B = P[1 - cur], t = ctx.currentTime, eq = !!(prep && prep.fine);
     clearTimeout(prep && prep.t);
     xfading = true;
-    [[B.g, UP], [A.g, DOWN]].forEach(function (x) { x[0].gain.cancelScheduledValues(0); x[0].gain.setValueCurveAtTime(x[1], t, XF); });
-    lastX = { at: Date.now(), from: A.a.currentTime, to: B.a.currentTime, skew: prep ? prep.skew : null, lead: prep ? prep.lead : 0, tries: prep ? prep.tries : 0 };
+    [[B.g, eq ? UPG : UP], [A.g, eq ? DOWNG : DOWN]].forEach(function (x) { x[0].gain.cancelScheduledValues(0); x[0].gain.setValueCurveAtTime(x[1], t, XF); });
+    lastX = { at: Date.now(), from: A.a.currentTime, to: B.a.currentTime, skew: prep ? prep.skew : null, lead: prep ? prep.lead : 0, tries: prep ? prep.tries : 0,
+      fine: eq, delay: B.dl ? +B.dl.delayTime.value.toFixed(6) : 0, measures: prep ? prep.measures : 0, curve: eq ? 'gain' : 'power' };
     cur = 1 - cur;
     setTimeout(finishX, XF * 1000 + 60);
   }
@@ -452,12 +522,12 @@
   var switches = box ? $$('[data-sound-switch]', box) : [], volEl = box && $('[data-sound-volume]', box), statusEl = box && $('[data-sound-status]', box);
   function status() {
     if (!S.music) return ['off', fmt('సంగీతం ఆఫ్‌లో ఉంది.')];
-    if (err) return ['wait', fmt('సంగీతాన్ని లోడ్ చేయలేకపోయాము.')];
+    if (err) return ['wait', fmt('సంగీతం లోడ్ కాలేదు.')];
     if (tabHeld) return ['wait', fmt('సంగీతం మరో ట్యాబ్‌లో ప్లే అవుతోంది.')];
-    if (media.length || frames.length) return ['wait', fmt('మరో రికార్డింగ్ లేదా వీడియో ప్లే అవుతున్నప్పుడు సంగీతం ఆగి ఉంటుంది.')];
-    if (!on && armed) return ['wait', fmt('మీరు స్క్రీన్‌ను తాకినప్పుడు లేదా ఏదైనా కీ నొక్కినప్పుడు సంగీతం మొదలవుతుంది.')];
+    if (media.length || frames.length) return ['wait', fmt('మరో రికార్డింగ్ లేదా వీడియో ప్లే అవుతున్నంత సేపు సంగీతం ఆగి ఉంటుంది.')];
+    if (!on && armed) return ['wait', fmt('మీరు స్క్రీన్‌ను తాకగానే లేదా ఏదైనా కీ నొక్కగానే సంగీతం మొదలవుతుంది.')];
     if (on && !live) return ['wait', fmt('సంగీతం లోడ్ అవుతోంది.')];
-    return [on ? 'on' : 'wait', fmt('వేణు సంగీతం వినిపిస్తోంది.')];
+    return [on ? 'on' : 'wait', fmt('వేణుగానం వినిపిస్తోంది.')];
   }
   var lastKey = '';
   function render() {
@@ -620,7 +690,7 @@
     q.setAttribute('aria-live', 'polite');
     inv.insertBefore(q, inv.firstChild);
     var span = music && $('span', music);
-    if (span) span.textContent = fmt('వేణు సంగీతం ప్లే చేయండి');
+    if (span) span.textContent = fmt('వేణుగానం వినండి');
     if (silence) silence.textContent = fmt('ఇప్పుడు వద్దు');
     inv.classList.add('snd-invite--card');
     inv.setAttribute('role', 'group'); inv.setAttribute('aria-labelledby', 'snd-invite-q');
@@ -644,7 +714,7 @@
       if (done || pref) return;
       inv.hidden = false;
       cardOpen = true; tuck();
-      setTimeout(function () { q.textContent = fmt('చదువుతున్నప్పుడు వేణు సంగీతం కావాలా?'); }, 80); // announced
+      setTimeout(function () { q.textContent = fmt('చదువుతున్నప్పుడు వేణుగానం వింటారా?'); }, 80); // announced
       W.addEventListener('scroll', onScrollAway, { passive: true });
       doc.addEventListener('keydown', onKey);
       timer = setTimeout(function () { close(); }, 16000);

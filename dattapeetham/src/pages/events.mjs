@@ -405,7 +405,7 @@ function panel([id, name, greg]) {
 }
 
 const festivalsSection = `<section id="festivals" class="section section-dark grain ev-year ${DV_HOST}">
-  ${pushpanjali({ density: 0.8 })}
+  ${pushpanjali({ density: 0.6 })}
   <div class="wrap">
     ${sectionHead({
       eyebrow: 'The festival year',

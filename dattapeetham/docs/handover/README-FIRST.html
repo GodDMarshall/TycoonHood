@@ -166,6 +166,8 @@
       <li>English, ಕನ್ನಡ, हिन्दी, தமிழ், తెలుగు</li>
       <li>Any web host can serve it</li>
       <li>No database, no server-side code</li>
+      <li>Flute music and temple sounds, only if the visitor chooses</li>
+      <li>Photos served from 4K masters</li>
     </ul>
     <nav class="toc" aria-labelledby="toc-h">
       <h2 id="toc-h">On this page</h2>
@@ -194,15 +196,24 @@
         with the default options. You only need it on this computer, for the
         preview. The live website does not need it.</p></li>
       <li><p>Extract the whole zip first (right-click it, then <em>Extract
-        All</em>): the preview does not run from inside the zip. Then open the
-        <code>preview</code> folder and double-click
-        <strong><code>Start-Preview.cmd</code></strong>. (On a Mac or Linux:
-        run <code>./start-preview.sh</code> in a terminal.)</p></li>
-      <li><p>Your browser opens the site. The black window also shows an
-        address for a phone or tablet on the same Wi-Fi. Keep the window open
-        while you look; close it to stop.</p></li>
+        All</em>): the preview does not run from inside the zip. Open the
+        extracted folder, the one that holds this page and the
+        <code>website</code> and <code>preview</code> folders. Click in File
+        Explorer's address bar, type <code>powershell</code> and press
+        Enter.</p></li>
+      <li><p>In the window that opens, type
+        <strong><code>node preview\serve.mjs</code></strong> and press Enter.
+        Your browser opens the site. The window also shows an address for a
+        phone or tablet on the same Wi-Fi. Keep the window open while you
+        look; press Ctrl+C or close it to stop. (On a Mac or Linux: run
+        <code>node preview/serve.mjs</code> in a terminal, in this
+        folder.)</p></li>
     </ol>
-    <p class="muted" style="margin-top:14px">Without Node.js you can still open
+    <p class="muted" style="margin-top:14px"><code>preview\Start-Preview.cmd</code>
+      does the same with a double-click, but it is optional: Windows Smart App
+      Control blocks <code>.cmd</code> files that came from the internet.
+      Typing the command always works.</p>
+    <p class="muted" style="margin-top:10px">Without Node.js you can still open
       <a href="website/index.html" data-project-href="../../site/index.html"><code>website/index.html</code></a>
       directly: the pages show, but site search does not work that way.</p>
   </section>
@@ -243,8 +254,9 @@
       <dt>Traffic</dt>
       <dd><p>Measured on version 1.0.0: a visitor who reads one page to the end
         downloads about 0.5 to 2.5 MB from your host (the home page is the
-        largest). Browsers keep photos and code, so a returning visitor
-        downloads much less.</p></dd>
+        largest). A visitor who chooses sound also downloads the music once
+        (about 3.5 MB). Browsers keep photos, audio and code, so a returning
+        visitor downloads much less.</p></dd>
       <dt>Certificate</dt>
       <dd><p>One HTTPS certificate for www.dattapeetham.org and
         dattapeetham.org. Let's Encrypt issues them free of charge, and many
@@ -286,9 +298,17 @@
         the platform's privacy, terms and disclaimer pages also cover it.
         <span class="who">The Peetham's legal team</span></li>
       <li><strong>The photos.</strong> Most were small web copies, enlarged with
-        an AI enhancer that sharpens them but can only estimate lost detail.
-        The Ashram checks them, the portraits of Sri Swamiji above all, and
-        sends camera originals where it can.
+        an AI enhancer to 4K masters: it sharpens them but can only estimate
+        lost detail. The Ashram checks them, the portraits of Sri Swamiji above
+        all, and sends camera originals where it can.
+        <span class="who">The Ashram</span></li>
+      <li><strong>The music.</strong> The website has its own flute music (an
+        original composition in Raga Mohanam) and soft temple sounds while
+        scrolling. Nothing plays unless the visitor chooses it on the first
+        visit, and a sound button on every page switches it. Nobody has
+        listened to it yet: the Ashram listens and approves it, and decides
+        on the conch (shankha) at the end of a page, which is switched off
+        until then.
         <span class="who">The Ashram</span></li>
       <li><strong>Visitor statistics.</strong> The website has none. Adding any
         is a code change and changes what the privacy notice must say.
@@ -364,13 +384,20 @@
           <tr><td><code>README-FIRST.html</code></td><td>This page.</td></tr>
           <tr><td><code>VERSION.txt</code></td><td>The version, the build date, the two addresses the website was built for, and the size of the website.</td></tr>
           <tr><td><code>website</code></td><td><strong>The finished website.</strong> Upload the <em>contents</em> of this folder to the web server. It includes hidden files such as <code>.htaccess</code>.</td></tr>
-          <tr><td><code>preview</code></td><td>Look at the site on your own computer: <code>Start-Preview.cmd</code> (Windows), <code>start-preview.sh</code> (Mac, Linux).</td></tr>
+          <tr><td><code>preview</code></td><td>Look at the site on your own computer: <code>node preview\serve.mjs</code> (see above; <code>Start-Preview.cmd</code> and <code>start-preview.sh</code> do the same).</td></tr>
           <tr><td><code>server-configs</code></td><td>Copies of each kind of server's configuration, for reference.</td></tr>
           <tr><td><code>docs</code></td><td>The hand-over guides (below) and the notes for the translation reviewers.</td></tr>
           <tr><td><code>source</code></td><td>The project, for changing and rebuilding the website later.</td></tr>
         </tbody>
       </table>
     </div>
+    <p style="margin-top:14px">The package comes as one zip with all of this,
+      and also as two smaller zips: <code>…-deploy-only.zip</code> (only the
+      website files, ready to upload) and <code>…-source-only.zip</code> (only
+      the project, for changing and rebuilding). <code>SHA256SUMS.txt</code>,
+      beside the zips, holds their fingerprints; the
+      <a href="docs/HANDOVER.md" data-project-href="HANDOVER.md">start-here guide</a>
+      says how to check them.</p>
   </section>
 
   <section id="guides" aria-labelledby="guides-h">

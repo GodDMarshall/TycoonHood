@@ -47,6 +47,14 @@ was requested and no audio player existed until the visitor chose; after
 `dp-sound-pos` was used to carry the music on; after "Enter in silence", or
 with both sound switches off, further pages requested no audio at all.
 
+It was checked again on 25 October 2026, on real nginx and Apache servers,
+with the sound on (the choice stored, one click to start it, then a full
+scroll): every page of the sitemap, the five "page not found" pages and five
+unknown addresses, at desktop and phone sizes, 170 visits on each server.
+In every visit the music and the seven temple sounds came from the site
+itself, and the Content Security Policy, which lets a page reach only the
+hosts in section 2, reported no attempt to reach any other.
+
 How to repeat the check in a normal browser: open the site, press F12, and
 look at *Application → Storage / Cookies* and at the *Network* tab
 (filter "third-party", or sort by domain), on the pages named below.
@@ -80,6 +88,17 @@ The two sound values come from the devotional sound feature
 (`src/assets/js/devotion-sound.js`), which every page loads. The question is
 offered once, on the first page of a first visit; if the visitor does not
 answer it, nothing is stored and it is offered again in a later visit.
+
+Two more things the sound feature uses, neither of which stores anything or
+leaves the browser:
+
+- **A message between open tabs of the site** (a `BroadcastChannel` named
+  `dp-sound`): when the music starts in one tab, the other tabs of the site in
+  the same browser pause theirs, so only one plays. The message is a random
+  tab number, held in memory only.
+- **The media keys and the lock-screen play/pause buttons** (the browser's
+  Media Session): they switch the flute music on and off, as the panel does.
+  The site gives the operating system no title, artwork or other details.
 
 ## 2. Other services the browser contacts
 
@@ -183,5 +202,6 @@ browser, and the site's address as `Referer`).
 - **E-mail.** Messages devotees send through their own e-mail app arrive at
   `mail@dattapeetham.com` and are handled by the Peetham's e-mail system.
 
-If the site changes (a new embedded service, analytics, the sound feature),
-this inventory must be updated before that version goes live.
+If the site changes (a new embedded service, analytics, a change to the
+sound feature), this inventory must be updated before that version goes
+live.

@@ -251,3 +251,37 @@ The six chunks were made consistent in one editing pass. These choices now apply
   exist, because both headwords are పూజ in Telugu.
 - Hidden search strings (`data-q` on the Centres page) hold the Telugu names followed by the
   English ones, so visitors can search in either script. They are in NFD form on purpose.
+
+## 10. The devotional sound
+
+These strings belong to the opening-curtain invitation, the round sound button and its panel,
+and the small card shown on slow connections. The English is in `src/features/devotion-sound.mjs`;
+the Telugu is in `src/i18n/te/part-99-devotion.json`.
+
+- **Terms** (all in `te.json`):
+  - Flute is వేణువు. Flute music is వేణుగానం, the usual Telugu word for flute playing
+    (వేణుగాన కచేరీ). Do not use the calque వేణు సంగీతం, the loanword ఫ్లూట్, or మురళి.
+    Inside names the compound form stays as it is: దత్త వేణు, ఎస్‌జీఎస్ దత్త వేణు.
+  - Raga Mohanam is మోహన రాగం, the same pattern as సామ రాగం and వీణావాదిని రాగం. The raga on its own
+    is మోహనం.
+  - Tanpura and Tambura are both తంబురా (plural తంబురాలు), as on the music and attractions pages.
+  - Shankha (conch) is శంఖం. The conch sound is not used yet: it stays off until the Peetham has
+    listened to it, so there is no Telugu string for it.
+  - "Sound" as the name of the control is ధ్వని: ధ్వని సెట్టింగ్‌లు (Sound settings), ధ్వని బటన్ (the
+    sound button). Where the music and teachings pages speak of sound as Nada, keep నాదం.
+  - Temple sounds are ఆలయ ధ్వనులు. Volume is the loanword వాల్యూమ్, as on Telugu phones.
+- **Labels:** వేణుగానంతో ప్రవేశించండి (Enter with flute music) and నిశ్శబ్దంగా ప్రవేశించండి (Enter in
+  silence) are parallel and about the same length. నిశ్శబ్దంగా means without sound. మౌనం is kept
+  for "Observe silence" (not speaking) on the visit page.
+- **The card on slow connections:** the question is చదువుతున్నప్పుడు వేణుగానం వింటారా?, the
+  usual polite way to offer something in Telugu. Do not use the blunt కావాలా?. The buttons are
+  వేణుగానం వినండి (Play flute music) and ఇప్పుడు వద్దు (Not now). వినండి answers the question
+  directly, and these are the forms that fit the 300px card the way the English does: the
+  question on one line and the two buttons side by side. The longer వినాలనుకుంటున్నారా? and
+  వేణుగానం ప్లే చేయండి each pushed the card onto an extra line (measured at 360, 390 and 1440 px).
+- The credit is the client's own wording: వేణువు: ఈ వెబ్‌సైట్ కోసం రూపొందించిన మౌలిక రాగ రచన.
+  "Original" is మౌలిక, as in మౌలిక రచన (an original work). Do not use అసలైన, which reads as "genuine".
+  The raga is traditional and the composition is new, so do not turn it into "a new raga", and
+  do not attribute the music to Sri Swamiji.
+- Status lines are whole short sentences ending in a full stop: సంగీతం ఆఫ్‌లో ఉంది. "Tap" is
+  స్క్రీన్‌ను తాకడం. "Could not be loaded" is లోడ్ కాలేదు, which is neutral, with no "we".

@@ -23,15 +23,36 @@ Paths below are inside the project folder (`source\` in the package).
       after that, add the next year's dates from the official calendar.
 
 - [ ] **The music and the temple sounds** have been heard and approved by
-      the Ashram, on a phone speaker and on headphones: open the site in a
-      new private window, choose "Enter with flute music", listen for a few
-      minutes, then scroll a page slowly (the bell and chimes). The flute is
-      an original composition in Raga Mohanam; ideally a musician of the
-      Peetham listens too. ([MAINTENANCE.md](MAINTENANCE.md), *Music and
-      temple sounds*.)
-- [ ] **The conch (shankha)** at the end of a page: switched off until the
-      Ashram has listened to it. Decide: keep it off, or switch it on
-      (`SHANKHA` in `src/features/devotion-sound.mjs`).
+      the Ashram, on a phone speaker and on headphones. Nobody has listened
+      to them yet: they were composed, synthesised and measured by
+      software. Open the site in a new private window, choose "Enter with
+      flute music", and let it play for at least four minutes, so that the
+      music goes once round its loop (it is 3 minutes 38 seconds long; the
+      turn should not be heard). Move to another page while it plays (it
+      should carry on), then scroll a page slowly (the bell and chimes).
+      The flute is an original composition in Raga Mohanam; ideally a
+      musician of the Peetham listens too, a Carnatic flautist best of all.
+      ([MAINTENANCE.md](MAINTENANCE.md), *Music and temple sounds*.)
+- [ ] **The same on an iPhone or iPad (Safari) and in Firefox.** The sound
+      was tested in Chrome's engine only: check that the music starts after
+      "Enter with flute music", carries on to the next page, and goes round
+      its loop without a hiccup.
+- [ ] **The conch (shankha)** at the end of a page: switched off, and not
+      shipped, until the Ashram has listened to it (the file is
+      `src/assets/audio/sfx/shankha.mp3`). Decide: keep it off, or switch it
+      on (`SHANKHA` in `src/features/devotion-sound.mjs`, then rebuild):
+      ______________________
+- [ ] **The motion.** Each page has one to three quiet devotional motifs
+      (lamps, flowers, incense, the aarti, the lotus, the kolam, the temple
+      bell) and lamps before the closing prayer in the footer. The Ashram
+      has looked at every page on a phone and on a computer and approves
+      them. Three small choices are open (`docs/DEVOTION-PLAN.md`, section
+      10): the bells on Darshan and Visit hang small in the right margin
+      (they could hang beside the section heading instead); on a phone the
+      aarti flame on Darshan passes over the corners of the photograph's
+      card; the closing flowers on Home and Seva drift behind the heading
+      "Support the Peetham’s seva" (they could be kept to the cards below
+      it).
 
 The official pages disagree on the points below (README.md, *For the Ashram
 to confirm*). The site states them carefully and does not pick one silently.
@@ -92,14 +113,29 @@ For each language:
 
 ### Photos
 
-- [ ] The Ashram has looked at the photos, the portraits of Sri Swamiji
-      above all, and approved them. Most of the site's photos come from small
-      web copies on the Peetham's S3 bucket, enlarged with an AI enhancer
-      (Real-ESRGAN): it sharpens them, but detail the small copy lost is
-      estimated, not recovered.
-- [ ] The Ashram has been asked for the camera originals of the hero and
-      portrait photos; originals give truly sharp images. How they are used:
-      `photos/originals/README.md` and `docs/PHOTOS.md`.
+- [ ] The Ashram has looked at the photos, the enhanced portraits above
+      all (Sri Swamiji, Sri Bala Swamiji, Sri Jayalakshmi Maata, the Gurus
+      of the lineage and the deities), and approved them. Most of the
+      site's photos come from small web copies on the Peetham's S3 bucket,
+      enlarged with an AI enhancer (Real-ESRGAN) to 4K masters: it sharpens
+      them, but detail the small copy lost is estimated, not recovered.
+      Faces too small for the enhancer to treat faithfully were kept as soft
+      as the source.
+- [ ] The Ashram has been asked for the camera originals on the list in
+      `docs/PHOTOS.md` (*Ask the Peetham for camera originals of these*,
+      with the page and section of each). The first to ask for: Sri
+      Swamiji's main portrait (`sadguru-deva.jpg`, also the default share
+      picture), Sri Bala Swamiji's portraits, Sri Swamiji standing, Sri
+      Jayalakshmi Maata, the presiding deity Kaalaagni Shamana Dattatreya,
+      Padmavathi Devi, Marakata Subrahmanya Swami, the Guru paintings, the
+      Guru Parampara composition, the home page picture and the Kriya Yoga
+      collage; for the album covers and concert posters, the design files.
+      Originals give truly sharp 4K images: they go in `photos/originals/`
+      (`photos/originals/README.md`).
+- [ ] One photo decision: the Nada Mantapa crowd seen from above
+      (`nadamandapa-sahsrachandra.jpg`, Attractions and Music) is only 400
+      pixels wide, so it is soft on large screens and in the photo viewer.
+      Send its original, or choose another photo: ______________________
 
 ### Privacy and legal
 

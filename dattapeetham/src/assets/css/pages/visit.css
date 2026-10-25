@@ -52,6 +52,8 @@
 /* ---------- welcome ---------- */
 .page-visit .vs-welcome { padding-top: clamp(72px, 9vw, 112px); }
 .page-visit .vs-lit { margin: 0 auto clamp(56px, 8vw, 96px); }
+/* the kolam is drawn at the threshold of the saying, not on top of it */
+.page-visit .vs-dv-kolam { margin-bottom: clamp(16px, 2.2vw, 28px); }
 .page-visit .vs-lit .scroll-lit { max-width: 22ch; font-style: italic; font-weight: 400; }
 .page-visit .vs-welcome .split { align-items: center; }
 .page-visit .vs-welcome h2 { margin-top: 2px; }

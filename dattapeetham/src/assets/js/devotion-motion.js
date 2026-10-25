@@ -428,25 +428,44 @@
       for (var k = a; k < b; k++) ctx.quadraticCurveTo(P[k * 2], P[k * 2 + 1], (P[k * 2] + P[k * 2 + 2]) / 2, (P[k * 2 + 1] + P[k * 2 + 3]) / 2);
       ctx.stroke();
     }
+    // The room between the canvas edge and the host's text column (its .wrap content box), or
+    // null when the host has no .wrap.
+    function margin() {
+      var host = cv.parentElement, wrap = host && host.querySelector(':scope > .wrap, :scope > .container');
+      if (!wrap) return null;
+      var cr = cv.getBoundingClientRect(), wr = wrap.getBoundingClientRect(), ws = getComputedStyle(wrap);
+      return from === 'right' ? cr.right - (wr.right - (parseFloat(ws.paddingRight) || 0)) : (wr.left + (parseFloat(ws.paddingLeft) || 0)) - cr.left;
+    }
+    // Where the stick stands. It stands in the margin beside the text column, so the smoke rises
+    // clear of the words: at 30 % of the canvas, as first built, it stood under the first letters
+    // of Kriya Yoga's paragraphs at 1440 px and its smoke drifted behind them. Where the margin
+    // is narrow (phones, small laptops) it stands at the very edge and the smoke sways less, so
+    // it keeps to the margin.
+    function pose(s, w, h) {
+      var small = W.innerWidth < 640, room = from === 'center' ? null : margin();
+      var edge = room == null ? Math.max(56, Math.min(w * 0.3, 160)) : room >= 80 ? Math.round(room / 2) : 18;
+      var x0 = from === 'right' ? w - edge : from === 'center' ? w / 2 : edge;
+      var L = Math.min(small ? 52 : 92, h * 0.16), tilt = (from === 'right' ? -1 : 1) * (small ? 0.1 : 0.2);
+      s.vw = W.innerWidth;
+      s.sway = room == null ? 1 : clamp(room / 140, 0.4, 1);
+      s.base = { x: x0, y: h - 6 }; s.tip = { x: x0 + Math.sin(tilt) * L, y: h - 6 - Math.cos(tilt) * L };
+      s.H = Math.min(h * 0.9, small ? 420 : 640);
+      return s;
+    }
     canvasMotif(cv, 'dhoopa', {
       dpr: 1, every: 2, budget: 1.6, still: 9.5,
       setup: function (w, h) {
-        var rnd = prng(108), small = W.innerWidth < 640;
-        // the canvas is a column at the section's edge; on a phone the stick stands at the very edge, clear of the words
-        var edge = small ? 18 : Math.max(56, Math.min(w * 0.3, 160));
-        var x0 = from === 'right' ? w - edge : from === 'center' ? w / 2 : edge;
-        var L = Math.min(small ? 52 : 92, h * 0.16), tilt = (from === 'right' ? -1 : 1) * (small ? 0.1 : 0.2);
-        var base = { x: x0, y: h - 6 }, tip = { x: x0 + Math.sin(tilt) * L, y: h - 6 - Math.cos(tilt) * L };
-        var wisps = [];
+        var rnd = prng(108), wisps = [];
         for (var i = 0; i < nW; i++) wisps.push({
           f1: 0.5 + rnd() * 0.3, f2: 1.1 + rnd() * 0.5, v1: 0.028 + rnd() * 0.016, v2: 0.05 + rnd() * 0.03,
           p1: rnd() * 6.283, p2: rnd() * 6.283, amp: 0.75 + rnd() * 0.5, curl: 0.5 + rnd() * 0.6, lean: (rnd() - 0.5) * 0.14, a: i ? 0.6 : 1,
         });
         var lo = doc.createElement('canvas');
         lo.width = Math.max(1, Math.ceil(w / LO)); lo.height = Math.max(1, Math.ceil(h / LO));
-        return { base: base, tip: tip, H: Math.min(h * 0.9, small ? 420 : 640), wisps: wisps, pts: new Float32Array((SEG + 1) * 2), lo: lo, lx: lo.getContext('2d') };
+        return pose({ wisps: wisps, pts: new Float32Array((SEG + 1) * 2), lo: lo, lx: lo.getContext('2d') }, w, h);
       },
       draw: function (ctx, w, h, dt, t, s) {
+        if (s.vw !== W.innerWidth) pose(s, w, h); // a resize that left the column's size alone
         var tip = s.tip, H = s.H, k, wind = Math.sin(t * 0.045) * 0.08, lx = s.lx, n, q, P = s.pts;
         ctx.clearRect(0, 0, w, h);
         lx.setTransform(1, 0, 0, 1, 0, 0); lx.clearRect(0, 0, s.lo.width, s.lo.height); lx.setTransform(1 / LO, 0, 0, 1 / LO, 0, 0);
@@ -456,9 +475,9 @@
           for (k = 0; k <= SEG; k++) {
             var u = k / SEG, Y = u * H, grow = Math.pow(u, 1.5);
             var ph1 = 6.283 * (q.f1 * Y / 160 - q.v1 * t * 10) + q.p1, ph2 = 6.283 * (q.f2 * Y / 110 - q.v2 * t * 10) + q.p2;
-            var dx = (Math.sin(ph1) * 0.78 + Math.sin(ph2) * 0.22) * (2 + 70 * grow) * q.amp;
+            var dx = (Math.sin(ph1) * 0.78 + Math.sin(ph2) * 0.22) * (2 + 70 * grow) * q.amp * s.sway;
             var dy = Math.cos(ph1) * 14 * u * u * q.curl; // higher up, the wisp folds back on itself
-            P[k * 2] = tip.x + dx + (q.lean + wind) * Y * u;
+            P[k * 2] = tip.x + dx + (q.lean + wind) * Y * u * s.sway;
             P[k * 2 + 1] = tip.y - Y + dy;
           }
           // the veil: broad and faint, drawn small and enlarged so it is soft
@@ -511,9 +530,16 @@
       if (!w || !h) return;
       var r = host.getBoundingClientRect(), room = Math.min(r.left, root.clientWidth - r.right);
       var gap = Math.round(clamp(room - fw * 0.75 - 2, 4, gap0));
+      // An ellipse --dv-gap clear of the middle of each edge passes inside the corners, so the
+      // flame crossed the corners of what it circles (on Darshan, the first and last letters of
+      // the inset's caption, once a circle). Where the screen leaves room, widen it evenly
+      // until it clears the corners too; near the screen edge (phones) it keeps the snug fit.
+      var A = w / 2 + gap, B = h / 2 + gap, c = Math.max(4, gap / 2);
+      var k = Math.sqrt(Math.pow((w / 2 + c) / A, 2) + Math.pow((h / 2 + c) / B, 2));
+      if (k > 1 && A * k - w / 2 <= room - fw * 0.75 - 2) { A *= k; B *= k; }
       el.style.setProperty('--dv-gap', gap + 'px');
-      el.style.setProperty('--dv-ad', Math.round(h + gap * 2) + 'px');
-      el.style.setProperty('--dv-sx', ((w + gap * 2) / (h + gap * 2)).toFixed(4));
+      el.style.setProperty('--dv-ad', Math.round(B * 2) + 'px');
+      el.style.setProperty('--dv-sx', (A / B).toFixed(4));
       el.classList.add('is-fit');
     };
     fit();

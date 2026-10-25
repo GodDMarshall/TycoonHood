@@ -47,7 +47,14 @@ server's own format by the build. On every host the result is the same:
   `X-Content-Type-Options`, `Referrer-Policy` and `Permissions-Policy`.
 - **Caching:** pages and data are revalidated on every visit; CSS and
   JavaScript (which carry a content hash in their address) are kept for a
-  year; photos and fonts for 30 days.
+  year; photos, fonts and the devotional audio (the flute music and the
+  temple sounds, `.mp3`) for 30 days. The audio's addresses carry a content
+  version too, so a re-rendered file reaches visitors at once.
+- **Audio:** `.mp3` files are served as `audio/mpeg`, uncompressed, and the
+  server answers byte-range requests (`206 Partial Content`). The music
+  player needs ranges to carry the music on from one page to the next and
+  to go round its loop. Both were tested on real nginx and Apache with the
+  files here; on any other host, the server check below tests them.
 - **Redirects (301):** 41 addresses of the old site go to the new pages (for
   example `/page/view/sri-bala-swamiji` goes to
   `/sri-swamiji.html#bala-swamiji`). Addresses without `.html` go to the
@@ -415,6 +422,7 @@ settings:
 | Platform hand-off | `/poojas`, `/donations` and so on give "not found" on the new site | The 302 rules in `website/_redirects` |
 | Security headers | No Content Security Policy, no HSTS, no clickjacking protection | The headers in `website/_headers` |
 | Cache rules | The host's defaults; visitors may keep old CSS or pages | The values in `website/_headers` |
+| Audio type and byte ranges | If `.mp3` is not `audio/mpeg`, or ranges are refused, the flute music may not play, or starts again from the beginning on every page | `.mp3` as `audio/mpeg`, with byte ranges (the server check tests both) |
 | The 404 page with status 404 | The host's own error page, or a "soft" 404 | Error document `404.html`, status 404 |
 | Folder index | `/kn/` may not open `/kn/index.html` | Index document `index.html` for every folder |
 
@@ -430,7 +438,8 @@ missing.
 `deploy/test/verify-server.mjs` checks a running server against the rules
 with real requests: every redirect (status and target), every page in every
 language, the 404 page, the security and cache headers, content types,
-hidden files and the platform hand-off. About 800 checks. It needs only
+the music file (type, cache, byte ranges, content version), hidden files and
+the platform hand-off. About 800 checks. It needs only
 Node.js 20 or newer, and nothing to install.
 
 Run it in `source\`. It reads `site.config.json` there to know which

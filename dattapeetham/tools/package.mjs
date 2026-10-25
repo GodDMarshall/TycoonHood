@@ -12,8 +12,9 @@
 //      VERSION.txt        version, build date, commit, addresses, pages, translation coverage
 //      website/           the built site, hidden .htaccess included: upload the CONTENTS
 //                         of this folder to the web root
-//      preview/           look at the site locally: Start-Preview.cmd (Windows),
-//                         start-preview.sh (macOS / Linux), serve.mjs
+//      preview/           look at the site locally: `node preview/serve.mjs` in the package
+//                         folder; Start-Preview.cmd (Windows; Smart App Control may block a
+//                         downloaded .cmd) and start-preview.sh (macOS / Linux) are optional
 //      server-configs/    each server's configuration, copied for reference
 //      docs/              the hand-over documents (docs/handover) and the translation
 //                         review notes (docs/i18n)
@@ -21,7 +22,11 @@
 // 3. release/dattapeetham-website-v<version>.zip              that folder
 //    release/dattapeetham-website-v<version>-deploy-only.zip  the website files alone, at the
 //                                                           zip root, ready to upload
-//    release/SHA256SUMS.txt
+//    release/dattapeetham-website-v<version>-source-only.zip  source/ alone (no built website),
+//                                                           in a folder <name>-source/
+//    release/SHA256SUMS.txt                                 all three
+//    The full zip carries the photos twice (website/ and source/), so the two
+//    smaller zips let each reader download only what they need.
 //
 // The zips are written here (no zip program needed): entries in a fixed order
 // (folder by folder, names sorted), one timestamp (the build's), dotfiles
@@ -589,15 +594,18 @@ async function main() {
     const mtime = builtAt;
     const full = join(STAGE, `${NAME}.zip`);
     const deploy = join(STAGE, `${NAME}-deploy-only.zip`);
+    const source = join(STAGE, `${NAME}-source-only.zip`);
     const zFull = await writeZip(full, await zipEntries(P, `${NAME}/`), { mtime });
     const zDeploy = await writeZip(deploy, await zipEntries(W), { mtime });
+    const zSource = await writeZip(source, await zipEntries(S, `${NAME}-source/`), { mtime });
 
     await rm(join(RELEASE, NAME), { recursive: true, force: true });
     await rename(P, join(RELEASE, NAME));
     await rename(full, join(RELEASE, `${NAME}.zip`));
     await rename(deploy, join(RELEASE, `${NAME}-deploy-only.zip`));
+    await rename(source, join(RELEASE, `${NAME}-source-only.zip`));
     const sums = [];
-    for (const f of [`${NAME}-deploy-only.zip`, `${NAME}.zip`]) sums.push(`${await sha256File(join(RELEASE, f))}  ${f}`);
+    for (const f of [`${NAME}-deploy-only.zip`, `${NAME}-source-only.zip`, `${NAME}.zip`]) sums.push(`${await sha256File(join(RELEASE, f))}  ${f}`);
     await writeFile(join(RELEASE, 'SHA256SUMS.txt'), `${sums.join('\n')}\n`);
 
     // Sizes
@@ -608,6 +616,7 @@ async function main() {
     for (const [k, s] of Object.entries(sizes)) console.log(`  ${`${k}/`.padEnd(16)} ${String(s.files).padStart(5)} files  ${mb(s.bytes).padStart(9)}`);
     console.log(`release/${NAME}.zip              ${mb(zFull.bytes).padStart(9)}  (${zFull.entries} entries)`);
     console.log(`release/${NAME}-deploy-only.zip  ${mb(zDeploy.bytes).padStart(9)}  (${zDeploy.entries} entries)`);
+    console.log(`release/${NAME}-source-only.zip  ${mb(zSource.bytes).padStart(9)}  (${zSource.entries} entries)`);
     console.log('release/SHA256SUMS.txt');
     console.log(`\nVersion ${version}, built ${iso(builtAt)}, site ${siteUrl}, platform ${legacyUrl}`);
     if (configNote) console.log(`\nNote: ${configNote}.`);

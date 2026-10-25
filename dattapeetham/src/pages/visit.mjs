@@ -300,7 +300,7 @@ const hero = pageHero({
 
 const welcome = `<section id="welcome" class="section vs-welcome" aria-labelledby="welcome-h">
   <div class="wrap">
-    ${kolam({ cols: 9, rows: 2, width: 440, cls: 'vs-dv-kolam' })}
+    ${kolam({ cols: 9, rows: 2, width: 440, range: '0.92,0.66', cls: 'vs-dv-kolam' })}
     <div class="vs-lit">${scrollLit('Persons of *all faiths* are welcome at Avadhoota Datta Peetham.')}</div>
     ${split({
       media: frame(P.hanuman, 'The Karya Siddhi Hanuman temple at the Ashram, with the 70-ft monolithic statue of Hanuman rising above it', { ratio: '4/3', pos: '41% 50%', caption: '<b>Karya Siddhi Hanuman</b>One of the shrines you can visit within the Ashram', badge: 'Mysuru' }),

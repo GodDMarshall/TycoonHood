@@ -2,7 +2,8 @@
 
 > **Status: wired (stage 2).** Every placement below is in the real pages, in
 > all five languages, together with the flute music and the temple sounds.
-> What stage 2 changed, measured and left open is in section 9.
+> What stage 2 changed, measured and left open is in section 9; what the
+> recorded walk-through of every page changed is in section 10.
 
 The client asked for "motion graphics on every page that plant the thought
 'this is devotion' in one's mind". This plan answers with motifs drawn from
@@ -112,11 +113,11 @@ goes. Every motif starts from its `data-devotion` attribute.
 | `lamp-chain` (standalone) | Guru Parampara: a lamp lit from a lamp | `lampChain({ count, axis: 'x'\|'y', range })` | A ledge (or vertical line) of lamps. Light travels along it with scroll; a small taper flame carries it, and each lamp kindles when the light reaches it. The light never goes back. | All lit |
 | `lamp-chain` (attached) | The same, on an existing list | `lampChainAttrs({ nodes, line, diya, at, size, gap, order })` on the list element | A small lamp (flame, or flame on a diya) on each node, lit as the reading line passes it. Use `at: 'below'` to place it under a node that clips its content. Use `order: 'sequence'` for a row of nodes at one height: lit in order when the row comes into view. | All lit |
 | `pushpanjali` | Offering flowers | `pushpanjali({ density, shower, layer })` in a `DV_HOST` | Marigold petals (saffron and yellow, with ruffled edges) and jasmine flowers and buds drift down with depth: far ones soft, a very near one a bokeh blur. They tumble softly. A gentle shower falls when the section first comes into view, then it is sparse; fast scrolling stirs a few more. Each petal is a small pre-drawn element moved only by transform and opacity. | No JS: none. Reduced: a still scatter |
-| `dhoopa` | Offering incense | `dhoopa({ from, wisps, stick, at, height, width })` in a `DV_HOST` | An incense stick with a breathing ember. Thin wisps rise, start to sway, then curl and spread into a soft veil at very low opacity. The canvas is only a column (480px by default) at one side of the section. On phones the stick stands at the very edge. For dark sections. | No JS: none. Reduced: a still frame |
+| `dhoopa` | Offering incense | `dhoopa({ from, wisps, stick, at, height, width })` in a `DV_HOST` | An incense stick with a breathing ember. Thin wisps rise, start to sway, then curl and spread into a soft veil at very low opacity. The canvas is only a column (480px by default) at one side of the section. The stick stands in the margin beside the text column (the host's `.wrap`), so the smoke rises clear of the words; where that margin is narrow (phones, small laptops) it stands at the very edge and the smoke sways less. For dark sections. | No JS: none. Reduced: a still frame |
 | `aarti` | Aarti / pradakshina | `aarti({ gap, period, size })` inside a positioned focal element, or `aartiAround(imgOrSvgHtml, opts)` | A small flame traces a slow clockwise circle with a fading trail of light, then rests at the crown. One circle every 8 s. Around a photograph the path becomes an ellipse with `gap` clear of each edge, and the flame is counter-scaled so it stays a true flame. | The path ring, with the flame at the crown |
 | `padma` | The lotus (seat of the divine, of meditation) | `padma({ size })` (bloom) or `padmaOrnament(sectionHeadHtml)` | Gold line-art lotus: petals open from a bud, the outer ones first, then a bindu kindles above. `padmaOrnament()` swaps the gold ornament that `sectionHead()`/`ornament()` draw for the lotus between two hairlines. | Open |
 | `kolam` | The kolam drawn at the threshold to welcome | `kolam({ cols, rows, width, range })` | A sikku kolam: one unbroken line woven around a dot grid, with diagonal crossings and petal loops at the border. The geometry is computed at build time, so it is deterministic and the line is single when cols and rows are coprime. First the dots appear, then the line is drawn by your scrolling. When it closes, a bead of light runs the line once. On forest it is cream, like rice flour. | Drawn |
-| `nada` | Nada: the primordial sound | `nada({ size, layer: 'behind' })` (rings) or `nada({ variant: 'string' })` (tanpura) | A bindu with rings that breathe outward (about 10 s). While the flute plays (`DP.sound`), the rings brighten and the bindu and rings pulse with its level. The string variant is three shimmering strings of light with a bead travelling along them. | Still rings; still strings |
+| `nada` | Nada: the primordial sound | `nada({ size, layer: 'behind' })` (rings) or `nada({ variant: 'string' })` (tanpura) | A bindu with rings that breathe outward (about 10 s). While the flute plays (`DP.sound`), the rings brighten and the bindu and rings pulse with its level. Behind words (`layer: 'behind'`) the bindu is only a soft warmth, without the white-hot point. The string variant is three shimmering strings of light with a bead travelling along them. | Still rings; still strings |
 | `jyoti-progress` | Carrying the lamp | `JYOTI_ATTR` on `.scroll-progress` | A flame at the reading line's tip | The flame at the tip, still |
 | `ghanta` | Ringing the bell on entering | `ghanta({ side, drop, inset })` inside a positioned section | A brass bell on a chain at the section's top edge. It swings once, with a ring of light humming out, when it first comes into view, on `dp:bell`, and when a pointer touches it. | Hangs still |
 
@@ -169,10 +170,12 @@ mandala stay underneath them.
 | Motif | Where | What it evokes |
 | --- | --- | --- |
 | `dhoopa` | The `ab-statement` section ("… Devotion is His *methodology*"): add `${DV_HOST}` to its class and `${dhoopa({ from: 'left', wisps: 2 })}` as its first child | Incense rising in the stillness of the statement |
-| `lamp-chain` (sequence) | `<ol class="ab-lineage-row" data-stagger${lampChainAttrs({ nodes: '.ab-guru-ring', diya: true, at: 'below', size: 32, gap: 16, order: 'sequence' })}>`, plus in `about.css`: `.page-about .ab-guru-num { margin-top: 50px; }` | The four Gurus of the row, lit one from the next, from Lord Dattatreya to Sri Swamiji |
+| `lamp-chain` (sequence) | `<ol class="ab-lineage-row" data-stagger${lampChainAttrs({ nodes: '.ab-guru-ring', diya: true, at: 'below', size: 32, gap: 22, order: 'sequence' })}>`, plus in `about.css`: `.page-about .ab-guru-num { margin-top: 56px; }` | The four Gurus of the row, lit one from the next, from Lord Dattatreya to Sri Swamiji |
 
 Tested at 1440 and 390. The incense stands at the left edge. The lineage
-lamps need the 50px margin: without it the lamp covers the "01" label. They
+lamps need the 56px margin: without it the lamp covers the "01" label. (The
+gap was 16 and the margin 50 until the walk-through in section 10: the flame's
+tip touched the portrait's gold ring.) They
 also need a positioned parent, as `at: 'below'` requires
 (`.page-about .ab-guru > a { position: relative; }`, added in stage 2):
 without it the four lamps were placed against each `<li>` while the stagger
@@ -204,10 +207,12 @@ text.
 | Motif | Where | What it evokes |
 | --- | --- | --- |
 | `ghanta` | `timingsSection`: insert `${ghanta({ side: 'right', drop: 72 })}` right after `<section id="timings" class="section section-paper dn-timings-sec">` | Ringing the bell as you enter for darshan; it swings with the section bell when temple sounds are on |
-| `aarti` | `prayerHall`: in `<figure class="dn-inset">`, wrap the image: `${aartiAround(img(pic.kaalaagni, 'Sri Swamiji offers arati to Kaalaagni Shamana Dattatreya, the main deity of the Peetham'), { gap: 18, size: 30 })}` | The photograph is of the arati itself: the flame circles it as the lamp circles the deity |
+| `aarti` | `prayerHall`: as the last child of `<figure class="dn-inset">` (after its `<figcaption>`), `${aarti({ gap: 18, size: 30 })}`, so the flame circles the whole inset, the photograph and its name | The photograph is of the arati itself: the flame circles it as the lamp circles the deity |
 | `deepaDivider` (5) | `render`: between `${festivalsSection}` and `${ctaBand({`, insert `${deepaDivider({ count: 5 })}` | Lamps lit before "Come for darshan" |
 
-Tested at 1440 and 390. The ellipse hugs the 4:5 inset with 18px clear.
+Tested at 1440 and 390. The ellipse hugs the inset card with 18px clear. (Until
+the walk-through in section 10 it circled the photograph alone, so every circle
+passed across the caption beneath it.)
 On a phone the inset sits about 36px from the screen edge; if a placement
 leaves less room than the gap plus the flame, the script closes the path in
 (down to 4px) so the flame never passes the edge of the screen.
@@ -216,7 +221,7 @@ leaves less room than the gap plus the flame, the script closes the path in
 
 | Motif | Where | What it evokes |
 | --- | --- | --- |
-| `pushpanjali` | `festivalsSection`: `<section id="festivals" class="section section-dark grain ev-year ${DV_HOST}">` and `${pushpanjali({ density: 0.8 })}` as its first child | The festival year: flowers of celebration (the `.grain` overlay stays on top) |
+| `pushpanjali` | `festivalsSection`: `<section id="festivals" class="section section-dark grain ev-year ${DV_HOST}">` and `${pushpanjali({ density: 0.6 })}` as its first child | The festival year: flowers of celebration (the `.grain` overlay stays on top). Density 0.6 (was 0.8): the section's month dial already moves |
 | `padmaOrnament` | `calendarSection`: `padmaOrnament(sectionHead({ … }))` | The lotus over the calendar |
 
 The flowers were looked at on screen at 1440 and 390, the ornament at 1440.
@@ -250,14 +255,15 @@ layout.
 | `dhoopa` | `#breath`: `<section class="section section-dark ky-breath-section grain ${DV_HOST}" …>` and `${dhoopa({ from: 'left', wisps: 2, height: '560px' })}` as its first child | Incense in meditation; prana flowing like smoke. It is quiet beside the existing breathing circle. |
 
 The lotus was looked at on screen at 1440, the incense at 1440 and 390. The
-stick stands bottom-left, under the "circle is illustrative" note. If that feels crowded, use `from: 'right'` with
-`height: '420px'`; this was not tried.
+stick stands bottom-left, in the margin left of the text column. (Until the
+walk-through in section 10 it stood under the note, at the column's first
+letters, and its smoke drifted up behind the paragraphs.)
 
 ### seva — low
 
 | Motif | Where | What it evokes |
 | --- | --- | --- |
-| `lamp-chain` (standalone, 5) | `.seva-creed`: right after `<p class="creed-note" …>…</p>`, insert `${lampChain({ count: 5, cls: 'seva-dv-chain' })}`, plus in `seva.css`: `.page-seva .seva-dv-chain { margin-top: 28px; }` | "Service to mankind is service to God": one act of service kindles the next, a lamp lit from a lamp |
+| `lamp-chain` (standalone, 5) | `.seva-creed`: right after `<p class="creed-note" …>…</p>`, insert `${lampChain({ count: 5, range: '0.9,0.62', cls: 'seva-dv-chain' })}`, plus in `seva.css`: `.page-seva .seva-dv-chain { margin-top: 28px; }` | "Service to mankind is service to God": one act of service kindles the next, a lamp lit from a lamp. The range has all five lit by the time the creed is mid-screen (the default left a reader who paused there with three of five) |
 | `pushpanjali` | `#donate`: `<section id="donate" class="section section-paper seva-donate ${DV_HOST}">` and `${pushpanjali({ density: 0.6 })}` | The offering: "Your offering sustains …" |
 
 Looked at on screen at 1440. The flowers fall behind the fund cards.
@@ -266,7 +272,7 @@ Looked at on screen at 1440. The flowers fall behind the fund cards.
 
 | Motif | Where | What it evokes |
 | --- | --- | --- |
-| `kolam` (9 × 2) | `welcome`: right before `<div class="vs-lit">`, insert `${kolam({ cols: 9, rows: 2, width: 440, cls: 'vs-dv-kolam' })}` | The kolam drawn at the doorstep to welcome guests, above "Persons of all faiths are welcome" |
+| `kolam` (9 × 2) | `welcome`: right before `<div class="vs-lit">`, insert `${kolam({ cols: 9, rows: 2, width: 440, range: '0.92,0.66', cls: 'vs-dv-kolam' })}`, plus in `visit.css`: `.page-visit .vs-dv-kolam { margin-bottom: clamp(16px, 2.2vw, 28px); }` | The kolam drawn at the doorstep to welcome guests, above "Persons of all faiths are welcome". It closes as it reaches the middle of the screen, then the bead runs; with the default range a reader stopping at the saying saw a half-drawn line with a loose end |
 | `ghanta` | `guidelinesSection`: insert `${ghanta({ side: 'right', drop: 64 })}` right after `<section id="guidelines" …>` | The bell at the temple door: before you travel |
 
 The kolam was looked at on screen at 1440 and 390, the bell at 1440. The
@@ -490,30 +496,61 @@ byte-identical). The build writes the loop plan on `[data-sound]` from
 `assets/audio/manifest.json`:
 
 - **When element A reaches 221.21 s (the loop plus 3.46 s), element B,
-  started at 3.46 s, plays the same music**, and the two cross over (equal
-  power, 0.6 s) inside the tanpura's quiet stretch after the kharaj pluck. No
-  pluck is doubled or dropped and no part of the loop is skipped. (The tail
-  is 4.6 s rather than the 3.35 s first suggested so that it holds that
-  quiet stretch, 3.36–4.55 s into each cycle.)
-- **B is put in step while it is silent.** It starts 1.6 s early at gain 0
-  and is seeked until its `currentTime` agrees with A's. Recording the
-  output in Chromium 141 against the file showed that `currentTime` is not
-  quite what is heard: **an MP3 element positioned by a seek into the first
-  half of the file (`#t=`, or `currentTime` before or during play) sounds one
-  MP3 frame, 1152 samples (26.1 ms), later than its `currentTime` says**;
-  seeked into the second half (the split is at half the duration, measured
-  between 110.8 and 111.5 s), or playing on from 0, it sounds where
-  `currentTime` says. B (always seeked near the start) therefore aims ahead
-  of A by that frame unless A was itself seeked into the first half. Matching
-  the two by their actual output at run time was tried and dropped: the
-  drone is so periodic that short snapshots alias by whole kharaj periods
-  (27 ms).
-- **Measured, by recording the speakers and matching them to the file**
-  (Chromium 141, headless): before the lead, every crossfade jumped the music
-  back 26.1 ms (nine of nine, every flow); with it, the jump is +1.9 to
-  +3.1 ms on a page resumed with `#t=` (three runs), and −4.7 ms on the second
-  loop of the same page. Through the fade the level stays within −0.9/+1.6 dB
-  of the uninterrupted file and no 10 ms frame drops out.
+  started at 3.46 s, plays the same music**, and the two cross over (0.6 s)
+  inside the tanpura's quiet stretch after the kharaj pluck. No pluck is
+  doubled or dropped and no part of the loop is skipped. (The tail is 4.6 s
+  rather than the 3.35 s first suggested so that it holds that quiet
+  stretch, 3.36–4.55 s into each cycle.)
+- **B is put in step while it is silent, in two stages.** It starts 2.8 s
+  early at gain 0.
+  1. *By `currentTime`:* it is seeked until it leads A by 8 ms by ear.
+     Recording the output in Chromium 141 against the file showed that
+     `currentTime` is not quite what is heard: **an MP3 element positioned
+     by a seek into the first half of the file (`#t=`, or `currentTime`
+     before or during play) sounds one MP3 frame, 1152 samples (26.1 ms),
+     later than its `currentTime` says**; seeked into the second half (the
+     split is at half the duration, measured between 110.8 and 111.5 s), or
+     playing on from 0, it sounds where `currentTime` says. The aim allows
+     for that frame. A seek still lands a few milliseconds off, and for
+     this drone that is as good as two unrelated copies: measured on the
+     file, the correlation of the drone with itself falls to 0.44 at 0.5 ms,
+     0.23 at 1 ms and about 0 by 1.5 ms. Faded together they comb-filter.
+  2. *By what the two actually play (ship stage):* each element's path is
+     tapped (an `AnalyserNode` between its `DelayNode` and its gain), B's
+     lead over A is measured to the sample by cross-correlating the two
+     taps (8192 samples each), and the `DelayNode` on B's path takes it up.
+     B's lead is searched from −6 to +20 ms (the aim is 8 ms), a span
+     shorter than the drone's 27.2 ms period (where the drone's correlation
+     with itself is 0.96), so it cannot lock onto a period instead of the
+     true lead; the nearer
+     secondary peaks (6.8 ms, 13.6 ms) reach only 0.58 and 0.75 against
+     1.0 at the true lead. A measurement counts only when the next one
+     (100 ms later) repeats it within 3 samples, because two taps read a
+     render quantum apart would differ by 128 samples; there are at most 14
+     measurements a loop, each a few milliseconds of main-thread time (more
+     on a phone). Once the residual is
+     within 2 samples the fade uses **equal-gain** curves (sin², cos²: the
+     two are one signal, and equal power would swell it by up to 3 dB); if
+     that is never reached (no taps, a very busy machine) it falls back to
+     equal power, as before. `DP.sound.loop().last` reports `fine`, the
+     `delay` used, the number of `measures` and the `curve`.
+- **Measured, by recording the speakers on the audio thread and matching
+  them to the file** (Chromium 141, headless, real nginx; the harness
+  stayed in the agency's working folder):
+  - *Before the ship stage* (stage 1 only): on every run the two copies
+    were 2.6–3.9 ms apart through the fade, so the drone was doubled for
+    0.6 s once a loop (correlation with the file down to 0.61–0.69, against
+    1.0 outside the fade), and on a fresh start, where the two happened to
+    be in step, the equal-power curves swelled the level by up to +2.7 dB.
+  - *After* (four runs of the final code: resumed at 211 s and at 100 s,
+    100 s being a first-half seek where the one-frame offset applies; then
+    at 211 s and 150 s with three of the machine's four cores kept busy):
+    in every run the correlation with the file through the fade was
+    0.9998–0.9999 (as outside it), the level within 0.01 dB, no jump
+    (0.00 ms), no silent frame and no dropped render quantum. B was found
+    3.3 to 12.0 ms ahead and held back by exactly that, from four
+    measurements, with no reseek, and the fade used equal-gain curves every
+    time.
 - **If B cannot start** (a network failure), A goes round by itself with a
   seek back by one loop at 221.7 s: a gap of a few milliseconds in the drone.
   Tested by making B's `play()` fail.
@@ -584,11 +621,71 @@ On the built `site/` over HTTP (the dev server), Chromium 141 headless:
   sounds on speakers or headphones, and the shankha needs the Peetham's
   approval before `SHANKHA` is switched on.
 - **iOS Safari and Firefox were not tested.** The one-frame seek offset was
-  measured in Chromium only; elsewhere the crossfade may sit up to 26 ms off,
-  as every crossfade did before (inaudible as a click, a brief phasing of the
-  drone at most). iOS Safari playing two media elements through Web Audio at
-  once during the 0.6 s fade is also untested.
+  measured in Chromium only, but the sample alignment measures what the two
+  players actually output, so it does not depend on it. If a browser cannot
+  tap a media element (an `AnalyserNode` after a `MediaElementSource`), the
+  fade falls back to equal power: a brief phasing of the drone once a loop
+  at most, as before. iOS Safari playing two media elements through Web
+  Audio at once during the 0.6 s fade is also untested.
 - **The floating sound button** (bottom left, like back-to-top on the right)
   sits over page content as the reader scrolls on phones; it tucks away at
   the top of each page while nothing sounds, and the footer leaves room for
   it.
+
+## 10. The walk-through (stage 2)
+
+Every page was recorded as a visitor meets it, and the recordings were
+looked at frame by frame, motif by motif:
+
+- the first visit, from the opening curtain through "Enter with flute
+  music";
+- a steady read of each of the 16 English pages at 1440 × 900 (about 420 px
+  a second, pausing three seconds wherever a motif comes into view, then at
+  the footer lamps), with the flute and the temple sounds on;
+- Home, Darshan and Guru Parampara on a 390 × 844 phone, and `kn/index` at
+  both sizes; the invitation and the sound panel in Kannada.
+
+The frames were rendered at a fixed page time per frame (headless Chromium
+with begin-frame control and virtual time), so every motif moves at its real
+speed in the recordings however loaded the machine was. Each change below was
+recorded again afterwards and looked at.
+
+### Changed
+
+| Where | What the recording showed | Change |
+| --- | --- | --- |
+| Media, Music, Attractions (`nada`, behind words) | The bindu's white-hot core sat on "in" of "Listen in stillness" and between the lines of the two quotes, pulsing with the flute: a glare on the text. The `.72` opacity meant for it never applied (the breathing animation sets opacity). | Behind words the bindu is a soft warmth with its own gentle breathing (`devotion-motion.css`); the rings carry the motif. |
+| Kriya Yoga (`dhoopa`) | The stick stood under the first letters of the paragraphs (30 % of the canvas, 144 px, with the text column at 132 px) and its smoke rose behind the words. | The stick stands in the margin beside the host's `.wrap` text column (66 px at 1440); where the margin is under 80 px it stands at the very edge and the smoke sways less (`devotion-motion.js`, every incense placement). |
+| Darshan (`aarti`) | The ellipse circled the photograph alone, so every circle crossed the caption beneath it; an ellipse through the middle of each edge also cuts the corners. | `aarti()` now circles the whole inset card (`darshan.mjs`), and where the screen leaves room the ellipse is widened evenly until it also clears the corners (`devotion-motion.js`). |
+| Visit (`kolam`) | A reader stopping at "Persons of all faiths are welcome" saw the line half drawn with a loose end, and the kolam sat on the saying. | `range: '0.92,0.66'`: it closes as it reaches the middle of the screen and the bead runs; a margin below it (`visit.css`). |
+| Seva (`lamp-chain`) | Three or four of five lamps lit while the creed was being read. | `range: '0.9,0.62'`: all five are lit by then. |
+| Home, Teachings (`deepa-row` under a saying) | The flames rose to within a few pixels of the last line's descenders. | A breath of space above a lamp row inside a `<figure>` (`devotion-motion.css`). |
+| About (lineage lamps) | The flame's tip touched each portrait's gold ring. | `gap: 22` (was 16), `.ab-guru-num` margin 56 px (was 50). |
+| Events (`pushpanjali`) | About thirteen petals at once over a section whose month dial also moves, crossing the heading and the paragraph. | `density: 0.6` (was 0.8). |
+
+### Looked at and kept
+
+The curtain and its invitation (at 1440, 390 and in Kannada), the sound
+button over light and dark sections, the panel and its credit; the reading
+lamp; the footer lamps before the closing prayer on every page; the lotus
+ornaments; the lineage diyas on Guru Parampara; the Sri Swamiji timeline
+flames; the Guru Purnima and About incense; the Darshan and Visit bells; the
+Home and Seva flowers; the Centres row of sixteen; the tanpura strings on
+Music; the single lamp on the 404 page. No page scrolled sideways in any
+recording (measured at the end of each).
+
+### Still open (larger than a placement)
+
+- **The aarti on phones.** At 390 the inset card sits 14 px from the screen's
+  edge, so the ellipse keeps its snug fit and the flame still passes the
+  corners of the card, near the first and last letters of its three-line
+  caption, once a circle. A path that follows the card's rounded rectangle
+  (`offset-path`) would fix it everywhere; Safari support for that should be
+  checked first.
+- **Flowers behind headings.** On Home and Seva the petals of the closing
+  offering pass behind "Support the Peetham's seva". They are behind the
+  text and sparse; a host that starts below the heading would keep them to
+  the cards and buttons.
+- **The bells are small and far right** (Darshan, Visit), in the gutter at the
+  section's top. That is restrained; if the Peetham wants the bell noticed,
+  hang it beside the section's heading instead.
