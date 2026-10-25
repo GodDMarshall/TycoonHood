@@ -541,3 +541,44 @@ test('dev server: byte ranges for the audio', () => {
   assert.deepEqual(byteRange('bytes=100-', 100), { unsatisfiable: true });
   assert.equal(byteRange('bytes=0-1,5-9', 100), null, 'several ranges: the whole file');
 });
+
+// polish-sound: the loop's fade curve, the first-visit curtain and the fling guard, read from
+// the shipped script (curves() is evaluated as written there)
+test('sound: the crossfade keeps the level for any likeness of the two players (equal gain when in step)', async () => {
+  const js = await readFile(join(SITE, 'assets/js/devotion-sound.js'), 'utf8');
+  const src = /function curves\(r\) \{[\s\S]*?\n {2}\}/.exec(js);
+  assert.ok(src, 'curves() in devotion-sound.js');
+  const curves = new Function(`var CURVES = {};\n${src[0]}\nreturn curves;`)();
+  for (const r of [-0.3, 0, 0.2, 0.5, 0.8, 1]) { // (curves() works in steps of 0.02)
+    const [up, down] = curves(r);
+    assert.ok(up.length >= 32 && up.length === down.length, `r=${r}: curve length`);
+    const n = up.length - 1;
+    assert.ok(Math.abs(up[0]) < 1e-6 && Math.abs(down[0] - 1) < 1e-6 && Math.abs(up[n] - 1) < 1e-6 && Math.abs(down[n]) < 1e-6, `r=${r}: from A alone to B alone`);
+    for (let k = 0; k <= n; k++) {
+      const p = up[k] ** 2 + down[k] ** 2 + 2 * r * up[k] * down[k]; // power of the sum of two signals correlated r
+      assert.ok(Math.abs(p - 1) < 1e-4, `r=${r}, point ${k}: power of the sum ${p.toFixed(5)}`);
+      if (k && r >= 0) assert.ok(up[k] >= up[k - 1] && down[k] <= down[k - 1], `r=${r}, point ${k}: not monotonic`);
+      assert.ok(up[k] <= 1.1 && down[k] <= 1.1, `r=${r}, point ${k}: a gain above 1.1`);
+    }
+  }
+  const [u, d] = curves(1);
+  u.forEach((x, k) => assert.ok(Math.abs(x + d[k] - 1) < 1e-6, 'in step to the sample: the gains add to one (equal gain, no 3 dB swell)'));
+});
+
+test('sound: an unanswered first-visit question lifts the curtain after about 4 s and carries on as the corner card', async () => {
+  const js = await readFile(join(SITE, 'assets/js/devotion-sound.js'), 'utf8');
+  const ask = +(/\bASK = (\d+)/.exec(js) || [])[1];
+  assert.ok(ask >= 3000 && ask <= 4500, `the curtain holds the question ${ask} ms`);
+  assert.match(js, /if \(withMusic === undefined\) offer\(inv, \d+\)/, 'unanswered: the question moves to the card');
+  assert.match(js, /function toPage\(\)/, 'focus goes back to the start of the page');
+  const css = await readFile(join(SITE, 'assets/css/devotion-sound.css'), 'utf8');
+  assert.match(css, /\.snd-inviting \.intro \{[^}]*animation: snd-lift [^}]*var\(--snd-hold/, 'the CSS still lifts the curtain if the script stops');
+});
+
+test('sound: a fling is read from the wheel and the finger, and a temple sound that falls due waits for it', async () => {
+  const js = await readFile(join(SITE, 'assets/js/devotion-sound.js'), 'utf8');
+  assert.match(js, /addEventListener\(IN\[0\], onWheel/, 'wheel steps are watched while the temple sounds are on');
+  assert.match(js, /'touchmove'/, 'and the finger');
+  const hold = +(/\bHOLD = (\d+)/.exec(js) || [])[1];
+  assert.ok(hold >= 150 && hold <= 400, `a chime or section bell that falls due waits ${hold} ms`);
+});

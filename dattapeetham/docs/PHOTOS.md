@@ -811,7 +811,13 @@ stage-1 build, after = this one).
    width) but the measured width, so Chromium and Safari pick alike. The page
    heroes are eager and preloaded and state their own: full-bleed `100vw`
    (the phone's LCP, see below), the home hero `(min-width: 1181px) 86vw,
-   100vw` and Sri Swamiji's arch `(min-width: 981px) 1030px, 440px`.
+   100vw` and Sri Swamiji's arch `(min-width: 981px) 1030px, 440px`. `img()`
+   in src/components.mjs multiplies every length in an eager photo's sizes by
+   0.97 (`slackSizes`), so the built pages carry `97vw`, `(min-width: 1181px)
+   83.42vw, 97vw` and `(min-width: 981px) 999.1px, 426.8px`; site.js applies
+   the same 3 % slack to lazy photos before they load. The Music page's disc
+   photo states its drawn size: `(min-width: 1024px) 390px, (min-width: 768px)
+   270px, 58vw`.
    `tests/photos.test.mjs` fails when a lazy photo has no measured entry or
    the table names a photo no longer on its page; `node
    tools/measure-sizes.mjs --check` tells whether the table still matches the

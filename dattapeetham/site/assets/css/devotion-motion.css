@@ -22,6 +22,8 @@
   --dv-svg-sheen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 30'%3E%3Cdefs%3E%3CradialGradient id='g' cx='56' cy='7' r='30' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23ffe6ad' stop-opacity='.95'/%3E%3Cstop offset='.45' stop-color='%23ffc766' stop-opacity='.35'/%3E%3Cstop offset='1' stop-color='%23ffc766' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M5 10.2C5.6 19.6 15.4 26.6 28.6 26.6 38.6 26.6 45.6 22.6 50.2 17.2 53.2 13.8 56 10.6 60.4 7.4 61 7 60.8 6.3 60 6.3 55.4 6.4 51.4 7.8 47.6 9.4 45 6.8 36.4 5.4 26.4 5.4 15.6 5.4 6.4 7.2 5 10.2Z'/%3E%3C/svg%3E");
   --dv-svg-bell: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 52'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%234f3711'/%3E%3Cstop offset='.2' stop-color='%238a6628'/%3E%3Cstop offset='.38' stop-color='%23d2ad63'/%3E%3Cstop offset='.47' stop-color='%23f6e4b0'/%3E%3Cstop offset='.58' stop-color='%23c9a45c'/%3E%3Cstop offset='.82' stop-color='%237d5b22'/%3E%3Cstop offset='1' stop-color='%2346300d'/%3E%3C/linearGradient%3E%3ClinearGradient id='l' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%236b4c1a'/%3E%3Cstop offset='.45' stop-color='%23f0d897'/%3E%3Cstop offset='1' stop-color='%235a3f12'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='20' cy='4.6' r='3.4' fill='none' stroke='url(%23b)' stroke-width='1.8'/%3E%3Cpath fill='url(%23b)' d='M17 8.2h6l.6 2.6h-7.2Z'/%3E%3Cpath fill='url(%23b)' d='M20 10.4C12.6 10.4 9.4 15.6 9 23.6 8.6 32.4 7.4 38.6 3.4 43.2 3 43.8 3.4 44.6 4.2 44.6H35.8C36.6 44.6 37 43.8 36.6 43.2 32.6 38.6 31.4 32.4 31 23.6 30.6 15.6 27.4 10.4 20 10.4Z'/%3E%3Cpath fill='none' stroke='%23fff4d6' stroke-width='1' stroke-linecap='round' opacity='.55' d='M15.4 14.4C13 18 12.6 24 12.2 30'/%3E%3Cpath fill='none' stroke='%235a3f12' stroke-width='.8' opacity='.55' d='M9 23.6C15 25.2 25 25.2 31 23.6M8.2 33C15 35 25 35 31.8 33'/%3E%3Crect x='2' y='43.4' width='36' height='3.4' rx='1.7' fill='url(%23l)'/%3E%3C/svg%3E");
   /*SVG-URIS:end*/
+  /* the tongue above, drawn once as a 48 x 96 bitmap (2 KB): what phones flicker (see .dv-lite) */
+  --dv-img-tongue: url("data:image/webp;base64,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");
 }
 
 .dv { position: relative; pointer-events: none; -webkit-user-select: none; user-select: none; }
@@ -67,6 +69,37 @@
 }
 @keyframes dv-core { 0%, 100% { transform: scale(1, 1); opacity: .92; } 50% { transform: scale(.9, 1.07); opacity: 1; } }
 @keyframes dv-halo { from { transform: scale(.93); } to { transform: scale(1.06); } }
+/* Phones and tablets (no hover, or a coarse pointer: the same test the script makes for its
+   html.dv-lite; a media query here rather than that class, because a class set on <html> after the
+   first paint restyled the whole page once). Each running animation costs the main
+   thread a style update every frame, so a flame flickers with its tongue alone; the halo and the
+   white-hot core hold still. The tongue flickers by its background size rather than by transform:
+   a running transform animation is handed to the compositor, and the browser must then assume it
+   may cover anything painted after it, so the page behind every lamp was cut into extra layers
+   (on Guru Parampara at 390, 18 to 37 more layers than without the motifs, each costing the main
+   thread every frame; now 1 to 9). A size change repaints the flame, so it is drawn from a small
+   bitmap of the same tongue (the SVG, redrawn at a new size each frame, cost three times as
+   much), and it changes in small steps, about seven a second, so a flame repaints a few times a
+   second rather than every frame. The box is grown so the flicker never crops the tip. While the
+   page moves (html.dv-moving) the flames and the nada rings hold still, and take up again when
+   the reader stops. */
+@media (hover: none), (pointer: coarse) {
+  .dv-flame::before, .dv-flame > i { animation: none; }
+  .dv-flame::after { inset: -9% -5% 0; background-image: var(--dv-img-tongue); background-size: 91.7% 91.7%; animation-name: dv-flicker-paint; animation-timing-function: steps(3, end); }
+}
+@keyframes dv-flicker-paint {
+  0%, 100% { background-size: 91.7% 91.7%; }
+  13% { background-size: 88% 97.2%; }
+  29% { background-size: 94.4% 87.1%; }
+  44% { background-size: 87.1% 99%; }
+  61% { background-size: 93.5% 88.9%; }
+  77% { background-size: 89% 95.4%; }
+  89% { background-size: 92.6% 89.8%; }
+}
+/* each selector ends in a class (never in *), so toggling the class on <html> restyles only these
+   elements: with .dv-nada * and .dv-aarti * it restyled the whole page at every start and stop of
+   a scroll (46 ms a time on Home, measured) */
+html.dv-moving .dv-flame::after, html.dv-moving .dv-nada-ring, html.dv-moving .dv-nada-bindu, html.dv-moving .dv-aarti-trail, html.dv-moving .dv-aarti-arm, html.dv-moving .dv-aarti-hold { animation-play-state: paused; }
 
 /* ---------------- the brass diya ---------------- */
 .dv-lamp { position: relative; display: block; flex: none; width: var(--dv-s, 34px); height: calc(var(--dv-s, 34px) * 1.04); }
@@ -123,7 +156,9 @@ figure > .dv-deepa:not(:first-child) { margin-top: clamp(10px, 1.3vw, 18px); }
 .dv-chain.is-moving .dv-chain-tip { opacity: 1; }
 .dv-chain-tip .dv-flame { --dv-s: 26px; bottom: -2px; }
 .section-dark .dv-chain-line, .dv-on-dark .dv-chain-line { background: rgba(226, 200, 142, .22); }
-/* attached to an existing list: one lamp per node */
+/* attached to an existing list: one lamp per node. In a list whose progress the page writes every
+   frame, the lamps hang in a layer just after it (the script places each one) */
+.dv-node-layer { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 2; }
 .dv-node-lamp { position: absolute; left: 50%; top: 50%; width: 0; height: 0; z-index: 2; pointer-events: none; --dv-s: 30px; }
 .dv-node-lamp[data-at="top"] { top: 0; }
 .dv-node-lamp[data-at="bottom"] { top: 100%; }
@@ -169,6 +204,22 @@ figure > .dv-deepa:not(:first-child) { margin-top: clamp(10px, 1.3vw, 18px); }
 /* on dark grounds the path is a thread of light */
 .section-dark .dv-aarti-ring, .dv-on-dark .dv-aarti-ring, .page-hero .dv-aarti-ring, .hero .dv-aarti-ring, .cta-box .dv-aarti-ring, .site-footer .dv-aarti-ring { border-color: rgba(226, 200, 142, .16); }
 .section-dark .dv-aarti-trail, .dv-on-dark .dv-aarti-trail, .page-hero .dv-aarti-trail, .hero .dv-aarti-trail, .cta-box .dv-aarti-trail, .site-footer .dv-aarti-trail { background: conic-gradient(from 0deg, rgba(255, 214, 140, 0) 0deg 216deg, rgba(255, 214, 140, .18) 290deg, rgba(255, 236, 190, .85) 360deg); }
+
+/* Near the screen edge (the Darshan inset on a phone) the flame follows the card's outline, a
+   rounded frame --dv-gap clear of it (.is-frame, built by the script): the circle is set aside, a
+   point carries the flame along the frame (a Web Animation of transform), and four sparks follow
+   it as its trail of light. */
+.dv-aarti.is-frame .dv-aarti-orbit { display: none; }
+.dv-aarti-frame { position: absolute; inset: 0; }
+.dv-aarti-fring { position: absolute; inset: 0; border-radius: var(--dv-fr, 24px); border: 1px solid rgba(180, 138, 67, .2); }
+.dv-aarti-mover, .dv-aarti-spark { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.dv-aarti-spark { opacity: 0; }
+.dv-aarti-spark::before { content: ""; position: absolute; left: -2.5px; top: -2.5px; width: 5px; height: 5px; border-radius: 50%; background: rgba(255, 228, 168, .9); box-shadow: 0 0 6px 2px rgba(240, 186, 98, .45); }
+.dv-aarti-spark:nth-child(3)::before { transform: scale(.82); opacity: .75; }
+.dv-aarti-spark:nth-child(4)::before { transform: scale(.66); opacity: .55; }
+.dv-aarti-spark:nth-child(5)::before { transform: scale(.5); opacity: .38; }
+.dv-aarti-mover .dv-aarti-lamp { transform: none; }
+.section-dark .dv-aarti-fring, .dv-on-dark .dv-aarti-fring, .cta-box .dv-aarti-fring, .site-footer .dv-aarti-fring { border-color: rgba(226, 200, 142, .16); }
 
 /* aartiAround(): the wrapper the circle is measured on */
 .dv-focal { position: relative; display: block; }
@@ -226,6 +277,15 @@ figure > .dv-deepa:not(:first-child) { margin-top: clamp(10px, 1.3vw, 18px); }
 .dv-nada.dv-nada--behind .dv-nada-bindu { background: radial-gradient(circle, rgba(255, 226, 160, .5) 0, rgba(246, 205, 125, .2) 38%, rgba(240, 190, 100, 0) 70%); animation-name: dv-nada-breathe-soft; }
 @keyframes dv-nada-breathe-soft { 0%, 100% { opacity: .5; } 50% { opacity: .75; } }
 .dv-nada-string { display: block; width: 100%; height: 120px; }
+/* phones and tablets: three rings, evenly spaced, and a still bindu (each running ring is a style
+   update every frame; on Music the five rings and the breathing bindu were a fifth of the page's
+   style work while scrolling past the quote) */
+@media (hover: none), (pointer: coarse) {
+  .dv-nada-ring:nth-child(n+4) { display: none; }
+  .dv-nada-ring { animation-delay: calc(var(--i) * -3.333s); }
+  .dv-nada .dv-nada-bindu { animation: none; opacity: .9; }
+  .dv-nada.dv-nada--behind .dv-nada-bindu { opacity: .62; }
+}
 
 /* ---------------- 9 · jyoti progress (the reading lamp) ---------------- */
 .dv-jyoti { position: absolute; left: 0; top: 2px; width: 0; height: 0; opacity: 0; transition: opacity .7s ease-out; will-change: transform; }
@@ -234,6 +294,21 @@ figure > .dv-deepa:not(:first-child) { margin-top: clamp(10px, 1.3vw, 18px); }
 .dv-jyoti .dv-flame { --dv-s: 34px; bottom: -1px; }
 .dv-jyoti .dv-flame::before { width: calc(var(--dv-fw) * 4); height: calc(var(--dv-fw) * 4); margin: calc(var(--dv-fw) * -2) 0 0 calc(var(--dv-fw) * -2); opacity: .9; }
 .dv-jyoti-bead { position: absolute; left: -2.5px; top: -3.5px; width: 5px; height: 5px; border-radius: 50%; background: #fffaf0; box-shadow: 0 0 6px 2px rgba(255, 214, 140, .85); }
+/* the pace of reading (classes set by the script only when it changes): carried forward, the flame
+   streams back; reading on, it lengthens; faster, longer still; scrolling back, it turns */
+.dv-jyoti.is-moving .dv-jyoti-flame { transform: rotate(-90deg) scale(.84, .98); }
+.dv-jyoti.is-fast .dv-jyoti-flame { transform: rotate(-90deg) scale(.98, 1.4); }
+.dv-jyoti.is-back .dv-jyoti-flame { transform: rotate(90deg) scale(.8); }
+.dv-jyoti.is-back.is-moving .dv-jyoti-flame { transform: rotate(90deg) scale(.84, .98); }
+.dv-jyoti.is-back.is-fast .dv-jyoti-flame { transform: rotate(90deg) scale(.98, 1.4); }
+/* a scroll timeline carries the lamp (no script per frame): a box as wide as the line slides in
+   from the left with the page's progress, the flame and bead riding its leading edge */
+@supports (animation-timeline: scroll()) {
+  .dv-jyoti.is-sdt { width: 100%; animation: dv-jyoti-run linear both; animation-timeline: scroll(root block); }
+  .dv-jyoti.is-sdt .dv-jyoti-flame { left: auto; right: 3px; }
+  .dv-jyoti.is-sdt .dv-jyoti-bead { left: auto; right: .5px; }
+}
+@keyframes dv-jyoti-run { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 
 /* ---------------- 10 · ghanta ---------------- */
 .dv-ghanta { position: absolute; top: 0; right: max(var(--dv-gi, var(--gutter, 24px)), 22px); width: 28px; height: calc(var(--dv-drop, 64px) + 40px); z-index: 2; pointer-events: auto; }
@@ -250,6 +325,18 @@ figure > .dv-deepa:not(:first-child) { margin-top: clamp(10px, 1.3vw, 18px); }
 .dv-ghanta.is-ringing .dv-ghanta-swing { animation: dv-swing 3s cubic-bezier(.33, 0, .3, 1) 1; }
 .dv-ghanta.is-ringing .dv-ghanta-clapper { animation: dv-clapper 3s ease-in-out 1; }
 .dv-ghanta.is-ringing .dv-ghanta-hum { animation: dv-hum 1.8s cubic-bezier(.2, .7, .3, 1) .22s 1; }
+/* beside the section's heading (ghanta({ beside })): a little larger, placed by the script after
+   the end of a line of the heading; the chain fades upward, as if it hung from the beam above.
+   Unplaced (no script) it is not shown. */
+.dv-ghanta--beside { --dv-gw: clamp(32px, 1.2vw + 24px, 42px); top: 0; right: auto; left: 0; width: var(--dv-gw); height: calc(var(--dv-drop, 44px) + var(--dv-gw) * 1.3 + 4px); opacity: 0; pointer-events: none; transition: opacity .6s ease-out; }
+.dv-ghanta--beside.is-placed { opacity: 1; pointer-events: auto; }
+.dv-ghanta--beside .dv-ghanta-bell { width: var(--dv-gw); height: calc(var(--dv-gw) * 1.3); }
+.dv-ghanta--beside .dv-ghanta-chain { -webkit-mask: linear-gradient(180deg, transparent, #000 60%); mask: linear-gradient(180deg, transparent, #000 60%); }
+.dv-ghanta--beside .dv-ghanta-clapper { width: 6px; height: 7px; margin-left: -3px; }
+.dv-ghanta--beside .dv-ghanta-hum { top: calc(var(--dv-drop, 44px) + var(--dv-gw) * .64); }
+/* beside words the swing is gentler (8 degrees at most), so the lip keeps clear of them */
+.dv-ghanta--beside.is-ringing .dv-ghanta-swing { animation-name: dv-swing-sm; }
+@keyframes dv-swing-sm { 0% { transform: rotate(0); } 11% { transform: rotate(8deg); } 28% { transform: rotate(-6deg); } 45% { transform: rotate(4deg); } 61% { transform: rotate(-2.5deg); } 75% { transform: rotate(1.4deg); } 88% { transform: rotate(-.6deg); } 100% { transform: rotate(0); } }
 @keyframes dv-swing { 0% { transform: rotate(0); } 11% { transform: rotate(11deg); } 28% { transform: rotate(-8deg); } 45% { transform: rotate(5.5deg); } 61% { transform: rotate(-3.4deg); } 75% { transform: rotate(1.9deg); } 88% { transform: rotate(-.8deg); } 100% { transform: rotate(0); } }
 @keyframes dv-clapper { 0% { transform: rotate(0); } 14% { transform: rotate(-9deg); } 30% { transform: rotate(8deg); } 47% { transform: rotate(-5deg); } 64% { transform: rotate(3deg); } 80% { transform: rotate(-1.4deg); } 100% { transform: rotate(0); } }
 @keyframes dv-hum { 0% { opacity: .8; transform: scale(.3); } 100% { opacity: 0; transform: scale(1.6); } }
@@ -282,7 +369,7 @@ figure > .dv-deepa:not(:first-child) { margin-top: clamp(10px, 1.3vw, 18px); }
 @media (prefers-reduced-motion: reduce) {
   .dv *, .dv *::before, .dv *::after, .dv::before, .dv::after { animation: none !important; transition: none !important; }
   .dv-aarti-trail { opacity: .55; }
-  .dv-aarti-ring { border-color: rgba(226, 200, 142, .3); }
+  .dv-aarti-ring, .dv-aarti-fring { border-color: rgba(226, 200, 142, .3); }
 }
 @media print {
   .dv-canvas, .dv-layer, .dv-jyoti, .dv-ghanta, .dv-aarti { display: none !important; }

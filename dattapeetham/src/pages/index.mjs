@@ -493,7 +493,7 @@ const appsSection = `<section id="apps" class="section section-dark ix-apps" ari
 
 const closing = `<section id="support" class="ix-closing ${DV_HOST}" aria-labelledby="support-h">
   ${horizon()}
-  ${pushpanjali()}
+  ${pushpanjali({ below: '.ix-closing-inner .lead' })}
   <svg class="ix-closing-mandala" viewBox="0 0 104 104" aria-hidden="true"><use href="#i-mandala"/></svg>
   <div class="wrap ix-closing-inner">
     ${ornament()}

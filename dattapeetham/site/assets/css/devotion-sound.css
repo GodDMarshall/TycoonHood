@@ -62,14 +62,15 @@
 .snd-raga { margin: 4px 4px 0; font: 600 .68rem/1.3 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-3); }
 
 /* ---------- first-visit invitation inside the intro curtain ---------- */
-/* While the choice is offered the curtain holds; a CSS fallback still lifts it
-   (--snd-hold) if the script stops, so content can never be trapped. */
-.snd-inviting .intro { pointer-events: auto; animation: snd-lift .9s cubic-bezier(.76, 0, .24, 1) var(--snd-hold, 11s) forwards; }
+/* While the choice is offered the curtain holds (the script lifts it 4 s after the
+   question appears, and the question carries on as the card below); a CSS fallback
+   still lifts it (--snd-hold) if the script stops, so content can never be trapped. */
+.snd-inviting .intro { pointer-events: auto; animation: snd-lift .9s cubic-bezier(.76, 0, .24, 1) var(--snd-hold, 8.5s) forwards; }
 .snd-entering .intro { pointer-events: none; animation: snd-lift-go .9s cubic-bezier(.76, 0, .24, 1) forwards; }
 @keyframes snd-lift { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); visibility: hidden; } }
 @keyframes snd-lift-go { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); visibility: hidden; } }
 .snd-invite { display: grid; justify-items: center; gap: 16px; width: 100%; max-width: 560px; margin-top: 12px; padding: 0 var(--gutter, 16px); text-align: center; }
-.snd-inviting .snd-invite { animation: snd-rise 1s var(--ease-k) var(--snd-in, 1.2s) both; }
+.snd-inviting .snd-invite { animation: snd-rise 1s var(--ease-k) var(--snd-in, 1.5s) both; }
 @keyframes snd-rise { from { opacity: 0; transform: translateY(14px); } }
 .snd-invite-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 .snd-enter { min-height: 48px; padding: 14px 24px; }
@@ -84,8 +85,9 @@
 }
 
 /* ---------- the same choice as a card above the button ----------
-   When the script arrives after the curtain has lifted (a slow connection), the
-   invitation moves into the control as a small non-modal card. */
+   When the curtain lifts unanswered, or the script arrives after it has lifted
+   (a slow connection), the invitation moves into the control as a small
+   non-modal card. */
 .snd-invite--card { position: absolute; left: 0; bottom: calc(100% + 12px); width: min(300px, calc(100vw - 32px)); max-width: none; margin: 0; padding: 14px 14px 14px; display: grid; justify-items: start; gap: 10px; text-align: left; border-radius: 18px; border: 1px solid rgba(226, 200, 142, .3); background: linear-gradient(180deg, var(--forest-2) 0%, var(--forest) 100%); color: var(--cream-on-dark); box-shadow: 0 26px 50px -22px rgba(5, 10, 8, .8); transform-origin: 24px 100%; animation: snd-pop .4s var(--ease-k) both; }
 .snd-invite-q { margin: 0 2px; font: italic 500 1.08rem/1.3 var(--serif); color: var(--cream-on-dark); }
 .snd-invite--card .snd-invite-actions { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: center; width: auto; gap: 8px; }

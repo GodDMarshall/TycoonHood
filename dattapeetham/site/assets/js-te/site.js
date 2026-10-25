@@ -487,23 +487,53 @@
     });
   }
 
-  /* ---------------- photos cropped by object-fit: cover ----------------
+  /* ---------------- which copy each lazy photo gets ----------------
      Every lazy photo carries the sizes tools/measure-sizes.mjs measured
-     (src/image-sizes.json), cover crops included. This is the safety net for a
-     photo it has not measured yet, or a layout that changed since: sizes="auto"
-     picks a file by the box width alone, so a tall crop of a wide photograph
-     would get a file narrower than the crop it shows. Ask for that width, at
-     most at 2x density (a 3x phone shows no difference and loads a third
-     less), and only for a photo the browser has not started to fetch: raising
-     sizes after that fetches a second copy. */
-  var dpr = window.devicePixelRatio || 1;
-  $$('img[srcset][sizes^="auto"]').forEach(function (im) {
-    if (im.complete || im.currentSrc) return;
-    var w = im.clientWidth, h = im.clientHeight, ar = (+im.getAttribute('width') || 0) / (+im.getAttribute('height') || 1);
-    if (!w || !h || !ar || getComputedStyle(im).objectFit !== 'cover') return;
-    var need = Math.ceil(Math.max(w, h * ar) * Math.min(dpr, 2) / dpr);
-    if (need > w * 1.15) im.sizes = need + 'px';
-  });
+     (src/image-sizes.json), cover crops included. Two adjustments here, only
+     for a photo the browser has not started to fetch (changing sizes after
+     that fetches a second copy). currentSrc is not enough to tell: Chromium
+     starts a lazy photo once it is within 1250 px of the window (2500 px on
+     slower connections) and leaves currentSrc empty until the first bytes
+     arrive, so a photo within 1.5 times that distance keeps its sizes.
+     1. A 3 % slack. A browser takes the first copy at least as wide as sizes
+        × the screen's density, so a story plate asking for 1606 px on a 1x
+        laptop (the measured list runs up to 30 % above the drawn width) skips
+        the 1600 copy, 0.4 % short, for the 2560 one: 1.7 times the bytes and
+        no visible difference. Every length in sizes is lowered by 3 %, so a
+        copy up to 3 % narrower than asked is taken, at every density (1x,
+        2x, 3x alike). The preloaded page heroes carry the same slack from
+        the page code (components.mjs), and the lightbox none: it asks for
+        the exact box, so a 4K screen gets the 3840 copy.
+     2. The safety net for a photo not measured yet, or a layout that changed
+        since: sizes="auto" picks a file by the box width alone, so a tall
+        crop of a wide photograph would get a file narrower than the crop it
+        shows. Ask for that width, at most at 2x density (a 3x phone shows no
+        difference and loads a third less). */
+  var dpr = window.devicePixelRatio || 1, SLACK = 0.97;
+  var net = navigator.connection, near = (net && net.effectiveType === '4g' ? 1250 : 2500) * 1.5;
+  // every length that closes an entry, times SLACK: "(min-width: 1181px) calc(93.5vw + 260px), 100vw"
+  // → "(min-width: 1181px) calc(90.69vw + 252.2px), 97vw"; "auto" and the media conditions stay
+  function slack(sizes) {
+    return sizes.split(/,(?![^()]*\))/).map(function (part) {
+      var m = /(calc\(.*\)|[\d.]+[a-z]+)\s*$/i.exec(part);
+      return (m ? part.slice(0, m.index) + m[1].replace(/(\d*\.?\d+)([a-z]+)/gi, function (s, n, u) { return +(n * SLACK).toFixed(2) + u; }) : part).trim();
+    }).join(', ');
+  }
+  // read every box first, then write: no layout between the writes
+  $$('img[srcset][loading="lazy"]').map(function (im) {
+    if (im.complete || im.currentSrc) return null;
+    var r = im.getBoundingClientRect(); // all 0 when hidden (display: none): not loading
+    if ((r.width || r.height) && r.bottom > -near && r.top < innerHeight + near && r.right > -near && r.left < innerWidth + near) return null;
+    var sizes = im.getAttribute('sizes') || '';
+    if (/^auto/.test(sizes)) {
+      var w = im.clientWidth, h = im.clientHeight, ar = (+im.getAttribute('width') || 0) / (+im.getAttribute('height') || 1);
+      if (w && h && ar && getComputedStyle(im).objectFit === 'cover') {
+        var need = Math.ceil(Math.max(w, h * ar) * Math.min(dpr, 2) / dpr);
+        if (need > w * 1.15) sizes = need + 'px';
+      }
+    }
+    return sizes && [im, slack(sizes)];
+  }).forEach(function (x) { if (x) x[0].sizes = x[1]; });
 
   /* ---------------- misc ---------------- */
   $$('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });

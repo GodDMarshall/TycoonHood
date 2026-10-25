@@ -4,9 +4,11 @@
 
    - Preference in localStorage 'dp-sound' = {music, sfx, v: 1, vol}; absent
      means a first visit, when the intro curtain offers the choice (a modal
-     dialog that takes focus). If this script arrives after the curtain has
-     lifted (a slow connection), the same choice is offered instead as a small
-     non-modal card above the sound button.
+     dialog that takes focus) for about 4 s. Unanswered (or on a scroll, Escape
+     or a tap on the curtain) the curtain lifts and the same choice carries on as
+     a small non-modal card above the sound button; the card is also how it is
+     offered when this script arrives after the curtain has lifted (a slow
+     connection).
    - Nothing is downloaded and no AudioContext exists until sound is on.
    - Music: <audio preload="none"> → MediaElementSource → per-element gain →
      music bus (fades) → analyser (level) → master (volume) → speakers. Two
@@ -22,7 +24,9 @@
    - Position carries across pages through sessionStorage 'dp-sound-pos'.
    - Temple sounds: decoded buffers → panner → SFX bus (−8 dB) → master.
      A chime every ~800 px of reading (≥ 0.9 s apart), a bell as each section
-     arrives (≥ 1.5 s apart, never within 0.7 s of a chime: it waits). The
+     arrives (≥ 1.5 s apart, never within 0.7 s of a chime: it waits). Never
+     during a fling, read from the wheel or finger as well as the scroll; a
+     sound that falls due waits 0.25 s in case a fling is just starting. The
      conch (shankha) at the end of a page plays only if the build lists it in
      data-sfx, which it does not until the client has approved it.
    - Audio URLs carry ?v=<content hash> from data-audio-v, so a re-rendered
@@ -136,14 +140,31 @@
 
   /* ---------------- music: two elements crossfading inside the loop's tail ---------------- */
   var P = [], cur = 0, on = false, live = false, err = false, xfading = false, started = false, stopT, leaveT, prep = null;
-  // Fade curves. Two elements in step to the sample play one signal, so their gains must add
-  // to one (equal gain: sin² and cos²; equal power would swell it by up to 3 dB). Two copies
-  // even 1 ms apart are, for this drone, as good as unrelated (measured on the file: their
-  // correlation falls to 0.2 at 1 ms and to 0 by 1.5 ms), and those need equal power.
-  var UP = new Float32Array(48), DOWN = new Float32Array(48), UPG = new Float32Array(48), DOWNG = new Float32Array(48);
-  for (var k = 0; k < 48; k++) {
-    UP[k] = Math.sin(k / 47 * Math.PI / 2); DOWN[k] = Math.cos(k / 47 * Math.PI / 2); // equal power
-    UPG[k] = UP[k] * UP[k]; DOWNG[k] = DOWN[k] * DOWN[k]; // equal gain
+  // Fade curves, for two signals whose correlation is r. Two elements in step to the sample play
+  // one signal (r = 1), so their gains must add to one (equal gain; equal power would swell it
+  // by 3 dB at the middle of the fade). Two copies even 1 ms apart are, for this drone, as good
+  // as unrelated, and unrelated signals (r = 0) need equal power. In between, the gains keep the
+  // power of the sum steady:
+  //   in = s·n, out = (1 − s)·n, s = sin²(πx/2), n = 1 / √((1 − s)² + s² + 2r·s(1 − s)),
+  // which is sin², cos² for r = 1 and a constant-power pair for r = 0. Two copies a few ms apart
+  // can be unlike (r down to −0.33 for this drone): then the gains rise a little above 1 in the
+  // second half of the fade (r is held to −0.35 … 1).
+  // RHO_UNKNOWN: when the engine cannot tell (no taps), B is in step only by currentTime, a few
+  // ms either way. Measured on the file through the fade, the music's correlation with itself
+  // 1 to 12 ms apart averages −0.07 (from −0.33 at 3.5 ms to 0.45 at 6.75 ms), so equal power
+  // is the best guess there: the middle of the fade then lies within −1.7 … +1.6 dB (a
+  // compromise curve for r = 0.25 measured −2.0 dB in a recording, and −2.7 … +0.6 on paper).
+  var RHO_UNKNOWN = 0, CURVES = {};
+  function curves(r) {
+    r = Math.round(Math.max(-0.35, Math.min(1, r)) * 50) / 50;
+    if (CURVES[r]) return CURVES[r];
+    var up = new Float32Array(48), down = new Float32Array(48), x, s, n;
+    for (var k = 0; k < 48; k++) {
+      x = Math.sin(k / 47 * Math.PI / 2); s = x * x;
+      n = 1 / Math.sqrt((1 - s) * (1 - s) + s * s + 2 * r * s * (1 - s));
+      up[k] = s * n; down[k] = (1 - s) * n;
+    }
+    return (CURVES[r] = [up, down]);
   }
   // B is first aimed this far ahead of A by ear, so that the measured lead is positive and a
   // delay on B's path can take it up exactly (a DelayNode can hold back, not bring forward)
@@ -228,16 +249,18 @@
   //     B's lead is searched from -6 to +20 ms (the aim is MARGIN, 8 ms): a span shorter than
   //     the 27 ms period of the drone, so the search cannot lock onto a period instead. A
   //     measurement counts only when the next one repeats it (two taps read a render quantum
-  //     apart would differ by 128 samples). Once the residual is within 2 samples, the fade
-  //     uses equal-gain curves; if that is never reached (no taps, a busy machine), it falls
-  //     back to equal power, as before.
+  //     apart would differ by 128 samples). Measuring stops 0.4 s before the fade.
+  // The fade curve: once the residual is within 2 samples, equal gain (the two are one
+  // signal). If that is never reached (a busy machine), the curve follows how alike the two
+  // taps are as heard together in the last 0.4 s (corr0); with no taps at all, equal power
+  // (see curves()).
   function prepare() {
     var A = P[cur], B = player(1 - cur), tries = 0, want = 0, lag = 0;
     warm();
     B.g.gain.cancelScheduledValues(0); B.g.gain.value = 0;
     if (B.dl) B.dl.delayTime.value = 0;
     var dA = A.dl ? A.dl.delayTime.value : 0, fine = !!(A.tap && B.tap && B.dl), margin = fine ? MARGIN : 0;
-    prep = { skew: null, tries: 0, lead: 0, fine: false, delay: 0, since: 0, next: 0, last: null, measures: 0 };
+    prep = { skew: null, tries: 0, lead: 0, fine: false, delay: 0, since: 0, next: 0, last: null, measures: 0, rho: null, rhos: [] };
     var seek = function () {
       var t = Math.max(0, A.a.currentTime - period() + lag + want);
       want = late(B, t) - late(A) - dA + margin; prep.lead = want; // the currentTime lead that puts B MARGIN ahead by ear
@@ -262,6 +285,17 @@
       if (d >= 0 && d <= MAX_DELAY * 0.9) { B.dl.delayTime.value = d; prep.delay = d; prep.since = now; return; }
       if (tries < 6) { tries++; prep.tries = tries; lag += margin - d; B.dl.delayTime.value = 0; prep.delay = 0; seek(); } // out of reach: seek again
     };
+    // in the last 0.4 s before the fade (B's path no longer changing): how alike the two are,
+    // as heard together, for the fade curve; a value counts when the next repeats it (±0.15)
+    var rhoRead = function () {
+      var now = performance.now();
+      if (!prep.since) { prep.since = now; return; }
+      if (now - prep.since < SETTLE) return;
+      var r = corr0(A.tap, B.tap);
+      if (r === null) return;
+      var q = prep.rhos; q.push(r); if (q.length > 2) q.shift();
+      if (q.length === 2 && Math.abs(q[0] - q[1]) <= 0.15) prep.rho = (q[0] + q[1]) / 2;
+    };
     lag = 0.004; seek();
     var pr = B.a.play(); if (pr && pr.then) pr.then(null, noop);
     (function tick() {
@@ -271,7 +305,8 @@
         var skew = B.a.currentTime + period() - ta; // > 0: B ahead by currentTime
         prep.skew = skew;
         if (!prep.delay && Math.abs(skew - want) > 0.006 && tries < 4 && ta < XFROM - 0.3) { tries++; prep.tries = tries; lag -= skew - want; seek(); }
-        else if (fine && !prep.fine && ta < XFROM - 0.05) measure();
+        else if (fine && !prep.fine && ta < XFROM - 0.4) measure();
+        else if (A.tap && B.tap && ta >= XFROM - 0.4) rhoRead();
       } else prep.since = 0;
       if (ready && ta >= XFROM) { crossfade(); return; }
       if (ta >= XFROM + 0.5) { // B never got going (a slow network): carry A round by itself
@@ -296,6 +331,19 @@
     for (l = bl - 3; l <= bl + 3; l++) { c = xcorr(TA, TB, l, 1); if (c > fb) { fb = c; fl = l; } }
     return fb >= 0.9 ? fl : null;
   }
+  // the correlation of what A and B play at the same moment (lag 0 after B's delay), from both
+  // taps read within one render quantum (A read again: unchanged), or null
+  var TC = null;
+  function corr0(ta, tb) {
+    var n = ta.fftSize;
+    if (!TA || TA.length !== n) { TA = new Float32Array(n); TB = new Float32Array(n); }
+    if (!TC || TC.length !== n) TC = new Float32Array(n);
+    for (var k = 0; k < 3; k++) {
+      ta.getFloatTimeDomainData(TA); tb.getFloatTimeDomainData(TB); ta.getFloatTimeDomainData(TC);
+      if (TC[n - 1] === TA[n - 1] && TC[n - 129] === TA[n - 129] && TC[0] === TA[0]) return xcorr(TA, TB, 0, 1);
+    }
+    return null;
+  }
   function xcorr(a, b, l, step) {
     var x = 0, ea = 0, eb = 0, i0 = Math.max(0, -l), i1 = Math.min(a.length, a.length - l), u, v;
     for (var i = i0; i < i1; i += step) { u = a[i + l]; v = b[i]; x += u * v; ea += u * u; eb += v * v; }
@@ -303,11 +351,14 @@
   }
   function crossfade() {
     var A = P[cur], B = P[1 - cur], t = ctx.currentTime, eq = !!(prep && prep.fine);
+    // in step to the sample: equal gain; otherwise the measured likeness, or equal power
+    var rho = prep && prep.rho != null ? Math.max(-1, Math.min(1, prep.rho)) : null, r = eq ? 1 : rho != null ? rho : RHO_UNKNOWN, cv = curves(r);
     clearTimeout(prep && prep.t);
     xfading = true;
-    [[B.g, eq ? UPG : UP], [A.g, eq ? DOWNG : DOWN]].forEach(function (x) { x[0].gain.cancelScheduledValues(0); x[0].gain.setValueCurveAtTime(x[1], t, XF); });
+    [[B.g, cv[0]], [A.g, cv[1]]].forEach(function (x) { x[0].gain.cancelScheduledValues(0); x[0].gain.setValueCurveAtTime(x[1], t, XF); });
     lastX = { at: Date.now(), from: A.a.currentTime, to: B.a.currentTime, skew: prep ? prep.skew : null, lead: prep ? prep.lead : 0, tries: prep ? prep.tries : 0,
-      fine: eq, delay: B.dl ? +B.dl.delayTime.value.toFixed(6) : 0, measures: prep ? prep.measures : 0, curve: eq ? 'gain' : 'power' };
+      fine: eq, delay: B.dl ? +B.dl.delayTime.value.toFixed(6) : 0, measures: prep ? prep.measures : 0,
+      rho: rho == null ? null : +rho.toFixed(4), r: +Math.max(-0.35, Math.min(1, r)).toFixed(2), curve: r >= 0.98 ? 'gain' : Math.abs(r) <= 0.02 ? 'power' : 'mixed' };
     cur = 1 - cur;
     setTimeout(finishX, XF * 1000 + 60);
   }
@@ -385,25 +436,72 @@
   var step = 800, swara = -1, lastBell = 0, lastChime = 0, flungAt = -1e4, shankhaDone = false, panelOpen = false, sample = false, movedAt = 0;
   // spacing, ms: chime after chime, chime after bell, bell after chime (a bell waits rather than clash)
   var CHIME_GAP = 900, AFTER_BELL = 900, BELL_AFTER_CHIME = 700, BELL_GAP = 1500;
+  // The first scroll steps of a fast fling can look calm: the speed of a scroll event is its
+  // distance over the time since the last one, which after a pause is long (measured: chimes
+  // 63-757 ms into a fling). So a fling is also read from the input itself, which arrives
+  // before the scroll it causes: wheel steps, or a finger moving, faster than FLING px/s over
+  // the last ~200 ms (a single wheel step of over 700 px, or 100 px notches more than 35 a
+  // second, is a fling; the 100-160 px steps of a reader are not). And a chime or a section
+  // bell that falls due waits HOLD ms, and sounds only if no fling began meanwhile.
+  var HOLD = 250, TAU = 200, chimeDue = 0, bellDue = 0, wheelQ = [], fingerQ = [], fingerY = null;
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   function emit(name, detail) {
     var ev; try { ev = new CustomEvent(name, { detail: detail }); } catch (e) { ev = doc.createEvent('CustomEvent'); ev.initCustomEvent(name, false, false, detail); }
     doc.dispatchEvent(ev);
   }
   function panOf(el) { var r = el.getBoundingClientRect(); return Math.max(-0.6, Math.min(0.6, ((r.left + r.width / 2) / innerWidth - 0.5) * 1.2)); }
-  // a bell: never within BELL_AFTER_CHIME of a chime (it waits), never during a fling
+  // a bell: after HOLD, never within BELL_AFTER_CHIME of a chime (it waits), never during a
+  // fling; force (a hanging bell touched) rings at once
   function bell(el, sec, force) {
-    var wait = force ? 0 : Math.max(0, lastChime + BELL_AFTER_CHIME - performance.now());
+    var now = performance.now(), at = force ? now : Math.max(now + HOLD, Math.max(lastChime, chimeDue) + BELL_AFTER_CHIME);
+    if (!force) bellDue = Math.max(bellDue, at);
     var ring = function () {
       var t = performance.now();
-      if (!force && (t - flungAt < 600 || t - lastBell < BELL_GAP)) return;
+      if (!force) {
+        var w = Math.max(lastChime, chimeDue) + BELL_AFTER_CHIME - t; // a chime came first: let it ring out
+        if (w > 1) { bellDue = Math.max(bellDue, t + w); setTimeout(ring, w); return; }
+        if (bellDue <= t + 1) bellDue = 0;
+        if (t - flungAt < 600 || t - lastBell < BELL_GAP) return;
+      }
       if (hit('ghanta', rnd(0.85, 1), panOf(el), rnd(0.96, 1.04))) {
         lastBell = t;
         // the bell hanging in that section (devotion-motion's ghanta) swings with it
         if (sec) emit('dp:bell', { section: sec });
       }
     };
-    if (wait) setTimeout(ring, wait); else ring();
+    if (at > now) setTimeout(ring, at - now); else ring();
+  }
+  // a chime that fell due: it sounds HOLD ms later unless a fling began meanwhile; if a bell
+  // rang meanwhile it waits for the next scroll step
+  function chime(sw) {
+    chimeDue = performance.now() + HOLD;
+    setTimeout(function () {
+      var t = performance.now();
+      chimeDue = 0;
+      if (t - flungAt < 600 || panelOpen) return;
+      if (bellDue || t - lastBell < AFTER_BELL) { travel = Math.max(travel, step); return; }
+      if (hit(SWARA[sw], rnd(0.65, 0.8), rnd(-0.3, 0.3), rnd(0.996, 1.004))) { lastChime = t; swara = sw; }
+    }, HOLD);
+  }
+  // The speed of the input in px/s over the last TAU ms: the steps since the oldest one in that
+  // window over the time they took (a train of 420 px steps 120 ms apart is 3500 px/s); a step
+  // on its own counts as spread over TAU.
+  function rate(q, t, px) {
+    q.push([t, px]);
+    while (t - q[0][0] > TAU) q.shift();
+    if (q.length < 2) return px * 1000 / TAU;
+    for (var i = 1, sum = 0; i < q.length; i++) sum += q[i][1];
+    return sum * 1000 / Math.max(16, t - q[0][0]);
+  }
+  function onWheel(e) { // wheel steps, lines and pages in px
+    var t = performance.now(), k = e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? innerHeight : 1;
+    if (rate(wheelQ, t, Math.abs(e.deltaY * k)) > FLING) flungAt = t;
+  }
+  function onFinger(e) { // one finger moving the page
+    var t = performance.now(), y = e.touches && e.touches.length === 1 ? e.touches[0].clientY : null;
+    if (e.type !== 'touchmove' || y === null || fingerY === null) { fingerY = y; fingerQ = y === null ? [] : [[t, 0]]; return; }
+    if (rate(fingerQ, t, Math.abs(y - fingerY)) > FLING) flungAt = t;
+    fingerY = y;
   }
   function loadFx() {
     if (fxLoaded) return; fxLoaded = true;
@@ -442,17 +540,23 @@
       if (back < 48) return;
       dir = d; travel = back; back = 0;
     } else { back = 0; travel += Math.abs(dy); }
-    if (travel < step || t - lastChime < CHIME_GAP || t - lastBell < AFTER_BELL) return; // keep the travel until it may sound
+    if (travel < step || chimeDue || bellDue || t - lastChime < CHIME_GAP || t - lastBell < AFTER_BELL) return; // keep the travel until it may sound
     travel = 0; step = rnd(700, 900);
-    swara = swara < 0 ? (d > 0 ? 0 : 5) : (swara + d + 6) % 6; // arohana going down the page, avarohana going up
-    if (hit(SWARA[swara], rnd(0.65, 0.8), rnd(-0.3, 0.3), rnd(0.996, 1.004))) lastChime = t;
+    chime(swara < 0 ? (d > 0 ? 0 : 5) : (swara + d + 6) % 6); // arohana going down the page, avarohana going up
   }
   function listen(onOff) {
     if (onOff === listening) return;
     listening = onOff;
-    if (!onOff) { W.removeEventListener('scroll', onScroll); doc.removeEventListener('dp:ghanta', onGhanta); if (io) io.disconnect(); io = null; return; }
+    var IN = ['wheel', 'touchstart', 'touchmove', 'touchend', 'touchcancel'];
+    if (!onOff) {
+      W.removeEventListener('scroll', onScroll); doc.removeEventListener('dp:ghanta', onGhanta);
+      W.removeEventListener(IN[0], onWheel, true); IN.slice(1).forEach(function (n) { W.removeEventListener(n, onFinger, true); });
+      if (io) io.disconnect(); io = null; return;
+    }
     lastY = W.scrollY || W.pageYOffset; lastT = performance.now(); vel = 0; travel = 0;
     W.addEventListener('scroll', onScroll, { passive: true });
+    W.addEventListener(IN[0], onWheel, { capture: true, passive: true });
+    IN.slice(1).forEach(function (n) { W.addEventListener(n, onFinger, { capture: true, passive: true }); });
     doc.addEventListener('dp:ghanta', onGhanta);
     if (!W.IntersectionObserver) return;
     var secs = $$('main > section[id]'); if (!secs.length) secs = $$('section[id]', $('main') || doc);
@@ -607,18 +711,43 @@
   }
 
   /* ---------------- first visit: the choice inside the intro curtain ---------------- */
+  // The curtain holds the question only briefly: ASK ms after it appears (or at once if the
+  // visitor scrolls, presses Escape or taps the curtain) the curtain lifts unanswered and the
+  // same question carries on as the small card above the sound button (offer()), so reading
+  // is never held up and the choice stays open. While the pointer rests on the choices, or the
+  // visitor moves between them with Tab, the curtain waits (a lift under a pointer about to
+  // click would land the click on the page beneath); leaving them, it lifts AGAIN ms later.
+  var ASK = 4000, AGAIN = 2000;
+  // Focus back to the start of the page, as on arrival: the next Tab reaches the skip link and
+  // then the sound control. (A plain blur() leaves Chromium's sequential focus starting point
+  // inside the hidden curtain, so Tab would skip both and land on the header.) Focusing the body
+  // through a tabindex taken off again shows no focus ring.
+  function toPage() {
+    var B = doc.body, had = B.hasAttribute('tabindex'), ti = B.getAttribute('tabindex');
+    try { if (!had) B.setAttribute('tabindex', '-1'); B.focus({ preventScroll: true }); } catch (e) { if (doc.activeElement && doc.activeElement.blur) doc.activeElement.blur(); }
+    if (!had) B.removeAttribute('tabindex'); else B.setAttribute('tabindex', ti);
+  }
   function invite() {
     var intro = $('.intro'), inv = $('[data-sound-invite]');
     if (pref || !intro || !inv || root.classList.contains('intro-seen') || getComputedStyle(intro).display === 'none') return;
     var lift = (intro.getAnimations ? intro.getAnimations() : []).filter(function (a) { return a.animationName === 'intro-lift'; })[0];
-    var elapsed = lift ? +lift.currentTime || 0 : performance.now();
+    // The curtain's own clock: when its animations started. They start with the first frame
+    // that shows them, which on a busy device comes well after this script runs (measured:
+    // up to 0.5 s), so the times below are kept to it rather than to this moment.
+    var mark = $('.intro-mark', intro), ma = mark && mark.getAnimations ? mark.getAnimations()[0] : null;
+    // (Its times are on the clock of performance.now(); the timeline's own currentTime is the
+    // time of the frame being drawn, which on a busy device lags by up to 0.4 s.)
+    var started = function () { return !!(ma && ma.startTime != null); };
+    var elapsed = started() ? performance.now() - ma.startTime : lift ? +lift.currentTime || 0 : performance.now();
     // the curtain is already lifting (a slow connection: the script arrived late): ask in a
     // small card beside the sound button instead, so a first visit is always offered the choice
     if (elapsed > 1450) { offer(inv); return; }
-    var showIn = Math.max(0, 1500 - elapsed), timer, done = false, label = $('.intro-label', intro), auto = false;
+    // the question appears once the curtain's own animation has played (mandala, name, bar: 1.5 s)
+    var showIn = Math.max(0, 1500 - elapsed), timer, done = false, label = $('.intro-label', intro), auto = false, engaged = false;
+    var due = performance.now() + showIn + ASK, focusT;
     var choices = $$('[data-sound-enter]', inv);
     root.style.setProperty('--snd-in', showIn + 'ms');
-    root.style.setProperty('--snd-hold', (showIn + 11000) + 'ms'); // CSS lifts the curtain even if this script stops
+    root.style.setProperty('--snd-hold', (showIn + ASK + 3000) + 'ms'); // CSS lifts the curtain even if this script stops
     inv.hidden = false;
     root.classList.add('snd-inviting');
     // while the choice is offered the curtain is a small modal dialog
@@ -629,21 +758,28 @@
     intro.setAttribute('aria-describedby', 'snd-invite-note');
     $$('.intro-mark, .intro-word, .intro-bar', intro).forEach(function (el) { el.setAttribute('aria-hidden', 'true'); });
     function wait(ms) { clearTimeout(timer); timer = setTimeout(function () { close(); }, ms); }
+    // no sooner than the question's own time is up, and AGAIN after the visitor leaves the choices
+    function release() { if (!done) { engaged = false; wait(Math.max(AGAIN, due - performance.now())); } }
+    // withMusic: the answer (true/false), or undefined when the curtain lifts unanswered; lifted:
+    // the CSS fallback has lifted it already
     function close(withMusic, lifted) {
       if (done) return; done = true;
       clearTimeout(timer);
       doc.removeEventListener('keydown', onKey, true);
       W.removeEventListener('wheel', onIntent, true); W.removeEventListener('touchmove', onIntent, true);
       if (withMusic !== undefined) act(function () { S.music = S.sfx = withMusic; savePref(); reconcile(); });
-      if (inv.contains(doc.activeElement)) doc.activeElement.blur();
+      // focus on a choice, or nowhere (a click on the curtain leaves Tab's starting point there)
+      var a = doc.activeElement;
+      if (!a || a === doc.body || intro.contains(a)) toPage();
       intro.setAttribute('aria-hidden', 'true');
       ['role', 'aria-modal', 'aria-labelledby', 'aria-describedby'].forEach(function (a) { intro.removeAttribute(a); });
-      var gone = function () { intro.style.display = 'none'; inv.hidden = true; };
-      if (lifted) { gone(); root.classList.remove('snd-inviting'); return; } // already lifted by the CSS: no second wipe
+      // unanswered: once the curtain is up, the question moves to the card in the corner
+      var gone = function () { intro.style.display = 'none'; inv.hidden = true; if (withMusic === undefined) offer(inv, 250); };
+      if (lifted) { root.classList.remove('snd-inviting'); gone(); return; } // already lifted by the CSS: no second wipe
       root.classList.remove('snd-inviting'); root.classList.add('snd-entering');
       setTimeout(gone, 1000);
     }
-    function onIntent() { close(); } // scrolling means the visitor wants to read: continue in silence
+    function onIntent() { close(); } // scrolling means the visitor wants to read: the question waits in the corner
     function onKey(e) {
       if (e.key === 'Escape') { e.preventDefault(); close(); return; }
       if (e.key === 'Tab') { // keep focus on the two choices while they are offered
@@ -655,32 +791,47 @@
       if (/^(PageDown|PageUp|ArrowDown|ArrowUp|End|Home)$/.test(e.key) || (e.key === ' ' && choices.indexOf(doc.activeElement) < 0)) close();
     }
     choices.forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); close(b.getAttribute('data-sound-enter') === 'music'); }); });
-    intro.addEventListener('click', function () { close(); }); // a tap on the curtain: in, quietly
+    intro.addEventListener('click', function () { close(); }); // a tap on the curtain: in, and the question waits in the corner
     // if the CSS fallback lifts the curtain first (a pointer resting on the choices), follow it:
     // never leave the Tab trap and key handlers behind an invisible curtain
     intro.addEventListener('animationend', function (e) { if (e.target === intro && e.animationName === 'snd-lift') close(undefined, true); });
-    inv.addEventListener('pointerenter', function () { clearTimeout(timer); });
-    inv.addEventListener('pointerleave', function () { if (!done) wait(4000); });
-    inv.addEventListener('focusin', function () { if (!auto) clearTimeout(timer); });
-    inv.addEventListener('focusout', function () { if (!done && !auto) wait(4000); });
+    // engaged (a pointer on the choices, or Tab between them): the CSS safety lift waits too
+    var hold = function () { engaged = true; clearTimeout(timer); root.style.setProperty('--snd-hold', (showIn + 12000) + 'ms'); };
+    inv.addEventListener('pointerenter', hold);
+    inv.addEventListener('pointerleave', release);
+    inv.addEventListener('focusin', function () { if (!auto) hold(); });
+    inv.addEventListener('focusout', function () { if (!auto) release(); });
     doc.addEventListener('keydown', onKey, true);
     W.addEventListener('wheel', onIntent, { capture: true, passive: true });
     W.addEventListener('touchmove', onIntent, { capture: true, passive: true });
-    wait(showIn + 8000); // nothing chosen: continue in silence, and ask again next session
     // a modal dialog takes focus when it appears (a screen reader then announces it);
     // this programmatic focus does not count as the visitor engaging with it
-    setTimeout(function () {
+    var takeFocus = function () {
       if (done || (doc.activeElement && doc.activeElement !== doc.body && !inv.contains(doc.activeElement))) return;
       auto = true;
       try { choices[0].focus({ preventScroll: true }); } catch (e) { choices[0].focus(); }
       auto = false;
-    }, showIn + 60);
+    };
+    wait(showIn + ASK); // no answer yet: lift the curtain and ask in the corner instead
+    focusT = setTimeout(takeFocus, showIn + 60);
+    // once the curtain's clock runs: the question rises at 1.5 s of it and the curtain lifts ASK later
+    if (ma && ma.ready) ma.ready.then(function () {
+      if (done || !started()) return;
+      var c0 = ma.startTime, now = performance.now();
+      inv.getAnimations().forEach(function (a) { if (a.animationName === 'snd-rise') a.startTime = c0 + 1500 - showIn; });
+      due = c0 + 1500 + ASK;
+      if (!engaged) wait(Math.max(0, due - now));
+      clearTimeout(focusT); focusT = setTimeout(takeFocus, Math.max(0, c0 + 1560 - now));
+    }, noop);
   }
 
-  // The same choice when the curtain could not hold it: a small non-modal card above the
-  // sound button. It covers nothing important, never takes focus, and leaves on its own
-  // after a while (or once the reader is well into the page): ask again next session.
-  function offer(inv) {
+  // The same choice when the curtain does not hold it: a small non-modal card above the
+  // sound button, shown `delay` ms from now. It comes when the curtain lifts unanswered, and
+  // when this script arrived after the curtain had lifted (a slow connection). It covers
+  // nothing important, never takes focus (Tab reaches it right after the skip link), and
+  // leaves on its own after a while (or once the reader is well into the page): ask again
+  // next session.
+  function offer(inv, delay) {
     if (!box || !btn) return;
     var done = false, timer, y0 = W.scrollY || 0;
     var choices = $$('[data-sound-enter]', inv), music = choices.filter(function (b) { return b.getAttribute('data-sound-enter') === 'music'; })[0];
@@ -706,7 +857,9 @@
       cardOpen = false; tuck();
       if (hadFocus) btn.focus();
     }
-    function onScrollAway() { if (Math.abs((W.scrollY || 0) - y0) > innerHeight * 2.5) close(); }
+    // On phones the card sits over the hero's buttons, so it leaves sooner there.
+    var narrow = W.innerWidth < 640;
+    function onScrollAway() { if (Math.abs((W.scrollY || 0) - y0) > innerHeight * (narrow ? 0.6 : 2.5)) close(); }
     function onKey(e) { if (e.key === 'Escape' && inv.contains(doc.activeElement)) { e.preventDefault(); close(); } }
     choices.forEach(function (b) { b.addEventListener('click', function () { close(b === music); }); });
     btn.addEventListener('click', function () { close(); }); // opening the panel answers it there
@@ -717,10 +870,10 @@
       setTimeout(function () { q.textContent = fmt('ಓದುವಾಗ ಕೊಳಲಿನ ಸಂಗೀತ ಆಲಿಸಲು ಬಯಸುವಿರಾ?'); }, 80); // announced
       W.addEventListener('scroll', onScrollAway, { passive: true });
       doc.addEventListener('keydown', onKey);
-      timer = setTimeout(function () { close(); }, 16000);
+      timer = setTimeout(function () { close(); }, narrow ? 8000 : 16000);
       inv.addEventListener('pointerenter', function () { clearTimeout(timer); });
       inv.addEventListener('pointerleave', function () { if (!done) { clearTimeout(timer); timer = setTimeout(function () { close(); }, 6000); } });
-    }, 900);
+    }, delay === undefined ? 900 : delay);
   }
 
   /* ---------------- start ---------------- */

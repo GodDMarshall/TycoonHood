@@ -214,9 +214,8 @@ const dayTrack = `<div class="dn-day panel" data-reveal="up">
 </div>`;
 
 const timingsSection = `<section id="timings" class="section section-paper dn-timings-sec">
-  ${ghanta({ side: 'right', drop: 72 })}
   <div class="wrap">
-    ${sectionHead({ eyebrow: 'Daily Darshan', title: 'Temple <span class="em-light">timings</span>', lead: 'Darshan is offered every morning and evening. The Peetham publishes general temple timings, and the Sri Datta Venkateshwara and Karya Siddhi Hanuman temples list their own hours. All timings are in Indian Standard Time.' })}
+    ${sectionHead({ eyebrow: 'Daily Darshan', title: 'Temple <span class="em-light">timings</span>', lead: 'Darshan is offered every morning and evening. The Peetham publishes general temple timings, and the Sri Datta Venkateshwara and Karya Siddhi Hanuman temples list their own hours. All timings are in Indian Standard Time.' }).replace(/^<header[^>]*>/, (h) => `${h}\n  ${ghanta({ beside: 'h2', drop: 44 })}`)}
     <div class="dn-timings">
       <div class="dn-hours">
         <div class="dn-hours-grid" data-stagger>${hoursCards}</div>

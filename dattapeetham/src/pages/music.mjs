@@ -177,7 +177,7 @@ export default {
     </div>
     <figure class="nada-portrait" data-reveal="scale">
       <span class="np-ring" aria-hidden="true"></span>
-      <span class="np-disc">${img(P.veena, 'Sri Swamiji seated in a forest, playing the veena (black-and-white photograph)', { eager: true, pos: '56% 38%' })}</span>
+      <span class="np-disc">${img(P.veena, 'Sri Swamiji seated in a forest, playing the veena (black-and-white photograph)', { eager: true, pos: '56% 38%', sizes: '(min-width: 1024px) 390px, (min-width: 768px) 270px, 58vw' })}</span>
       <figcaption>Sri Swamiji with the veena</figcaption>
     </figure>
   </div>

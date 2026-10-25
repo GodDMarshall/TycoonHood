@@ -18,13 +18,18 @@
 // translation dictionaries can cover them (markup strings are picked up by
 // `node build.mjs --extract`; runtime strings come from fmt() calls in the JS).
 //
-// Behaviour worth knowing (review stage):
-// - The invitation takes focus when it appears (a modal dialog). If the script
-//   arrives after the CSS curtain has lifted (slow connections: measured at
-//   1.6 Mbps / 150 ms latency the deferred scripts run at ~5.3 s and at 3G
-//   speeds at ~12 s, long after the curtain), the same choice moves into the
-//   control as a small non-modal card ("Would you like flute music while you
-//   read?" · "Play flute music" · "Not now").
+// Behaviour worth knowing (review stage, polish):
+// - The invitation appears 1.5 s into the curtain (after its own animation) and
+//   takes focus (a modal dialog). Unanswered for 4 s, or on a scroll, Escape or
+//   a tap on the curtain, the curtain lifts (gone 6.4 s into it; it used to hold
+//   ~10.4 s), focus returns to the start of the page, and the same choice
+//   carries on as a small non-modal card above the sound button ("Would you
+//   like flute music while you read?" · "Play flute music" · "Not now"), which
+//   Tab reaches right after the skip link. A pointer resting on the choices, or
+//   Tab between them, holds the curtain. The card is also how the choice is
+//   offered when the script arrives after the CSS curtain has lifted (slow
+//   connections: measured at 1.6 Mbps / 150 ms latency the deferred scripts
+//   run at ~5.3 s and at 3G speeds at ~12 s, long after the curtain).
 // - On screens below 1100px the button tucks away at the top of a page while
 //   nothing sounds (at 360-768px it covered a page link or button on 10-14 of
 //   the 16 pages, e.g. "Donate" on Seva at 360px). It returns once the reader

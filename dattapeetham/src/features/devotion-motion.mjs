@@ -136,9 +136,11 @@ export function lampChainAttrs({ nodes, line = 0.62, diya = false, at = 'center'
  * @param {number} [o.density=1]   0.5 sparser … 1.5 fuller
  * @param {boolean} [o.shower=true] the welcoming shower on first view
  * @param {'behind'|'front'} [o.layer='behind']  front only over imagery, never over body text
+ * @param {string} [o.below]  a selector inside the host (its heading): the flowers fall only beneath
+ *        it, so the heading stays clear; the layer starts just under that element (measured by the script)
  */
-export function pushpanjali({ density = 1, shower = true, layer = 'behind', cls = '' } = {}) {
-  return `<span class="${cx('dv-layer', 'dv-pushpanjali', layer === 'front' && 'dv-front', cls)}" data-devotion="pushpanjali" data-density="${density}"${shower ? '' : ' data-shower="off"'} ${HIDE}></span>`;
+export function pushpanjali({ density = 1, shower = true, layer = 'behind', below, cls = '' } = {}) {
+  return `<span class="${cx('dv-layer', 'dv-pushpanjali', layer === 'front' && 'dv-front', cls)}" data-devotion="pushpanjali" data-density="${density}"${shower ? '' : ' data-shower="off"'}${below ? ` data-below="${below}"` : ''} ${HIDE}></span>`;
 }
 
 /**
@@ -340,13 +342,18 @@ export const JYOTI_ATTR = ' data-devotion="jyoti-progress"';
  * it first comes into view (a devotee rings the bell on entering), when the
  * sound engine rings a section bell ('dp:bell'), and when a pointer touches it.
  * Place it inside a positioned section; it hangs from the section's top edge.
+ * With `beside`, place it inside the section's heading block instead (first child of its
+ * <header>): it hangs beside the heading's words, at a modest size, where the reader is
+ * looking as the section arrives. The script finds room: after the end of the heading's
+ * first line, else its last, else before a centred line, else above the heading at the right.
  * @param {object} o
  * @param {'left'|'right'} [o.side='right']
  * @param {number} [o.drop=64]  chain length in px
  * @param {string} [o.inset]    CSS length from the side (default: the page gutter)
+ * @param {string} [o.beside]   selector of the heading inside the bell's parent (e.g. 'h2')
  */
-export function ghanta({ side = 'right', drop = 64, inset, tone: t, cls = '' } = {}) {
-  return `<span class="${cx('dv', 'dv-ghanta', side === 'left' ? 'dv-ghanta--left' : '', tone(t), cls)}" data-devotion="ghanta" style="--dv-drop:${drop}px${inset ? `;--dv-gi:${inset}` : ''}" ${HIDE}>
+export function ghanta({ side = 'right', drop = 64, inset, beside, tone: t, cls = '' } = {}) {
+  return `<span class="${cx('dv', 'dv-ghanta', side === 'left' ? 'dv-ghanta--left' : '', beside && 'dv-ghanta--beside', tone(t), cls)}" data-devotion="ghanta"${beside ? ` data-beside="${beside}"` : ''} style="--dv-drop:${drop}px${inset ? `;--dv-gi:${inset}` : ''}" ${HIDE}>
   <span class="dv-ghanta-swing"><span class="dv-ghanta-chain"></span><span class="dv-ghanta-bell"><i class="dv-ghanta-clapper"></i></span></span><svg class="dv-ghanta-hum" viewBox="-1 -1 2 2" width="2" height="2" overflow="visible" focusable="false"><circle r="37.5"/></svg>
 </span>`;
 }

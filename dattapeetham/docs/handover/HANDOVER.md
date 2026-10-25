@@ -93,10 +93,14 @@ languages are in folders: `/kn/about.html`, `/hi/about.html`,
   ([MAINTENANCE.md](MAINTENANCE.md), *Music and temple sounds*).
 - **Consent.** On the first visit the opening curtain asks: *Enter with
   flute music* or *Enter in silence*. The answer is remembered in the
-  visitor's browser. A visitor who does not answer, or scrolls, goes in
-  silently and is asked again on a later visit. On a slow connection, where
-  the curtain has lifted before the question is ready, the same choice
-  appears as a small card above the sound button instead. A round sound
+  visitor's browser. The curtain holds the question for about four seconds,
+  so reading is never held up: unanswered, it lifts by itself (at once if
+  the visitor scrolls, presses Escape or taps it), and the same question
+  waits for a while as a small card above the sound button (*Would you like
+  flute music while you read?* · *Play flute music* · *Not now*). Left
+  unanswered there too, the site stays silent and asks again on a later
+  visit. On a slow connection, where the curtain has lifted before the
+  question is ready, the card is where it is asked. A round sound
   button at the bottom left of every page opens a panel that switches the
   flute music and the temple sounds on and off and sets the volume.
 - **Nothing plays, and nothing is downloaded, without that choice.** Until

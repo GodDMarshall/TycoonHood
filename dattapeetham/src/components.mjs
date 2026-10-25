@@ -13,8 +13,23 @@ import { esc } from './layout.mjs';
 
 const isExt = (href) => /^https?:|^mailto:|^tel:/.test(href || '');
 
+// A 3 % slack on the `sizes` of an eager photo (a page hero, preloaded with
+// the same sizes): every length that closes an entry times 0.97, so the
+// browser takes a copy up to 3 % narrower than asked instead of the next one,
+// about 1.7 times the bytes ("100vw" → "97vw"). Lazy photos get
+// the same slack in site.js, before their fetch ("which copy each lazy photo
+// gets"); doing it here too would count it twice.
+const SLACK = 0.97;
+export const slackSizes = (sizes) => sizes.split(/,(?![^()]*\))/).map((part) => {
+  const m = /(calc\(.*\)|[\d.]+[a-z]+)\s*$/i.exec(part);
+  return (m ? part.slice(0, m.index) + m[1].replace(/(\d*\.?\d+)([a-z]+)/gi, (s, n, u) => +(n * SLACK).toFixed(2) + u) : part).trim();
+}).join(', ');
+
+// An eager photo states its width (the window's by default); a lazy one gets
+// its measured sizes from the build (src/image-sizes.json).
 export function img(src, alt = '', { cls = '', w, h, eager = false, parallax, sizes, pos } = {}) {
-  return `<img src="${src}" alt="${esc(alt)}"${cls ? ` class="${cls}"` : ''}${w ? ` width="${w}"` : ''}${h ? ` height="${h}"` : ''}${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"${parallax ? ` data-parallax="${parallax}"` : ''}${sizes ? ` sizes="${sizes}"` : ''}${pos ? ` style="object-position:${pos}"` : ''}>`;
+  const sz = eager ? slackSizes(sizes || '100vw') : sizes;
+  return `<img src="${src}" alt="${esc(alt)}"${cls ? ` class="${cls}"` : ''}${w ? ` width="${w}"` : ''}${h ? ` height="${h}"` : ''}${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"${parallax ? ` data-parallax="${parallax}"` : ''}${sz ? ` sizes="${sz}"` : ''}${pos ? ` style="object-position:${pos}"` : ''}>`;
 }
 
 export function btn(label, href, variant = 'gold', iconName = 'arrow', extra = '') {

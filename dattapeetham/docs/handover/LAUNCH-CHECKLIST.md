@@ -46,13 +46,14 @@ Paths below are inside the project folder (`source\` in the package).
       (lamps, flowers, incense, the aarti, the lotus, the kolam, the temple
       bell) and lamps before the closing prayer in the footer. The Ashram
       has looked at every page on a phone and on a computer and approves
-      them. Three small choices are open (`docs/DEVOTION-PLAN.md`, section
-      10): the bells on Darshan and Visit hang small in the right margin
-      (they could hang beside the section heading instead); on a phone the
-      aarti flame on Darshan passes over the corners of the photograph's
-      card; the closing flowers on Home and Seva drift behind the heading
-      "Support the Peetham’s seva" (they could be kept to the cards below
-      it).
+      them. Three placements were changed after the first review
+      (`docs/DEVOTION-PLAN.md`, section 11); look at these in particular:
+      the bells on Darshan ("Temple timings") and Visit ("Before you
+      travel") now hang beside the section heading; on a phone the aarti
+      flame on Darshan follows a faint rounded frame outside the
+      photograph's card, clear of the card and its caption; the closing
+      flowers on Home and Seva fall beneath the heading "Support the
+      Peetham’s seva", among the buttons and the fund cards.
 
 The official pages disagree on the points below (README.md, *For the Ashram
 to confirm*). The site states them carefully and does not pick one silently.

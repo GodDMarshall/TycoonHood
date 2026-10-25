@@ -366,7 +366,7 @@ ${pageHero({
 </section>
 
 <section id="donate" class="section section-paper seva-donate ${DV_HOST}">
-  ${pushpanjali({ density: 0.6 })}
+  ${pushpanjali({ density: 0.6, below: '.section-head' })}
   <div class="wrap">
     ${sectionHead({ eyebrow: 'Donate', title: 'Support the Peetham’s <span class="em-light">seva</span>', lead: 'Your offering sustains Annadana, Gau Seva, the Veda Pathashala, free medical care and the birds of Shuka Vana. Donations are made on the Peetham’s own system at dattapeetham.org, where you choose the fund to support.' })}
     <ul class="funds" data-stagger>

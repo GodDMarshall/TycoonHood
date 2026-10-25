@@ -23,8 +23,11 @@
 //   --no-vary                 do not require Vary: Accept-Encoding (local Cloudflare workerd omits it;
 //                             the Cloudflare edge adds it)
 //   --verbose                 print every check, not only failures
+//   --help                    print this text
 //
-// Exit code 0 when every check passes.
+// Exit code 0 when every check passes (or for --help), 1 when a check fails,
+// 2 when the command line is incomplete or wrong (this text is printed) or the
+// server cannot be reached.
 
 import http from 'node:http';
 import https from 'node:https';
@@ -39,9 +42,40 @@ const has = (name) => args.includes(`--${name}`);
 let config = {};
 try { config = JSON.parse(readFileSync(fileURLToPath(new URL('../../site.config.json', import.meta.url)), 'utf8')); } catch { /* defaults */ }
 
-const BASE = new URL(opt('base') || process.env.BASE_URL || '');
-const SITE = new URL(opt('site-url') || config.siteUrl || 'https://www.dattapeetham.org');
-const LEGACY = new URL(opt('legacy-url') || config.legacyPlatformUrl || config.legacyUrl || SITE.href);
+// The usage text is the header above, from the command line to "Exit code".
+// Printed for --help, and with the problem first for a missing or wrong
+// option (exit code 0 for --help, 2 for a problem).
+function usage(problem) {
+  const lines = readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n');
+  const from = lines.findIndex((l) => l.includes('node deploy/test/verify-server.mjs [options]'));
+  const to = lines.findIndex((l, i) => i > from && !l.startsWith('//'));
+  const text = `Usage:\n${lines.slice(from, to).map((l) => l.replace(/^\/\/ ?/, '')).join('\n')}\n`;
+  if (problem) console.error(`verify-server: ${problem}\n\n${text}`);
+  else console.log(text);
+  process.exit(problem ? 2 : 0);
+}
+const VALUE_OPTIONS = ['base', 'site-url', 'legacy-url', 'canonical-off', 'revalidate'];
+const FLAG_OPTIONS = ['no-canonical', 'forwarded-proto', 'fixtures', 'no-vary', 'verbose', 'help'];
+if (has('help') || args.includes('-h')) usage();
+for (const a of args) {
+  const name = (/^--([a-z-]+)/.exec(a) || [])[1];
+  if (VALUE_OPTIONS.includes(name) && a === `--${name}`) usage(`${a} needs a value: ${a}=…`);
+  if (VALUE_OPTIONS.includes(name) ? !a.startsWith(`--${name}=`) : !FLAG_OPTIONS.includes(name) || a !== `--${name}`) {
+    usage(/^https?:\/\//.test(a) ? `give the server as --base=${a}` : `unknown option ${a}`);
+  }
+}
+// an http(s) address, or the usage text
+function address(value, what) {
+  let u = null;
+  try { u = new URL(value); } catch { /* reported below */ }
+  if (!u || !/^https?:$/.test(u.protocol) || !u.host) usage(`${what} is not an http:// or https:// address: ${value}`);
+  return u;
+}
+const baseArg = opt('base') || process.env.BASE_URL;
+if (!baseArg) usage('no server to test: give --base=URL (or set BASE_URL)');
+const BASE = address(baseArg, opt('base') ? '--base' : 'BASE_URL');
+const SITE = address(opt('site-url') || config.siteUrl || 'https://www.dattapeetham.org', opt('site-url') ? '--site-url' : 'siteUrl in site.config.json');
+const LEGACY = address(opt('legacy-url') || config.legacyPlatformUrl || config.legacyUrl || SITE.href, opt('legacy-url') ? '--legacy-url' : 'legacyPlatformUrl in site.config.json');
 const SPLIT = SITE.host !== LEGACY.host;
 const ALIAS = SITE.hostname.startsWith('www.') ? SITE.hostname.slice(4) : `www.${SITE.hostname}`;
 const VERBOSE = has('verbose');
@@ -304,4 +338,9 @@ async function main() {
   process.exit(failures.length ? 1 : 0);
 }
 
-main().catch((e) => { console.error(e); process.exit(2); });
+// a server that cannot be reached is one line; anything else, the whole error
+main().catch((e) => {
+  if (e && /^(ECONNREFUSED|ECONNRESET|ENOTFOUND|EAI_AGAIN|EHOSTUNREACH|ENETUNREACH|ETIMEDOUT|CERT_|ERR_TLS|DEPTH_ZERO|SELF_SIGNED|UNABLE_TO)/.test(e.code || '')) console.error(`verify-server: cannot reach ${BASE.origin}: ${e.message}`);
+  else console.error(e);
+  process.exit(2);
+});

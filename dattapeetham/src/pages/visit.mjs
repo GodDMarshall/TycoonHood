@@ -493,10 +493,10 @@ const mapSection = withPlaceFixes(placeFixes, () => ashramMap({
 }));
 
 const guidelinesSection = `<section id="guidelines" class="section vs-guidelines" aria-labelledby="guidelines-h">
-  ${ghanta({ side: 'right', drop: 64 })}
   <div class="wrap vs-guide-grid">
     <div class="vs-guide-side">
       <header class="section-head is-left">
+        ${ghanta({ beside: 'h2', drop: 44 })}
         <span class="eyebrow">Guidelines for Visitors</span>
         <h2 id="guidelines-h" data-split>Before you <span class="em-light">travel</span></h2>
         <p class="lead" data-reveal="up">Facilities at the Ashram are limited and primarily maintained for the devotees of Sri Swamiji. These guidelines, from the Peetham, help every visit go smoothly.</p>

@@ -3,7 +3,9 @@
 > **Status: wired (stage 2).** Every placement below is in the real pages, in
 > all five languages, together with the flute music and the temple sounds.
 > What stage 2 changed, measured and left open is in section 9; what the
-> recorded walk-through of every page changed is in section 10.
+> recorded walk-through of every page changed is in section 10; the polish for
+> phones (speed, the Darshan aarti, the flowers on Home and Seva, the bells on
+> Darshan and Visit) is in section 11.
 
 The client asked for "motion graphics on every page that plant the thought
 'this is devotion' in one's mind". This plan answers with motifs drawn from
@@ -28,8 +30,8 @@ outside the four new files has been changed.
 | File | What it is |
 | --- | --- |
 | `src/features/devotion-motion.mjs` | Markup helpers. Page modules and `layout.mjs` call them. Every helper returns an HTML string. |
-| `src/assets/js/devotion-motion.js` | Behaviour. A plain IIFE with no dependencies (37 KB, 12 KB gzipped). It starts every `[data-devotion]` element and exposes `DP.devotion`. |
-| `src/assets/css/devotion-motion.css` | Styles (32 KB, 8 KB gzipped). The flame, diya and bell drawings are inline SVG data URIs, which the CSP allows (`img-src data:`). |
+| `src/assets/js/devotion-motion.js` | Behaviour. A plain IIFE with no dependencies (54 KB, 18 KB gzipped, much of it comments). It starts every `[data-devotion]` element and exposes `DP.devotion`. Every motif that the script moves runs on one shared frame loop (section 11). |
+| `src/assets/css/devotion-motion.css` | Styles (45 KB, 14 KB gzipped). The flame, diya and bell drawings are inline SVG data URIs, plus one 2 KB WebP of the flame for phones; the CSP allows both (`img-src data:`). |
 | `docs/DEVOTION-PLAN.md` | This plan. |
 
 The motifs contain no text, so they add nothing to translate. Every one is
@@ -112,14 +114,14 @@ goes. Every motif starts from its `data-devotion` attribute.
 | `deepaDivider` | The same, as a threshold between sections | `deepaDivider({ count, size })` | A lamp row between gold hairlines | Lit |
 | `lamp-chain` (standalone) | Guru Parampara: a lamp lit from a lamp | `lampChain({ count, axis: 'x'\|'y', range })` | A ledge (or vertical line) of lamps. Light travels along it with scroll; a small taper flame carries it, and each lamp kindles when the light reaches it. The light never goes back. | All lit |
 | `lamp-chain` (attached) | The same, on an existing list | `lampChainAttrs({ nodes, line, diya, at, size, gap, order })` on the list element | A small lamp (flame, or flame on a diya) on each node, lit as the reading line passes it. Use `at: 'below'` to place it under a node that clips its content. Use `order: 'sequence'` for a row of nodes at one height: lit in order when the row comes into view. | All lit |
-| `pushpanjali` | Offering flowers | `pushpanjali({ density, shower, layer })` in a `DV_HOST` | Marigold petals (saffron and yellow, with ruffled edges) and jasmine flowers and buds drift down with depth: far ones soft, a very near one a bokeh blur. They tumble softly. A gentle shower falls when the section first comes into view, then it is sparse; fast scrolling stirs a few more. Each petal is a small pre-drawn element moved only by transform and opacity. | No JS: none. Reduced: a still scatter |
+| `pushpanjali` | Offering flowers | `pushpanjali({ density, shower, layer, below })` in a `DV_HOST` | Marigold petals (saffron and yellow, with ruffled edges) and jasmine flowers and buds drift down with depth: far ones soft, a very near one a bokeh blur. They tumble softly. A gentle shower falls when the section first comes into view, then it is sparse; fast scrolling stirs a few more. Each petal is a small pre-drawn element moved only by transform and opacity. With `below: '<selector>'` the flowers fall only beneath that element of the host (its heading), emerging just under it, so the heading stays clear. | No JS: none. Reduced: a still scatter |
 | `dhoopa` | Offering incense | `dhoopa({ from, wisps, stick, at, height, width })` in a `DV_HOST` | An incense stick with a breathing ember. Thin wisps rise, start to sway, then curl and spread into a soft veil at very low opacity. The canvas is only a column (480px by default) at one side of the section. The stick stands in the margin beside the text column (the host's `.wrap`), so the smoke rises clear of the words; where that margin is narrow (phones, small laptops) it stands at the very edge and the smoke sways less. For dark sections. | No JS: none. Reduced: a still frame |
-| `aarti` | Aarti / pradakshina | `aarti({ gap, period, size })` inside a positioned focal element, or `aartiAround(imgOrSvgHtml, opts)` | A small flame traces a slow clockwise circle with a fading trail of light, then rests at the crown. One circle every 8 s. Around a photograph the path becomes an ellipse with `gap` clear of each edge, and the flame is counter-scaled so it stays a true flame. | The path ring, with the flame at the crown |
+| `aarti` | Aarti / pradakshina | `aarti({ gap, period, size })` inside a positioned focal element, or `aartiAround(imgOrSvgHtml, opts)` | A small flame traces a slow clockwise circle with a fading trail of light, then rests at the crown. One circle every 8 s. Around a photograph the path becomes an ellipse with `gap` clear of each edge, and the flame is counter-scaled so it stays a true flame. Near the screen edge (a phone), where an ellipse clear of the corners would pass the edge of the screen, the flame instead follows the element's own outline, a rounded frame `gap` clear of it, with four sparks as its trail. | The path ring (or frame), with the flame at the crown |
 | `padma` | The lotus (seat of the divine, of meditation) | `padma({ size })` (bloom) or `padmaOrnament(sectionHeadHtml)` | Gold line-art lotus: petals open from a bud, the outer ones first, then a bindu kindles above. `padmaOrnament()` swaps the gold ornament that `sectionHead()`/`ornament()` draw for the lotus between two hairlines. | Open |
 | `kolam` | The kolam drawn at the threshold to welcome | `kolam({ cols, rows, width, range })` | A sikku kolam: one unbroken line woven around a dot grid, with diagonal crossings and petal loops at the border. The geometry is computed at build time, so it is deterministic and the line is single when cols and rows are coprime. First the dots appear, then the line is drawn by your scrolling. When it closes, a bead of light runs the line once. On forest it is cream, like rice flour. | Drawn |
 | `nada` | Nada: the primordial sound | `nada({ size, layer: 'behind' })` (rings) or `nada({ variant: 'string' })` (tanpura) | A bindu with rings that breathe outward (about 10 s). While the flute plays (`DP.sound`), the rings brighten and the bindu and rings pulse with its level. Behind words (`layer: 'behind'`) the bindu is only a soft warmth, without the white-hot point. The string variant is three shimmering strings of light with a bead travelling along them. | Still rings; still strings |
 | `jyoti-progress` | Carrying the lamp | `JYOTI_ATTR` on `.scroll-progress` | A flame at the reading line's tip | The flame at the tip, still |
-| `ghanta` | Ringing the bell on entering | `ghanta({ side, drop, inset })` inside a positioned section | A brass bell on a chain at the section's top edge. It swings once, with a ring of light humming out, when it first comes into view, on `dp:bell`, and when a pointer touches it. | Hangs still |
+| `ghanta` | Ringing the bell on entering | `ghanta({ side, drop, inset, beside })` inside a positioned section, or with `beside: 'h2'` as the first child of the section's heading block | A brass bell on a chain at the section's top edge. It swings once, with a ring of light humming out, when it first comes into view, on `dp:bell`, and when a pointer touches it. With `beside` it hangs beside the heading's words at a modest size (32 to 42px), its body level with the heading's line and its chain fading upward; the script finds room after the first line, else the last, else before a centred line, else above the heading at the right (long Tamil and Kannada headings on a phone). It swings more gently there (8 degrees) so its lip keeps clear of the words. | Hangs still (beside: placed, still) |
 
 **Runtime API.**
 - `DP.devotion.init(scope)` starts motifs added later. Use it after a page
@@ -127,6 +129,8 @@ goes. Every motif starts from its `data-devotion` attribute.
 - `DP.devotion.light(el)` lights every lamp inside `el`.
 - `DP.devotion.ring(el?)` swings a bell (with no argument, every bell).
 - `DP.devotion.stats()` returns the frame cost per motif.
+- `DP.devotion.tier` is the device tier the motifs chose: `'full'`, `'lite'`
+  (phones and tablets) or `'low'` (section 11).
 
 **Hosts.** Layer motifs fill their host and sit above the host's own
 background but under its content. Give the host `DV_HOST` (the class
@@ -160,7 +164,7 @@ lamps.
 | --- | --- | --- |
 | `padmaOrnament` | `mandirSection`: replace `${ornament()}` in its `<header class="section-head">` with `${padma({ size: 56, variant: 'ornament' })}` | "Every shrine … a doorway to the divine": the lotus seat above the city of temples |
 | `deepa-row` (5) | `statement`: between `<blockquote>${scrollLit('Just as *fire* …')}</blockquote>` and `<figcaption>`, insert `${deepaRow({ count: 5, cls: 'ix-dv-lamps' })}` | "Just as fire cannot be separated from wood, a true devotee is not separate from … devotion": the lamps are lit as the saying is read |
-| `pushpanjali` | `closing`: `<section id="support" class="ix-closing ${DV_HOST}" …>` and `${pushpanjali()}` right after `${horizon()}` | "Your offering sustains …": flowers offered at the close of the page |
+| `pushpanjali` | `closing`: `<section id="support" class="ix-closing ${DV_HOST}" …>` and `${pushpanjali({ below: '.ix-closing-inner .lead' })}` right after `${horizon()}` | "Your offering sustains …": flowers offered at the close of the page; they fall beneath the saying, around the buttons, so "Support the Peetham's seva" stays clear (section 11) |
 
 Tested at 1440 and 390. The petals pass behind the words; the horizon and the
 mandala stay underneath them.
@@ -206,16 +210,18 @@ text.
 
 | Motif | Where | What it evokes |
 | --- | --- | --- |
-| `ghanta` | `timingsSection`: insert `${ghanta({ side: 'right', drop: 72 })}` right after `<section id="timings" class="section section-paper dn-timings-sec">` | Ringing the bell as you enter for darshan; it swings with the section bell when temple sounds are on |
+| `ghanta` | `timingsSection`: the section head as ``sectionHead({ … }).replace(/^<header[^>]*>/, (h) => `${h}${ghanta({ beside: 'h2', drop: 44 })}`)``, so the bell is the head's first child and hangs beside "Temple timings" (section 11; it hung in the far-right gutter until then) | Ringing the bell as you enter for darshan; it swings with the section bell when temple sounds are on |
 | `aarti` | `prayerHall`: as the last child of `<figure class="dn-inset">` (after its `<figcaption>`), `${aarti({ gap: 18, size: 30 })}`, so the flame circles the whole inset, the photograph and its name | The photograph is of the arati itself: the flame circles it as the lamp circles the deity |
 | `deepaDivider` (5) | `render`: between `${festivalsSection}` and `${ctaBand({`, insert `${deepaDivider({ count: 5 })}` | Lamps lit before "Come for darshan" |
 
 Tested at 1440 and 390. The ellipse hugs the inset card with 18px clear. (Until
 the walk-through in section 10 it circled the photograph alone, so every circle
 passed across the caption beneath it.)
-On a phone the inset sits about 36px from the screen edge; if a placement
-leaves less room than the gap plus the flame, the script closes the path in
-(down to 4px) so the flame never passes the edge of the screen.
+On a phone the inset sits about 30px from the screen edge, too close for an
+ellipse that clears the card's corners, so there the flame follows the card's
+rounded outline 18px clear of it (section 11); if a placement leaves less room
+than the gap plus the flame, the script closes the path in so the flame never
+passes the edge of the screen.
 
 ### events — medium
 
@@ -264,21 +270,23 @@ letters, and its smoke drifted up behind the paragraphs.)
 | Motif | Where | What it evokes |
 | --- | --- | --- |
 | `lamp-chain` (standalone, 5) | `.seva-creed`: right after `<p class="creed-note" …>…</p>`, insert `${lampChain({ count: 5, range: '0.9,0.62', cls: 'seva-dv-chain' })}`, plus in `seva.css`: `.page-seva .seva-dv-chain { margin-top: 28px; }` | "Service to mankind is service to God": one act of service kindles the next, a lamp lit from a lamp. The range has all five lit by the time the creed is mid-screen (the default left a reader who paused there with three of five) |
-| `pushpanjali` | `#donate`: `<section id="donate" class="section section-paper seva-donate ${DV_HOST}">` and `${pushpanjali({ density: 0.6 })}` | The offering: "Your offering sustains …" |
+| `pushpanjali` | `#donate`: `<section id="donate" class="section section-paper seva-donate ${DV_HOST}">` and `${pushpanjali({ density: 0.6, below: '.section-head' })}` | The offering: "Your offering sustains …"; the flowers fall beneath the section head, over the fund cards (section 11) |
 
-Looked at on screen at 1440. The flowers fall behind the fund cards.
+Looked at on screen at 1440 and 390. The flowers fall behind the fund cards,
+never across the heading.
 
 ### visit — low
 
 | Motif | Where | What it evokes |
 | --- | --- | --- |
 | `kolam` (9 × 2) | `welcome`: right before `<div class="vs-lit">`, insert `${kolam({ cols: 9, rows: 2, width: 440, range: '0.92,0.66', cls: 'vs-dv-kolam' })}`, plus in `visit.css`: `.page-visit .vs-dv-kolam { margin-bottom: clamp(16px, 2.2vw, 28px); }` | The kolam drawn at the doorstep to welcome guests, above "Persons of all faiths are welcome". It closes as it reaches the middle of the screen, then the bead runs; with the default range a reader stopping at the saying saw a half-drawn line with a loose end |
-| `ghanta` | `guidelinesSection`: insert `${ghanta({ side: 'right', drop: 64 })}` right after `<section id="guidelines" …>` | The bell at the temple door: before you travel |
+| `ghanta` | `guidelinesSection`: `${ghanta({ beside: 'h2', drop: 44 })}` as the first child of `<header class="section-head is-left">` | The bell at the temple door: before you travel |
 
-The kolam was looked at on screen at 1440 and 390, the bell at 1440. The
-kolam is drawn by scrolling, then a bead of light runs the line. The bell hangs in the right gutter. While you scroll it
-sits under the page's sticky "Plan" bar, and it swings when the section comes
-into view.
+The kolam was looked at on screen at 1440 and 390, the bell at 1440, 1024 and
+390 and in the four languages. The kolam is drawn by scrolling, then a bead of
+light runs the line. The bell hangs beside "Before you travel", in the sticky
+column with its heading, and swings when the heading comes into view (until
+section 11 it hung in the right gutter, under the page's sticky "Plan" bar).
 
 ### attractions — low
 
@@ -476,6 +484,25 @@ not part of this repository.
   (`localStorage` `dp-sound`), and the control on every page switches the
   flute and the temple sounds. A page with both off requests no audio file
   and creates no AudioContext or player.
+- **The curtain holds the question briefly** (after stage 2). The question
+  rises 1.5 s into the curtain, once its own animation has played, and takes
+  focus; unanswered, the curtain starts to lift 4 s later (`ASK` in
+  `devotion-sound.js`; gone about 6.4 s into the curtain, where it used to
+  hold about 10.4 s), at once on a scroll, Escape, an arrow or Page key or a
+  tap on the curtain. The times are kept to the curtain's own animation
+  clock, which on a busy device starts up to 0.5 s after the script runs.
+  A pointer resting on the choices, or Tab between them, holds the curtain;
+  leaving them, it lifts 2 s later, never before the 4 s are up. The CSS
+  still lifts it by itself 7 s after the question (12 s while the visitor is
+  on the choices) if the script stops. Focus then returns to the start of
+  the page, and the same question carries on 250 ms after the curtain is
+  gone as the small card above the sound button ("Would you like flute music
+  while you read?" · "Play flute music" · "Not now"), which never takes
+  focus (Tab reaches it right after the skip link) and leaves by itself after
+  16 s or once the reader is 2.5 screens into the page; nothing is stored
+  then, and the next visit asks again. The same card is how the question is
+  asked when the script arrives after the curtain has lifted (a slow
+  connection).
 - **Credit**, the client's words exactly, everywhere: "Flute: original raga
   composition for this website", with "Raga Mohanam" on the line beneath it
   in the panel (`CREDIT` and `RAGA` in `src/features/devotion-sound.mjs`).
@@ -530,10 +557,16 @@ byte-identical). The build writes the loop plan on `[data-sound]` from
      measurements a loop, each a few milliseconds of main-thread time (more
      on a phone). Once the residual is
      within 2 samples the fade uses **equal-gain** curves (sin², cos²: the
-     two are one signal, and equal power would swell it by up to 3 dB); if
-     that is never reached (no taps, a very busy machine) it falls back to
-     equal power, as before. `DP.sound.loop().last` reports `fine`, the
-     `delay` used, the number of `measures` and the `curve`.
+     two are one signal, and equal power would swell it by up to 3 dB). If
+     that is never reached (a very busy machine), the curves are computed for
+     how alike the two taps are as heard together in the last 0.4 s (their
+     lag-0 correlation r, counted when the next reading repeats it within
+     0.15), keeping the power of the sum steady: in = s·n, out = (1 − s)·n,
+     s = sin², n = 1/√((1 − s)² + s² + 2r·s(1 − s)), r held to −0.35…1 (so
+     r = 1 is equal gain and r = 0 equal power). With no taps at all it falls
+     back to equal power, as before. `DP.sound.loop().last` reports `fine`,
+     the `delay` used, the number of `measures`, `rho`, the `r` used and the
+     `curve` (`gain`, `power` or `mixed`).
 - **Measured, by recording the speakers on the audio thread and matching
   them to the file** (Chromium 141, headless, real nginx; the harness
   stayed in the agency's working folder):
@@ -676,6 +709,9 @@ recording (measured at the end of each).
 
 ### Still open (larger than a placement)
 
+All three were done in section 11; the notes below are what the walk-through
+found.
+
 - **The aarti on phones.** At 390 the inset card sits 14 px from the screen's
   edge, so the ellipse keeps its snug fit and the flame still passes the
   corners of the card, near the first and last letters of its three-line
@@ -689,3 +725,233 @@ recording (measured at the end of each).
 - **The bells are small and far right** (Darshan, Visit), in the gutter at the
   section's top. That is restrained; if the Peetham wants the bell noticed,
   hang it beside the section's heading instead.
+
+## 11. Polish for phones (after stage 2)
+
+The stage-2 verification measured the motifs on a phone profile (390 × 844,
+CPU slowed four times): while scrolling they added 18–33 % to the long-task
+time of Home, Darshan, Music and `kn/index`, and 158 % on Guru Parampara. It
+also left three placements open (section 10). This section records what was
+found and changed. All measurements: Chromium 141 headless, no GPU, on a
+shared four-core machine, the pages served by nginx; a phone is 390 × 844 at
+3×, touch, CPU × 4.
+
+### Why the motifs were slow on a phone
+
+Measured with Performance traces, layer counts and A/B passes inside one page
+load (the motifs shown, then hidden with `display: none`, alternating, after
+a warm-up pass, so machine load and image loading fall on both arms alike):
+
+1. **Every flickering flame cut the page into extra layers.** A flame
+   flickers with a transform animation, which the compositor runs; the
+   browser then has to assume the moving flame may cover anything painted
+   after it, so the content after each lamp was lifted onto layers of its own.
+   On Guru Parampara, counted at nine scroll positions after every reveal had
+   played: 18 to 37 more layers than with the motifs hidden (58–107 against
+   40–71). Each layer costs the main thread on every frame (layerize, commit,
+   update layers). This was the largest single cost.
+2. **Lamps inside a list the page restyles every frame.** `site.js` writes
+   the reading progress (`--p`, `--tl`) on `[data-progress]` and
+   `[data-timeline]` lists on every scrolled frame. The property is inherited,
+   so every part of every lamp attached to the Guru Parampara thread (and the
+   Sri Swamiji timeline) was restyled every frame. With the lamps moved out of
+   the list the style time fell to the level with the motifs hidden (4652 and
+   4674 ms a pass, against 5590 with the lamps inside).
+3. **Writes before the page's own reads.** The reading lamp wrote its
+   position every scrolled frame in a frame callback that ran before the page
+   scripts' callbacks, which then read layout (`getBoundingClientRect`); each
+   read forced a second style and layout pass in that frame (on Guru
+   Parampara, 69 of the 72 forced passes inside `site.js` followed the reading
+   lamp's writes).
+4. **Script.** The incense cost 4.4 ms a draw at four-fold CPU (20 draws a
+   second near Guru Purnima); the strings on Music drew at 60 fps; every
+   canvas and the flowers ran their own loop.
+
+Not causes: the IntersectionObservers (under 60 ms in a whole scroll), the
+`gp-bead` animation of the page itself (it costs the same with the motifs
+hidden). (A note for whoever measures next: blocking a script with request
+interception, Playwright's `route`, slows every request of the page and skews
+that arm; stop a script with its own guard instead, as the table below does.)
+
+One correction to the stage-2 attribution: its "motifs removed" run removed
+every `[data-devotion]` element, and on Guru Parampara that includes the
+page's own lineage list (it carries the attached lamp chain), so part of the
+158 % it attributed to the motifs was the page's thread itself.
+
+### What changed (`devotion-motion.js`, `devotion-motion.css`)
+
+- **Device tiers.** The script treats phones and tablets (no hover or a coarse
+  pointer) as `lite` and weak devices (`navigator.deviceMemory` of 2 GB or
+  less, `hardwareConcurrency` of 2 or fewer, or Save-Data) as `low`, and
+  reports it in `DP.devotion.tier` (and as `html.dv-lite` / `html.dv-low`,
+  which no rule uses). The stylesheet makes the same phone test with
+  `@media (hover: none), (pointer: coarse)` rather than with the class: a class
+  set on `<html>` after the first paint restyled the whole page once.
+- **Flames on phones** flicker with the tongue alone (the halo and the
+  white-hot core hold still), by `background-size` rather than transform, so
+  nothing is handed to the compositor and no layer is made. A size change
+  repaints the flame, and the SVG tongue redrawn at a new size each frame
+  cost three times the paint of the motifs-hidden page, so phones draw the
+  same tongue from a 2 KB WebP, and it changes in small steps (about seven a
+  second). Layers with the motifs shown on Guru Parampara: 1 to 9 more than
+  hidden (were 18 to 37). Desktop flames are unchanged.
+- **One frame loop** for every motif the script moves (canvases, flowers, the
+  nada pulse, the scroll-driven chains and kolam, the reading lamp), each at
+  its own rate. While the page scrolls the loop runs after the page scripts'
+  scroll work: a scroll listener added at `DOMContentLoaded` (after every
+  deferred page script's) moves the pending frame callback to the end of the
+  list. The viewport size is read once per resize, never mid-frame.
+- **Rates on phones**: flowers 30 fps, incense 20 fps with two wisps of 40
+  segments (a third of the work a draw), Music's strings 20 fps; on low-end
+  devices 20 fps, fewer petals, one wisp.
+- **Still while the page moves, on phones** (`html.dv-moving`, from 300 px/s
+  until the page slows under 80 px/s): the canvases and the flowers rest and
+  the flames and the nada rings hold still, taking up again as soon as the
+  reader stops, which is when they are looked at. A busy page's frames
+  already run close to the 50 ms long-task line on a slow phone, so even a
+  small cost per frame there tipped many frames over it; and a moving page
+  hides a flicker anyway. Desktop motifs keep moving. Every rule keyed to
+  `html.dv-moving` ends in a class: the first version paused `.dv-nada *` and
+  `.dv-aarti *`, and a selector ending in `*` under a class on `<html>` made
+  each toggle restyle the whole page (46 ms a toggle on Home at full CPU
+  speed; 1.7 ms now).
+- **The reading lamp rides a CSS scroll timeline** (`animation-timeline:
+  scroll()`, Chromium and Safari 26) with no script per frame; elsewhere the
+  shared loop moves it. Its lean (still, reading, fast, backwards) is set as a
+  class only when the pace changes.
+- **Per-frame values on the element that uses them**: the attached lamps of a
+  `[data-progress]`/`[data-timeline]` list hang in a layer just after the list
+  (`.dv-node-layer`, placed by the script at the same spots); the standalone
+  lamp chain writes its progress on its fill and runner, the kolam on its
+  line, not on the whole motif.
+- **Nada on phones**: three rings evenly spaced (not five) and a still bindu.
+- **The aarti's frame path** (below) runs only near the screen; far from it the
+  animations are cancelled, since a paused one keeps its layers.
+
+### Measured after
+
+**The phone scroll, against the build before stage 2** (`b5dfe94`). Each
+run is a fresh context with a cold cache, 3 s after load, then the page is
+wheeled to the bottom 120 px every 60 ms; long-task time is the sum of the
+tasks over 50 ms during that scroll. Medians; "stage 2" is the build as the
+stage-2 verification measured it (`493fffb`), "now" the build with this
+section's changes.
+
+| Page | Long-task time, stage 2 | Long-task time, now | Main-thread time, stage 2 | Main-thread time, now | Now without the devotional layer (long-task / main-thread) |
+| --- | --- | --- | --- | --- | --- |
+| Home | +22 % | **+10 %** | +7 % | +6 % | +19 % / +7 % |
+| Darshan | +17 % | **+6 %** | +6 % | +5 % | +10 % / +5 % |
+| Music | +33 % | +38 % | +9 % | +6 % | +10 to +55 % / +1 to +8 % |
+| Guru Parampara | +113 % | +69 % | +19 % | +12 % | +19 % / +5 % |
+| `kn/index` | +20 % | +20 % | +8 % | +7 % | +6 % / +1 % |
+
+(9 runs a build for stage 2 and the base, 7 for now, 4 for the last column,
+which is now with the motion and sound scripts stopped by their own guards
+and their elements hidden.)
+
+How to read it:
+
+- **Home and Darshan are within the +10 % target.** Darshan's aarti, bell and
+  lamps now cost nothing measurable; Home's were about 5 % of main-thread time
+  in an A/B inside one page load.
+- **Guru Parampara went from +113 % to +69 %**, and is still over the target.
+  Split on the same machine in one run (4 runs each): the page as built +79 %,
+  with the sound layer stopped +53 %, with both stopped +19 %. So the motifs
+  still cost it about a third (mostly compositing: the reading lamp's two
+  layers, the incense canvas and the layers that overlap it), the sound layer
+  about a quarter (not part of this work), and the rest is the page itself.
+  Inside one page load the motifs add 7 % of main-thread time (2 s of 27 a
+  pass); the long-task sum grows much more because this page's frames already
+  run at 40–50 ms on a phone four times slower than this machine, so a little
+  more work per frame tips many of them over the 50 ms line.
+- **Music and `kn/index` are over the target, but not because of the
+  motifs**: with the devotional layer stopped they are just as far (Music
+  swung from +10 % to +55 % between runs; its long-task time is only 5–12 s,
+  so it is the noisiest of the five). Main-thread time is within +7 % on both.
+- The spread is wide. On this shared machine two runs of the same build differ
+  by up to a third in long-task time; main-thread time is steadier (a few per
+  cent), which is why both are given.
+
+**Inside one page load** (motifs shown, then hidden, alternating, six to eight
+passes): Guru Parampara +7 % main-thread time, Home +5 %, Music +6 %, Darshan
+no measurable difference.
+
+**Layers** (Guru Parampara at 390, nine scroll positions, motifs shown against
+hidden): stage 2, 18 to 37 more; now 1 to 9 more. Darshan: 8 more, now 1 to 3.
+
+**Toggling a class on `<html>`** (the moving state): 46 ms a toggle on Home
+with the first selectors, 1.7 ms now (full CPU speed).
+
+### The three placements
+
+- **Darshan aarti on phones.** Near the screen edge, where an ellipse that
+  clears the card's corners would pass the edge of the screen, the flame now
+  follows the card's own outline: a rounded frame 18 px clear of the card
+  (its corner radius plus the gap), drawn as a faint gold line, with the flame
+  carried along it at the circle's pace and ease and four sparks as its trail
+  of light; it rests at the crown as before. The path is a Web Animation of
+  transform (sampled along the frame), so no script runs per frame. At 320,
+  360, 390 and 414 the flame stays outside the card and its caption all the
+  way round, at least 12 px inside the screen edge, clear of the text below,
+  and nothing scrolls sideways while it moves. Reduced motion: the frame and
+  the flame at the crown. Desktop keeps the widened ellipse.
+- **Flowers below the heading** (Home `#support`, Seva `#donate`):
+  `pushpanjali({ below })` starts the layer just beneath the given element of
+  the host, measured by the script (offsets, so the reveals do not move it),
+  and the petals emerge there. Home: beneath the saying, so they fall around
+  the buttons and over the horizon; Seva: beneath the section head, over the
+  fund cards. The heading, and on Home the saying too, stay clear. Looked at
+  at 1440 and 390.
+- **Bells beside the headings** (Darshan timings, Visit guidelines):
+  `ghanta({ beside: 'h2' })` as the first child of the section head. The bell
+  is 32 to 42 px (was 28), hangs 18–26 px after the end of the heading's first
+  line with its body level with that line and its chain fading upward, and
+  swings more gently (8 degrees) so its lip keeps clear of the words; where no
+  line leaves room it hangs above the heading at the right of the head (Tamil
+  Darshan at 390). Looked at at 1440, 1024 and 390, at 360 in Telugu, and in
+  Tamil, Kannada and Hindi; the swing and sound still happen together as the
+  heading arrives. Both sections are light grounds (the site has no dark
+  theme); the bell is drawn the same on dark grounds.
+
+### Verified
+
+On the built site, Chromium 141 headless:
+
+- The four placements recorded as short frame sequences and looked at: the
+  aarti at 320, 360, 390 and 414 while it circles (and under reduced motion);
+  the flowers on Home at 1440 and 390 and on Seva at 1440; the bells at 1440,
+  1024, 390 and 360, in English, Tamil, Kannada, Hindi and Telugu, ringing and
+  still; the phone flames (the footer lamps being lit, the Guru Parampara
+  lineage lamps, the Sri Swamiji timeline flames) and the motifs holding still
+  while the page moves and taking up again when it stops.
+- No sideways scroll while they move: the aarti at 320, 360, 390 and 414, the
+  bells at 360 and 390, every page at 390 (the QA crawl). (At 320 the pages
+  checked scroll sideways by 25–29 px, the same in the pre-stage-2 build; it
+  comes from the header, not from the motifs.)
+- Layout shift while scrolling through in screen-sized steps (Home, Seva,
+  Darshan, Visit, Guru Parampara, Sri Swamiji, `ta/darshan`; 360, 390, 1440):
+  no shift has a motif as its source; every page 0.009 or less except Seva at
+  360 (0.042, from its own sections, the same in the stage-2 build).
+- `node build.mjs` (kn, hi, ta, te 100 %, nothing missing or rejected, no link
+  problems), `npm test` (1474 pass), `node --test tests/photos.test.mjs` (252
+  pass), and `node qa/check-pages.mjs`: all 75 pages in the five languages
+  clean at 1440, at 390 and under reduced motion with axe.
+
+### Still open
+
+- **Real phones.** All figures are headless and software-rendered on a
+  shared machine. A mid-range Android phone and an iPhone should be checked
+  by hand, Guru Parampara and Home first.
+- **The incense canvas is still a layer of its own** on Guru Purnima,
+  Kriya Yoga and About, and a few of the layers after it overlap it; that is
+  most of what remains of the layer difference on Guru Parampara.
+- **Guru Parampara is still over the +10 % target** (see the table). What
+  remains of the motifs there is compositing: the reading lamp's layers (it is
+  on screen the whole way) and the incense canvas with the layers that overlap
+  it. The sound layer's share is for its owner to look at (its floating
+  control and scroll listener, with sound off).
+- **Music and `kn/index`** are over the target with or without the
+  devotional layer; the cause is elsewhere in stage 2 (not investigated here).
+- **At 320 px the pages checked (Home, Darshan, Visit) scroll sideways by
+  25–29 px**, from the header (the navigation), with or without the motifs and
+  in the pre-stage-2 build too; it is not part of the devotional layer.
