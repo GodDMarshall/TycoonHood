@@ -262,9 +262,8 @@ the Telugu is in `src/i18n/te/part-99-devotion.json`.
   - Flute is వేణువు. Flute music is వేణుగానం, the usual Telugu word for flute playing
     (వేణుగాన కచేరీ). Do not use the calque వేణు సంగీతం, the loanword ఫ్లూట్, or మురళి.
     Inside names the compound form stays as it is: దత్త వేణు, ఎస్‌జీఎస్ దత్త వేణు.
-  - Raga Bhoopali is భూపాలి రాగం, the same pattern as సామ రాగం and వీణావాదిని రాగం. The raga on its own
-    is భూపాలి. It is the Hindustani raga of the site's bansuri piece (S R G P D): not its Carnatic
-    counterpart మోహనం, and not భూపాళం, a different Carnatic raga.
+  - Raga Pahadi is పహాడి రాగం, the same pattern as సామ రాగం and వీణావాదిని రాగం. The raga on its own
+    is పహాడి. It is the light-classical raga of the site's bansuri piece, from the folk music of the hills.
   - Tanpura and Tambura are both తంబురా (plural తంబురాలు), as on the music and attractions pages.
   - Shankha (conch) is శంఖం. The conch sound is not used yet: it stays off until the Peetham has
     listened to it, so there is no Telugu string for it.

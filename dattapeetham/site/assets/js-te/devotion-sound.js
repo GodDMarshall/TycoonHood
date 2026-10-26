@@ -1,5 +1,5 @@
 /* Datta Peetham — devotional sound (no dependencies).
-   The flute music (an original bansuri composition in Raga Bhoopali, tuned to
+   The flute music (an original bansuri composition in Raga Pahadi, tuned to
    A = 432 Hz, made for this website) and the temple sounds while scrolling.
 
    - Preference in localStorage 'dp-sound' = {music, sfx, v: 1, vol}; absent
@@ -66,7 +66,7 @@
   var VER = {};
   (cfg.audioV || '').split(/\s+/).forEach(function (t) { var i = t.lastIndexOf('='); if (i > 0) VER[t.slice(0, i)] = t.slice(i + 1); });
   var url = function (f) { return base + f + (VER[f] ? '?v=' + VER[f] : ''); };
-  var SRC = url(cfg.music || 'flute-bhoopali.mp3');
+  var SRC = url(cfg.music || 'flute-pahadi.mp3');
   var SWARA = ['chime-s', 'chime-r', 'chime-g', 'chime-p', 'chime-d', 'chime-s2'];
   // data-sfx (written by the build from the files that exist) lists the temple sounds to load;
   // the shankha is never assumed: it is optional and off until the client approves it
