@@ -269,9 +269,10 @@ in `docs/DEVOTION-PLAN.md` (section 9).
   (by RMS) as the track's own 95th-percentile frame as 1. The build writes
   that reference on the sound control as `data-level-ref`, from `levelRef`
   in the manifest, when the manifest has one; without it the player uses
-  0.08, measured on the first flute track. `tools/compose-audio.mjs` does
-  not write `levelRef` yet, so today the player uses 0.08. Neither
-  attribute is edited by hand: re-render and rebuild.
+  0.08, measured on the first flute track. `tools/compose-audio.mjs` writes
+  `levelRef` on every full run (the 95th percentile of the RMS of
+  2048-sample frames of the file the site plays; 0.069 for the Pahadi
+  piece). Neither attribute is edited by hand: re-render and rebuild.
 
 ### Changing or re-rendering the music
 

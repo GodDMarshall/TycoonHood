@@ -383,7 +383,9 @@
     clearTimeout(leaveT); leaveT = setTimeout(function () { if (on && live) fadeTo(bus, 1, 0.5); }, 1500);
   }
   function onHide() {
-    if (started && P[cur]) save('sessionStorage', POS, { t: inLoop(P[cur].a.currentTime), at: Date.now(), d: period() });
+    // an element that never loaded (the walk came before the file) carries where it meant to start
+    var A = started && P[cur], t = A && (A.a.readyState ? A.a.currentTime : A.at != null ? A.at : +cfg.start || 0);
+    if (A) save('sessionStorage', POS, { t: inLoop(t), at: Date.now(), d: period() });
     closeChannel();
   }
   function onShow(e) { // back/forward cache: the other page may have changed things

@@ -517,7 +517,7 @@ not part of this repository.
   249.26 s loop (74 %), and the tanpura (17 LU below the flute) and the pad
   (23.5 LU below) sit 16.1 LU under it together. There is no swarmandal
   (the option is kept, off, like the conch). Mastered at −23 LUFS,
-  −12.7 dBTP, loudness range 10.6 LU. The scroll chimes (S R G P D S',
+  −12.0 dBTP, loudness range 10.5 LU. The scroll chimes (S R G P D S',
   576.65–1153.3 Hz) and the bell are tuned to the same Sa, and the bell's
   pitch now varies by about 5 cents (it varied by about 70), so it stays on
   Sa.
@@ -534,8 +534,9 @@ not part of this repository.
   `data-level-ref` from `music.levelRef` in the manifest (the track's own
   95th-percentile frame RMS) when the manifest has one; without it the
   script uses 0.08, measured on the Mohanam track (it was 0.12 before that).
-  `tools/compose-audio.mjs` does not write `levelRef` yet, so the Pahadi
-  build writes no `data-level-ref` and 0.08 is in use.
+  `tools/compose-audio.mjs` writes `levelRef` on every full run: 0.069 for
+  the Pahadi track (the Mohanam track's was 0.078). Measured in Chromium
+  over 30 s from the first-play start, the meter's p50 is 0.72 and p95 0.89.
 
 ### The music, revised (2026-10-26)
 
@@ -555,8 +556,13 @@ site's owner asked for it to be replaced, twice:
 The credit is unchanged, word for word. The figures in *The loop* and
 *Delivery* below are the Pahadi render's, from `assets/audio/manifest.json`;
 the measurements recorded with them (correlations, recorded runs, the
-one-frame seek offset) were made on the Mohanam track and have not been
-repeated on this one.
+one-frame seek offset) were made on the Mohanam track. The browser suite was
+re-run on the Pahadi render on 2026-10-26 and passed: the loop crossfade from
+a first play and from near the loop end (measured likeness of the two players
+0.9997 at the fade), continuity across five pages, consent, pause on a hidden
+tab, the temple sounds and the bell (each bell within about 5 cents of Sa), a
+three-minute soak, and a fresh visitor's first play (playing within about
+0.2 s of the click, at 8.5 s; the flute about 1.8 s later).
 
 ### The loop
 

@@ -19,7 +19,8 @@
 //   left as it was, with a warning: run both). An unknown option, a missing value or a
 //   tail longer than the loop is an error, before anything is written. Every MP3 is
 //   encoded in the work folder and copied into src/assets/audio/ only once all of them
-//   have passed their checks, so a failed run leaves the site's files as they were.
+//   have passed their checks, each beside its target first and then renamed over it, so
+//   a failed run leaves the site's files as they were and none is ever half-written.
 //
 // Nothing is sampled or recorded: the bansuri, the tanpura, the pad, the
 // swarmandal (off in this score), the bells and the hall are all synthesised
@@ -55,7 +56,7 @@
 // pad alone. The loop's MP3 is encoded circularly too (see WRAP), so the codec
 // adds no edge at the wrap.
 
-import { writeFile, readFile, mkdir, stat, rm, copyFile } from 'node:fs/promises';
+import { writeFile, readFile, mkdir, stat, rm, copyFile, rename } from 'node:fs/promises';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
@@ -145,7 +146,8 @@ export const SCORE = {
     { notes: 'D.:0.5 /S:1.8 R:0.4 /G:2.2 (M)G:0.6 R:0.4 S:1.0 D.:0.45 /P.:2.6', gap: 2.4, level: 0.68 },
     { notes: 'P:0.9 /G:1.8 R:0.45 S:0.8 (RGR)S:0.6 D.:0.45 P.:1.2 D.:0.45 /S:2.6', gap: 2.8, level: 0.66 },
 
-    // III. Gopa-geet: the cowherd's song on Ga, in call and answer (Ma touched twice, G M G R S and P M G)
+    // III. Gopa-geet: the cowherd's song on Ga, in call and answer (Ma touched in four of its five
+    // phrases: G M G R S, P M G twice, and the kan onto the andolan)
     { notes: 'S:0.6 /G:2.2 R:0.45 G:0.6 P:1.8 -:0.25 (D)P:0.6 /G:1.6', gap: 2.1, level: 0.69 },
     { notes: 'G:0.6 P:1.4 D:0.45 /P:2.0 /G:2.2 (M)G:0.5 R:0.45 S:1.2', gap: 2.3, level: 0.7 },
     { notes: 'P:0.9 D:0.45 /P:2.0 -:0.3 (D)P:0.6 G:0.45 P:1.0 (PM)G:1.6 R:0.4 S:0.8', gap: 2.2, level: 0.71 },
@@ -432,7 +434,7 @@ const PHRASE_KEYS = ['notes', 'gap', 'level', 'shimmer'];
 export function schedule(score = SCORE) {
   for (const k of Object.keys(score)) if (!SCORE_KEYS.includes(k)) throw new Error(`the score has an unknown field "${k}" (it reads ${SCORE_KEYS.join(', ')})`);
   const rg = ragaOf(score.raga);
-  if (!(score.sa > 0)) throw new Error(`sa is ${JSON.stringify(score.sa)}: the frequency of Sa in Hz, above 0`);
+  if (typeof score.sa !== 'number' || !Number.isFinite(score.sa) || !(score.sa > 0)) throw new Error(`sa is ${JSON.stringify(score.sa)}: the frequency of Sa in Hz, above 0`);
   if (!Number.isInteger(score.seed)) throw new Error(`seed is ${JSON.stringify(score.seed)}: write a whole number`);
   if (!(score.tempo > 0)) throw new Error(`tempo is ${score.tempo}: it must be above 0`);
   if (!(score.intro >= 0) || !(score.outro >= 0)) throw new Error(`intro and outro are seconds, 0 or more (they are ${score.intro} and ${score.outro})`);
@@ -484,16 +486,24 @@ export function schedule(score = SCORE) {
 // Pahadi, its touch swaras M and N. A slow glide that lingers near one of them
 // makes the ear hear that note: a note foreign to the raga, or M or N as a
 // resting note. So the glide may stay in each such band (±MEEND.band cents) for
-// at most MEEND.dwell seconds. When it would stay longer, it is first made
-// steeper through the middle, along ease(u^p / (u^p + (1 − u)^p)) with p from 1
-// (the plain raised cosine) up to MEEND.steep: the meend keeps its length, but
-// it leaves the first swara a little later and settles into the second a little
-// more slowly. Only if that is not enough is it also made shorter, so it takes
-// less than its usual 35–60 % of the note. Between Pahadi's swaras a foreign
-// band lies in the middle of almost every step (komal Re between S and R, komal
-// Ga between R and G, …), so nearly every slow meend is shaped here; --plan
-// lists what each one became.
-const MEEND = { band: 30, dwell: 0.125, steep: 1.6 };
+// only a moment: its cap, between MEEND.dwell[0] and MEEND.dwell[1] seconds,
+// drawn for each meend from the phrase's own `meend-` stream (so the meends do
+// not all move at one speed, and nothing else in the phrase moves with them).
+// When it would stay longer, it is first made steeper through the middle, along
+// ease(u^p / (u^p + (1 − u)^p)) with p from 1 (the plain raised cosine) up to
+// MEEND.steep: the meend keeps its length, but it leaves the first swara a
+// little later and settles into the second a little more slowly. Only if that
+// is not enough is it also made shorter, so it takes less than its usual 35–60 %
+// of the note. A meend that leaves M or N starts inside that swara's own band,
+// where an eased start would hold it for a third of a slow glide (and a steeper
+// middle longer still), as if M or N were a resting note. It leaves along
+// ease(1 − (1 − u)²) instead: off the touch in half the time (twice as fast at the start),
+// then settling slowly into the swara it lands on; and it too is shortened if
+// even that would stay too long. Between Pahadi's swaras a foreign band lies in
+// the middle of almost every step (komal Re between S and R, komal Ga between R
+// and G, …), so nearly every slow meend is shaped here; --plan lists what each
+// one became.
+const MEEND = { band: 30, dwell: [0.115, 0.15], steep: 1.6 };
 const glideCurve = (p) => (p === 1 ? ease : (u) => {
   if (u <= 0) return 0;
   if (u >= 1) return 1;
@@ -507,39 +517,48 @@ function glideAt(p, y) {
   const v = Math.acos(1 - 2 * y) / Math.PI; // the inverse of ease
   return 1 / (1 + Math.pow((1 - v) / v, 1 / p));
 }
+// a meend that leaves M or N, and its inverse
+const leaveCurve = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : ease(1 - (1 - u) * (1 - u)));
+const leaveAt = (y) => (y <= 0 ? 0 : y >= 1 ? 1 : 1 - Math.sqrt(1 - Math.acos(1 - 2 * y) / Math.PI));
 const OCT_NAME = { '-2': 'ati-mandra ', '-1': 'mandra ', 0: '', 1: 'tara ', 2: 'ati-tara ' };
 // the bands of passBands (in every octave) that lie between two pitches, each with the
-// share of the way from `from` to `to` over which the glide is inside it
+// share of the way from `from` to `to` over which the glide is inside it. A band around the
+// swara the glide lands on is that swara, and is left out; a band around the swara it
+// leaves (only M or N can be one: `leaves`) counts from the start
 function bandsBetween(from, to, rg) {
   const lo = Math.min(from, to), hi = Math.max(from, to), w = MEEND.band, out = [];
   for (const b of passBands(rg)) {
     for (let k = Math.floor((lo - w - b.cents) / 1200); b.cents + 1200 * k < hi + w; k++) {
       const c = b.cents + 1200 * k;
-      if (c + w <= lo || c - w >= hi || Math.abs(c - from) < 1 || Math.abs(c - to) < 1) continue;
+      if (c + w <= lo || c - w >= hi || Math.abs(c - to) < 1) continue;
       const y1 = clamp((c - w - from) / (to - from), 0, 1), y2 = clamp((c + w - from) / (to - from), 0, 1);
-      out.push({ name: (OCT_NAME[k] ?? '') + b.name, y: [Math.min(y1, y2), Math.max(y1, y2)] });
+      out.push({ name: (OCT_NAME[k] ?? '') + b.name, y: [Math.min(y1, y2), Math.max(y1, y2)], leaves: Math.abs(c - from) < 1 });
     }
   }
   return out;
 }
 // The curve and the time a meend from `from` to `to` (cents) takes, asked to take `tau`
-// seconds; with how long it then spends in each band it passes.
-function glideFor(from, to, tau, rg) {
-  const bands = bandsBetween(from, to, rg);
-  const dwell = (p, T) => bands.map((b) => T * (glideAt(p, b.y[1]) - glideAt(p, b.y[0])));
+// seconds and to stay at most `cap` seconds in any band it passes; with how long it then
+// spends in each band.
+function glideFor(from, to, tau, rg, cap = MEEND.dwell[1]) {
+  const bands = bandsBetween(from, to, rg), leaves = bands.some((b) => b.leaves);
+  const share = (p, y) => (leaves ? leaveAt(y) : glideAt(p, y));
+  const dwell = (p, T) => bands.map((b) => T * (share(p, b.y[1]) - share(p, b.y[0])));
   const worst = (p, T) => Math.max(0, ...dwell(p, T));
   let p = 1, T = tau;
-  if (worst(1, tau) > MEEND.dwell) {
-    for (let i = 1, best = 1; i <= 30; i++) { // the least steepening that is enough, or the best there is
-      const q = 1 + (i * (MEEND.steep - 1)) / 30;
-      if (worst(q, tau) < worst(best, tau)) best = q;
-      p = best;
-      if (worst(q, tau) <= MEEND.dwell) { p = q; break; }
+  if (worst(1, tau) > cap) {
+    if (!leaves) {
+      for (let i = 1, best = 1; i <= 30; i++) { // the least steepening that is enough, or the best there is
+        const q = 1 + (i * (MEEND.steep - 1)) / 30;
+        if (worst(q, tau) < worst(best, tau)) best = q;
+        p = best;
+        if (worst(q, tau) <= cap) { p = q; break; }
+      }
     }
-    if (worst(p, tau) > MEEND.dwell) T = (tau * MEEND.dwell) / worst(p, tau);
+    if (worst(p, tau) > cap) T = (tau * cap) / worst(p, tau);
   }
   const d = dwell(p, T);
-  return { curve: glideCurve(p), p, tau: T, asked: tau, bands: bands.map((b, i) => ({ band: b.name, seconds: d[i] })) };
+  return { curve: leaves ? leaveCurve : glideCurve(p), p, leaves, cap, tau: T, asked: tau, bands: bands.map((b, i) => ({ band: b.name, seconds: d[i] })) };
 }
 // a pitch moved just outside any band of passBands it falls in, on the side of `target`
 // (where a soft scoop into a breath starts: never on a note the raga lacks)
@@ -551,13 +570,16 @@ function clearOf(c, target, rg) {
   return c;
 }
 
+// the pitch (cents re Sa) the contour has reached at time t on its way into the event e
+const along = (e, t) => (t <= e.ts ? e.from : t >= e.ts + e.tau ? e.cents : e.from + (e.cents - e.from) * e.curve((t - e.ts) / e.tau));
+
 // How each swara of a phrase is reached: from which pitch, from when, over how long and
 // along which curve (step 1 of renderFlute). It is the first use of the phrase's `flute-`
-// stream, so --plan, which calls it on a fresh stream to list the meends, sees exactly
-// what the render does.
-function reach(ph, R, rg) {
-  // the pitch the contour has reached at time t on its way into the event e
-  const reached = (e, t) => (t <= e.ts ? e.from : t >= e.ts + e.tau ? e.cents : e.from + (e.cents - e.from) * e.curve((t - e.ts) / e.tau));
+// stream, and the only use of its `meend-` stream (each meend's cap in a band, see MEEND),
+// so --plan, which calls it on fresh streams to list the meends, sees exactly what the
+// render does.
+function reach(ph, R, score) {
+  const rg = ragaOf(score.raga), Rm = rng(score.seed, `meend-${ph.index}`);
   let prev = null;
   for (const e of ph.ev) {
     if (e.rest) { prev = null; continue; }
@@ -579,9 +601,13 @@ function reach(ph, R, rg) {
       if (e.meend) { e.tau = clamp((0.35 + 0.25 * R()) * e.dur, 0.12, 2.4); e.ts = e.t0; e.curve = ease; }
       else if (e.grace || prev.grace) { e.tau = 0.028 + 0.01 * R(); e.ts = e.t0 - 0.35 * e.tau; e.curve = smoother; }
       else { e.tau = clamp(0.28 * Math.min(prev.dur, e.dur), 0.045, 0.1); e.ts = e.t0 - 0.4 * e.tau; e.curve = smoother; }
-      e.from = reached(prev, e.ts); // from wherever the last swara has got to: the pitch never jumps
+      e.from = along(prev, e.ts); // from wherever the last swara has got to: the pitch never jumps
     }
-    if (e.meend) { const g = glideFor(e.from, e.cents, e.tau, rg); e.tau = g.tau; e.curve = g.curve; e.glide = g; }
+    if (e.meend) {
+      const cap = MEEND.dwell[0] + (MEEND.dwell[1] - MEEND.dwell[0]) * Rm(); // one draw for every meend, in order
+      const g = glideFor(e.from, e.cents, e.tau, rg, cap);
+      e.tau = g.tau; e.curve = g.curve; e.glide = g;
+    }
     prev = e;
   }
 }
@@ -593,15 +619,16 @@ function reach(ph, R, rg) {
 // airy and singing. A continuous-phase oscillator follows a pitch contour built
 // from the score (meend, kan, murki, andolan, a soft scoop into each breath,
 // slow drift), so every note-to-note move is a real slide, never a jump. The
-// tone is soft-blown and fundamental-dominant (2nd harmonic about −28 dB and 3rd
-// about −32 dB in madhya, less in tara), a little brighter when the breath is
-// stronger, over plenty of breath noise (about −12.5 dB re the tone on a held
-// madhya note) in four bands: a band riding on the fundamental (the airy halo of
-// a large bamboo flute), a weaker band on the octave, a broad, warm band of air
-// near 1.4 kHz and a soft hiss. Each breath arrives as air first; the tone
-// speaks 40–80 ms later and fills in over 300–460 ms with a gentle chiff, and
-// now and then (from the phrase's own stream) a small "phoonk" of air comes
-// before it. A phrase that opens on a kan or a murki speaks at once instead.
+// tone is soft-blown and fundamental-dominant (2nd harmonic about −29 dB and 3rd
+// about −33 dB in madhya, each wandering ±1 dB, less in tara), a little brighter
+// when the breath is stronger, over plenty of breath noise (about −12.5 dB re the
+// tone on a held madhya note) in four bands: a band riding on the fundamental
+// (the airy halo of a large bamboo flute), a weaker band on the octave, a broad,
+// warm band of air near 1.4 kHz and a soft hiss. Each breath arrives as air
+// first; the tone speaks 40–80 ms later (up to about 105 ms after a phoonk) and
+// fills in over about 0.3–0.5 s with a gentle chiff, and now and then (from the
+// phrase's own stream) a small "phoonk" of air comes before it. A phrase that
+// opens on a kan or a murki speaks at once instead.
 // Long swaras carry breath vibrato: the breath pressure swings about 1.2–1.8 dB
 // peak to peak at 4.6–5.3 Hz, arriving after about 0.8 s, with only a trace of
 // pitch in it (±2 cents). At the end of a phrase the tone thins into breath
@@ -622,7 +649,7 @@ function renderFlute(plan, N, score, { part } = {}) {
     const ev = ph.ev, baseDb = 20 * Math.log10(ph.level), pdur = ph.t1 - ph.t0;
     const lastI = ev.length - 1;
     // 1. how each swara is reached
-    reach(ph, R, rg);
+    reach(ph, R, score);
     // 2. pitch contour, swara by swara (each owns the time until the next one starts to move)
     for (let i = 0; i <= lastI; i++) {
       const e = ev[i];
@@ -929,6 +956,14 @@ function renderPluck(st, ring, amp, R) {
 // ±0.6 cents, and the three reeds of a voice sit left, centre and right (the
 // middle reed's partials alternating a little to either side), each drifting
 // slowly, for a wide image.
+// The middle reeds of all the voices are in tune and waver together, so their
+// partials that meet on one frequency (Sa's octave, tara Sa and mandra Sa's 4th
+// harmonic at 576.65 Hz; Pa and mandra Sa's 3rd; …) never beat, but as separate
+// oscillators they would sum to whatever their start phases made of them, and
+// cancel in places (10 dB at 576.65 Hz in mono, measured on the previous
+// render). So each such meeting is one oscillator, with one phase: its level in
+// each channel is the power sum of the partials it stands for (as unrelated reeds
+// add on average), each keeping its own swell and pan.
 // Nothing in it is random in time: every partial has a whole number of cycles
 // in the loop and every swell, sweep, wavering and drift a whole number of
 // periods, so the pad is exactly periodic and sample N - 1 flows into sample 0.
@@ -951,8 +986,8 @@ function renderPad(N, score) {
     // far left and right, are weaker in the fundamental and brighter above it, so the chorus
     // shimmers in the upper partials while the drone's body stays steady
     [-3.4, 0, 3.1].forEach((dc, m) => {
-      // the middle reeds of all the voices are in tune and waver together, so the partials
-      // they share do not beat
+      // the middle reeds of all the voices are in tune and waver together (one wow), so the
+      // partials they share do not beat; below, each frequency they share is one oscillator
       const reed = { cents: m === 1 ? 0 : dc + 0.8 * (R() - 0.5), pan: [-0.9, 0, 0.9][m] + 0.06 * (R() - 0.5), drift: lfo(41 + 20 * R()), wow: m === 1 ? wow : lfo(13 + 9 * R()), gain: 0.9 + 0.2 * R() };
       for (let k = 1; k * v.f <= 2600; k++) {
         const f = whole(k * v.f * 2 ** (reed.cents / 1200));
@@ -963,20 +998,33 @@ function renderPad(N, score) {
       }
     });
   });
-  // gains (left, right) and phase swing of one partial at time t, with the low-pass at fc
+  // one oscillator for each frequency the middle reeds share (the same whole number of cycles
+  // in the loop, the same wow): the first of them gives the phase, and each keeps its own
+  // level, swell and pan (`parts`)
+  const bank = [];
+  for (const o of osc) {
+    const twin = o.reed.wow === wow && bank.find((q) => q.reed.wow === wow && Math.round(q.f * L) === Math.round(o.f * L));
+    if (twin) twin.parts.push(o); else bank.push({ ...o, parts: [o] });
+  }
+  // gains (left, right) and phase swing of one oscillator at time t, with the low-pass at fc:
+  // in each channel the power sum of the partials it stands for (just the one, mostly)
   const state = (o, t, fc) => {
-    const lp = 1 / Math.sqrt(1 + Math.pow(o.f / fc, 8)), hp = 1 / Math.sqrt(1 + Math.pow(90 / o.f, 4));
-    const a = o.amp * lp * hp * (1 + 0.22 * sw(o.swell, t)) * (1 + 0.12 * sw(all, t));
-    const [gl, gr] = panGains(clamp(o.reed.pan + o.pan + 0.1 * sw(o.reed.drift, t), -1, 1));
-    return [a * gl, a * gr, o.wow * sw(o.reed.wow, t)];
+    const lp = 1 / Math.sqrt(1 + Math.pow(o.f / fc, 8)), hp = 1 / Math.sqrt(1 + Math.pow(90 / o.f, 4)), g = lp * hp * (1 + 0.12 * sw(all, t));
+    let l2 = 0, r2 = 0;
+    for (const q of o.parts) {
+      const a = g * q.amp * (1 + 0.22 * sw(q.swell, t));
+      const [gl, gr] = panGains(clamp(q.reed.pan + q.pan + 0.1 * sw(q.reed.drift, t), -1, 1));
+      l2 += a * a * gl * gl; r2 += a * a * gr * gr;
+    }
+    return [Math.sqrt(l2), Math.sqrt(r2), o.wow * sw(o.reed.wow, t)];
   };
   const fcAt = (t) => 850 * Math.pow(2, 0.33 * sw(cut[0], t) + 0.17 * sw(cut[1], t));
   const outL = new Float32Array(N), outR = new Float32Array(N), CR = 64;
-  const fc0 = fcAt(0), cur = osc.map((o) => state(o, 0, fc0));
+  const fc0 = fcAt(0), cur = bank.map((o) => state(o, 0, fc0));
   for (let n0 = 0; n0 < N; n0 += CR) {
     const n1 = Math.min(N, n0 + CR), m = n1 - n0, fc = fcAt(n1 / SR);
-    for (let j = 0; j < osc.length; j++) {
-      const o = osc[j], [aL1, aR1, w1] = state(o, n1 / SR, fc), [aL0, aR0, w0] = cur[j], inc = o.f / SR;
+    for (let j = 0; j < bank.length; j++) {
+      const o = bank[j], [aL1, aR1, w1] = state(o, n1 / SR, fc), [aL0, aR0, w0] = cur[j], inc = o.f / SR;
       let p = o.p;
       if (Math.max(aL0, aR0, aL1, aR1) > 1e-7) {
         const dL = (aL1 - aL0) / m, dR = (aR1 - aR0) / m, dW = (w1 - w0) / m;
@@ -992,7 +1040,7 @@ function renderPad(N, score) {
       o.p = p; cur[j] = [aL1, aR1, w1];
     }
   }
-  return { L: outL, R: outR, voices: voices.map((v) => v.name), partials: osc.length };
+  return { L: outL, R: outR, voices: voices.map((v) => v.name), partials: osc.length, oscillators: bank.length };
 }
 
 // ============================================================================
@@ -1085,7 +1133,15 @@ function zitherPluck(f, oct, R, amp) {
 // then a dense, decorrelated stereo tail that builds up gently and whose decay
 // time falls with frequency (≈3.9 s in the low mids, ≈2.8 s at 2 kHz, ≈1.4 s at
 // 8 kHz), with its top rolled off. The tail is synthesised frame by frame
-// (random phase, frequency-dependent decay).
+// (random phase, frequency-dependent decay). Its low end is then made to reach
+// the two channels nearly alike, as it reaches two nearby points in a real room
+// (see cohere), and a little of each channel (IR_CROSS, -18 dB) is mixed into the
+// other: the flute's few, narrow partials each meet the tail's fine structure at
+// one pitch, where the two channels can still be opposed by chance (the reverb's
+// third-octave bands at 200, 252 and 800 Hz read -0.13, -0.04 and -0.17 without
+// it, measured), and this lifts every band to +0.05 or more (800 Hz is the lowest; +0.28
+// overall).
+const IR_CROSS = 0.12;
 function makeIR(seed, seconds = 5.2) {
   const R = rng(seed, 'hall'), M = Math.round(seconds * SR), pre = Math.round(0.022 * SR);
   const T60 = [[63, 3.5], [125, 3.8], [250, 3.95], [500, 3.9], [1000, 3.5], [2000, 2.8], [4000, 2.1], [8000, 1.4], [16000, 0.8]];
@@ -1140,10 +1196,46 @@ function makeIR(seed, seconds = 5.2) {
     for (let i = 0; i < M; i++) tail[i] += ge * er[i];
     ir.push(tail);
   }
+  cohere(ir[0], ir[1]);
+  for (let i = 0; i < M; i++) { const l = ir[0][i], r = ir[1][i]; ir[0][i] = l + IR_CROSS * r; ir[1][i] = r + IR_CROSS * l; }
   let e = 0;
   for (const ch of ir) for (let i = 0; i < M; i++) e += ch[i] * ch[i];
   scaleAll(1 / Math.sqrt(e / 2), ...ir);
   return { L: ir[0], R: ir[1] };
+}
+
+// In a room the low end reaches two nearby points almost alike, and only higher up do
+// they differ: the coherence of a diffuse field between two points d apart is
+// sin x / x, x = 2πf·d/c. Two independently synthesised channels do not do that. Their
+// few low-frequency components, and the sparse early reflections that carry most of the
+// energy below 100 Hz, correlate at random: as low as −0.74 in one third-octave band
+// (measured on the previous IR), which made the hall thinner in mono than an
+// uncorrelated pair would be. So each band below about 340 Hz is brought up to about the
+// coherence of two points half a metre apart (0.87 at 100 Hz, 0.53 at 200 Hz, 0 at
+// 343 Hz), and up to 400 Hz none is left anti-correlated (the lift fades out by 500 Hz),
+// by rebalancing the channels' sum against their difference; each keeps its energy, so
+// the colour and the decay times stay as they are. A band already as coherent as that is
+// left alone. In place, zero-phase.
+function cohere(L, R, d = 0.5) {
+  const M = L.length, F = 1 << Math.ceil(Math.log2(M + SR)), half = F / 2;
+  const mr = new Float64Array(F), mi = new Float64Array(F), sr = new Float64Array(F), si = new Float64Array(F);
+  for (let i = 0; i < M; i++) { mr[i] = 0.5 * (L[i] + R[i]); sr[i] = 0.5 * (L[i] - R[i]); }
+  fft(mr, mi); fft(sr, si);
+  // the powers of the sum and the difference, summed up to each bin (for third-octave bands)
+  const cm = new Float64Array(half + 2), cs = new Float64Array(half + 2);
+  for (let k = 0; k <= half; k++) { cm[k + 1] = cm[k] + mr[k] * mr[k] + mi[k] * mi[k]; cs[k + 1] = cs[k] + sr[k] * sr[k] + si[k] * si[k]; }
+  for (let k = 1, top = Math.ceil((500 * F) / SR); k <= top; k++) {
+    const f = (k * SR) / F, x = (TAU * f * d) / 343, lift = f <= 400 ? 1 : ease((500 - f) / 100);
+    const a = Math.max(1, Math.floor(k / 2 ** (1 / 6))), b = Math.min(half, Math.ceil(k * 2 ** (1 / 6)));
+    const pm = cm[b + 1] - cm[a], ps = cs[b + 1] - cs[a], r = (pm - ps) / (pm + ps);
+    const want = x < Math.PI ? Math.sin(x) / x : 0;
+    if (!(pm > 0 && ps > 0) || r >= want) continue;
+    const rho = r + lift * (want - r); // the band's new correlation
+    const h = Math.sqrt(((1 + rho) * (pm + ps)) / (2 * pm)), g = Math.sqrt(((1 - rho) * (pm + ps)) / (2 * ps));
+    for (const j of [k, F - k]) { mr[j] *= h; mi[j] *= h; sr[j] *= g; si[j] *= g; }
+  }
+  fft(mr, mi, true); fft(sr, si, true);
+  for (let i = 0; i < M; i++) { L[i] = mr[i] + sr[i]; R[i] = mr[i] - sr[i]; }
 }
 
 // Circular convolution of a mono send with a stereo IR (overlap-add, FFT 2^19,
@@ -1304,6 +1396,23 @@ function ebur128(file) {
   const s = err.slice(err.lastIndexOf('Summary:'));
   return { lufs: +/I:\s+(-?[\d.]+) LUFS/.exec(s)[1], lra: +/LRA:\s+(-?[\d.]+) LU/.exec(s)[1], truePeak: +/Peak:\s+(-?[\d.]+) dBFS/.exec(s)[1] };
 }
+// An MP3 decoded as a player that reads its gapless header decodes it (ffmpeg, as Chromium
+// does): interleaved stereo samples
+async function decodeMp3(file, work) {
+  const raw = join(work, 'decoded.f32');
+  try {
+    ffmpeg(['-i', file, '-f', 'f32le', '-c:a', 'pcm_f32le', '-ac', '2', raw]);
+    const b = readFileSync(raw);
+    return new Float32Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.length));
+  } finally {
+    await rm(raw, { force: true });
+  }
+}
+// the q-quantile of some numbers, interpolated linearly between the two nearest (as numpy's default)
+function percentile(xs, q) {
+  const a = Float64Array.from(xs).sort(), x = q * (a.length - 1), i = Math.floor(x);
+  return i + 1 < a.length ? a[i] + (x - i) * (a[i + 1] - a[i]) : a[i];
+}
 // Encode, measure the MP3 itself, and re-encode once with the residual
 // corrected: libmp3lame scales its input by 0.95 (-0.45 dB), and the codec
 // shifts loudness a little more, so the target is checked on the real file.
@@ -1348,8 +1457,10 @@ function crc16(bytes) {
 // set from the frame count (ffmpeg's own figure can be a few samples off: 15 short for one
 // length measured here, which a gapless decoder then returns as extra samples). The tag's
 // CRC (over the bytes of the frame before it) is rewritten. The CRC is checked first, so a
-// tag laid out otherwise than ffmpeg's is refused rather than corrupted. Returns false, and
-// leaves the file as it was, when the padding would not fit the tag's 12 bits.
+// tag laid out otherwise is refused rather than corrupted; that includes ffmpeg's own mono and
+// MPEG-2 files, whose CRC ffmpeg takes over a fixed 190 bytes: this suits the stereo 44.1 kHz
+// music only (where both conventions cover the same 190 bytes). Returns false, and leaves the
+// file as it was, when the padding would not fit the tag's 12 bits.
 function setGapless(file, lead, samples) {
   const d = readFileSync(file), t = infoTag(d);
   if (!t || !t.frames) throw new Error(`${file}: no Info tag with a frame count to carry the gapless fields`);
@@ -1414,7 +1525,7 @@ function excerptStart(plan, score = SCORE) {
   return ex;
 }
 
-async function renderMusic(work, encode, xfadeTail = 0) {
+async function renderMusic(work, encode, xfadeTail = 0, ship = []) {
   const t0 = Date.now();
   const plan = schedule(SCORE);
   const N = Math.round(plan.length * SR), T = Math.round(xfadeTail * SR);
@@ -1429,7 +1540,7 @@ async function renderMusic(work, encode, xfadeTail = 0) {
   const tan = renderTanpura(N, SCORE);
   console.log(`  tanpura rendered (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
   const pad = renderPad(N, SCORE);
-  console.log(`  pad rendered: ${pad.partials} partials (${((Date.now() - t0) / 1000).toFixed(1)} s); ${shim.events.length ? `${shim.events.length} shimmers` : 'no shimmer'}`);
+  console.log(`  pad rendered: ${pad.partials} partials in ${pad.oscillators} oscillators (${((Date.now() - t0) / 1000).toFixed(1)} s); ${shim.events.length ? `${shim.events.length} shimmers` : 'no shimmer'}`);
 
   // every layer is set by loudness relative to the flute's
   const [fl, fr] = panGains(MUSIC.flutePan);
@@ -1464,7 +1575,9 @@ async function renderMusic(work, encode, xfadeTail = 0) {
   await writeFile(join(work, 'stem-flute-dry.wav'), wavFloat([st(flute)]));
   await writeFile(join(work, 'stem-tanpura.wav'), wavFloat([st(tan.L), st(tan.R)]));
   await writeFile(join(work, 'stem-pad.wav'), wavFloat([st(pad.L), st(pad.R)]));
-  await writeFile(join(work, 'stem-shimmer.wav'), wavFloat([st(shim.L), st(shim.R)])); // silent when the score has none
+  // the swarmandal's stem only when it rings (an earlier score's, if any, goes)
+  if (shim.events.length) await writeFile(join(work, 'stem-shimmer.wav'), wavFloat([st(shim.L), st(shim.R)]));
+  else await rm(join(work, 'stem-shimmer.wav'), { force: true });
   await writeFile(join(work, 'stem-reverb.wav'), wavFloat([wet.L.map((v) => v * wg * g), wet.R.map((v) => v * wg * g)]));
   const r3 = (x) => +x.toFixed(3);
   await writeFile(join(work, 'timeline.json'), JSON.stringify({
@@ -1473,7 +1586,7 @@ async function renderMusic(work, encode, xfadeTail = 0) {
       onset: { breathToFullTone: r3(p.onsetShape.speak + p.onsetShape.swell), toneSpeaksAfter: r3(p.onsetShape.speak), phoonk: p.onsetShape.puff ? { seconds: r3(p.onsetShape.puff.dur), amp: r3(p.onsetShape.puff.amp) } : null, opensOnGrace: p.onsetShape.graceFirst },
       swaras: p.ev.filter((e) => !e.rest).map((e) => ({ s: e.swara, cents: +e.cents.toFixed(1), t0: r3(e.t0), t1: r3(e.t1), meend: !!e.meend, andolan: !!e.andolan, kan: !!e.kan, murki: !!e.murki, grace: !!e.grace, ...(e.grace ? { ornament: e.ornament } : {}), touch: !!e.touch,
         from: +e.from.toFixed(1), ts: r3(e.ts), tau: r3(e.tau),
-        ...(e.glide ? { glide: { askedTau: r3(e.glide.asked), steepness: +e.glide.p.toFixed(2), bands: e.glide.bands.map((b) => ({ band: b.band, ms: Math.round(1000 * b.seconds) })) } } : {}) })) })),
+        ...(e.glide ? { glide: { askedTau: r3(e.glide.asked), steepness: +e.glide.p.toFixed(2), leavesTouch: e.glide.leaves, capMs: Math.round(1000 * e.glide.cap), bands: e.glide.bands.map((b) => ({ band: b.band, ms: Math.round(1000 * b.seconds) })) } } : {}) })) })),
     shimmers: shim.events.map((s) => ({ before: s.index, t0: r3(s.t0), sweep: r3(s.sweep), rising: s.up, ringsUntil: r3(s.ring) })),
   }, null, 1));
   // the loop, then its own beginning again: continuous across N by construction
@@ -1486,7 +1599,7 @@ async function renderMusic(work, encode, xfadeTail = 0) {
   }
   const info = {
     file: `${NAME}.mp3`, samples: N, seconds: +(N / SR).toFixed(4), fluteStart: +plan.fluteStart.toFixed(2), fluteEnd: +plan.fluteEnd.toFixed(2), tanpura: tanpuraGrid(tan, plan),
-    pad: { levelLU: MUSIC.padLU, note: `A faint ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (${pad.partials} partials), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; ${-MUSIC.padLU} LU below the flute, and with the tanpura (${-MUSIC.tanpuraLU} LU below) ${(-bed).toFixed(1)} LU below it together. Exactly periodic over the loop.` },
+    pad: { levelLU: MUSIC.padLU, note: `A faint ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (${pad.partials} partials, ${pad.oscillators} oscillators: where the middle reeds of two voices meet on one frequency they are one, so they cannot cancel), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; ${-MUSIC.padLU} LU below the flute, and with the tanpura (${-MUSIC.tanpuraLU} LU below) ${(-bed).toFixed(1)} LU below it together. Exactly periodic over the loop.` },
     shimmer: shim.events.length
       ? { levelLU: MUSIC.shimmerLU, at: shim.events.map((s) => ({ beforePhrase: s.index, from: +s.t0.toFixed(2), to: +s.ring.toFixed(2) })),
         note: `Soft swarmandal sweeps (${shim.strings} plucked strings tuned to Raga ${SCORE.raga}, madhya to ati-tara Sa) in the breath before the phrases the score marks; never within ${MUSIC.shimmerGuard} s of the loop's start or end.` }
@@ -1497,48 +1610,92 @@ async function renderMusic(work, encode, xfadeTail = 0) {
     return info;
   }
 
-  // pass 1: loudnorm measures the master; pass 2: its linear gain, checked on the MP3
+  // pass 1: loudnorm measures the master; pass 2: its linear gain, checked on the MP3. The MP3s
+  // are made in the work folder and listed in `ship`: main() copies them into OUT only once
+  // everything has passed, so a failed or interrupted run never leaves a broken or half-made
+  // file among the site's assets
   const m = measure(wav, MUSIC.lufs, MUSIC.truePeak);
-  const mp3 = join(OUT, `${NAME}.mp3`), title = `${SCORE.raga} (bansuri with tanpura)`;
-  await mkdir(OUT, { recursive: true });
-  // the loop between its own last `WRAP` samples and its first `out` samples, as a WAV to encode
+  const mp3 = join(work, `${NAME}.mp3`), title = `${SCORE.raga} (bansuri with tanpura)`;
+  // the loop between its own last `WRAP` samples and its first `out` samples, as a WAV to encode:
+  // written once in this run (encodeTo may encode twice), never taken from an earlier run (an
+  // interrupted one leaves its own audio there), and removed when the encoding succeeds or
+  // fails (a run killed by a signal, Ctrl-C, still leaves it, and the next run overwrites it)
+  const made = new Set();
   const cwav = (out) => {
     const file = join(work, `${NAME}-circular-${out}.wav`);
-    if (!existsSync(file)) {
+    if (!made.has(file)) {
       const around = (x) => { const y = new Float32Array(WRAP + N + out); y.set(x.subarray(N - WRAP)); y.set(x, WRAP); y.set(x.subarray(0, out), WRAP + N); return y; };
       writeFileSync(file, wavFloat([around(L), around(Rt)]));
+      made.add(file);
     }
     return file;
   };
-  const enc = encodeTo(MUSIC.lufs, mp3, (gain) => {
-    for (const out of [WRAP, WRAP / 2]) {
-      ffmpeg(['-i', cwav(out), '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
-        '-metadata', `title=${title}`, '-metadata', 'artist=Original composition for dattapeetham.org',
-        '-metadata', `comment=${CREDIT}. Raga ${SCORE.raga}, Sa = D (${TUNING}).`, mp3]);
-      if (setGapless(mp3, WRAP, N)) return;
-    }
-    throw new Error(`${mp3}: its end padding does not fit the Info tag`);
-  }, linearGain(m, MUSIC.lufs, MUSIC.truePeak));
-  for (const out of [WRAP, WRAP / 2]) await rm(join(work, `${NAME}-circular-${out}.wav`), { force: true });
+  let enc;
+  try {
+    enc = encodeTo(MUSIC.lufs, mp3, (gain) => {
+      for (const out of [WRAP, WRAP / 2]) {
+        ffmpeg(['-i', cwav(out), '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
+          '-metadata', `title=${title}`, '-metadata', 'artist=Original composition for dattapeetham.org',
+          '-metadata', `comment=${CREDIT}. Raga ${SCORE.raga}, Sa = D (${TUNING}).`, mp3]);
+        if (setGapless(mp3, WRAP, N)) return;
+      }
+      throw new Error(`${mp3}: its end padding does not fit the Info tag`);
+    }, linearGain(m, MUSIC.lufs, MUSIC.truePeak));
+  } finally {
+    for (const out of [WRAP, WRAP / 2]) await rm(join(work, `${NAME}-circular-${out}.wav`), { force: true });
+  }
   if (enc.truePeak > MUSIC.truePeak) throw new Error(`true peak ${enc.truePeak} dBTP exceeds ${MUSIC.truePeak}`);
   ffmpeg(['-ss', ex.toFixed(3), '-t', '30', '-i', wav, '-af', `volume=${enc.gain.toFixed(3)}dB,afade=t=in:st=0:d=1.2,afade=t=out:st=27.5:d=2.5`,
     '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-metadata', `title=${SCORE.raga} (30 s excerpt)`, join(work, 'flute-excerpt.mp3')]);
   console.log(`  encoded ${mp3} (${await kb(mp3)} KB, circularly): master ${m.input_i} LUFS / ${m.input_tp} dBTP; gain ${enc.gain.toFixed(2)} dB → ${enc.lufs} LUFS, ${enc.truePeak} dBTP, LRA ${enc.lra} LU`);
   console.log(`  excerpt ${join(work, 'flute-excerpt.mp3')} from ${ex.toFixed(1)} s`);
-  const out = { ...info, gainDb: +enc.gain.toFixed(3), lufs: enc.lufs, truePeakDbtp: enc.truePeak, lraLU: enc.lra, kb: await kb(mp3), excerptFrom: +ex.toFixed(2) };
+  let xmp3 = null;
   if (xwav) {
-    const xmp3 = join(OUT, `${NAME}-xfade.mp3`);
+    xmp3 = join(work, `${NAME}-xfade.mp3`);
     ffmpeg(['-i', xwav, '-af', `volume=${enc.gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
       '-metadata', `title=${title}, crossfade tail`, '-metadata', `comment=${CREDIT}.`, xmp3]);
     if (!setGapless(xmp3, 0, N + T)) console.warn(`  ! ${xmp3}: its gapless padding could not be set exactly`);
+  }
+  // The file the site plays, decoded as a player that reads its gapless header decodes it. From
+  // it: the gain the MP3 really carries (gainDb is the volume filter's; libmp3lame scales its
+  // input by a further 0.95, -0.45 dB), as the least-squares fit of the decoded loop to the
+  // master; and levelRef, the RMS that the player's level meter reports as 1: the 95th
+  // percentile of the RMS of 2048-sample frames (hop 1024) over the loop, in mono (0.5 (L + R))
+  // as its AnalyserNode takes it, after the crossfade gains (at unity) and before the volume.
+  const site = xmp3 || mp3, heard = await decodeMp3(site, work), n = heard.length / 2;
+  if (n !== (xmp3 ? N + T : N)) console.warn(`  ! ${site} decodes to ${n} samples, not ${xmp3 ? N + T : N}`);
+  let xy = 0, xx = 0;
+  for (let i = 0; i < Math.min(N, n); i++) { xy += L[i] * heard[2 * i] + Rt[i] * heard[2 * i + 1]; xx += L[i] * L[i] + Rt[i] * Rt[i]; }
+  const frames = [];
+  for (let s = 0; s < N; s += 1024) {
+    let e = 0;
+    for (let i = s; i < s + 2048; i++) { const j = 2 * (i < n ? i : i - N), v = 0.5 * (heard[j] + heard[j + 1]); e += v * v; } // past the end of the main file: its start
+    frames.push(Math.sqrt(e / 2048));
+  }
+  const out = {
+    ...info, gainDb: +enc.gain.toFixed(3), mp3GainDb: +(20 * Math.log10(xy / xx)).toFixed(2),
+    gainNote: 'gainDb is the gain of the ffmpeg volume filter; libmp3lame scales its input by 0.95 (-0.45 dB) as well, so the MP3s carry mp3GainDb relative to the master (measured: the decoded loop fitted to it)',
+    lufs: enc.lufs, truePeakDbtp: enc.truePeak, lraLU: enc.lra, levelRef: +percentile(frames, 0.95).toFixed(3), kb: await kb(mp3), excerptFrom: +ex.toFixed(2),
+  };
+  console.log(`  ${site} decoded: carries ${out.mp3GainDb} dB re the master; levelRef ${out.levelRef} (95th-percentile frame RMS)`);
+  if (xmp3) {
     out.xfade = { file: `${NAME}-xfade.mp3`, samples: N + T, loopSamples: N, loopSeconds: +(N / SR).toFixed(4), tailSeconds: +(T / SR).toFixed(4), kb: await kb(xmp3),
-      note: 'Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play identical audio.' };
+      note: 'Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play the same music (the same samples in the master; in the MP3, each copy with its own coding noise).' };
     console.log(`  crossfade variant ${xmp3} (${out.xfade.kb} KB, tail ${out.xfade.tailSeconds} s)`);
   }
+  const gl = await gapless(mp3);
+  if (!gl || gl.samples !== N) console.warn(`  ! gapless header says ${gl && gl.samples} samples, the master has ${N}`);
+  const lead = gl ? gl.encoderDelay + 529 : null;
+  out.loop = {
+    start: 0, end: out.seconds, samples: N, gapless: gl,
+    note: `The whole file is one seamless loop. It is encoded circularly (its own last ${WRAP} samples before it and its first ${WRAP} after it, with the Info tag's encoder delay and padding raised by ${WRAP} each), so the codec adds no edge at the wrap. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly \`samples\` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true) in a 44.1 kHz AudioContext. In a 48 kHz one, decodeAudioData resamples the file as one piece rather than as a loop, and that leaves a faint edge at the wrap (about -66 dBFS above 5 kHz in Chromium 141, measured on an earlier render): there, use a 44.1 kHz AudioContext, or music.xfade.file and its crossfade. A decoder that ignores the header returns more: ${lead} extra at the start (the encoder delay of ${gl && gl.encoderDelay}, which includes the ${WRAP} lead-in, and 529 of decoder delay) and the lead-out and padding at the end; then set loopStart = ${lead} / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skipped 12–23 ms at the wrap (measured on an earlier track), an audible hiccup in the drone. The site does not play this file: it plays music.xfade.file with two <audio> elements crossfaded inside its tail (see music.xfade); a two-element player without that file should use music.tanpura.crossfade (the same point of the tanpura cycle) rather than fade the end of this file into its start.`,
+  };
+  ship.push([mp3, join(OUT, `${NAME}.mp3`)]);
+  if (xmp3) ship.push([xmp3, join(OUT, `${NAME}-xfade.mp3`)]);
   return out;
 }
 
-async function renderSfx(work, encode) {
+async function renderSfx(work, encode, ship = []) {
   const seed = SCORE.seed;
   const items = [
     { name: 'ghanta', kind: 'ghanta', buf: renderGhanta(seed), note: 'small brass hand-bell, struck (Sa = D6, Ga ringing above; A4 = 432 Hz)' },
@@ -1547,7 +1704,6 @@ async function renderSfx(work, encode) {
     { name: 'shankha', kind: 'shankha', buf: renderShankha(seed), note: 'soft conch swell on Sa (D4, A4 = 432 Hz); optional' },
   ];
   await mkdir(join(work, 'sfx'), { recursive: true });
-  if (encode) await mkdir(join(OUT, 'sfx'), { recursive: true });
   const out = [];
   for (const it of items) {
     const g = dbToGain(SFX_LUFS[it.kind] - lufs([it.buf]));
@@ -1557,10 +1713,11 @@ async function renderSfx(work, encode) {
     await writeFile(wav, wavFloat([it.buf]));
     const rec = { file: `sfx/${it.name}.mp3`, seconds: +(it.buf.length / SR).toFixed(3), ...(it.swara ? { swara: it.swara, hz: it.hz } : {}), ...(it.note ? { note: it.note } : {}) };
     if (encode) {
-      const mp3 = join(OUT, 'sfx', it.name + '.mp3');
+      const mp3 = join(work, 'sfx', it.name + '.mp3'); // copied into OUT with the rest (see renderMusic)
       const enc = encodeTo(SFX_LUFS[it.kind], mp3, (gain) => ffmpeg(['-i', wav, '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', '96k', '-ac', '1', '-ar', String(SR),
         '-metadata', `title=${it.name}`, '-metadata', 'artist=Original sound for dattapeetham.org', mp3]));
       Object.assign(rec, { lufs: enc.lufs, truePeakDbtp: enc.truePeak, kb: await kb(mp3) });
+      ship.push([mp3, join(OUT, 'sfx', it.name + '.mp3')]);
     }
     out.push(rec);
     console.log(`  ${it.name}: ${rec.seconds} s${rec.kb ? `, ${rec.kb} KB, ${rec.lufs} LUFS, ${rec.truePeakDbtp} dBTP` : ''}`);
@@ -1575,12 +1732,25 @@ function swaraName(c) {
   return s ? s + marks : `${pc.toFixed(0)} c${marks}`;
 }
 
+// How long the pitch stays within ±w cents of the swara ev[i] of a phrase (after reach): its
+// own time and the move off it, as one stretch (a meend that leaves it included)
+function stay(ph, i, w = MEEND.band) {
+  const ev = ph.ev, e = ev[i], next = ev[i + 1], moves = next && !next.rest, dt = 0.001;
+  const pitch = (t) => (moves && t >= next.ts ? along(next, t) : along(e, t));
+  let n = 0;
+  for (let t = e.ts, t1 = moves ? next.ts + next.tau : e.t1; t <= t1; t += dt) {
+    if (Math.abs(pitch(t) - e.cents) <= w) n++;
+    else if (n) break;
+  }
+  return n * dt;
+}
+
 // --plan: the timeline, and the shape of the piece against the composition's targets
 function printPlan() {
   const plan = schedule(SCORE), N = Math.round(plan.length * SR), rg = ragaOf(SCORE.raga);
   const shimmers = shimmerPlan(plan, N, SCORE); // throws if one is misplaced
   const ex = excerptStart(plan); // throws if excerptFrom names no phrase, or the excerpt would run off the end
-  for (const p of plan.phrases) reach(p, rng(SCORE.seed, `flute-${p.index}`), rg); // the meends exactly as the render shapes them
+  for (const p of plan.phrases) reach(p, rng(SCORE.seed, `flute-${p.index}`), SCORE); // the meends exactly as the render shapes them
   const sum = (xs) => xs.reduce((a, b) => a + b, 0), flag = (ok) => (ok ? '  ' : '! ');
   console.log(`Raga ${SCORE.raga}: ${[...rg.swaras].join(' ')}${rg.touch ? ` (${[...rg.touch.swaras].join(' and ')} as soft touches only)` : ''}; Sa ${SCORE.sa.toFixed(4)} Hz (${TUNING})`);
   for (const p of plan.phrases) console.log(`${String(p.index).padStart(2)}${p.shimmer ? ' *' : '  '} ${p.t0.toFixed(1).padStart(6)}–${p.t1.toFixed(1).padEnd(6)} ${p.notes}`);
@@ -1592,10 +1762,13 @@ function printPlan() {
   console.log(`${flag(tara <= 0.15 * all && andolan <= 2)}tara sthayi ${((100 * tara) / all).toFixed(1)} % of the flute's sounding time (at most ~15); andolan ${andolan}× (at most 2)`);
   console.log(`${flag(Math.max(...levels) <= 0.8)}levels ${Math.min(...levels)}–${Math.max(...levels)} (soft: mostly 0.6–0.78); shimmers ${shimmers.length}${shimmers.length ? '' : ' (none: the score marks none)'}`);
   if (rg.touch) {
-    const touch = sounding.filter((e) => rg.touch.swaras.includes(e.swara[0])), plain = touch.filter((e) => !e.grace);
-    const held = plain.filter((e) => e.dur > rg.touch.hold * SCORE.tempo * 1.02 || e.andolan), part = sum(touch.map((e) => e.dur)) / all;
-    console.log(`${flag(!held.length && part <= rg.touch.share)}${[...rg.touch.swaras].join(' and ')}: ${(100 * part).toFixed(1)} % of the flute's sounding time (at most ~${100 * rg.touch.share}); longest held ${plain.length ? Math.max(...plain.map((e) => e.dur)).toFixed(2) : 0} s (at most ~${rg.touch.hold}, except in a grace)`);
-    for (const e of held) console.log(`!   ${e.token} in phrase ${plan.phrases.find((p) => p.ev.includes(e)).index}: ${e.andolan ? 'an andolan makes it a resting note' : `held ${e.dur.toFixed(2)} s`}`);
+    const touch = sounding.filter((e) => rg.touch.swaras.includes(e.swara[0])), part = sum(touch.map((e) => e.dur)) / all;
+    // each plain M or N: its written time, and how long the pitch stays near it (with the move off it)
+    const plain = plan.phrases.flatMap((p) => p.ev.flatMap((e, i) => (!e.rest && !e.grace && rg.touch.swaras.includes(e.swara[0]) ? [{ p, e, near: stay(p, i) }] : [])));
+    const limit = rg.touch.hold * SCORE.tempo, held = plain.filter(({ e, near }) => e.dur > limit * 1.02 || near > limit || e.andolan);
+    const longest = (f) => (plain.length ? Math.max(...plain.map(f)) : 0).toFixed(2);
+    console.log(`${flag(!held.length && part <= rg.touch.share)}${[...rg.touch.swaras].join(' and ')}: ${(100 * part).toFixed(1)} % of the flute's sounding time (at most ~${100 * rg.touch.share}); longest held ${longest((x) => x.e.dur)} s, and ${longest((x) => x.near)} s within ±${MEEND.band} c with the move off it (at most ~${rg.touch.hold}, except in a grace)`);
+    for (const { p, e, near } of held) console.log(`!   ${e.token} in phrase ${p.index}: ${e.andolan ? 'an andolan makes it a resting note' : `held ${e.dur.toFixed(2)} s, ${near.toFixed(2)} s within ±${MEEND.band} c with the move off it`}`);
   }
   // an andolan needs room: at least 0.6 s between its swara settling and the next move (otherwise it is dropped)
   for (const p of plan.phrases) p.ev.forEach((e, i) => {
@@ -1604,13 +1777,16 @@ function printPlan() {
     if (room <= 0.6) console.log(`!   ${e.token} in phrase ${p.index}: too short for an andolan (${Math.max(0, room).toFixed(2)} s to swing in; it is played plain)`);
   });
   // every meend that passes a band, and what glideFor made of it
-  const meends = plan.phrases.flatMap((p) => p.ev.filter((e) => e.glide && e.glide.bands.length).map((e) => ({ p, e })));
-  if (meends.length) console.log(`meends (each band a glide passes: at most ${1000 * MEEND.dwell} ms; ±${MEEND.band} c around ${passBands(rg).map((b) => b.name).join(', ')}):`);
+  const glides = plan.phrases.flatMap((p) => p.ev.filter((e) => e.glide).map((e) => ({ p, e }))), meends = glides.filter(({ e }) => e.glide.bands.length);
+  const ms = (s) => Math.round(1000 * s);
+  if (meends.length) console.log(`meends (each band a glide passes: at most ${ms(MEEND.dwell[0])}–${ms(MEEND.dwell[1])} ms, drawn for each meend; ±${MEEND.band} c around ${passBands(rg).map((b) => b.name).join(', ')}):`);
   for (const { p, e } of meends) {
     const { glide: gl } = e, worst = gl.bands.reduce((a, b) => (b.seconds > a.seconds ? b : a));
-    const how = gl.tau < gl.asked - 1e-9 ? `steeper (p ${gl.p.toFixed(2)}) and shortened from ${gl.asked.toFixed(2)} s` : gl.p > 1 ? `steeper (p ${gl.p.toFixed(2)})` : 'as written';
-    console.log(`${flag(worst.seconds <= MEEND.dwell + 1e-6)}  phrase ${String(p.index).padStart(2)} ${swaraName(e.from).padStart(3)} → ${e.swara.padEnd(3)} ${e.tau.toFixed(2)} s, ${((100 * e.tau) / e.dur).toFixed(0)} % of the note, ${how}; longest in a band ${Math.round(1000 * worst.seconds)} ms (${worst.band})`);
+    const how = [gl.leaves ? `off ${swaraName(e.from)} at once` : gl.p > 1 ? `steeper (p ${gl.p.toFixed(2)})` : '',
+      gl.tau < gl.asked - 1e-9 ? `shortened by ${ms(gl.asked - gl.tau)} ms (from ${gl.asked.toFixed(2)} s)` : ''].filter(Boolean).join(' and ') || 'as written';
+    console.log(`${flag(worst.seconds <= gl.cap + 1e-6)}  phrase ${String(p.index).padStart(2)} ${swaraName(e.from).padStart(3)} → ${e.swara.padEnd(3)} ${e.tau.toFixed(2)} s, ${((100 * e.tau) / e.dur).toFixed(0)} % of the note, ${how}; longest in a band ${ms(worst.seconds)} ms of its ${ms(gl.cap)} (${worst.band})`);
   }
+  if (glides.length) console.log(`  ${glides.length} meends: ${meends.length} pass a band, ${meends.filter(({ e }) => e.glide.tau < e.glide.asked - 1e-9).length} of them shortened`);
   for (const s of shimmers) console.log(`  * shimmer before phrase ${s.index}: sweep ${s.t0.toFixed(1)}–${(s.t0 + s.sweep).toFixed(1)} s (${s.up ? 'rising' : 'falling'}), rings until ${s.ring.toFixed(1)} s`);
   console.log(`excerpt ${ex.toFixed(1)}–${(ex + 30).toFixed(1)} s (from phrase ${SCORE.excerptFrom})`);
 }
@@ -1628,7 +1804,8 @@ async function writeManifest(top, music, sfx) {
     console.warn(`  ! manifest.json left as it was: it has no ${music ? 'sfx' : `music part for ${NAME}.mp3`} to keep (run without --music or --sfx)`);
     return;
   }
-  await writeFile(file, JSON.stringify({ ...top, music, sfx }, null, 2) + '\n');
+  await writeFile(`${file}.new`, JSON.stringify({ ...top, music, sfx }, null, 2) + '\n');
+  await rename(`${file}.new`, file); // whole or not at all
   console.log(`  ${file} written${old && (music === old.music || sfx === old.sfx) ? ` (its ${music === old.music ? 'music' : 'sfx'} part kept)` : ''}`);
 }
 
@@ -1648,20 +1825,27 @@ async function main() {
   const encode = !args.includes('--wav');
   if (args.includes('--plan')) { printPlan(); return; }
   const doMusic = !args.includes('--sfx') || args.includes('--music'), doSfx = !args.includes('--music') || args.includes('--sfx');
+  if (encode && doMusic && tail === undefined) console.warn(`  ! no --xfade-tail: the manifest gets no music.xfade, so the site falls back to looping ${NAME}.mp3 one tanpura cycle short; the site's own copy is made with --xfade-tail 4.6`);
   const top = { credit: CREDIT, raga: ragaOf(SCORE.raga).label, sa: 'D', saHz: +SCORE.sa.toFixed(4), tuning: TUNING, sampleRate: SR };
-  const music = doMusic ? await renderMusic(work, encode, xfadeTail) : null;
+  const ship = []; // every MP3 made in the work folder, with where it goes in OUT
+  const music = doMusic ? await renderMusic(work, encode, xfadeTail, ship) : null;
   let sfx = null;
-  if (doSfx) { console.log('temple sounds:'); sfx = await renderSfx(work, encode); }
-  if (encode && music) {
-    const gl = await gapless(join(OUT, music.file));
-    if (!gl || gl.samples !== music.samples) console.warn(`  ! gapless header says ${gl && gl.samples} samples, the master has ${music.samples}`);
-    const lead = gl ? gl.encoderDelay + 529 : null;
-    music.loop = {
-      start: 0, end: music.seconds, samples: music.samples, gapless: gl,
-      note: `The whole file is one seamless loop. It is encoded circularly (its own last ${WRAP} samples before it and its first ${WRAP} after it, with the Info tag's encoder delay and padding raised by ${WRAP} each), so the codec adds no edge at the wrap. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly \`samples\` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true). A decoder that ignores the header returns more: ${lead} extra at the start (the encoder delay of ${gl && gl.encoderDelay}, which includes the ${WRAP} lead-in, and 529 of decoder delay) and the lead-out and padding at the end; then set loopStart = ${lead} / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skipped 12–23 ms at the wrap (measured on an earlier track), an audible hiccup in the drone. The site does not play this file: it plays music.xfade.file with two <audio> elements crossfaded inside its tail (see music.xfade); a two-element player without that file should use music.tanpura.crossfade (the same point of the tanpura cycle) rather than fade the end of this file into its start.`,
-    };
+  if (doSfx) { console.log('temple sounds:'); sfx = await renderSfx(work, encode, ship); }
+  if (encode) {
+    // every part has passed its checks: only now do the new files replace the site's. Each is
+    // copied beside its target first (a failed copy removes them all and leaves OUT as it was),
+    // then renamed over it, which replaces it whole
+    const staged = [];
+    try {
+      for (const [from, to] of ship) { await mkdir(dirname(to), { recursive: true }); staged.push(to); await copyFile(from, `${to}.new`); }
+    } catch (e) {
+      for (const to of staged) await rm(`${to}.new`, { force: true }).catch(() => {});
+      throw e;
+    }
+    for (const to of staged) await rename(`${to}.new`, to);
+    console.log(`  ${ship.length} files copied into ${OUT}`);
+    await writeManifest(top, music, sfx);
   }
-  if (encode) await writeManifest(top, music, sfx);
   console.log(`work files in ${work}`);
 }
 

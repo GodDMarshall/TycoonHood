@@ -33,16 +33,19 @@
     },
     "pad": {
       "levelLU": -23.5,
-      "note": "A faint ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (111 partials), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; 23.5 LU below the flute, and with the tanpura (17 LU below) 16.1 LU below it together. Exactly periodic over the loop."
+      "note": "A faint ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (111 partials, 92 oscillators: where the middle reeds of two voices meet on one frequency they are one, so they cannot cancel), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; 23.5 LU below the flute, and with the tanpura (17 LU below) 16.0 LU below it together. Exactly periodic over the loop."
     },
     "shimmer": {
       "at": [],
       "note": "None: the score marks no shimmer (the engine keeps the swarmandal option, off)."
     },
-    "gainDb": -11.24,
+    "gainDb": -10.69,
+    "mp3GainDb": -11.14,
+    "gainNote": "gainDb is the gain of the ffmpeg volume filter; libmp3lame scales its input by 0.95 (-0.45 dB) as well, so the MP3s carry mp3GainDb relative to the master (measured: the decoded loop fitted to it)",
     "lufs": -23,
-    "truePeakDbtp": -12.7,
-    "lraLU": 10.6,
+    "truePeakDbtp": -12,
+    "lraLU": 10.5,
+    "levelRef": 0.069,
     "kb": 3897,
     "excerptFrom": 198.21,
     "xfade": {
@@ -52,7 +55,7 @@
       "loopSeconds": 249.2579,
       "tailSeconds": 4.6,
       "kb": 3968,
-      "note": "Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play identical audio."
+      "note": "Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play the same music (the same samples in the master; in the MP3, each copy with its own coding noise)."
     },
     "loop": {
       "start": 0,
@@ -65,7 +68,7 @@
         "frames": 9547,
         "samples": 10992275
       },
-      "note": "The whole file is one seamless loop. It is encoded circularly (its own last 2304 samples before it and its first 2304 after it, with the Info tag's encoder delay and padding raised by 2304 each), so the codec adds no edge at the wrap. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true). A decoder that ignores the header returns more: 3409 extra at the start (the encoder delay of 2880, which includes the 2304 lead-in, and 529 of decoder delay) and the lead-out and padding at the end; then set loopStart = 3409 / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skipped 12–23 ms at the wrap (measured on an earlier track), an audible hiccup in the drone. The site does not play this file: it plays music.xfade.file with two <audio> elements crossfaded inside its tail (see music.xfade); a two-element player without that file should use music.tanpura.crossfade (the same point of the tanpura cycle) rather than fade the end of this file into its start."
+      "note": "The whole file is one seamless loop. It is encoded circularly (its own last 2304 samples before it and its first 2304 after it, with the Info tag's encoder delay and padding raised by 2304 each), so the codec adds no edge at the wrap. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true) in a 44.1 kHz AudioContext. In a 48 kHz one, decodeAudioData resamples the file as one piece rather than as a loop, and that leaves a faint edge at the wrap (about -66 dBFS above 5 kHz in Chromium 141, measured on an earlier render): there, use a 44.1 kHz AudioContext, or music.xfade.file and its crossfade. A decoder that ignores the header returns more: 3409 extra at the start (the encoder delay of 2880, which includes the 2304 lead-in, and 529 of decoder delay) and the lead-out and padding at the end; then set loopStart = 3409 / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skipped 12–23 ms at the wrap (measured on an earlier track), an audible hiccup in the drone. The site does not play this file: it plays music.xfade.file with two <audio> elements crossfaded inside its tail (see music.xfade); a two-element player without that file should use music.tanpura.crossfade (the same point of the tanpura cycle) rather than fade the end of this file into its start."
     }
   },
   "sfx": [
