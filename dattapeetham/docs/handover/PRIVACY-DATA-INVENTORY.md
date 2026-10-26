@@ -66,7 +66,7 @@ look at *Application → Storage / Cookies* and at the *Network* tab
 | `dp-lang` | `localStorage` | Only when the visitor picks a language in the language switcher | `en`, `kn`, `hi`, `ta` or `te` | On later visits, opens pages in that language | Until the visitor clears the site's data |
 | `dp-intro` | `sessionStorage` | On the first page viewed in a browser tab | `1` | Shows the opening intro animation only once per visit | Until the tab or window is closed |
 | `dp-sound` | `localStorage` | Only when the visitor answers the first-visit question about sound ("Enter with flute music" or "Enter in silence", or "Play flute music" / "Not now" on the small card), or changes a switch or the volume in the sound panel | Whether the flute music and the temple sounds are on, and the volume, for example `{"music":true,"sfx":true,"v":1,"vol":0.8}` | Asks the question only once, and keeps every page to the visitor's choice | Until the visitor clears the site's data |
-| `dp-sound-pos` | `sessionStorage` | When the visitor leaves a page on which the flute music has played | Where the music had reached, when, and the length of the music, for example `{"t":81.42,"at":1761212345678,"d":217.7497}` | The next page carries the music on from the same moment instead of starting again | Until the tab or window is closed |
+| `dp-sound-pos` | `sessionStorage` | When the visitor leaves a page on which the flute music has played | Where the music had reached, when, and the length of the music, for example `{"t":81.42,"at":1761212345678,"d":249.2579}` | The next page carries the music on from the same moment instead of starting again | Until the tab or window is closed |
 
 Nothing else is stored:
 

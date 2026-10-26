@@ -81,11 +81,15 @@ languages are in folders: `/kn/about.html`, `/hi/about.html`,
 
 ### Sound: what the visitor hears, and only when they choose it
 
-- **The music** is a flute piece in Raga Mohanam with a tanpura drone,
-  composed and synthesised for this website (it is not a recording of
-  anyone). The sound panel credits it as *"Flute: original raga composition
-  for this website"*, with *Raga Mohanam* beneath. It is about 3½ minutes
-  long and loops without a break; the music carries on from page to page.
+- **The music** is a soft, breathy piece for bansuri (the Hindustani
+  bamboo flute) in Raga Pahadi, over a tanpura and a faint drone like that
+  of a shruti box, composed and synthesised for this website (it is not a
+  recording of anyone) and tuned to A4 = 432 Hz. The flute is about 70 % of
+  what is heard and the accompaniment about 30 %. The sound panel credits
+  it as *"Flute: original raga composition for this website"*, with *Raga
+  Pahadi* beneath. It is about 4 minutes long (4 min 9 s) and loops without
+  a break; a first play starts just before the flute comes in, and the
+  music carries on from page to page.
 - **Temple sounds while scrolling:** a soft chime now and then while
   reading, rising up the scale as the reader goes down the page, and a small
   bell as a new section arrives. A conch (shankha) at the end of a page also
@@ -109,7 +113,7 @@ languages are in folders: `/kn/about.html`, `/hi/about.html`,
   the visitor's first tap or key (the panel says so) rather than starting by
   itself. It pauses while another video or recording plays, when the tab is
   hidden, and when another tab of the site plays it.
-- The audio comes from the website itself: the music file is about 3.5 MB,
+- The audio comes from the website itself: the music file is about 4 MB,
   the seven temple sounds about 165 KB together, downloaded only by visitors
   who chose sound. What the browser stores for this is listed in
   [PRIVACY-DATA-INVENTORY.md](PRIVACY-DATA-INVENTORY.md).
@@ -324,7 +328,7 @@ do not quote any.
 | --- | --- |
 | **Hosting** | Any web server or static host that serves files over HTTPS (see [DEPLOY.md](DEPLOY.md)). No database, and nothing to install on the server: no Node.js, PHP or other server-side code. |
 | **Space** | Under 1 GB. `VERSION.txt` gives the exact size of the `website` folder; almost all of it is photos. |
-| **Traffic** | Measured on version 1.0.0, from the site's own server: a visitor who reads one page to the end downloads about 0.5 to 2.5 MB (desktop; less on a phone). The home page is the largest. A visitor who chooses sound also downloads the music once (about 3.5 MB) and the temple sounds (about 165 KB). Photos and audio are kept by the browser for 30 days and CSS and JavaScript for a year, so returning visitors download much less. |
+| **Traffic** | Measured on version 1.0.0, from the site's own server: a visitor who reads one page to the end downloads about 0.5 to 2.5 MB (desktop; less on a phone). The home page is the largest. A visitor who chooses sound also downloads the music once (about 4 MB) and the temple sounds (about 165 KB). Photos and audio are kept by the browser for 30 days and CSS and JavaScript for a year, so returning visitors download much less. |
 | **Certificate** | One HTTPS certificate covering `www.dattapeetham.org` and `dattapeetham.org`. Let's Encrypt issues them free of charge; many hosts set one up themselves. |
 | **Outside services** | Google Fonts, the Google Maps embed (Visit and Contact pages) and the YouTube player. The site uses them without any account or API key. What each one receives is in [PRIVACY-DATA-INVENTORY.md](PRIVACY-DATA-INVENTORY.md). |
 | **The existing platform** | Keeps running with its own vendor, as today, at a new address of its own (which needs its own HTTPS certificate). |

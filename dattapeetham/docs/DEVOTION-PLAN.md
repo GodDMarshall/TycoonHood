@@ -2,7 +2,8 @@
 
 > **Status: wired (stage 2).** Every placement below is in the real pages, in
 > all five languages, together with the flute music and the temple sounds.
-> What stage 2 changed, measured and left open is in section 9; what the
+> What stage 2 changed, measured and left open is in section 9 (with the
+> music as replaced on 2026-10-26: Raga Pahadi on bansuri); what the
 > recorded walk-through of every page changed is in section 10; the polish for
 > phones (speed, the Darshan aarti, the flowers on Home and Seva, the bells on
 > Darshan and Visit) is in section 11.
@@ -504,30 +505,77 @@ not part of this repository.
   asked when the script arrives after the curtain has lifted (a slow
   connection).
 - **Credit**, the client's words exactly, everywhere: "Flute: original raga
-  composition for this website", with "Raga Mohanam" on the line beneath it
-  in the panel (`CREDIT` and `RAGA` in `src/features/devotion-sound.mjs`).
+  composition for this website", with "Raga Pahadi" on the line beneath it
+  in the panel (`CREDIT` and `RAGA` in `src/features/devotion-sound.mjs`;
+  translated in kn, hi, ta and te).
+- **The music** (since 2026-10-26, below): an original piece for bansuri,
+  the Hindustani bamboo flute, in Raga Pahadi (S R G P D, with soft touches
+  of shuddha Ma and Ni), 22 phrases over a tanpura and a faint drone like a
+  shruti box, synthesised by `tools/compose-audio.mjs`. It is tuned to
+  Sa = D at A4 = 432 Hz (the flute's madhya Sa is 288.3254 Hz), soft and
+  breathy, and balanced about 70/30: the flute sounds for 183.4 s of the
+  249.26 s loop (74 %), and the tanpura (17 LU below the flute) and the pad
+  (23.5 LU below) sit 16.1 LU under it together. There is no swarmandal
+  (the option is kept, off, like the conch). Mastered at −23 LUFS,
+  −12.7 dBTP, loudness range 10.6 LU. The scroll chimes (S R G P D S',
+  576.65–1153.3 Hz) and the bell are tuned to the same Sa, and the bell's
+  pitch now varies by about 5 cents (it varied by about 70), so it stays on
+  Sa.
 - **The conch (shankha) is off** (`SHANKHA = false` in
   `src/features/devotion-sound.mjs`): it has not been auditioned. While it is
   off, the page does not list it and the build does not ship its file. Set
   it to `true` after the Peetham has listened and approved it.
-- **Level reference** for `DP.sound.level()`: 0.08, the measured
-  95th-percentile frame RMS of the track (it was 0.12).
+- **A first play starts just before the flute** (`data-start`, 8.5 s: the
+  manifest's `fluteStart`, 10 s, less 1.5 s). With the 70/30 balance the
+  opening drone sits about 16 LU under the flute, and starting at 0 would
+  sound as if nothing had happened. A position carried from another page
+  still wins.
+- **Level reference** for `DP.sound.level()`: the build writes
+  `data-level-ref` from `music.levelRef` in the manifest (the track's own
+  95th-percentile frame RMS) when the manifest has one; without it the
+  script uses 0.08, measured on the Mohanam track (it was 0.12 before that).
+  `tools/compose-audio.mjs` does not write `levelRef` yet, so the Pahadi
+  build writes no `data-level-ref` and 0.08 is in use.
+
+### The music, revised (2026-10-26)
+
+The music first delivered was an original flute composition in Raga
+Mohanam (Carnatic in style, A = 440 Hz, with a tanpura). On 2026-10-26 the
+site's owner asked for it to be replaced, twice:
+
+1. With bansuri music in the style of a YouTube video they named. That
+   recording could not be licensed for the site, so an original piece was
+   composed in that style instead (first in Raga Bhoopali, at
+   A4 = 432 Hz). The YouTube track itself was not used and was not heard.
+2. Having heard the first render (Raga Bhoopali), they asked for "a soft raaga and more breath
+   and like how exactly krishna does it … 70% flute and rest 30%". The
+   piece was re-composed in Raga Pahadi, breathier and softer, with the
+   tanpura and a faint pad about 16 LU under the flute.
+
+The credit is unchanged, word for word. The figures in *The loop* and
+*Delivery* below are the Pahadi render's, from `assets/audio/manifest.json`;
+the measurements recorded with them (correlations, recorded runs, the
+one-frame seek offset) were made on the Mohanam track and have not been
+repeated on this one.
 
 ### The loop
 
-The file is `flute-mohanam-xfade.mp3`, rendered with
-`node tools/compose-audio.mjs --xfade-tail 4.6`: the 217.75 s loop followed
-by its own first 4.6 s (decoded length exactly N + T; the tail correlates
-0.9993 with the head; the plain loop and the temple sounds re-rendered
-byte-identical). The build writes the loop plan on `[data-sound]` from
-`assets/audio/manifest.json`:
+The file is `flute-pahadi-xfade.mp3`, rendered with
+`node tools/compose-audio.mjs --xfade-tail 4.6`: the 249.26 s loop
+(10 992 275 samples) followed by its own first 4.6 s, 11 195 135 samples in
+all. (On the Mohanam track the decoded length was exactly N + T, the tail
+correlated 0.9993 with the head, and the plain loop and the temple sounds
+re-rendered byte-identical.) The plain loop, `flute-pahadi.mp3`, is encoded
+circularly, so a decoder that reads its gapless header returns exactly the
+loop, with no edge at the wrap. The build writes the loop plan on
+`[data-sound]` from `assets/audio/manifest.json`:
 
-- **When element A reaches 221.21 s (the loop plus 3.46 s), element B,
-  started at 3.46 s, plays the same music**, and the two cross over (0.6 s)
+- **When element A reaches 252.71 s (the loop plus 3.45 s), element B,
+  started at 3.45 s, plays the same music**, and the two cross over (0.6 s)
   inside the tanpura's quiet stretch after the kharaj pluck. No pluck is
   doubled or dropped and no part of the loop is skipped. (The tail is 4.6 s
   rather than the 3.35 s first suggested so that it holds that quiet
-  stretch, 3.36–4.55 s into each cycle.)
+  stretch, now 3.35–4.54 s into each of the 54 tanpura cycles of 4.62 s.)
 - **B is put in step while it is silent, in two stages.** It starts 2.8 s
   early at gain 0.
   1. *By `currentTime`:* it is seeked until it leads A by 8 ms by ear.
@@ -536,27 +584,28 @@ byte-identical). The build writes the loop plan on `[data-sound]` from
      by a seek into the first half of the file (`#t=`, or `currentTime`
      before or during play) sounds one MP3 frame, 1152 samples (26.1 ms),
      later than its `currentTime` says**; seeked into the second half (the
-     split is at half the duration, measured between 110.8 and 111.5 s), or
-     playing on from 0, it sounds where `currentTime` says. The aim allows
-     for that frame. A seek still lands a few milliseconds off, and for
-     this drone that is as good as two unrelated copies: measured on the
-     file, the correlation of the drone with itself falls to 0.44 at 0.5 ms,
-     0.23 at 1 ms and about 0 by 1.5 ms. Faded together they comb-filter.
+     split is at half the duration, measured on the Mohanam file between
+     110.8 and 111.5 s), or playing on from 0, it sounds where `currentTime`
+     says. The aim allows for that frame. A seek still lands a few
+     milliseconds off, and for this drone that is as good as two unrelated
+     copies: measured on the Mohanam file, the correlation of the drone with
+     itself falls to 0.44 at 0.5 ms, 0.23 at 1 ms and about 0 by 1.5 ms.
+     Faded together they comb-filter.
   2. *By what the two actually play (ship stage):* each element's path is
      tapped (an `AnalyserNode` between its `DelayNode` and its gain), B's
      lead over A is measured to the sample by cross-correlating the two
      taps (8192 samples each), and the `DelayNode` on B's path takes it up.
      B's lead is searched from −6 to +20 ms (the aim is 8 ms), a span
-     shorter than the drone's 27.2 ms period (where the drone's correlation
-     with itself is 0.96), so it cannot lock onto a period instead of the
-     true lead; the nearer
-     secondary peaks (6.8 ms, 13.6 ms) reach only 0.58 and 0.75 against
-     1.0 at the true lead. A measurement counts only when the next one
-     (100 ms later) repeats it within 3 samples, because two taps read a
-     render quantum apart would differ by 128 samples; there are at most 14
-     measurements a loop, each a few milliseconds of main-thread time (more
-     on a phone). Once the residual is
-     within 2 samples the fade uses **equal-gain** curves (sin², cos²: the
+     shorter than the drone's period (about 28 ms at A4 = 432 Hz; 27.2 ms in
+     the Mohanam track, at which lag the drone's correlation with itself
+     was 0.96), so it cannot lock onto a period instead of the true lead; on
+     that track the nearer secondary peaks (6.8 ms, 13.6 ms) reached only
+     0.58 and 0.75 against 1.0 at the true lead. A measurement counts only
+     when the next one (100 ms later) repeats it within 3 samples, because
+     two taps read a render quantum apart would differ by 128 samples; there
+     are at most 14 measurements a loop, each a few milliseconds of
+     main-thread time (more on a phone). Once the residual is within 2
+     samples the fade uses **equal-gain** curves (sin², cos²: the
      two are one signal, and equal power would swell it by up to 3 dB). If
      that is never reached (a very busy machine), the curves are computed for
      how alike the two taps are as heard together in the last 0.4 s (their
@@ -569,7 +618,8 @@ byte-identical). The build writes the loop plan on `[data-sound]` from
      `curve` (`gain`, `power` or `mixed`).
 - **Measured, by recording the speakers on the audio thread and matching
   them to the file** (Chromium 141, headless, real nginx; the harness
-  stayed in the agency's working folder):
+  stayed in the agency's working folder; all on the Mohanam track, not yet
+  repeated on the Pahadi one):
   - *Before the ship stage* (stage 1 only): on every run the two copies
     were 2.6–3.9 ms apart through the fade, so the drone was doubled for
     0.6 s once a loop (correlation with the file down to 0.61–0.69, against
@@ -585,17 +635,20 @@ byte-identical). The build writes the loop plan on `[data-sound]` from
     measurements, with no reseek, and the fade used equal-gain curves every
     time.
 - **If B cannot start** (a network failure), A goes round by itself with a
-  seek back by one loop at 221.7 s: a gap of a few milliseconds in the drone.
+  seek back by one loop 0.5 s after the fade point (now at 253.2 s): a gap
+  of a few milliseconds in the drone.
   Tested by making B's `play()` fail.
 - **Across pages** the position travels in `sessionStorage` (`dp-sound-pos`,
   mapped into the loop) and the next page starts the file with `#t=`.
 
 ### Delivery
 
-- **Only the files the script uses are shipped**: the crossfade file and the
-  seven temple sounds. `manifest.json`, the plain `flute-mohanam.mp3` and,
-  while it is off, `sfx/shankha.mp3` stay in `src/assets/audio/` and out of
-  `site/` (`SOUND_DEV_ONLY`, read by `build.mjs` through layout's
+- **Only the files the script uses are shipped**: the crossfade file
+  (`flute-pahadi-xfade.mp3`, 3968 KB) and the seven temple sounds.
+  `manifest.json`, the plain `flute-pahadi.mp3` (3897 KB), the files of the
+  earlier pieces still in the folder and, while it is off,
+  `sfx/shankha.mp3` stay in `src/assets/audio/` and out of `site/`
+  (`SOUND_DEV_ONLY`, read by `build.mjs` through layout's
   `DEV_ONLY_ASSETS`).
 - **Versions**: each audio URL carries `?v=` and the first 8 hex characters
   of the file's SHA-256, the build's scheme for CSS and JS. The script builds
@@ -650,9 +703,12 @@ On the built `site/` over HTTP (the dev server), Chromium 141 headless:
 
 ### Still open
 
-- **Listen on real devices.** Nobody has heard the music or the temple
-  sounds on speakers or headphones, and the shankha needs the Peetham's
-  approval before `SHANKHA` is switched on.
+- **Listen on real devices.** The site's owner asked for the Pahadi piece
+  after hearing two earlier renders; the Peetham has yet to hear it on
+  speakers and headphones, with the temple sounds (retuned to
+  A4 = 432 Hz), and the shankha needs the Peetham's approval before
+  `SHANKHA` is switched on. The player's measurements above were made on
+  the Mohanam track and are worth repeating on this one.
 - **iOS Safari and Firefox were not tested.** The one-frame seek offset was
   measured in Chromium only, but the sample alignment measures what the two
   players actually output, so it does not depend on it. If a browser cannot

@@ -229,16 +229,17 @@ Rules:
 
 ## Music and temple sounds
 
-The site has its own flute music (an original composition in Raga Mohanam,
-made for this website) and soft temple sounds (a bell and six chimes) while
-scrolling. Nothing plays until the visitor chooses it: the first visit asks,
-the answer is remembered, and the round sound button at the bottom left of
-every page switches both on or off. The files are in `src/assets/audio/`;
-the plan and the measurements are in `docs/DEVOTION-PLAN.md` (section 9).
+The site has its own flute music (an original piece for bansuri, the
+Hindustani bamboo flute, in Raga Pahadi, made for this website) and soft
+temple sounds (a bell and six chimes) while scrolling. Nothing plays until
+the visitor chooses it: the first visit asks, the answer is remembered, and
+the round sound button at the bottom left of every page switches both on or
+off. The files are in `src/assets/audio/`; the plan and the measurements are
+in `docs/DEVOTION-PLAN.md` (section 9).
 
 - **The credit** shown in the sound panel, "Flute: original raga composition
   for this website", is `CREDIT` in `src/features/devotion-sound.mjs` (and
-  "Raga Mohanam" beneath it is `RAGA`). Changing either changes a translated
+  "Raga Pahadi" beneath it is `RAGA`). Changing either changes a translated
   sentence (see [Translations](#translations)).
 - **The conch (shankha)** at the end of a page has not been auditioned, so it
   is switched off: the pages do not list it and the build does not ship its
@@ -248,38 +249,130 @@ the plan and the measurements are in `docs/DEVOTION-PLAN.md` (section 9).
   each page's sound control and ships `assets/audio/sfx/shankha.mp3`; it
   sounds once, softly, when a reader with temple sounds on reaches the end of
   a page. Set it back to `false` to switch it off again.
-- **The level.** The flute is mastered quietly (−23 LUFS), so the control's
+- **The level.** The music is mastered quietly (−23 LUFS), so the control's
   default volume is 80 %; the temple sounds sit 8 dB under the music. To
   change these defaults, add `data-volume="70"` (0 to 100) or
   `data-sfx-db="-10"` to the `<div class="snd" data-sound …>` that
   `soundControl()` writes in `src/features/devotion-sound.mjs`. A visitor's
   own volume, once set, is kept.
+- **Where a first play starts.** The flute sits well above its drone (about
+  70/30, below), so the first 10 seconds of the file, the tanpura and the
+  pad alone, would sound as if nothing had happened. A visitor's first play
+  therefore starts 1.5 seconds before the flute comes in (8.5 seconds into
+  the file); music carried over from another page goes on from where it
+  was. The build writes this point on the sound control as `data-start`,
+  from `fluteStart` in `src/assets/audio/manifest.json`, so it follows the
+  music when it is re-rendered.
+- **The level reference.** The motifs that pulse with the flute (the nada
+  rings, and the sound rings in the Music page's opening picture) read the
+  music's level through `DP.sound.level()`, which reports a moment as loud
+  (by RMS) as the track's own 95th-percentile frame as 1. The build writes
+  that reference on the sound control as `data-level-ref`, from `levelRef`
+  in the manifest, when the manifest has one; without it the player uses
+  0.08, measured on the first flute track. `tools/compose-audio.mjs` does
+  not write `levelRef` yet, so today the player uses 0.08. Neither
+  attribute is edited by hand: re-render and rebuild.
 
 ### Changing or re-rendering the music
 
-Nothing is recorded: the flute, the tanpura, the bells and the temple's
-acoustics are synthesised by `tools/compose-audio.mjs`, from a score written
-in sargam at the top of that file (`SCORE`). Each phrase is one line, for
-example:
+Nothing is recorded: the bansuri, the tanpura, a faint drone like a shruti
+box (the "pad"), the bells and the temple's acoustics are synthesised by
+`tools/compose-audio.mjs`, from a score written in sargam near the top of
+that file (`SCORE`). The comments above the score explain every symbol. Each
+phrase is one line, for example:
 
 ```js
-{ notes: 'S:0.7 R:0.6 G~:1.8 R:0.6 S:2.6', gap: 1.6, level: 0.78 },
+{ notes: 'G:1.0 (M)G:0.5 R:0.45 S:1.0 D.:0.45 /P.:3.0', gap: 1.9, level: 0.65 },
 ```
 
-- `S R G P D` are the five swaras of Mohanam; `P.` (a dot) is the octave
-  below, `S'` (a quote) the octave above, `S''` the one above that.
-- `:1.8` is how long the swara is held, in seconds; `G~` a kampita (the
-  swara oscillates up to the next one and settles); `/D` a slow slide into
-  the swara; `(D)P` a quick grace touch of D before P; `-:0.3` a short
-  silence.
-- `gap` is the breath after the phrase, in seconds (the tanpura carries on);
-  `level` (0 to 1) is how strongly the phrase is played. `tempo` above the
-  phrases slows the whole piece (1.1 is 10 % slower).
-- Keep to the five swaras: Ma and Ni are not in Mohanam. The comments at the
-  top of the file explain every symbol.
+- `S R G P D` are the swaras Raga Pahadi moves on; `M` and `N` (shuddha Ma
+  and Ni) may only touch (see below). `P.` (a dot) is the octave below,
+  `P..` two octaves below, `S'` (a quote) the octave above, `S''` the one
+  above that.
+- `:1.8` is how long the swara is held, in seconds (there is no tala).
+- `/D` is a meend: a slow glide into the swara from the one before it, over
+  35–60 % of the note. At the start of a phrase, or after a silence, it
+  glides up from the raga's melody swara below (never from Ma or Ni).
+- `(D)P` is a kan, a quick grace touch of D just before landing on P;
+  `(GR)S` a murki, two quick grace notes and then the swara (at most three
+  in the brackets).
+- `G~` is an andolan: a slow, shallow swing 15–25 cents *below* the swara
+  that keeps returning to it. It is rare in this style: at most twice in the
+  piece.
+- `-:0.4` is a short silence inside the phrase (no breath is taken).
+- The marks combine in this order: meend, grace notes, swara, octave marks,
+  andolan, duration, as in `/(DP)G'~:2.4`. A silence takes none of them.
+- `gap` is the breath after the phrase, in seconds (0 or more; the tanpura
+  and the pad carry on); `level` (above 0, at most 1) is how strongly the
+  phrase is played: softly here, 0.62 to 0.72. `shimmer: true` would ring a
+  soft swarmandal sweep in the breath before that phrase; this piece uses
+  none, and the option is kept, off, like the conch (a shimmer may not ring
+  within 8 seconds of the loop's start or end, and needs a breath of at
+  least 1.55 seconds before its phrase).
+- Above the phrases: `tempo` slows the whole piece (1.1 is 10 % slower);
+  `intro` and `outro` are the seconds of drone alone before the first phrase
+  (10) and after the last (8), where the loop's seam falls; `excerptFrom` is
+  the phrase the 30-second listening excerpt starts just before; `seed`
+  drives every small human detail (a different seed is a different
+  performance of the same score).
+
+**Ma and Ni only touch.** In Pahadi they appear as a kan or a murki, or in
+passing (`G M G R S`, `P M G`, `D N S'`, `S' N D P`, `N. S`), never as a
+resting note: a plain `M` or `N` is held at most about 0.6 seconds and
+takes no andolan, and the two together are at most about 6 % of the flute's
+sounding time. `--plan` checks both (as the score stands: 2.1 %, and 0.41
+seconds at the longest). There are no komal or tivra notes: a lower-case
+`r g m d n` is an error that says so ("Pahadi has no komal or tivra
+notes").
+
+**A meend never rests on a wrong note.** On its way a slow glide passes the
+pitches between its two swaras, among them notes Pahadi does not have (komal
+Re, komal Ga, tivra Ma, komal Dha, komal Ni) and its touches Ma and Ni. It
+may stay within 30 cents of any of them for at most 125 milliseconds, or the
+ear would hear that note. Where a glide would stay longer, the tool makes it
+steeper through the middle and, only if that is not enough, shorter; nearly
+every slow meend in Pahadi is shaped this way. `--plan` lists each one and
+what it became.
+
+**The raga.** `SCORE.raga` names one of the ragas in `RAGAS`, just below the
+score: `Pahadi`, or `Bhoopali` (S R G P D only), which is kept so that the
+notation stays general. Each entry lists the swaras a phrase may write, the
+melody swaras a meend may start from, the swaras allowed only as touches with
+their limits (for Pahadi `touch: { swaras: 'MN', hold: 0.6, share: 0.06 }`),
+the raga's line in the manifest and the error for a swara it lacks. A new
+raga is added there; it can use only the seven shuddha swaras, since the
+notation has no komal or tivra notes. When the raga changes:
+
+- the music's file names follow it (`flute-pahadi.mp3` becomes
+  `flute-<raga>.mp3`), and the build follows the manifest;
+- the line under the credit does not: change `RAGA` in
+  `src/features/devotion-sound.mjs` by hand, and have it translated (see
+  [Translations](#translations));
+- the scroll chimes stay on S R G P D S', whatever the raga.
+
+The build ships only the music file the site plays (`flute-pahadi-xfade.mp3`
+today); the plain loop, the manifest and any files of an earlier piece left
+in `src/assets/audio/` stay out of the site.
+
+**The balance** is about 70 % flute and 30 % accompaniment, as the site's
+owner asked. In `MUSIC`, below the score, each layer is set by its
+loudness relative to the flute: `tanpuraLU: -17` (the tanpura 17 LU below
+the flute) and `padLU: -23.5` (the pad 23.5 LU below), which puts the two
+together about 16 LU below it (the render prints 16.1). `wetLU: -9` is the
+temple's reverb, 9 LU below the dry mix: the flute's space, not an
+instrument. A number nearer 0 brings that layer forward; loudness roughly
+halves for every 10 LU. (`shimmerLU` is for the swarmandal, which this piece
+does not use.)
+
+**The tuning.** Everything is tuned to Sa = D at A4 = 432 Hz: the flute's
+madhya Sa is D4, 288.3254 Hz (`SCORE.sa`), the tanpura is tuned an octave
+below, and the swaras sit in just intonation above Sa. The bell and the six
+chimes (S R G P D S', 576.65 to 1153.3 Hz) are rendered from the same Sa, and
+the player varies the bell's pitch by only about 5 cents, so it stays on Sa.
+Changing `SCORE.sa` (or `SCORE.seed`) changes every detail of the render.
 
 To render it (needs Node.js 20 or newer and `ffmpeg` with `libmp3lame` on
-the PATH; about a minute; the same score always gives the same files):
+the PATH; a minute or two; the same score always gives the same files):
 
 ```powershell
 node tools/compose-audio.mjs --plan
@@ -288,22 +381,39 @@ node build.mjs
 npm test
 ```
 
-1. `--plan` prints when each phrase starts and the length of the loop, and
-   renders nothing.
+1. `--plan` checks the score and renders nothing. It prints the raga, Sa
+   and the tuning; when each phrase starts and ends; the length of the loop
+   and how much of it the flute plays (targets 230–270 seconds and
+   70–75 %; as written, 249.26 seconds and 74 %); the share of tara sthayi
+   and the number of andolans; the levels and the shimmers; the share of
+   Ma and Ni and the longest plain one; every meend that passes a note the
+   raga lacks, or Ma or Ni, and what was made of it; and where the
+   30-second excerpt falls. A line that starts with `!` is outside its
+   target. A mistake in the score (a token it cannot read, a komal note, a
+   misplaced shimmer, an unknown field) stops it with a message that says
+   what is wrong and in which phrase.
 2. The second command renders and encodes everything into
-   `src/assets/audio/`: the music (`flute-mohanam.mp3`, and
-   `flute-mohanam-xfade.mp3`, the copy the site plays: the loop followed by
+   `src/assets/audio/`: the music (`flute-pahadi.mp3`, and
+   `flute-pahadi-xfade.mp3`, the copy the site plays: the loop followed by
    its own first 4.6 seconds, so that two players can hand over without a
-   seam), the temple sounds in `sfx/`, and `manifest.json` (the loop points
-   the site reads). **Always run it whole, with `--xfade-tail 4.6`**: the
-   manifest is written only by a full run, and without `--xfade-tail` the
-   site falls back to the plain file. It also writes a 30-second listening
-   excerpt, `flute-excerpt.mp3`, into a work folder it names at the end
-   (not part of the site).
-3. The build reads the new loop points from the manifest, gives every audio
-   address a new content version (so visitors get the new music at once,
-   although browsers keep audio for 30 days), and ships only the files the
-   pages use. `npm test` checks them.
+   seam), the temple sounds in `sfx/`, and `manifest.json` (the loop points,
+   the start of the flute and the loudness the site reads).
+   `flute-pahadi.mp3` is encoded circularly, so a player that loops it to
+   the sample hears no edge at the wrap. **Always run it whole, with
+   `--xfade-tail 4.6`**: `--music` or `--sfx` alone rewrites the manifest
+   with the other part kept from the one already there, and without
+   `--xfade-tail` the manifest names no crossfade copy, so the site falls
+   back to the plain file. It also writes a 30-second listening excerpt,
+   `flute-excerpt.mp3`, into a work folder it names at the end (not part of
+   the site; `--work` followed by a folder puts the work files there).
+   `--wav` renders the WAV files there only, and changes nothing in
+   `src/assets/audio/`. An unknown option, an option without its value, or
+   a tail longer than the loop is an error before anything is written.
+3. The build reads the new loop points, the first-play start and, when the
+   manifest has one, the level reference from the manifest, gives every
+   audio address a new content version (so visitors get the new music at
+   once, although browsers keep audio for 30 days), and ships only the files
+   the pages use. `npm test` checks them.
 4. Listen to the result on speakers and on headphones before deploying.
 
 ## Text on a page

@@ -82,14 +82,16 @@ All motion switches off when the visitor's system asks for reduced motion.
 
 And a devotional layer (plan and measurements: `docs/DEVOTION-PLAN.md`):
 
-- Flute music, an original composition in Raga Mohanam made for this
+- Flute music, an original bansuri piece in Raga Pahadi made for this
   website (credited "Flute: original raga composition for this website"),
-  and soft temple sounds while scrolling. Nothing plays, and no audio is
-  downloaded, without the visitor's choice: the first visit asks inside the
-  opening curtain ("Enter with flute music" / "Enter in silence"), the
-  answer is remembered, and a sound button on every page switches both. The
-  music carries on from page to page and loops seamlessly (two players hand
-  over in step to the sample). The conch (shankha) is off until the Peetham
+  soft and breathy, tuned to A4 = 432 Hz, about 70 % flute over a tanpura
+  and a faint shruti-box-like drone, and soft temple sounds (tuned with it)
+  while scrolling. Nothing plays, and no audio is downloaded, without the
+  visitor's choice: the first visit asks inside the opening curtain ("Enter
+  with flute music" / "Enter in silence"), the answer is remembered, and a
+  sound button on every page switches both. A first play starts just before
+  the flute comes in; the music carries on from page to page and loops
+  seamlessly (two players hand over in step to the sample). The conch (shankha) is off until the Peetham
   has listened to it (`SHANKHA` in `src/features/devotion-sound.mjs`). The
   music is re-rendered from its sargam score with
   `node tools/compose-audio.mjs --xfade-tail 4.6` (`MAINTENANCE.md`).

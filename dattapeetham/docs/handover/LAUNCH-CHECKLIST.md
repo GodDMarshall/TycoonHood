@@ -23,16 +23,20 @@ Paths below are inside the project folder (`source\` in the package).
       after that, add the next year's dates from the official calendar.
 
 - [ ] **The music and the temple sounds** have been heard and approved by
-      the Ashram, on a phone speaker and on headphones. Nobody has listened
-      to them yet: they were composed, synthesised and measured by
-      software. Open the site in a new private window, choose "Enter with
-      flute music", and let it play for at least four minutes, so that the
-      music goes once round its loop (it is 3 minutes 38 seconds long; the
-      turn should not be heard). Move to another page while it plays (it
+      the Ashram, on a phone speaker and on headphones. The music is new
+      (26 October 2026): an original bansuri piece in Raga Pahadi, soft and
+      breathy, tuned to A4 = 432 Hz, about 70 % flute and 30 % tanpura and
+      a faint drone pad. The site's owner asked for it after hearing an
+      earlier render, but the Ashram has not heard this piece yet, nor the temple
+      sounds, retuned with it: they were composed, synthesised and measured
+      by software. Open the site in a new private window, choose "Enter with
+      flute music", and let it play for at least four and a half minutes,
+      so that the music goes once round its loop (it is 4 minutes 9 seconds
+      long, and a first play starts 8.5 seconds in, just before the flute;
+      the turn should not be heard). Move to another page while it plays (it
       should carry on), then scroll a page slowly (the bell and chimes).
-      The flute is an original composition in Raga Mohanam; ideally a
-      musician of the Peetham listens too, a Carnatic flautist best of all.
-      ([MAINTENANCE.md](MAINTENANCE.md), *Music and temple sounds*.)
+      Ideally a musician of the Peetham listens too, a bansuri player best
+      of all. ([MAINTENANCE.md](MAINTENANCE.md), *Music and temple sounds*.)
 - [ ] **The same on an iPhone or iPad (Safari) and in Firefox.** The sound
       was tested in Chrome's engine only: check that the music starts after
       "Enter with flute music", carries on to the next page, and goes round
