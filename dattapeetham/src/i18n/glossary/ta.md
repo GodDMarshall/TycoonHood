@@ -209,8 +209,9 @@ These settle questions the translators raised; the glossary has the matching ent
       in every label, so the curtain choice, the panel switch, the status line and the late card all name it the same
       way and each fits on one line at 390 px. With புல்லாங்குழல் இசையுடன் நுழைக the curtain button broke onto two lines.
       வேணு stays only inside names: தத்த வேணு ராக சாகர, and the app SGS Datta Venu stays in Latin.
-    - Raga Mohanam → **மோகன ராகம்**, like வீணாவாதினி ராகம் and ஸாம ராகம் elsewhere on the site. Keep the raga's name
-      as the English gives it.
+    - Raga Bhoopali → **பூபாலி ராகம்**, like வீணாவாதினி ராகம் and ஸாம ராகம் elsewhere on the site. It is the Hindustani
+      raga of the site's bansuri piece (S R G P D). Keep the raga's name as the English gives it: not its Carnatic
+      counterpart மோகனம், and not பூபாளம், a different Carnatic raga.
     - Tanpura / Tambura → **தம்புரா** (plural தம்புராக்கள், as on the music and attractions pages).
     - Shankha (conch) → **சங்கு**. The conch is not used yet: it stays off until the Peetham has listened to it.
     - "Sound" as the name of the control → **ஒலி** (Sound settings → ஒலி அமைப்புகள், the sound button → ஒலி பொத்தான்,

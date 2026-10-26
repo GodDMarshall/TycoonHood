@@ -260,7 +260,7 @@ These settle points on which the six translation chunks differed. They are alrea
   Datta Vijayam is ದತ್ತವಿಜಯಮ್ (as on the Facebook page).
 - **The sound layer** (intro invitation, the sound button and panel, its status lines). The
   instrument is ಕೊಳಲು (flute music ಕೊಳಲಿನ ಸಂಗೀತ); ವೇಣು stays only inside names (ದತ್ತ ವೇಣು).
-  The raga is ಮೋಹನ ರಾಗ, tanpura ತಂಬೂರಿ, temple sounds ದೇವಸ್ಥಾನದ ಧ್ವನಿಗಳು, conch ಶಂಖ, bell ಘಂಟೆ.
+  The raga is ಭೂಪಾಲಿ ರಾಗ (Raga Bhoopali, the Hindustani raga of the bansuri piece, S R G P D; not its Carnatic counterpart ಮೋಹನ, and not ಭೂಪಾಳ, a different Carnatic raga), tanpura ತಂಬೂರಿ, temple sounds ದೇವಸ್ಥಾನದ ಧ್ವನಿಗಳು, conch ಶಂಖ, bell ಘಂಟೆ.
   Button and status verbs follow the UI forms above: Play is ಪ್ಲೇ ಮಾಡಿ (never ನುಡಿಸಿ, which
   reads as "you play the flute"), "is playing" is ಕೇಳಿಬರುತ್ತಿದೆ or ಪ್ಲೇ ಆಗುತ್ತಿದೆ, scrolling is
   ಪುಟ ಸರಿಸುವಾಗ (as in ಕೆಳಗೆ ಸರಿಸಿ), Sound settings is ಧ್ವನಿ ಆಯ್ಕೆಗಳು. The credit says

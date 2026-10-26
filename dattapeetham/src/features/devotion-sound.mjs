@@ -1,5 +1,6 @@
-// Devotional sound: the flute music (an original composition in Raga Mohanam
-// made for this website) and the temple sounds while scrolling.
+// Devotional sound: the flute music (an original bansuri composition in Raga
+// Bhoopali, tuned to A = 432 Hz, made for this website) and the temple sounds
+// while scrolling.
 //
 // Server-side markup helpers for src/layout.mjs. The runtime is
 // src/assets/js/devotion-sound.js, the styles src/assets/css/devotion-sound.css.
@@ -54,12 +55,12 @@ const sfxPresent = () => SFX_NAMES.filter((n) => has(`sfx/${n}.mp3`));
 
 // The credit the client chose, word for word, and the raga beneath it.
 export const CREDIT = 'Flute: original raga composition for this website';
-export const RAGA = 'Raga Mohanam';
+export const RAGA = 'Raga Bhoopali';
 
 // How the music loops, from assets/audio/manifest.json (written by
 // tools/compose-audio.mjs). Two <audio> elements crossfade at the loop point
 // (Chromium's <audio loop> skips 12–23 ms at the wrap). The preferred file is
-// flute-mohanam-xfade.mp3: the loop followed by its own first seconds, so the
+// flute-bhoopali-xfade.mp3: the loop followed by its own first seconds, so the
 // end of the file plays exactly what its start plays. When element A reaches
 // loop + d, element B starts at d and the two play the same music; the fade
 // (0.6 s) sits inside the tanpura's quiet stretch after the kharaj pluck, so
@@ -72,7 +73,7 @@ export function musicPlan() {
   let man = null;
   try { man = JSON.parse(readFileSync(fileURLToPath(new URL('manifest.json', AUDIO)), 'utf8')); } catch { /* no manifest */ }
   const m = man && man.music, c = m && m.tanpura && m.tanpura.crossfade, x = m && m.xfade;
-  if (!m || !c) return { file: 'flute-mohanam.mp3' }; // no plan: the script falls back to its own
+  if (!m || !c) return { file: 'flute-bhoopali.mp3' }; // no plan: the script falls back to its own
   if (x && has(x.file) && x.tailSeconds >= c.bAt + c.seconds + 0.2) {
     return { file: x.file, from: +(x.loopSeconds + c.bAt).toFixed(4), to: c.bAt, fade: c.seconds, loop: x.loopSeconds };
   }
