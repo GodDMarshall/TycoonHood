@@ -74,10 +74,13 @@ export function musicPlan() {
   try { man = JSON.parse(readFileSync(fileURLToPath(new URL('manifest.json', AUDIO)), 'utf8')); } catch { /* no manifest */ }
   const m = man && man.music, c = m && m.tanpura && m.tanpura.crossfade, x = m && m.xfade;
   if (!m || !c) return { file: 'flute-pahadi.mp3' }; // no plan: the script falls back to its own
+  // a first play starts 1.5 s before the flute enters (the drone alone sits far under it), and
+  // the level meter's reference is the track's own (both from the manifest, when it has them)
+  const more = { start: m.fluteStart > 1.5 ? +(m.fluteStart - 1.5).toFixed(2) : 0, ...(m.levelRef > 0 ? { levelRef: m.levelRef } : {}) };
   if (x && has(x.file) && x.tailSeconds >= c.bAt + c.seconds + 0.2) {
-    return { file: x.file, from: +(x.loopSeconds + c.bAt).toFixed(4), to: c.bAt, fade: c.seconds, loop: x.loopSeconds };
+    return { file: x.file, from: +(x.loopSeconds + c.bAt).toFixed(4), to: c.bAt, fade: c.seconds, loop: x.loopSeconds, ...more };
   }
-  return { file: m.file, from: c.aFrom, to: c.bAt, fade: c.seconds, loop: m.seconds };
+  return { file: m.file, from: c.aFrom, to: c.bAt, fade: c.seconds, loop: m.seconds, ...more };
 }
 
 // ?v=<first 8 hex of the file's SHA-256>, the build's versioning scheme for
@@ -156,15 +159,17 @@ export function soundInvite() {
 //   data-music       the music file, relative to assets/audio/
 //   data-xf-from, data-xf-to, data-xfade   the loop plan (musicPlan() above)
 //   data-sfx         the temple sounds to load (the files present; no shankha while SHANKHA is false)
+//   data-start       where a first play begins, in seconds (just before the flute enters)
+//   data-level-ref   music RMS that DP.sound.level() reports as 1 (the track's p95 frame RMS)
 //   data-audio-v     "file=hash" content versions, appended to the audio URLs as ?v=
 // Optional tuning attributes, read by the script:
 //   data-sfx-db="-8" temple-sound level relative to the music, in dB
 //   data-volume="80" default volume (0–100) before the visitor sets one
-//   data-level-ref="0.08" music RMS that DP.sound.level() reports as 1 (p95 of the track)
 export function soundControl({ sfx = sfxPresent() } = {}) {
   const { plan, versions } = audioSet();
   const loop = plan.from ? ` data-xf-from="${plan.from}" data-xf-to="${plan.to}" data-xfade="${plan.fade}"` : '';
-  return `<div class="snd" data-sound data-state="off" data-music="${plan.file}"${loop} data-sfx="${sfx.join(' ')}" data-audio-v="${versions}" hidden>
+  const tune = `${plan.start ? ` data-start="${plan.start}"` : ''}${plan.levelRef ? ` data-level-ref="${plan.levelRef}"` : ''}`;
+  return `<div class="snd" data-sound data-state="off" data-music="${plan.file}"${loop}${tune} data-sfx="${sfx.join(' ')}" data-audio-v="${versions}" hidden>
   <button class="snd-btn" type="button" aria-label="Sound settings" aria-expanded="false" aria-controls="snd-panel" data-sound-toggle>${fluteIcon(22)}<span class="snd-bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
   <div class="snd-panel" id="snd-panel" role="group" aria-labelledby="snd-title" data-sound-panel hidden>
     <p class="snd-title" id="snd-title">Sound</p>

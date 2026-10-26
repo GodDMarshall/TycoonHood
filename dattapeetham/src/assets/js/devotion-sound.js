@@ -176,14 +176,17 @@
   // positioned by a seek (#t=, or currentTime before or during play) into the first half of the
   // file sounds one MP3 frame (1152 samples, 26.1 ms) later than its currentTime says; seeked
   // into the second half, or playing on from 0, it sounds where currentTime says. The split is
-  // at half the duration (110.8 s → late, 111.5 s → on time). late() is that frame for an
+  // at half the duration (measured on the 221.8 s Mohanam file: 110.8 s → late, 111.5 s → on time). late() is that frame for an
   // element whose last seek (p.at) was into the first half; leads below make up for it.
   var FRAME = 1152 / 44100;
   function late(p, at) { at = at === undefined ? p.at : at; var d = p.a.duration || 2 * XFROM; return at != null && at < d / 2 ? FRAME : 0; }
   function seekTo(p, t) { p.at = t; p.a.currentTime = t; }
-  function startAt() {
+  // where the music starts: the position carried from the last page, or on a first play just
+  // before the flute enters (data-start: the drone alone sits far under the flute, and the
+  // opening seconds of drone would sound like nothing happened)
+  function startAt(first) {
     var p = load('sessionStorage', POS);
-    if (!p || typeof p.t !== 'number') return 0;
+    if (!p || typeof p.t !== 'number') return first ? inLoop(+cfg.start || 0) : 0;
     var gap = Date.now() - p.at, t = p.t + (gap > 0 && gap < 8000 ? gap / 1000 : 0); // the walk to the next page
     return inLoop(t);
   }
@@ -209,7 +212,7 @@
     if (prep && !xfading) finishX(); // turned back on before a stop finished: drop a half-prepared B
     var p = player(cur), a = p.a;
     on = true; started = true;
-    if (!a.src) { var t = startAt(); p.at = t > 0.5 ? +t.toFixed(2) : null; a.src = SRC + (p.at ? '#t=' + p.at : ''); }
+    if (!a.src) { var t = startAt(true); p.at = t > 0.5 ? +t.toFixed(2) : null; a.src = SRC + (p.at ? '#t=' + p.at : ''); }
     else if (a.error) a.load(); // the file failed before: try it again
     if (a.paused) {
       var pr = a.play();
@@ -247,7 +250,7 @@
   //     and the DelayNode on B's path takes it up. A seek alone lands a few ms off at best,
   //     and for this drone that is two unrelated copies (a comb filter through the fade).
   //     B's lead is searched from -6 to +20 ms (the aim is MARGIN, 8 ms): a span shorter than
-  //     the 27 ms period of the drone, so the search cannot lock onto a period instead. A
+  //     the drone's 28 ms period, so the search cannot lock onto a period instead. A
   //     measurement counts only when the next one repeats it (two taps read a render quantum
   //     apart would differ by 128 samples). Measuring stops 0.4 s before the fade.
   // The fade curve: once the residual is within 2 samples, equal gain (the two are one
@@ -463,7 +466,7 @@
         if (bellDue <= t + 1) bellDue = 0;
         if (t - flungAt < 600 || t - lastBell < BELL_GAP) return;
       }
-      if (hit('ghanta', rnd(0.85, 1), panOf(el), rnd(0.96, 1.04))) {
+      if (hit('ghanta', rnd(0.85, 1), panOf(el), rnd(0.997, 1.003))) { // a hair of variety: the bell stays on Sa
         lastBell = t;
         // the bell hanging in that section (devotion-motion's ghanta) swings with it
         if (sec) emit('dp:bell', { section: sec });
@@ -616,7 +619,7 @@
     if (!td) td = an.getFloatTimeDomainData ? new Float32Array(an.fftSize) : new Uint8Array(an.fftSize);
     if (td instanceof Float32Array) { an.getFloatTimeDomainData(td); for (i = 0; i < td.length; i++) s += td[i] * td[i]; }
     else { an.getByteTimeDomainData(td); for (i = 0; i < td.length; i++) { var x = (td[i] - 128) / 128; s += x * x; } }
-    var x2 = Math.min(1, Math.sqrt(s / td.length) / (+cfg.levelRef || 0.08)); // 0.08 ≈ the 95th-percentile frame RMS of the flute track (measured: 0.078)
+    var x2 = Math.min(1, Math.sqrt(s / td.length) / (+cfg.levelRef || 0.08)); // data-level-ref: the track's 95th-percentile 2048-sample frame RMS, from the manifest; 0.08 was the first track's
     lv += (x2 - lv) * (1 - Math.exp(-dt / (x2 > lv ? 0.06 : 0.25)));
     return lv;
   }
