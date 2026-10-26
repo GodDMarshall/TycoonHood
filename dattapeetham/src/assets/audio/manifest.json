@@ -1,18 +1,19 @@
 {
   "credit": "Flute: original raga composition for this website",
-  "raga": "Mohanam (S R2 G3 P D2)",
+  "raga": "Bhoopali (S R G P D)",
   "sa": "D",
-  "saHz": 293.66,
+  "saHz": 288.3254,
+  "tuning": "A4 = 432 Hz",
   "sampleRate": 44100,
   "music": {
-    "file": "flute-mohanam.mp3",
-    "samples": 9602762,
-    "seconds": 217.7497,
-    "fluteStart": 8,
-    "fluteEnd": 210.25,
+    "file": "flute-bhoopali.mp3",
+    "samples": 10987309,
+    "seconds": 249.1453,
+    "fluteStart": 10,
+    "fluteEnd": 241.15,
     "tanpura": {
-      "cycles": 47,
-      "cycleSeconds": 4.633,
+      "cycles": 54,
+      "cycleSeconds": 4.6138,
       "plucksPerCycle": [
         "Pa",
         "Sa",
@@ -20,41 +21,66 @@
         "Kharaj Sa"
       ],
       "quietInCycle": [
-        3.3627,
-        4.5522
+        3.3535,
+        4.533
       ],
       "crossfade": {
-        "aFrom": 216.5794,
-        "bAt": 3.4627,
+        "aFrom": 247.985,
+        "bAt": 3.4535,
         "seconds": 0.6,
-        "note": "For a two-<audio> player: when A reaches aFrom, start B at bAt (better: at A.currentTime - (cycles - 1) * cycleSeconds) and crossfade with equal-power curves over `seconds`. Both are drone only and at the same point of the tanpura cycle; anywhere inside quietInCycle works."
+        "note": "For a two-<audio> player: when A reaches aFrom, start B at bAt (better: at A.currentTime - (cycles - 1) * cycleSeconds) and crossfade with equal-power curves over `seconds`. Both are at the same point of the tanpura cycle with only the drone and the pad sounding; anywhere inside quietInCycle works. The pad is periodic over the whole loop, not over one cycle, so during the fade the two elements play different moments of the pad (equal-power keeps its level; its partials are not phase-aligned). The xfade file avoids this."
       }
     },
-    "gainDb": -10.43,
+    "pad": {
+      "levelLU": -12.5,
+      "note": "An ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (111 partials), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; -12.5 LU below the flute. Exactly periodic over the loop."
+    },
+    "shimmer": {
+      "levelLU": -12,
+      "at": [
+        {
+          "beforePhrase": 5,
+          "from": 46.06,
+          "to": 50.77
+        },
+        {
+          "beforePhrase": 10,
+          "from": 101.88,
+          "to": 106.55
+        },
+        {
+          "beforePhrase": 18,
+          "from": 193.71,
+          "to": 198.84
+        }
+      ],
+      "note": "Soft swarmandal sweeps (11 plucked strings tuned to Bhoopali, madhya to ati-tara Sa) in the breath before the phrases the score marks; never within 8 s of the loop's start or end."
+    },
+    "gainDb": -9.52,
     "lufs": -23,
-    "truePeakDbtp": -11.7,
-    "lraLU": 8.7,
-    "kb": 3403,
-    "excerptFrom": 83.72,
+    "truePeakDbtp": -10.9,
+    "lraLU": 9,
+    "kb": 3894,
+    "excerptFrom": 90.62,
     "xfade": {
-      "file": "flute-mohanam-xfade.mp3",
-      "samples": 9805622,
-      "loopSamples": 9602762,
-      "loopSeconds": 217.7497,
+      "file": "flute-bhoopali-xfade.mp3",
+      "samples": 11190169,
+      "loopSamples": 10987309,
+      "loopSeconds": 249.1453,
       "tailSeconds": 4.6,
-      "kb": 3475,
+      "kb": 3966,
       "note": "Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play identical audio."
     },
     "loop": {
       "start": 0,
-      "end": 217.7497,
-      "samples": 9602762,
+      "end": 249.1453,
+      "samples": 10987309,
       "gapless": {
         "encoder": "Lavc60.31",
         "encoderDelay": 576,
-        "padding": 886,
-        "frames": 8337,
-        "samples": 9602762
+        "padding": 1043,
+        "frames": 9539,
+        "samples": 10987309
       },
       "note": "The whole file is one seamless loop. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true). A decoder that ignores the header returns more, usually 1105 extra at the start (576 encoder + 529 decoder delay): then set loopStart = 1105 / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skips 12–23 ms at the wrap (measured), an audible hiccup in the drone. A player that crossfades two <audio> elements should use music.tanpura.crossfade (same point of the tanpura cycle) rather than fade the end of the file into B started at 0."
     }
@@ -63,16 +89,16 @@
     {
       "file": "sfx/ghanta.mp3",
       "seconds": 3,
-      "note": "small brass hand-bell, struck (Sa = D6, Ga ringing above)",
+      "note": "small brass hand-bell, struck (Sa = D6, Ga ringing above; A4 = 432 Hz)",
       "lufs": -22,
-      "truePeakDbtp": -8.7,
+      "truePeakDbtp": -9.1,
       "kb": 36
     },
     {
       "file": "sfx/chime-s.mp3",
       "seconds": 1.7,
       "swara": "S",
-      "hz": 587.32,
+      "hz": 576.65,
       "lufs": -23,
       "truePeakDbtp": -10.8,
       "kb": 21
@@ -81,16 +107,16 @@
       "file": "sfx/chime-r.mp3",
       "seconds": 1.7,
       "swara": "R",
-      "hz": 660.74,
+      "hz": 648.73,
       "lufs": -23,
-      "truePeakDbtp": -13.5,
+      "truePeakDbtp": -13.4,
       "kb": 21
     },
     {
       "file": "sfx/chime-g.mp3",
       "seconds": 1.7,
       "swara": "G",
-      "hz": 734.15,
+      "hz": 720.81,
       "lufs": -23,
       "truePeakDbtp": -7.7,
       "kb": 21
@@ -99,35 +125,35 @@
       "file": "sfx/chime-p.mp3",
       "seconds": 1.7,
       "swara": "P",
-      "hz": 880.98,
+      "hz": 864.98,
       "lufs": -23,
-      "truePeakDbtp": -7.9,
+      "truePeakDbtp": -7.8,
       "kb": 21
     },
     {
       "file": "sfx/chime-d.mp3",
       "seconds": 1.7,
       "swara": "D",
-      "hz": 978.87,
+      "hz": 961.08,
       "lufs": -23,
-      "truePeakDbtp": -9.7,
+      "truePeakDbtp": -9.6,
       "kb": 21
     },
     {
       "file": "sfx/chime-s2.mp3",
       "seconds": 1.7,
       "swara": "S2",
-      "hz": 1174.64,
+      "hz": 1153.3,
       "lufs": -23,
-      "truePeakDbtp": -8.7,
+      "truePeakDbtp": -8.6,
       "kb": 21
     },
     {
       "file": "sfx/shankha.mp3",
       "seconds": 1.9,
-      "note": "soft conch swell on Sa (D4); optional",
+      "note": "soft conch swell on Sa (D4, A4 = 432 Hz); optional",
       "lufs": -23,
-      "truePeakDbtp": -14,
+      "truePeakDbtp": -14.2,
       "kb": 23
     }
   ]
