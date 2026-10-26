@@ -8,27 +8,33 @@
 //   node tools/compose-audio.mjs --wav      render the WAV files but do not encode them
 //   node tools/compose-audio.mjs --work <dir>   where WAVs and stems go
 //                                               (default: <system temp>/dattapeetham-audio)
-//   node tools/compose-audio.mjs --xfade-tail 4.6   also write flute-bhoopali-xfade.mp3: the same
+//   node tools/compose-audio.mjs --xfade-tail 4.6   also write flute-pahadi-xfade.mp3: the same
 //        loop followed by its own first 4.6 s, for a player that crossfades two <audio>
 //        elements (crossfade inside the tail into a second element started at 0, and the
-//        two play identical audio). Not made unless asked for.
+//        two play identical audio). This is the copy the site plays. Not made unless asked
+//        for; with --wav it is written as flute-pahadi-xfade.wav in the work folder.
+//   --music or --sfx alone encodes its own part and rewrites manifest.json with the other
+//   part kept from the manifest already there (with no such part to keep, the manifest is
+//   left as it was, with a warning: run both). An unknown option, a missing value or a
+//   tail longer than the loop is an error, before anything is written.
 //
 // Nothing is sampled or recorded: the bansuri, the tanpura, the pad, the
-// swarmandal, the bells and the hall are all synthesised below from well-known
-// DSP (additive and modal synthesis, resonant filters, a synthetic room impulse
-// response and FFT convolution). Seeded random generators drive every human
-// detail, so each render is identical. Each phrase has its own streams (its
-// rubato, its ornaments, its breath noise, its drift and its shimmer): editing
-// one phrase leaves the nuances of every other phrase as they were (later
-// phrases only move in time), and the score never changes the tanpura, the pad
-// or the bells.
+// swarmandal (off in this score), the bells and the hall are all synthesised
+// below from well-known DSP (additive and modal synthesis, resonant filters, a
+// synthetic room impulse response and FFT convolution). Seeded random
+// generators drive every human detail, so each render is identical. Each phrase
+// has its own streams (its rubato, its ornaments, its breath noise and its
+// "phoonk", its drift and its shimmer): editing one phrase leaves the nuances of
+// every other phrase as they were (later phrases only move in time), and the
+// phrases never change the tanpura, the pad or the bells (only the loop length
+// they add up to does, and SCORE.seed and SCORE.sa change everything).
 //
 // Needs Node 20+ and nothing else to render. Encoding needs ffmpeg with
 // libmp3lame on the PATH.
 //
 // What it makes (all tuned to the same Sa = D, at A4 = 432 Hz):
-//   src/assets/audio/flute-bhoopali.mp3  ~4 min bansuri alap in Raga Bhoopali over a tanpura
-//                                        drone and a soft ambient pad; loops seamlessly (see LOOP)
+//   src/assets/audio/flute-pahadi.mp3    ~4 min soft bansuri in Raga Pahadi over a tanpura drone
+//                                        and a faint pad; loops seamlessly (see LOOP)
 //   src/assets/audio/sfx/ghanta.mp3      a small brass hand-bell, struck once
 //   src/assets/audio/sfx/chime-*.mp3     soft bell tones on the swaras S R G P D S'
 //   src/assets/audio/sfx/shankha.mp3     a soft conch swell (optional)
@@ -42,9 +48,11 @@
 // piece had been crossfaded into itself. The flute is silent for SCORE.intro
 // seconds at the start and SCORE.outro seconds at the end, and no swarmandal
 // shimmer rings within 8 s of either, so the seam always falls on drone and
-// pad alone.
+// pad alone. The loop's MP3 is encoded circularly too (see WRAP), so the codec
+// adds no edge at the wrap.
 
-import { writeFile, readFile, mkdir, stat } from 'node:fs/promises';
+import { writeFile, readFile, mkdir, stat, rm } from 'node:fs/promises';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -53,79 +61,102 @@ import os from 'node:os';
 // ============================================================================
 // THE SCORE
 // ============================================================================
-// Raga Bhoopali (Hindustani; audava–audava): S R G P D, all shuddha — no Ma,
-// no Ni. Vadi Ga, samvadi Dha. Sa = D at A4 = 432 Hz: the flute's madhya Sa is
-// D4 (288.3254 Hz) and the tanpura is tuned an octave below. The swaras sit in
-// just intonation above Sa (R 9/8, G 5/4, P 3/2, D 5/3).
+// Raga Pahadi (Bilawal thaat; light-classical, from the folk music of the
+// hills), the raga of Krishna's flute: pastoral and sweet. The melody moves on
+// S R G P D. Shuddha Ma and shuddha Ni are soft touches only: as a kan or a
+// murki, or in passing (G M G R S, P M G, D N S', S' N D P, N. S), never held as
+// a resting note (at most about 0.6 s, except inside a grace) and together at
+// most about 6 % of the flute's time. No komal or tivra notes. The mandra is
+// home: P. and D. are resting places and phrases often fall to mandra Pa or Sa;
+// Sa and Pa are the pillars, with Ga strong. Sa = D at A4 = 432 Hz: the flute's
+// madhya Sa is D4 (288.3254 Hz) and the tanpura is tuned an octave below. The
+// swaras sit in just intonation above Sa (R 9/8, G 5/4, M 4/3, P 3/2, D 5/3,
+// N 15/8).
 //
-// Each phrase is written the way a musician would write sargam:
+// SCORE.raga picks the swaras a phrase may use (RAGAS, below; Bhoopali, S R G P
+// D only, is kept so the notation stays general). Each phrase is written the
+// way a musician would write sargam:
 //
-//   S R G P D      the five swaras of Bhoopali (Sa, shuddha Re, shuddha Ga, Pa, shuddha Dha)
+//   S R G M P D N  the seven shuddha swaras (in Pahadi, M and N only as soft touches)
 //   P.  D.  P..    a dot after a swara: mandra sthayi (the octave below); two dots, two octaves
 //   S'  R'  G'     a quote after it: tara sthayi (the octave above); S'' is ati-tara Sa (rarely, if ever)
-//   :1.5           how long the swara is held, in seconds (an alap has no tala)
+//   :1.5           how long the swara is held, in seconds (no tala)
 //   /D             meend: a slow glide into this swara from the one before it, over 35–60 %
 //                  of the note, easing in and out; at the start of a phrase (or after a
-//                  silence) it glides up from the swara below
+//                  silence) it glides up from the melody swara below (never from M or N).
+//                  On its way it passes the pitches between: a band of ±30 cents around
+//                  a note the raga lacks, or around M or N, is passed in at most about
+//                  125 ms (see glideFor), so a slow glide never rests on one of them
 //   (D)P           kan: a quick grace touch of D just before landing on P
 //   (GR)S          murki: two quick grace notes, then the swara (at most three in the brackets)
 //   G~             andolan: a slow (about 1 Hz), shallow swing 15–25 cents *below* the swara
-//                  that keeps returning to it; it never reaches a neighbouring swara.
-//                  Bhoopali barely uses it: at most twice in the piece
+//                  that keeps returning to it; it never reaches a neighbouring swara (the
+//                  nearest is 112 cents away). Rare in this style: at most twice in the piece
 //   -:0.4          a short silence inside the phrase (no breath is taken)
 //
-// The marks combine in this order: /(DP)G~:2.4. A silence takes none of them.
+// Komal and tivra notes have no token: a lower-case r g m d n is an error that
+// names the raga ("Pahadi has no komal or tivra notes"), and so is a swara the
+// raga lacks (M or N in Bhoopali); any other letter is simply not notation.
+// The marks combine in this order: meend, grace notes, swara, octave marks,
+// andolan, duration, as in /(DP)G'~:2.4. A silence takes none of them.
 //
-// After each phrase the flautist breathes for `gap` seconds while the tanpura
-// and the pad carry on. `level` (0–1) is how strongly the phrase is played.
-// `shimmer: true` rings a soft swarmandal sweep in the breath *before* that
-// phrase (at section starts; it may not ring within 8 s of the loop's start or
-// end, and needs a breath of at least ~1.6 s before the phrase). Change anything
-// here and run `node tools/compose-audio.mjs --plan` to check it, then again
-// without --plan to render.
+// After each phrase the flautist breathes for `gap` seconds (0 or more) while
+// the tanpura and the pad carry on. `level` (above 0, at most 1) is how
+// strongly the phrase is played: softly here, mostly 0.6–0.78. `shimmer: true`
+// would ring a soft swarmandal sweep in the breath before that phrase; this
+// score uses none (the option is kept, off, like the shankha). A shimmer may
+// not ring within 8 s of the loop's start or end and needs a breath of at least
+// 1.55 s before its phrase. Change anything here and run
+// `node tools/compose-audio.mjs --plan` to check it, then again without --plan
+// to render.
 export const SCORE = {
-  raga: 'Bhoopali',
+  raga: 'Pahadi',
   sa: 432 * 2 ** (-7 / 12), // D4 at A4 = 432 Hz (288.3254 Hz), the flute's madhya Sa
   tempo: 1, // > 1 plays slower: every duration and gap is multiplied by it
   intro: 10, // seconds of tanpura and pad alone before the flute's first phrase
   outro: 8, // seconds of tanpura and pad after the last phrase (the reverb rings into it)
   seed: 108,
-  excerptFrom: 9, // the client's 30-second audition excerpt starts just before this phrase
-  //               (the end of the mandra, the whole shimmer, then the Ga of section III)
-  // An original alap in five sections. Each section ends with a slightly longer
-  // breath (3.5 s); II, III and V open with a swarmandal shimmer (the tara
-  // section is left unmarked). One andolan, resolved onto a steady Ga.
+  excerptFrom: 19, // the client's 30-second audition excerpt starts just before this phrase
+  //                (section V: the murki (DPM)G, G M G R S falling to mandra Pa, and an
+  //                answer on Ga; it ends in a breath)
+  // An original Pahadi dhun in five sections, phrased like a folk tune: calls
+  // that end open (on Ga, mandra Dha or tara Sa) and answers that fall home to
+  // mandra Pa or Sa. Each section ends with a slightly longer breath (2.8 s).
+  // One short visit to the tara (IV), one andolan (on Ga, in III), four murkis
+  // and no shimmer. Ma and Ni only touch, in passing or as grace notes (never
+  // more than 0.4 s), and the playing stays soft (levels 0.62–0.72).
   phrases: [
-    // I. Aochar: breathing on Sa, a first look at Ga, and home
-    { notes: 'S:4.4', gap: 3.2, level: 0.7 },
-    { notes: 'S:1.0 D.:2.6 /S:3.0', gap: 3.0, level: 0.72 },
-    { notes: 'S:0.6 R:0.45 /G:2.6 -:0.3 (P)G:0.6 R:0.4 /G:1.8', gap: 3.1, level: 0.74 },
-    { notes: 'G:0.6 R:0.45 S:1.2 -:0.3 (RGR)S:1.4 D.:0.6 S:2.4', gap: 3.5, level: 0.74 },
+    // I. Godhuli: Sa at dusk and mandra Pa as home; the second phrase asks on Ga, the third answers
+    { notes: 'S:3.4 (R)S:0.8 D.:0.45 /P.:3.0', gap: 2.1, level: 0.62 },
+    { notes: 'P.:1.2 (D.)S:1.4 R:0.45 /G:2.6 R:0.4 /G:1.4', gap: 2.0, level: 0.64 },
+    { notes: 'G:1.0 (M)G:0.5 R:0.45 S:1.0 D.:0.45 /P.:3.0', gap: 1.9, level: 0.65 },
+    { notes: 'P.:0.9 D.:0.45 S:2.2 -:0.3 (N.)S:0.6 R:0.45 (PM)G:0.9 R:0.45 /S:2.6', gap: 2.8, level: 0.66 },
 
-    // II. Mandra: the low flute
-    { notes: 'S:0.9 D.:2.6 /P.:3.4', gap: 3.0, level: 0.72, shimmer: true },
-    { notes: 'S:0.8 D.:1.2 P.:2.2 /D.:1.0 S:2.4', gap: 3.2, level: 0.73 },
-    { notes: 'D.:0.9 S:2.6 (G)R:0.45 S:0.8 -:0.3 (S)D.:0.7 /P.:3.2', gap: 2.9, level: 0.74 },
-    { notes: 'P.:0.9 D.:1.4 S:0.6 /G:3.0 R:0.5 S:2.6', gap: 3.1, level: 0.75 },
-    { notes: 'R:0.5 S:0.9 D.:2.4 P.:1.0 /D.:2.8', gap: 3.5, level: 0.74 },
+    // II. Yamuna: the herd by the river, in the mandra
+    { notes: 'S:0.8 /D.:2.6 P.:0.5 D.:0.45 S:0.6 R:0.4 /G:2.4', gap: 2.0, level: 0.66 },
+    { notes: 'P.:1.4 D.:0.5 S:0.45 /G:2.4 -:0.25 G:0.6 R:0.4 S:1.0 D.:0.45 /P.:2.2', gap: 2.4, level: 0.67 },
+    { notes: 'S:0.6 R:0.45 S:1.2 N.:0.4 /D.:3.0 P.:0.5 /D.:1.6', gap: 2.1, level: 0.67 },
+    { notes: 'D.:0.5 /S:1.8 R:0.4 /G:2.2 (M)G:0.6 R:0.4 S:1.0 D.:0.45 /P.:2.6', gap: 2.4, level: 0.68 },
+    { notes: 'P:0.9 /G:1.8 R:0.45 S:0.8 (RGR)S:0.6 D.:0.45 P.:1.2 D.:0.45 /S:2.6', gap: 2.8, level: 0.66 },
 
-    // III. Madhya: resting on Ga (vadi) and Dha (samvadi)
-    { notes: 'G:2.4 (P)G:0.9 R:0.5 G:0.6 P:0.7 /G:2.8', gap: 3.1, level: 0.77, shimmer: true },
-    { notes: 'G:0.7 P:0.9 D:3.2 P:0.7 /G:2.8', gap: 2.9, level: 0.78 },
-    { notes: 'D:0.8 P:0.5 /G:1.8 R:0.45 G~:2.6 (P)G:0.6 R:0.45 S:2.0', gap: 3.2, level: 0.78 },
-    { notes: "G:0.6 R:0.45 G:0.9 P:0.45 /D:2.2 -:0.3 (S')D:0.5 P:1.2 /G:2.2", gap: 3.0, level: 0.79 },
-    { notes: 'D:0.8 P:2.2 (D)P:0.6 /G:2.0 R:0.5 S:2.8', gap: 3.5, level: 0.78 },
+    // III. Gopa-geet: the cowherd's song on Ga, in call and answer
+    { notes: 'S:0.6 /G:2.2 R:0.45 G:0.6 P:1.8 -:0.25 (D)P:0.6 /G:1.6', gap: 2.1, level: 0.69 },
+    { notes: 'G:0.6 P:1.4 D:0.45 /P:2.0 /G:2.2 (P)G:0.5 R:0.45 S:1.2', gap: 2.3, level: 0.7 },
+    { notes: 'P:0.9 D:0.45 /P:2.0 -:0.3 (D)P:0.6 G:0.45 P:1.0 (DP)G:1.6 R:0.4 S:0.8', gap: 2.2, level: 0.71 },
+    { notes: 'P.:0.8 (D.)S:1.0 R:0.4 /G:1.8 P:0.5 /D:1.4 P:0.6 M:0.35 /G:2.0', gap: 2.3, level: 0.71 },
+    { notes: 'G:0.6 (M)G~:2.6 R:0.45 S:1.0 N.:0.35 S:0.4 D.:0.6 /P.:2.6', gap: 2.8, level: 0.69 },
 
-    // IV. Tara: one short visit to the upper Sa (D → S' and S' → D meends)
-    { notes: "G:0.7 P:1.2 D:0.6 /S':3.0 /D:2.8", gap: 3.1, level: 0.79 },
-    { notes: "D:0.7 /S':2.2 R':0.5 S':0.6 /G':1.4 R':0.5 S':2.0", gap: 3.0, level: 0.8 },
-    { notes: "S':1.4 /D:2.4 P:0.7 /G:3.2", gap: 3.5, level: 0.78 },
+    // IV. Pukaar: calling across the Yamuna; up through Ni to tara Sa, once, and down
+    { notes: "G:0.7 P:1.0 /D:1.4 N:0.35 /S':3.0", gap: 1.9, level: 0.71 },
+    { notes: "D:0.5 /S':2.0 (R')S':0.5 R':0.4 /G':1.2 R':0.45 (N)S':2.2", gap: 2.1, level: 0.72 },
+    { notes: "S':1.4 N:0.4 D:0.45 /P:1.8 -:0.3 (D)P:0.9 M:0.4 /G:2.4", gap: 2.2, level: 0.72 },
+    { notes: "P:0.6 /D:1.4 (N)S':1.0 (N)D:1.2 P:0.6 /G:1.8 P:0.4 G:0.6 R:0.45 S:1.2", gap: 2.8, level: 0.7 },
 
-    // V. Return through madhya and a last look at mandra Pa, to a long Sa
-    { notes: 'D.:0.8 S:0.6 /G:3.0 R:0.5 G:1.4 P:0.7 /G:2.4', gap: 2.9, level: 0.76, shimmer: true },
-    { notes: 'P:0.7 /D:2.6 P:2.6 (DP)G:0.9 R:0.45 S:2.2', gap: 3.2, level: 0.75 },
-    { notes: 'S:0.7 D.:1.0 P.:1.8 /D.:1.0 S:0.5 D.:0.5 /P.:2.4', gap: 3.1, level: 0.73 },
-    { notes: '/G:1.6 R:0.5 S:0.9 D.:0.8 /S:6.0', gap: 0, level: 0.72 },
+    // V. Ghar ki or: homeward, to mandra Pa and a long Sa (gap 0: the outro follows)
+    { notes: 'G:1.8 P:0.5 (DPM)G:0.9 R:0.45 S:1.2 -:0.25 R:0.45 /G:1.8', gap: 2.0, level: 0.68 },
+    { notes: 'G:0.8 M:0.4 G:0.7 R:0.45 S:1.6 -:0.25 S:0.45 N.:0.4 D.:0.6 /P.:2.6', gap: 2.3, level: 0.66 },
+    { notes: 'P.:1.2 (D.)S:0.9 R:0.4 /G:2.2 -:0.3 G:0.45 R:0.45 /S:2.4', gap: 2.4, level: 0.64 },
+    { notes: 'G:0.6 R:0.45 S:0.9 D.:0.45 /P.:2.2 D.:0.45 (N.)S:6.0', gap: 0, level: 0.62 },
   ],
 };
 
@@ -134,14 +165,17 @@ export const SCORE = {
 // ============================================================================
 const SR = 44100;
 const TAU = Math.PI * 2;
+// The mix is about 70 % flute: the tanpura and the pad together sound about a
+// third as loud as the flute (loudness roughly halves every 10 LU), about 16 LU
+// below it combined.
 const MUSIC = {
   lufs: -23, // EBU R128 integrated: it plays in the background
   truePeak: -2, // dBTP ceiling
   bitrate: '128k',
-  tanpuraLU: -8.5, // tanpura loudness relative to the flute's
-  padLU: -12.5, // the ambient pad, relative to the flute
-  shimmerLU: -12, // the swarmandal while it rings, relative to the flute
-  wetLU: -7.5, // reverb return loudness relative to the dry mix
+  tanpuraLU: -17, // tanpura loudness relative to the flute's
+  padLU: -23.5, // the faint ambient pad, relative to the flute
+  shimmerLU: -12, // the swarmandal while it rings, relative to the flute (none in this score)
+  wetLU: -9, // reverb return loudness relative to the dry mix: the flute's space, not an instrument
   send: { tanpura: 0.55, pad: 0.35, shimmer: 0.6 }, // reverb sends (the flute's is 1)
   lowCut: 55, // Hz, 12 dB/octave
   flutePan: 0.06, // -1 left … +1 right
@@ -154,10 +188,45 @@ const CREDIT = 'Flute: original raga composition for this website';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'src/assets/audio');
 
-// The five swaras in just intonation (cents above Sa)
-const RATIO = { S: 1, R: 9 / 8, G: 5 / 4, P: 3 / 2, D: 5 / 3 };
-const SCALE = ['S', 'R', 'G', 'P', 'D'];
-const CENTS = Object.fromEntries(SCALE.map((s) => [s, 1200 * Math.log2(RATIO[s])]));
+// The seven shuddha swaras in just intonation (ratios above Sa), and their cents
+const RATIO = { S: 1, R: 9 / 8, G: 5 / 4, M: 4 / 3, P: 3 / 2, D: 5 / 3, N: 15 / 8 };
+const CENTS = Object.fromEntries(Object.entries(RATIO).map(([s, r]) => [s, 1200 * Math.log2(r)]));
+// Every pitch a raga might lack, in cents above Sa: komal Re (16/15), komal Ga (6/5),
+// shuddha Ma, tivra Ma (45/32), komal Dha (8/5), komal Ni (16/9) and shuddha Ni
+const CHROMATIC = {
+  'komal Re': 1200 * Math.log2(16 / 15), 'komal Ga': 1200 * Math.log2(6 / 5), Ma: CENTS.M, 'tivra Ma': 1200 * Math.log2(45 / 32),
+  'komal Dha': 1200 * Math.log2(8 / 5), 'komal Ni': 1200 * Math.log2(16 / 9), Ni: CENTS.N,
+};
+// What each raga allows. `swaras`: every swara a phrase may write; `melody`: the swaras
+// the melody rests on (a meend that opens a breath starts from the melody swara below);
+// `touch`: swaras allowed only as soft touches, with the longest a plain one may be held
+// (written seconds) and their share of the flute's sounding time (both checked by --plan);
+// `lacks`: the error for a swara the raga does not have.
+export const RAGAS = {
+  Pahadi: {
+    swaras: 'SRGMPDN', melody: 'SRGPD', touch: { swaras: 'MN', hold: 0.6, share: 0.06 },
+    label: 'Pahadi (S R G P D, with soft touches of M and N)',
+    lacks: { komal: 'Pahadi has no komal or tivra notes' },
+  },
+  Bhoopali: {
+    swaras: 'SRGPD', melody: 'SRGPD', touch: null,
+    label: 'Bhoopali (S R G P D)',
+    lacks: { shuddha: 'Bhoopali has no Ma and no Ni', komal: 'Bhoopali has no komal or tivra notes' },
+  },
+};
+function ragaOf(name) {
+  const rg = RAGAS[name];
+  if (!rg) throw new Error(`raga "${name}" is not one this engine knows (${Object.keys(RAGAS).join(', ')})`);
+  return rg;
+}
+// The pitches a slow glide may pass but not linger on (see glideFor): every note the raga
+// lacks, and its touch swaras (cents above Sa, within one octave)
+function passBands(rg) {
+  const swara = { Ma: 'M', Ni: 'N' }; // the two of CHROMATIC that a raga may have
+  const lacking = Object.entries(CHROMATIC).filter(([name]) => !(swara[name] && rg.swaras.includes(swara[name])));
+  const touch = rg.touch ? [...rg.touch.swaras].map((s) => [s, CENTS[s]]) : [];
+  return [...lacking, ...touch].map(([name, cents]) => ({ name, cents }));
+}
 
 // ============================================================================
 // Small DSP toolkit
@@ -165,8 +234,8 @@ const CENTS = Object.fromEntries(SCALE.map((s) => [s, 1200 * Math.log2(RATIO[s])
 const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
 const dbToGain = (db) => Math.pow(10, db / 20);
 const smoother = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * u * (u * (u * 6 - 15) + 10));
-const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : 0.5 - 0.5 * Math.cos(Math.PI * u));
-const rise = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : Math.pow(Math.sin((Math.PI / 2) * u), 2)); // a sin² fade-in over [0, 1]
+const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : 0.5 - 0.5 * Math.cos(Math.PI * u)); // raised cosine (= sin²(πu/2)): glides and fades
+const mod1200 = (c) => ((c % 1200) + 1200) % 1200;
 
 // Seeded PRNG (mulberry32); each part of the piece gets its own stream.
 function rng(seed, name) {
@@ -309,45 +378,67 @@ const panGains = (p) => [Math.cos(((p + 1) * Math.PI) / 4), Math.sin(((p + 1) * 
 // ============================================================================
 // Score → timeline
 // ============================================================================
-// One swara with its octave marks (S, D., P.., S', S''), then a whole token:
+// One letter with its octave marks (S, D., P.., S', S''), then a whole token:
 // [/] [(grace…)] swara-or-rest [marks] [~] :seconds
-const SWARA = "[SRGPD](?:\\.{1,2}|'{1,2})?";
-const TOKEN = new RegExp(`^(\\/)?(?:\\(((?:${SWARA})+)\\))?([SRGPD-])(\\.{1,2}|'{1,2})?(~)?:(\\d+(?:\\.\\d+)?)$`);
+// Any letter fits the pattern; whether it is a swara of the raga is checked after it.
+const LETTER = "[A-Za-z](?:\\.{1,2}|'{1,2})?";
+const TOKEN = new RegExp(`^(\\/)?(?:\\(((?:${LETTER})+)\\))?([A-Za-z-])(\\.{1,2}|'{1,2})?(~)?:(\\d+(?:\\.\\d+)?)$`);
 const octave = (marks = '') => [...marks].reduce((o, c) => o + (c === "'" ? 1 : -1), 0);
 const swaraCents = (s) => CENTS[s[0]] + 1200 * octave(s.slice(1));
+// Why a letter is not a swara of the raga, when that has a name: a lower-case
+// r g m d n (the usual way of writing komal and tivra notes, which have no token
+// here), or a shuddha swara the raga lacks. Any other letter is not notation.
+const lacking = (ch, rg) => ('rgmdn'.includes(ch) ? rg.lacks.komal : 'SRGMPDN'.includes(ch) && !rg.swaras.includes(ch) ? rg.lacks.shuddha : null);
 
-export function parsePhrase(text, where = 'phrase') {
+export function parsePhrase(text, where = 'phrase', raga = SCORE.raga) {
+  const rg = ragaOf(raga);
   return text.trim().split(/\s+/).map((tok) => {
-    if (/[MN]/i.test(tok)) throw new Error(`${where}: "${tok}" — Bhoopali has no Ma and no Ni`);
+    const named = [...tok].map((ch) => lacking(ch, rg)).find(Boolean);
+    if (named) throw new Error(`${where}: "${tok}" — ${named} (write its swaras: ${[...rg.swaras].join(' ')})`);
     const m = TOKEN.exec(tok);
-    if (!m) throw new Error(`${where}: cannot read "${tok}" (write e.g. G:0.8, D.:1.2, S':2, /D:1, (D)P:0.8, (GR)S:1.2, G~:2, -:0.4)`);
+    const unreadable = () => new Error(`${where}: cannot read "${tok}" (write e.g. G:0.8, D.:1.2, S':2, /D:1, (D)P:0.8, (GR)S:1.2, G~:2, -:0.4)`);
+    if (!m) throw unreadable();
     const [, meend, graceText, sw, oct, andolan, dur] = m;
     const rest = sw === '-';
-    const graces = graceText ? graceText.match(new RegExp(SWARA, 'g')) : [];
+    const graces = graceText ? graceText.match(new RegExp(LETTER, 'g')) : [];
+    if (![sw, ...graces.map((g) => g[0])].every((ch) => ch === '-' || rg.swaras.includes(ch))) throw unreadable();
     if (rest && (meend || graces.length || oct || andolan)) throw new Error(`${where}: "${tok}" — a silence takes no meend, grace notes, octave marks or andolan`);
     if (graces.length > 3) throw new Error(`${where}: "${tok}" — a murki has at most three grace notes`);
     if (!(+dur > 0)) throw new Error(`${where}: "${tok}" — a swara needs a duration above zero`);
     return {
       token: tok, rest, swara: rest ? '-' : sw + (oct || ''),
       cents: rest ? null : CENTS[sw] + 1200 * octave(oct),
-      meend: !!meend, andolan: !!andolan, graces: graces.map(swaraCents), dur: +dur,
+      touch: !rest && !!rg.touch && rg.touch.swaras.includes(sw),
+      meend: !!meend, andolan: !!andolan, graces: graces.map(swaraCents), graceSwaras: graces, dur: +dur,
     };
   });
 }
-// the next Bhoopali swara below a pitch (cents re Sa)
-function below(c) {
-  const pc = ((c % 1200) + 1200) % 1200, base = c - pc;
-  for (let i = SCALE.length - 1; i >= 0; i--) if (CENTS[SCALE[i]] < pc - 1) return base + CENTS[SCALE[i]];
-  return base - 1200 + CENTS.D;
+// the next melody swara of the raga below a pitch (cents re Sa): where a meend that opens a
+// breath starts from (in Pahadi never M or N, which are touches, not places to start from)
+function below(c, rg) {
+  const pc = mod1200(c), base = c - pc, mel = [...rg.melody].map((s) => CENTS[s]);
+  for (let i = mel.length - 1; i >= 0; i--) if (mel[i] < pc - 1) return base + mel[i];
+  return base - 1200 + mel.at(-1);
 }
 
+const SCORE_KEYS = ['raga', 'sa', 'tempo', 'intro', 'outro', 'seed', 'excerptFrom', 'phrases'];
+const PHRASE_KEYS = ['notes', 'gap', 'level', 'shimmer'];
 export function schedule(score = SCORE) {
+  for (const k of Object.keys(score)) if (!SCORE_KEYS.includes(k)) throw new Error(`the score has an unknown field "${k}" (it reads ${SCORE_KEYS.join(', ')})`);
+  ragaOf(score.raga);
+  if (!(score.tempo > 0)) throw new Error(`tempo is ${score.tempo}: it must be above 0`);
+  if (!(score.intro >= 0) || !(score.outro >= 0)) throw new Error(`intro and outro are seconds, 0 or more (they are ${score.intro} and ${score.outro})`);
+  if (!Array.isArray(score.phrases) || !score.phrases.length) throw new Error('the score has no phrases');
   let t = score.intro;
   const phrases = score.phrases.map((ph, pi) => {
     const where = `phrase ${pi + 1}`;
+    for (const k of Object.keys(ph)) if (!PHRASE_KEYS.includes(k)) throw new Error(`${where}: unknown field "${k}" (a phrase has ${PHRASE_KEYS.join(', ')})`);
+    if (typeof ph.notes !== 'string') throw new Error(`${where}: notes is the phrase's sargam, as text`);
+    if (ph.level !== undefined && !(ph.level > 0 && ph.level <= 1)) throw new Error(`${where}: level is ${ph.level}; write a number above 0 and at most 1`);
+    if (ph.gap !== undefined && !(ph.gap >= 0)) throw new Error(`${where}: gap is ${ph.gap}; write 0 or more seconds`);
     if (ph.shimmer !== undefined && typeof ph.shimmer !== 'boolean') throw new Error(`${where}: shimmer is true or false`);
     const R = rng(score.seed, `rubato-${pi + 1}`), Rg = rng(score.seed, `grace-${pi + 1}`); // grace timing has its own stream
-    const notes = parsePhrase(ph.notes, where);
+    const notes = parsePhrase(ph.notes, where, score.raga);
     const ev = [];
     for (const n of notes) {
       // a little rubato: no two swaras are held for exactly the written time
@@ -359,11 +450,11 @@ export function schedule(score = SCORE) {
         const g = k === 1 ? Math.min(0.075, d * 0.3) : Math.min(0.085, (0.5 * d) / (k + 1));
         n.graces.forEach((c, j) => {
           const gd = g * (1 + (k > 1 && j === 0 ? 0.18 : 0) + 0.12 * (Rg() - 0.5));
-          ev.push({ cents: c, dur: gd, grace: true, swara: k === 1 ? 'kan' : 'murki' });
+          ev.push({ cents: c, dur: gd, grace: true, swara: n.graceSwaras[j], ornament: k === 1 ? 'kan' : 'murki' });
           d -= gd;
         });
       }
-      const { graces, ...main } = n;
+      const { graces, graceSwaras, ...main } = n;
       ev.push({ ...main, kan: k === 1, murki: k > 1, dur: d });
     }
     const t0 = t;
@@ -377,29 +468,144 @@ export function schedule(score = SCORE) {
 }
 
 // ============================================================================
+// Meend: how a slow glide passes the pitches between its two swaras
+// ============================================================================
+// A meend eases out of one swara and into the next along a raised cosine,
+// fastest in the middle. On its way it passes pitches the raga lacks (in Pahadi
+// komal Re, komal Ga, tivra Ma, komal Dha and komal Ni, in every octave) and, in
+// Pahadi, its touch swaras M and N. A slow glide that lingers near one of them
+// makes the ear hear that note: a note foreign to the raga, or M or N as a
+// resting note. So the glide may stay in each such band (±MEEND.band cents) for
+// at most MEEND.dwell seconds. When it would stay longer, it is first made
+// steeper through the middle, along ease(u^p / (u^p + (1 − u)^p)) with p from 1
+// (the plain raised cosine) up to MEEND.steep: the meend keeps its length, but
+// it leaves the first swara a little later and settles into the second a little
+// more slowly. Only if that is not enough is it also made shorter, so it takes
+// less than its usual 35–60 % of the note. Between Pahadi's swaras a foreign
+// band lies in the middle of almost every step (komal Re between S and R, komal
+// Ga between R and G, …), so nearly every slow meend is shaped here; --plan
+// lists what each one became.
+const MEEND = { band: 30, dwell: 0.125, steep: 1.6 };
+const glideCurve = (p) => (p === 1 ? ease : (u) => {
+  if (u <= 0) return 0;
+  if (u >= 1) return 1;
+  const a = Math.pow(u, p), b = Math.pow(1 - u, p);
+  return ease(a / (a + b));
+});
+// the inverse of glideCurve(p): the share of the glide's time by which it has covered the share y of its way
+function glideAt(p, y) {
+  if (y <= 0) return 0;
+  if (y >= 1) return 1;
+  const v = Math.acos(1 - 2 * y) / Math.PI; // the inverse of ease
+  return 1 / (1 + Math.pow((1 - v) / v, 1 / p));
+}
+const OCT_NAME = { '-2': 'ati-mandra ', '-1': 'mandra ', 0: '', 1: 'tara ', 2: 'ati-tara ' };
+// the bands of passBands (in every octave) that lie between two pitches, each with the
+// share of the way from `from` to `to` over which the glide is inside it
+function bandsBetween(from, to, rg) {
+  const lo = Math.min(from, to), hi = Math.max(from, to), w = MEEND.band, out = [];
+  for (const b of passBands(rg)) {
+    for (let k = Math.floor((lo - w - b.cents) / 1200); b.cents + 1200 * k < hi + w; k++) {
+      const c = b.cents + 1200 * k;
+      if (c + w <= lo || c - w >= hi || Math.abs(c - from) < 1 || Math.abs(c - to) < 1) continue;
+      const y1 = clamp((c - w - from) / (to - from), 0, 1), y2 = clamp((c + w - from) / (to - from), 0, 1);
+      out.push({ name: (OCT_NAME[k] ?? '') + b.name, y: [Math.min(y1, y2), Math.max(y1, y2)] });
+    }
+  }
+  return out;
+}
+// The curve and the time a meend from `from` to `to` (cents) takes, asked to take `tau`
+// seconds; with how long it then spends in each band it passes.
+function glideFor(from, to, tau, rg) {
+  const bands = bandsBetween(from, to, rg);
+  const dwell = (p, T) => bands.map((b) => T * (glideAt(p, b.y[1]) - glideAt(p, b.y[0])));
+  const worst = (p, T) => Math.max(0, ...dwell(p, T));
+  let p = 1, T = tau;
+  if (worst(1, tau) > MEEND.dwell) {
+    for (let i = 1, best = 1; i <= 30; i++) { // the least steepening that is enough, or the best there is
+      const q = 1 + (i * (MEEND.steep - 1)) / 30;
+      if (worst(q, tau) < worst(best, tau)) best = q;
+      p = best;
+      if (worst(q, tau) <= MEEND.dwell) { p = q; break; }
+    }
+    if (worst(p, tau) > MEEND.dwell) T = (tau * MEEND.dwell) / worst(p, tau);
+  }
+  const d = dwell(p, T);
+  return { curve: glideCurve(p), p, tau: T, asked: tau, bands: bands.map((b, i) => ({ band: b.name, seconds: d[i] })) };
+}
+// a pitch moved just outside any band of passBands it falls in, on the side of `target`
+// (where a soft scoop into a breath starts: never on a note the raga lacks)
+function clearOf(c, target, rg) {
+  for (const b of passBands(rg)) {
+    const centre = b.cents + 1200 * Math.round((c - b.cents) / 1200);
+    if (Math.abs(c - centre) < MEEND.band && Math.abs(target - centre) >= MEEND.band) return target > centre ? centre + MEEND.band : centre - MEEND.band;
+  }
+  return c;
+}
+
+// How each swara of a phrase is reached: from which pitch, from when, over how long and
+// along which curve (step 1 of renderFlute). It is the first use of the phrase's `flute-`
+// stream, so --plan, which calls it on a fresh stream to list the meends, sees exactly
+// what the render does.
+function reach(ph, R, rg) {
+  // the pitch the contour has reached at time t on its way into the event e
+  const reached = (e, t) => (t <= e.ts ? e.from : t >= e.ts + e.tau ? e.cents : e.from + (e.cents - e.from) * e.curve((t - e.ts) / e.tau));
+  let prev = null;
+  for (const e of ph.ev) {
+    if (e.rest) { prev = null; continue; }
+    if (!prev) { // phrase start, or after a silence
+      e.onset = true;
+      e.ts = e.t0;
+      if (e.grace) { // a kan or murki straight after a silence: the tone speaks on it, with a grace's quick approach
+        e.from = e.cents - (25 + 25 * R());
+        e.tau = Math.min(0.028 + 0.01 * R(), 0.45 * e.dur);
+        e.curve = smoother;
+      } else { // the breath arrives with a soft scoop up from below, or a meend from the melody swara below
+        e.from = e.meend ? below(e.cents, rg) : e.cents - (25 + 25 * R());
+        e.tau = e.meend ? clamp((0.35 + 0.25 * R()) * e.dur, 0.15, 2.4) : Math.min(0.14 + 0.08 * R(), 0.6 * e.dur);
+        e.curve = e.meend ? ease : smoother;
+      }
+      if (!e.meend) e.from = clearOf(e.from, e.cents, rg);
+    } else {
+      // meend: 35–60 % of the swara, easing in and out
+      if (e.meend) { e.tau = clamp((0.35 + 0.25 * R()) * e.dur, 0.12, 2.4); e.ts = e.t0; e.curve = ease; }
+      else if (e.grace || prev.grace) { e.tau = 0.028 + 0.01 * R(); e.ts = e.t0 - 0.35 * e.tau; e.curve = smoother; }
+      else { e.tau = clamp(0.28 * Math.min(prev.dur, e.dur), 0.045, 0.1); e.ts = e.t0 - 0.4 * e.tau; e.curve = smoother; }
+      e.from = reached(prev, e.ts); // from wherever the last swara has got to: the pitch never jumps
+    }
+    if (e.meend) { const g = glideFor(e.from, e.cents, e.tau, rg); e.tau = g.tau; e.curve = g.curve; e.glide = g; }
+    prev = e;
+  }
+}
+
+// ============================================================================
 // The bansuri
 // ============================================================================
-// A large bamboo flute played in the Hindustani way. A continuous-phase
-// oscillator follows a pitch contour built from the score (meend, kan, murki,
-// andolan, a soft scoop into each breath, slow drift), so every note-to-note
-// move is a real slide, never a jump. The tone is fundamental-dominant (2nd
-// harmonic about −23 dB and 3rd about −27 dB in madhya, less in tara), a little
-// brighter when the breath is strong, over breath noise in four bands: a band
-// riding on the fundamental (the airy halo of a large bamboo flute), a weaker
-// band on the octave, a broad, warm band of air near 1.4 kHz and a soft hiss.
-// Each breath arrives as air first; the tone speaks 30–60 ms later and fills
-// in over 180–320 ms with a gentle chiff. Long swaras carry breath vibrato: the
-// breath pressure swings about 1.2–1.8 dB peak to peak at 4.6–5.3 Hz, arriving
-// after about 0.8 s, with only a trace of pitch in it (±2 cents). At the end of
-// a phrase the tone thins into breath before the breath stops. Gaps carry a
-// faint inhale.
+// A large bamboo flute played softly, the way Krishna's flute is imagined: sweet,
+// airy and singing. A continuous-phase oscillator follows a pitch contour built
+// from the score (meend, kan, murki, andolan, a soft scoop into each breath,
+// slow drift), so every note-to-note move is a real slide, never a jump. The
+// tone is soft-blown and fundamental-dominant (2nd harmonic about −28 dB and 3rd
+// about −32 dB in madhya, less in tara), a little brighter when the breath is
+// stronger, over plenty of breath noise (about −12.5 dB re the tone on a held
+// madhya note) in four bands: a band riding on the fundamental (the airy halo of
+// a large bamboo flute), a weaker band on the octave, a broad, warm band of air
+// near 1.4 kHz and a soft hiss. Each breath arrives as air first; the tone
+// speaks 40–80 ms later and fills in over 300–460 ms with a gentle chiff, and
+// now and then (from the phrase's own stream) a small "phoonk" of air comes
+// before it. A phrase that opens on a kan or a murki speaks at once instead.
+// Long swaras carry breath vibrato: the breath pressure swings about 1.2–1.8 dB
+// peak to peak at 4.6–5.3 Hz, arriving after about 0.8 s, with only a trace of
+// pitch in it (±2 cents). At the end of a phrase the tone thins into breath
+// before the breath stops. Gaps carry a faint inhale.
 //
 // `part` ('tone' or 'breath') renders only that half, for analysis.
+const PHOONK = { chance: 0.4, level: 0.34 };
 function renderFlute(plan, N, score, { part } = {}) {
-  const SA = score.sa;
+  const SA = score.sa, rg = ragaOf(score.raga);
   const cents = new Float32Array(N), lvl = new Float32Array(N);
   const envT = new Float32Array(N), envB = new Float32Array(N); // tone and breath, apart
-  const air = new Float32Array(N), chf = new Float32Array(N), vib = new Float32Array(N), inh = new Float32Array(N);
+  const air = new Float32Array(N), chf = new Float32Array(N), vib = new Float32Array(N), inh = new Float32Array(N), puf = new Float32Array(N);
   const at = (t) => clamp(Math.round(t * SR), 0, N);
   const ranges = [];
 
@@ -408,24 +614,7 @@ function renderFlute(plan, N, score, { part } = {}) {
     const ev = ph.ev, baseDb = 20 * Math.log10(ph.level), pdur = ph.t1 - ph.t0;
     const lastI = ev.length - 1;
     // 1. how each swara is reached
-    let prev = null;
-    for (const e of ev) {
-      if (e.rest) { prev = null; continue; }
-      if (!prev) { // phrase start, or after a silence: the breath arrives with a soft scoop up from below
-        e.onset = true;
-        e.from = e.meend ? below(e.cents) : e.cents - (25 + 25 * R());
-        e.ts = e.t0;
-        e.tau = e.meend ? clamp((0.35 + 0.25 * R()) * e.dur, 0.15, 2.4) : 0.14 + 0.08 * R();
-        e.curve = e.meend ? ease : smoother;
-      } else {
-        e.from = prev.cents;
-        // meend: 35–60 % of the swara, easing in and out
-        if (e.meend) { e.tau = clamp((0.35 + 0.25 * R()) * e.dur, 0.12, 2.4); e.ts = e.t0; e.curve = ease; }
-        else if (e.grace || prev.grace) { e.tau = 0.028 + 0.01 * R(); e.ts = e.t0 - 0.35 * e.tau; e.curve = smoother; }
-        else { e.tau = clamp(0.28 * Math.min(prev.dur, e.dur), 0.045, 0.1); e.ts = e.t0 - 0.4 * e.tau; e.curve = smoother; }
-      }
-      prev = e;
-    }
+    reach(ph, R, rg);
     // 2. pitch contour, swara by swara (each owns the time until the next one starts to move)
     for (let i = 0; i <= lastI; i++) {
       const e = ev[i];
@@ -437,8 +626,8 @@ function renderFlute(plan, N, score, { part } = {}) {
       // shallowly *below* itself, 15–25 cents, and keeps coming back to it. A
       // whole number of swings ends just before the next move (the swara is held
       // plain until they begin), so it leaves from and returns to the swara; it
-      // never reaches a neighbour (the nearest Bhoopali swara is at least 180
-      // cents away).
+      // never reaches a neighbour (the nearest swara is at least 112 cents away)
+      // and stays clear of the ±30-cent band of every note the raga lacks.
       let an = null;
       if (e.andolan) {
         const t0 = e.ts + e.tau + 0.2, tb = settle - 0.2;
@@ -471,7 +660,8 @@ function renderFlute(plan, N, score, { part } = {}) {
         }
       }
     }
-    // 4. dynamics: phrase arc, register, a messa di voce on long notes, a long diminuendo at the very end
+    // 4. dynamics: phrase arc, register, a messa di voce on long notes, a long diminuendo at
+    //    the very end; all gentle, as the flute is played softly (no loud peaks)
     for (let i = 0; i <= lastI; i++) {
       const e = ev[i];
       if (e.rest) { for (let n = at(e.t0); n < at(e.t1); n++) lvl[n] = lvl[Math.max(0, n - 1)]; continue; }
@@ -479,11 +669,11 @@ function renderFlute(plan, N, score, { part } = {}) {
       while (ev[j].grace && ev[j + 1] && !ev[j + 1].rest) j++; // grace notes take the level of their swara
       const main = ev[j];
       const u = ((main.t0 + main.t1) / 2 - ph.t0) / pdur;
-      const d0 = baseDb + 2.2 * Math.sin(Math.PI * Math.pow(u, 0.8)) - 1.1 + clamp(main.cents / 1200, -0.5, 1.4) * 2;
+      const d0 = baseDb + 1.8 * Math.sin(Math.PI * Math.pow(u, 0.8)) - 0.9 + clamp(main.cents / 1200, -0.5, 1.4) * 1.5;
       for (let n = at(e.t0); n < at(i === lastI ? ph.t1 + 0.06 : e.t1); n++) {
         const v = clamp((n / SR - e.t0) / e.dur, 0, 1);
         let d = d0;
-        if (e.dur >= 1.2 && !e.grace) d += 1.6 * Math.sin(Math.PI * Math.min(1, v * 1.25)) - 1.2 * v;
+        if (e.dur >= 1.2 && !e.grace) d += 1.3 * Math.sin(Math.PI * Math.min(1, v * 1.25)) - 1.0 * v;
         if (ph.last && i === lastI) d -= 10 * Math.pow(v, 1.3);
         lvl[n] = d;
       }
@@ -495,16 +685,28 @@ function renderFlute(plan, N, score, { part } = {}) {
     }
     // 5. the breath and the tone: onset, release, silences inside the phrase,
     //    re-articulated repeated swaras, the chiff, a little more air in a meend
-    const att = 0.18 + 0.14 * R(), lead = 0.03 + 0.03 * R(); // the air arrives first, the tone speaks after it
+    const att = 0.3 + 0.16 * R(), lead = 0.04 + 0.04 * R(); // the air arrives first; the tone speaks after it and swells in
     const rel = ph.last ? 1.8 : 0.4 + 0.2 * R();
+    // A phrase that opens on a kan or a murki speaks at once (a grace is far shorter than the
+    // swell). Any other phrase may open with a gentle "phoonk": a small puff of air before the
+    // tone speaks. Whether it does, and how, comes from the phrase's own `phoonk-` stream, so
+    // nothing else in the phrase moves with it.
+    const Rp = rng(score.seed, `phoonk-${ph.index}`);
+    const puff = Rp() < PHOONK.chance ? { dur: 0.08 + 0.06 * Rp(), amp: 0.8 + 0.4 * Rp() } : null;
+    const graceFirst = !!ev[0].grace, puffed = puff && !graceFirst;
+    const speak = graceFirst ? 0.005 : puffed ? Math.max(lead, 0.75 * puff.dur) : lead, swell = graceFirst ? 0.025 : att - lead;
+    if (puffed) {
+      for (let n = at(ph.t0); n < at(ph.t0 + puff.dur); n++) puf[n] = puff.amp * Math.pow(Math.sin(Math.PI * Math.pow((n / SR - ph.t0) / puff.dur, 0.6)), 2);
+    }
+    ph.onsetShape = { att, lead, speak, swell, puff: puffed ? puff : null, graceFirst }; // for timeline.json
     for (let n = at(ph.t0); n < at(ph.t1); n++) {
       const t = n / SR, a = t - ph.t0, r = ph.t1 - t;
       let gT = 1, gB = 1, ai = 0.2;
-      if (a < att) { gB = rise(a / (0.6 * att)); gT = rise((a - lead) / (att - lead)); }
+      if (a < 0.6 * att || a < speak + swell) { gB = ease(a / (0.6 * att)); gT = ease((a - speak) / swell); }
       if (r < rel) {
         const u = r / rel; // 1 → 0 through the release
-        gT *= rise((u - 0.3) / 0.7); // the tone thins away first…
-        gB *= rise(u / 0.5); // …and the breath a moment after it
+        gT *= ease((u - 0.3) / 0.7); // the tone thins away first…
+        gB *= ease(u / 0.5); // …and the breath a moment after it
         ai += 0.6 * (1 - u);
         cents[n] -= 16 * Math.pow(1 - u, 2) * (ph.last ? 0.5 : 1); // and it sags a little flat
       }
@@ -513,10 +715,12 @@ function renderFlute(plan, N, score, { part } = {}) {
     for (let i = 0; i <= lastI; i++) {
       const e = ev[i];
       if (e.rest) { // the tone stops just before the air does, and speaks again just after it
+        // (at once when a grace note comes next: a kan or murki is shorter than the usual 0.13 s re-entry)
+        const quick = ev[i + 1] && ev[i + 1].grace, tIn = quick ? 0.005 : 0.03, tRise = quick ? 0.025 : 0.1;
         for (let n = at(e.t0 - 0.08); n < at(e.t1 + 0.14); n++) {
           const t = n / SR;
-          envT[n] *= t < e.t0 ? 1 - rise((t - e.t0 + 0.08) / 0.06) : t < e.t1 + 0.03 ? 0 : rise((t - e.t1 - 0.03) / 0.1);
-          envB[n] *= t < e.t0 ? 1 - rise((t - e.t0 + 0.05) / 0.05) : t < e.t1 ? 0 : rise((t - e.t1) / 0.06);
+          envT[n] *= t < e.t0 ? 1 - ease((t - e.t0 + 0.08) / 0.06) : t < e.t1 + tIn ? 0 : ease((t - e.t1 - tIn) / tRise);
+          envB[n] *= t < e.t0 ? 1 - ease((t - e.t0 + 0.05) / 0.05) : t < e.t1 ? 0 : ease((t - e.t1) / 0.06);
         }
         continue;
       }
@@ -531,7 +735,7 @@ function renderFlute(plan, N, score, { part } = {}) {
         for (let n = at(e.t0); n < at(e.t0 + 0.4); n++) {
           const a = n / SR - e.t0;
           air[n] += 0.55 * Math.exp(-a / 0.07);
-          chf[n] = rise(a / 0.02) * Math.exp(-Math.max(0, a - 0.02) / 0.045);
+          chf[n] = ease(a / 0.02) * Math.exp(-Math.max(0, a - 0.02) / 0.045);
         }
       }
       if (e.meend) for (let n = at(e.ts); n < at(e.ts + e.tau); n++) air[n] += 0.12 * Math.sin((Math.PI * (n / SR - e.ts)) / e.tau);
@@ -558,8 +762,9 @@ function renderFlute(plan, N, score, { part } = {}) {
   const halo1 = new Biquad(), halo2 = new Biquad(), edge = new Biquad();
   const airBP = new Biquad().bandpass(1400, 0.7), hissHP = new Biquad().highpass(2500), hissLP = new Biquad().lowpass(6500);
   const inBP = new Biquad().bandpass(1500, 0.8), inLP = new Biquad().lowpass(4500);
-  const HISS_NORM = 1 / Math.sqrt((6500 - 2500) / (SR / 2)), AIR_NORM = bpNorm(1400, 0.7), IN_NORM = bpNorm(1500, 0.8);
-  const filters = [halo1, halo2, edge, airBP, hissHP, hissLP, inBP, inLP];
+  const puffBP = new Biquad().bandpass(1000, 0.6), puffLP = new Biquad().lowpass(3800); // the phoonk: a soft, low "ph" of air
+  const HISS_NORM = 1 / Math.sqrt((6500 - 2500) / (SR / 2)), AIR_NORM = bpNorm(1400, 0.7), IN_NORM = bpNorm(1500, 0.8), PUFF_NORM = bpNorm(1000, 0.6);
+  const filters = [halo1, halo2, edge, airBP, hissHP, hissLP, inBP, inLP, puffBP, puffLP];
   for (const { a, b, key } of ranges) {
     // every breath starts afresh: its own random streams on its own clock, the
     // oscillator and the filters at rest, so a phrase depends only on its own notes
@@ -568,7 +773,7 @@ function renderFlute(plan, N, score, { part } = {}) {
     const drift = wander(S('drift'), 0.4, len), jitter = wander(S('jitter'), 7, len);
     const turbA = wander(S('turbA'), 11, len), turbB = wander(S('turbB'), 2.3, len);
     const mod2 = wander(S('h2'), 0.7, len), mod3 = wander(S('h3'), 1.1, len);
-    let ph = 0, n1 = 1, n2 = 1, n3 = 1, h2 = 0, h3 = 0, h4 = 0, h5 = 0, reg = 0;
+    let ph = 0, n1 = 1, n2 = 1, n3 = 1, h2 = 0, h3 = 0, h4 = 0, h5 = 0, reg = 0, fresh = true;
     for (const f of filters) f.reset();
     for (let n = a; n < b; n++) {
       const t = (n - a) / SR, eT = envT[n], eB = envB[n], w = noise();
@@ -577,18 +782,19 @@ function renderFlute(plan, N, score, { part } = {}) {
         const v = vib[n];
         const c = cents[n] + 2.5 * v + 2.5 * drift(t) + 0.8 * jitter(t);
         const f = SA * Math.pow(2, c / 1200);
-        if (((n - a) & 31) === 0) {
+        if (fresh || ((n - a) & 31) === 0) { // (at the breath's first sound too, so no filter keeps the last breath's tuning)
+          fresh = false;
           halo1.bandpass(f, 5); n1 = bpNorm(f, 5);
           halo2.bandpass(2 * f, 8); n2 = bpNorm(2 * f, 8);
           edge.bandpass(3 * f, 3); n3 = bpNorm(3 * f, 3);
-          // fundamental-dominant, purer from the top of madhya into tara, a little brighter
-          // when the breath is strong
+          // soft-blown and fundamental-dominant, purer from the top of madhya into tara, a
+          // little brighter when the breath is stronger
           const oct = Math.log2(f / SA), up = clamp(oct - 0.6, 0, 1.4), down = clamp(-oct, 0, 1);
           const loud = clamp((lvl[n] + 8) / 10, 0, 1) - 0.5;
-          h2 = dbToGain(-23 - 10 * up + 1.5 * down + 4 * loud + mod2(t));
-          h3 = dbToGain(-27 - 11 * up + 1.5 * down + 4 * loud + mod3(t));
-          h4 = dbToGain(-38 - 12 * up + 5 * loud);
-          h5 = dbToGain(-47 - 12 * up + 5 * loud);
+          h2 = dbToGain(-29 - 10 * up + 1.5 * down + 3 * loud + mod2(t));
+          h3 = dbToGain(-33 - 11 * up + 1.5 * down + 3 * loud + mod3(t));
+          h4 = dbToGain(-44 - 12 * up + 4 * loud);
+          h5 = dbToGain(-53 - 12 * up + 4 * loud);
           reg = 0.15 * down - 0.2 * up; // a bass flute's low notes are breathier, its high ones cleaner
         }
         ph += f / SR; ph -= Math.floor(ph);
@@ -599,11 +805,13 @@ function renderFlute(plan, N, score, { part } = {}) {
         const tone = sinT(ph) + h2 * sinT(p2) + h3 * sinT(p3) + h4 * sinT(p4) + h5 * sinT(p5);
         const breathy = 0.55 + air[n] + 0.25 * clamp(-lvl[n] / 8, 0, 1) + reg;
         const gB = kB * g * eB * dbToGain(0.6 * v), An = gB * breathy * 0.707;
+        // the breath: the halo on the fundamental, the octave band, the warm air band, the hiss
         y = A * tone
-          + An * (0.155 * n1 * halo1.tick(w) + 0.05 * n2 * halo2.tick(w) + 0.035 * AIR_NORM * airBP.tick(w) + 0.017 * HISS_NORM * hissLP.tick(hissHP.tick(w)))
-          + gB * chf[n] * 0.035 * n3 * edge.tick(w);
+          + An * (0.25 * n1 * halo1.tick(w) + 0.08 * n2 * halo2.tick(w) + 0.125 * AIR_NORM * airBP.tick(w) + 0.03 * HISS_NORM * hissLP.tick(hissHP.tick(w)))
+          + gB * chf[n] * 0.03 * n3 * edge.tick(w);
+        if (puf[n] > 0) y += kB * g * puf[n] * PHOONK.level * PUFF_NORM * puffLP.tick(puffBP.tick(w));
       }
-      if (inh[n] > 0) y += kB * 0.014 * inh[n] * IN_NORM * inLP.tick(inBP.tick(w));
+      if (inh[n] > 0) y += kB * 0.017 * inh[n] * IN_NORM * inLP.tick(inBP.tick(w));
       out[n] += y;
     }
   }
@@ -783,14 +991,15 @@ function renderPad(N, score) {
 // The swarmandal shimmer
 // ============================================================================
 // A plucked zither swept with the fingers across its strings, in the breath
-// before a phrase marked `shimmer: true`. Eleven steel strings tuned to
-// Bhoopali (S R G P D in madhya, the same in tara, and ati-tara Sa), each a
-// modal pluck: bright, slightly stretched partials (a stiff wire), plucked
-// near the bridge, its two polarisations a fraction of a hertz apart; the
-// fundamental rings for 2.2–3.5 s (T60) and the upper partials die sooner. The
-// sweep takes 1–1.8 s and ends just before the flute comes in; most sweeps
-// rise. Low strings sit to the left, high ones to the right.
-const SWARMANDAL = ['S', 'R', 'G', 'P', 'D', "S'", "R'", "G'", "P'", "D'", "S''"];
+// before a phrase marked `shimmer: true` (none in this score: the option is
+// kept, off). Its steel strings are tuned to the raga's melody swaras in madhya
+// and tara, with ati-tara Sa on top (for Pahadi, like Bhoopali, S R G P D: 11
+// strings), each a modal pluck: bright, slightly stretched partials (a stiff
+// wire), plucked near the bridge, its two polarisations a fraction of a hertz
+// apart; the fundamental rings for 2.2–3.5 s (T60) and the upper partials die
+// sooner. The sweep takes 1–1.8 s and ends just before the flute comes in;
+// most sweeps rise. Low strings sit to the left, high ones to the right.
+const swarmandal = (rg) => [...[...rg.melody], ...[...rg.melody].map((s) => s + "'"), "S''"];
 const SHIMMER_RING = 3.6; // seconds a string still sounds after its pluck (its longest T60, with margin)
 
 // Where each shimmer falls. Throws if a shimmer would ring within
@@ -803,7 +1012,7 @@ function shimmerPlan(plan, N, score = SCORE) {
     const R = rng(score.seed, `shimmer-${ph.index}`);
     const prevT1 = ph.index > 1 ? plan.phrases[ph.index - 2].t1 : 0, from = ph.index > 1 ? prevT1 + 0.25 : 0; // after the last breath has gone
     const room = ph.t0 - 0.3 - from;
-    if (room < 1) throw new Error(`phrase ${ph.index}: a shimmer needs a breath of at least 1.6 s before the phrase (the gap before it is ${(ph.t0 - prevT1).toFixed(2)} s)`);
+    if (room < 1) throw new Error(`phrase ${ph.index}: a shimmer needs a breath of at least 1.55 s before the phrase (the gap before it is ${(ph.t0 - prevT1).toFixed(2)} s)`);
     const sweep = Math.min(1 + 0.8 * R(), room), t0 = ph.t0 - 0.3 - sweep, up = R() < 0.7, ring = t0 + sweep + SHIMMER_RING;
     if (t0 < g || ring > L - g) {
       throw new Error(`phrase ${ph.index}: its shimmer would ring at ${t0.toFixed(1)}–${ring.toFixed(1)} s, within ${g} s of the loop's start or end (0 and ${L.toFixed(1)} s), where the seam and the crossfade are; mark a later section start`);
@@ -815,8 +1024,9 @@ function shimmerPlan(plan, N, score = SCORE) {
 
 function renderShimmer(plan, N, score) {
   const events = shimmerPlan(plan, N, score);
-  const outL = new Float32Array(N), outR = new Float32Array(N);
-  const strings = SWARMANDAL.map((s, i) => ({ s, oct: swaraCents(s) / 1200, pan: -0.8 + (1.6 * i) / (SWARMANDAL.length - 1) }));
+  const outL = new Float32Array(N), outR = new Float32Array(N), names = swarmandal(ragaOf(score.raga));
+  const strings = names.map((s, i) => ({ s, oct: swaraCents(s) / 1200, pan: -0.8 + (1.6 * i) / (names.length - 1) }));
+  if (!events.length) return { L: outL, R: outR, events, strings: names.length }; // silent: nothing to filter
   for (const ev of events) {
     const R = rng(score.seed, `swarmandal-${ev.index}`), G = gaussian(R);
     const order = ev.up ? strings : [...strings].reverse();
@@ -831,7 +1041,7 @@ function renderShimmer(plan, N, score) {
   }
   // a softened top: it shimmers without glare
   for (const ch of [outL, outR]) filterLoop(ch, [new Biquad().highshelf(5000, -4), new Biquad().lowpass(10000)]);
-  return { L: outL, R: outR, events };
+  return { L: outL, R: outR, events, strings: names.length };
 }
 
 function zitherPluck(f, oct, R, amp) {
@@ -861,16 +1071,16 @@ function zitherPluck(f, oct, R, amp) {
 // ============================================================================
 // The hall: synthetic stereo impulse response + circular FFT convolution
 // ============================================================================
-// A large stone hall, longer and softer than a mantapa: a sparse cluster of
-// dulled early reflections in the first 130 ms (weaker than before, so no
-// slap), then a dense, decorrelated stereo tail that builds up gently and whose
-// decay time falls with frequency (≈4.9 s in the low mids, ≈3.4 s at 2 kHz,
-// ≈1.6 s at 8 kHz), with its top rolled off: the ambience blooms behind the
-// flute without hardening it. The tail is synthesised frame by frame (random
-// phase, frequency-dependent decay).
-function makeIR(seed, seconds = 6.2) {
-  const R = rng(seed, 'hall'), M = Math.round(seconds * SR), pre = Math.round(0.028 * SR);
-  const T60 = [[63, 4.3], [125, 4.7], [250, 4.9], [500, 4.8], [1000, 4.3], [2000, 3.4], [4000, 2.5], [8000, 1.6], [16000, 0.9]];
+// A stone hall, more intimate than a large one, so the breath stays audible and
+// does not wash out: it is the flute's space, not an instrument. A sparse
+// cluster of dulled early reflections in the first 110 ms (weak, so no slap),
+// then a dense, decorrelated stereo tail that builds up gently and whose decay
+// time falls with frequency (≈3.9 s in the low mids, ≈2.8 s at 2 kHz, ≈1.4 s at
+// 8 kHz), with its top rolled off. The tail is synthesised frame by frame
+// (random phase, frequency-dependent decay).
+function makeIR(seed, seconds = 5.2) {
+  const R = rng(seed, 'hall'), M = Math.round(seconds * SR), pre = Math.round(0.022 * SR);
+  const T60 = [[63, 3.5], [125, 3.8], [250, 3.95], [500, 3.9], [1000, 3.5], [2000, 2.8], [4000, 2.1], [8000, 1.4], [16000, 0.8]];
   const t60 = (fr) => {
     if (fr <= T60[0][0]) return T60[0][1];
     for (let i = 1; i < T60.length; i++) if (fr <= T60[i][0]) {
@@ -907,13 +1117,13 @@ function makeIR(seed, seconds = 6.2) {
       const t = (i - pre) / SR;
       tail[i] = y[i] * (1 - Math.exp(-t / 0.05)) * (i > M - 0.25 * SR ? Math.pow(Math.cos((Math.PI / 2) * ((i - (M - 0.25 * SR)) / (0.25 * SR))), 2) : 1);
     }
-    // early reflections off stone pillars and the floor, far apart in a large hall and dulled
+    // early reflections off stone pillars and the floor, dulled (a little closer together than in a large hall)
     let eTail = 0;
     for (let i = 0; i < M; i++) eTail += tail[i] * tail[i];
     const er = new Float32Array(M);
-    const taps = side ? [15.7, 23.6, 27.2, 35.4, 51.5, 61.6, 73.8, 85.8, 101.1, 118.9] : [13.6, 20.0, 29.5, 38.9, 46.2, 58.2, 68.9, 81.9, 93.9, 111.2];
+    const taps = (side ? [15.7, 23.6, 27.2, 35.4, 51.5, 61.6, 73.8, 85.8, 101.1, 118.9] : [13.6, 20.0, 29.5, 38.9, 46.2, 58.2, 68.9, 81.9, 93.9, 111.2]).map((ms) => 0.88 * ms);
     for (const ms of taps) {
-      const c = Math.round((ms / 1000) * SR) + pre, g = (R() < 0.5 ? -1 : 1) * (0.7 + 0.6 * R()) * Math.exp(-ms / 85);
+      const c = Math.round((ms / 1000) * SR) + pre, g = (R() < 0.5 ? -1 : 1) * (0.7 + 0.6 * R()) * Math.exp(-ms / 80);
       for (let j = -6; j <= 6; j++) er[c + j] += g * (0.5 + 0.5 * Math.cos((Math.PI * j) / 7)); // dulled
     }
     let eEr = 0;
@@ -1096,23 +1306,54 @@ function encodeTo(target, mp3, encode, gain = 0) {
   return { gain, ...m };
 }
 const kb = async (f) => Math.round((await stat(f)).size / 1024);
-// The gapless fields of the Xing/Info header ffmpeg writes: encoder delay and
-// end padding, which decoders use to return exactly the original samples.
-async function gapless(file) {
-  const d = await readFile(file);
-  const i = d.subarray(0, 3).toString() === 'ID3' ? 10 + ((d[6] << 21) | (d[7] << 14) | (d[8] << 7) | d[9]) : 0;
-  const first = d.subarray(i, i + 64); // the tag sits in the first frame, after the side information
+// The Info/Xing tag ffmpeg writes in the first frame, after the side information: where the
+// frame starts (`frame`) and where its LAME extension starts (`lame`), and the frame count.
+function infoTag(d) {
+  const frame = d.subarray(0, 3).toString() === 'ID3' ? 10 + ((d[6] << 21) | (d[7] << 14) | (d[8] << 7) | d[9]) : 0;
+  const first = d.subarray(frame, frame + 64);
   const at = Math.max(first.indexOf('Info'), first.indexOf('Xing'));
   if (at < 0) return null;
-  const tag = i + at;
-  const flags = d.readUInt32BE(tag + 4);
+  const tag = frame + at, flags = d.readUInt32BE(tag + 4);
   let p = tag + 8, frames = null;
   if (flags & 1) { frames = d.readUInt32BE(p); p += 4; }
   if (flags & 2) p += 4;
   if (flags & 4) p += 100;
   if (flags & 8) p += 4;
-  const delay = (d[p + 21] << 4) | (d[p + 22] >> 4), padding = ((d[p + 22] & 15) << 8) | d[p + 23];
-  return { encoder: d.subarray(p, p + 9).toString().replace(/\0/g, ''), encoderDelay: delay, padding, frames, samples: frames * 1152 - delay - padding };
+  return { frame, lame: p, frames };
+}
+// The gapless fields of that tag: encoder delay and end padding, which decoders use to
+// return exactly the original samples.
+async function gapless(file) {
+  const d = await readFile(file), t = infoTag(d);
+  if (!t) return null;
+  const p = t.lame, delay = (d[p + 21] << 4) | (d[p + 22] >> 4), padding = ((d[p + 22] & 15) << 8) | d[p + 23];
+  return { encoder: d.subarray(p, p + 9).toString().replace(/\0/g, ''), encoderDelay: delay, padding, frames: t.frames, samples: t.frames * 1152 - delay - padding };
+}
+// CRC-16 (ARC: polynomial 0x8005 reflected, initial 0), the checksum of the LAME tag
+function crc16(bytes) {
+  let c = 0;
+  for (const x of bytes) { c ^= x; for (let k = 0; k < 8; k++) c = c & 1 ? (c >>> 1) ^ 0xa001 : c >>> 1; }
+  return c;
+}
+// Make an MP3's Info tag describe exactly `samples` samples of music that start `lead`
+// samples into what was encoded: the encoder delay grows by `lead`, and the end padding is
+// set from the frame count (ffmpeg's own figure can be a few samples off: 15 short for one
+// length measured here, which a gapless decoder then returns as extra samples). The tag's
+// CRC (over the bytes of the frame before it) is rewritten. The CRC is checked first, so a
+// tag laid out otherwise than ffmpeg's is refused rather than corrupted. Returns false, and
+// leaves the file as it was, when the padding would not fit the tag's 12 bits.
+function setGapless(file, lead, samples) {
+  const d = readFileSync(file), t = infoTag(d);
+  if (!t || !t.frames) throw new Error(`${file}: no Info tag with a frame count to carry the gapless fields`);
+  const p = t.lame, crcAt = p + 34;
+  if (crc16(d.subarray(t.frame, crcAt)) !== d.readUInt16BE(crcAt)) throw new Error(`${file}: the LAME tag is not laid out as expected (its CRC does not match)`);
+  const delay = ((d[p + 21] << 4) | (d[p + 22] >> 4)) + lead, padding = t.frames * 1152 - delay - samples;
+  if (delay > 4095) throw new Error(`${file}: an encoder delay of ${delay} would not fit the tag's 12 bits`);
+  if (padding < 0 || padding > 4095) return false;
+  d[p + 21] = delay >> 4; d[p + 22] = ((delay & 15) << 4) | (padding >> 8); d[p + 23] = padding & 255;
+  d.writeUInt16BE(crc16(d.subarray(t.frame, crcAt)), crcAt);
+  writeFileSync(file, d);
+  return true;
 }
 
 // ============================================================================
@@ -1143,19 +1384,44 @@ function tanpuraGrid(tan, plan) {
   };
 }
 
+const NAME = `flute-${SCORE.raga.toLowerCase()}`; // flute-pahadi: the music's file names
+const TUNING = `A4 = ${+(SCORE.sa * 2 ** (7 / 12)).toFixed(2)} Hz`;
+// The loop's own MP3 is encoded circularly. An MP3 encoder starts from silence (its
+// priming) and ends in silence (its padding), while the loop's first and last samples sit
+// in the middle of the drone, so a plain encode leaves a step at both edges of the file: a
+// click wherever a player wraps it. Instead the loop's last WRAP samples go before it and
+// its first WRAP after it (half that, if the padding would not fit the tag), and the Info
+// tag's encoder delay and end padding are raised to match (setGapless): a decoder that
+// reads the tag returns exactly the loop, decoded from frames that ran through the wrap as
+// through any other moment of the music.
+const WRAP = 2304; // two MP3 frames
+
+// Where the 30 s excerpt starts: 1.5 s before phrase SCORE.excerptFrom. Throws if that names
+// no phrase or the excerpt would run past the end of the loop (it would end without its fade).
+function excerptStart(plan, score = SCORE) {
+  const k = score.excerptFrom, n = plan.phrases.length;
+  if (!Number.isInteger(k) || k < 1 || k > n) throw new Error(`excerptFrom is ${k}: write the number of a phrase, 1–${n}`);
+  const ex = Math.max(0, plan.phrases[k - 1].t0 - 1.5);
+  if (ex + 30 > plan.length) throw new Error(`excerptFrom ${k}: a 30 s excerpt from ${ex.toFixed(1)} s runs past the end of the loop (${plan.length.toFixed(1)} s)`);
+  return ex;
+}
+
 async function renderMusic(work, encode, xfadeTail = 0) {
   const t0 = Date.now();
   const plan = schedule(SCORE);
-  const N = Math.round(plan.length * SR);
-  console.log(`music: ${plan.phrases.length} phrases, flute ${plan.fluteStart.toFixed(1)}–${plan.fluteEnd.toFixed(1)} s, loop ${(N / SR).toFixed(3)} s (${N} samples)`);
+  const N = Math.round(plan.length * SR), T = Math.round(xfadeTail * SR);
+  // the options and the score are checked before anything is rendered or written
+  if (T > N) throw new Error(`--xfade-tail ${xfadeTail}: longer than the loop (${(N / SR).toFixed(1)} s)`);
+  const ex = excerptStart(plan);
+  const shim = renderShimmer(plan, N, SCORE); // it checks where the shimmers fall
+  console.log(`music: Raga ${SCORE.raga}, ${plan.phrases.length} phrases, flute ${plan.fluteStart.toFixed(1)}–${plan.fluteEnd.toFixed(1)} s, loop ${(N / SR).toFixed(3)} s (${N} samples)`);
 
-  const shim = renderShimmer(plan, N, SCORE); // first: it checks where the shimmers fall
   const flute = renderFlute(plan, N, SCORE);
   console.log(`  flute rendered (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
   const tan = renderTanpura(N, SCORE);
   console.log(`  tanpura rendered (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
   const pad = renderPad(N, SCORE);
-  console.log(`  pad rendered: ${pad.partials} partials (${((Date.now() - t0) / 1000).toFixed(1)} s); ${shim.events.length} shimmers`);
+  console.log(`  pad rendered: ${pad.partials} partials (${((Date.now() - t0) / 1000).toFixed(1)} s); ${shim.events.length ? `${shim.events.length} shimmers` : 'no shimmer'}`);
 
   // every layer is set by loudness relative to the flute's
   const [fl, fr] = panGains(MUSIC.flutePan);
@@ -1165,6 +1431,7 @@ async function renderMusic(work, encode, xfadeTail = 0) {
   setLU(tan, MUSIC.tanpuraLU);
   setLU(pad, MUSIC.padLU);
   if (shim.events.length) setLU(shim, MUSIC.shimmerLU); // measured over the moments it rings (gated)
+  const bed = lufs([tan.L.map((x, i) => x + pad.L[i]), tan.R.map((x, i) => x + pad.R[i])]) - lFlute; // the tanpura and the pad together
 
   const send = new Float32Array(N), S = MUSIC.send;
   for (let i = 0; i < N; i++) send[i] = flute[i] + 0.5 * (S.tanpura * (tan.L[i] + tan.R[i]) + S.pad * (pad.L[i] + pad.R[i]) + S.shimmer * (shim.L[i] + shim.R[i]));
@@ -1179,54 +1446,84 @@ async function renderMusic(work, encode, xfadeTail = 0) {
   const norm = dbToGain(-1) / peakOf(L, Rt);
   scaleAll(norm, L, Rt);
   const under = shim.events.length ? 20 * Math.log10(peakOf(fL, fR) / peakOf(shim.L, shim.R)) : null;
-  console.log(`  mixed (${((Date.now() - t0) / 1000).toFixed(1)} s): flute ${lFlute.toFixed(1)} LUFS; tanpura ${MUSIC.tanpuraLU} LU, pad ${MUSIC.padLU} LU, shimmer ${MUSIC.shimmerLU} LU below it${under != null ? ` (its peaks ${under.toFixed(1)} dB under the flute's)` : ''}; reverb ${MUSIC.wetLU} LU`);
+  console.log(`  mixed (${((Date.now() - t0) / 1000).toFixed(1)} s): flute ${lFlute.toFixed(1)} LUFS; tanpura ${-MUSIC.tanpuraLU} LU and pad ${-MUSIC.padLU} LU below it (together ${(-bed).toFixed(1)} LU below)${under != null ? `, shimmer ${-MUSIC.shimmerLU} LU below (its peaks ${under.toFixed(1)} dB under the flute's)` : ''}; reverb ${-MUSIC.wetLU} LU below the dry mix`);
 
   await mkdir(work, { recursive: true });
-  const wav = join(work, 'flute-bhoopali.wav');
+  const wav = join(work, `${NAME}.wav`);
   await writeFile(wav, wavFloat([L, Rt]));
   // stems for analysis (same gain as in the mix, before the master's low cut)
   const g = norm, st = (x) => x.map((v) => v * g);
   await writeFile(join(work, 'stem-flute-dry.wav'), wavFloat([st(flute)]));
   await writeFile(join(work, 'stem-tanpura.wav'), wavFloat([st(tan.L), st(tan.R)]));
   await writeFile(join(work, 'stem-pad.wav'), wavFloat([st(pad.L), st(pad.R)]));
-  await writeFile(join(work, 'stem-shimmer.wav'), wavFloat([st(shim.L), st(shim.R)]));
+  await writeFile(join(work, 'stem-shimmer.wav'), wavFloat([st(shim.L), st(shim.R)])); // silent when the score has none
   await writeFile(join(work, 'stem-reverb.wav'), wavFloat([wet.L.map((v) => v * wg * g), wet.R.map((v) => v * wg * g)]));
+  const r3 = (x) => +x.toFixed(3);
   await writeFile(join(work, 'timeline.json'), JSON.stringify({
-    sa: SCORE.sa, samples: N, seconds: N / SR, fluteStart: plan.fluteStart, fluteEnd: plan.fluteEnd,
-    phrases: plan.phrases.map((p) => ({ index: p.index, t0: +p.t0.toFixed(3), t1: +p.t1.toFixed(3), notes: p.notes, shimmer: p.shimmer,
-      swaras: p.ev.filter((e) => !e.rest).map((e) => ({ s: e.swara, cents: +e.cents.toFixed(1), t0: +e.t0.toFixed(3), t1: +e.t1.toFixed(3), meend: !!e.meend, andolan: !!e.andolan, kan: !!e.kan, murki: !!e.murki, grace: !!e.grace })) })),
-    shimmers: shim.events.map((s) => ({ before: s.index, t0: +s.t0.toFixed(3), sweep: +s.sweep.toFixed(3), rising: s.up, ringsUntil: +s.ring.toFixed(3) })),
+    raga: SCORE.raga, sa: SCORE.sa, samples: N, seconds: N / SR, fluteStart: plan.fluteStart, fluteEnd: plan.fluteEnd,
+    phrases: plan.phrases.map((p) => ({ index: p.index, t0: r3(p.t0), t1: r3(p.t1), notes: p.notes, level: p.level, shimmer: p.shimmer,
+      onset: { breathToFullTone: r3(p.onsetShape.speak + p.onsetShape.swell), toneSpeaksAfter: r3(p.onsetShape.speak), phoonk: p.onsetShape.puff ? { seconds: r3(p.onsetShape.puff.dur), amp: r3(p.onsetShape.puff.amp) } : null, opensOnGrace: p.onsetShape.graceFirst },
+      swaras: p.ev.filter((e) => !e.rest).map((e) => ({ s: e.swara, cents: +e.cents.toFixed(1), t0: r3(e.t0), t1: r3(e.t1), meend: !!e.meend, andolan: !!e.andolan, kan: !!e.kan, murki: !!e.murki, grace: !!e.grace, ...(e.grace ? { ornament: e.ornament } : {}), touch: !!e.touch,
+        from: +e.from.toFixed(1), ts: r3(e.ts), tau: r3(e.tau),
+        ...(e.glide ? { glide: { askedTau: r3(e.glide.asked), steepness: +e.glide.p.toFixed(2), bands: e.glide.bands.map((b) => ({ band: b.band, ms: Math.round(1000 * b.seconds) })) } } : {}) })) })),
+    shimmers: shim.events.map((s) => ({ before: s.index, t0: r3(s.t0), sweep: r3(s.sweep), rising: s.up, ringsUntil: r3(s.ring) })),
   }, null, 1));
+  // the loop, then its own beginning again: continuous across N by construction
+  let xwav = null;
+  if (T > 0) {
+    const xL = new Float32Array(N + T), xR = new Float32Array(N + T);
+    xL.set(L); xL.set(L.subarray(0, T), N); xR.set(Rt); xR.set(Rt.subarray(0, T), N);
+    xwav = join(work, `${NAME}-xfade.wav`);
+    await writeFile(xwav, wavFloat([xL, xR]));
+  }
   const info = {
-    file: 'flute-bhoopali.mp3', samples: N, seconds: +(N / SR).toFixed(4), fluteStart: +plan.fluteStart.toFixed(2), fluteEnd: +plan.fluteEnd.toFixed(2), tanpura: tanpuraGrid(tan, plan),
-    pad: { levelLU: MUSIC.padLU, note: `An ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (${pad.partials} partials), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; ${MUSIC.padLU} LU below the flute. Exactly periodic over the loop.` },
-    shimmer: { levelLU: MUSIC.shimmerLU, at: shim.events.map((s) => ({ beforePhrase: s.index, from: +s.t0.toFixed(2), to: +s.ring.toFixed(2) })),
-      note: `Soft swarmandal sweeps (${SWARMANDAL.length} plucked strings tuned to Bhoopali, madhya to ati-tara Sa) in the breath before the phrases the score marks; never within ${MUSIC.shimmerGuard} s of the loop's start or end.` },
+    file: `${NAME}.mp3`, samples: N, seconds: +(N / SR).toFixed(4), fluteStart: +plan.fluteStart.toFixed(2), fluteEnd: +plan.fluteEnd.toFixed(2), tanpura: tanpuraGrid(tan, plan),
+    pad: { levelLU: MUSIC.padLU, note: `A faint ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (${pad.partials} partials), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; ${-MUSIC.padLU} LU below the flute, and with the tanpura (${-MUSIC.tanpuraLU} LU below) ${(-bed).toFixed(1)} LU below it together. Exactly periodic over the loop.` },
+    shimmer: shim.events.length
+      ? { levelLU: MUSIC.shimmerLU, at: shim.events.map((s) => ({ beforePhrase: s.index, from: +s.t0.toFixed(2), to: +s.ring.toFixed(2) })),
+        note: `Soft swarmandal sweeps (${shim.strings} plucked strings tuned to Raga ${SCORE.raga}, madhya to ati-tara Sa) in the breath before the phrases the score marks; never within ${MUSIC.shimmerGuard} s of the loop's start or end.` }
+      : { at: [], note: 'None: the score marks no shimmer (the engine keeps the swarmandal option, off).' },
   };
-  if (!encode) return info;
+  if (!encode) {
+    if (xwav) console.log(`  crossfade variant ${xwav} (WAV only: --wav)`);
+    return info;
+  }
 
   // pass 1: loudnorm measures the master; pass 2: its linear gain, checked on the MP3
   const m = measure(wav, MUSIC.lufs, MUSIC.truePeak);
-  const mp3 = join(OUT, 'flute-bhoopali.mp3');
+  const mp3 = join(OUT, `${NAME}.mp3`), title = `${SCORE.raga} (bansuri with tanpura)`;
   await mkdir(OUT, { recursive: true });
-  const enc = encodeTo(MUSIC.lufs, mp3, (gain) => ffmpeg(['-i', wav, '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
-    '-metadata', 'title=Bhoopali (bansuri alap with tanpura)', '-metadata', 'artist=Original composition for dattapeetham.org',
-    '-metadata', `comment=${CREDIT}. Raga Bhoopali, Sa = D (A4 = 432 Hz).`, mp3]), linearGain(m, MUSIC.lufs, MUSIC.truePeak));
+  // the loop between its own last `WRAP` samples and its first `out` samples, as a WAV to encode
+  const cwav = (out) => {
+    const file = join(work, `${NAME}-circular-${out}.wav`);
+    if (!existsSync(file)) {
+      const around = (x) => { const y = new Float32Array(WRAP + N + out); y.set(x.subarray(N - WRAP)); y.set(x, WRAP); y.set(x.subarray(0, out), WRAP + N); return y; };
+      writeFileSync(file, wavFloat([around(L), around(Rt)]));
+    }
+    return file;
+  };
+  const enc = encodeTo(MUSIC.lufs, mp3, (gain) => {
+    for (const out of [WRAP, WRAP / 2]) {
+      ffmpeg(['-i', cwav(out), '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
+        '-metadata', `title=${title}`, '-metadata', 'artist=Original composition for dattapeetham.org',
+        '-metadata', `comment=${CREDIT}. Raga ${SCORE.raga}, Sa = D (${TUNING}).`, mp3]);
+      if (setGapless(mp3, WRAP, N)) return;
+    }
+    throw new Error(`${mp3}: its end padding does not fit the Info tag`);
+  }, linearGain(m, MUSIC.lufs, MUSIC.truePeak));
+  for (const out of [WRAP, WRAP / 2]) await rm(join(work, `${NAME}-circular-${out}.wav`), { force: true });
   if (enc.truePeak > MUSIC.truePeak) throw new Error(`true peak ${enc.truePeak} dBTP exceeds ${MUSIC.truePeak}`);
-  const ex = plan.phrases[SCORE.excerptFrom - 1].t0 - 1.5;
   ffmpeg(['-ss', ex.toFixed(3), '-t', '30', '-i', wav, '-af', `volume=${enc.gain.toFixed(3)}dB,afade=t=in:st=0:d=1.2,afade=t=out:st=27.5:d=2.5`,
-    '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-metadata', 'title=Bhoopali (30 s excerpt)', join(work, 'flute-excerpt.mp3')]);
-  console.log(`  encoded ${mp3} (${await kb(mp3)} KB): master ${m.input_i} LUFS / ${m.input_tp} dBTP; gain ${enc.gain.toFixed(2)} dB → ${enc.lufs} LUFS, ${enc.truePeak} dBTP, LRA ${enc.lra} LU`);
+    '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-metadata', `title=${SCORE.raga} (30 s excerpt)`, join(work, 'flute-excerpt.mp3')]);
+  console.log(`  encoded ${mp3} (${await kb(mp3)} KB, circularly): master ${m.input_i} LUFS / ${m.input_tp} dBTP; gain ${enc.gain.toFixed(2)} dB → ${enc.lufs} LUFS, ${enc.truePeak} dBTP, LRA ${enc.lra} LU`);
   console.log(`  excerpt ${join(work, 'flute-excerpt.mp3')} from ${ex.toFixed(1)} s`);
   const out = { ...info, gainDb: +enc.gain.toFixed(3), lufs: enc.lufs, truePeakDbtp: enc.truePeak, lraLU: enc.lra, kb: await kb(mp3), excerptFrom: +ex.toFixed(2) };
-  if (xfadeTail > 0) { // the loop, then its own beginning again: continuous across N by construction
-    const T = Math.round(xfadeTail * SR), xL = new Float32Array(N + T), xR = new Float32Array(N + T);
-    xL.set(L); xL.set(L.subarray(0, T), N); xR.set(Rt); xR.set(Rt.subarray(0, T), N);
-    const xwav = join(work, 'flute-bhoopali-xfade.wav'), xmp3 = join(OUT, 'flute-bhoopali-xfade.mp3');
-    await writeFile(xwav, wavFloat([xL, xR]));
+  if (xwav) {
+    const xmp3 = join(OUT, `${NAME}-xfade.mp3`);
     ffmpeg(['-i', xwav, '-af', `volume=${enc.gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
-      '-metadata', 'title=Bhoopali (bansuri alap with tanpura), crossfade tail', '-metadata', `comment=${CREDIT}.`, xmp3]);
-    out.xfade = { file: 'flute-bhoopali-xfade.mp3', samples: N + T, loopSamples: N, loopSeconds: +(N / SR).toFixed(4), tailSeconds: +(T / SR).toFixed(4), kb: await kb(xmp3),
+      '-metadata', `title=${title}, crossfade tail`, '-metadata', `comment=${CREDIT}.`, xmp3]);
+    if (!setGapless(xmp3, 0, N + T)) console.warn(`  ! ${xmp3}: its gapless padding could not be set exactly`);
+    out.xfade = { file: `${NAME}-xfade.mp3`, samples: N + T, loopSamples: N, loopSeconds: +(N / SR).toFixed(4), tailSeconds: +(T / SR).toFixed(4), kb: await kb(xmp3),
       note: 'Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play identical audio.' };
     console.log(`  crossfade variant ${xmp3} (${out.xfade.kb} KB, tail ${out.xfade.tailSeconds} s)`);
   }
@@ -1263,46 +1560,105 @@ async function renderSfx(work, encode) {
   return out;
 }
 
+// A pitch in cents re Sa written as a swara (D., S', komal Ga …)
+function swaraName(c) {
+  const pc = mod1200(c), o = Math.round((c - pc) / 1200), marks = o < 0 ? '.'.repeat(-o) : "'".repeat(o);
+  const s = Object.keys(CENTS).find((k) => Math.abs(CENTS[k] - pc) < 1 || Math.abs(CENTS[k] - pc + 1200) < 1);
+  return s ? s + marks : `${pc.toFixed(0)} c${marks}`;
+}
+
 // --plan: the timeline, and the shape of the piece against the composition's targets
 function printPlan() {
-  const plan = schedule(SCORE), N = Math.round(plan.length * SR);
+  const plan = schedule(SCORE), N = Math.round(plan.length * SR), rg = ragaOf(SCORE.raga);
   const shimmers = shimmerPlan(plan, N, SCORE); // throws if one is misplaced
+  const ex = excerptStart(plan); // throws if excerptFrom names no phrase, or the excerpt would run off the end
+  for (const p of plan.phrases) reach(p, rng(SCORE.seed, `flute-${p.index}`), rg); // the meends exactly as the render shapes them
+  const sum = (xs) => xs.reduce((a, b) => a + b, 0), flag = (ok) => (ok ? '  ' : '! ');
+  console.log(`Raga ${SCORE.raga}: ${[...rg.swaras].join(' ')}${rg.touch ? ` (${[...rg.touch.swaras].join(' and ')} as soft touches only)` : ''}; Sa ${SCORE.sa.toFixed(4)} Hz (${TUNING})`);
   for (const p of plan.phrases) console.log(`${String(p.index).padStart(2)}${p.shimmer ? ' *' : '  '} ${p.t0.toFixed(1).padStart(6)}–${p.t1.toFixed(1).padEnd(6)} ${p.notes}`);
-  const sum = (xs) => xs.reduce((a, b) => a + b, 0);
-  const flute = sum(plan.phrases.map((p) => p.t1 - p.t0));
-  const sounding = plan.phrases.flatMap((p) => p.ev.filter((e) => !e.rest));
-  const tara = sum(sounding.filter((e) => e.cents >= 1200 - 1).map((e) => e.dur)), all = sum(sounding.map((e) => e.dur));
-  const andolan = sounding.filter((e) => e.andolan).length;
-  console.log(`loop length ${plan.length.toFixed(2)} s (target 230–270); the flute plays ${flute.toFixed(1)} s of it, ${((100 * flute) / plan.length).toFixed(0)} % (target 60–70)`);
-  console.log(`tara sthayi ${((100 * tara) / all).toFixed(1)} % of the flute's sounding time (at most ~15); andolan ${andolan}× (at most 2); shimmers ${shimmers.length} (2–4)`);
+  const flute = sum(plan.phrases.map((p) => p.t1 - p.t0)), share = (100 * flute) / plan.length;
+  const sounding = plan.phrases.flatMap((p) => p.ev.filter((e) => !e.rest)), all = sum(sounding.map((e) => e.dur));
+  const tara = sum(sounding.filter((e) => e.cents >= 1200 - 1).map((e) => e.dur));
+  const andolan = sounding.filter((e) => e.andolan).length, levels = plan.phrases.map((p) => p.level);
+  console.log(`${flag(plan.length >= 230 && plan.length <= 270 && share >= 70 && share <= 75)}loop length ${plan.length.toFixed(2)} s (target 230–270); the flute plays ${flute.toFixed(1)} s of it, ${share.toFixed(0)} % (target 70–75)`);
+  console.log(`${flag(tara <= 0.15 * all && andolan <= 2)}tara sthayi ${((100 * tara) / all).toFixed(1)} % of the flute's sounding time (at most ~15); andolan ${andolan}× (at most 2)`);
+  console.log(`${flag(Math.max(...levels) <= 0.8)}levels ${Math.min(...levels)}–${Math.max(...levels)} (soft: mostly 0.6–0.78); shimmers ${shimmers.length}${shimmers.length ? '' : ' (none: the score marks none)'}`);
+  if (rg.touch) {
+    const touch = sounding.filter((e) => rg.touch.swaras.includes(e.swara[0])), plain = touch.filter((e) => !e.grace);
+    const held = plain.filter((e) => e.dur > rg.touch.hold * SCORE.tempo * 1.02 || e.andolan), part = sum(touch.map((e) => e.dur)) / all;
+    console.log(`${flag(!held.length && part <= rg.touch.share)}${[...rg.touch.swaras].join(' and ')}: ${(100 * part).toFixed(1)} % of the flute's sounding time (at most ~${100 * rg.touch.share}); longest held ${plain.length ? Math.max(...plain.map((e) => e.dur)).toFixed(2) : 0} s (at most ~${rg.touch.hold}, except in a grace)`);
+    for (const e of held) console.log(`!   ${e.token} in phrase ${plan.phrases.find((p) => p.ev.includes(e)).index}: ${e.andolan ? 'an andolan makes it a resting note' : `held ${e.dur.toFixed(2)} s`}`);
+  }
+  // an andolan needs room: at least 0.6 s between its swara settling and the next move (otherwise it is dropped)
+  for (const p of plan.phrases) p.ev.forEach((e, i) => {
+    if (!e.andolan) return;
+    const next = p.ev[i + 1], room = (next && !next.rest ? next.ts : e.t1) - 0.2 - (e.ts + e.tau + 0.2);
+    if (room <= 0.6) console.log(`!   ${e.token} in phrase ${p.index}: too short for an andolan (${Math.max(0, room).toFixed(2)} s to swing in; it is played plain)`);
+  });
+  // every meend that passes a band, and what glideFor made of it
+  const meends = plan.phrases.flatMap((p) => p.ev.filter((e) => e.glide && e.glide.bands.length).map((e) => ({ p, e })));
+  if (meends.length) console.log(`meends (each band a glide passes: at most ${1000 * MEEND.dwell} ms; ±${MEEND.band} c around ${passBands(rg).map((b) => b.name).join(', ')}):`);
+  for (const { p, e } of meends) {
+    const { glide: gl } = e, worst = gl.bands.reduce((a, b) => (b.seconds > a.seconds ? b : a));
+    const how = gl.tau < gl.asked - 1e-9 ? `steeper (p ${gl.p.toFixed(2)}) and shortened from ${gl.asked.toFixed(2)} s` : gl.p > 1 ? `steeper (p ${gl.p.toFixed(2)})` : 'as written';
+    console.log(`${flag(worst.seconds <= MEEND.dwell + 1e-6)}  phrase ${String(p.index).padStart(2)} ${swaraName(e.from).padStart(3)} → ${e.swara.padEnd(3)} ${e.tau.toFixed(2)} s, ${((100 * e.tau) / e.dur).toFixed(0)} % of the note, ${how}; longest in a band ${Math.round(1000 * worst.seconds)} ms (${worst.band})`);
+  }
   for (const s of shimmers) console.log(`  * shimmer before phrase ${s.index}: sweep ${s.t0.toFixed(1)}–${(s.t0 + s.sweep).toFixed(1)} s (${s.up ? 'rising' : 'falling'}), rings until ${s.ring.toFixed(1)} s`);
+  console.log(`excerpt ${ex.toFixed(1)}–${(ex + 30).toFixed(1)} s (from phrase ${SCORE.excerptFrom})`);
+}
+
+// manifest.json: written whole after a run that encodes both parts. After --music or --sfx
+// alone, the other part is kept from the manifest already in OUT when it describes the
+// same files; without one to keep, the manifest is left as it was, with a warning.
+async function writeManifest(top, music, sfx) {
+  const file = join(OUT, 'manifest.json');
+  let old = null;
+  try { old = JSON.parse(await readFile(file, 'utf8')); } catch { /* none yet, or unreadable */ }
+  if (!music && old && old.music && old.music.file === `${NAME}.mp3`) music = old.music;
+  if (!sfx && old && Array.isArray(old.sfx)) sfx = old.sfx;
+  if (!music || !sfx) {
+    console.warn(`  ! manifest.json left as it was: it has no ${music ? 'sfx' : `music part for ${NAME}.mp3`} to keep (run without --music or --sfx)`);
+    return;
+  }
+  await writeFile(file, JSON.stringify({ ...top, music, sfx }, null, 2) + '\n');
+  console.log(`  ${file} written${old && (music === old.music || sfx === old.sfx) ? ` (its ${music === old.music ? 'music' : 'sfx'} part kept)` : ''}`);
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const wi = args.indexOf('--work');
-  const work = resolve(wi >= 0 ? args[wi + 1] : join(os.tmpdir(), 'dattapeetham-audio'));
+  const valued = ['--work', '--xfade-tail'], known = ['--music', '--sfx', '--plan', '--wav', ...valued];
+  args.forEach((a, i) => { if (!known.includes(a) && !valued.includes(args[i - 1])) throw new Error(`unknown option ${a} (the options are listed at the top of tools/compose-audio.mjs)`); });
+  const value = (flag) => {
+    const i = args.indexOf(flag);
+    if (i < 0) return undefined;
+    if (args[i + 1] === undefined || args[i + 1].startsWith('--')) throw new Error(`${flag} needs a value`);
+    return args[i + 1];
+  };
+  const work = resolve(value('--work') ?? join(os.tmpdir(), 'dattapeetham-audio'));
+  const tail = value('--xfade-tail'), xfadeTail = tail === undefined ? 0 : +tail;
+  if (!(xfadeTail >= 0)) throw new Error(`--xfade-tail ${tail}: write the seconds of the tail, e.g. 4.6`);
   const encode = !args.includes('--wav');
   if (args.includes('--plan')) { printPlan(); return; }
   const doMusic = !args.includes('--sfx') || args.includes('--music'), doSfx = !args.includes('--music') || args.includes('--sfx');
-  const manifest = { credit: CREDIT, raga: 'Bhoopali (S R G P D)', sa: 'D', saHz: +SCORE.sa.toFixed(4), tuning: `A4 = ${+(SCORE.sa * 2 ** (7 / 12)).toFixed(2)} Hz`, sampleRate: SR };
-  const xi = args.indexOf('--xfade-tail');
-  if (doMusic) manifest.music = await renderMusic(work, encode, xi >= 0 ? +args[xi + 1] : 0);
-  if (doSfx) { console.log('temple sounds:'); manifest.sfx = await renderSfx(work, encode); }
-  if (encode && doMusic && doSfx) {
-    const gl = await gapless(join(OUT, 'flute-bhoopali.mp3'));
-    if (!gl || gl.samples !== manifest.music.samples) console.warn(`  ! gapless header says ${gl && gl.samples} samples, the master has ${manifest.music.samples}`);
-    manifest.music.loop = {
-      start: 0, end: manifest.music.seconds, samples: manifest.music.samples, gapless: gl,
-      note: 'The whole file is one seamless loop. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true). A decoder that ignores the header returns more, usually 1105 extra at the start (576 encoder + 529 decoder delay): then set loopStart = 1105 / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skips 12–23 ms at the wrap (measured), an audible hiccup in the drone. A player that crossfades two <audio> elements should use music.tanpura.crossfade (same point of the tanpura cycle) rather than fade the end of the file into B started at 0.',
+  const top = { credit: CREDIT, raga: ragaOf(SCORE.raga).label, sa: 'D', saHz: +SCORE.sa.toFixed(4), tuning: TUNING, sampleRate: SR };
+  const music = doMusic ? await renderMusic(work, encode, xfadeTail) : null;
+  let sfx = null;
+  if (doSfx) { console.log('temple sounds:'); sfx = await renderSfx(work, encode); }
+  if (encode && music) {
+    const gl = await gapless(join(OUT, music.file));
+    if (!gl || gl.samples !== music.samples) console.warn(`  ! gapless header says ${gl && gl.samples} samples, the master has ${music.samples}`);
+    const lead = gl ? gl.encoderDelay + 529 : null;
+    music.loop = {
+      start: 0, end: music.seconds, samples: music.samples, gapless: gl,
+      note: `The whole file is one seamless loop. It is encoded circularly (its own last ${WRAP} samples before it and its first ${WRAP} after it, with the Info tag's encoder delay and padding raised by ${WRAP} each), so the codec adds no edge at the wrap. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly \`samples\` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true). A decoder that ignores the header returns more: ${lead} extra at the start (the encoder delay of ${gl && gl.encoderDelay}, which includes the ${WRAP} lead-in, and 529 of decoder delay) and the lead-out and padding at the end; then set loopStart = ${lead} / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skipped 12–23 ms at the wrap (measured on an earlier track), an audible hiccup in the drone. The site does not play this file: it plays music.xfade.file with two <audio> elements crossfaded inside its tail (see music.xfade); a two-element player without that file should use music.tanpura.crossfade (the same point of the tanpura cycle) rather than fade the end of this file into its start.`,
     };
-    await writeFile(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
   }
+  if (encode) await writeManifest(top, music, sfx);
   console.log(`work files in ${work}`);
 }
 
 // for tests and analysis: `import { makeIR } from './compose-audio.mjs'` renders nothing by itself
-export { renderFlute, renderTanpura, renderPad, renderShimmer, makeIR, convolveLoop, renderGhanta, renderChime, renderShankha, lufs, SR };
+export { renderFlute, renderTanpura, renderPad, renderShimmer, makeIR, convolveLoop, renderGhanta, renderChime, renderShankha, lufs, reach, glideFor, SR };
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   main().catch((e) => { console.error(e.message || e); process.exit(1); });

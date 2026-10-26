@@ -1,19 +1,19 @@
 {
   "credit": "Flute: original raga composition for this website",
-  "raga": "Bhoopali (S R G P D)",
+  "raga": "Pahadi (S R G P D, with soft touches of M and N)",
   "sa": "D",
   "saHz": 288.3254,
   "tuning": "A4 = 432 Hz",
   "sampleRate": 44100,
   "music": {
-    "file": "flute-bhoopali.mp3",
-    "samples": 10987309,
-    "seconds": 249.1453,
+    "file": "flute-pahadi.mp3",
+    "samples": 10992275,
+    "seconds": 249.2579,
     "fluteStart": 10,
-    "fluteEnd": 241.15,
+    "fluteEnd": 241.26,
     "tanpura": {
       "cycles": 54,
-      "cycleSeconds": 4.6138,
+      "cycleSeconds": 4.6159,
       "plucksPerCycle": [
         "Pa",
         "Sa",
@@ -21,68 +21,51 @@
         "Kharaj Sa"
       ],
       "quietInCycle": [
-        3.3535,
-        4.533
+        3.3549,
+        4.5351
       ],
       "crossfade": {
-        "aFrom": 247.985,
-        "bAt": 3.4535,
+        "aFrom": 248.0969,
+        "bAt": 3.4549,
         "seconds": 0.6,
         "note": "For a two-<audio> player: when A reaches aFrom, start B at bAt (better: at A.currentTime - (cycles - 1) * cycleSeconds) and crossfade with equal-power curves over `seconds`. Both are at the same point of the tanpura cycle with only the drone and the pad sounding; anywhere inside quietInCycle works. The pad is periodic over the whole loop, not over one cycle, so during the fade the two elements play different moments of the pad (equal-power keeps its level; its partials are not phase-aligned). The xfade file avoids this."
       }
     },
     "pad": {
-      "levelLU": -12.5,
-      "note": "An ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (111 partials), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; -12.5 LU below the flute. Exactly periodic over the loop."
+      "levelLU": -23.5,
+      "note": "A faint ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (111 partials), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; 23.5 LU below the flute, and with the tanpura (17 LU below) 16.1 LU below it together. Exactly periodic over the loop."
     },
     "shimmer": {
-      "levelLU": -12,
-      "at": [
-        {
-          "beforePhrase": 5,
-          "from": 46.06,
-          "to": 50.77
-        },
-        {
-          "beforePhrase": 10,
-          "from": 101.88,
-          "to": 106.55
-        },
-        {
-          "beforePhrase": 18,
-          "from": 193.71,
-          "to": 198.84
-        }
-      ],
-      "note": "Soft swarmandal sweeps (11 plucked strings tuned to Bhoopali, madhya to ati-tara Sa) in the breath before the phrases the score marks; never within 8 s of the loop's start or end."
+      "at": [],
+      "note": "None: the score marks no shimmer (the engine keeps the swarmandal option, off)."
     },
-    "gainDb": -9.52,
+    "gainDb": -11.24,
     "lufs": -23,
-    "truePeakDbtp": -10.9,
-    "lraLU": 9,
-    "kb": 3894,
-    "excerptFrom": 90.62,
+    "truePeakDbtp": -12.7,
+    "lraLU": 10.6,
+    "kb": 3897,
+    "excerptFrom": 198.21,
     "xfade": {
-      "file": "flute-bhoopali-xfade.mp3",
-      "samples": 11190169,
-      "loopSamples": 10987309,
-      "loopSeconds": 249.1453,
+      "file": "flute-pahadi-xfade.mp3",
+      "samples": 11195135,
+      "loopSamples": 10992275,
+      "loopSeconds": 249.2579,
       "tailSeconds": 4.6,
-      "kb": 3966,
+      "kb": 3968,
       "note": "Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play identical audio."
     },
     "loop": {
       "start": 0,
-      "end": 249.1453,
-      "samples": 10987309,
+      "end": 249.2579,
+      "samples": 10992275,
       "gapless": {
         "encoder": "Lavc60.31",
-        "encoderDelay": 576,
-        "padding": 1043,
-        "frames": 9539,
-        "samples": 10987309
+        "encoderDelay": 2880,
+        "padding": 2989,
+        "frames": 9547,
+        "samples": 10992275
       },
-      "note": "The whole file is one seamless loop. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true). A decoder that ignores the header returns more, usually 1105 extra at the start (576 encoder + 529 decoder delay): then set loopStart = 1105 / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skips 12–23 ms at the wrap (measured), an audible hiccup in the drone. A player that crossfades two <audio> elements should use music.tanpura.crossfade (same point of the tanpura cycle) rather than fade the end of the file into B started at 0."
+      "note": "The whole file is one seamless loop. It is encoded circularly (its own last 2304 samples before it and its first 2304 after it, with the Info tag's encoder delay and padding raised by 2304 each), so the codec adds no edge at the wrap. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true). A decoder that ignores the header returns more: 3409 extra at the start (the encoder delay of 2880, which includes the 2304 lead-in, and 529 of decoder delay) and the lead-out and padding at the end; then set loopStart = 3409 / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skipped 12–23 ms at the wrap (measured on an earlier track), an audible hiccup in the drone. The site does not play this file: it plays music.xfade.file with two <audio> elements crossfaded inside its tail (see music.xfade); a two-element player without that file should use music.tanpura.crossfade (the same point of the tanpura cycle) rather than fade the end of this file into its start."
     }
   },
   "sfx": [
