@@ -11,12 +11,15 @@
 //   node tools/compose-audio.mjs --xfade-tail 4.6   also write flute-pahadi-xfade.mp3: the same
 //        loop followed by its own first 4.6 s, for a player that crossfades two <audio>
 //        elements (crossfade inside the tail into a second element started at 0, and the
-//        two play identical audio). This is the copy the site plays. Not made unless asked
-//        for; with --wav it is written as flute-pahadi-xfade.wav in the work folder.
+//        two play the same music). This is the copy the site plays. Not made unless asked
+//        for (an encode without it warns); with --wav it is written as flute-pahadi-xfade.wav
+//        in the work folder.
 //   --music or --sfx alone encodes its own part and rewrites manifest.json with the other
 //   part kept from the manifest already there (with no such part to keep, the manifest is
 //   left as it was, with a warning: run both). An unknown option, a missing value or a
-//   tail longer than the loop is an error, before anything is written.
+//   tail longer than the loop is an error, before anything is written. Every MP3 is
+//   encoded in the work folder and copied into src/assets/audio/ only once all of them
+//   have passed their checks, so a failed run leaves the site's files as they were.
 //
 // Nothing is sampled or recorded: the bansuri, the tanpura, the pad, the
 // swarmandal (off in this score), the bells and the hall are all synthesised
@@ -24,8 +27,9 @@
 // synthetic room impulse response and FFT convolution). Seeded random
 // generators drive every human detail, so each render is identical. Each phrase
 // has its own streams (its rubato, its ornaments, its breath noise and its
-// "phoonk", its drift and its shimmer): editing one phrase leaves the nuances of
-// every other phrase as they were (later phrases only move in time), and the
+// "phoonk", its meends, its drift and its shimmer): editing one phrase leaves the
+// nuances of every other phrase as they were (later phrases only move in time:
+// the same playing, on the sample grid of its new start), and the
 // phrases never change the tanpura, the pad or the bells (only the loop length
 // they add up to does, and SCORE.seed and SCORE.sa change everything).
 //
@@ -51,8 +55,8 @@
 // pad alone. The loop's MP3 is encoded circularly too (see WRAP), so the codec
 // adds no edge at the wrap.
 
-import { writeFile, readFile, mkdir, stat, rm } from 'node:fs/promises';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { writeFile, readFile, mkdir, stat, rm, copyFile } from 'node:fs/promises';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -86,7 +90,8 @@ import os from 'node:os';
 //                  silence) it glides up from the melody swara below (never from M or N).
 //                  On its way it passes the pitches between: a band of ±30 cents around
 //                  a note the raga lacks, or around M or N, is passed in at most about
-//                  125 ms (see glideFor), so a slow glide never rests on one of them
+//                  115–150 ms (drawn for each meend; see glideFor), so a slow glide never
+//                  rests on one of them, and a meend that leaves M or N leaves it at once
 //   (D)P           kan: a quick grace touch of D just before landing on P
 //   (GR)S          murki: two quick grace notes, then the swara (at most three in the brackets)
 //   G~             andolan: a slow (about 1 Hz), shallow swing 15–25 cents *below* the swara
@@ -118,13 +123,14 @@ export const SCORE = {
   seed: 108,
   excerptFrom: 19, // the client's 30-second audition excerpt starts just before this phrase
   //                (section V: the murki (DPM)G, G M G R S falling to mandra Pa, and an
-  //                answer on Ga; it ends in a breath)
+  //                answer that rests on Ga and comes home to Sa; it ends in a breath)
   // An original Pahadi dhun in five sections, phrased like a folk tune: calls
   // that end open (on Ga, mandra Dha or tara Sa) and answers that fall home to
   // mandra Pa or Sa. Each section ends with a slightly longer breath (2.8 s).
   // One short visit to the tara (IV), one andolan (on Ga, in III), four murkis
   // and no shimmer. Ma and Ni only touch, in passing or as grace notes (never
-  // more than 0.4 s), and the playing stays soft (levels 0.62–0.72).
+  // written longer than 0.4 s, and under 0.6 s with the move off them, which
+  // --plan checks), and the playing stays soft (levels 0.62–0.72).
   phrases: [
     // I. Godhuli: Sa at dusk and mandra Pa as home; the second phrase asks on Ga, the third answers
     { notes: 'S:3.4 (R)S:0.8 D.:0.45 /P.:3.0', gap: 2.1, level: 0.62 },
@@ -139,10 +145,10 @@ export const SCORE = {
     { notes: 'D.:0.5 /S:1.8 R:0.4 /G:2.2 (M)G:0.6 R:0.4 S:1.0 D.:0.45 /P.:2.6', gap: 2.4, level: 0.68 },
     { notes: 'P:0.9 /G:1.8 R:0.45 S:0.8 (RGR)S:0.6 D.:0.45 P.:1.2 D.:0.45 /S:2.6', gap: 2.8, level: 0.66 },
 
-    // III. Gopa-geet: the cowherd's song on Ga, in call and answer
+    // III. Gopa-geet: the cowherd's song on Ga, in call and answer (Ma touched twice, G M G R S and P M G)
     { notes: 'S:0.6 /G:2.2 R:0.45 G:0.6 P:1.8 -:0.25 (D)P:0.6 /G:1.6', gap: 2.1, level: 0.69 },
-    { notes: 'G:0.6 P:1.4 D:0.45 /P:2.0 /G:2.2 (P)G:0.5 R:0.45 S:1.2', gap: 2.3, level: 0.7 },
-    { notes: 'P:0.9 D:0.45 /P:2.0 -:0.3 (D)P:0.6 G:0.45 P:1.0 (DP)G:1.6 R:0.4 S:0.8', gap: 2.2, level: 0.71 },
+    { notes: 'G:0.6 P:1.4 D:0.45 /P:2.0 /G:2.2 (M)G:0.5 R:0.45 S:1.2', gap: 2.3, level: 0.7 },
+    { notes: 'P:0.9 D:0.45 /P:2.0 -:0.3 (D)P:0.6 G:0.45 P:1.0 (PM)G:1.6 R:0.4 S:0.8', gap: 2.2, level: 0.71 },
     { notes: 'P.:0.8 (D.)S:1.0 R:0.4 /G:1.8 P:0.5 /D:1.4 P:0.6 M:0.35 /G:2.0', gap: 2.3, level: 0.71 },
     { notes: 'G:0.6 (M)G~:2.6 R:0.45 S:1.0 N.:0.35 S:0.4 D.:0.6 /P.:2.6', gap: 2.8, level: 0.69 },
 
@@ -215,7 +221,7 @@ export const RAGAS = {
   },
 };
 function ragaOf(name) {
-  const rg = RAGAS[name];
+  const rg = Object.hasOwn(RAGAS, name) ? RAGAS[name] : null; // not 'toString' and the like
   if (!rg) throw new Error(`raga "${name}" is not one this engine knows (${Object.keys(RAGAS).join(', ')})`);
   return rg;
 }
@@ -425,7 +431,9 @@ const SCORE_KEYS = ['raga', 'sa', 'tempo', 'intro', 'outro', 'seed', 'excerptFro
 const PHRASE_KEYS = ['notes', 'gap', 'level', 'shimmer'];
 export function schedule(score = SCORE) {
   for (const k of Object.keys(score)) if (!SCORE_KEYS.includes(k)) throw new Error(`the score has an unknown field "${k}" (it reads ${SCORE_KEYS.join(', ')})`);
-  ragaOf(score.raga);
+  const rg = ragaOf(score.raga);
+  if (!(score.sa > 0)) throw new Error(`sa is ${JSON.stringify(score.sa)}: the frequency of Sa in Hz, above 0`);
+  if (!Number.isInteger(score.seed)) throw new Error(`seed is ${JSON.stringify(score.seed)}: write a whole number`);
   if (!(score.tempo > 0)) throw new Error(`tempo is ${score.tempo}: it must be above 0`);
   if (!(score.intro >= 0) || !(score.outro >= 0)) throw new Error(`intro and outro are seconds, 0 or more (they are ${score.intro} and ${score.outro})`);
   if (!Array.isArray(score.phrases) || !score.phrases.length) throw new Error('the score has no phrases');
@@ -450,7 +458,7 @@ export function schedule(score = SCORE) {
         const g = k === 1 ? Math.min(0.075, d * 0.3) : Math.min(0.085, (0.5 * d) / (k + 1));
         n.graces.forEach((c, j) => {
           const gd = g * (1 + (k > 1 && j === 0 ? 0.18 : 0) + 0.12 * (Rg() - 0.5));
-          ev.push({ cents: c, dur: gd, grace: true, swara: n.graceSwaras[j], ornament: k === 1 ? 'kan' : 'murki' });
+          ev.push({ cents: c, dur: gd, grace: true, swara: n.graceSwaras[j], ornament: k === 1 ? 'kan' : 'murki', touch: !!rg.touch && rg.touch.swaras.includes(n.graceSwaras[j][0]) });
           d -= gd;
         });
       }
