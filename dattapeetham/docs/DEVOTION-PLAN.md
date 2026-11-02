@@ -614,9 +614,16 @@ synthesised piece).
 The figures in *The loop* and *Delivery* below are now the recording's,
 from `assets/audio/manifest.json`. The measurements recorded with them were
 made on earlier tracks, as each one says: the correlations, the recorded
-runs and the one-frame seek offset on the Mohanam track, the browser suite
-and the meter on the Pahadi render. This document records no browser run
-on the recording yet.
+runs and the one-frame seek offset on the Mohanam track, the meter on the
+Pahadi render. The browser suite was run on the recording on 2026-11-02 and
+passed: the loop handover from a first play and from near the loop end (A at
+222.12 and 222.11 s into B at 3.53 and 3.51 s, the two players' likeness 1.00,
+level steady to 0.00 dB, no dropout; every silent 10 ms frame fell inside the
+recording's own gap of silence), music carried across five pages on desktop
+and phone, consent, pause on a hidden tab and for video, a fresh visitor's
+first play (from 0), a visitor who leaves before the file loads, the temple
+sounds and a three-minute soak. Four of its scripts had to be told about the
+new file name, credit and gap; none of their checks was loosened.
 
 ### The loop
 
