@@ -1,6 +1,5 @@
-// Devotional sound: the flute music (an original bansuri composition in Raga
-// Pahadi, tuned to A = 432 Hz, made for this website) and the temple sounds
-// while scrolling.
+// Devotional sound: the flute music (a recording chosen for this website; see
+// tools/use-recording.mjs) and the temple sounds while scrolling.
 //
 // Server-side markup helpers for src/layout.mjs. The runtime is
 // src/assets/js/devotion-sound.js, the styles src/assets/css/devotion-sound.css.
@@ -53,34 +52,37 @@ const SFX_NAMES = ['ghanta', 'chime-s', 'chime-r', 'chime-g', 'chime-p', 'chime-
 // Only the temple sounds that exist at build time are requested.
 const sfxPresent = () => SFX_NAMES.filter((n) => has(`sfx/${n}.mp3`));
 
-// The credit the client chose, word for word, and the raga beneath it.
-export const CREDIT = 'Flute: original raga composition for this website';
-export const RAGA = 'Raga Pahadi';
+// The credit, word for word, and the raga beneath it. The flute recording is not
+// in a raga the site can name (its melody uses all seven notes of C major), so
+// there is no raga line: RAGA is empty and the panel leaves the line out.
+export const CREDIT = 'Flute: original composition for this website';
+export const RAGA = '';
 
 // How the music loops, from assets/audio/manifest.json (written by
-// tools/compose-audio.mjs). Two <audio> elements crossfade at the loop point
+// tools/use-recording.mjs for a recording, or by tools/compose-audio.mjs for
+// the synthesised piece). Two <audio> elements crossfade at the loop point
 // (Chromium's <audio loop> skips 12–23 ms at the wrap). The preferred file is
-// flute-pahadi-xfade.mp3: the loop followed by its own first seconds, so the
+// flute-music-xfade.mp3: the loop followed by its own first seconds, so the
 // end of the file plays exactly what its start plays. When element A reaches
-// loop + d, element B starts at d and the two play the same music; the fade
-// (0.6 s) sits inside the tanpura's quiet stretch after the kharaj pluck, so
-// no pluck is doubled or dropped and no part of the loop is skipped. Without
-// that file (or with a tail too short to hold the quiet stretch) the plain
-// loop is used, faded at the same point of the tanpura cycle one cycle apart.
+// loop + d, element B starts at d and the two play the same music through the
+// fade (0.6 s): nothing is doubled, dropped or skipped. Without that file the
+// synthesised piece's plain loop is faded at the same point of its tanpura
+// cycle, one cycle apart; a recording has no such plan.
 //   from  A's time at which the fade begins    to  B's time at that moment
 //   fade  seconds                              the loop period is from − to
 export function musicPlan() {
   let man = null;
   try { man = JSON.parse(readFileSync(fileURLToPath(new URL('manifest.json', AUDIO)), 'utf8')); } catch { /* no manifest */ }
-  const m = man && man.music, c = m && m.tanpura && m.tanpura.crossfade, x = m && m.xfade;
-  if (!m || !c) return { file: 'flute-pahadi.mp3' }; // no plan: the script falls back to its own
+  const m = man && man.music, c = m && (m.crossfade || (m.tanpura && m.tanpura.crossfade)), x = m && m.xfade;
+  if (!m || !c) return { file: 'flute-music.mp3' }; // no plan: the script falls back to its own
   // a first play starts 1.5 s before the flute enters (the drone alone sits far under it), and
   // the level meter's reference is the track's own (both from the manifest, when it has them)
   const more = { start: m.fluteStart > 1.5 ? +(m.fluteStart - 1.5).toFixed(2) : 0, ...(m.levelRef > 0 ? { levelRef: m.levelRef } : {}) };
   if (x && has(x.file) && x.tailSeconds >= c.bAt + c.seconds + 0.2) {
     return { file: x.file, from: +(x.loopSeconds + c.bAt).toFixed(4), to: c.bAt, fade: c.seconds, loop: x.loopSeconds, ...more };
   }
-  return { file: m.file, from: c.aFrom, to: c.bAt, fade: c.seconds, loop: m.seconds, ...more };
+  // the plain file: handed over one tanpura cycle short (a recording has no cycle: no plan)
+  return c.aFrom != null ? { file: m.file, from: c.aFrom, to: c.bAt, fade: c.seconds, loop: m.seconds, ...more } : { file: m.file, ...more };
 }
 
 // ?v=<first 8 hex of the file's SHA-256>, the build's versioning scheme for
@@ -178,7 +180,7 @@ export function soundControl({ sfx = sfxPresent() } = {}) {
     <label class="snd-vol"><span>Volume</span><input type="range" min="0" max="100" step="5" value="80" data-sound-volume></label>
     <p class="snd-status" data-sound-status aria-live="polite"></p>
     <p class="snd-credit">${CREDIT}</p>
-    <p class="snd-raga">${RAGA}</p>
+    ${RAGA ? `<p class="snd-raga">${RAGA}</p>` : ''}
   </div>
 </div>`;
 }
@@ -196,7 +198,7 @@ export const SOUND_STRINGS = {
     'Temple sounds while scrolling',
     'Volume',
     CREDIT,
-    RAGA,
+    ...(RAGA ? [RAGA] : []),
     'Sound settings', // aria-label of the round button
   ],
   runtime: [

@@ -1297,12 +1297,18 @@ function modal(seconds, modes, strikes, R, { tick = 0, tickHz = 6500, fadeLen = 
   return out;
 }
 
+// The temple sounds' intervals: just intonation, as the synthesised piece is tuned. A recording
+// in equal temperament (tools/use-recording.mjs) sets SFX.equal, so the chimes and the bell's
+// Ga sit where its own notes are (a just Ga or Dha is 14–16 cents flat of an equal-tempered one).
+export const SFX = { equal: false };
+const sfxRatio = (s) => (SFX.equal ? 2 ** ({ S: 0, R: 200, G: 400, M: 500, P: 700, D: 900, N: 1100 }[s] / 1200) : RATIO[s]);
+
 function renderGhanta(seed) {
-  const R = rng(seed, 'ghanta'), f = 2 * SCORE.sa * 2; // D6
+  const R = rng(seed, 'ghanta'), f = 2 * SCORE.sa * 2; // Sa two octaves up (D6 for this score)
   const modes = [ // ratio, amplitude, decay (s), doublet split (Hz), doublet amplitude
     [0.5, 0.05, 0.9, 0.9, 0.3],
     [1.0, 1.0, 0.85, 2.3, 0.55], // Sa
-    [2.5, 0.55, 0.55, 3.6, 0.5], // Ga, two octaves up
+    [2 * sfxRatio('G'), 0.55, 0.55, 3.6, 0.5], // Ga, two octaves up
     [4.23, 0.32, 0.22, 5.1, 0.45],
     [6.05, 0.22, 0.13, 6.7, 0.4],
     [8.38, 0.14, 0.08, 9.0, 0.4],
@@ -1313,7 +1319,7 @@ function renderGhanta(seed) {
 
 function renderChime(swara, seed) {
   const R = rng(seed, 'chime-' + swara);
-  const f = 2 * SCORE.sa * (swara === 'S2' ? 2 : RATIO[swara]); // tara sthayi: D5 … D6
+  const f = 2 * SCORE.sa * (swara === 'S2' ? 2 : sfxRatio(swara)); // tara sthayi: Sa an octave up (D5 for this score) … Sa'
   const modes = [
     [1.0, 1.0, 0.5, 1.1, 0.35],
     [2.0, 0.1, 0.35, 1.7, 0.3],
@@ -1504,7 +1510,15 @@ function tanpuraGrid(tan, plan) {
 }
 
 const NAME = `flute-${SCORE.raga.toLowerCase()}`; // flute-pahadi: the music's file names
-const TUNING = `A4 = ${+(SCORE.sa * 2 ** (7 / 12)).toFixed(2)} Hz`;
+// A frequency as the nearest note of the twelve-tone scale (A4 = 440 Hz) and how far off it
+// is: { name: 'D4', note: 'D', cents: -31.7 }. tuningOf(hz) is the A4 that would put it in tune.
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+function noteOf(hz) {
+  const m = 69 + 12 * Math.log2(hz / 440), k = Math.round(m), note = NOTE_NAMES[((k % 12) + 12) % 12];
+  return { name: note + (Math.floor(k / 12) - 1), note, cents: +(100 * (m - k)).toFixed(1) };
+}
+const tuningOf = (hz) => { const m = 69 + 12 * Math.log2(hz / 440); return `A4 = ${+(440 * 2 ** ((m - Math.round(m)) / 12)).toFixed(2)} Hz`; };
+const TUNING = tuningOf(SCORE.sa);
 // The loop's own MP3 is encoded circularly. An MP3 encoder starts from silence (its
 // priming) and ends in silence (its padding), while the loop's first and last samples sit
 // in the middle of the drone, so a plain encode leaves a step at both edges of the file: a
@@ -1636,7 +1650,7 @@ async function renderMusic(work, encode, xfadeTail = 0, ship = []) {
       for (const out of [WRAP, WRAP / 2]) {
         ffmpeg(['-i', cwav(out), '-af', `volume=${gain.toFixed(3)}dB`, '-c:a', 'libmp3lame', '-b:a', MUSIC.bitrate, '-ar', String(SR), '-ac', '2',
           '-metadata', `title=${title}`, '-metadata', 'artist=Original composition for dattapeetham.org',
-          '-metadata', `comment=${CREDIT}. Raga ${SCORE.raga}, Sa = D (${TUNING}).`, mp3]);
+          '-metadata', `comment=${CREDIT}. Raga ${SCORE.raga}, Sa = ${noteOf(SCORE.sa).note} (${TUNING}).`, mp3]);
         if (setGapless(mp3, WRAP, N)) return;
       }
       throw new Error(`${mp3}: its end padding does not fit the Info tag`);
@@ -1698,10 +1712,10 @@ async function renderMusic(work, encode, xfadeTail = 0, ship = []) {
 async function renderSfx(work, encode, ship = []) {
   const seed = SCORE.seed;
   const items = [
-    { name: 'ghanta', kind: 'ghanta', buf: renderGhanta(seed), note: 'small brass hand-bell, struck (Sa = D6, Ga ringing above; A4 = 432 Hz)' },
+    { name: 'ghanta', kind: 'ghanta', buf: renderGhanta(seed), note: `small brass hand-bell, struck (Sa = ${noteOf(4 * SCORE.sa).name}, Ga ringing above; ${tuningOf(SCORE.sa)})` },
     ...['S', 'R', 'G', 'P', 'D', 'S2'].map((s) => ({ name: `chime-${s.toLowerCase()}`, kind: 'chime', swara: s, buf: renderChime(s, seed),
-      hz: +(2 * SCORE.sa * (s === 'S2' ? 2 : RATIO[s])).toFixed(2) })),
-    { name: 'shankha', kind: 'shankha', buf: renderShankha(seed), note: 'soft conch swell on Sa (D4, A4 = 432 Hz); optional' },
+      hz: +(2 * SCORE.sa * (s === 'S2' ? 2 : sfxRatio(s))).toFixed(2) })),
+    { name: 'shankha', kind: 'shankha', buf: renderShankha(seed), note: `soft conch swell on Sa (${noteOf(SCORE.sa).name}, ${tuningOf(SCORE.sa)}); optional` },
   ];
   await mkdir(join(work, 'sfx'), { recursive: true });
   const out = [];
@@ -1826,7 +1840,7 @@ async function main() {
   if (args.includes('--plan')) { printPlan(); return; }
   const doMusic = !args.includes('--sfx') || args.includes('--music'), doSfx = !args.includes('--music') || args.includes('--sfx');
   if (encode && doMusic && tail === undefined) console.warn(`  ! no --xfade-tail: the manifest gets no music.xfade, so the site falls back to looping ${NAME}.mp3 one tanpura cycle short; the site's own copy is made with --xfade-tail 4.6`);
-  const top = { credit: CREDIT, raga: ragaOf(SCORE.raga).label, sa: 'D', saHz: +SCORE.sa.toFixed(4), tuning: TUNING, sampleRate: SR };
+  const top = { credit: CREDIT, raga: ragaOf(SCORE.raga).label, sa: noteOf(SCORE.sa).note, saHz: +SCORE.sa.toFixed(4), tuning: TUNING, sampleRate: SR };
   const ship = []; // every MP3 made in the work folder, with where it goes in OUT
   const music = doMusic ? await renderMusic(work, encode, xfadeTail, ship) : null;
   let sfx = null;
@@ -1849,8 +1863,10 @@ async function main() {
   console.log(`work files in ${work}`);
 }
 
-// for tests and analysis: `import { makeIR } from './compose-audio.mjs'` renders nothing by itself
+// for tests and analysis: `import { makeIR } from './compose-audio.mjs'` renders nothing by itself.
+// tools/use-recording.mjs uses the temple sounds, the encoding and the manifest helpers.
 export { renderFlute, renderTanpura, renderPad, renderShimmer, makeIR, convolveLoop, renderGhanta, renderChime, renderShankha, lufs, reach, glideFor, SR };
+export { renderSfx, ffmpeg, measure, linearGain, ebur128, encodeTo, decodeMp3, percentile, kb, wavFloat, setGapless, gapless, noteOf, tuningOf, OUT };
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   main().catch((e) => { console.error(e.message || e); process.exit(1); });

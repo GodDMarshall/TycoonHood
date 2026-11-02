@@ -1,90 +1,82 @@
 {
-  "credit": "Flute: original raga composition for this website",
-  "raga": "Pahadi (S R G P D, with soft touches of M and N)",
-  "sa": "D",
-  "saHz": 288.3254,
-  "tuning": "A4 = 432 Hz",
+  "credit": "Flute: original composition for this website",
+  "raga": null,
+  "sa": "C",
+  "saHz": 261.928,
+  "tuning": "A4 = 440.51 Hz",
+  "temperament": "equal (the temple sounds, to match the recording)",
   "sampleRate": 44100,
   "music": {
-    "file": "flute-pahadi.mp3",
-    "samples": 10992275,
-    "seconds": 249.2579,
-    "fluteStart": 10,
-    "fluteEnd": 241.26,
-    "tanpura": {
-      "cycles": 54,
-      "cycleSeconds": 4.6159,
-      "plucksPerCycle": [
-        "Pa",
-        "Sa",
-        "Sa",
-        "Kharaj Sa"
-      ],
-      "quietInCycle": [
-        3.3549,
-        4.5351
-      ],
-      "crossfade": {
-        "aFrom": 248.0969,
-        "bAt": 3.4549,
-        "seconds": 0.6,
-        "note": "For a two-<audio> player: when A reaches aFrom, start B at bAt (better: at A.currentTime - (cycles - 1) * cycleSeconds) and crossfade with equal-power curves over `seconds`. Both are at the same point of the tanpura cycle with only the drone and the pad sounding; anywhere inside quietInCycle works. The pad is periodic over the whole loop, not over one cycle, so during the fade the two elements play different moments of the pad (equal-power keeps its level; its partials are not phase-aligned). The xfade file avoids this."
-      }
+    "file": "flute-music.mp3",
+    "samples": 9641634,
+    "seconds": 218.6312,
+    "fluteStart": 0.15,
+    "fluteEnd": 217.13,
+    "recording": {
+      "from": "Raga_Brindavana_Saranga.m4a",
+      "seconds": 217.613,
+      "soundFrom": 0,
+      "soundTo": 217.131,
+      "gapSeconds": 1.5,
+      "source": "Made with Suno on the site owner's paid account; the owner owns the song (stated 2026-11-02).",
+      "note": "A recording, used as it is: decoded, resampled to 44.1 kHz, its digital silence trimmed, a 10 ms fade-in, one fixed gain; then the gap of silence before it starts again. Made with tools/use-recording.mjs."
     },
-    "pad": {
-      "levelLU": -23.5,
-      "note": "A faint ambient drone like a shruti box: Sa, Pa and tara Sa with a soft mandra Sa, each voiced by three reeds a few cents apart (111 partials, 92 oscillators: where the middle reeds of two voices meet on one frequency they are one, so they cannot cancel), low-passed at 600–1200 Hz (slowly breathing), with slow swells and a wide stereo image; 23.5 LU below the flute, and with the tanpura (17 LU below) 16.0 LU below it together. Exactly periodic over the loop."
+    "crossfade": {
+      "bAt": 3.45,
+      "seconds": 0.6,
+      "note": "Only for the xfade file: when A reaches loopSeconds + bAt, B (started at bAt) takes over over `seconds`; both play the same music. There is no plan for the plain file: a recording has no cycle to hand over on."
     },
-    "shimmer": {
-      "at": [],
-      "note": "None: the score marks no shimmer (the engine keeps the swarmandal option, off)."
-    },
-    "gainDb": -10.69,
-    "mp3GainDb": -11.14,
-    "gainNote": "gainDb is the gain of the ffmpeg volume filter; libmp3lame scales its input by 0.95 (-0.45 dB) as well, so the MP3s carry mp3GainDb relative to the master (measured: the decoded loop fitted to it)",
+    "gainDb": -7.4,
     "lufs": -23,
-    "truePeakDbtp": -12,
-    "lraLU": 10.5,
-    "levelRef": 0.069,
-    "kb": 3897,
-    "excerptFrom": 198.21,
+    "truePeakDbtp": -7.4,
+    "lraLU": 5.6,
+    "bitrateKbps": 192,
+    "levelRef": 0.077,
+    "kb": 5126,
     "xfade": {
-      "file": "flute-pahadi-xfade.mp3",
-      "samples": 11195135,
-      "loopSamples": 10992275,
-      "loopSeconds": 249.2579,
+      "file": "flute-music-xfade.mp3",
+      "samples": 9844494,
+      "loopSamples": 9641634,
+      "loopSeconds": 218.6312,
       "tailSeconds": 4.6,
-      "kb": 3968,
+      "kb": 5234,
+      "gapless": {
+        "encoder": "Lavc60.31",
+        "encoderDelay": 576,
+        "padding": 1074,
+        "frames": 8547,
+        "samples": 9844494
+      },
       "note": "Samples [N, N+T) repeat [0, T). Crossfade two elements inside the tail: when A reaches loopSeconds + d, start B at d; both then play the same music (the same samples in the master; in the MP3, each copy with its own coding noise)."
     },
     "loop": {
       "start": 0,
-      "end": 249.2579,
-      "samples": 10992275,
+      "end": 218.6312,
+      "samples": 9641634,
       "gapless": {
         "encoder": "Lavc60.31",
-        "encoderDelay": 2880,
-        "padding": 2989,
-        "frames": 9547,
-        "samples": 10992275
+        "encoderDelay": 576,
+        "padding": 1182,
+        "frames": 8371,
+        "samples": 9641634
       },
-      "note": "The whole file is one seamless loop. It is encoded circularly (its own last 2304 samples before it and its first 2304 after it, with the Info tag's encoder delay and padding raised by 2304 each), so the codec adds no edge at the wrap. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples: loop the whole AudioBuffer (AudioBufferSourceNode.loop = true) in a 44.1 kHz AudioContext. In a 48 kHz one, decodeAudioData resamples the file as one piece rather than as a loop, and that leaves a faint edge at the wrap (about -66 dBFS above 5 kHz in Chromium 141, measured on an earlier render): there, use a 44.1 kHz AudioContext, or music.xfade.file and its crossfade. A decoder that ignores the header returns more: 3409 extra at the start (the encoder delay of 2880, which includes the 2304 lead-in, and 529 of decoder delay) and the lead-out and padding at the end; then set loopStart = 3409 / sampleRate and loopEnd = loopStart + samples / sampleRate. Avoid <audio loop>: Chromium 141 skipped 12–23 ms at the wrap (measured on an earlier track), an audible hiccup in the drone. The site does not play this file: it plays music.xfade.file with two <audio> elements crossfaded inside its tail (see music.xfade); a two-element player without that file should use music.tanpura.crossfade (the same point of the tanpura cycle) rather than fade the end of this file into its start."
+      "note": "The whole file is one loop: the recording, then its gap of silence. Decoders that read the gapless header (Chromium decodeAudioData, ffmpeg) return exactly `samples` samples. The site plays the xfade file with the crossfade above."
     }
   },
   "sfx": [
     {
       "file": "sfx/ghanta.mp3",
       "seconds": 3,
-      "note": "small brass hand-bell, struck (Sa = D6, Ga ringing above; A4 = 432 Hz)",
+      "note": "small brass hand-bell, struck (Sa = C6, Ga ringing above; A4 = 440.51 Hz)",
       "lufs": -22,
-      "truePeakDbtp": -9.1,
+      "truePeakDbtp": -8.8,
       "kb": 36
     },
     {
       "file": "sfx/chime-s.mp3",
       "seconds": 1.7,
       "swara": "S",
-      "hz": 576.65,
+      "hz": 523.86,
       "lufs": -23,
       "truePeakDbtp": -10.8,
       "kb": 21
@@ -93,7 +85,7 @@
       "file": "sfx/chime-r.mp3",
       "seconds": 1.7,
       "swara": "R",
-      "hz": 648.73,
+      "hz": 588.01,
       "lufs": -23,
       "truePeakDbtp": -13.4,
       "kb": 21
@@ -102,7 +94,7 @@
       "file": "sfx/chime-g.mp3",
       "seconds": 1.7,
       "swara": "G",
-      "hz": 720.81,
+      "hz": 660.02,
       "lufs": -23,
       "truePeakDbtp": -7.7,
       "kb": 21
@@ -111,7 +103,7 @@
       "file": "sfx/chime-p.mp3",
       "seconds": 1.7,
       "swara": "P",
-      "hz": 864.98,
+      "hz": 784.9,
       "lufs": -23,
       "truePeakDbtp": -7.8,
       "kb": 21
@@ -120,26 +112,26 @@
       "file": "sfx/chime-d.mp3",
       "seconds": 1.7,
       "swara": "D",
-      "hz": 961.08,
+      "hz": 881.02,
       "lufs": -23,
-      "truePeakDbtp": -9.6,
+      "truePeakDbtp": -9.5,
       "kb": 21
     },
     {
       "file": "sfx/chime-s2.mp3",
       "seconds": 1.7,
       "swara": "S2",
-      "hz": 1153.3,
+      "hz": 1047.71,
       "lufs": -23,
-      "truePeakDbtp": -8.6,
+      "truePeakDbtp": -8.2,
       "kb": 21
     },
     {
       "file": "sfx/shankha.mp3",
       "seconds": 1.9,
-      "note": "soft conch swell on Sa (D4, A4 = 432 Hz); optional",
+      "note": "soft conch swell on Sa (C4, A4 = 440.51 Hz); optional",
       "lufs": -23,
-      "truePeakDbtp": -14.2,
+      "truePeakDbtp": -14.6,
       "kb": 23
     }
   ]
