@@ -229,18 +229,32 @@ Rules:
 
 ## Music and temple sounds
 
-The site has its own flute music (an original piece for bansuri, the
-Hindustani bamboo flute, in Raga Pahadi, made for this website) and soft
-temple sounds (a bell and six chimes) while scrolling. Nothing plays until
-the visitor chooses it: the first visit asks, the answer is remembered, and
-the round sound button at the bottom left of every page switches both on or
-off. The files are in `src/assets/audio/`; the plan and the measurements are
-in `docs/DEVOTION-PLAN.md` (section 9).
+The site's flute music is a recording (since 2 November 2026). The site's
+owner supplied it, as `Raga_Brindavana_Saranga.m4a`: it was made with
+Suno, an AI music service, on the owner's paid account, and the owner
+states that they own the song. It replaced an original bansuri piece in
+Raga Pahadi that `tools/compose-audio.mjs` synthesised, in whose flute the
+owner heard a "buzz". The recording is used as it is (see
+[Replacing the music with another recording](#replacing-the-music-with-another-recording)).
+The soft temple sounds while scrolling (a bell and six chimes) are still
+synthesised by `tools/compose-audio.mjs`, now tuned to the recording.
+Nothing plays until the visitor chooses it: the first visit asks, the
+answer is remembered, and the round sound button at the bottom left of
+every page switches both on or off. The files are in `src/assets/audio/`;
+the plan and the measurements are in `docs/DEVOTION-PLAN.md` (section 9).
 
-- **The credit** shown in the sound panel, "Flute: original raga composition
-  for this website", is `CREDIT` in `src/features/devotion-sound.mjs` (and
-  "Raga Pahadi" beneath it is `RAGA`). Changing either changes a translated
-  sentence (see [Translations](#translations)).
+- **The credit** shown in the sound panel, "Flute: original composition
+  for this website", is `CREDIT` in `src/features/devotion-sound.mjs`.
+  There is **no raga line** beneath it: `RAGA` there is empty (`''`), and
+  the panel leaves the line out. Despite its file name, the recording is
+  not in Raga Brindavana Saranga: its melody uses all seven notes of
+  C major, with Ga (E) its second most-used note, and Brindavana Saranga
+  has no Ga (E) and no Dha (A). The owner chose both: no raga line, and
+  the credit without the word "raga" (until 2 November it read "Flute:
+  original raga composition for this website", with "Raga Pahadi"
+  beneath). Changing the credit, or putting a raga's name in `RAGA` (which
+  brings the line back), means a sentence to translate (see
+  [Translations](#translations)).
 - **The conch (shankha)** at the end of a page has not been auditioned, so it
   is switched off: the pages do not list it and the build does not ship its
   file. To switch it on after the Peetham has listened to it (it is
@@ -255,32 +269,166 @@ in `docs/DEVOTION-PLAN.md` (section 9).
   `data-sfx-db="-10"` to the `<div class="snd" data-sound …>` that
   `soundControl()` writes in `src/features/devotion-sound.mjs`. A visitor's
   own volume, once set, is kept.
-- **Where a first play starts.** The flute sits well above its drone (about
-  70/30, below), so the first 10 seconds of the file, the tanpura and the
-  pad alone, would sound as if nothing had happened. A visitor's first play
-  therefore starts 1.5 seconds before the flute comes in (8.5 seconds into
-  the file); music carried over from another page goes on from where it
-  was. The build writes this point on the sound control as `data-start`,
-  from `fluteStart` in `src/assets/audio/manifest.json`, so it follows the
-  music when it is re-rendered.
+- **Where a first play starts.** A visitor's first play starts 1.5 seconds
+  before the music is first heard, or at the very beginning when it is
+  heard sooner than that. The recording is heard at once (0.15 seconds
+  into the file), so a first play starts at the beginning. (The
+  synthesised piece opens with 10 seconds of tanpura and pad alone, which
+  would sound as if nothing had happened, so with it a first play starts
+  8.5 seconds in, just before the flute.) Music carried over from another
+  page goes on from where it was. The build reads this from `fluteStart`
+  in `src/assets/audio/manifest.json` and, when the start is not at the
+  beginning, writes it on the sound control as `data-start`, so it follows
+  the music when it is replaced.
 - **The level reference.** The motifs that pulse with the flute (the nada
   rings, and the sound rings in the Music page's opening picture) read the
   music's level through `DP.sound.level()`, which reports a moment as loud
   (by RMS) as the track's own 95th-percentile frame as 1. The build writes
   that reference on the sound control as `data-level-ref`, from `levelRef`
   in the manifest, when the manifest has one; without it the player uses
-  0.08, measured on the first flute track. `tools/compose-audio.mjs` writes
-  `levelRef` on every full run (the 95th percentile of the RMS of
-  2048-sample frames of the file the site plays; 0.069 for the Pahadi
-  piece). Neither attribute is edited by hand: re-render and rebuild.
+  0.08, measured on the first flute track. `tools/use-recording.mjs`
+  writes `levelRef` every time, and `tools/compose-audio.mjs` on every full
+  run (the 95th percentile of the RMS of 2048-sample frames of the file the
+  site plays): 0.077 for the recording, 0.069 for the Pahadi piece.
+  Neither attribute is edited by hand: replace or re-render the music, and
+  rebuild.
 
-### Changing or re-rendering the music
+### Replacing the music with another recording
 
-Nothing is recorded: the bansuri, the tanpura, a faint drone like a shruti
-box (the "pad"), the bells and the temple's acoustics are synthesised by
-`tools/compose-audio.mjs`, from a score written in sargam near the top of
-that file (`SCORE`). The comments above the score explain every symbol. Each
-phrase is one line, for example:
+`tools/use-recording.mjs` makes the site's music from any recording that
+`ffmpeg` can read (m4a, mp3, wav, flac …). It needs Node.js 20 or newer
+and `ffmpeg` on the PATH, built with libmp3lame and libsoxr
+(`ffmpeg -version` lists `--enable-libmp3lame` and `--enable-libsoxr`).
+Make sure first that the site may use the recording: every visitor who
+chooses music hears it.
+
+The recording on the site was made with the options below. In PowerShell,
+in the project folder, put the path of your copy of the recording between
+the first pair of quotes (in a Linux or macOS terminal, write the path
+with `/`):
+
+```powershell
+node tools/use-recording.mjs "$HOME\Downloads\Raga_Brindavana_Saranga.m4a" --sa 261.928 --source "Made with Suno on the site owner's paid account; the owner owns the song (stated 2026-11-02)."
+node build.mjs
+npm test
+```
+
+- The recording comes first, one at a time.
+- `--sa` (needed) is the recording's Sa, its tonic, in hertz. The temple
+  sounds (the bell and the six scroll chimes, S R G P D S') are retuned to
+  it, so they sound in the music's key. How to find it is below.
+- `--gap` is how many seconds of silence follow the recording before it
+  starts again: 0 to 10, and 1.5 if it is left out (as on the site).
+- `--bitrate` is the MP3 bitrate in kbit/s: 96, 128, 160, 192, 224, 256 or
+  320, and 192 if it is left out (as on the site). A recording is heard as
+  it is, so it is kept a step above the 128 kbit/s of the synthesised
+  piece; a higher bitrate makes a larger download (the site's copy is
+  about 5.2 MB).
+- `--source` is one line on where the recording comes from and who owns
+  it. It is kept in `src/assets/audio/manifest.json`, and in the MP3 files'
+  comment after the credit. Always give it.
+- `--work`, followed by a folder, is where the WAV and MP3 files are made
+  (by default `dattapeetham-recording` in the system's temporary folder).
+
+If the new recording is different music, change `CREDIT` (and `RAGA`, if
+the music has a raga the site can name) in
+`src/features/devotion-sound.mjs` **before** running the tool, which
+copies the credit into the manifest and the MP3 files, and have the new
+wording translated.
+
+**Finding the Sa.** The Sa is the note the music keeps coming home to: its
+phrases end on it, and a drone, if there is one, sounds it. If a musician
+can name it, ask them. Otherwise:
+
+1. Play the recording to a chromatic tuner (a tuner app on a phone held
+   near the speaker will do) while the music rests on that note, and read
+   the note's name and how many cents sharp (+) or flat (−) it is.
+2. Take that note's frequency at A4 = 440 Hz, in the octave around middle
+   C: C 261.63, C♯ 277.18, D 293.66, D♯ 311.13, E 329.63, F 349.23,
+   F♯ 369.99, G 392.00, G♯ 415.30, A 220.00, A♯ 233.08, B 246.94 Hz. Keep
+   to this octave: the chimes sound from one octave above the Sa up to two,
+   and the bell two octaves above it, as they do now.
+3. If the tuner read it a few cents off, multiply by 1.00058 for each cent
+   sharp (or divide by it for each cent flat). The recording on the site
+   is in C, 2 cents sharp (it measures A4 = 440.51 Hz):
+   261.63 × 1.00058 × 1.00058 = 261.93, or more exactly 261.928 Hz.
+
+The tool prints the note it takes the Sa to be, with the tuning that
+implies (for the recording on the site,
+`temple sounds, Sa = C4 (261.928 Hz, A4 = 440.51 Hz):`). Check that it
+names the note you meant.
+
+**What it does.** The recording itself is not changed. It is decoded and
+resampled to 44.1 kHz (with soxr), the digital silence at either end
+(below −70 dBFS) is trimmed, a 10-millisecond fade-in keeps the restart
+from clicking, and one fixed gain sets it to −23 LUFS, the level the
+site's sound is built around (for the recording on the site the gain is
+−7.4 dB, and its true peak is then −7.4 dBTP). Nothing is filtered,
+compressed or added. Then the gap of silence follows it.
+
+**What it checks.** It stops with a message, before anything in
+`src/assets/audio/` is changed, if an option is wrong (an unknown option,
+a missing value, `--sa` outside 50 to 1000 Hz, `--gap` outside 0 to 10
+seconds, a bitrate not in the list), if the recording has less than 10
+seconds of sound, if the MP3's true peak is above −2 dBTP (the gain is
+lowered first, with a warning, when the recording would reach it), if
+either MP3 does not decode to exactly the loop, or the loop and its
+4.6-second tail, to the sample, or if that tail does not play what the
+start of the loop plays.
+
+**What it writes**, only once every check has passed, each file copied
+beside its target first and then renamed over it, so a failed run leaves
+the site's files as they were:
+
+- `flute-music.mp3`: the recording as one loop, the music and then the gap
+  of silence;
+- `flute-music-xfade.mp3`: the same loop followed by its own first 4.6
+  seconds, the copy the site plays. Two players hand over inside that
+  tail: the second, started 3.45 seconds in, takes over from the first
+  when the first reaches the loop plus 3.45 seconds, over 0.6 seconds.
+  Both play the same music, so the turn has no seam;
+- the temple sounds in `sfx/`, tuned to `--sa` in equal temperament, as a
+  recording is played (a just Ga or Dha, as the synthesised piece is
+  tuned, would be 14 to 16 cents flat of the recording's notes);
+- `manifest.json`, which the build reads: the files, the loop and
+  crossfade points, where the music is first heard, the loudness, the
+  level reference, the recording's file name and the `--source` line.
+
+It then removes any other `flute-*.mp3` file in `src/assets/audio/` (the
+music it replaces), and names the folder where it left its work files.
+The build reads the new file names, loop points, first-play start and
+level reference from the manifest, gives every audio address a new content
+version (so visitors get the new music at once, although browsers keep
+audio for 30 days), and ships only the files the pages use. `npm test`
+checks them. Listen to the result on speakers and on headphones before
+deploying.
+
+**The temple sounds** are still made by `tools/compose-audio.mjs`;
+`tools/use-recording.mjs` has it render them at the recording's Sa. Today
+that is Sa = C, 261.928 Hz (A4 = 440.51 Hz): the chimes S R G P D S' at
+523.86, 588.01, 660.02, 784.9, 881.02 and 1047.71 Hz, the bell on C6 (two
+octaves above Sa) with Ga ringing above, and the conch (switched off) on
+C4. To render them again, run `tools/use-recording.mjs` again with the
+same recording and `--sa`. While the site plays a recording,
+`node tools/compose-audio.mjs --sfx` (or `--music`) on its own stops with
+a message and changes nothing: it would make temple sounds for the
+synthesised piece (Sa = D at A4 = 432 Hz, in just intonation), out of the
+recording's key.
+
+### The synthesised piece (the alternative)
+
+Until 2 November 2026 the site played an original piece for bansuri, the
+Hindustani bamboo flute, in Raga Pahadi, composed and synthesised for this
+website by `tools/compose-audio.mjs`. It is not what the site plays now,
+but the tool and its score are kept: running the tool whole (below) makes
+the piece the site's music again, and `tools/use-recording.mjs` goes back
+the other way.
+
+Nothing in it is recorded: the bansuri, the tanpura, a faint drone like a
+shruti box (the "pad"), the bells and the temple's acoustics are
+synthesised by `tools/compose-audio.mjs`, from a score written in sargam
+near the top of that file (`SCORE`). The comments above the score explain
+every symbol. Each phrase is one line, for example:
 
 ```js
 { notes: 'G:1.0 (M)G:0.5 R:0.45 S:1.0 D.:0.45 /P.:3.0', gap: 1.9, level: 0.65 },
@@ -351,9 +499,10 @@ notation has no komal or tivra notes. When the raga changes:
   [Translations](#translations));
 - the scroll chimes stay on S R G P D S', whatever the raga.
 
-The build ships only the music file the site plays (`flute-pahadi-xfade.mp3`
-today); the plain loop, the manifest and any files of an earlier piece left
-in `src/assets/audio/` stay out of the site.
+The build ships only the music file the site plays (today the recording's
+`flute-music-xfade.mp3`; with this piece, `flute-pahadi-xfade.mp3`); the
+plain loop, the manifest and any files of an earlier piece left in
+`src/assets/audio/` stay out of the site.
 
 **The balance** is about 70 % flute and 30 % accompaniment, as the site's
 owner asked. In `MUSIC`, below the score, each layer is set by its
@@ -365,15 +514,19 @@ instrument. A number nearer 0 brings that layer forward; loudness roughly
 halves for every 10 LU. (`shimmerLU` is for the swarmandal, which this piece
 does not use.)
 
-**The tuning.** Everything is tuned to Sa = D at A4 = 432 Hz: the flute's
+**The tuning.** The piece is tuned to Sa = D at A4 = 432 Hz: the flute's
 madhya Sa is D4, 288.3254 Hz (`SCORE.sa`), the tanpura is tuned an octave
-below, and the swaras sit in just intonation above Sa. The bell and the six
-chimes (S R G P D S', 576.65 to 1153.3 Hz) are rendered from the same Sa, and
-the player varies the bell's pitch by only about 5 cents, so it stays on Sa.
-Changing `SCORE.sa` (or `SCORE.seed`) changes every detail of the render.
+below, and the swaras sit in just intonation above Sa. Rendered with the
+piece, the bell and the six chimes (S R G P D S', 576.65 to 1153.3 Hz) take
+the same Sa and the same just intonation; for a recording they take its Sa
+in equal temperament instead (`SFX.equal`, which `tools/use-recording.mjs`
+sets). The player varies the bell's pitch by only about 5 cents, so it
+stays on Sa. Changing `SCORE.sa` (or `SCORE.seed`) changes every detail of
+the render.
 
-To render it (needs Node.js 20 or newer and `ffmpeg` with `libmp3lame` on
-the PATH; a minute or two; the same score always gives the same files):
+To render it and make it the site's music again (needs Node.js 20 or newer
+and `ffmpeg` with `libmp3lame` on the PATH; a minute or two; the same score
+always gives the same files):
 
 ```powershell
 node tools/compose-audio.mjs --plan
@@ -395,16 +548,24 @@ npm test
    what is wrong and in which phrase.
 2. The second command renders and encodes everything into
    `src/assets/audio/`: the music (`flute-pahadi.mp3`, and
-   `flute-pahadi-xfade.mp3`, the copy the site plays: the loop followed by
-   its own first 4.6 seconds, so that two players can hand over without a
-   seam), the temple sounds in `sfx/`, and `manifest.json` (the loop points,
-   the start of the flute and the loudness the site reads).
+   `flute-pahadi-xfade.mp3`, the copy the site then plays: the loop
+   followed by its own first 4.6 seconds, so that two players can hand over
+   without a seam), the temple sounds in `sfx/`, tuned to this piece again,
+   and `manifest.json` (the loop points, the start of the flute and the
+   loudness the site reads). The manifest then names the Pahadi files, so
+   the site plays them; the recording's `flute-music` files stay in
+   `src/assets/audio/`, out of the site (this tool removes no earlier
+   files). The sound panel does not follow: its credit and raga line are
+   set by hand in `src/features/devotion-sound.mjs` (with this piece,
+   `CREDIT` was "Flute: original raga composition for this website" and
+   `RAGA` "Raga Pahadi"), and have to be translated.
    `flute-pahadi.mp3` is encoded circularly, so a player that loops it to
    the sample hears no edge at the wrap. **Always run it whole, with
    `--xfade-tail 4.6`**: `--music` or `--sfx` alone rewrites the manifest
-   with the other part kept from the one already there, and without
-   `--xfade-tail` the manifest names no crossfade copy, so the site falls
-   back to the plain file. It also writes a 30-second listening excerpt,
+   with the other part kept from the one already there (or, after a
+   recording, `--sfx` alone leaves it as it was: see *The temple sounds*,
+   above), and without `--xfade-tail` the manifest names no crossfade copy,
+   so the site falls back to the plain file. It also writes a 30-second listening excerpt,
    `flute-excerpt.mp3`, into a work folder it names at the end (not part of
    the site; `--work` followed by a folder puts the work files there).
    `--wav` renders the WAV files there only, and changes nothing in

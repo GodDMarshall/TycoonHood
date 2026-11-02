@@ -24,19 +24,24 @@ Paths below are inside the project folder (`source\` in the package).
 
 - [ ] **The music and the temple sounds** have been heard and approved by
       the Ashram, on a phone speaker and on headphones. The music is new
-      (26 October 2026): an original bansuri piece in Raga Pahadi, soft and
-      breathy, tuned to A4 = 432 Hz, about 70 % flute and 30 % tanpura and
-      a faint drone pad. The site's owner asked for it after hearing an
-      earlier render, but the Ashram has not heard this piece yet, nor the temple
-      sounds, retuned with it: they were composed, synthesised and measured
-      by software. Open the site in a new private window, choose "Enter with
-      flute music", and let it play for at least four and a half minutes,
-      so that the music goes once round its loop (it is 4 minutes 9 seconds
-      long, and a first play starts 8.5 seconds in, just before the flute;
-      the turn should not be heard). Move to another page while it plays (it
-      should carry on), then scroll a page slowly (the bell and chimes).
-      Ideally a musician of the Peetham listens too, a bansuri player best
-      of all. ([MAINTENANCE.md](MAINTENANCE.md), *Music and temple sounds*.)
+      (2 November 2026): a recording that the site's owner supplied in
+      place of the synthesised bansuri piece, in whose flute they heard a
+      "buzz". It is used as it is, credited "Flute: original composition
+      for this website", with no raga line beneath (both the owner's
+      choices). The Ashram has not heard it yet, nor the temple sounds,
+      retuned to it: they were synthesised and measured by software. Open
+      the site in a new private window, choose "Enter with flute music", and
+      let it play for at least four minutes, so that the music goes once
+      round its loop (3 minutes 39 seconds: the recording, then 1.5 seconds
+      of silence, then the recording again from the beginning, with no click
+      or skip; a first play starts at the beginning). Move to another page
+      while it plays (it should carry on), then scroll a page slowly (the
+      bell and chimes). Ideally a musician of the Peetham listens too.
+      **Where the recording comes from**, as the site's owner states it: it
+      was made with Suno, an AI music service, on the owner's paid account,
+      and the owner owns the song (2 November 2026). The same statement is
+      kept in `src/assets/audio/manifest.json`.
+      ([MAINTENANCE.md](MAINTENANCE.md), *Music and temple sounds*.)
 - [ ] **The same on an iPhone or iPad (Safari) and in Firefox.** The sound
       was tested in Chrome's engine only: check that the music starts after
       "Enter with flute music", carries on to the next page, and goes round

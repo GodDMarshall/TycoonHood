@@ -263,7 +263,9 @@ the Telugu is in `src/i18n/te/part-99-devotion.json`.
     (వేణుగాన కచేరీ). Do not use the calque వేణు సంగీతం, the loanword ఫ్లూట్, or మురళి.
     Inside names the compound form stays as it is: దత్త వేణు, ఎస్‌జీఎస్ దత్త వేణు.
   - Raga Pahadi is పహాడి రాగం, the same pattern as సామ రాగం and వీణావాదిని రాగం. The raga on its own
-    is పహాడి. It is the light-classical raga of the site's bansuri piece, from the folk music of the hills.
+    is పహాడి. It is the light-classical raga of the site's earlier, synthesised bansuri piece, from the
+    folk music of the hills. Since 2026-11-02 the music is a recording and the sound panel shows no raga,
+    so no page uses the term; it is kept here for reference.
   - Tanpura and Tambura are both తంబురా (plural తంబురాలు), as on the music and attractions pages.
   - Shankha (conch) is శంఖం. The conch sound is not used yet: it stays off until the Peetham has
     listened to it, so there is no Telugu string for it.
@@ -279,9 +281,9 @@ the Telugu is in `src/i18n/te/part-99-devotion.json`.
   directly, and these are the forms that fit the 300px card the way the English does: the
   question on one line and the two buttons side by side. The longer వినాలనుకుంటున్నారా? and
   వేణుగానం ప్లే చేయండి each pushed the card onto an extra line (measured at 360, 390 and 1440 px).
-- The credit is the client's own wording: వేణువు: ఈ వెబ్‌సైట్ కోసం రూపొందించిన మౌలిక రాగ రచన.
-  "Original" is మౌలిక, as in మౌలిక రచన (an original work). Do not use అసలైన, which reads as "genuine".
-  The raga is traditional and the composition is new, so do not turn it into "a new raga", and
-  do not attribute the music to Sri Swamiji.
+- The credit is the site owner's own wording: వేణువు: ఈ వెబ్‌సైట్ కోసం రూపొందించిన మౌలిక రచన.
+  Since 2026-11-02 it has no word for raga, at the owner's choice (it was మౌలిక రాగ రచన, for "original
+  raga composition"); do not add one. "Original" is మౌలిక, as in మౌలిక రచన (an original work). Do not
+  use అసలైన, which reads as "genuine". Do not attribute the music to Sri Swamiji.
 - Status lines are whole short sentences ending in a full stop: సంగీతం ఆఫ్‌లో ఉంది. "Tap" is
   స్క్రీన్‌ను తాకడం. "Could not be loaded" is లోడ్ కాలేదు, which is neutral, with no "we".

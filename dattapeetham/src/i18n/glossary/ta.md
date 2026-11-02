@@ -210,7 +210,9 @@ These settle questions the translators raised; the glossary has the matching ent
       way and each fits on one line at 390 px. With புல்லாங்குழல் இசையுடன் நுழைக the curtain button broke onto two lines.
       வேணு stays only inside names: தத்த வேணு ராக சாகர, and the app SGS Datta Venu stays in Latin.
     - Raga Pahadi → **பஹாடி ராகம்**, like வீணாவாதினி ராகம் and ஸாம ராகம் elsewhere on the site. It is the light-classical
-      raga of the site's bansuri piece, from the folk music of the hills. Keep the raga's name as the English gives it.
+      raga of the site's earlier, synthesised bansuri piece, from the folk music of the hills. Since 2026-11-02 the music
+      is a recording and the sound panel shows no raga, so no page uses the term; it is kept here for reference. Keep a
+      raga's name as the English gives it.
     - Tanpura / Tambura → **தம்புரா** (plural தம்புராக்கள், as on the music and attractions pages).
     - Shankha (conch) → **சங்கு**. The conch is not used yet: it stays off until the Peetham has listened to it.
     - "Sound" as the name of the control → **ஒலி** (Sound settings → ஒலி அமைப்புகள், the sound button → ஒலி பொத்தான்,
@@ -224,9 +226,10 @@ These settle questions the translators raised; the glossary has the matching ent
   - The question on the late card is **குழலிசையுடன் படிக்க விரும்புகிறீர்களா?** ("would you like to read with flute
     music?"): polite -ீர்களா, parallel to the curtain button, two lines in the 300 px card. The literal படிக்கும்போது
     குழலிசையைக் கேட்க விரும்புகிறீர்களா? took three.
-  - The credit is the client's own wording, so keep it close to word for word:
-    **புல்லாங்குழல்: இந்த இணையதளத்துக்கான புதிய ராக இசையமைப்பு**. "Original" is புதிய (a new composition, not an
-    existing piece). Do not use மூல, which can read as "the root raga", and do not add இயற்றப்பட்ட, which repeats
-    இசையமைப்பு.
+  - The credit is the site owner's own wording, so keep it close to word for word:
+    **புல்லாங்குழல்: இந்த இணையதளத்துக்கான புதிய இசையமைப்பு**. Since 2026-11-02 it has no word for raga, at the owner's
+    choice (it was புதிய ராக இசையமைப்பு, for "original raga composition"); do not add one. "Original" is புதிய (a new
+    composition, not an existing piece). Do not use மூல, which next to ராக could read as "the root raga", and do not
+    add இயற்றப்பட்ட, which repeats இசையமைப்பு.
   - Status lines are whole short sentences: இசை அணைக்கப்பட்டுள்ளது. · குழலிசை ஒலிக்கிறது. "Tap" is திரையைத் தொடுதல்,
     a browser tab is **தாவல்**, and "paused" is **இடைநிறுத்தப்படுகிறது** (Pause → இடைநிறுத்து on the rest of the site).

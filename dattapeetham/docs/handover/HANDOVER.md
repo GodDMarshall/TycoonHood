@@ -81,15 +81,19 @@ languages are in folders: `/kn/about.html`, `/hi/about.html`,
 
 ### Sound: what the visitor hears, and only when they choose it
 
-- **The music** is a soft, breathy piece for bansuri (the Hindustani
-  bamboo flute) in Raga Pahadi, over a tanpura and a faint drone like that
-  of a shruti box, composed and synthesised for this website (it is not a
-  recording of anyone) and tuned to A4 = 432 Hz. The flute is about 70 % of
-  what is heard and the accompaniment about 30 %. The sound panel credits
-  it as *"Flute: original raga composition for this website"*, with *Raga
-  Pahadi* beneath. It is about 4 minutes long (4 min 9 s) and loops without
-  a break; a first play starts just before the flute comes in, and the
-  music carries on from page to page.
+- **The music** is a recording that the site's owner supplied on
+  2 November 2026, made with Suno (an AI music service) on the owner's paid
+  account; the owner states that they own the song. It replaced a piece for
+  bansuri in Raga Pahadi that had been composed and synthesised for this
+  website, in whose flute the owner heard a "buzz". The recording is used
+  as it is: nothing is filtered, compressed or added, and only its level is
+  set. The sound panel credits it as *"Flute: original composition for this
+  website"*, the owner's wording, with no raga beneath: despite its file
+  name (`Raga_Brindavana_Saranga.m4a`), the recording is not in a raga the
+  site can name. It is about 3½ minutes long (3 min 39 s, with 1.5 seconds
+  of silence at the end) and goes round its loop without a seam; a first
+  play starts at the beginning, and the music carries on from page to
+  page.
 - **Temple sounds while scrolling:** a soft chime now and then while
   reading, rising up the scale as the reader goes down the page, and a small
   bell as a new section arrives. A conch (shankha) at the end of a page also
@@ -113,7 +117,7 @@ languages are in folders: `/kn/about.html`, `/hi/about.html`,
   the visitor's first tap or key (the panel says so) rather than starting by
   itself. It pauses while another video or recording plays, when the tab is
   hidden, and when another tab of the site plays it.
-- The audio comes from the website itself: the music file is about 4 MB,
+- The audio comes from the website itself: the music file is about 5.2 MB,
   the seven temple sounds about 165 KB together, downloaded only by visitors
   who chose sound. What the browser stores for this is listed in
   [PRIVACY-DATA-INVENTORY.md](PRIVACY-DATA-INVENTORY.md).
@@ -328,7 +332,7 @@ do not quote any.
 | --- | --- |
 | **Hosting** | Any web server or static host that serves files over HTTPS (see [DEPLOY.md](DEPLOY.md)). No database, and nothing to install on the server: no Node.js, PHP or other server-side code. |
 | **Space** | Under 1 GB. `VERSION.txt` gives the exact size of the `website` folder; almost all of it is photos. |
-| **Traffic** | Measured on version 1.0.0, from the site's own server: a visitor who reads one page to the end downloads about 0.5 to 2.5 MB (desktop; less on a phone). The home page is the largest. A visitor who chooses sound also downloads the music once (about 4 MB) and the temple sounds (about 165 KB). Photos and audio are kept by the browser for 30 days and CSS and JavaScript for a year, so returning visitors download much less. |
+| **Traffic** | Measured on version 1.0.0, from the site's own server: a visitor who reads one page to the end downloads about 0.5 to 2.5 MB (desktop; less on a phone). The home page is the largest. A visitor who chooses sound also downloads the music once (about 5.2 MB) and the temple sounds (about 165 KB). Photos and audio are kept by the browser for 30 days and CSS and JavaScript for a year, so returning visitors download much less. |
 | **Certificate** | One HTTPS certificate covering `www.dattapeetham.org` and `dattapeetham.org`. Let's Encrypt issues them free of charge; many hosts set one up themselves. |
 | **Outside services** | Google Fonts, the Google Maps embed (Visit and Contact pages) and the YouTube player. The site uses them without any account or API key. What each one receives is in [PRIVACY-DATA-INVENTORY.md](PRIVACY-DATA-INVENTORY.md). |
 | **The existing platform** | Keeps running with its own vendor, as today, at a new address of its own (which needs its own HTTPS certificate). |
@@ -366,6 +370,7 @@ publishers'; the agency confirms them before the hand-over.
 | Lenis (smooth scrolling) | `src/assets/vendor/lenis.min.js` | **TO CONFIRM (agency):** the file carries no licence header |
 | Web fonts: Cormorant Garamond, Marcellus, Inter, Noto Serif Devanagari, Noto Sans and Noto Serif Kannada, Noto Sans Devanagari, Tamil and Telugu | Served by Google Fonts | Google Fonts' terms; **TO CONFIRM (agency)** |
 | Google Maps embed, YouTube player | Loaded from Google | Google's terms |
+| The flute recording (the background music) | `src/assets/audio/flute-music*.mp3`, made from the owner's file by `tools/use-recording.mjs` | Made with Suno on the site owner's paid account; the owner states they own the song (2 November 2026). **TO CONFIRM (agency):** keep the owner's written confirmation with the hand-over |
 
 **The photos** are the Peetham's own, from its storage bucket. Most of them
 were small web copies (half of them 800 pixels wide or less), so the agency

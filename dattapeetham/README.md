@@ -82,19 +82,23 @@ All motion switches off when the visitor's system asks for reduced motion.
 
 And a devotional layer (plan and measurements: `docs/DEVOTION-PLAN.md`):
 
-- Flute music, an original bansuri piece in Raga Pahadi made for this
-  website (credited "Flute: original raga composition for this website"),
-  soft and breathy, tuned to A4 = 432 Hz, about 70 % flute over a tanpura
-  and a faint shruti-box-like drone, and soft temple sounds (tuned with it)
-  while scrolling. Nothing plays, and no audio is downloaded, without the
-  visitor's choice: the first visit asks inside the opening curtain ("Enter
-  with flute music" / "Enter in silence"), the answer is remembered, and a
-  sound button on every page switches both. A first play starts just before
-  the flute comes in; the music carries on from page to page and loops
-  seamlessly (two players hand over in step to the sample). The conch (shankha) is off until the Peetham
-  has listened to it (`SHANKHA` in `src/features/devotion-sound.mjs`). The
-  music is re-rendered from its sargam score with
-  `node tools/compose-audio.mjs --xfade-tail 4.6` (`MAINTENANCE.md`).
+- Flute music, a recording the site's owner supplied (made with Suno, an
+  AI music service, on the owner's paid account; the owner states that they
+  own the song), used as it is and credited "Flute: original composition
+  for this website", with no raga line, and soft temple sounds (tuned to
+  it) while scrolling. Nothing plays, and no audio is downloaded, without
+  the visitor's choice: the first visit asks inside the opening curtain
+  ("Enter with flute music" / "Enter in silence"), the answer is
+  remembered, and a sound button on every page switches both. A first play
+  starts at the beginning; the music carries on from page to page and goes
+  round its loop (the recording, then 1.5 s of silence) without a seam (two
+  players hand over in step to the sample). The conch (shankha) is off
+  until the Peetham has listened to it (`SHANKHA` in
+  `src/features/devotion-sound.mjs`). The music is made from a recording
+  with `node tools/use-recording.mjs <recording> --sa <Hz>`;
+  `node tools/compose-audio.mjs --xfade-tail 4.6` renders the earlier,
+  synthesised bansuri piece in Raga Pahadi from its sargam score instead
+  (`MAINTENANCE.md`).
 - One to three quiet motifs on each page drawn from acts of worship: lamps
   lit one after another, a lamp lit from a lamp, flowers offered, incense,
   the aarti, the lotus, the kolam, nada and the temple bell. A small flame

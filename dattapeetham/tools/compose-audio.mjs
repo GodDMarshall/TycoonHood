@@ -1839,6 +1839,14 @@ async function main() {
   const encode = !args.includes('--wav');
   if (args.includes('--plan')) { printPlan(); return; }
   const doMusic = !args.includes('--sfx') || args.includes('--music'), doSfx = !args.includes('--music') || args.includes('--sfx');
+  // while the site plays a recording (tools/use-recording.mjs), a part rendered here alone would
+  // not belong with it: temple sounds tuned to this score's Sa, or a manifest describing music the
+  // site does not play. Running whole replaces the recording with this piece; that is allowed.
+  if (encode && doMusic !== doSfx) {
+    let man = null;
+    try { man = JSON.parse(await readFile(join(OUT, 'manifest.json'), 'utf8')); } catch { /* none */ }
+    if (man && man.music && man.music.recording) throw new Error(`the site plays a recording (${man.music.file}): ${doSfx ? 'temple sounds made here alone would be tuned to this score, not to it' : 'music made here alone would not match its temple sounds'}. Run tools/use-recording.mjs again for the recording, or this tool whole (--xfade-tail 4.6) to go back to the synthesised piece.`);
+  }
   if (encode && doMusic && tail === undefined) console.warn(`  ! no --xfade-tail: the manifest gets no music.xfade, so the site falls back to looping ${NAME}.mp3 one tanpura cycle short; the site's own copy is made with --xfade-tail 4.6`);
   const top = { credit: CREDIT, raga: ragaOf(SCORE.raga).label, sa: noteOf(SCORE.sa).note, saHz: +SCORE.sa.toFixed(4), tuning: TUNING, sampleRate: SR };
   const ship = []; // every MP3 made in the work folder, with where it goes in OUT
