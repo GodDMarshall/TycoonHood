@@ -575,6 +575,46 @@ test('sound: an unanswered first-visit question lifts the curtain after about 4 
   assert.match(css, /\.snd-inviting \.intro \{[^}]*animation: snd-lift [^}]*var\(--snd-hold/, 'the CSS still lifts the curtain if the script stops');
 });
 
+// The opening screen (2026-11-03): the namaskara on a first visit ever, the short loading screen
+// after it (localStorage dp-welcome, docs/DEVOTION-PLAN.md "The opening screen: namaskara")
+test('opening screen: a first visit ever is told from a return, and the flute question waits for the namaskara', async () => {
+  for (const { f, lang, html } of pages) {
+    const head = (/<script>[^<]*'dp-intro'[^<]*<\/script>/.exec(html) || [''])[0];
+    assert.ok(head, `${f}: no curtain flags in the head script`);
+    // dp-welcome is read and set only on a page that shows the curtain, and a storage error counts as a return
+    assert.ok(head.indexOf("'dp-intro'") < head.indexOf("'dp-welcome'"), `${f}: dp-welcome before the once-per-session check`);
+    assert.match(head, /if\(s\)\{d\.classList\.add\('intro-seen'\);return;\}/, `${f}: a page without the curtain must not use up dp-welcome`);
+    assert.match(head, /catch\(e\)\{d\.classList\.add\('welcome-seen'\);\}/, `${f}: storage that throws counts as a returning visit`);
+    // a page leaving for the remembered language uses up no flag, and mid-session shows no curtain
+    assert.match(head, /if\(!L\)sessionStorage\.setItem\('dp-intro','1'\)/, `${f}: a leaving page must not use up dp-intro`);
+    assert.ok(head.indexOf("if(s){d.classList.add('intro-seen');return;}if(L)return;") > 0, `${f}: a leaving page sets no dp-welcome`);
+    const intro = (/<div class="intro"[\s\S]*?\n<\/div>/.exec(html.slice(html.indexOf('<body'))) || [''])[0];
+    assert.match(intro, /<div class="intro-mark">[\s\S]*<svg class="ih-l"[\s\S]*<svg class="ih-r"/, `${f}: the two hands in the art box`);
+    // two separate segments, so each is translated on its own
+    assert.match(intro, /<p class="intro-hello intro-hello-first" aria-hidden="true">[^<]+<\/p>\s*<p class="intro-hello intro-hello-back" aria-hidden="true">[^<]+<\/p>/, `${f}: the two greetings`);
+    if (lang === 'en') assert.match(intro, />Welcome to<\/p>[\s\S]*>Welcome<\/p>/);
+    else assert.doesNotMatch(intro, />Welcome( to)?<\/p>/, `${f}: a greeting left in English`);
+  }
+  const js = await readFile(join(SITE, 'assets/js/devotion-sound.js'), 'utf8');
+  assert.match(js, /INTRO_Q = root\.classList\.contains\('welcome-seen'\) \? 1500 : 2200;/, 'the question rises after the hands have joined (2.2 s), 1.5 s on the loading screen');
+  assert.doesNotMatch(js, /elapsed > 1450|1500 - elapsed|c0 \+ 1500|c0 \+ 1560/, 'a curtain time still hard-coded at 1.5 s');
+  // a late script reads the curtain's own exit (the wipe, or the reduced-motion fade) and never holds a curtain on its way out
+  assert.match(js, /a\.animationName === 'intro-lift' \|\| a\.animationName === 'ih-out'; \}\)\[0\];/, 'the late threshold reads the curtain exit');
+  assert.match(js, /elapsed > INTRO_Q - 50 \|\| \(lift && \+lift\.currentTime > liftAt - 150\)/, 'the late threshold also checks the exit on its own clock');
+  const css = await readFile(join(SITE, 'assets/css/site.css'), 'utf8');
+  const block = css.slice(css.indexOf('/* The opening screen'), css.indexOf('/* emphasis sheen'));
+  assert.ok(block.length > 1000, 'the opening screen rules in site.css');
+  assert.match(block, /@keyframes intro-lift \{ from \{ clip-path: inset\(0 0 0 0\); \}/, 'the lift starts from a clip-path it can interpolate (a wipe, not a cut at half time)');
+  assert.doesNotMatch(block, /\binfinite\b/, 'every loop under the curtain is finite');
+  // the lift (main thread) can start up to ~0.24 s after the art: it is timed to end by 2.9 s
+  for (const [sel, at, d] of [['.intro', 2.2, 0.7], ['.welcome-seen .intro', 2, 0.8]]) {
+    const m = new RegExp(`\\n${reEsc(sel)} \\{[^}]*--lift-at: ([\\d.]+)s; --lift-d: ([\\d.]+)s;`).exec(block);
+    assert.ok(m, `${sel}: the lift's times`);
+    assert.deepEqual([+m[1], +m[2]], [at, d], `${sel}: the lift's times`);
+    assert.ok(at + d <= 2.9 + 1e-9, `${sel}: gone by ${at + d} s`);
+  }
+});
+
 test('sound: a fling is read from the wheel and the finger, and a temple sound that falls due waits for it', async () => {
   const js = await readFile(join(SITE, 'assets/js/devotion-sound.js'), 'utf8');
   assert.match(js, /addEventListener\(IN\[0\], onWheel/, 'wheel steps are watched while the temple sounds are on');

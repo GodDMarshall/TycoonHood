@@ -258,6 +258,9 @@ These strings belong to the opening-curtain invitation, the round sound button a
 and the small card shown on slow connections. The English is in `src/features/devotion-sound.mjs`;
 the Telugu is in `src/i18n/te/part-99-devotion.json`.
 
+- **The opening screen** (2026-11-03): "Welcome to" is సుస్వాగతం and "Welcome" (the returning visitor's
+  loading screen) is స్వాగతం. Each sits on its own line above the Latin wordmark AVADHOOTA DATTA PEETHAM,
+  so it is a standalone greeting: the name takes no case ending (no -కు). Not yet reviewed by a native speaker.
 - **Terms** (all in `te.json`):
   - Flute is వేణువు. Flute music is వేణుగానం, the usual Telugu word for flute playing
     (వేణుగాన కచేరీ). Do not use the calque వేణు సంగీతం, the loanword ఫ్లూట్, or మురళి.

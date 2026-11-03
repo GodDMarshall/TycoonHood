@@ -19,13 +19,16 @@
 // `node build.mjs --extract`; runtime strings come from fmt() calls in the JS).
 //
 // Behaviour worth knowing (review stage, polish):
-// - The invitation appears 1.5 s into the curtain (after its own animation) and
-//   takes focus (a modal dialog). Unanswered for 4 s, or on a scroll, Escape or
-//   a tap on the curtain, the curtain lifts (gone 6.4 s into it; it used to hold
-//   ~10.4 s), focus returns to the start of the page, and the same choice
-//   carries on as a small non-modal card above the sound button ("Would you
-//   like flute music while you read?" · "Play flute music" · "Not now"), which
-//   Tab reaches right after the skip link. A pointer resting on the choices, or
+// - The invitation appears once the curtain's own animation has played (2.2 s
+//   into it on a first visit ever, after the namaskara; 1.5 s on a returning
+//   visitor's loading screen: INTRO_Q in the script) and takes focus (a modal
+//   dialog). Unanswered for 4 s, or on a scroll, Escape or a tap on the
+//   curtain, the curtain lifts (gone about 7.1 s into it on a first visit ever,
+//   6.4 s on the loading screen; it used to hold ~10.4 s), focus returns to the
+//   start of the page, and the same choice carries on as a small non-modal
+//   card above the sound button ("Would you like flute music while you
+//   read?" · "Play flute music" · "Not now"), which Tab reaches right after
+//   the skip link. A pointer resting on the choices, or
 //   Tab between them, holds the curtain. The card is also how the choice is
 //   offered when the script arrives after the CSS curtain has lifted (slow
 //   connections: measured at 1.6 Mbps / 150 ms latency the deferred scripts

@@ -723,6 +723,10 @@
   // visitor moves between them with Tab, the curtain waits (a lift under a pointer about to
   // click would land the click on the page beneath); leaving them, it lifts AGAIN ms later.
   var ASK = 4000, AGAIN = 2000;
+  // The question rises once the curtain's own animation has played: on a first visit ever after
+  // the namaskara (the hands join at 1.4 s, the name is in by about 2.1 s), on the loading screen
+  // of a returning visitor (.welcome-seen, set by the head script) at 1.5 s, as before.
+  var INTRO_Q = root.classList.contains('welcome-seen') ? 1500 : 2200;
   // Focus back to the start of the page, as on arrival: the next Tab reaches the skip link and
   // then the sound control. (A plain blur() leaves Chromium's sequential focus starting point
   // inside the hidden curtain, so Tab would skip both and land on the header.) Focusing the body
@@ -734,8 +738,13 @@
   }
   function invite() {
     var intro = $('.intro'), inv = $('[data-sound-invite]');
+    // once the curtain has gone by itself (its wipe, or with reduced motion its fade), take it out
+    // of the page, so the slow loops of its art stop under it
+    if (intro) intro.addEventListener('animationend', function (e) { if (e.target === intro && (e.animationName === 'intro-lift' || e.animationName === 'ih-out')) intro.style.display = 'none'; });
     if (pref || !intro || !inv || root.classList.contains('intro-seen') || getComputedStyle(intro).display === 'none') return;
-    var lift = (intro.getAnimations ? intro.getAnimations() : []).filter(function (a) { return a.animationName === 'intro-lift'; })[0];
+    // the curtain's own exit: the wipe, or with reduced motion the fade (site.css)
+    var lift = (intro.getAnimations ? intro.getAnimations() : []).filter(function (a) { return a.animationName === 'intro-lift' || a.animationName === 'ih-out'; })[0];
+    var liftAt = lift && lift.effect ? +lift.effect.getTiming().delay || 0 : Infinity;
     // The curtain's own clock: when its animations started. They start with the first frame
     // that shows them, which on a busy device comes well after this script runs (measured:
     // up to 0.5 s), so the times below are kept to it rather than to this moment.
@@ -745,10 +754,12 @@
     var started = function () { return !!(ma && ma.startTime != null); };
     var elapsed = started() ? performance.now() - ma.startTime : lift ? +lift.currentTime || 0 : performance.now();
     // the curtain is already lifting (a slow connection: the script arrived late): ask in a
-    // small card beside the sound button instead, so a first visit is always offered the choice
-    if (elapsed > 1450) { offer(inv); return; }
-    // the question appears once the curtain's own animation has played (mandala, name, bar: 1.5 s)
-    var showIn = Math.max(0, 1500 - elapsed), timer, done = false, label = $('.intro-label', intro), auto = false, engaged = false;
+    // small card beside the sound button instead, so a first visit is always offered the choice.
+    // Its exit runs on its own clock, which can be up to 0.2 s ahead of the art's, so that is
+    // checked too (150 ms early): holding a curtain already on its way out would snap it back.
+    if (elapsed > INTRO_Q - 50 || (lift && +lift.currentTime > liftAt - 150)) { offer(inv); return; }
+    // the question appears once the curtain's own animation has played (INTRO_Q above)
+    var showIn = Math.max(0, INTRO_Q - elapsed), timer, done = false, label = $('.intro-label', intro), auto = false, engaged = false;
     var due = performance.now() + showIn + ASK, focusT;
     var choices = $$('[data-sound-enter]', inv);
     root.style.setProperty('--snd-in', showIn + 'ms');
@@ -819,14 +830,14 @@
     };
     wait(showIn + ASK); // no answer yet: lift the curtain and ask in the corner instead
     focusT = setTimeout(takeFocus, showIn + 60);
-    // once the curtain's clock runs: the question rises at 1.5 s of it and the curtain lifts ASK later
+    // once the curtain's clock runs: the question rises at INTRO_Q of it and the curtain lifts ASK later
     if (ma && ma.ready) ma.ready.then(function () {
       if (done || !started()) return;
       var c0 = ma.startTime, now = performance.now();
-      inv.getAnimations().forEach(function (a) { if (a.animationName === 'snd-rise') a.startTime = c0 + 1500 - showIn; });
-      due = c0 + 1500 + ASK;
+      inv.getAnimations().forEach(function (a) { if (a.animationName === 'snd-rise') a.startTime = c0 + INTRO_Q - showIn; });
+      due = c0 + INTRO_Q + ASK;
       if (!engaged) wait(Math.max(0, due - now));
-      clearTimeout(focusT); focusT = setTimeout(takeFocus, Math.max(0, c0 + 1560 - now));
+      clearTimeout(focusT); focusT = setTimeout(takeFocus, Math.max(0, c0 + INTRO_Q + 60 - now));
     }, noop);
   }
 

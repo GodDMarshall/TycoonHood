@@ -153,6 +153,7 @@ The build rejects any Hindi string whose digit sequences differ from the English
 - **Labels that sit before a name filled in by the page** must agree with any noun: the top-bar "Next ·" before the next ritual is आगामी (gender-neutral, so it works before हनुमान आरती and हनुमान अभिषेक alike); the search-hint "Try" is सुझाव.
 - **External-link arrows** (`<2/>` inside the link pair, as in `Datta Kashi on <1>dattapeetham.org<2/></1>`) belong at the end of the link: दत्त काशी — `<1>dattapeetham.org<2/></1>`, not `<1>dattapeetham.org<2/></1>` पर दत्त काशी.
 - **Highlighted words** (gold, italic words inside headings) are drawn with a gradient that currently cuts off marks above and below the line (ि, ी, े, ं, र्). This is a CSS issue, not a translation issue; do not reword headings to avoid it.
+- **The opening screen** (2026-11-03): "Welcome to" is आपका स्वागत है and "Welcome" (the returning visitor's loading screen) is स्वागत है. Each sits on its own line above the Latin wordmark AVADHOOTA DATTA PEETHAM, so it is a standalone greeting: the name takes no postposition (no …में). Not yet reviewed by a native speaker.
 - **The devotional sound** (the opening-curtain invitation, the sound button and its panel; English in `src/features/devotion-sound.mjs`):
   - Terms:
     - Flute → बाँसुरी, the everyday Hindi word. वेणु stays only inside names: दत्त वेणु, एसजीएस दत्त वेणु, दत्त वेणु राग सागर.

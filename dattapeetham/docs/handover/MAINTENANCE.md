@@ -597,6 +597,46 @@ pages, and honorifics follow the Peetham's usage.
 Transactions stay on the existing platform: never add a form that looks as if
 it takes payments or sign-ins.
 
+## The opening screen
+
+The opening screen covers the first page a visitor opens in a browser tab,
+for about 3 seconds, then lifts away. It has two forms:
+
+- **The first visit ever in this browser:** two golden hands glide in
+  from either side and meet in namaskara (by 1.4 s). A soft light blooms as
+  they meet, inside the site's mandala, above a small lotus. Then "Welcome
+  to", "Avadhoota Datta Peetham" and "Jaya Guru Datta" rise, and the screen
+  lifts (gone by 3 s).
+- **Every later visit:** the same hands, already joined, glow and
+  "breathe" like a loading screen, under "Welcome", with a gold bar that
+  fills. The screen lifts from about 2 s and is gone by 3 s.
+
+The browser remembers the first visit in `dp-welcome` (see
+`PRIVACY-DATA-INVENTORY.md`). Where the browser does not let the site keep
+it (site data blocked), every visit counts as a later one; a private window
+keeps it until the window is closed. When no sound choice is stored
+yet, the flute-music question appears inside the screen once the hands have
+joined (2.2 s; 1.5 s on the loading screen) and holds it, as described under
+[Music and temple sounds](#music-and-temple-sounds). With "reduce motion" set
+in the device's settings, the hands are shown joined, only the light and the
+words fade in, and the screen fades out by 2.5 s.
+
+| What | Where |
+| --- | --- |
+| The hands, the lotus, the mandala and rays (an illustration in SVG) | `INTRO_ART` in `src/layout.mjs` |
+| The words ("Welcome to", "Welcome", "Jaya Guru Datta") | the `<div class="intro">` block in `src/layout.mjs` |
+| The timing, sizes, colours, phone and reduced-motion rules | the "opening screen" block in `src/assets/css/site.css` |
+| When the flute question appears (`INTRO_Q`) | `src/assets/js/devotion-sound.js` |
+
+Changing a word there means a sentence to translate (see
+[Translations](#translations)). The two greetings are in
+`src/i18n/kn/part-99-devotion.json` and the matching hi, ta and te files.
+
+**To see it again** while checking a change: open the site in a new tab (the
+screen shows once per tab). To see the first-visit namaskara again, also
+delete `dp-welcome`: press F12, then *Application → Local storage*, select
+the site, and delete the entry (or open a new private window).
+
 ## Translations
 
 English is the source. Each language has dictionaries in

@@ -629,23 +629,108 @@ html.js:not([lang="en"]) [data-split] .w { white-space: normal; max-width: 100%;
 main { animation: page-enter .7s var(--ease-k) backwards; }
 @keyframes page-enter { from { opacity: 0; } }
 
-/* intro curtain: once per session, CSS-timed so a JS failure can never trap content */
-.intro { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; align-content: center; gap: 22px; background: radial-gradient(120% 80% at 50% 110%, #2a3b2f 0%, var(--forest) 45%, var(--night) 100%); color: var(--gold-2); pointer-events: none; animation: intro-lift .9s cubic-bezier(.76, 0, .24, 1) 1.65s forwards; }
+/* The opening screen, once per session and CSS-timed from the first paint (it plays without JS).
+   First visit ever: the namaskara, lifting 2.2-2.9 s; .welcome-seen: the loading screen, 2.0-2.8 s.
+   Variants set custom properties and children only, never .intro's animation (devotion-sound.css
+   holds it for the flute question). Timings, sizes and measurements: docs/DEVOTION-PLAN.md,
+   "The opening screen: namaskara". */
+.intro { --room: 470px; --art-min: 130px; --art: min(400px, 42vh, 72vw, max(var(--art-min), 100vh - var(--room))); --lift-at: 2.2s; --lift-d: .7s; position: fixed; inset: 0; z-index: 200; display: grid; grid-template-rows: 2fr auto 3fr; justify-items: center; padding: 16px; overflow: hidden; background: radial-gradient(120% 80% at 50% 110%, #2a3b2f 0%, var(--forest) 45%, var(--night) 100%); color: var(--gold-2); pointer-events: none; animation: intro-lift var(--lift-d) cubic-bezier(.76, 0, .24, 1) var(--lift-at) forwards; }
+/* --room keeps space below the art for the name and the flute question, so the art never moves when
+   the question appears (2fr/3fr: a question taller than its row takes from row 1, never stretches row 2) */
+@supports (height: 1svh) { .intro { --art: min(400px, 42svh, 72vw, max(var(--art-min), 100svh - var(--room))); } }
+html[lang="ta"] .intro { --room: 540px; }
+@media (max-width: 359px) { .intro { --room: 520px; --art-min: 108px; } html[lang="ta"] .intro { --room: 560px; } }
+.welcome-seen .intro { --lift-at: 2s; --lift-d: .8s; }
 .intro-seen .intro { display: none; }
-@keyframes intro-lift { to { clip-path: inset(0 0 100% 0); visibility: hidden; } }
-.intro-mark { width: 104px; height: 104px; animation: intro-spin 1.4s cubic-bezier(.3, 0, .12, 1) 60ms both; filter: drop-shadow(0 0 18px rgba(226, 200, 142, .35)); }
-@keyframes intro-spin { from { transform: rotate(-360deg) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
-.intro-word { display: flex; gap: .02em; overflow: hidden; font-family: var(--display); font-size: clamp(1.1rem, 3.4vw, 1.7rem); letter-spacing: .3em; text-transform: uppercase; color: var(--gold-3); padding-bottom: 4px; }
-.intro-word span { display: inline-block; transform: translateY(110%); animation: intro-letter .8s var(--ease-k) forwards; }
-/* phones: the wordmark at .3em ran past both screen edges below ~390px and was clipped (measured:
-   -14px each side at 360, -21px at 320); the first-visit sound choice now holds this curtain on screen */
-@media (max-width: 480px) { .intro-word { font-size: clamp(.95rem, 4.4vw, 1.1rem); letter-spacing: .2em; } }
+/* from inset(0): from `none` it cannot interpolate, and the curtain was cut at half time */
+@keyframes intro-lift { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); visibility: hidden; } }
+/* full width, so a web-font swap moves only the text (CLS) */
+.intro-core { grid-row: 2; justify-self: stretch; display: grid; align-content: start; justify-items: center; text-align: center; }
+.intro > .snd-invite { grid-row: 3; align-self: start; margin-top: clamp(22px, 3.4vh, 34px); }
+
+/* the art (INTRO_ART in src/layout.mjs); its lowest 11% is empty, and the words come up into it */
+.intro-mark { position: relative; height: var(--art); aspect-ratio: 26 / 30; margin-bottom: calc(var(--art) * -.06 + 8px); animation: ih-fade .5s ease-out both; }
+.intro-mark > * { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ih-glow { inset: -12% -36%; width: auto; height: auto; background: radial-gradient(closest-side at 50% 44%, rgba(255, 214, 140, .5), rgba(226, 170, 90, .2) 42%, rgba(201, 137, 58, .06) 68%, transparent); opacity: .22; transform: scale(.72); animation: ih-bloom 1.2s cubic-bezier(.2, .7, .2, 1) 1.25s forwards; }
+.ih-halo { color: var(--gold-3); opacity: 0; animation: ih-halo 1.5s ease-out .3s forwards; }
+.ih-halo svg { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: 50% 42.667%; animation: ih-turn 60s linear; }
+.ih-rays { opacity: 0; transform-origin: 50% 42.667%; transform: scale(.9); animation: ih-rays 1.2s cubic-bezier(.2, .7, .2, 1) 1.3s forwards; }
+.ih-ring { inset: 3.67% auto auto 5%; width: 90%; height: auto; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, transparent 70%, rgba(255, 234, 190, .2) 86%, transparent); opacity: 0; animation: ih-ring 1.3s cubic-bezier(.2, .6, .3, 1) 1.32s; }
+.ih-lotus { transform-origin: 50% 88%; animation: ih-open .9s var(--ease-k) 1.15s both; }
+/* each hand turns about its wrist: open as it glides in, wrists meet near 1.0 s, palms close by 1.4 s */
+.ih-l, .ih-r { transform-origin: 50% 69.333%; filter: drop-shadow(0 0 6px rgba(240, 200, 120, .28)); animation: ih-l 1.3s cubic-bezier(.3, 0, .35, 1) .1s both; }
+.ih-r { animation-name: ih-r; }
+.ih-seam { inset: 12% auto auto 46%; width: 8%; height: 56%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 248, 228, .75), rgba(255, 236, 196, .22) 55%, transparent); opacity: 0; animation: ih-seam 1.6s ease-out 1.3s forwards; }
+@keyframes ih-fade { from { opacity: 0; } }
+@keyframes ih-in { to { opacity: 1; } }
+@keyframes ih-l { from { opacity: 0; transform: translateX(-30%) rotate(-14deg); } 28% { opacity: 1; } 70% { transform: translateX(-2.5%) rotate(-7deg); animation-timing-function: cubic-bezier(.45, 0, .3, 1); } to { opacity: 1; transform: none; } }
+@keyframes ih-r { from { opacity: 0; transform: translateX(30%) rotate(14deg); } 28% { opacity: 1; } 70% { transform: translateX(2.5%) rotate(7deg); animation-timing-function: cubic-bezier(.45, 0, .3, 1); } to { opacity: 1; transform: none; } }
+@keyframes ih-bloom { 40% { opacity: 1; transform: scale(1.05); } to { opacity: .85; transform: none; } }
+@keyframes ih-halo { to { opacity: .26; } }
+@keyframes ih-turn { to { transform: rotate(1turn); } }
+@keyframes ih-rays { 35% { opacity: 1; } to { opacity: .5; transform: none; } }
+@keyframes ih-ring { from { opacity: 0; transform: scale(.5); } 12% { opacity: 1; } 55% { opacity: .3; } to { opacity: 0; transform: scale(1.7); } }
+@keyframes ih-open { from { opacity: 0; transform: scale(.3, .5); } 35% { opacity: 1; } }
+@keyframes ih-seam { 22% { opacity: .8; } to { opacity: .3; } }
+
+.intro-hello { margin: 0 0 6px; font: italic 500 clamp(1.3rem, 2.4vw, 1.65rem)/1.25 var(--serif); letter-spacing: .03em; color: var(--cream-on-dark); opacity: 0; animation: ih-rise .6s var(--ease-k) 1.36s forwards; }
+.intro-hello-back, .welcome-seen .intro-hello-first { display: none; }
+.welcome-seen .intro-hello-back { display: block; animation-delay: .1s; }
+/* the scripts have no italic: upright and lighter, so the greeting does not outweigh the name */
+html:not([lang="en"]) .intro-hello { font-style: normal; font-weight: 400; font-size: clamp(1.15rem, 2vw, 1.45rem); }
+.intro-word { display: flex; gap: .02em; overflow: hidden; padding: 0 0 4px .3em; font-family: "Marcellus", var(--display); font-size: clamp(1.1rem, 3.4vw, 1.7rem); line-height: 1.25; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-3); }
+.intro-word span { display: inline-block; transform: translateY(120%); animation: intro-letter .45s var(--ease-k) calc(1.42s + var(--i, 0) * 12ms) forwards; }
+.welcome-seen .intro-word span { animation-duration: .5s; animation-delay: calc(.15s + var(--i, 0) * 12ms); }
+/* phones: tighter tracking, or the wordmark runs past the screen edges below ~390px */
+@media (max-width: 480px) { .intro-word { font-size: clamp(.95rem, 4.4vw, 1.1rem); letter-spacing: .2em; padding-left: .2em; } }
+@media (max-width: 359px) { .intro-word { letter-spacing: .14em; padding-left: .14em; } }
+.intro-bar { width: min(200px, 50vw); height: 1px; margin: 14px 0 12px; background: rgba(226, 200, 142, .2); overflow: hidden; opacity: 0; animation: ih-in .4s ease-out 1.5s forwards; }
+.intro-bar i { display: block; height: 100%; background: linear-gradient(90deg, transparent, var(--gold-3), var(--gold)); transform-origin: left; transform: scaleX(0); animation: intro-bar .6s var(--ease-k) 1.55s forwards; }
+.welcome-seen .intro-bar { animation-delay: .15s; }
+/* on the loading screen the bar fills like a loader until the lift */
+.welcome-seen .intro-bar i { animation: intro-bar 1.75s cubic-bezier(.45, .05, .3, 1) .2s forwards; }
+.intro-label { font: italic 500 clamp(1.05rem, 1.6vw, 1.2rem)/1.3 var(--serif); letter-spacing: .08em; color: var(--gold-3); opacity: 0; animation: ih-in .45s ease-out 1.7s forwards; }
+.welcome-seen .intro-label { animation-delay: .35s; }
+@keyframes ih-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes intro-letter { to { transform: none; } }
-.intro-bar { width: min(260px, 60vw); height: 1px; background: rgba(226, 200, 142, .2); overflow: hidden; }
-.intro-bar i { display: block; height: 100%; background: linear-gradient(90deg, transparent, var(--gold-3), var(--gold)); transform-origin: left; transform: scaleX(0); animation: intro-bar 1.4s var(--ease-k) .15s forwards; }
-@keyframes intro-bar { to { transform: scaleX(1); } }
-.intro-label { font: 500 .72rem/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--muted-on-dark); opacity: 0; animation: fade-in .8s var(--ease-k) .7s forwards; }
-@keyframes fade-in { to { opacity: 1; } }
+@keyframes intro-bar { to { transform: none; } }
+/* landscape phones: a smaller art and tighter words, so the flute question fits below them */
+@media (max-height: 500px) {
+  .intro { --art: max(92px, min(30vh, 100vh - 290px)); padding-block: 8px; grid-template-rows: 7fr auto 13fr; }
+  .intro-hello, html:not([lang="en"]) .intro-hello { font-size: 1.1rem; margin-bottom: 0; }
+  .intro-word { font-size: clamp(1rem, 5.6vh, 1.4rem); }
+  .intro-bar { margin: 8px 0 6px; }
+  .intro > .snd-invite { margin-top: 12px; gap: 10px; }
+}
+
+/* the loading screen: the hands joined from the first frame; they, the glow and the rays breathe */
+.welcome-seen .ih-l, .welcome-seen .ih-r { transform-origin: 50% 45%; animation: ih-breathe 1.5s ease-in-out .3s 12 alternate; }
+.welcome-seen .ih-glow { opacity: .7; transform: none; animation: ih-pulse 1.5s ease-in-out .3s 12 alternate; }
+.welcome-seen .ih-rays { opacity: .3; transform: none; animation: ih-ray-pulse 1.5s ease-in-out .3s 12 alternate; }
+.welcome-seen .ih-halo { animation-duration: .6s; animation-delay: 0s; }
+.welcome-seen .ih-lotus, .welcome-seen .ih-seam { animation: none; }
+.welcome-seen .ih-seam { opacity: .3; }
+.welcome-seen .ih-ring { display: none; }
+@keyframes ih-breathe { to { transform: scale(1.018); } }
+@keyframes ih-pulse { to { opacity: 1; transform: scale(1.05); } }
+@keyframes ih-ray-pulse { to { opacity: .55; } }
+
+/* reduced motion: no travel, turning or rising; the joined hands, their light and the words fade in,
+   and the curtain fades out by 2.5 s (these restore their own times over the site-wide .001ms rule) */
+@media (prefers-reduced-motion: reduce) {
+  .intro .ih-l, .intro .ih-r, .intro .ih-halo svg, .intro .ih-lotus, .intro .intro-word span, .intro .intro-bar i { transform: none; animation: none !important; }
+  .intro .ih-ring { display: none; }
+  /* one animation stays on the art: devotion-sound.js reads the curtain's clock from it */
+  .intro .intro-mark { animation: ih-fade .5s ease-out both !important; }
+  .intro .ih-glow { opacity: .85; transform: none; animation: ih-fade 1s ease-out .2s both !important; }
+  .intro .ih-halo { opacity: .26; animation: ih-fade 1s ease-out .2s both !important; }
+  .intro .ih-rays { opacity: .45; transform: none; animation: ih-fade 1s ease-out .3s both !important; }
+  .intro .ih-seam { opacity: .3; animation: none !important; }
+  .intro .intro-hello, .intro .intro-bar, .intro .intro-label { opacity: 1; transform: none; animation: ih-fade .6s ease-out .3s both !important; }
+  .intro .intro-word { animation: ih-fade .6s ease-out .35s both !important; }
+  :root:not(.snd-inviting):not(.snd-entering) .intro { animation: ih-out .5s ease-in 2s forwards !important; }
+}
+@keyframes ih-out { to { opacity: 0; visibility: hidden; } }
 
 /* emphasis sheen: a slow light running through key words */
 .em-light { padding: 0 .06em .12em; margin: 0 -.06em -.12em; background: linear-gradient(105deg, var(--gold-deep) 0%, #a57a33 24%, #c79a4c 44%, #a57a33 64%, var(--gold-deep) 100%); background-size: 240% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: sheen 7s ease-in-out infinite; font-style: italic; }

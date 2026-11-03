@@ -487,10 +487,13 @@ not part of this repository.
   flute and the temple sounds. A page with both off requests no audio file
   and creates no AudioContext or player.
 - **The curtain holds the question briefly** (after stage 2). The question
-  rises 1.5 s into the curtain, once its own animation has played, and takes
-  focus; unanswered, the curtain starts to lift 4 s later (`ASK` in
-  `devotion-sound.js`; gone about 6.4 s into the curtain, where it used to
-  hold about 10.4 s), at once on a scroll, Escape, an arrow or Page key or a
+  rises once the curtain's own animation has played (since 2026-11-03: 2.2 s
+  into it on a first visit ever, after the namaskara, and 1.5 s on a
+  returning visitor's loading screen; `INTRO_Q` in `devotion-sound.js`, see
+  "The opening screen: namaskara" below) and takes focus; unanswered, the
+  curtain starts to lift 4 s later (`ASK` in `devotion-sound.js`; gone about
+  7.1 s into the curtain on a first visit ever and 6.4 s on the loading
+  screen, where it used to hold about 10.4 s), at once on a scroll, Escape, an arrow or Page key or a
   tap on the curtain. The times are kept to the curtain's own animation
   clock, which on a busy device starts up to 0.5 s after the script runs.
   A pointer resting on the choices, or Tab between them, holds the curtain;
@@ -781,6 +784,163 @@ On the built `site/` over HTTP (the dev server), Chromium 141 headless:
   files, their versions and the byte ranges), the photo tests (91), the
   build at 100% translation coverage in all four languages, and real nginx
   and Apache in Docker (`deploy/test/docker-servers.mjs`, all checks).
+
+### The opening screen: namaskara (2026-11-03)
+
+The site's owner asked for an opening that "looks divine and spiritual": on
+the first visit ever, two hands do namaskara and welcome the visitor to
+Avadhoota Datta Peetham; on later visits, the hands already joined, as a
+loading screen of about 3 seconds. It replaces the curtain's turning mandala
+(the curtain itself, its once-per-session rule and its place for the flute
+question are unchanged).
+
+Three designs were drawn and judged on devotional correctness, on motion and
+craft, and on how they fit the code. The one built takes the hands of the
+"classical" design (a front view, as the visitor faces the one greeting
+them: palms pressed together, fingers together pointing up, joined at the
+heart, gesso-gold with fine creases, wrists only a hint) and its small lotus
+below them, and adds the site's own mandala as a slowly turning halo with
+fine rays, a light in the seam and one soft ring of light as the palms meet,
+a two-step join (the wrists meet first, then the palms), and the integration of the "linework" design (the head flag, the
+question's timing, the clean translation segments).
+
+**What a visitor sees** (times from the first frame of the curtain):
+
+| | First visit ever | Every later visit (`.welcome-seen`) |
+| --- | --- | --- |
+| Hands | glide in from either side, open, from 0.1 s; the wrists meet near 1.0 s; palm to palm by 1.4 s | joined from the first frame; they breathe (scale 1 to 1.018, 1.5 s) |
+| Light | the halo fades in from 0.3 s; as the palms meet the glow blooms (1.25 s), the rays open (1.3 s), a ring of light ripples out and fades (1.32 to 2.6 s), the seam lights (1.3 s), the lotus opens (1.15 s) | glow and rays breathe with the hands |
+| Words | "Welcome to" rises at 1.36 s; the name letter by letter from 1.42 s, in by 2.1 s; the bar fills from 1.55 s; "Jaya Guru Datta" 1.7 to 2.15 s | "Welcome" at 0.1 s, the name in by 0.9 s, the bar fills like a loader from 0.2 to 1.95 s |
+| Flute question (no sound choice stored) | rises at 2.2 s and holds the curtain | rises at 1.5 s and holds the curtain |
+| Curtain | wipes up from 2.2 s, gone by 2.9 s | wipes up from 2.0 s, gone by 2.8 s |
+
+With "reduce motion", nothing travels, turns or rises: the hands are shown
+joined, the light and the words fade in, and the curtain fades out from 2.0
+to 2.5 s (when the flute question holds it, its own instant lift applies, as
+before). Without JavaScript the first-visit namaskara plays, as the old
+curtain did.
+
+**How it works**
+
+- The head script (`src/layout.mjs`) adds `.welcome-seen` when
+  `localStorage` `dp-welcome` is already set, and sets it otherwise, only on
+  a page that shows the curtain. Storage that throws counts as a returning
+  visit. A page that is leaving for the remembered language (`data-leaving`)
+  now sets neither `dp-intro` nor `dp-welcome`, so the page it opens shows
+  the curtain (before, the leaving page used up `dp-intro` and the language
+  page showed none). Mid-session a leaving page still gets `.intro-seen`, so
+  it shows no curtain; on the first page of a session it shows the
+  curtain's first frames until the language page opens.
+- A private window keeps `localStorage` for its own life, so each new
+  private window sees the first-visit namaskara once. Only storage that
+  throws (site data blocked) counts as a returning visit; when both
+  storages throw there is no curtain at all, as before. Private browsing
+  cannot be detected from a head script, so this differs from the brief's
+  "treat private mode as returning" on purpose.
+- The art is `INTRO_ART` in `src/layout.mjs`: inline SVG (4.8 KB; the
+  mandala is the sprite's `#i-mandala`), in every page. With the curtain's
+  CSS (8.6 KB without comments, 10.4 KB as shipped) that is 13.4 KB, 3.9 KB
+  compressed, where the old curtain took about 2.2 KB: more than the 10 KB
+  aimed for, accepted. Each hand is its own `<svg>`, so its glide is a
+  compositor transform.
+- `site.css` animates only transform and opacity, one animation per element
+  (two on one element would take both off the compositor), and every loop is
+  finite (the halo turns once in 60 s; the loading screen breathes 12 times).
+  A Chromium trace showed every new animation composited; only the curtain's
+  clip-path lift is not, as before. When the curtain has gone by itself (its
+  wipe, or the reduced-motion fade), `devotion-sound.js` sets it to
+  `display: none`, so the slow loops of the art stop under it.
+- The variants change custom properties and children only, never `.intro`'s
+  own animation, so `devotion-sound.css`'s holds (`.snd-inviting`,
+  `.snd-entering`) still win.
+- `intro-lift` now has `from { clip-path: inset(0 0 0 0) }`. Without it,
+  `clip-path: none` cannot interpolate, and the old curtain was cut away at
+  half time instead of wiping up. The lift is the one animation on the main
+  thread; its start was measured from 0.2 s before to 0.24 s after the art's,
+  so it is timed to end at 2.9 s (2.8 s on the loading screen).
+- In headless Chromium with software rendering, the first frame of the wipe
+  comes about 0.25 to 0.3 s late (the old curtain's answered lift,
+  `snd-lift`, does the same). A layer hint (`will-change`) did not change
+  it. Real GPU devices were not tested.
+- `.intro` is a grid with rows `2fr auto 3fr`: the art and the words in
+  the middle row, the flute question in the third, so the hands do not move
+  when the question appears. The art's height, `min(400px, 42svh, 72vw,
+  max(var(--art-min), 100svh - var(--room)))`, leaves `--room` for the words
+  and the question: 470px, 540px in Tamil (its note runs to four lines),
+  and below 360px of width 520px (Tamil 560px) with the art no smaller than
+  108px. A question taller than its row takes the space from the first row
+  (the flex factors sum above 1), so the middle row never stretches. Below
+  500px of height (landscape phones) the art and the words are smaller.
+  `.intro-core` takes the full width, so a web-font swap moves only the
+  text's own lines.
+- The wordmark is set in Marcellus on every language page (it is Latin and
+  `translate="no"`); in the scripts' Noto fallbacks the tops of its capitals
+  showed above the line before the letters rose. The translated greetings
+  are upright and lighter (weight 400), as the scripts have no italic.
+- `devotion-sound.js` reads the curtain's clock from the first animation of
+  `.intro-mark`, which is now the art box (its fade starts at 0 s, as the
+  mandala's turn did). A late script offers the corner card instead of the
+  in-curtain question when the art's clock is past `INTRO_Q - 50`, or when
+  the curtain's own exit (`intro-lift`, or `ih-out` with reduced motion) is
+  less than 150 ms away on its own clock, which can run ahead of the art's;
+  holding a curtain already on its way out snapped it back to full.
+- Two new strings, "Welcome to" and "Welcome", are separate `<p>` elements,
+  so each is one translation segment; "Welcome" already had its
+  translations. "Welcome to" before a Latin name cannot keep the English
+  order in Kannada, Hindi, Tamil or Telugu, so it is translated as a
+  standalone greeting: ಸುಸ್ವಾಗತ, आपका स्वागत है, உங்களை வரவேற்கிறோம்,
+  సుస్వాగతం. Both lines are `aria-hidden`, like the wordmark.
+- "Jaya Guru Datta" is now set in the serif italic, in gold, as a greeting
+  rather than a small grey caption.
+
+**Measured** (Chromium, the built site):
+
+- Text contrast against the painted ground, worst pixel under each line,
+  with the words in (2.2 s): "Welcome to" 13.7:1, the name 10.8:1, "Jaya
+  Guru Datta" 10.7:1 at 1440x900; 13.9, 10.9 and 10.8 at 390x844 (also in
+  Kannada); 14.2, 10.9 and 10.8 on the loading screen.
+- With and without the flute question, in all five languages at 320x568,
+  360x640, 360x740, 360x800, 375x667, 390x844, 412x915, 414x736, 844x390,
+  1280x720 and 1440x900 (55 pairs): the art's top is the same in 53, and the
+  question ends inside the screen in all 55. The two that move are Tamil at
+  320x568 (12.7 px) and Tamil on a landscape phone, 844x390 (31 px); the
+  move shows only if the script arrives while the hands are visible.
+- Layout shift on the desktop home page: the curtain's share is 0.0033
+  (the old curtain's 0.0072 on a first visit); phones 0.
+- The loading screen, measured in real time from the curtain's first frame:
+  gone at 2.75 to 2.83 s (median 2.76 desktop, 2.79 phone; the old curtain
+  2.50 and 2.57). On a phone with the CPU slowed 4x: 2.82 to 3.22 s, median
+  2.83, one run of five past 3.0 s (the old curtain: two of five).
+- A late script around the curtain's exit (held to 1.5 to 2.11 s of the
+  art's clock, with reduced motion): an early one asks in the curtain, a
+  late one offers the card, and the fade always completes, with no snap.
+- The head flags in nine cases (first visit, next page, new tab, new
+  session, `localStorage` throws, both throw, `setItem` throws, a language
+  redirect on the first page and mid-session) all behave as described.
+- The frames, contact sheets and scripts of the review are outside the
+  repository (the session's scratchpad); the frames were frozen on the
+  curtain's own clock.
+
+**Open points**
+
+- It is an illustration, stylised in the manner of a gilded relief, not a
+  photograph. In the front view the thumbs lie behind the hands, towards the
+  heart, so they are not drawn; most namaskara images show the greeter's
+  side instead.
+- While the hands are apart (0.2 to 1.0 s) each is seen edge-on, with an
+  almost straight inner edge.
+- The sprite's mandala has a 1.6-unit stroke, heavier at this size than the
+  hands' fine lines; it is shown at 26% opacity.
+- At 320px wide the page itself is 347px wide (the menu overflows, before
+  this change too), so every fixed layer, the curtain included, is laid out
+  at 347px; the name is set tighter below 360px so it still fits.
+- The four greetings follow the glossaries (each `.md` notes them) but have
+  not been reviewed by a native speaker; the Tamil pair especially.
+- A first visit ever always shows the flute question (no choice is stored
+  yet), so it lasts longer than 3 s: about 3.3 s with an instant answer,
+  about 7.1 s unanswered. The 3 s is the loading screen's.
+- Only Chromium was checked: not iOS Safari or Firefox, and not a real
+  low-end phone. The lift is a clip-path wipe, painted on the main thread.
 
 ### Still open
 

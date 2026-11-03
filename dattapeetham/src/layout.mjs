@@ -118,7 +118,13 @@ function head(page, body) {
   // The 404 page answers unknown URLs: not indexed, no language alternates, and no
   // remembered-language redirect (it would loop, every unknown URL is this page).
   const is404 = page.slug === '404';
-  const langRedirect = "(function(d){try{var pref=localStorage.getItem('dp-lang'),cur=d.lang||'en';if(pref&&pref!==cur&&/^(en|kn|hi|ta|te)$/.test(pref)&&!/[?&]lang=keep/.test(location.search)){var f=location.pathname.split('/').pop()||'index.html';location.replace((d.getAttribute('data-root')||'')+(pref==='en'?'':pref+'/')+f+location.hash);return;}}catch(e){}})(document.documentElement);";
+  // The inline head script only sets classes on <html>. The opening screen (.intro) shows on the
+  // first page of a browser session (sessionStorage dp-intro; otherwise .intro-seen hides it). When
+  // it shows, localStorage dp-welcome tells a returning visitor (.welcome-seen: the short loading
+  // screen) from a first visit ever (the namaskara); a browser that cannot keep it counts as
+  // returning. A page that is leaving for the remembered language (data-leaving) sets neither flag,
+  // so the page it opens still shows the screen as it should; mid-session it shows no curtain either.
+  const langRedirect = "(function(d){try{var pref=localStorage.getItem('dp-lang'),cur=d.lang||'en';if(pref&&pref!==cur&&/^(en|kn|hi|ta|te)$/.test(pref)&&!/[?&]lang=keep/.test(location.search)){var f=location.pathname.split('/').pop()||'index.html';location.replace((d.getAttribute('data-root')||'')+(pref==='en'?'':pref+'/')+f+location.hash);d.setAttribute('data-leaving','');return;}}catch(e){}})(document.documentElement);";
   return `<!doctype html>
 <html lang="en" data-root="">
 <head>
@@ -155,7 +161,7 @@ ${soundStyles()}
 ${(page.features || []).map((f) => `<link rel="stylesheet" href="assets/css/features/${f}.css">`).join('\n')}
 ${page.css ? `<link rel="stylesheet" href="assets/css/pages/${page.slug}.css">` : ''}
 ${jsonLd(page)}
-<script>${is404 ? '' : langRedirect}(function(d){d.classList.add('js');try{if(sessionStorage.getItem('dp-intro'))d.classList.add('intro-seen');else sessionStorage.setItem('dp-intro','1');}catch(e){d.classList.add('intro-seen');}})(document.documentElement);window.DP_HOURS=${JSON.stringify(hours)};</script>
+<script>${is404 ? '' : langRedirect}(function(d){d.classList.add('js');var L=d.hasAttribute('data-leaving'),s=1;try{if(!sessionStorage.getItem('dp-intro')){if(!L)sessionStorage.setItem('dp-intro','1');s=0;}}catch(e){}if(s){d.classList.add('intro-seen');return;}if(L)return;try{if(localStorage.getItem('dp-welcome'))d.classList.add('welcome-seen');else localStorage.setItem('dp-welcome','1');}catch(e){d.classList.add('welcome-seen');}})(document.documentElement);window.DP_HOURS=${JSON.stringify(hours)};</script>
 </head>`;
 }
 
@@ -282,7 +288,26 @@ function footer() {
 </footer>`;
 }
 
-const INTRO_WORD = [...'Avadhoota Datta Peetham'].map((ch, i) => ch === ' ' ? '<span>&nbsp;</span>' : `<span style="animation-delay:${120 + i * 40}ms">${ch}</span>`).join('');
+// one span per letter, each rising in turn; site.css times them from --i (per variant: first visit, loading screen)
+const INTRO_WORD = [...'Avadhoota Datta Peetham'].map((ch, i) => ch === ' ' ? '<span>&nbsp;</span>' : `<span style="--i:${i}">${ch}</span>`).join('');
+
+// The opening screen's art (docs/DEVOTION-PLAN.md, "The opening screen: namaskara"): two hands in
+// anjali (namaskara), seen from the front as the visitor faces the one greeting them, joined at the
+// heart over a small lotus, inside the site's own mandala with fine rays. It is an illustration.
+// One hand is drawn (#ih-hand) and the other is its mirror. Each hand is its own <svg>, so its glide
+// is a composited transform. Every layer shares the art's 260 x 300 units (the halo's centre is at
+// 0,128; the wrists meet at 0,208). .intro-mark is the art box: devotion-sound.js reads the curtain's
+// clock from its first animation.
+const INTRO_ART = `<div class="intro-mark">
+    <i class="ih-glow"></i>
+    <span class="ih-halo"><svg viewBox="-130 0 260 300"><use href="#i-mandala" x="-117" y="11" width="234" height="234"/></svg></span>
+    <svg class="ih-rays" viewBox="-130 0 260 300"><defs><radialGradient id="ih-ray" gradientUnits="userSpaceOnUse" cx="0" cy="128" r="148"><stop offset=".8" stop-color="#f0dcaa"/><stop offset="1" stop-color="#f0dcaa" stop-opacity="0"/></radialGradient></defs><path fill="none" stroke="url(#ih-ray)" stroke-width=".9" stroke-linecap="round" d="M-102 187L-126 201M-111 168L-124 173M-116 148L-130 151M-118 128L-146 128M-116 108L-130 105M-111 88L-124 83M-102 69L-126 55M-90 52L-101 43M-76 38L-85 27M-59 26L-73 2M-40 17L-45 4M-20 12L-23 -2M0 10L0 -18M20 12L23 -2M40 17L45 4M59 26L73 2M76 38L85 27M90 52L101 43M102 69L126 55M111 88L124 83M116 108L130 105M118 128L146 128M116 148L130 151M111 168L124 173M102 187L126 201"/></svg>
+    <i class="ih-ring"></i>
+    <svg class="ih-lotus" viewBox="-130 0 260 300"><defs><linearGradient id="ih-pg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#7d5a22"/><stop offset=".5" stop-color="#cfa75e"/><stop offset="1" stop-color="#f3dfab"/></linearGradient><g id="ih-pet"><path d="M0 0C9.5-4 13-20 0-38-13-20-9.5-4 0 0Z"/><path d="M0-4V-31" fill="none" stroke-width=".55" opacity=".7"/></g></defs><g transform="translate(0 265) scale(.86)" fill="url(#ih-pg)" stroke="#5e4114" stroke-width=".8" stroke-linejoin="round"><g fill="#6e4e1c"><use href="#ih-pet" transform="rotate(-50) scale(.9)"/><use href="#ih-pet" transform="rotate(50) scale(.9)"/><use href="#ih-pet" transform="rotate(-16)"/><use href="#ih-pet" transform="rotate(16)"/></g><use href="#ih-pet" transform="rotate(-76) scale(.72)"/><use href="#ih-pet" transform="rotate(76) scale(.72)"/><use href="#ih-pet" transform="rotate(-54) scale(.84)"/><use href="#ih-pet" transform="rotate(54) scale(.84)"/><use href="#ih-pet" transform="rotate(-29) scale(.94)"/><use href="#ih-pet" transform="rotate(29) scale(.94)"/><use href="#ih-pet"/><path d="M-40 2.5H40" fill="none" stroke="#e2c88e" opacity=".8"/></g></svg>
+    <svg class="ih-l" viewBox="-130 0 260 300"><defs><linearGradient id="ih-gold" gradientUnits="userSpaceOnUse" x1="0" y1="34" x2="0" y2="240"><stop offset="0" stop-color="#f4e2b0"/><stop offset=".45" stop-color="#d8b36b"/><stop offset=".8" stop-color="#a47835"/><stop offset="1" stop-color="#7a5622"/></linearGradient><linearGradient id="ih-sheen" gradientUnits="userSpaceOnUse" x2="36"><stop offset="0" stop-color="#4a3009" stop-opacity=".28"/><stop offset=".2" stop-color="#4a3009" stop-opacity="0"/><stop offset=".5" stop-color="#fff4d6" stop-opacity=".26"/><stop offset=".78" stop-color="#fff4d6" stop-opacity="0"/><stop offset=".96" stop-color="#4a3009" stop-opacity=".22"/></linearGradient><radialGradient id="ih-fade" gradientUnits="userSpaceOnUse" cx="0" cy="128" r="124" gradientTransform="scale(.74 1)"><stop offset=".8" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="ih-m" maskUnits="userSpaceOnUse" x="-130" y="0" width="260" height="300"><rect x="-130" width="260" height="300" fill="url(#ih-fade)"/></mask><path id="ih-shape" d="M0 38.6C.3 35.6 2.4 34 5.2 34c3 0 5.2 5.5 6 13 .5 4.5 1.2 8 1.8 11 2.4-1.2 5.6 1.6 6.8 8 1.8 13 4.2 30 7.2 44 1.4 6 4.4 11 6.4 17 2.4 13 3.2 29 2 43-.8 10-.8 19 2.2 26 4.4 6 11.4 12 19.4 18 7 5 15 10 23 15l-14 17c-10-6-20-10-30-15-12-7-25-15-36-23-2.2-11-1.8-38-.9-58 .6-12 .7-18 .9-23-1.1-8-1.1-24-.6-30-.3-4 0-7.5.6-10-1.1-8-1.1-23 0-29.5-.9-6.5-.8-14.5 0-18.9Z"/><g id="ih-hand" mask="url(#ih-m)"><use href="#ih-shape" fill="url(#ih-gold)"/><use href="#ih-shape" fill="url(#ih-sheen)"/><path fill="none" stroke="#f6e3b2" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" d="M0 38.6C.3 35.6 2.4 34 5.2 34c3 0 5.2 5.5 6 13 .5 4.5 1.2 8 1.8 11 2.4-1.2 5.6 1.6 6.8 8 1.8 13 4.2 30 7.2 44 1.4 6 4.4 11 6.4 17 2.4 13 3.2 29 2 43-.8 10-.8 19 2.2 26 4.4 6 11.4 12 19.4 18 7 5 15 10 23 15"/><g fill="none" stroke="#6a4818" stroke-width=".85" stroke-linecap="round"><path d="M0 38.6V208" stroke-width=".7" opacity=".7"/><path d="M13 58c1.8 15 4.6 34 8 50 1.2 6 3.6 11 6.4 15M0 57.5c.4-3.1 2.4-5.1 5-5.1 3.2 0 5.4 4.6 6.2 10.6 1.4 14 3.4 33 6 49 1 6 3.2 11 6.2 15M0 87c.4-3 2.2-4.8 4.6-4.8 2.8 0 4.6 3.8 5.2 8.8.8 11 1.8 24 2.8 36 .8 6 2.4 10 4.8 13"/><path d="M7.6 84.6c1.4 1.8 1.9 4 1.8 6.4M2.4 110.5c2.6-1 5.6-.9 8.2.4M2.4 97.5c2.4-.9 5-.8 7.4.3M3 76c3-1 6.4-.9 9.4.4M16.2 80.4c1.9-.7 3.9-.6 5.6.3" opacity=".5"/><path d="M24 140c1.6 16 3.4 32 6.4 48M16.4 146c2 14 4.2 30 8 45" opacity=".3"/><path d="M0 208c11 8 24 16 36 23" opacity=".35"/></g></g></defs><use href="#ih-hand" transform="scale(-1 1)"/></svg>
+    <svg class="ih-r" viewBox="-130 0 260 300"><use href="#ih-hand"/></svg>
+    <i class="ih-seam"></i>
+  </div>`;
 
 export function layout(page, body) {
   const scripts = [
@@ -304,10 +329,14 @@ ${soundControl()}
 ${sprite}
 <div class="scroll-progress" aria-hidden="true"${JYOTI_ATTR}><span></span></div>
 <div class="intro" aria-hidden="true">
-  <svg class="intro-mark" viewBox="0 0 104 104"><use href="#i-mandala"/></svg>
+  <div class="intro-core">
+  ${INTRO_ART}
+  <p class="intro-hello intro-hello-first" aria-hidden="true">Welcome to</p>
+  <p class="intro-hello intro-hello-back" aria-hidden="true">Welcome</p>
   <div class="intro-word" translate="no">${INTRO_WORD}</div>
   <div class="intro-bar"><i></i></div>
   <div class="intro-label">Jaya Guru Datta</div>
+  </div>
   ${soundInvite()}
 </div>
 ${header(page)}

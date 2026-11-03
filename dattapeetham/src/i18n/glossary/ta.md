@@ -202,6 +202,10 @@ These settle questions the translators raised; the glossary has the matching ent
   compound. In the TV schedule, 5:40 AM is written **காலை 5:40** because அதிகாலை does not fit the time column.
 - **Runtime messages** are whole sentences with slots (%1, %2 …). Keep every slot; move them to fit Tamil word order
   ("%2 மையங்களில் %1 காட்டப்படுகின்றன").
+- **The opening screen** (2026-11-03): "Welcome to" is உங்களை வரவேற்கிறோம் and "Welcome" (the returning
+  visitor's loading screen) is நல்வரவு. Each sits on its own line above the Latin wordmark AVADHOOTA DATTA
+  PEETHAM, so it is a standalone greeting: the name takes no case ending (no -க்கு). Not yet reviewed by a
+  native speaker; please confirm the pair.
 - **The devotional sound** (the opening-curtain invitation, the sound button and its panel; English in
   `src/features/devotion-sound.mjs`):
   - Terms:

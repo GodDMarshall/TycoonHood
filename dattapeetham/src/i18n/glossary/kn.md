@@ -258,6 +258,10 @@ These settle points on which the six translation chunks differed. They are alrea
   `…<3> (Eluru)</3>`): Nellore is ಣಂ, Eluru is ನಂ; (ನೆಲ್ಲೂರು), (ಏಲೂರು).
 - **Social-media page names** keep the page's own Kannada name where it has one:
   Datta Vijayam is ದತ್ತವಿಜಯಮ್ (as on the Facebook page).
+- **The opening screen** (2026-11-03): "Welcome to" is ಸುಸ್ವಾಗತ and "Welcome" (the returning
+  visitor's loading screen) is ಸ್ವಾಗತ. Each sits on its own line above the Latin wordmark AVADHOOTA DATTA
+  PEETHAM, so it is a standalone greeting: the name takes no case ending (no ಪೀಠಕ್ಕೆ). Not yet reviewed by a
+  native speaker.
 - **The sound layer** (intro invitation, the sound button and panel, its status lines). The
   instrument is ಕೊಳಲು (flute music ಕೊಳಲಿನ ಸಂಗೀತ); ವೇಣು stays only inside names (ದತ್ತ ವೇಣು).
   Since 2026-11-02 the music is a recording and the panel shows no raga; Raga Pahadi, the light-classical raga of the earlier, synthesised bansuri piece (from the folk music of the hills), is ಪಹಾಡಿ ರಾಗ, kept here for reference. Tanpura is ತಂಬೂರಿ, temple sounds ದೇವಸ್ಥಾನದ ಧ್ವನಿಗಳು, conch ಶಂಖ, bell ಘಂಟೆ.

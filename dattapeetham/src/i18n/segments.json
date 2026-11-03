@@ -132,6 +132,48 @@
   ]
  },
  {
+  "k": "Welcome to",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
+  "k": "Welcome",
+  "pages": [
+   "404.html",
+   "about.html",
+   "attractions.html",
+   "centers.html",
+   "contact.html",
+   "darshan.html",
+   "events.html",
+   "guru-parampara.html",
+   "index.html",
+   "kriya-yoga.html",
+   "media.html",
+   "music.html",
+   "seva.html",
+   "sri-swamiji.html",
+   "teachings.html",
+   "visit.html"
+  ]
+ },
+ {
   "k": "Jaya Guru Datta",
   "pages": [
    "404.html",
@@ -26811,12 +26853,6 @@
  },
  {
   "k": "<1>Karya Siddhi Hanuman</1>One of the shrines you can visit within the Ashram",
-  "pages": [
-   "visit.html"
-  ]
- },
- {
-  "k": "Welcome",
   "pages": [
    "visit.html"
   ]
