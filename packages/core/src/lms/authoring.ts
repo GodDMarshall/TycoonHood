@@ -12,12 +12,16 @@
  *    archive the programme instead. Their certificates stay valid.
  *  - One final assessment per programme: marking a lesson final unmarks
  *    the others. A final assessment is always a QUIZ lesson.
+ *  - An edit that can finish members' programmes (marking a final,
+ *    removing a lesson or module, publishing) completes and certifies
+ *    everyone who now qualifies, at once.
  */
 import { z } from "zod";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { Prisma, PrismaClient, UserRole } from "@tycoonhood/db";
 import { assertCan, can, ForbiddenError, type HasRole, type Permission } from "../auth/permissions";
 import { AuditService } from "../platform/audit";
+import { LmsService } from "./lms";
 
 export type AuthoringActor = { id: string; role: UserRole };
 
@@ -70,6 +74,13 @@ const optUrlOrPath = z
 
 const bool = z.preprocess((v) => v === true || v === "on" || v === "true" || v === "1", z.boolean());
 
+/** An XP field left blank means the default, not 0 (Number("") is 0). 0 typed on purpose stays 0. */
+const xpField = (max: number, fallback: number) =>
+  z.preprocess(
+    (v) => (v == null || (typeof v === "string" && v.trim() === "") ? undefined : v),
+    z.coerce.number().int().min(0).max(max).default(fallback)
+  );
+
 export const PILLARS = ["WARRIOR", "BUILDER", "TYCOON", "MIND"] as const;
 export const LESSON_TYPES = ["VIDEO", "READING", "ASSIGNMENT", "QUIZ"] as const;
 export const RESOURCE_KINDS = ["link", "file", "template"] as const;
@@ -82,7 +93,7 @@ export const courseInputSchema = z.object({
   description: z.string().trim().min(10, "Write at least a sentence of description.").max(5000),
   coverImage: optUrlOrPath,
   instructorId: optText(64),
-  xpOnCompletion: z.coerce.number().int().min(0).max(10_000).default(500),
+  xpOnCompletion: xpField(10_000, 500),
 });
 export type CourseInput = z.input<typeof courseInputSchema>;
 
@@ -116,7 +127,7 @@ export const lessonInputSchema = z
       .optional()
       .nullable()
       .transform((v) => (v === "" || v == null || v === 0 ? null : v)),
-    xpReward: z.coerce.number().int().min(0).max(1000).default(50),
+    xpReward: xpField(1000, 50),
     isPreview: bool.default(false),
     isFinal: bool.default(false),
     moduleId: z.string().optional(),
@@ -205,6 +216,20 @@ export class CourseAuthoringService {
     return l;
   }
 
+  /**
+   * After an edit that can finish members' programmes (a final marked, a
+   * lesson or module removed, publishing), complete and certify everyone who
+   * now qualifies. Fail-soft: the edit stands either way, and a member is
+   * settled again when they next open the programme.
+   */
+  private async settleMembers(courseId: string) {
+    try {
+      await new LmsService(this.db).reconcileCourse(courseId);
+    } catch {
+      // The edit is saved; nothing here may undo it.
+    }
+  }
+
   private async assertInstructor(id: string | null) {
     if (id && !(await this.db.instructor.findUnique({ where: { id }, select: { id: true } }))) {
       throw new AuthoringError("Choose an instructor from the list.");
@@ -257,6 +282,7 @@ export class CourseAuthoringService {
     if (problems.length) throw new PublishBlockedError(problems.join(" "));
     const course = await this.db.course.update({ where: { id: courseId }, data: { status: "PUBLISHED" } });
     await this.log(actor, "course.publish", "Course", course.id, { slug: course.slug });
+    await this.settleMembers(course.id);
     return course;
   }
 
@@ -318,6 +344,7 @@ export class CourseAuthoringService {
     }
     await this.db.courseModule.delete({ where: { id: moduleId } });
     await this.log(actor, "module.delete", "CourseModule", moduleId, { courseId });
+    await this.settleMembers(courseId);
   }
 
   // ── lessons
@@ -381,6 +408,8 @@ export class CourseAuthoringService {
     });
     if (d.isFinal) await this.clearOtherFinals(courseId, lesson.id);
     await this.log(actor, "lesson.update", "Lesson", lesson.id, { courseId, moduleId, title: lesson.title });
+    // Members who already passed this check may now hold the final.
+    if (d.isFinal && !current.isFinal) await this.settleMembers(courseId);
     return lesson;
   }
 
@@ -403,6 +432,8 @@ export class CourseAuthoringService {
     }
     await this.db.lesson.delete({ where: { id: lessonId } });
     await this.log(actor, "lesson.delete", "Lesson", lessonId, { courseId: l.module.courseId, title: l.title });
+    // It may have been the only lesson some members had left.
+    await this.settleMembers(l.module.courseId);
   }
 
   // ── quizzes

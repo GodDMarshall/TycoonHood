@@ -10,6 +10,9 @@ import { gateLessons, nextLesson } from "../src/lms/gating";
 import { StandardService, StandardError, MAX_OWN_STANDARD_ITEMS } from "../src/standard/standard";
 import { CommunityService, CommunityError, cleanUrl, MESSAGE_MAX, type Viewer } from "../src/community/community";
 import { countEvidence } from "../src/rules/counters";
+import { parseCriteria, repeatBucket, weekKey } from "../src/rules/criteria";
+import { localWeekStartKey } from "../src/time/day";
+import { StreakService } from "../src/gamification/streaks";
 import { createTestUser, uid } from "./helpers";
 
 const lms = new LmsService(prisma);
@@ -186,6 +189,84 @@ describe("The daily standard", () => {
     await expect(standard.removeOwn(other.id, own[0].id)).rejects.toBeInstanceOf(StandardError);
     await standard.removeOwn(user.id, own[0].id);
     expect((await standard.today(user.id, day)).items.filter((i) => i.own)).toHaveLength(MAX_OWN_STANDARD_ITEMS - 1);
+  });
+});
+
+// ─────────────────────────────────────────── a week of the standard
+
+describe("Hold the standard: a week of met days", () => {
+  const streaks = new StreakService(prisma);
+  const fiveDays = { event: "STREAK", count: 5, within: "week" };
+
+  async function weeklyMission() {
+    return prisma.mission.create({
+      data: { slug: `t-std-${uid().slice(0, 8)}`, name: "Five met days", description: "test", criteria: fiveDays, xpReward: 5, repeatable: true, active: true },
+    });
+  }
+
+  /** A day as it happens: a lesson first (it touches the streak, then ticks
+   *  Study), then the member ticks the rest by hand. The last tick meets the
+   *  standard after the day's streak touch has already happened. */
+  async function meetTheDay(userId: string, at: Date) {
+    await streaks.touch(userId, at);
+    await standard.autoTick(userId, "LESSON_COMPLETED", at);
+    const today = await standard.today(userId, at);
+    for (const i of today.items.filter((i) => !i.auto && !i.ticked)) await standard.tick(userId, i.id, at);
+    expect((await standard.today(userId, at)).met).toBe(true);
+  }
+
+  const paid = async (userId: string, missionId: string) =>
+    prisma.missionCompletion.findMany({ where: { userId, missionId }, select: { idempotencyKey: true } });
+
+  it("pays on the fifth met day itself, not on some later day", async () => {
+    const user = await createTestUser();
+    const m = await weeklyMission();
+    try {
+      for (const day of ["2099-06-15", "2099-06-16", "2099-06-17", "2099-06-18"]) await meetTheDay(user.id, new Date(`${day}T12:00:00Z`));
+      expect(await paid(user.id, m.id)).toHaveLength(0);
+      await meetTheDay(user.id, new Date("2099-06-19T12:00:00Z")); // Friday
+      expect(await paid(user.id, m.id)).toEqual([{ idempotencyKey: `mission:${m.id}:${user.id}:week:2099-06-15` }]);
+      expect((await prisma.streak.findUniqueOrThrow({ where: { userId: user.id } })).current).toBe(5);
+    } finally {
+      await prisma.mission.delete({ where: { id: m.id } });
+    }
+  });
+
+  it("counts the member's own week: a Sunday evening in Los Angeles is that week's Sunday", async () => {
+    const user = await createTestUser();
+    await prisma.profile.update({ where: { userId: user.id }, data: { timezone: "America/Los_Angeles" } });
+    const m = await weeklyMission();
+    try {
+      // 18:00 in Los Angeles, Wednesday to Saturday: already the next day in UTC.
+      for (const day of ["2099-06-18", "2099-06-19", "2099-06-20", "2099-06-21"]) await meetTheDay(user.id, new Date(`${day}T01:00:00Z`));
+      expect(await paid(user.id, m.id)).toHaveLength(0);
+      const sundayEvening = new Date("2099-06-22T01:00:00Z"); // Monday 01:00 UTC
+      await meetTheDay(user.id, sundayEvening);
+      expect(await paid(user.id, m.id)).toEqual([{ idempotencyKey: `mission:${m.id}:${user.id}:week:2099-06-15` }]);
+
+      const c = parseCriteria(fiveDays);
+      expect(await countEvidence(prisma, user.id, c, sundayEvening, "America/Los_Angeles")).toBe(5);
+      // Counted by the UTC week, the same five days would already be last week.
+      expect(await countEvidence(prisma, user.id, c, sundayEvening)).toBe(0);
+      // Monday morning in Los Angeles starts a new week of their own.
+      expect(await countEvidence(prisma, user.id, c, new Date("2099-06-22T16:00:00Z"), "America/Los_Angeles")).toBe(0);
+    } finally {
+      await prisma.mission.delete({ where: { id: m.id } });
+    }
+  });
+
+  it("buckets a week of standard days by the member's Monday, every other week by UTC", () => {
+    const c = parseCriteria(fiveDays);
+    const lessons = parseCriteria({ event: "LESSON_COMPLETED", count: 5, within: "week" });
+    const daily = parseCriteria({ event: "DAILY_ACTIVE" });
+    const sundayLa = new Date("2099-06-22T01:00:00Z");
+    expect(localWeekStartKey(sundayLa, "America/Los_Angeles")).toBe("2099-06-15");
+    expect(localWeekStartKey(sundayLa)).toBe("2099-06-22");
+    // 01:30 on Monday in India is still Sunday in UTC.
+    const mondayIndia = new Date("2099-06-21T20:00:00Z");
+    expect(repeatBucket(c, mondayIndia, "Asia/Kolkata")).toBe("week:2099-06-22");
+    expect(repeatBucket(lessons, mondayIndia, "Asia/Kolkata")).toBe(weekKey(mondayIndia));
+    expect(repeatBucket(daily, mondayIndia, "Asia/Kolkata")).toBe("2099-06-22");
   });
 });
 

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { LedgerService } from "@tycoonhood/core";
+import { LedgerService, privacyShows } from "@tycoonhood/core";
 import { Avatar, Badge, CoinMark, Icon, RankBadge, ThcAmount } from "@tycoonhood/ui";
 
 export const dynamic = "force-dynamic";
@@ -37,8 +37,8 @@ export default async function PublicProfile({ params }: { params: Promise<{ user
   });
   if (!profile) notFound();
   const u = profile.user;
-  const privacy = (profile.privacy ?? {}) as Record<string, boolean>;
-  const show = (k: string) => privacy[k] !== false;
+  // Courses and certificates are opt-in; every other facet shows unless turned off.
+  const show = (k: string) => privacyShows(profile.privacy, k);
   const balance = show("thc") ? (await ledger.ensureUserAccount(u.id)).balance : null;
 
   const facts: { label: string; value: ReactNode }[] = [];

@@ -55,7 +55,7 @@ export { DiscordInteractionHandler, discordInteractions, verifyDiscordSignature 
 export type { DiscordInteraction, DiscordResponse } from "./integrations/discord-interactions";
 
 // --- Phase 1: the spine (spec §14, §17, §19) ---
-export { localDayKey, localDayKeyOffset, isSameLocalDay, dayKeyToDate } from "./time/day";
+export { localDayKey, localDayKeyOffset, isSameLocalDay, dayKeyToDate, localWeekStartKey } from "./time/day";
 export { clip, sliceWhole } from "./text/clip";
 export { DOMAIN_EVENTS, isDomainEventType } from "./events/types";
 export type { DomainEvent, DomainEventType } from "./events/types";
@@ -63,7 +63,17 @@ export { EventBus, events } from "./events/bus";
 export type { EmitResult } from "./events/bus";
 export { RulesEngine, rulesEngine } from "./rules/engine";
 export type { RuleOutcome } from "./rules/engine";
-export { parseCriteria, tryParseCriteria, describeCriteria, windowStart, InvalidCriteriaError } from "./rules/criteria";
+export {
+  parseCriteria,
+  tryParseCriteria,
+  describeCriteria,
+  windowStart,
+  InvalidCriteriaError,
+  repeatBucket,
+  missionCadence,
+  weeklyResetNote,
+  countsStandardDays,
+} from "./rules/criteria";
 export type { Criteria } from "./rules/criteria";
 export { countEvidence, requiredFor } from "./rules/counters";
 

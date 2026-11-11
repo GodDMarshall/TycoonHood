@@ -11,6 +11,7 @@ import {
   NotEnrolledError,
   QuizRequiredError,
   ReviewNotAllowedError,
+  type QuizReviewItem,
 } from "@tycoonhood/core";
 import { isZodError, zodMessage } from "../../../lib/form-errors";
 import { getCurrentUser } from "../../../lib/auth";
@@ -57,13 +58,14 @@ export async function completeLessonAction(slug: string, lessonId: string) {
 }
 
 export interface QuizState {
+  /** Everything here reaches the browser. Never the answer key. */
   result?: {
     scorePct: number;
     passed: boolean;
     passScore: number;
     correct: number;
     total: number;
-    review: { prompt: string; yourAnswer: number; correctIndex: number; correct: boolean; explanation: string | null }[];
+    review: QuizReviewItem[];
   };
   /** Where to go after a pass. */
   nextHref?: string;
@@ -84,14 +86,16 @@ export async function submitQuizAction(
     answers.push(Number(v));
   }
   try {
-    const result = await lms.submitQuiz(user.id, meta.quizId, answers);
+    const r = await lms.submitQuiz(user.id, meta.quizId, answers);
     revalidatePath("/", "layout");
     let nextHref: string | undefined;
-    if (result.passed) {
+    if (r.passed) {
       const view = await lms.memberCourseView(user.id, meta.slug);
       const next = view?.course.modules.flatMap((m) => m.lessons).find((l) => !l.progress[0]?.completedAt);
       nextHref = next ? `/courses/${meta.slug}/lesson/${next.id}` : `/courses/${meta.slug}?completed=1`;
     }
+    // Field by field: the response is serialised to the browser as is.
+    const result = { scorePct: r.scorePct, passed: r.passed, passScore: r.passScore, correct: r.correct, total: r.total, review: r.review };
     return { result, nextHref };
   } catch (e) {
     if (e instanceof LessonLockedError || e instanceof NotEnrolledError || e instanceof CourseUnavailableError) return { error: e.message };
@@ -105,12 +109,18 @@ export interface AskState {
   channel?: string;
 }
 
-/** Ask about this lesson: lands in the program's Questions channel with the lesson attached. */
+/**
+ * Ask about this lesson: lands in the program's Questions channel with the
+ * lesson attached. The channel is found from the lesson on the server, not
+ * from the program's slug, which an author can change.
+ */
 export async function askAboutLessonAction(slug: string, lessonId: string, _prev: AskState, fd: FormData): Promise<AskState> {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!rateLimit(`post:${user.id}`, 6, 30_000).ok) return { error: "You are posting very fast. Give it a few seconds." };
-  const channel = `${slug}-questions`;
+  const found = await community.questionsChannelFor(lessonId);
+  if (!found) return { error: "This program has no questions channel yet." };
+  const channel = found.slug;
   try {
     await community.post({ id: user.id, role: user.role }, channel, { body: String(fd.get("body") ?? ""), lessonId });
   } catch (e) {

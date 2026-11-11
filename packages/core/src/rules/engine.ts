@@ -10,12 +10,11 @@
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import type { DomainEvent } from "../events/types";
-import { tryParseCriteria, weekKey } from "./criteria";
+import { eventAdvances, repeatBucket, tryParseCriteria } from "./criteria";
 import { countEvidence, requiredFor } from "./counters";
 import { RewardsService, MissionCooldownError } from "../rewards/rewards";
 import { XpService } from "../gamification/xp";
 import { LedgerService } from "../ledger/ledger";
-import { localDayKey } from "../time/day";
 
 export interface RuleOutcome {
   missions: string[];      // slugs completed by this event
@@ -45,7 +44,7 @@ export class RulesEngine {
     const tz = profile?.timezone ?? null;
 
     await this.runMissions(event, now, tz, out);
-    await this.runAchievements(event, now, out);
+    await this.runAchievements(event, now, tz, out);
     return out;
   }
 
@@ -61,8 +60,11 @@ export class RulesEngine {
         continue;
       }
       if (c.event !== event.type) continue;
+      // An event that adds no evidence (a retake of a quiz already counted)
+      // must not pay a repeatable mission again in a new bucket.
+      if (!eventAdvances(c, event)) continue;
 
-      const have = await countEvidence(this.db, event.userId, c, now);
+      const have = await countEvidence(this.db, event.userId, c, now, tz);
       if (have === null) {
         out.skipped.push({ slug: m.slug, why: `no evidence source for ${c.event}` });
         continue;
@@ -72,8 +74,9 @@ export class RulesEngine {
       // Repeatable missions bucket by the MEMBER'S local day, so a check-in at
       // 05:00 IST counts for today rather than yesterday (spec §19).
       // A "week" window buckets by calendar week instead, so a weekly mission
-      // pays once per week rather than once per day after its target is met.
-      const occurrence = m.repeatable ? (c.within === "week" ? weekKey(now) : localDayKey(now, tz)) : undefined;
+      // pays once per week rather than once per day after its target is met;
+      // a week of standard days is the member's own week (repeatBucket).
+      const occurrence = m.repeatable ? repeatBucket(c, now, tz) : undefined;
       try {
         const r = await this.rewards.completeMission({
           userId: event.userId,
@@ -93,7 +96,7 @@ export class RulesEngine {
 
   // ----------------------------------------------------------- achievements
 
-  private async runAchievements(event: DomainEvent, now: Date, out: RuleOutcome) {
+  private async runAchievements(event: DomainEvent, now: Date, tz: string | null, out: RuleOutcome) {
     const candidates = await this.db.achievement.findMany({
       where: { active: true, unlocks: { none: { userId: event.userId } } },
     });
@@ -104,9 +107,9 @@ export class RulesEngine {
         out.skipped.push({ slug: a.slug, why: "unreadable criteria" });
         continue;
       }
-      if (c.event !== event.type) continue;
+      if (c.event !== event.type || !eventAdvances(c, event)) continue;
 
-      const have = await countEvidence(this.db, event.userId, c, now);
+      const have = await countEvidence(this.db, event.userId, c, now, tz);
       if (have === null) {
         out.skipped.push({ slug: a.slug, why: `no evidence source for ${c.event}` });
         continue;

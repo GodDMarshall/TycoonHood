@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
+import { showsCourses } from "@tycoonhood/core";
 import { CoinMark, Icon, PILLAR_LABEL } from "@tycoonhood/ui";
 import { requireUser } from "../../../../lib/guard";
 import { Page } from "../../../../components/app/page";
@@ -21,7 +22,7 @@ export default async function CertificateView({ params }: { params: Promise<{ se
     where: { serial: serial.toUpperCase() },
     include: {
       course: { select: { title: true, pillar: true, instructor: { select: { name: true, headline: true } } } },
-      user: { select: { name: true, profile: { select: { displayName: true } } } },
+      user: { select: { name: true, profile: { select: { displayName: true, privacy: true } } } },
     },
   });
   if (!cert || cert.userId !== user.id) notFound();
@@ -78,8 +79,14 @@ export default async function CertificateView({ params }: { params: Promise<{ se
       </article>
 
       <p className="mt-6 text-[13px] text-ink-3 print:hidden">
-        The public verification page shows the program, the date and the serial. It shows your name only if your profile makes your
-        courses public (Settings → Privacy).
+        The public verification page shows the program, the date and the serial.{" "}
+        {showsCourses(cert.user.profile?.privacy)
+          ? "It also shows your name, because you chose to show your certificates. "
+          : "It shows your name only if you choose to show your certificates. "}
+        <Link href="/settings#privacy" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
+          Change this in Settings
+        </Link>
+        .
       </p>
     </Page>
   );

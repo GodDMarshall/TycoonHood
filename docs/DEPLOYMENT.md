@@ -39,6 +39,14 @@ pnpm --filter @tycoonhood/web start
 
 Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are placeholders.
 
+## Upgrading a database that ran an earlier build
+
+Run this once after deploying. In earlier builds, finishing a programme set to 0 XP marked it complete but stopped before the certificate, the "Program complete" notice, and the achievements and missions for finishing a programme. This script catches those up. It awards no completion XP, and running it again changes nothing.
+
+```
+pnpm --filter @tycoonhood/core exec tsx scripts/repair-course-completions.ts
+```
+
 ## Turning on Razorpay
 
 1. In the Razorpay dashboard, go to Settings → API Keys and generate **test** keys first.

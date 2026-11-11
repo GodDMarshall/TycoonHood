@@ -41,3 +41,13 @@ export function isSameLocalDay(a: Date, b: Date, timezone?: string | null): bool
 export function dayKeyToDate(key: string): Date {
   return new Date(`${key}T00:00:00.000Z`);
 }
+
+/**
+ * Monday of the member's own week containing `at`, as a day key: their week
+ * runs Monday to Sunday by their local days, like the days it is made of.
+ */
+export function localWeekStartKey(at: Date = new Date(), timezone?: string | null): string {
+  const d = dayKeyToDate(localDayKey(at, timezone));
+  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); // Mon=0 … Sun=6
+  return d.toISOString().slice(0, 10);
+}

@@ -8,7 +8,8 @@
  * Versioned from the start (`v`), because rules outlive code and a row written
  * today must still be readable when the vocabulary grows.
  */
-import { DOMAIN_EVENTS, isDomainEventType, type DomainEventType } from "../events/types";
+import { DOMAIN_EVENTS, isDomainEventType, type DomainEvent, type DomainEventType } from "../events/types";
+import { localDayKey, localWeekStartKey } from "../time/day";
 
 export type Pillar = "WARRIOR" | "BUILDER" | "TYCOON" | "MIND";
 
@@ -22,7 +23,9 @@ export interface Criteria {
   /**
    * Window the count must fall inside. Rolling: "24h", "7d", "30d".
    * Calendar: "week" = since Monday 00:00 UTC this week. A repeatable mission
-   * with a "week" window pays at most once per calendar week.
+   * with a "week" window pays at most once per calendar week. Days of the
+   * standard are the member's own days, so for them the week is the
+   * member's own too: Monday to Sunday where they live (see repeatBucket).
    */
   within?: string;
   /** Narrowing. Not every event supports every facet; unsupported ones are ignored. */
@@ -137,6 +140,70 @@ export function weekKey(now: Date): string {
   return `week:${weekStart(now).toISOString().slice(0, 10)}`;
 }
 
+/** STREAK with `count` and no `days`: days the standard was met, not a run. */
+export function countsStandardDays(c: Criteria): boolean {
+  return c.event === "STREAK" && c.days === undefined && c.count !== undefined;
+}
+
+/**
+ * Whether this event can add evidence for the rule; the engine evaluates the
+ * rule only then. Every event can, except a quiz pass: a quiz counts for a
+ * rule once, at the member's first pass that reaches the rule's minimum
+ * score (any pass when it has none), as the counter counts it. A retake of a
+ * quiz already counted adds nothing, so it must not pay a repeatable mission
+ * again.
+ */
+export function eventAdvances(c: Criteria, event: DomainEvent): boolean {
+  if (event.type !== "QUIZ_PASSED") return true;
+  const min = c.minScore ?? 0;
+  return event.scorePct >= min && (event.previousBest == null || event.previousBest < min);
+}
+
+/**
+ * The bucket a repeatable mission's completion is recorded under: the
+ * member's local day, or for a "week" window the calendar week. A week of
+ * standard days is the member's own week (its Monday, their time zone), so
+ * the day they meet the standard always counts in the week they see it in.
+ * The engine and every screen that shows "done" use this, so they agree.
+ */
+export function repeatBucket(c: Criteria, now: Date, timezone?: string | null): string {
+  if (c.within !== "week") return localDayKey(now, timezone);
+  return countsStandardDays(c) ? `week:${localWeekStartKey(now, timezone)}` : weekKey(now);
+}
+
+/**
+ * How often a repeatable mission comes round, for the member's task board:
+ * a calendar "week" window is weekly; otherwise its cooldown, or a rolling
+ * window of a day or a week, decides. Null when it is neither.
+ */
+export function missionCadence(m: { cooldownHours: number | null; criteria: unknown }): "daily" | "weekly" | null {
+  const within = tryParseCriteria(m.criteria)?.within;
+  if (within === "week") return "weekly";
+  if (m.cooldownHours != null) {
+    if (m.cooldownHours <= 24) return "daily";
+    if (m.cooldownHours <= 24 * 7) return "weekly";
+    return null;
+  }
+  if (within === "24h" || within === "1d") return "daily";
+  if (within === "7d" || within === "168h") return "weekly";
+  return null;
+}
+
+/**
+ * When the weekly missions on the member's task board reset, in the
+ * Achievements page's terms. A calendar week resets Monday 00:00 UTC, but a
+ * week of standard days is the member's own: Monday at midnight, their time.
+ * A rolling week resets 7 days on. Null when calendar and rolling weeks mix.
+ */
+export function weeklyResetNote(weekly: { calendarWeek: boolean; localWeek: boolean }[]): string | null {
+  if (weekly.every((m) => m.calendarWeek)) {
+    if (weekly.every((m) => m.localWeek)) return "resets Monday at midnight, your time";
+    if (weekly.some((m) => m.localWeek)) return "resets Monday 00:00 UTC; days of the standard count Monday to Sunday, your time";
+    return "resets Monday 00:00 UTC";
+  }
+  return weekly.every((m) => !m.calendarWeek) ? "resets every 7 days" : null;
+}
+
 /** Human summary for the admin console and the member task board. */
 export function describeCriteria(c: Criteria): string {
   const n = c.count ?? 1;
@@ -144,13 +211,13 @@ export function describeCriteria(c: Criteria): string {
     ONBOARDED: "complete onboarding",
     LESSON_COMPLETED: n === 1 ? "complete a lesson" : `complete ${n} lessons`,
     COURSE_COMPLETED: n === 1 ? "finish a program" : `finish ${n} programs`,
-    QUIZ_PASSED: n === 1 ? "pass a quiz" : `pass ${n} quizzes`,
+    // Each quiz counts once, in the window it was first passed (counters.ts).
+    QUIZ_PASSED: `${n === 1 ? "pass a quiz" : `pass ${n} quizzes`}${c.within ? " for the first time" : ""}`,
     CHALLENGE_COMPLETED: n === 1 ? "complete a challenge" : `complete ${n} challenges`,
     DAILY_ACTIVE: "check in today",
-    STREAK:
-      c.days === undefined && c.count !== undefined
-        ? `hold the daily standard ${n === 1 ? "one day" : `${n} days`}`
-        : `reach a ${c.days ?? 1}-day streak`,
+    STREAK: countsStandardDays(c)
+      ? `hold the daily standard ${n === 1 ? "one day" : `${n} days`}`
+      : `reach a ${c.days ?? 1}-day streak`,
     MINING_CLAIMED: n === 1 ? "claim from the rig" : `claim ${n} times`,
     PURCHASE_MADE: n === 1 ? "make a purchase" : `make ${n} purchases`,
     VIDEO_WATCHED: n === 1 ? "watch a video" : `watch ${n} videos`,

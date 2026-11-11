@@ -70,6 +70,43 @@ export class ProfileService {
 
 export const profiles = new ProfileService();
 
+// ─── Privacy of the public profile ─────────────────────────────────
+
+/** Facets the Settings privacy form sets, one checkbox of the same name each. */
+export const PRIVACY_FORM_KEYS = ["level", "rank", "streak", "leaderboard", "courses"] as const;
+export type PrivacyFormKey = (typeof PRIVACY_FORM_KEYS)[number];
+
+function privacyRecord(privacy: unknown): Record<string, unknown> {
+  return privacy && typeof privacy === "object" && !Array.isArray(privacy) ? (privacy as Record<string, unknown>) : {};
+}
+
+/**
+ * Whether a facet shows on the member's public profile. Courses are opt-in:
+ * certificates on the profile, and the member's name on certificate
+ * verification, show only after the member ticks the box. Every other facet
+ * shows unless turned off.
+ */
+export function privacyShows(privacy: unknown, key: string): boolean {
+  const value = privacyRecord(privacy)[key];
+  return key === "courses" ? value === true : value !== false;
+}
+
+/** Shorthand for the opt-in courses facet. */
+export function showsCourses(privacy: unknown): boolean {
+  return privacyShows(privacy, "courses");
+}
+
+/**
+ * The privacy value the Settings form saves: each of its checkboxes sets its
+ * facet; facets the form does not show (achievements, thc) keep their
+ * stored value.
+ */
+export function privacyFromForm(current: unknown, ticked: (key: PrivacyFormKey) => boolean): Record<string, unknown> {
+  const next: Record<string, unknown> = { ...privacyRecord(current) };
+  for (const key of PRIVACY_FORM_KEYS) next[key] = ticked(key);
+  return next;
+}
+
 // ─── Profile completion ────────────────────────────────────────────
 
 export interface CompletionSubject {

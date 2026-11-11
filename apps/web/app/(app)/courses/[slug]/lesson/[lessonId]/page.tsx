@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { community, renderMarkdown } from "@tycoonhood/core";
+import { community, questionsForMember, renderMarkdown } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, Progress, buttonStyles, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../../../../lib/guard";
 import { courseDetail, LESSON_TYPE } from "../../../../../../lib/learning";
@@ -83,7 +83,13 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   const nextOpen = next && (next.gate.state !== "locked" || (!enrolled && next.isPreview));
   const viewer = { id: user.id, role: user.role };
   const questions = enrolled ? await community.lessonQuestions(viewer, lessonId, 5) : [];
-  const questionsChannel = d.channels.find((c) => c.kind === "QUESTIONS");
+  // The channel the ask form posts to, resolved the same way the action does.
+  const questionsChannel = enrolled ? await community.questionsChannelFor(lessonId) : null;
+  // "Passed" means a passing attempt on record, not just a complete lesson: a
+  // check whose questions were written after the member completed the lesson
+  // is still theirs to take.
+  const quizPassed =
+    !!full.quiz && done && !!(await prisma.quizAttempt.findFirst({ where: { userId: user.id, quizId: full.quiz.id, passed: true }, select: { id: true } }));
 
   const outline = (
     <ol className="flex flex-col gap-4">
@@ -181,10 +187,17 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
               </Panel>
             ) : full.quiz ? (
               <QuizForm
-                completed={done}
+                completed={quizPassed}
                 action={submitQuizAction.bind(null, { quizId: full.quiz.id, slug, lessonId, questionCount: full.quiz.questions.length })}
-                questions={full.quiz.questions.map((q) => ({ prompt: q.prompt, options: q.options as string[] }))}
+                // Prompts and options only: these props reach the browser.
+                questions={questionsForMember(full.quiz.questions)}
               />
+            ) : full.type === "QUIZ" && !done ? (
+              <Panel className="p-5">
+                <p className="text-[14.5px] text-ink-2">
+                  This knowledge check is not ready yet. Its questions are still being written; it opens here as soon as they are.
+                </p>
+              </Panel>
             ) : done ? (
               <Panel className="flex flex-wrap items-center justify-between gap-4 p-5">
                 <p className="flex items-center gap-2 text-[14.5px] text-success">

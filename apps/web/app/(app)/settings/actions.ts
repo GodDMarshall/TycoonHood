@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { after } from "next/server";
-import { prisma } from "@tycoonhood/db";
+import { prisma, type Prisma } from "@tycoonhood/db";
 import {
   accountSettings,
   AlreadyVerifiedError,
@@ -12,6 +12,7 @@ import {
   emailChangeReply,
   emailVerification,
   NoEmailChangeError,
+  privacyFromForm,
   profiles,
   sessions,
   UsernameTakenError,
@@ -53,20 +54,14 @@ export async function unlinkDiscordAction() {
 export async function savePrivacyAction(formData: FormData) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  // Merge, so facets this form does not show (achievements, courses, thc) keep their values.
-  const current = await prisma.profile.findUnique({ where: { userId: user.id }, select: { privacy: true } });
-  const base = current?.privacy && typeof current.privacy === "object" && !Array.isArray(current.privacy) ? (current.privacy as Record<string, unknown>) : {};
-  const privacy = {
-    ...base,
-    level: formData.get("level") === "on",
-    rank: formData.get("rank") === "on",
-    streak: formData.get("streak") === "on",
-    leaderboard: formData.get("leaderboard") === "on",
-  };
-  await prisma.profile.update({ where: { userId: user.id }, data: { privacy } });
+  // Merge, so facets this form does not show (achievements, thc) keep their values.
+  const current = await prisma.profile.findUnique({ where: { userId: user.id }, select: { privacy: true, username: true } });
+  const privacy = privacyFromForm(current?.privacy, (key) => formData.get(key) === "on");
+  await prisma.profile.update({ where: { userId: user.id }, data: { privacy: privacy as Prisma.InputJsonObject } });
   revalidatePath("/settings");
   revalidatePath("/profile");
   revalidatePath("/leaderboard");
+  if (current?.username) revalidatePath(`/u/${current.username}`);
 }
 
 // ─── Account & profile (spec B) ─────────────────────────────────────

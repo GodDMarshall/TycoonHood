@@ -24,5 +24,5 @@ export {
 export type { AuthoringActor, CourseInput, ModuleInput, LessonInput, QuizInput, ResourceInput, InstructorInput } from "./authoring";
 export { LearnerService, learner, ReviewNotAllowedError, reviewSchema, rankBySignals } from "./learner";
 export type { ReviewEligibility, ReviewInput } from "./learner";
-export { CourseUnavailableError } from "./lms";
-export type { CertificateEligibility } from "./lms";
+export { CourseUnavailableError, questionsForMember } from "./lms";
+export type { CertificateEligibility, QuizReviewItem } from "./lms";

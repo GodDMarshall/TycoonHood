@@ -5,7 +5,7 @@
  */
 import type { Metadata } from "next";
 import { prisma } from "@tycoonhood/db";
-import { countEvidence, describeCriteria, localDayKey, requiredFor, tryParseCriteria, weekKey } from "@tycoonhood/core";
+import { countEvidence, countsStandardDays, describeCriteria, localDayKey, repeatBucket, requiredFor, tryParseCriteria } from "@tycoonhood/core";
 import { xpRequiredForLevel } from "@tycoonhood/config";
 import { Badge, EmptyState, Icon, Progress, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
@@ -56,18 +56,27 @@ export default async function AchievementsPage() {
     missions.map(async (m) => {
       const c = tryParseCriteria(m.criteria);
       const kind: "weekly" | "daily" | "once" = !m.repeatable ? "once" : c?.within === "week" ? "weekly" : "daily";
-      const occurrence = kind === "once" ? "once" : kind === "weekly" ? weekKey(now) : localDayKey(now, tz);
+      // The same bucket the rules engine records the completion under.
+      const occurrence = kind === "once" ? "once" : c ? repeatBucket(c, now, tz) : localDayKey(now, tz);
       const [done, have] = await Promise.all([
         prisma.missionCompletion.findUnique({ where: { idempotencyKey: `mission:${m.id}:${user.id}:${occurrence}` }, select: { completedAt: true } }),
-        c ? countEvidence(prisma, user.id, c, now) : Promise.resolve(null),
+        c ? countEvidence(prisma, user.id, c, now, tz) : Promise.resolve(null),
       ]);
       const need = c ? requiredFor(c) : 1;
-      return { m, kind, rule: c ? cap(describeCriteria(c)) : m.description, done: !!done, have: have ?? 0, need, measurable: have !== null && need > 1 };
+      const localWeek = kind === "weekly" && !!c && countsStandardDays(c);
+      return { m, kind, localWeek, rule: c ? cap(describeCriteria(c)) : m.description, done: !!done, have: have ?? 0, need, measurable: have !== null && need > 1 };
     })
   );
+  // Days of the standard are the member's own days, so their week is too.
+  const weekly = missionRows.filter((r) => r.kind === "weekly");
+  const weeklyNote = weekly.every((r) => r.localWeek)
+    ? "Reset every Monday at midnight, your time."
+    : weekly.some((r) => r.localWeek)
+      ? "Reset every Monday, 00:00 UTC. Days of the standard count Monday to Sunday, your time."
+      : "Reset every Monday, 00:00 UTC.";
   const groups = [
     { key: "daily", title: "Daily", note: "Reset at midnight, your time." },
-    { key: "weekly", title: "Weekly", note: "Reset every Monday, 00:00 UTC." },
+    { key: "weekly", title: "Weekly", note: weeklyNote },
     { key: "once", title: "One-time", note: "Earned once." },
   ] as const;
 

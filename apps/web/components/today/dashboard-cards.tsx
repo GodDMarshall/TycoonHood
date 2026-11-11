@@ -8,7 +8,7 @@
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { notificationLink } from "@tycoonhood/core";
+import { notificationLink, weeklyResetNote } from "@tycoonhood/core";
 import { Badge, Icon, Progress, ThcAmount, XpBar, buttonStyles, cn, type IconName } from "@tycoonhood/ui";
 import { Panel, SectionTitle } from "../app/page";
 import type { DashboardData } from "../../app/(app)/today/dashboard";
@@ -153,6 +153,8 @@ export function ProgressCard({
 
 export function MissionsCard({ missions }: { missions: DashboardData["missions"] }) {
   const groups = (["daily", "weekly"] as const).map((c) => ({ cadence: c, items: missions.filter((m) => m.cadence === c) }));
+  const resets = weeklyResetNote(missions.filter((m) => m.cadence === "weekly"));
+  const weeklyLabel = resets ? `Weekly · ${resets}` : "Weekly";
   return (
     <section aria-labelledby="missions-title">
       <SectionTitle
@@ -173,7 +175,7 @@ export function MissionsCard({ missions }: { missions: DashboardData["missions"]
             .filter((g) => g.items.length > 0)
             .map((g) => (
               <Panel key={g.cadence} as="div" className="divide-y divide-line">
-                <p className="px-4 pb-2 pt-3 text-[12.5px] font-medium text-ink-3">{g.cadence === "daily" ? "Daily · resets every 24 hours" : "Weekly · resets every 7 days"}</p>
+                <p className="px-4 pb-2 pt-3 text-[12.5px] font-medium text-ink-3">{g.cadence === "daily" ? "Daily · resets every 24 hours" : weeklyLabel}</p>
                 {g.items.map((m) => (
                   <div key={m.id} className="flex items-start gap-3 px-4 py-3">
                     <span

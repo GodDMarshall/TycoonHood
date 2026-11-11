@@ -56,7 +56,8 @@ const courseInput = (fd: FormData) => ({
   description: str(fd, "description") ?? "",
   coverImage: str(fd, "coverImage"),
   instructorId: str(fd, "instructorId"),
-  xpOnCompletion: Number(str(fd, "xpOnCompletion") ?? 500),
+  // Raw: a blank field means the default (Number("") would be 0); the schema decides.
+  xpOnCompletion: str(fd, "xpOnCompletion"),
 });
 
 // ── courses
@@ -123,7 +124,7 @@ const lessonInput = (fd: FormData) => ({
   contentMd: str(fd, "contentMd"),
   videoUrl: str(fd, "videoUrl"),
   minutes: str(fd, "minutes") ? Number(str(fd, "minutes")) : ("" as const),
-  xpReward: Number(str(fd, "xpReward") ?? 50),
+  xpReward: str(fd, "xpReward"),
   isPreview: fd.get("isPreview") === "on",
   isFinal: fd.get("isFinal") === "on",
   moduleId: str(fd, "moduleId"),
