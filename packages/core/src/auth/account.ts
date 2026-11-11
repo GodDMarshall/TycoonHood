@@ -8,6 +8,9 @@ import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient, User } from "@tycoonhood/db";
 import { hashPassword, verifyPassword } from "./password";
 import type { OnboardingInput } from "./schemas";
+import { addressHeldFor } from "../platform/email-hold";
+
+const EMAIL_TAKEN = "An account with this email already exists.";
 
 export class EmailTakenError extends Error {}
 export class UsernameTakenError extends Error {}
@@ -24,19 +27,29 @@ export class AccountService {
   constructor(private readonly db: PrismaClient = defaultPrisma) {
   }
 
+  /**
+   * An address another account changed away from in the last 7 days is held
+   * for it (platform/email-hold) and refused in the same words as a taken
+   * one. The hold is looked for after the insert, which waits for a change
+   * of that address still in flight, so the hold that change writes is seen.
+   */
   async register(input: { email: string; password: string; name: string }): Promise<User> {
     const passwordHash = await hashPassword(input.password);
     try {
-      return await this.db.user.create({
-        data: {
-          email: input.email,
-          name: input.name,
-          credential: { create: { hash: passwordHash } },
-        },
+      return await this.db.$transaction(async (tx) => {
+        const user = await tx.user.create({
+          data: {
+            email: input.email,
+            name: input.name,
+            credential: { create: { hash: passwordHash } },
+          },
+        });
+        if (await addressHeldFor(tx, input.email)) throw new EmailTakenError(EMAIL_TAKEN);
+        return user;
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-        throw new EmailTakenError("An account with this email already exists.");
+        throw new EmailTakenError(EMAIL_TAKEN);
       }
       throw e;
     }

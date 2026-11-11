@@ -9,7 +9,7 @@ import { ActionForm } from "../../../../../components/admin/action-form";
 import { ConfirmButton } from "../../../../../components/admin-confirm";
 import { GrantForms } from "../../../../../components/admin-grant-forms";
 import { grantThcAction, grantXpAction } from "../../actions";
-import { changeRoleAction, setSuspendedAction } from "../actions";
+import { cancelEmailChangeAction, changeRoleAction, setSuspendedAction } from "../actions";
 
 export const metadata: Metadata = { title: "Admin · Member" };
 export const dynamic = "force-dynamic";
@@ -39,7 +39,7 @@ export default async function AdminMember({ params }: { params: Promise<{ id: st
   });
   if (!m) notFound();
 
-  const [orderGroups, commissionGroups, history] = await Promise.all([
+  const [orderGroups, commissionGroups, history, holds] = await Promise.all([
     prisma.order.groupBy({ by: ["status"], where: { userId: id }, _count: { _all: true } }),
     m.affiliate
       ? prisma.commission.groupBy({ by: ["status", "currency"], where: { affiliateId: m.affiliate.id }, _sum: { amountCents: true }, _count: { _all: true } })
@@ -50,6 +50,8 @@ export default async function AdminMember({ params }: { params: Promise<{ id: st
       take: 15,
       include: { actor: { select: { email: true } } },
     }),
+    // Addresses this member changed away from in the last 7 days: no one else can take them yet.
+    prisma.emailHold.findMany({ where: { userId: id, expires: { gt: new Date() } }, orderBy: { expires: "desc" } }),
   ]);
   const self = actor.id === id;
   const name = m.profile?.displayName ?? m.name ?? m.email;
@@ -81,6 +83,24 @@ export default async function AdminMember({ params }: { params: Promise<{ id: st
               Email:{" "}
               {m.emailVerified ? <Badge tone="success">Verified {dt.format(m.emailVerified)}</Badge> : <Badge tone="warning">Not verified</Badge>}
             </p>
+            {m.pendingEmail && (
+              <div className="flex flex-col items-start gap-2">
+                <p>
+                  Email change waiting: <span className="font-medium">{m.pendingEmail}</span>
+                </p>
+                <ConfirmButton
+                  action={cancelEmailChangeAction.bind(null, m.id)}
+                  label="Cancel the email change"
+                  confirmText={`The link sent to ${m.pendingEmail} will stop working. ${name} keeps ${m.email}.`}
+                />
+              </div>
+            )}
+            {holds.map((h) => (
+              <p key={h.id}>
+                Previous address <span className="font-medium">{h.address}</span>, held until {dt.format(h.expires)}.{" "}
+                <span className="text-ink-3">{h.undoToken ? "Its undo link still works." : "Its undo link no longer works."}</span>
+              </p>
+            ))}
             <p>Onboarded: {m.profile?.onboardedAt ? dt.format(m.profile.onboardedAt) : "not yet"}</p>
             <p>
               Level {m.level} · {m.xp.toLocaleString()} XP{m.rank ? ` · ${m.rank.name}` : ""}

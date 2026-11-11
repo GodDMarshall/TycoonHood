@@ -11,8 +11,13 @@ export {
   VERIFY_TTL_MS, VERIFY_RESEND_LIMIT, VERIFY_RESEND_WINDOW_MS,
 } from "./email-verification";
 export type { IssuedVerification, IssuedEmailChange, Confirmation } from "./email-verification";
+export { EMAIL_HOLD_MS } from "./email-hold";
+export type { IssuedUndo } from "./email-hold";
+export { EmailUndoService, emailUndo, InvalidUndoLinkError, UndoLinkOverError } from "./email-undo";
+export type { UndoneEmailChange } from "./email-undo";
 export {
   maskEmail, emailChangeLinkMail, emailChangeRequestedMail, emailChangedMail, passwordChangedMail,
+  emailChangeUndoneMail, emailChangeUndoneRemovedMail,
 } from "./account-mail";
 export type { MailCopy } from "./account-mail";
 export {

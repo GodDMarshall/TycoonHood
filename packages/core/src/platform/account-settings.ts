@@ -10,20 +10,25 @@
  *    signed out, the one making the change stays. Reset links and a waiting
  *    email change die with the old password, even a change asked for at the
  *    same moment: changeEmail checks the password again under a lock on the
- *    credential row, so the two run one after the other.
+ *    credential row, so the two run one after the other. changePassword
+ *    checks it again the same way, so it cannot land after an undone email
+ *    change (platform/email-undo) replaced the password it checked.
+ *  · an address held for another account (platform/email-hold) is refused
+ *    like a taken one; one held for this account is the member moving back.
  *  · delete account: a request for staff, recorded as a ContactMessage.
  *    Accounts are never hard-deleted from here — ledger rows reference the
  *    user with ON DELETE RESTRICT, and the books must still balance.
  */
 import { z } from "zod";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
-import type { PrismaClient } from "@tycoonhood/db";
+import type { Prisma, PrismaClient } from "@tycoonhood/db";
 import { hashPassword, verifyPassword } from "../auth/password";
 import { newPasswordSchema } from "../auth/password-reset";
 import { EmailTakenError } from "../auth/account";
 import { SessionService } from "../auth/session";
 import { AuditService } from "./audit";
 import { EmailVerificationService, resetTokenId, type IssuedEmailChange } from "./email-verification";
+import { addressHeldFor } from "./email-hold";
 
 export const DELETION_TOPIC = "account-deletion";
 
@@ -53,6 +58,18 @@ export class AccountSettingsService {
   }
 
   /**
+   * Inside `tx`: lock the member's credential row, and refuse unless its hash
+   * is still the one checkPassword matched. changePassword, resetPassword
+   * and an undone email change all write that row, so whichever comes
+   * second waits for the first and then sees what it did.
+   */
+  private async passwordUnchanged(tx: Prisma.TransactionClient, userId: string, checkedHash: string) {
+    const [cred] = await tx.$queryRaw<{ hash: string }[]>`
+      SELECT "hash" FROM "PasswordCredential" WHERE "userId" = ${userId} FOR UPDATE`;
+    if (cred?.hash !== checkedHash) throw new WrongPasswordError();
+  }
+
+  /**
    * Ask to move the account to another address. Nothing changes yet: the
    * address waits in pendingEmail with a new link (replacing any earlier
    * request), and the caller emails the link to the new address and a notice
@@ -64,9 +81,10 @@ export class AccountSettingsService {
     const user = await this.db.user.findUniqueOrThrow({ where: { id: userId } });
     if (user.email === newEmail) return null;
     // Addresses are stored lower-cased (registerSchema, emailSchema), so this is the unique email check.
-    if (await this.db.user.findUnique({ where: { email: newEmail }, select: { id: true } })) {
-      throw new EmailTakenError("An account with this email already exists.");
-    }
+    const taken = await this.db.user.findUnique({ where: { email: newEmail }, select: { id: true } });
+    // An address held for another account is refused in the same words; the confirmation checks again.
+    const heldFor = taken ? null : await addressHeldFor(this.db, newEmail);
+    if (taken || (heldFor && heldFor !== userId)) throw new EmailTakenError("An account with this email already exists.");
     return this.db.$transaction(async (tx) => {
       // A new password cancels a waiting change, so this request must not
       // land behind one set since the check above. Lock the credential row,
@@ -74,9 +92,7 @@ export class AccountSettingsService {
       // and refuse if the hash moved. So either the new password lands first
       // and this request is refused, or this lands first and the new password
       // then cancels it.
-      const [cred] = await tx.$queryRaw<{ hash: string }[]>`
-        SELECT "hash" FROM "PasswordCredential" WHERE "userId" = ${userId} FOR UPDATE`;
-      if (cred?.hash !== checkedHash) throw new WrongPasswordError();
+      await this.passwordUnchanged(tx, userId, checkedHash);
       await tx.user.update({ where: { id: userId }, data: { pendingEmail: newEmail } });
       const issued = await this.verification.issueEmailChangeIn(tx, { id: userId, email: user.email, pendingEmail: newEmail });
       await this.audit.log(
@@ -102,13 +118,16 @@ export class AccountSettingsService {
    * Revokes every other session; `keepSessionId` is the one doing the change.
    * In the same transaction as the new hash, every reset link and any waiting
    * email change die: whoever holds them asked before the account was
-   * secured. Returns the address of a waiting change it cancelled, if any.
+   * secured. Refused if the password changed since it was checked (another
+   * change, a reset, or an undone email change). Returns the address of a
+   * waiting change it cancelled, if any.
    */
   async changePassword(userId: string, currentPassword: string, newPassword: string, keepSessionId?: string) {
     const parsed = newPasswordSchema.parse(newPassword);
-    await this.checkPassword(userId, currentPassword);
+    const checkedHash = await this.checkPassword(userId, currentPassword);
     const hash = await hashPassword(parsed);
     const cancelledEmailChange = await this.db.$transaction(async (tx) => {
+      await this.passwordUnchanged(tx, userId, checkedHash);
       await tx.passwordCredential.update({ where: { userId }, data: { hash } });
       await tx.verificationToken.deleteMany({ where: { identifier: resetTokenId(userId) } });
       const cancelled = await this.verification.cancelEmailChange(userId, "password-change", tx);

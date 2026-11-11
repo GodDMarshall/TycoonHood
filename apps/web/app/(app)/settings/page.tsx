@@ -176,6 +176,7 @@ export default async function SettingsPage() {
                   {mail === "live" && <>We&rsquo;ll email a confirmation link to the new address, and tell {user.email} about the request. </>}
                   {mail === "dev" && <>Dev mode: the confirmation link goes to the server log, not by email. </>}
                   Your email changes only when the link is used, and that signs out every device except the one you use it on.
+                  {mail === "live" && <> {user.email} then gets a link that can undo the change for 7 days.</>}
                 </p>
               </ActionForm>
             )}

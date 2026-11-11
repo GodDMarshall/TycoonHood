@@ -3,6 +3,8 @@ import {
   emailChangedMail,
   emailChangeLinkMail,
   emailChangeRequestedMail,
+  emailChangeUndoneMail,
+  emailChangeUndoneRemovedMail,
   maskEmail,
   passwordChangedMail,
 } from "../src/platform/account-mail";
@@ -39,12 +41,30 @@ describe("Account security email", () => {
     expect(m.text).toContain(`${SITE}/forgot-password`);
   });
 
-  it("the notice to the old address, once changed, masks the new one and points to support", () => {
-    const m = emailChangedMail("newperson@example.com", SITE);
+  it("the notice to the old address, once changed, masks the new one and carries the undo link", () => {
+    const m = emailChangedMail("newperson@example.com", `${SITE}/undo-email/xyz`);
     expect(m.text).toContain("ne***@ex***.com");
     expect(m.text).not.toContain("newperson@example.com");
     expect(m.text).toMatch(/no longer signs in/);
-    expect(m.text).toContain(`${SITE}/contact`);
+    expect(m.text).toMatch(/If this wasn't you, undo it \(link valid 7 days, single use\)/);
+    expect(m.text).toContain(`${SITE}/undo-email/xyz`);
+    expect(m.text).toMatch(/signs out every device and asks for a new password/);
+  });
+
+  it("after an undo, each address hears about it and sees the other one masked", () => {
+    const back = emailChangeUndoneMail("newperson@example.com", SITE);
+    expect(back.text).toContain("ne***@ex***.com");
+    expect(back.text).not.toContain("newperson@example.com");
+    expect(back.text).toMatch(/was undone/);
+    expect(back.text).toMatch(/signs in to your account again/);
+    expect(back.text).toContain(`${SITE}/forgot-password`);
+
+    const off = emailChangeUndoneRemovedMail("owner@example.com", SITE);
+    expect(off.text).toContain("ow***@ex***.com");
+    expect(off.text).not.toContain("owner@example.com");
+    expect(off.subject).toMatch(/was undone/);
+    expect(off.text).toMatch(/no longer signs in/);
+    expect(off.text).toContain(`${SITE}/contact`);
   });
 
   it("the password notice says which devices were signed out", () => {

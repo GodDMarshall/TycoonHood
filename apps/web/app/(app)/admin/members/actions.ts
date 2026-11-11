@@ -28,3 +28,10 @@ export async function setSuspendedAction(targetId: string, suspended: boolean): 
   revalidatePath(`/admin/members/${targetId}`);
   revalidatePath("/admin/members");
 }
+
+/** Drop a member's waiting email change; its link stops working. Audited as done by this staff member. */
+export async function cancelEmailChangeAction(targetId: string): Promise<void> {
+  const actor = await actorWith("admin.users");
+  await memberAdmin.cancelEmailChange(actor, targetId);
+  revalidatePath(`/admin/members/${targetId}`);
+}

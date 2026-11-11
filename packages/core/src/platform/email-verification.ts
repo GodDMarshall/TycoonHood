@@ -21,6 +21,9 @@
  * or a resend replaces it). Until the link is used, the current address still
  * signs in and still gets reset links. Using it moves the account in one
  * transaction (see confirmEmailChange). Resending it shares the limit above.
+ * The address the change replaced is then held for the account for 7 days,
+ * and the notice to it carries a link that undoes the change (see
+ * platform/email-hold and platform/email-undo).
  *
  * Verification never gates learning. Other modules read User.emailVerified
  * where it matters (the affiliate programme requires it).
@@ -29,6 +32,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient, User, VerificationToken } from "@tycoonhood/db";
 import { AuditService } from "./audit";
+import { addressHeldFor, holdReplacedAddress, lockEmailOf, type IssuedUndo } from "./email-hold";
 
 export const VERIFY_TTL_MS = 24 * 60 * 60 * 1000;
 export const VERIFY_RESEND_LIMIT = 3;
@@ -81,13 +85,13 @@ export interface IssuedEmailChange {
   expires: Date;
 }
 
-/** What a used link did. */
+/** What a used link did. An email change also returns the link that undoes it, for the notice to the old address. */
 export type Confirmation =
   | { kind: "verify"; user: User }
-  | { kind: "email-change"; user: User; previousEmail: string };
+  | { kind: "email-change"; user: User; previousEmail: string; undo: IssuedUndo };
 
 /** Why a waiting email change was dropped, as the audit row records it ("taken" is recorded by confirm). */
-export type EmailChangeCancelReason = "member" | "password-change" | "password-reset";
+export type EmailChangeCancelReason = "member" | "staff" | "password-change" | "password-reset";
 
 export class EmailVerificationService {
   private audit: AuditService;
@@ -207,13 +211,15 @@ export class EmailVerificationService {
 
   /**
    * Drop the member's waiting email change, if there is one: the address and
-   * its link. Audited with the reason. Inside `tx` when given. Returns the
-   * address that was waiting, or null.
+   * its link. Audited with the reason, as done by `actorId` (the member
+   * unless staff did it). Inside `tx` when given. Returns the address that
+   * was waiting, or null.
    */
   async cancelEmailChange(
     userId: string,
     reason: EmailChangeCancelReason,
-    tx?: Prisma.TransactionClient
+    tx?: Prisma.TransactionClient,
+    actorId: string = userId
   ): Promise<string | null> {
     const run = async (t: Prisma.TransactionClient) => {
       await t.verificationToken.deleteMany({ where: { identifier: emailChangeTokenId(userId) } });
@@ -221,7 +227,7 @@ export class EmailVerificationService {
       if (!user?.pendingEmail) return null;
       await t.user.update({ where: { id: userId }, data: { pendingEmail: null } });
       await this.audit.log(
-        { actorId: userId, action: "account.email.change.cancel", targetType: "User", targetId: userId, meta: { to: user.pendingEmail, reason } },
+        { actorId, action: "account.email.change.cancel", targetType: "User", targetId: userId, meta: { to: user.pendingEmail, reason } },
         t
       );
       return user.pendingEmail;
@@ -297,20 +303,26 @@ export class EmailVerificationService {
 
   /**
    * An email-change link: the change takes effect, all in one transaction.
-   *  · The link is spent first, so a second (or parallel) use finds nothing.
-   *  · The address must still be waiting, and still free.
+   *  · The account's address lock comes first, so an undo of its last
+   *    change never interleaves with this (see email-hold).
+   *  · The link is spent next, so a second (or parallel) use finds nothing.
+   *  · The address must still be waiting, still free, and not held for
+   *    another account.
    *  · The account moves to it, verified: the click proves the mailbox.
    *  · Every link for the old address, every reset link and the change link
    *    die, and every other session is signed out. `keepSessionId` survives
    *    only if it is this member's.
-   * If another account took the address meanwhile, the change is dropped and
-   * EmailChangeTakenError says so.
+   *  · The old address is held for the account with a new undo link, and
+   *    every earlier undo link dies.
+   * If another account took the address meanwhile, or it is held for one,
+   * the change is dropped and EmailChangeTakenError says so.
    */
   private async confirmEmailChange(token: VerificationToken, keepSessionId?: string): Promise<Confirmation> {
     const userId = token.identifier.slice(EMAIL_CHANGE_TOKEN_PREFIX.length);
     let wanted = null as string | null;
     try {
       return await this.db.$transaction(async (tx) => {
+        await lockEmailOf(tx, userId);
         const spent = await tx.verificationToken.deleteMany({ where: { token: token.token } });
         if (spent.count === 0) throw new InvalidVerificationTokenError("That link is not valid, or it has already been used.");
         const user = await tx.user.findUnique({ where: { id: userId } });
@@ -318,8 +330,11 @@ export class EmailVerificationService {
           throw new EmailChangeEndedError("That email change was cancelled, so this link no longer works. Your email has not changed.");
         }
         wanted = user.pendingEmail;
+        // An account first, then a hold: a change that frees the address holds it in the same commit.
         const holder = await tx.user.findUnique({ where: { email: wanted }, select: { id: true } });
         if (holder && holder.id !== user.id) throw new EmailChangeTakenError();
+        const heldFor = await addressHeldFor(tx, wanted);
+        if (heldFor && heldFor !== user.id) throw new EmailChangeTakenError();
 
         const updated = await tx.user.update({
           where: { id: user.id },
@@ -331,11 +346,12 @@ export class EmailVerificationService {
         await tx.session.deleteMany({
           where: { userId: user.id, ...(keepSessionId ? { id: { not: keepSessionId } } : {}) },
         });
+        const undo = await holdReplacedAddress(tx, { userId: user.id, address: user.email, changedTo: wanted });
         await this.audit.log(
           { actorId: user.id, action: "account.email.change", targetType: "User", targetId: user.id, meta: { from: user.email, to: wanted } },
           tx
         );
-        return { kind: "email-change" as const, user: updated, previousEmail: user.email };
+        return { kind: "email-change" as const, user: updated, previousEmail: user.email, undo };
       });
     } catch (e) {
       const taken = e instanceof EmailChangeTakenError || (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002");
