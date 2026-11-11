@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
+import { showsCourses } from "@tycoonhood/core";
 import { Card, CardContent, CoinMark, PillarBadge, SectionRule } from "@tycoonhood/ui";
 
 export const dynamic = "force-dynamic";
@@ -15,9 +16,9 @@ export default async function VerifyCertificate({ params }: { params: Promise<{ 
     include: { course: true, user: { include: { profile: true } } },
   });
   if (!cert) notFound();
-  // Name per privacy: shown only when the member makes their courses public.
-  const privacy = (cert.user.profile?.privacy ?? {}) as Record<string, unknown>;
-  const showName = !!cert.user.profile && privacy.courses === true;
+  // Name per privacy: shown only when the member opts in (Settings → "Show my
+  // certificates, and my name when someone verifies one"). Off by default.
+  const showName = !!cert.user.profile && showsCourses(cert.user.profile.privacy);
 
   return (
     <main className="mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center px-6 py-16 text-center">

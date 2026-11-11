@@ -17,8 +17,9 @@ export {
 export type { SettingKey, SettingValue, HomeSection } from "./settings";
 export {
   ProfileService, profiles, profileUpdateSchema, profileCompletion, profileCompletionFor, isValidTimeZone,
+  PRIVACY_FORM_KEYS, privacyShows, showsCourses, privacyFromForm,
 } from "./profile";
-export type { ProfileUpdateInput, ProfileCompletion, CompletionItem, CompletionSubject } from "./profile";
+export type { ProfileUpdateInput, ProfileCompletion, CompletionItem, CompletionSubject, PrivacyFormKey } from "./profile";
 export { AccountSettingsService, accountSettings, WrongPasswordError, DELETION_TOPIC, emailSchema } from "./account-settings";
 export { MemberAdminService, memberAdmin, MemberAdminError } from "./members";
 export type { Actor } from "./members";

@@ -11,7 +11,7 @@ import {
   AlreadyVerifiedError,
 } from "../src/platform/email-verification";
 import { SettingsService, SETTING_DEFAULTS, resolveSetting, InvalidSettingError } from "../src/platform/settings";
-import { profileCompletion, ProfileService } from "../src/platform/profile";
+import { profileCompletion, ProfileService, privacyFromForm, privacyShows, showsCourses } from "../src/platform/profile";
 import { MemberAdminService, MemberAdminError } from "../src/platform/members";
 import { AccountSettingsService, WrongPasswordError } from "../src/platform/account-settings";
 import { CmsService } from "../src/platform/cms";
@@ -218,6 +218,41 @@ describe("Profile completion", () => {
     const saved = await svc.update(user.id, { ...base, avatarUrl: "https://example.com/a.png" });
     expect(saved.avatarUrl).toBe("https://example.com/a.png");
     expect(saved.bio).toBeNull();
+  });
+});
+
+describe("Profile privacy: certificates are opt-in", () => {
+  it("hides certificates and the name on verification until the member opts in", () => {
+    // The column default: courses off.
+    const fresh = { level: true, rank: true, achievements: true, streak: true, courses: false, thc: false };
+    expect(showsCourses(fresh)).toBe(false);
+    expect(showsCourses({})).toBe(false);
+    expect(showsCourses(null)).toBe(false);
+    expect(showsCourses({ courses: "true" })).toBe(false);
+    expect(showsCourses({ ...fresh, courses: true })).toBe(true);
+    // Everything else on the card shows unless turned off.
+    expect(privacyShows({}, "level")).toBe(true);
+    expect(privacyShows({ level: false }, "level")).toBe(false);
+    expect(privacyShows({}, "courses")).toBe(false);
+  });
+
+  it("the Settings form sets its own facets, courses included, and keeps the rest", () => {
+    const stored = { level: true, rank: true, achievements: false, streak: true, courses: false, thc: true };
+    const ticked = new Set(["level", "courses"]);
+    const next = privacyFromForm(stored, (k) => ticked.has(k));
+    expect(next).toEqual({ level: true, rank: false, achievements: false, streak: false, leaderboard: false, courses: true, thc: true });
+    expect(showsCourses(next)).toBe(true);
+    // Unticking it hides them again.
+    expect(showsCourses(privacyFromForm(next, (k) => k === "level"))).toBe(false);
+  });
+
+  it("a member who opts in is named on verification, through the saved profile", async () => {
+    const user = await createTestUser();
+    const before = await prisma.profile.findUniqueOrThrow({ where: { userId: user.id } });
+    expect(showsCourses(before.privacy)).toBe(false);
+    await prisma.profile.update({ where: { userId: user.id }, data: { privacy: privacyFromForm(before.privacy, (k) => k === "courses") as object } });
+    const after = await prisma.profile.findUniqueOrThrow({ where: { userId: user.id } });
+    expect(showsCourses(after.privacy)).toBe(true);
   });
 });
 

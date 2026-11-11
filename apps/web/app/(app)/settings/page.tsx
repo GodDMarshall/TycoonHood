@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Page, PageHeader } from "../../../components/app/page";
 import { requireUser } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
-import { accountSettings, activeDiscordTransport, discord, profileCompletion, sessions } from "@tycoonhood/core";
+import { accountSettings, activeDiscordTransport, discord, privacyShows, profileCompletion, sessions } from "@tycoonhood/core";
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Field, Input, Notice, SectionRule, Select, Textarea } from "@tycoonhood/ui";
 import { getCurrentSession } from "../../../lib/auth";
 import { mailMode } from "../../../lib/mail";
@@ -48,7 +48,6 @@ export default async function SettingsPage() {
   ]);
   const mail = mailMode();
   const contact = <Link href="/contact" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">contact us</Link>;
-  const privacy = (profile.privacy ?? {}) as Record<string, boolean>;
   const transport = activeDiscordTransport();
   const completion = profileCompletion({ emailVerified: user.emailVerified, profile });
   const zones = timeZones();
@@ -227,12 +226,18 @@ export default async function SettingsPage() {
       </Card>
 
       <SectionRule label="Your public profile card" className="mb-4 mt-10" />
-      <Card>
+      <Card id="privacy" className="scroll-mt-24">
         <CardContent className="py-4">
           <form action={savePrivacyAction} className="flex flex-col gap-3">
-            {[["level", "Show my level and XP"], ["rank", "Show my rank"], ["streak", "Show my streak"], ["leaderboard", "Show me on the leaderboard"]].map(([key, label]) => (
+            {[
+              ["level", "Show my level and XP"],
+              ["rank", "Show my rank"],
+              ["streak", "Show my streak"],
+              ["leaderboard", "Show me on the leaderboard"],
+              ["courses", "Show my certificates, and my name when someone verifies one"],
+            ].map(([key, label]) => (
               <label key={key} className="flex items-center gap-3 text-[14px] text-ink-1">
-                <input type="checkbox" name={key} defaultChecked={privacy[key] !== false} className="accent-[var(--color-gold)]" />
+                <input type="checkbox" name={key} defaultChecked={privacyShows(profile.privacy, key)} className="accent-[var(--color-gold)]" />
                 {label}
               </label>
             ))}
