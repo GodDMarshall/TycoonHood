@@ -1,22 +1,27 @@
 /**
  * ACCOUNT SETTINGS — the member's own security-sensitive changes.
  *
- *  · change email: needs the current password; the new address starts
- *    unverified and every token for the old one is revoked.
+ *  · change email: needs the current password, and waits for the new
+ *    address to be confirmed. The address asked for is kept in
+ *    User.pendingEmail and gets a link; the current address gets a notice
+ *    and stays the sign-in and reset address until the link is used (see
+ *    EmailVerificationService.confirm, which makes the switch).
  *  · change password: needs the current password; every OTHER session is
- *    signed out, the one making the change stays.
+ *    signed out, the one making the change stays. Reset links and a waiting
+ *    email change die with the old password.
  *  · delete account: a request for staff, recorded as a ContactMessage.
  *    Accounts are never hard-deleted from here — ledger rows reference the
  *    user with ON DELETE RESTRICT, and the books must still balance.
  */
 import { z } from "zod";
-import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
+import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import { hashPassword, verifyPassword } from "../auth/password";
 import { newPasswordSchema } from "../auth/password-reset";
 import { EmailTakenError } from "../auth/account";
 import { SessionService } from "../auth/session";
 import { AuditService } from "./audit";
+import { EmailVerificationService, resetTokenId, type IssuedEmailChange } from "./email-verification";
 
 export const DELETION_TOPIC = "account-deletion";
 
@@ -31,9 +36,11 @@ export const emailSchema = z.string().trim().toLowerCase().email("Enter a valid 
 export class AccountSettingsService {
   private sessions: SessionService;
   private audit: AuditService;
+  private verification: EmailVerificationService;
   constructor(private readonly db: PrismaClient = defaultPrisma) {
     this.sessions = new SessionService(db);
     this.audit = new AuditService(db);
+    this.verification = new EmailVerificationService(db);
   }
 
   private async checkPassword(userId: string, password: string) {
@@ -41,39 +48,62 @@ export class AccountSettingsService {
     if (!cred || !(await verifyPassword(cred.hash, password))) throw new WrongPasswordError();
   }
 
-  /** Returns the updated user; the caller sends the new verification email. */
-  async changeEmail(userId: string, newEmailRaw: string, currentPassword: string) {
+  /**
+   * Ask to move the account to another address. Nothing changes yet: the
+   * address waits in pendingEmail with a new link (replacing any earlier
+   * request), and the caller emails the link to the new address and a notice
+   * to the current one. Null when it already is the member's address.
+   */
+  async changeEmail(userId: string, newEmailRaw: string, currentPassword: string): Promise<IssuedEmailChange | null> {
     const newEmail = emailSchema.parse(newEmailRaw);
     await this.checkPassword(userId, currentPassword);
-    const before = await this.db.user.findUniqueOrThrow({ where: { id: userId } });
-    if (before.email === newEmail) return before;
-    try {
-      const user = await this.db.user.update({ where: { id: userId }, data: { email: newEmail, emailVerified: null } });
-      await this.db.verificationToken.deleteMany({ where: { identifier: before.email } });
-      await this.audit.log({
-        actorId: userId,
-        action: "account.email.change",
-        targetType: "User",
-        targetId: userId,
-        meta: { from: before.email, to: newEmail },
-      });
-      return user;
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-        throw new EmailTakenError("An account with this email already exists.");
-      }
-      throw e;
+    const user = await this.db.user.findUniqueOrThrow({ where: { id: userId } });
+    if (user.email === newEmail) return null;
+    // Addresses are stored lower-cased (registerSchema, emailSchema), so this is the unique email check.
+    if (await this.db.user.findUnique({ where: { email: newEmail }, select: { id: true } })) {
+      throw new EmailTakenError("An account with this email already exists.");
     }
+    return this.db.$transaction(async (tx) => {
+      await tx.user.update({ where: { id: userId }, data: { pendingEmail: newEmail } });
+      const issued = await this.verification.issueEmailChangeIn(tx, { id: userId, email: user.email, pendingEmail: newEmail });
+      await this.audit.log(
+        {
+          actorId: userId,
+          action: "account.email.change.request",
+          targetType: "User",
+          targetId: userId,
+          meta: { from: user.email, to: newEmail },
+        },
+        tx
+      );
+      return issued;
+    });
   }
 
-  /** Revokes every other session; `keepSessionId` is the one doing the change. */
+  /** Drop the email change waiting for confirmation. Returns the address that was waiting, or null. */
+  async cancelEmailChange(userId: string): Promise<string | null> {
+    return this.verification.cancelEmailChange(userId, "member");
+  }
+
+  /**
+   * Revokes every other session; `keepSessionId` is the one doing the change.
+   * In the same transaction as the new hash, every reset link and any waiting
+   * email change die: whoever holds them asked before the account was
+   * secured. Returns the address of a waiting change it cancelled, if any.
+   */
   async changePassword(userId: string, currentPassword: string, newPassword: string, keepSessionId?: string) {
     const parsed = newPasswordSchema.parse(newPassword);
     await this.checkPassword(userId, currentPassword);
     const hash = await hashPassword(parsed);
-    await this.db.passwordCredential.update({ where: { userId }, data: { hash } });
+    const cancelledEmailChange = await this.db.$transaction(async (tx) => {
+      await tx.passwordCredential.update({ where: { userId }, data: { hash } });
+      await tx.verificationToken.deleteMany({ where: { identifier: resetTokenId(userId) } });
+      const cancelled = await this.verification.cancelEmailChange(userId, "password-change", tx);
+      await this.audit.log({ actorId: userId, action: "account.password.change", targetType: "User", targetId: userId }, tx);
+      return cancelled;
+    });
     await this.sessions.destroyAllForUser(userId, keepSessionId);
-    await this.audit.log({ actorId: userId, action: "account.password.change", targetType: "User", targetId: userId });
+    return { cancelledEmailChange };
   }
 
   async signOutOtherDevices(userId: string, keepSessionId: string) {

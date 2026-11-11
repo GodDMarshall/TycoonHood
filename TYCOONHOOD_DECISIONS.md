@@ -291,5 +291,17 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **3D world:** optional only, and it must never gate a feature. Its return is the owner's call (decision card in the build thread).
 - **Founder:** the About page features HARSHA with the photo supplied by the owner (`apps/web/public/founder/harsha.jpg`). Only that photo is used.
 
+### DR-32 — An email change waits for the new address, and the account's address is told about account changes
+- **Date:** 2026-11-11 · **Status:** **ADOPTED** — account-security fixes P2 and P3 (ASVS V2.2.3).
+- **Before:** Settings changed `User.email` at once, on the current password alone. Anyone who knew the password could move the account to their own address, and reset links then went there. Reset links also outlived a password change or an email change.
+- **Now:**
+  - The address asked for waits in `User.pendingEmail`. A link (24 hours, single use) goes to it. Until the link is used, the current address still signs in and still gets reset links.
+  - The current address is told about the request. The notice shows the new address masked ("ne***@ex***.com") and says to change the password if it wasn't them.
+  - Using the link moves the account in one transaction. The address must still be free, and the account becomes verified at it. Every link for the old address, every reset link and the change link die. Every other session is signed out; the browser that used the link stays signed in only if it is the member's. The old address is told.
+  - A password change in Settings, or a reset, cancels a waiting change and spends every reset link. The account's address is told the password changed.
+  - With no mail provider, an email change is refused: its link could never arrive.
+  - Resending the change link shares the confirmation-resend limit: three an hour per member.
+- **Not unique:** two accounts may wait for the same address. The unique `email` decides who gets it; the other confirmation fails with a clear message and the waiting change is dropped.
+
 ## How to use this file going forward
 Add a Part B entry (or a new `D##` if it's architectural and adopted) for any decision that changes architecture, product scope, the economy, the design contract, or a security posture. Never edit a preserved entry to change its meaning — supersede it with a dated new entry that references the old ID. When an OPEN item is decided, change its status to ADOPTED/REJECTED with the date and a one-line outcome; leave the reasoning intact.

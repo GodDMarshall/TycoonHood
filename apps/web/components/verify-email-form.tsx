@@ -4,7 +4,11 @@ import { useActionState } from "react";
 import { Button, Card, CardContent, CardDescription, CardHeader, Notice } from "@tycoonhood/ui";
 import type { VerifyState } from "../app/(auth)/actions";
 
-/** One button: links in emails are often prefetched by scanners, so the click is what spends the token. */
+/**
+ * One button: links in emails are often prefetched by scanners, so the click
+ * is what spends the token. The same page takes a confirmation link and the
+ * link that confirms an email change; the result says which one it was.
+ */
 export function VerifyEmailForm({
   action,
   signedIn,
@@ -13,14 +17,25 @@ export function VerifyEmailForm({
   signedIn: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, {} as VerifyState);
-  const next = signedIn ? { href: "/today", label: "Go to your dashboard" } : { href: "/login", label: "Sign in" };
 
   if (state.done) {
+    const changed = state.done === "email-changed";
+    const next = state.signedIn
+      ? changed
+        ? { href: "/settings#email", label: "Back to your settings" }
+        : { href: "/today", label: "Go to your dashboard" }
+      : { href: "/login", label: "Sign in" };
     return (
       <Card variant="gold" className="w-full">
         <CardContent className="flex flex-col gap-3 py-6">
-          <p className="text-[15px] font-semibold text-ink-1">Email confirmed.</p>
-          <p className="text-[13px] text-ink-2">Thank you. Your account is fully set up.</p>
+          <p className="text-[15px] font-semibold text-ink-1">{changed ? "Email changed." : "Email confirmed."}</p>
+          <p className="text-[13px] text-ink-2">
+            {!changed && "Thank you. Your account is fully set up."}
+            {changed &&
+              (state.signedIn
+                ? `Your account now uses ${state.email}. You're still signed in here; every other device was signed out.`
+                : `Your account now uses ${state.email}, and every device was signed out. Sign in with the new address.`)}
+          </p>
           <Link href={next.href} className="text-[14px] font-semibold text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
             {next.label} →
           </Link>
@@ -41,7 +56,7 @@ export function VerifyEmailForm({
           <Button type="submit" size="lg" loading={pending} className="w-full">
             Confirm my email
           </Button>
-          {state.error && (
+          {state.error && state.retry !== false && (
             <p className="text-center text-[13px] text-ink-3">
               {signedIn ? (
                 <>

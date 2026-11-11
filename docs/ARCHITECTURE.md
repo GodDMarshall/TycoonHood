@@ -28,6 +28,11 @@ A pnpm monorepo with one product app.
 ## Security model
 
 - **Sessions** are resolved on the server from an httpOnly cookie (`packages/core/src/auth/session.ts`). A suspended user resolves to no session.
+- **Account changes** (DR-32):
+  - An email change waits in `User.pendingEmail` until the link sent to the new address is used. Using it moves the account, kills every link for the old address and every reset link, and signs out other sessions.
+  - A password change or reset cancels a waiting email change and spends every reset link.
+  - The account's address is told about each of these (`apps/web/lib/mail/account.ts`; the words are in `platform/account-mail.ts`).
+  - Confirmation resends are limited to three an hour per member. The count and the new link are written under one database lock, so parallel requests cannot pass it.
 - **Authorisation** is enforced in the data-access layer, `apps/web/lib/guard.ts`, never in a layout. `requireUser()`, `requirePermission(p)` and `actorWith(p)` run at the top of every protected page and server action.
 - **Permissions** are one table, `packages/core/src/auth/permissions.ts`. Code asks `can(user, "admin.commerce")` and never compares role strings. The admin navigation (`apps/web/lib/admin-nav.ts`) shows only the sections a role can open, and each admin page checks again on its own.
 - **Money** has two separate rails:

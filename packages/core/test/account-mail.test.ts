@@ -1,0 +1,59 @@
+import { describe, it, expect } from "vitest";
+import {
+  emailChangedMail,
+  emailChangeLinkMail,
+  emailChangeRequestedMail,
+  maskEmail,
+  passwordChangedMail,
+} from "../src/platform/account-mail";
+
+const SITE = "https://tycoonhood.test";
+
+describe("maskEmail", () => {
+  it("keeps two characters of each part and the top-level domain", () => {
+    expect(maskEmail("newperson@example.com")).toBe("ne***@ex***.com");
+    expect(maskEmail("me@mail.example.co.uk")).toBe("m***@ma***.uk");
+  });
+
+  it("shows one character of a short part, and never a whole one", () => {
+    expect(maskEmail("ab@x.io")).toBe("a***@x***.io");
+    expect(maskEmail("a@bc.in")).toBe("a***@b***.in");
+    expect(maskEmail("not-an-email")).toBe("***");
+  });
+});
+
+describe("Account security email", () => {
+  it("the link goes only to the new address, and says nothing changes without it", () => {
+    const m = emailChangeLinkMail(`${SITE}/verify-email/abc`);
+    expect(m.text).toContain(`${SITE}/verify-email/abc`);
+    expect(m.text).toMatch(/valid 24 hours, single use/);
+    expect(m.text).toMatch(/changes only when the link is used/);
+  });
+
+  it("the notice to the current address masks the new one and says what to do if it wasn't them", () => {
+    const m = emailChangeRequestedMail("newperson@example.com", SITE);
+    expect(m.text).toContain("ne***@ex***.com");
+    expect(m.text).not.toContain("newperson@example.com");
+    expect(m.text).toMatch(/Nothing changes until that address is confirmed/);
+    expect(m.text).toMatch(/If this wasn't you/);
+    expect(m.text).toContain(`${SITE}/forgot-password`);
+  });
+
+  it("the notice to the old address, once changed, masks the new one and points to support", () => {
+    const m = emailChangedMail("newperson@example.com", SITE);
+    expect(m.text).toContain("ne***@ex***.com");
+    expect(m.text).not.toContain("newperson@example.com");
+    expect(m.text).toMatch(/no longer signs in/);
+    expect(m.text).toContain(`${SITE}/contact`);
+  });
+
+  it("the password notice says which devices were signed out", () => {
+    expect(passwordChangedMail("settings", SITE).text).toMatch(/Every other device was signed out/);
+    expect(passwordChangedMail("reset", SITE).text).toMatch(/Every device was signed out/);
+    for (const via of ["settings", "reset"] as const) {
+      const m = passwordChangedMail(via, SITE);
+      expect(m.subject).toBe("Your Tycoonhood password was changed");
+      expect(m.text).toContain(`${SITE}/forgot-password`);
+    }
+  });
+});
