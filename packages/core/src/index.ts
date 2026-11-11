@@ -97,3 +97,6 @@ export * from "./earn";
 export * from "./shop";
 export * from "./discussions";
 export * from "./lms/index-authoring";
+
+// --- The optional 3D campus (DR-30) ---
+export * from "./world";
