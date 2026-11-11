@@ -14,5 +14,6 @@ export {
   commissionAmount,
   visitorHash,
   ipKey,
+  payoutBlocker,
 } from "./affiliates";
-export type { PayoutMethodInput, StoredPayoutMethod, RegisterInput, ClickInput } from "./affiliates";
+export type { PayoutMethodInput, StoredPayoutMethod, RegisterInput, ClickInput, PayoutCheck } from "./affiliates";

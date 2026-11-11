@@ -19,7 +19,7 @@
  */
 import { createHash, getRandomValues } from "node:crypto";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
-import type { AffiliateStatus, CommissionStatus, PayoutStatus, PrismaClient } from "@tycoonhood/db";
+import type { AffiliateStatus, CommissionStatus, PayoutStatus, PrismaClient, RefundStatus } from "@tycoonhood/db";
 import { AFFILIATE_HOLD_DAYS, AFFILIATE_RATE_BPS, MIN_PAYOUT_CENTS } from "@tycoonhood/config";
 import { promoteTo } from "../auth/permissions";
 import { AuditService } from "../platform/audit";
@@ -96,6 +96,15 @@ export type ClickInput = {
 };
 
 const OPEN_PAYOUT: PayoutStatus[] = ["REQUESTED", "APPROVED"];
+/** Refund requests still waiting for a decision. */
+const OPEN_REFUND: RefundStatus[] = ["REQUESTED", "APPROVED"];
+/** A refund request on the order is waiting for a decision. */
+const REFUND_OPEN: Prisma.OrderWhereInput = { refundRequests: { some: { status: { in: OPEN_REFUND } } } };
+/** An approved commission may go into a payout only while its order still stands. */
+const ORDER_STANDS: Prisma.OrderWhereInput = {
+  status: { in: ["PAID", "FULFILLED"] },
+  refundRequests: { none: { status: { in: OPEN_REFUND } } },
+};
 const DAY_MS = 86_400_000;
 const NEW_ACCOUNT_MS = 10 * 60_000;
 const href = "/earnings";
@@ -182,6 +191,32 @@ export function commissionAmount(baseCents: number, rateBps: number): number {
 export function inr(cents: number): string {
   return `₹${(cents / 100).toLocaleString("en-IN", { minimumFractionDigits: cents % 100 === 0 ? 0 : 2, maximumFractionDigits: 2 })}`;
 }
+
+/** What a payout must show before it may be approved or marked paid. */
+export type PayoutCheck = {
+  affiliate: { status: AffiliateStatus };
+  commissions: { order: { refundRequests: { status: RefundStatus }[] } }[];
+};
+
+/**
+ * Why a payout cannot be approved or marked paid right now, or null.
+ * movePayout enforces it; the admin queue uses it to hide the buttons.
+ */
+export function payoutBlocker(p: PayoutCheck): string | null {
+  if (p.affiliate.status !== "APPROVED") {
+    return `This affiliate is ${p.affiliate.status.toLowerCase()}. Decline the payout, or reinstate the affiliate first.`;
+  }
+  if (p.commissions.some((c) => c.order.refundRequests.some((r) => OPEN_REFUND.includes(r.status)))) {
+    return "A refund request is open on an order in this payout. Decide the refund first.";
+  }
+  return null;
+}
+
+/** The part of a payout's commissions that payoutBlocker reads. */
+const PAYOUT_CHECK = {
+  affiliate: true,
+  commissions: { select: { order: { select: { refundRequests: { where: { status: { in: OPEN_REFUND } }, select: { status: true } } } } } },
+} satisfies Prisma.PayoutRequestInclude;
 
 // ───────────────────────────────────────────────────────── service
 
@@ -538,6 +573,14 @@ export class AffiliateService implements EarnHooks {
       if (c.order.status !== "PAID" && c.order.status !== "FULFILLED") {
         throw new InvalidStateError(`The order is ${c.order.status.toLowerCase()}, so this commission cannot be approved.`);
       }
+      // A suspended affiliate is not paid until reinstated, and a refund still being
+      // decided would reverse the commission: approved now, it could be paid out first.
+      if (c.affiliate.status !== "APPROVED") {
+        throw new InvalidStateError(`This affiliate is ${c.affiliate.status.toLowerCase()}, so this commission cannot be approved.`);
+      }
+      if ((await tx.refundRequest.count({ where: { orderId: c.orderId, status: { in: OPEN_REFUND } } })) > 0) {
+        throw new InvalidStateError("A refund request is open on this order. Decide the refund first.");
+      }
       const n = await tx.commission.updateMany({
         where: { id: c.id, status: "PENDING" },
         data: { status: "APPROVED", reviewedAt: this.now() },
@@ -585,13 +628,14 @@ export class AffiliateService implements EarnHooks {
       const open = await tx.payoutRequest.findFirst({ where: { affiliateId: a.id, status: { in: OPEN_PAYOUT } }, select: { id: true } });
       if (open) throw new PayoutError("You already have a payout request in progress.");
 
+      // A commission whose order has a refund request waiting stays out until it is decided.
       const ready = await tx.commission.findMany({
-        where: { affiliateId: a.id, status: "APPROVED", payoutId: null, currency: "INR" },
+        where: { affiliateId: a.id, status: "APPROVED", payoutId: null, currency: "INR", order: ORDER_STANDS },
         select: { id: true, amountCents: true },
       });
       const amountCents = ready.reduce((s, c) => s + c.amountCents, 0);
       if (amountCents < MIN_PAYOUT_CENTS) {
-        throw new PayoutError(`The minimum payout is ${inr(MIN_PAYOUT_CENTS)}. You have ${inr(amountCents)} approved.`);
+        throw new PayoutError(`The minimum payout is ${inr(MIN_PAYOUT_CENTS)}. You have ${inr(amountCents)} available.`);
       }
 
       const payout = await tx.payoutRequest.create({
@@ -644,9 +688,13 @@ export class AffiliateService implements EarnHooks {
     message: (p: { amountCents: number }) => [string, string]
   ) {
     return this.db.$transaction(async (tx) => {
-      const p = await tx.payoutRequest.findUnique({ where: { id: payoutId }, include: { affiliate: true } });
+      const p = await tx.payoutRequest.findUnique({ where: { id: payoutId }, include: PAYOUT_CHECK });
       if (!p) throw new EarnError("Payout request not found.");
       if (!from.includes(p.status)) throw new InvalidStateError(`This payout is ${p.status.toLowerCase()}.`);
+      if (to === "APPROVED" || to === "PAID") {
+        const blocked = payoutBlocker(p);
+        if (blocked) throw new InvalidStateError(blocked);
+      }
       const now = this.now();
       const n = await tx.payoutRequest.updateMany({
         where: { id: p.id, status: p.status },
@@ -680,11 +728,13 @@ export class AffiliateService implements EarnHooks {
     const a = await this.profileFor(userId);
     if (!a) return null;
     const since = new Date(this.now().getTime() - 30 * DAY_MS);
-    const [clicks30d, clicksAll, byStatus, available, inPayout, openPayout] = await Promise.all([
+    const [clicks30d, clicksAll, byStatus, available, held, inPayout, openPayout] = await Promise.all([
       this.db.affiliateClick.count({ where: { affiliateId: a.id, createdAt: { gte: since } } }),
       this.db.affiliateClick.count({ where: { affiliateId: a.id } }),
       this.db.commission.groupBy({ by: ["status"], where: { affiliateId: a.id }, _sum: { amountCents: true }, _count: { _all: true } }),
-      this.db.commission.aggregate({ where: { affiliateId: a.id, status: "APPROVED", payoutId: null }, _sum: { amountCents: true } }),
+      // The same rule as requestPayout, so the button never offers more than it can request.
+      this.db.commission.aggregate({ where: { affiliateId: a.id, status: "APPROVED", payoutId: null, currency: "INR", order: ORDER_STANDS }, _sum: { amountCents: true } }),
+      this.db.commission.aggregate({ where: { affiliateId: a.id, status: "APPROVED", payoutId: null, order: REFUND_OPEN }, _sum: { amountCents: true } }),
       this.db.commission.aggregate({ where: { affiliateId: a.id, status: "APPROVED", payoutId: { not: null } }, _sum: { amountCents: true } }),
       this.db.payoutRequest.findFirst({ where: { affiliateId: a.id, status: { in: OPEN_PAYOUT } }, orderBy: { createdAt: "desc" } }),
     ]);
@@ -712,6 +762,8 @@ export class AffiliateService implements EarnHooks {
         reversed: count("REVERSED"),
       },
       availableCents,
+      /** Approved, but on hold while a refund request on the order is decided. */
+      heldCents: held._sum.amountCents ?? 0,
       inPayoutCents: inPayout._sum.amountCents ?? 0,
       minPayoutCents: MIN_PAYOUT_CENTS,
       openPayout,
@@ -778,8 +830,13 @@ export class AffiliateService implements EarnHooks {
         take: Math.min(opts.take ?? 50, 200),
         skip: opts.skip ?? 0,
         include: {
-          affiliate: { select: { code: true, user: { select: { email: true, profile: { select: { username: true } } } } } },
-          order: { select: { id: true, status: true, createdAt: true, totalFiatCents: true, discountCents: true, fiatCurrency: true, user: { select: { email: true } } } },
+          affiliate: { select: { code: true, status: true, user: { select: { email: true, profile: { select: { username: true } } } } } },
+          order: {
+            select: {
+              id: true, status: true, createdAt: true, totalFiatCents: true, discountCents: true, fiatCurrency: true, user: { select: { email: true } },
+              refundRequests: { where: { status: { in: OPEN_REFUND } }, select: { id: true, status: true } },
+            },
+          },
         },
       }),
       this.db.commission.count({ where }),
@@ -796,7 +853,8 @@ export class AffiliateService implements EarnHooks {
         take: Math.min(opts.take ?? 50, 200),
         skip: opts.skip ?? 0,
         include: {
-          affiliate: { select: { code: true, user: { select: { email: true, profile: { select: { username: true } } } } } },
+          ...PAYOUT_CHECK,
+          affiliate: { select: { code: true, status: true, user: { select: { email: true, profile: { select: { username: true } } } } } },
           _count: { select: { commissions: true } },
         },
       }),

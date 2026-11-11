@@ -10,6 +10,7 @@ import {
   PayoutError,
   AFFILIATE_CODE_PATTERN,
   commissionAmount,
+  payoutBlocker,
 } from "../src/earn";
 import { createTestUser, uid } from "./helpers";
 
@@ -48,6 +49,12 @@ async function approvedCommission(affiliate: { profile: { id: string; code: stri
   const c = await prisma.commission.findUniqueOrThrow({ where: { orderId: order.id } });
   await prisma.commission.update({ where: { id: c.id }, data: { holdUntil: new Date(Date.now() - 1000) } });
   return earn.approveCommission(admin.id, c.id);
+}
+
+/** The buyer asks for a refund on this order (the request stays open until decided). */
+async function openRefundRequest(orderId: string) {
+  const o = await prisma.order.findUniqueOrThrow({ where: { id: orderId } });
+  return prisma.refundRequest.create({ data: { orderId, userId: o.userId, reason: "Arrived damaged, please refund" } });
 }
 
 beforeAll(async () => {
@@ -252,6 +259,40 @@ describe("commissions", () => {
     expect((await afterHold.approveCommission(admin.id, live.id)).status).toBe("APPROVED");
   });
 
+  it("refuses approval while a refund request is open on the order, or while the affiliate is suspended", async () => {
+    const aff = await approvedAffiliate();
+    const buyer = await createTestUser();
+    await prisma.user.update({ where: { id: buyer.id }, data: { createdAt: new Date(Date.now() - 30 * DAY) } });
+    const order = await paidOrder(buyer.id, aff.profile.code, 100_000);
+    await earn.onOrderPaid(order.id);
+    const c = await prisma.commission.findUniqueOrThrow({ where: { orderId: order.id } });
+    const afterHold = new AffiliateService(prisma, () => new Date(Date.now() + AFFILIATE_HOLD_DAYS * DAY + 60_000));
+
+    // The buyer asked on day 13; on day 14 the hold has passed and the request is still open.
+    const req = await openRefundRequest(order.id);
+    await expect(afterHold.approveCommission(admin.id, c.id)).rejects.toThrow(/refund request is open/);
+    await prisma.refundRequest.update({ where: { id: req.id }, data: { status: "APPROVED" } }); // being refunded now
+    await expect(afterHold.approveCommission(admin.id, c.id)).rejects.toThrow(/refund request is open/);
+    // The admin queue shows it.
+    const row = (await earn.listCommissions({ affiliateId: aff.profile.id })).rows.find((r) => r.id === c.id)!;
+    expect(row.order.refundRequests.map((r) => r.status)).toEqual(["APPROVED"]);
+    expect(row.affiliate.status).toBe("APPROVED");
+
+    // Declined, so the order stands; but a suspended affiliate's commission waits.
+    await prisma.refundRequest.update({ where: { id: req.id }, data: { status: "REJECTED" } });
+    await earn.suspend(admin.id, aff.profile.id, "Under review");
+    await expect(afterHold.approveCommission(admin.id, c.id)).rejects.toThrow(/affiliate is suspended/);
+    expect((await earn.listCommissions({ affiliateId: aff.profile.id })).rows.find((r) => r.id === c.id)).toMatchObject({
+      affiliate: { status: "SUSPENDED" },
+      order: { refundRequests: [] },
+    });
+    expect((await prisma.commission.findUniqueOrThrow({ where: { id: c.id } })).status).toBe("PENDING");
+    expect(await prisma.auditLog.count({ where: { action: "commission.approve", targetId: c.id } })).toBe(0);
+
+    await earn.approve(admin.id, aff.profile.id); // reinstated
+    expect((await afterHold.approveCommission(admin.id, c.id)).status).toBe("APPROVED");
+  });
+
   it("rejection needs a reason the member can see", async () => {
     const aff = await approvedAffiliate();
     const buyer = await createTestUser();
@@ -387,5 +428,69 @@ describe("payouts", () => {
     const after = await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id }, include: { commissions: true } });
     expect(after.amountCents).toBe(50_000);
     expect(after.commissions.map((c) => c.id)).toEqual([keep.id]);
+  });
+
+  it("a payout request leaves out a commission whose order has a refund request open, and the summary says so", async () => {
+    const aff = await approvedAffiliate();
+    const kept = await approvedCommission(aff, 60_000);
+    const held = await approvedCommission(aff, 55_000);
+    const req = await openRefundRequest(held.orderId);
+    expect(await earn.summary(aff.user.id)).toMatchObject({ availableCents: 60_000, heldCents: 55_000, canRequestPayout: true });
+
+    const p = await earn.requestPayout(aff.user.id);
+    expect(p.amountCents).toBe(60_000);
+    expect((await prisma.commission.findMany({ where: { payoutId: p.id } })).map((c) => c.id)).toEqual([kept.id]);
+    expect((await prisma.commission.findUniqueOrThrow({ where: { id: held.id } })).payoutId).toBeNull();
+
+    // Once the refund is declined it is available again.
+    await prisma.refundRequest.update({ where: { id: req.id }, data: { status: "REJECTED" } });
+    expect(await earn.summary(aff.user.id)).toMatchObject({ availableCents: 55_000, heldCents: 0 });
+
+    // Held commissions alone never make up a request.
+    const solo = await approvedAffiliate();
+    const only = await approvedCommission(solo, 70_000);
+    await openRefundRequest(only.orderId);
+    expect(await earn.summary(solo.user.id)).toMatchObject({ availableCents: 0, heldCents: 70_000, canRequestPayout: false });
+    await expect(earn.requestPayout(solo.user.id)).rejects.toThrow(/₹0 available/);
+  });
+
+  it("a payout is not approved or paid while a refund request is open on one of its orders, or while the affiliate is suspended", async () => {
+    const aff = await approvedAffiliate();
+    const refunding = await approvedCommission(aff, 30_000);
+    await approvedCommission(aff, 30_000);
+    const p = await earn.requestPayout(aff.user.id);
+
+    // The buyer asks for a refund after the payout was requested.
+    const req = await openRefundRequest(refunding.orderId);
+    await expect(earn.approvePayout(admin.id, p.id)).rejects.toThrow(/refund request is open/);
+    expect((await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id } })).status).toBe("REQUESTED");
+    await prisma.refundRequest.update({ where: { id: req.id }, data: { status: "REJECTED" } });
+    expect((await earn.approvePayout(admin.id, p.id)).status).toBe("APPROVED");
+
+    const again = await openRefundRequest(refunding.orderId);
+    await expect(earn.markPayoutPaid(admin.id, p.id, "UTR1")).rejects.toThrow(/refund request is open/);
+    await prisma.refundRequest.update({ where: { id: again.id }, data: { status: "REJECTED" } });
+
+    await earn.suspend(admin.id, aff.profile.id, "Fraud check");
+    await expect(earn.markPayoutPaid(admin.id, p.id, "UTR1")).rejects.toThrow(/affiliate is suspended/);
+    const still = await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id }, include: { commissions: true } });
+    expect(still.status).toBe("APPROVED");
+    expect(still.commissions.every((c) => c.status === "APPROVED")).toBe(true);
+    expect(await prisma.auditLog.count({ where: { action: "payout.paid", targetId: p.id } })).toBe(0);
+    // Declining still works and gives the commissions back.
+    expect((await earn.rejectPayout(admin.id, p.id, "Account suspended")).status).toBe("REJECTED");
+
+    // A request made before the suspension is not approved either.
+    await earn.approve(admin.id, aff.profile.id);
+    const p2 = await earn.requestPayout(aff.user.id);
+    await earn.suspend(admin.id, aff.profile.id, "Fraud check");
+    await expect(earn.approvePayout(admin.id, p2.id)).rejects.toThrow(/affiliate is suspended/);
+  });
+
+  it("payoutBlocker reads only refund requests that are still open", () => {
+    const order = (...statuses: ("REQUESTED" | "APPROVED" | "REJECTED" | "REFUNDED")[]) => ({ order: { refundRequests: statuses.map((status) => ({ status })) } });
+    expect(payoutBlocker({ affiliate: { status: "APPROVED" }, commissions: [order("REJECTED", "REFUNDED"), order()] })).toBeNull();
+    expect(payoutBlocker({ affiliate: { status: "APPROVED" }, commissions: [order(), order("REQUESTED")] })).toMatch(/refund request is open/);
+    expect(payoutBlocker({ affiliate: { status: "SUSPENDED" }, commissions: [order()] })).toMatch(/suspended/);
   });
 });
