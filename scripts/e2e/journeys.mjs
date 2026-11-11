@@ -9,18 +9,22 @@
  *   6. Community   post, comment, react, report, moderator resolves
  *   7. Roles       role change, suspend/unsuspend, audit, permission walls
  *   8. Mobile      390×844: no sideways scroll, the nav opens
+ *   9. 3D campus   /world is optional: phones, tablets, reduced motion and
+ *                  software GPUs get its 2D page, and nothing else loads three
  *
  * Usage:  pnpm e2e:journeys              (the web app must be on :3000)
  *   JOURNEYS=1,4   run a subset (later journeys reuse the sign-up from 2)
  *   TH_WEB_LOG     the `next start` log; DEV_MODE mail (verification links) is read from it
  *   TH_SHOTS       directory for screenshots (skipped when unset)
  *   TH_WEB         base URL (default http://localhost:3000)
+ *   TH_WORLD_ENGINE=1  journey 9 also loads the 3D engine on Chromium's software
+ *                  GPU, posing as a hardware one (slow: about a frame a second)
  *
  * Prints PASS/FAIL per check and exits non-zero when any check fails.
  * Every check is something a member or staff member could see on screen; the
  * database is read only to learn ids and quiz answers, never to assert.
  */
-import { chromium } from "playwright";
+import { chromium, devices } from "playwright";
 import { execFileSync } from "node:child_process";
 import { readFileSync, existsSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -32,7 +36,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const WEB = process.env.TH_WEB ?? "http://localhost:3000";
 const LOG = process.env.TH_WEB_LOG ?? "";
 const SHOTS = process.env.TH_SHOTS ?? "";
-const ONLY = new Set((process.env.JOURNEYS ?? "1,2,3,4,5,6,7,8").split(",").map((s) => Number(s.trim())));
+const ONLY = new Set((process.env.JOURNEYS ?? "1,2,3,4,5,6,7,8,9").split(",").map((s) => Number(s.trim())));
 const stamp = Date.now().toString(36);
 const PASSWORD = "a-strong-password-here";
 const ADMIN_EMAIL = "e2e-admin@tycoonhood.test";
@@ -752,6 +756,330 @@ await journey(8, "MOBILE 390×844", async () => {
   await memberPhone.close();
   await adminPhone.close();
   await guestPhone.close();
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
+  // DR-30: the campus is an optional extra for signed-in members on a computer
+  // with a real GPU. Headless Chromium draws WebGL in software (SwiftShader),
+  // so here every visit is expected to get the 2D page.
+  const SECTIONS = ["Today", "Courses", "Community", "Leaderboard", "Mining", "Store"];
+  const RETIRED = /\b(Command Center|Arena|Vault|Treasury|Network|HQ)\b/;
+  const SOFTWARE = ["software-gpu", "no-webgl2"];
+  const MAC_SAFARI = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15";
+  const phone = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
+  await admin();
+  const storageState = await (await member()).storageState();
+
+  /** Every request a page makes, and every script it ran that carries three.js's renderer. */
+  function loads(page) {
+    const seen = { urls: [], three: [], pending: [] };
+    page.on("request", (r) => seen.urls.push(r.url()));
+    page.on("response", (r) => {
+      if (r.request().resourceType() !== "script") return;
+      seen.pending.push(
+        r.text().then(
+          (body) => body.includes("isWebGLRenderer") && seen.three.push(pathOf(r.url())),
+          () => {}
+        )
+      );
+    });
+    return seen;
+  }
+  const settled = (seen) => Promise.all(seen.pending);
+  const campusAssets = (seen) => seen.urls.filter((u) => /^\/world\/(tex|hdri|models)\//.test(pathOf(u)));
+  const state = (page) =>
+    page.evaluate(() => {
+      const r = document.querySelector("[data-world-root]");
+      return r && { mode: r.getAttribute("data-world-mode"), reason: r.getAttribute("data-world-fallback"), engine: r.getAttribute("data-world-engine") };
+    });
+  /** The device's decision: waits for the 2D page, then reads whatever the host says. */
+  async function decision(page) {
+    await page.waitForSelector("[data-world-root][data-world-mode='2d']", { timeout: 20000 }).catch(() => {});
+    return state(page);
+  }
+  const worldLinks = (page) => page.locator('a[href^="/world"]').count();
+
+  // ── a guest is asked to sign in first
+  {
+    const ctx = await newCtx();
+    const page = await ctx.newPage();
+    await go(page, "/world");
+    const u = new URL(page.url());
+    ok("guest: /world goes to sign-in, then back to /world", u.pathname === "/login" && u.searchParams.get("next") === "/world", `${u.pathname}${u.search}`);
+    ok("guest: no campus is rendered", (await page.locator("[data-world-root]").count()) === 0);
+    await ctx.close();
+  }
+
+  // ── desktop member, 1280×720, software GPU
+  const desk = await newCtx({ storageState });
+  {
+    const page = await desk.newPage();
+    const errors = watch(page);
+    const seen = loads(page);
+    const r = await go(page, "/world");
+    const d = await decision(page);
+    await settled(seen);
+    ok("desktop: /world answers 200", r?.status() === 200, `status ${r?.status()}`);
+    ok("desktop: the software GPU keeps the 2D page", d?.mode === "2d" && SOFTWARE.includes(d.reason), JSON.stringify(d));
+    ok("desktop: no canvas", (await page.locator("canvas").count()) === 0);
+    ok("desktop: no campus texture, HDRI or model is fetched", campusAssets(seen).length === 0, campusAssets(seen).join(", "));
+    ok("desktop: no script carries three.js", seen.three.length === 0, seen.three.join(", "));
+    const robots = await page.locator('meta[name="robots"]').getAttribute("content").catch(() => null);
+    ok("desktop: the page asks not to be indexed", /noindex/.test(robots ?? ""), robots ?? "no meta robots");
+    const h1 = await page.locator("h1").count();
+    ok("desktop: exactly one h1", h1 === 1, `${h1} h1`);
+    const heads = (await page.locator("[data-world-card] h2").allInnerTexts()).map((t) => t.trim());
+    ok("desktop: six cards, Today to Store", heads.join() === SECTIONS.join(), heads.join(", "));
+    const text = await bodyText(page);
+    ok("desktop: none of the retired HQ names appear", !RETIRED.test(text), text.match(RETIRED)?.[0] ?? "");
+    const said = (await page.locator("[data-world-root] [role='status']").innerText().catch(() => "")).trim();
+    ok("desktop: one line says why the page is 2D", said.length > 0, said);
+    await shot(page, "world-desktop");
+
+    const hrefs = [...new Set(await page.locator("[data-world-root] a[href^='/']").evaluateAll((as) => as.map((a) => a.getAttribute("href"))))];
+    const broken = [];
+    for (const href of hrefs) {
+      const res = await desk.request.get(`${WEB}${href}`, { maxRedirects: 0, failOnStatusCode: false });
+      if (res.status() !== 200) broken.push(`${href} → ${res.status()} ${res.headers().location ?? ""}`.trim());
+    }
+    ok("desktop: every link on the 2D page opens (200, no redirect)", hrefs.length >= 15 && broken.length === 0, broken.join(", ") || `${hrefs.length} links`);
+
+    const other = (await q1(`select p.username from "Profile" p join "User" u on u.id=p."userId" where u.email=$1`, [ADMIN_EMAIL]))?.username;
+    const html = await page.content();
+    ok("desktop: counts only, no other member's name or email in the page", !!other && !html.includes(other) && !html.includes(ADMIN_EMAIL), `looked for @${other}`);
+    ok("no console errors (desktop)", errors.length === 0, errors.join(" | "));
+    await page.close();
+  }
+
+  // ── the one way in: a quiet sidebar link, never prefetched
+  {
+    const page = await desk.newPage();
+    const errors = watch(page);
+    const seen = loads(page);
+    await go(page, "/today");
+    const link = page.locator('aside a[href="/world"]');
+    await link.waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
+    const label = (await link.innerText().catch(() => "")).replace(/\s+/g, " ").trim();
+    ok("/today: the sidebar offers the 3D campus, marked optional", /3D campus/.test(label) && /optional/.test(label), label || "no link");
+    const n = await worldLinks(page);
+    ok("/today: it is the only link to /world", n === 1, `${n} links`);
+    await settled(seen);
+    const fetched = [...campusAssets(seen), ...seen.three, ...seen.urls.filter((u) => pathOf(u) === "/world")];
+    ok("/today: nothing of the campus is fetched or prefetched", fetched.length === 0, fetched.join(", "));
+    await link.click();
+    await page.waitForURL((u) => pathOf(u.href) === "/world", { timeout: 20000 }).catch(() => {});
+    const d = await decision(page);
+    ok("the sidebar link opens /world on the 2D page", pathOf(page.url()) === "/world" && d?.mode === "2d", `${pathOf(page.url())} ${JSON.stringify(d)}`);
+    const current = await page.locator('aside a[href="/world"]').getAttribute("aria-current").catch(() => null);
+    ok("/world: the sidebar link is marked as the current page", current === "page", String(current));
+    ok("no console errors (sidebar link)", errors.length === 0, errors.join(" | "));
+    await page.close();
+  }
+
+  // ── ?world= picks a tier for QA; it never skips a gate
+  {
+    const page = await desk.newPage();
+    const errors = watch(page);
+    const seen = loads(page);
+    await go(page, "/world?world=cinematic");
+    const d = await decision(page);
+    await settled(seen);
+    ok("desktop ?world=cinematic: still 2D on a software GPU", d?.mode === "2d" && SOFTWARE.includes(d.reason), JSON.stringify(d));
+    ok("desktop ?world=cinematic: nothing of the campus is fetched", campusAssets(seen).length === 0 && seen.three.length === 0, [...campusAssets(seen), ...seen.three].join(", "));
+    ok("no console errors (override)", errors.length === 0, errors.join(" | "));
+    await page.close();
+  }
+
+  // ── no WebGL2 at all
+  {
+    const ctx = await newCtx({ storageState });
+    await ctx.addInitScript(() => {
+      const getContext = window.HTMLCanvasElement.prototype.getContext;
+      window.HTMLCanvasElement.prototype.getContext = function (type, ...rest) {
+        return type === "webgl2" ? null : getContext.call(this, type, ...rest);
+      };
+    });
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    await go(page, "/world");
+    const d = await decision(page);
+    ok("no WebGL2: the 2D page (no-webgl2)", d?.mode === "2d" && d.reason === "no-webgl2", JSON.stringify(d));
+    ok("no console errors (no WebGL2)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+
+  // ── reduced motion
+  {
+    const ctx = await newCtx({ storageState, reducedMotion: "reduce" });
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    await go(page, "/world");
+    const d = await decision(page);
+    ok("reduced motion: the 2D page (reduced-motion)", d?.mode === "2d" && d.reason === "reduced-motion", JSON.stringify(d));
+    await go(page, "/today");
+    await page.waitForTimeout(800);
+    ok("reduced motion: /today has no campus link", (await worldLinks(page)) === 0);
+    ok("no console errors (reduced motion)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+
+  // ── phone, as in journey 8
+  {
+    const ctx = await newCtx({ ...phone, storageState });
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    const seen = loads(page);
+    const r = await go(page, "/world");
+    const d = await decision(page);
+    ok("phone: /world answers 200 with the 2D page (phone)", r?.status() === 200 && d?.mode === "2d" && d.reason === "phone", `status ${r?.status()} ${JSON.stringify(d)}`);
+    ok("phone: no canvas", (await page.locator("canvas").count()) === 0);
+    const w = await noHorizontalScroll(page);
+    ok("phone: /world has no horizontal scroll", w.scrollWidth <= w.inner && w.bodyScroll <= w.inner, `scrollWidth ${w.scrollWidth}/${w.bodyScroll}, innerWidth ${w.inner}`);
+    await shot(page, "world-phone");
+    await go(page, "/world?world=cinematic");
+    const d2 = await decision(page);
+    ok("phone ?world=cinematic: still the 2D page (phone)", d2?.mode === "2d" && d2.reason === "phone", JSON.stringify(d2));
+    await go(page, "/today");
+    await page.waitForTimeout(800);
+    ok("phone: the bottom nav has no campus link", (await page.locator('nav[aria-label="App"] a[href^="/world"]').count()) === 0);
+    await page.getByRole("button", { name: /^more$/i }).click();
+    const sheet = page.locator('dialog[aria-label="More"]');
+    await sheet.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
+    const inSheet = await sheet.locator('a[href^="/world"]').count();
+    ok("phone: the More sheet opens and has no campus link", (await sheet.isVisible().catch(() => false)) && inSheet === 0, `${inSheet} links`);
+    await settled(seen);
+    ok("phone: nothing of the campus is fetched", campusAssets(seen).length === 0 && seen.three.length === 0, [...campusAssets(seen), ...seen.three].join(", "));
+    ok("no console errors (phone)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+
+  // ── tablets: an iPad, and an iPad that asks for the desktop site
+  {
+    const { defaultBrowserType: _browser, ...ipad } = devices["iPad Pro 11"];
+    const ctx = await newCtx({ ...ipad, storageState });
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    await go(page, "/world");
+    const d = await decision(page);
+    ok("iPad Pro 11: the 2D page (tablet)", d?.mode === "2d" && d.reason === "tablet", JSON.stringify(d));
+    ok("no console errors (iPad)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+  {
+    const ctx = await newCtx({ storageState, userAgent: MAC_SAFARI, hasTouch: true, viewport: { width: 1194, height: 834 } });
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    await go(page, "/world");
+    const d = await decision(page);
+    ok("iPad as a desktop (Mac UA, touch, 1194×834): the 2D page (tablet)", d?.mode === "2d" && d.reason === "tablet", JSON.stringify(d));
+    await go(page, "/today");
+    await page.waitForTimeout(800);
+    const sidebar = page.locator("aside", { has: page.locator('nav[aria-label="App"]') });
+    ok("iPad as a desktop: the sidebar shows, with no campus link", (await sidebar.isVisible().catch(() => false)) && (await worldLinks(page)) === 0);
+    ok("no console errors (iPad as a desktop)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+
+  // ── search engines
+  {
+    const robots = await (await desk.request.get(`${WEB}/robots.txt`)).text();
+    ok("robots.txt disallows /world", /^Disallow: \/world$/m.test(robots));
+    const sitemap = await (await desk.request.get(`${WEB}/sitemap.xml`)).text();
+    ok("sitemap.xml does not list /world", !/\/world(?=[/<?"]|$)/m.test(sitemap));
+  }
+
+  // ── sign-in still lands on /today, and comes back to /world only when asked
+  {
+    const ctx = await newCtx();
+    const page = await signIn(ctx, S.member.email);
+    ok("sign-in from /login still lands on /today", pathOf(page.url()) === "/today", pathOf(page.url()));
+    await ctx.close();
+  }
+  {
+    const ctx = await newCtx();
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    await go(page, "/world");
+    await page.fill('input[name="email"]', S.member.email);
+    await page.fill('input[name="password"]', PASSWORD);
+    await page.getByRole("button", { name: /sign in/i }).click();
+    await page.waitForURL((u) => !u.pathname.startsWith("/login"), { timeout: 20000 }).catch(() => {});
+    const d = await decision(page);
+    ok("a guest who signs in from /world comes back to its 2D page", pathOf(page.url()) === "/world" && d?.mode === "2d", `${pathOf(page.url())} ${JSON.stringify(d)}`);
+    ok("no console errors (sign-in return)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+
+  // ── optional: the engine itself, on the software GPU posing as a hardware one
+  if (process.env.TH_WORLD_ENGINE !== "1") {
+    skip("engine: loads, draws one canvas, releases its GL context", "set TH_WORLD_ENGINE=1 to run it (SwiftShader draws about a frame a second)");
+  } else {
+    const ctx = await newCtx({ storageState });
+    await ctx.addInitScript(() => {
+      const gl = [];
+      window.__worldGl = gl;
+      const getContext = window.HTMLCanvasElement.prototype.getContext;
+      window.HTMLCanvasElement.prototype.getContext = function (type, attrs, ...rest) {
+        let keep = attrs;
+        if (type === "webgl2" && attrs && attrs.failIfMajorPerformanceCaveat) {
+          const { failIfMajorPerformanceCaveat: _strict, ...others } = attrs;
+          keep = others;
+        }
+        const made = getContext.call(this, type, keep, ...rest);
+        if (type === "webgl2" && made && !gl.includes(made)) gl.push(made);
+        return made;
+      };
+      const getParameter = window.WebGL2RenderingContext.prototype.getParameter;
+      window.WebGL2RenderingContext.prototype.getParameter = function (p) {
+        return p === 0x9246 || p === 0x1f01 ? "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)" : getParameter.call(this, p);
+      };
+    });
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    const tooMany = [];
+    page.on("console", (m) => /Too many active WebGL contexts/i.test(m.text()) && tooMany.push(m.text()));
+    const seen = loads(page);
+    const live = () => page.evaluate(() => window.__worldGl.filter((g) => !g.isContextLost()).length);
+    const loaded = (timeout = 60000) => page.waitForSelector("[data-world-root][data-world-engine='loaded']", { timeout }).catch(() => {});
+
+    // SwiftShader may be too slow for the frame governor: closing itself to 2D is a pass too.
+    const up = (x) => (x?.mode === "3d" && x.engine === "loaded") || (x?.mode === "2d" && x.reason === "too-slow");
+    await go(page, "/world?world=performance");
+    await loaded();
+    const s = await state(page);
+    const canvases = await page.locator("canvas").count();
+    ok("engine: loads on a hardware-class GPU", up(s), JSON.stringify(s));
+    ok("engine: draws exactly one canvas", s?.mode !== "3d" || canvases === 1, `${canvases} canvas`);
+    const fetched = campusAssets(seen);
+    ok("engine: fetches only its own textures", fetched.length > 0 && fetched.every((u) => /^\/world\/tex\/[^/]+\.jpg$/.test(pathOf(u))), `${fetched.length} requests${fetched.length ? `, e.g. ${pathOf(fetched[0])}` : ""}`);
+    await shot(page, "world-3d");
+
+    await page.locator('aside nav a[href="/today"]').first().click({ timeout: 30000 });
+    await page.waitForURL((u) => pathOf(u.href) === "/today", { timeout: 30000 }).catch(() => {});
+    await page.waitForTimeout(500);
+    ok("engine: leaving for /today removes the canvas and frees every GL context", (await page.locator("canvas").count()) === 0 && (await live()) === 0, `${await page.locator("canvas").count()} canvas, ${await live()} live contexts`);
+
+    await page.locator('aside a[href="/world"]').click({ timeout: 30000 });
+    await page.waitForURL((u) => pathOf(u.href) === "/world", { timeout: 30000 }).catch(() => {});
+    await loaded();
+    const back = await state(page);
+    ok("engine: coming back loads it again", up(back), JSON.stringify(back));
+    ok("engine: no 'Too many active WebGL contexts' warning", tooMany.length === 0, tooMany.join(" | "));
+
+    if (back?.mode === "3d") {
+      await page.getByRole("button", { name: "2D view" }).click({ timeout: 30000 });
+      await page.waitForSelector("[data-world-root][data-world-engine='disposed']", { timeout: 30000 }).catch(() => {});
+      const chosen = await state(page);
+      const walk = await page.getByRole("button", { name: "Walk the campus" }).count();
+      ok("engine: the 2D view button closes it and offers the walk again", chosen?.reason === "chosen" && chosen.engine === "disposed" && (await page.locator("canvas").count()) === 0 && walk === 1 && (await live()) === 0, JSON.stringify(chosen));
+    } else {
+      skip("engine: the 2D view button", `the campus had already closed itself (${back?.reason})`);
+    }
+    ok("no console errors (engine)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+  await desk.close();
 });
 
 // ── summary ────────────────────────────────────────────────────────────────

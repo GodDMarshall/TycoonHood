@@ -12,6 +12,7 @@ The full-platform build ran as parallel workstreams on the branch `build/full-pl
 | **Platform** | `platform/{email-verification,settings,profile,account-settings,members,cms,analytics}.ts`; suspension; the home, about, contact, success-stories, refund-policy, FAQ, terms and privacy pages; `admin/{members,site,analytics,audit}`; Today dashboard cards; `site-footer` | `admin.users`, `admin.content`, `admin.analytics`, `admin.audit` |
 | **Commerce** | `shop/*` (cart, wishlist, coupons, pricing, checkout, payments, refunds, tracking, earn registry), the `commerce.ts` additions, `store/**`, `cart`, `wishlist`, `checkout/**`, `orders/**`, `admin/{coupons,refunds}`, the orders and products admin edits, `(public)/marketplace/**`, the Razorpay webhook, `seed-shop.ts` | `admin.commerce`, `EarnHooks` |
 | **Browser verification** | `scripts/e2e/journeys.mjs`, plus small bug fixes found by driving the UI (listed in `TEST_REPORT.md`) | — |
+| **3D campus** (DR-30, on its own branch `build/world`) | `packages/core/src/world/**` and `packages/core/test/world-*.test.ts`; `apps/web/components/world/**`; `app/(app)/world`; `lib/world-state.ts`; `apps/web/public/world/**`; `scripts/world/**`; the world rules in `eslint.config.mjs`; journey 9 in `scripts/e2e/journeys.mjs`; the sidebar link in `app-chrome.tsx` | `WorldState` version 1 (`world/state.ts`), `requireUser()`, the bundle rule (three only through `world-host.tsx`) |
 
 ## Rules every stream followed
 
