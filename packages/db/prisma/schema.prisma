@@ -1329,6 +1329,10 @@ model Payment {
   amountCents       Int
   currency          String
   status            PaymentStatus @default(CREATED)
+  /// Paise sent back so far, here or in the Razorpay dashboard. REFUNDED only once it reaches amountCents
+  refundedCents     Int           @default(0)
+  /// Provider refund ids already counted in refundedCents, so a retried webhook counts once
+  refundIds         String[]      @default([])
   raw               Json?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt

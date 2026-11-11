@@ -7,6 +7,7 @@ import {
   setEarnHooks, orderTimeline, refundBlocker, paymentsStatus, activeShopProvider, CartError, CouponError,
   PaymentVerificationError, paymentsStatusFor, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly,
   paidAfterCancel, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS, opensLibrary, libraryOrderFor,
+  ShopStatsService,
 } from "../src/shop";
 import { cronAuth } from "../src/platform/cron";
 import { CommerceService } from "../src/commerce/commerce";
@@ -974,5 +975,162 @@ describe("Shop — refunds", () => {
     const rightKeys = new RefundService(prisma, { providerFor: () => liveKeys });
     await expect(rightKeys.approve(admin.id, req.id)).resolves.toMatchObject({ rail: "INR/LIVE" });
     expect(liveCalls.filter((c) => /\/payments\/[^/]+\/refund$/.test(c.url))).toHaveLength(1);
+  });
+
+  /** Razorpay's signed refund.processed or refund.failed for a payment, as the webhook route passes it on. */
+  function refundWebhook(shop: ShopCheckoutService, paymentId: string) {
+    return (event: "refund.processed" | "refund.failed", refundId: string, amount: number) => {
+      const body = JSON.stringify({
+        event,
+        payload: { refund: { entity: { id: refundId, payment_id: paymentId, amount, status: event === "refund.processed" ? "processed" : "failed" } } },
+      });
+      return shop.handleRazorpayWebhook(body, hmacSha256Hex(WEBHOOK_SECRET, body), WEBHOOK_SECRET);
+    };
+  }
+
+  const refundCalls = (calls: { url: string; body: unknown }[]) => calls.filter((c) => /\/payments\/[^/]+\/refund$/.test(c.url));
+
+  it("a partial refund from the Razorpay dashboard keeps the order; the rest unwinds it, once", async () => {
+    const { provider: keys, calls } = fakeRazorpay("rzp_live_key");
+    const shop = new ShopCheckoutService(prisma, { provider: () => keys, providerFor: () => keys });
+    const stats = new ShopStatsService(prisma);
+    const { user, order, product: p } = await paidWithRazorpay(keys);
+    const pay = await prisma.payment.findFirstOrThrow({ where: { orderId: order.id, status: "CAPTURED" } });
+    expect(pay.amountCents).toBe(25_000);
+    const refund = refundWebhook(shop, pay.providerPaymentId!);
+    const revenue = (await stats.liveRevenue()).amountCents;
+
+    expect(await refundWebhook(shop, `pay_${uid().slice(0, 12)}`)("refund.processed", `rfnd_${uid().slice(0, 12)}`, 100)).toMatchObject({
+      status: 200,
+      body: { outcome: "not ours" },
+    });
+
+    // ₹100 of ₹250 goes back. Razorpay retries the webhook, even at the same moment: counted once.
+    const part1 = `rfnd_${uid().slice(0, 12)}`;
+    const first = await Promise.all([refund("refund.processed", part1, 10_000), refund("refund.processed", part1, 10_000)]);
+    expect(first.map((r) => r.body.outcome).sort()).toEqual(["already counted", "partial"]);
+    expect(await refund("refund.processed", part1, 10_000)).toMatchObject({ status: 200, body: { outcome: "already counted" } });
+    let after = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: { payments: true } });
+    expect(after.status).toBe("PAID");
+    expect(after.payments[0]).toMatchObject({ status: "CAPTURED", refundedCents: 10_000, refundIds: [part1] });
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(3);
+    expect(refundedSpy).not.toHaveBeenCalled();
+    expect(await prisma.auditLog.count({ where: { action: "refund.partial_external", targetId: order.id } })).toBe(1);
+    expect((await stats.liveRevenue()).amountCents).toBe(revenue - 10_000);
+
+    // The other ₹150: now the order is unwound, once.
+    const part2 = `rfnd_${uid().slice(0, 12)}`;
+    expect(await refund("refund.processed", part2, 15_000)).toMatchObject({ body: { outcome: "refunded" } });
+    expect(await refund("refund.processed", part2, 15_000)).toMatchObject({ body: { outcome: "already counted" } });
+    after = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: { payments: true } });
+    expect(after.status).toBe("REFUNDED");
+    expect(after.payments[0]).toMatchObject({ status: "REFUNDED", refundedCents: 25_000, refundIds: [part1, part2] });
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(4);
+    expect(refundedSpy).toHaveBeenCalledTimes(1);
+    expect(refundedSpy).toHaveBeenCalledWith(order.id);
+    expect(await prisma.auditLog.count({ where: { action: "refund.external", targetId: order.id } })).toBe(1);
+    expect(await prisma.auditLog.count({ where: { action: "order.unwind", targetId: order.id } })).toBe(1);
+    expect(await prisma.notification.count({ where: { userId: user.id, title: "Order refunded" } })).toBe(1);
+    expect((await stats.liveRevenue()).amountCents).toBe(revenue - 25_000);
+    expect(refundCalls(calls)).toHaveLength(0);
+
+    // Unwinding again changes nothing.
+    expect(await refundSvc.unwindOrder(order.id, { actorId: null, source: "test" })).toEqual({ unwound: false, closedRequests: 0 });
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(4);
+  });
+
+  it("approving a request after a partial dashboard refund sends only the rest; Razorpay confirming it changes nothing", async () => {
+    const admin = await createTestUser();
+    const { provider: keys, calls } = fakeRazorpay("rzp_live_key");
+    const shop = new ShopCheckoutService(prisma, { provider: () => keys, providerFor: () => keys });
+    const { user, order, product: p } = await paidWithRazorpay(keys);
+    const pay = await prisma.payment.findFirstOrThrow({ where: { orderId: order.id, status: "CAPTURED" } });
+    const refund = refundWebhook(shop, pay.providerPaymentId!);
+    expect(await refund("refund.processed", `rfnd_${uid().slice(0, 12)}`, 5_000)).toMatchObject({ body: { outcome: "partial" } });
+
+    const svc = new RefundService(prisma, { providerFor: () => keys });
+    const req = await svc.requestRefund(user.id, order.id, "Arrived damaged, please refund the rest");
+    await expect(svc.approve(admin.id, req.id)).resolves.toMatchObject({ rail: "INR/LIVE", refundedLocally: false });
+    const sent = refundCalls(calls);
+    expect(sent).toHaveLength(1);
+    expect(sent[0].body).toMatchObject({ amount: 20_000 });
+
+    const paid = await prisma.payment.findUniqueOrThrow({ where: { id: pay.id } });
+    expect(paid).toMatchObject({ status: "REFUNDED", refundedCents: 25_000 });
+    expect(paid.refundIds).toHaveLength(2);
+    expect(await prisma.auditLog.findFirst({ where: { action: "refund.approve", targetId: order.id } })).toMatchObject({ meta: { sentCents: 20_000 } });
+
+    // Razorpay's webhook for our own refund arrives afterwards.
+    expect(await refund("refund.processed", paid.refundIds[1], 20_000)).toMatchObject({ body: { outcome: "already counted" } });
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("REFUNDED");
+    expect((await prisma.refundRequest.findUniqueOrThrow({ where: { id: req.id } })).status).toBe("REFUNDED");
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(4);
+    expect(refundedSpy).toHaveBeenCalledTimes(1);
+    expect(await prisma.payment.findUniqueOrThrow({ where: { id: pay.id } })).toMatchObject({ refundedCents: 25_000 });
+  });
+
+  it("a full refund from the dashboard unwinds the order and closes the member's open request", async () => {
+    const admin = await createTestUser();
+    const { provider: keys, calls } = fakeRazorpay("rzp_live_key");
+    const shop = new ShopCheckoutService(prisma, { provider: () => keys, providerFor: () => keys });
+    const { user, order, product: p } = await paidWithRazorpay(keys);
+    const pay = await prisma.payment.findFirstOrThrow({ where: { orderId: order.id, status: "CAPTURED" } });
+    const req = await refundSvc.requestRefund(user.id, order.id, "Please refund, I changed my mind");
+
+    expect(await refundWebhook(shop, pay.providerPaymentId!)("refund.processed", `rfnd_${uid().slice(0, 12)}`, 25_000)).toMatchObject({
+      body: { outcome: "refunded" },
+    });
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("REFUNDED");
+    expect((await prisma.refundRequest.findUniqueOrThrow({ where: { id: req.id } })).status).toBe("REFUNDED");
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(4);
+    expect(refundedSpy).toHaveBeenCalledTimes(1);
+    // Nothing is left to decide or to send.
+    await expect(refundSvc.approve(admin.id, req.id)).rejects.toThrow(/already decided/);
+    expect(refundCalls(calls)).toHaveLength(0);
+  });
+
+  it("a retried refund.processed finishes an unwind that failed part way", async () => {
+    const { provider: keys } = fakeRazorpay("rzp_live_key");
+    const shop = new ShopCheckoutService(prisma, { provider: () => keys, providerFor: () => keys });
+    const { order, product: p } = await paidWithRazorpay(keys);
+    const pay = await prisma.payment.findFirstOrThrow({ where: { orderId: order.id, status: "CAPTURED" } });
+    const refundId = `rfnd_${uid().slice(0, 12)}`;
+    // The first delivery counted the refund, then failed before the order was unwound.
+    await prisma.payment.update({ where: { id: pay.id }, data: { status: "REFUNDED", refundedCents: 25_000, refundIds: [refundId] } });
+
+    expect(await refundWebhook(shop, pay.providerPaymentId!)("refund.processed", refundId, 25_000)).toMatchObject({
+      status: 200,
+      body: { outcome: "already counted" },
+    });
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("REFUNDED");
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(4);
+    expect(refundedSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("refund.failed takes our refund off again and lists the payment until it is refunded again", async () => {
+    const admin = await createTestUser();
+    const { provider: keys } = fakeRazorpay("rzp_live_key");
+    const shop = new ShopCheckoutService(prisma, { provider: () => keys, providerFor: () => keys });
+    const { user, order } = await paidWithRazorpay(keys);
+    const svc = new RefundService(prisma, { providerFor: () => keys });
+    const req = await svc.requestRefund(user.id, order.id, "Wrong size, please refund");
+    await svc.approve(admin.id, req.id);
+    const pay = await prisma.payment.findFirstOrThrow({ where: { orderId: order.id } });
+    expect(pay).toMatchObject({ status: "REFUNDED", refundedCents: 25_000 });
+    const refund = refundWebhook(shop, pay.providerPaymentId!);
+
+    expect(await refund("refund.failed", pay.refundIds[0], 25_000)).toMatchObject({ status: 200, body: { outcome: "reverted" } });
+    expect(await refund("refund.failed", pay.refundIds[0], 25_000)).toMatchObject({ body: { outcome: "not counted" } });
+    expect(await prisma.payment.findUniqueOrThrow({ where: { id: pay.id } })).toMatchObject({ status: "CAPTURED", refundedCents: 0, refundIds: [] });
+    expect(await prisma.auditLog.count({ where: { action: "refund.failed", targetId: order.id } })).toBe(1);
+    expect((await svc.listFailedRefunds()).find((x) => x.id === pay.id)).toMatchObject({ order: { id: order.id, status: "REFUNDED" } });
+    // The order stays refunded: its stock went back already.
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("REFUNDED");
+
+    // Sent again from the Razorpay dashboard, it is counted when Razorpay confirms it.
+    expect(await refund("refund.processed", `rfnd_${uid().slice(0, 12)}`, 25_000)).toMatchObject({ body: { outcome: "refunded" } });
+    expect(await prisma.payment.findUniqueOrThrow({ where: { id: pay.id } })).toMatchObject({ status: "REFUNDED", refundedCents: 25_000 });
+    expect((await svc.listFailedRefunds()).some((x) => x.id === pay.id)).toBe(false);
+    expect(refundedSpy).toHaveBeenCalledTimes(1);
   });
 });

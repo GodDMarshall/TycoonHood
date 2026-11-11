@@ -136,16 +136,17 @@ export class ShopStatsService {
   constructor(private readonly db: PrismaClient = defaultPrisma) {}
 
   /**
-   * Real rupee revenue: LIVE payments captured and not refunded. TEST payments
-   * are excluded by construction. Any revenue figure on any page must use this.
+   * Real rupee revenue: LIVE payments captured and not refunded, less any part
+   * refunded already. TEST payments are excluded by construction. Any revenue
+   * figure on any page must use this.
    */
   async liveRevenue(since?: Date) {
     const r = await this.db.payment.aggregate({
       where: { mode: "LIVE", status: "CAPTURED", currency: "INR", ...(since ? { createdAt: { gte: since } } : {}) },
-      _sum: { amountCents: true },
+      _sum: { amountCents: true, refundedCents: true },
       _count: true,
     });
-    return { amountCents: r._sum.amountCents ?? 0, payments: r._count, currency: "INR" as const };
+    return { amountCents: (r._sum.amountCents ?? 0) - (r._sum.refundedCents ?? 0), payments: r._count, currency: "INR" as const };
   }
 
   /** Count of TEST payments captured, shown beside revenue so nobody mistakes them for money. */

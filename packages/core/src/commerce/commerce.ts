@@ -15,7 +15,7 @@
  * always did.
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
-import type { PrismaClient } from "@tycoonhood/db";
+import type { Prisma, PrismaClient } from "@tycoonhood/db";
 import { can } from "../auth/permissions";
 import { LedgerService, InsufficientFundsError } from "../ledger/ledger";
 import { LmsService } from "../lms/lms";
@@ -157,15 +157,15 @@ export class CommerceService {
     if (affected === 0) throw new OutOfStockError("Sold out.");
   }
 
-  /** Puts `qty` units back. NULL (unlimited) inventory stays NULL. */
-  async releaseUnits(productId: string, variantId: string | null, qty: number) {
+  /** Puts `qty` units back, inside `db` when it is a transaction. NULL (unlimited) inventory stays NULL. */
+  async releaseUnits(productId: string, variantId: string | null, qty: number, db: Prisma.TransactionClient = this.db) {
     if (qty < 1) return;
     if (variantId) {
-      await this.db.$executeRaw`
+      await db.$executeRaw`
         UPDATE "ProductVariant" SET "inventory" = "inventory" + ${qty} WHERE "id" = ${variantId}`;
       return;
     }
-    await this.db.$executeRaw`
+    await db.$executeRaw`
       UPDATE "Product" SET "inventory" = "inventory" + ${qty}
       WHERE "id" = ${productId} AND "inventory" IS NOT NULL`;
   }

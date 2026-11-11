@@ -9,8 +9,17 @@
  *                test keys are configured; once they are not (live keys, or
  *                none) it is marked REFUNDED here, because no money moved
  *   INR, LIVE  → Razorpay's refund API with live keys, then REFUNDED
- * then the order becomes REFUNDED, physical units that never shipped go back
- * on the shelf, and the earn hook onOrderRefunded reverses any commission.
+ * Only what is left of the payment is sent: part of it may already have been
+ * refunded in the Razorpay dashboard. Then unwindOrder: the order becomes
+ * REFUNDED, physical units that never shipped go back on the shelf, and the
+ * earn hook onOrderRefunded reverses any commission.
+ *
+ * A refund made in the Razorpay dashboard arrives as the refund.processed
+ * webhook (recordProviderRefund), counted once per refund id. A partial refund
+ * keeps the payment CAPTURED and the order standing; once the whole payment
+ * is back, the order is unwound the same way. refund.failed
+ * (recordFailedRefund) takes a refund we had counted off again, and the
+ * admin refunds page lists the payment until it is refunded again.
  *
  * Every decision is audited and the member is told.
  */
@@ -121,13 +130,14 @@ export class RefundService {
 
     const req = await this.db.refundRequest.findUniqueOrThrow({
       where: { id: requestId },
-      include: { order: { include: { items: { include: { product: true } }, payments: true } } },
+      include: { order: { include: { payments: true } } },
     });
     const order = req.order;
 
     try {
       let rail: string;
       let refundedLocally = false;
+      let sentCents: number | null = null;
       if (order.ledgerTxId) {
         rail = "THC";
         await this.ledger.reverse(order.ledgerTxId, {
@@ -140,11 +150,14 @@ export class RefundService {
         if (!payment) throw new RefundError("No captured payment on this order — nothing to send back.");
         rail = `INR/${payment.mode}`;
         if (payment.status === "CAPTURED") {
+          // Part of it may already have gone back from the Razorpay dashboard.
+          const remaining = payment.amountCents - payment.refundedCents;
           let raw: unknown = { refundedBy: adminId };
+          let refundId: string | null = null;
           // The sandbox moved no money, so there is nothing to send back. A Razorpay
           // payment goes back through Razorpay, with keys of the same mode: Razorpay
           // keeps test and live apart, so live keys cannot refund a test payment.
-          if (payment.provider !== "sandbox") {
+          if (payment.provider !== "sandbox" && remaining > 0) {
             const provider = this.providerFor(payment.provider);
             if (payment.mode === "TEST" && provider?.mode !== "TEST") {
               // The test keys that took it are gone, and a test payment moved no money.
@@ -158,36 +171,26 @@ export class RefundService {
               if (!payment.providerPaymentId) throw new RefundError("The payment has no provider payment id.");
               const r = await provider.refund({
                 providerPaymentId: payment.providerPaymentId,
-                amountCents: payment.amountCents,
+                amountCents: remaining,
                 notes: { orderId: order.id, requestId },
               });
+              refundId = r.refundId;
               raw = r.raw ?? { refundId: r.refundId };
             }
           }
-          await this.db.payment.update({
-            where: { id: payment.id },
-            data: { status: "REFUNDED", raw: { previous: payment.raw ?? null, refund: raw } as Prisma.InputJsonValue },
-          });
+          await this.addRefund(payment.id, { refundId, amountCents: remaining, raw });
+          sentCents = remaining;
         }
       }
 
-      // An order cancelled before its (late) payment arrived already gave its stock back.
-      const wasLive = order.status === "PAID" || order.status === "FULFILLED";
-      if (wasLive) {
-        if (!order.shippedAt) {
-          for (const i of order.items) {
-            if (i.product.kind === "PHYSICAL") await this.commerce.releaseUnits(i.productId, i.variantId, i.qty);
-          }
-        }
-        await this.db.order.update({ where: { id: order.id }, data: { status: "REFUNDED" } });
-      }
+      await this.unwindOrder(order.id, { actorId: adminId, source: "refund.approve" });
       await this.db.refundRequest.update({ where: { id: requestId }, data: { status: "REFUNDED" } });
       await this.audit.log({
         actorId: adminId,
         action: "refund.approve",
         targetType: "order",
         targetId: order.id,
-        meta: { requestId, rail, note: note ?? null, ...(refundedLocally ? { refundedLocally: TEST_REFUND_NOTE } : {}) },
+        meta: { requestId, rail, note: note ?? null, ...(sentCents !== null ? { sentCents } : {}), ...(refundedLocally ? { refundedLocally: TEST_REFUND_NOTE } : {}) },
       });
       await notify(
         order.userId,
@@ -197,14 +200,169 @@ export class RefundService {
         { orderId: order.id, href: `/orders/${order.id}` },
         this.db
       );
-      await callEarnHook("onOrderRefunded", order.id, this.db);
       return { orderId: order.id, rail, refundedLocally };
     } catch (e) {
-      // Put the request back so it can be retried once the cause is fixed.
-      await this.db.refundRequest.update({ where: { id: requestId }, data: { status: "REQUESTED" } });
+      // Put the request back so it can be retried once the cause is fixed, unless
+      // a refund from Razorpay closed it meanwhile.
+      await this.db.refundRequest.updateMany({ where: { id: requestId, status: "APPROVED" }, data: { status: "REQUESTED" } });
       await this.audit.log({ actorId: adminId, action: "refund.approve_failed", targetType: "order", targetId: order.id, meta: { requestId, error: e instanceof Error ? e.message : String(e) } });
       throw e;
     }
+  }
+
+  /**
+   * Unwinds a refunded order, once. Under the order's row lock, a PAID or
+   * FULFILLED order becomes REFUNDED and its physical units that never shipped
+   * go back on the shelf, and any open refund request is closed. Then the earn
+   * hook reverses any commission. Calling it again changes nothing.
+   */
+  async unwindOrder(orderId: string, opts: { actorId: string | null; source: string }) {
+    const done = await this.db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${orderId} FOR UPDATE`;
+      const order = await tx.order.findUniqueOrThrow({
+        where: { id: orderId },
+        select: { status: true, shippedAt: true, items: { select: { productId: true, variantId: true, qty: true, product: { select: { kind: true } } } } },
+      });
+      // An order cancelled before its (late) payment arrived already gave its stock back.
+      const unwound = order.status === "PAID" || order.status === "FULFILLED";
+      const released: { productId: string; variantId: string | null; qty: number }[] = [];
+      if (unwound) {
+        await tx.order.update({ where: { id: orderId }, data: { status: "REFUNDED" } });
+        if (!order.shippedAt) {
+          for (const i of order.items) {
+            if (i.product.kind !== "PHYSICAL") continue;
+            await this.commerce.releaseUnits(i.productId, i.variantId, i.qty, tx);
+            released.push({ productId: i.productId, variantId: i.variantId, qty: i.qty });
+          }
+        }
+      }
+      const closed = await tx.refundRequest.updateMany({ where: { orderId, status: { in: ["REQUESTED", "APPROVED"] } }, data: { status: "REFUNDED" } });
+      if (unwound || closed.count > 0) {
+        await this.audit.log(
+          { actorId: opts.actorId, action: "order.unwind", targetType: "order", targetId: orderId, meta: { source: opts.source, from: order.status, released, closedRequests: closed.count } },
+          tx
+        );
+      }
+      return { unwound, closedRequests: closed.count };
+    });
+    if (done.unwound || done.closedRequests > 0) await callEarnHook("onOrderRefunded", orderId, this.db);
+    return done;
+  }
+
+  /**
+   * Counts money sent back on a payment, under its row lock and once per
+   * provider refund id. The payment turns REFUNDED when all of it is back.
+   */
+  private async addRefund(paymentId: string, r: { refundId: string | null; amountCents: number; raw?: unknown }) {
+    return this.db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Payment" WHERE id = ${paymentId} FOR UPDATE`;
+      const p = await tx.payment.findUniqueOrThrow({ where: { id: paymentId } });
+      if (r.refundId && p.refundIds.includes(r.refundId)) return { payment: p, added: false };
+      const refundedCents = Math.min(p.amountCents, p.refundedCents + Math.max(0, r.amountCents));
+      const payment = await tx.payment.update({
+        where: { id: p.id },
+        data: {
+          refundedCents,
+          ...(r.refundId ? { refundIds: { push: r.refundId } } : {}),
+          ...(refundedCents >= p.amountCents ? { status: "REFUNDED" as const } : {}),
+          ...(r.raw !== undefined ? { raw: { previous: p.raw ?? null, refund: r.raw } as Prisma.InputJsonValue } : {}),
+        },
+      });
+      return { payment, added: true };
+    });
+  }
+
+  /**
+   * Razorpay's refund.processed. Our own refund was counted when we sent it, so
+   * it changes nothing; a refund made in the Razorpay dashboard is counted now.
+   * Part of the payment back: the order stands and a later refund sends only the
+   * rest. All of it back: the order is unwound as an approved refund would be.
+   */
+  async recordProviderRefund(input: { providerPaymentId: string; refundId: string; amountCents: number }) {
+    const found = await this.db.payment.findUnique({ where: { providerPaymentId: input.providerPaymentId }, select: { id: true, orderId: true } });
+    if (!found) return { outcome: "not ours" as const };
+    const r = await this.addRefund(found.id, { refundId: input.refundId, amountCents: input.amountCents });
+    const full = r.payment.status === "REFUNDED";
+    if (r.added) {
+      await this.audit.log({
+        actorId: null,
+        action: full ? "refund.external" : "refund.partial_external",
+        targetType: "order",
+        targetId: found.orderId,
+        meta: { paymentId: found.id, refundId: input.refundId, amountCents: input.amountCents, refundedCents: r.payment.refundedCents, paymentCents: r.payment.amountCents },
+      });
+    }
+    if (!full) return { outcome: r.added ? ("partial" as const) : ("already counted" as const) };
+    // Also when already counted: a retry finishes an unwind that failed part way. Once done it changes nothing.
+    const unwind = await this.unwindOrder(found.orderId, { actorId: null, source: "refund.external" });
+    if (unwind.unwound || unwind.closedRequests > 0) {
+      const order = await this.db.order.findUniqueOrThrow({ where: { id: found.orderId }, select: { userId: true } });
+      await notify(
+        order.userId,
+        "ORDER",
+        "Order refunded",
+        r.payment.mode === "TEST" ? "Test-mode order — no real money had been charged." : "Razorpay is sending the money back to your original payment method.",
+        { orderId: found.orderId, href: `/orders/${found.orderId}` },
+        this.db
+      );
+    }
+    return { outcome: r.added ? ("refunded" as const) : ("already counted" as const) };
+  }
+
+  /**
+   * Razorpay's refund.failed: that money did not go back. A refund we had
+   * counted is taken off again and the payment returns to CAPTURED, so the
+   * admin refunds page lists it to be refunded again. The order is left as it is.
+   */
+  async recordFailedRefund(input: { providerPaymentId: string; refundId: string; amountCents: number }) {
+    const found = await this.db.payment.findUnique({ where: { providerPaymentId: input.providerPaymentId }, select: { id: true, orderId: true } });
+    if (!found) return { outcome: "not ours" as const };
+    const r = await this.db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Payment" WHERE id = ${found.id} FOR UPDATE`;
+      const p = await tx.payment.findUniqueOrThrow({ where: { id: found.id } });
+      if (!p.refundIds.includes(input.refundId)) return { counted: false, payment: p };
+      const refundedCents = Math.max(0, p.refundedCents - Math.max(0, input.amountCents));
+      const payment = await tx.payment.update({
+        where: { id: p.id },
+        data: {
+          refundedCents,
+          refundIds: p.refundIds.filter((id) => id !== input.refundId),
+          ...(p.status === "REFUNDED" && refundedCents < p.amountCents ? { status: "CAPTURED" as const } : {}),
+        },
+      });
+      return { counted: true, payment };
+    });
+    // Razorpay retries webhooks: one audit entry per failed refund.
+    const seen = await this.db.auditLog.count({
+      where: { action: "refund.failed", targetType: "order", targetId: found.orderId, meta: { path: ["refundId"], equals: input.refundId } },
+    });
+    if (seen === 0) {
+      await this.audit.log({
+        actorId: null,
+        action: "refund.failed",
+        targetType: "order",
+        targetId: found.orderId,
+        meta: { paymentId: found.id, refundId: input.refundId, amountCents: input.amountCents, counted: r.counted, refundedCents: r.payment.refundedCents },
+      });
+    }
+    return { outcome: r.counted ? ("reverted" as const) : ("not counted" as const) };
+  }
+
+  /**
+   * Money still with us on an order that was refunded or cancelled, with no
+   * refund request open: mostly a refund that Razorpay failed. The admin
+   * refunds page lists these until each is refunded again.
+   */
+  async listFailedRefunds() {
+    return this.db.payment.findMany({
+      where: {
+        status: "CAPTURED",
+        order: { status: { in: ["REFUNDED", "CANCELLED"] }, refundRequests: { none: { status: { in: ["REQUESTED", "APPROVED"] } } } },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 50,
+      include: { order: { select: { id: true, status: true, user: { select: { email: true } } } } },
+    });
   }
 
   async reject(adminId: string, requestId: string, note: string) {

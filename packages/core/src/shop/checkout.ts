@@ -36,6 +36,7 @@ import { CouponService } from "./coupons";
 import { callEarnHook } from "./earn-registry";
 import { CheckoutError, PaymentVerificationError } from "./errors";
 import { SHOP_CURRENCY } from "./pricing";
+import { RefundService } from "./refunds";
 import { activeShopProvider, razorpayFromEnv, sandboxProvider, sandboxAllowed, RazorpayProvider } from "./payments";
 import type { RazorpayWebhookEvent, ShopPaymentProvider } from "./payments";
 import { verifyWebhookSignature } from "./payments/razorpay";
@@ -93,6 +94,7 @@ export class ShopCheckoutService {
   private provider: (buyer: HasRole) => ShopPaymentProvider | null;
   private providerFor: (name: string) => ShopPaymentProvider | null;
   private sandboxEnabled: () => boolean;
+  private refunds: RefundService;
   private lastSweepAt = 0;
 
   constructor(private readonly db: PrismaClient = defaultPrisma, opts: ShopCheckoutOptions = {}) {
@@ -104,6 +106,7 @@ export class ShopCheckoutService {
     this.provider = opts.provider ?? ((buyer) => activeShopProvider(process.env, buyer));
     this.providerFor = opts.providerFor ?? defaultProviderFor;
     this.sandboxEnabled = opts.sandboxEnabled ?? (() => sandboxAllowed());
+    this.refunds = new RefundService(db, { providerFor: this.providerFor });
   }
 
   /** Reserves every line or none: on the first failure, what was taken goes back. */
@@ -597,12 +600,14 @@ export class ShopCheckoutService {
           await this.recordFailedAttempt({ providerOrderId: pay.order_id, providerPaymentId: pay.id, reason: pay.error_description });
           return { status: 200, body: { ok: true } };
         }
-        case "refund.processed": {
+        case "refund.processed":
+        case "refund.failed": {
+          // Counted once per refund id. Only a refund of the whole payment unwinds the order.
           const ref = event.payload?.refund?.entity;
-          if (ref?.payment_id) {
-            await this.db.payment.updateMany({ where: { providerPaymentId: ref.payment_id, status: "CAPTURED" }, data: { status: "REFUNDED" } });
-          }
-          return { status: 200, body: { ok: true } };
+          if (!ref?.id || !ref.payment_id) return { status: 200, body: { ignored: "no refund" } };
+          const input = { providerPaymentId: ref.payment_id, refundId: ref.id, amountCents: ref.amount };
+          const r = event.event === "refund.processed" ? await this.refunds.recordProviderRefund(input) : await this.refunds.recordFailedRefund(input);
+          return { status: 200, body: { ok: true, outcome: r.outcome } };
         }
         default:
           return { status: 200, body: { ignored: event.event } };
