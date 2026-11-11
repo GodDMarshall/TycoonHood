@@ -90,12 +90,28 @@ describe("Manual settlement of a legacy rupee order", () => {
     expect(await prisma.auditLog.count({ where: { action: "order.settle_manual", targetId: order.id } })).toBe(0);
   });
 
-  it("refuses an order that is not pending, so a second settle writes nothing", async () => {
+  // Admin → Orders catches ManualSettlementError and redraws the list (settlePendingFiatAction),
+  // so a click from a stale list must be refused with exactly that class, and write nothing.
+  it("refuses an order another admin already settled, with a ManualSettlementError, and writes nothing", async () => {
     const order = await legacyOrder();
-    const staff = await admin();
-    await settlement.settle(staff, order.id);
-    await expect(settlement.settle(staff, order.id)).rejects.toThrow(/not pending/);
+    const first = await admin();
+    const second = await admin();
+    await settlement.settle(first, order.id);
+    const err = await settlement.settle(second, order.id).catch((e) => e);
+    expect(err).toBeInstanceOf(ManualSettlementError);
+    expect(err.message).toBe("This order is fulfilled, not pending.");
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).paymentRef).toBe(`admin_${first.id}`);
     expect(await prisma.auditLog.count({ where: { action: "order.settle_manual", targetId: order.id } })).toBe(1);
+  });
+
+  it("refuses an order cancelled since the list was drawn, with a ManualSettlementError", async () => {
+    const order = await legacyOrder();
+    await commerce.cancelFiatOrder(order.id);
+    const err = await settlement.settle(await admin(), order.id).catch((e) => e);
+    expect(err).toBeInstanceOf(ManualSettlementError);
+    expect(err.message).toBe("This order is cancelled, not pending.");
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("CANCELLED");
+    expect(await prisma.auditLog.count({ where: { action: "order.settle_manual", targetId: order.id } })).toBe(0);
   });
 
   it("needs admin.commerce", async () => {

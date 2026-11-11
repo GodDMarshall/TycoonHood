@@ -11,6 +11,7 @@ import {
   challenges,
   commerce,
   manualSettlement,
+  ManualSettlementError,
 } from "@tycoonhood/core";
 import { getCurrentUser } from "../../../lib/auth";
 import { actorWith } from "../../../lib/guard";
@@ -202,10 +203,18 @@ export async function shipOrderAction(orderId: string, _prev: ShipState, fd: For
 /**
  * Settle a legacy rupee order by hand. Core refuses any order the payment
  * flow owns (one with a Payment row) and audits the settlement.
+ *
+ * A refusal means the order moved on after the list was drawn: another admin
+ * settled it, it was cancelled, or a payment started. Nothing was written, so
+ * the list is redrawn to show where the order stands, not an error page.
  */
 export async function settlePendingFiatAction(orderId: string) {
   const admin = await actorWith("admin.commerce");
-  await manualSettlement.settle({ id: admin.id, role: admin.role }, orderId);
+  try {
+    await manualSettlement.settle({ id: admin.id, role: admin.role }, orderId);
+  } catch (e) {
+    if (!(e instanceof ManualSettlementError)) throw e;
+  }
   revalidatePath("/admin/orders");
   revalidatePath("/orders");
 }
