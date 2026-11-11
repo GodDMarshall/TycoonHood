@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import { EventBus } from "../src/events/bus";
-import { parseCriteria, InvalidCriteriaError, describeCriteria } from "../src/rules/criteria";
+import { parseCriteria, InvalidCriteriaError, describeCriteria, missionCadence } from "../src/rules/criteria";
 import { localDayKey, localDayKeyOffset } from "../src/time/day";
 import { LedgerService } from "../src/ledger/ledger";
 import { createTestUser, uid } from "./helpers";
@@ -164,6 +164,27 @@ describe("criteria DSL", () => {
     expect(() => parseCriteria({ event: "LESSON_COMPLETED", within: "soon" })).toThrow(InvalidCriteriaError);
     expect(() => parseCriteria({ event: "LESSON_COMPLETED", scope: { pillar: "SPICY" } })).toThrow(InvalidCriteriaError);
     expect(() => parseCriteria(null)).toThrow(InvalidCriteriaError);
+  });
+});
+
+describe("mission cadence on the member's task board", () => {
+  it("a calendar-week mission is weekly, alongside cooldowns and rolling windows", () => {
+    const m = (criteria: unknown, cooldownHours: number | null = null) => missionCadence({ criteria, cooldownHours });
+    // The seeded weekly missions: within "week", no cooldown.
+    expect(m({ event: "LESSON_COMPLETED", count: 5, within: "week" })).toBe("weekly");
+    expect(m({ event: "STREAK", count: 5, within: "week" })).toBe("weekly");
+    expect(m({ event: "QUIZ_PASSED", count: 2, within: "week" })).toBe("weekly");
+    expect(m({ event: "DAILY_ACTIVE" }, 20)).toBe("daily");
+    expect(m({ event: "LESSON_COMPLETED", within: "24h" })).toBe("daily");
+    expect(m({ event: "LESSON_COMPLETED", within: "7d" })).toBe("weekly");
+    expect(m({ event: "LESSON_COMPLETED" }, 24 * 7)).toBe("weekly");
+    expect(m({ event: "LESSON_COMPLETED", within: "30d" })).toBeNull();
+    expect(m({ event: "NOPE" })).toBeNull();
+  });
+
+  it("describes a windowed quiz rule truthfully: each check counts on its first pass", () => {
+    expect(describeCriteria(parseCriteria({ event: "QUIZ_PASSED", count: 2, within: "week" }))).toBe("pass 2 quizzes for the first time this week");
+    expect(describeCriteria(parseCriteria({ event: "QUIZ_PASSED", count: 3 }))).toBe("pass 3 quizzes");
   });
 });
 

@@ -5,7 +5,7 @@
  */
 import "server-only";
 import { prisma } from "@tycoonhood/db";
-import { parseCriteria, describeCriteria, profileCompletion, type ProfileCompletion } from "@tycoonhood/core";
+import { describeCriteria, missionCadence, profileCompletion, repeatBucket, tryParseCriteria, type ProfileCompletion } from "@tycoonhood/core";
 import { xpRequiredForLevel } from "@tycoonhood/config";
 
 export type MissionView = {
@@ -16,28 +16,14 @@ export type MissionView = {
   xpReward: number;
   thcReward: bigint;
   cadence: "daily" | "weekly";
+  /** Resets on Monday (a calendar week), rather than 7 days after completion. */
+  calendarWeek: boolean;
   doneThisPeriod: boolean;
 };
 
 export type DashboardData = Awaited<ReturnType<typeof loadDashboard>>;
 
 const HOUR = 60 * 60 * 1000;
-
-function cadenceOf(m: { cooldownHours: number | null; criteria: unknown }): "daily" | "weekly" | null {
-  if (m.cooldownHours != null) {
-    if (m.cooldownHours <= 24) return "daily";
-    if (m.cooldownHours <= 24 * 7) return "weekly";
-    return null;
-  }
-  try {
-    const within = parseCriteria(m.criteria).within;
-    if (within === "24h" || within === "1d") return "daily";
-    if (within === "7d" || within === "168h") return "weekly";
-  } catch {
-    /* malformed rule: not shown */
-  }
-  return null;
-}
 
 export async function loadDashboard(user: {
   id: string;
@@ -46,12 +32,15 @@ export async function loadDashboard(user: {
   emailVerified: Date | null;
   profile: { displayName: string; username: string; bio: string | null; avatarUrl: string | null; timezone: string | null; goals: string[]; referralCode: string | null } | null;
 }) {
-  const since7d = new Date(Date.now() - 7 * 24 * HOUR);
+  const now = new Date();
+  // Covers a rolling week and the whole calendar week (its Monday may be up
+  // to a day further back in the member's zone).
+  const since8d = new Date(now.getTime() - 8 * 24 * HOUR);
   const [missions, completions, affiliate, referralGroups, orders, posts, groupCount, notifications, unread] = await Promise.all([
     prisma.mission.findMany({ where: { active: true, repeatable: true }, orderBy: { name: "asc" } }),
     prisma.missionCompletion.findMany({
-      where: { userId: user.id, completedAt: { gte: since7d } },
-      select: { missionId: true, completedAt: true },
+      where: { userId: user.id, completedAt: { gte: since8d } },
+      select: { missionId: true, completedAt: true, idempotencyKey: true },
     }),
     prisma.affiliateProfile.findUnique({ where: { userId: user.id }, select: { id: true, status: true, code: true } }),
     prisma.referral.groupBy({ by: ["status"], where: { referrerId: user.id }, _count: { _all: true } }),
@@ -85,26 +74,29 @@ export async function loadDashboard(user: {
   ]);
 
   // ─ Missions: repeatable ones that reset daily or weekly.
+  const tz = user.profile?.timezone ?? null;
   const missionViews: MissionView[] = [];
   for (const m of missions) {
-    const cadence = cadenceOf(m);
+    const cadence = missionCadence(m);
     if (!cadence) continue;
+    const c = tryParseCriteria(m.criteria);
+    const calendarWeek = c?.within === "week";
+    // A calendar-week mission is done when this week's completion exists,
+    // under the key the rules engine wrote; the rest count back from now.
+    const thisWeek = calendarWeek && c ? `mission:${m.id}:${user.id}:${repeatBucket(c, now, tz)}` : null;
     const windowMs = (m.cooldownHours ?? (cadence === "daily" ? 24 : 168)) * HOUR;
-    const doneThisPeriod = completions.some((c) => c.missionId === m.id && Date.now() - c.completedAt.getTime() < windowMs);
-    let rule: string | null;
-    try {
-      rule = describeCriteria(parseCriteria(m.criteria));
-    } catch {
-      rule = null;
-    }
+    const doneThisPeriod = completions.some((x) =>
+      thisWeek ? x.idempotencyKey === thisWeek : x.missionId === m.id && now.getTime() - x.completedAt.getTime() < windowMs
+    );
     missionViews.push({
       id: m.id,
       name: m.name,
       description: m.description,
-      rule,
+      rule: c ? describeCriteria(c) : null,
       xpReward: m.xpReward,
       thcReward: m.thcReward,
       cadence,
+      calendarWeek,
       doneThisPeriod,
     });
   }

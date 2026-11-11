@@ -160,11 +160,29 @@ export class StandardService {
     if (today.met) {
       try {
         await this.db.standardDay.create({ data: { userId, day, items: today.total, metAt: now } });
-        // A met day is a day of action: it advances the streak once.
-        await this.streaks.touch(userId, now);
+        await this.settleMetDay(userId, dayKey, now);
       } catch (e) {
         if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) throw e;
       }
+    }
+  }
+
+  /**
+   * A met day is a day of action: it advances the streak once. The streak
+   * announces itself (STREAK) only on the day's first activity, and on a met
+   * day that has usually happened already: a lesson touched the streak
+   * before its Study tick wrote today's record. So announce the met day
+   * whenever the touch did not, or "hold the standard 5 days this week" would
+   * not see today until some later day. Rules pay once per day or week, so a
+   * second look pays nothing twice.
+   */
+  private async settleMetDay(userId: string, dayKey: string, now: Date) {
+    const before = await this.db.streak.findUnique({ where: { userId }, select: { lastActiveOn: true } });
+    const alreadyCounted = before?.lastActiveOn?.toISOString().slice(0, 10) === dayKey;
+    const streak = await this.streaks.touch(userId, now);
+    if (alreadyCounted) {
+      const { events } = await import("../events/bus");
+      await events.emit({ type: "STREAK", userId, days: streak.current, at: now });
     }
   }
 

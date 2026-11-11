@@ -13,13 +13,19 @@
  */
 import type { PrismaClient } from "@tycoonhood/db";
 import type { Criteria } from "./criteria";
-import { windowStart } from "./criteria";
+import { countsStandardDays, windowStart } from "./criteria";
+import { dayKeyToDate, localWeekStartKey } from "../time/day";
 
+/**
+ * `timezone` is the member's: days of the standard are their local days, so
+ * a "week" of them is their own Monday to Sunday (see repeatBucket).
+ */
 export async function countEvidence(
   db: PrismaClient,
   userId: string,
   c: Criteria,
-  now: Date
+  now: Date,
+  timezone?: string | null
 ): Promise<number | null> {
   const since = windowStart(c.within, now);
   const when = since ? { gte: since } : undefined;
@@ -67,15 +73,21 @@ export async function countEvidence(
         },
       });
 
-    case "QUIZ_PASSED":
-      return db.quizAttempt.count({
+    case "QUIZ_PASSED": {
+      // Distinct knowledge checks, each counted once, in the window of its
+      // first pass: a retake of a check already passed adds nothing, so
+      // "pass 2 knowledge checks this week" means two new ones.
+      const firstPasses = await db.quizAttempt.groupBy({
+        by: ["quizId"],
         where: {
           userId,
           passed: true,
           ...(c.minScore !== undefined ? { scorePct: { gte: c.minScore } } : {}),
-          ...(when ? { createdAt: when } : {}),
         },
+        _min: { createdAt: true },
       });
+      return firstPasses.filter((f) => !since || (f._min.createdAt !== null && f._min.createdAt >= since)).length;
+    }
 
     case "CHALLENGE_COMPLETED":
       return db.challengeParticipation.count({
@@ -84,8 +96,15 @@ export async function countEvidence(
 
     case "STREAK": {
       // Days the standard was met inside a window ("hold the standard 5 days
-      // this week"): `count` + `within`, no `days`. The met-day record is the store.
-      if (c.days === undefined && c.count !== undefined && since) {
+      // this week"): `count` + `within`, no `days`. The met-day record is the
+      // store. Its days are the member's local dates, so "this week" starts on
+      // their own Monday, not Monday in UTC.
+      if (countsStandardDays(c) && since) {
+        if (c.within === "week") {
+          const monday = dayKeyToDate(localWeekStartKey(now, timezone));
+          const nextMonday = new Date(monday.getTime() + 7 * 86_400_000);
+          return db.standardDay.count({ where: { userId, day: { gte: monday, lt: nextMonday } } });
+        }
         return db.standardDay.count({ where: { userId, day: { gte: since } } });
       }
       const s = await db.streak.findUnique({ where: { userId }, select: { current: true } });

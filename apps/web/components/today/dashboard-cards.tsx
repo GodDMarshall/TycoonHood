@@ -152,6 +152,12 @@ export function ProgressCard({
 
 export function MissionsCard({ missions }: { missions: DashboardData["missions"] }) {
   const groups = (["daily", "weekly"] as const).map((c) => ({ cadence: c, items: missions.filter((m) => m.cadence === c) }));
+  const weekly = missions.filter((m) => m.cadence === "weekly");
+  const weeklyLabel = weekly.every((m) => m.calendarWeek)
+    ? "Weekly · resets every Monday"
+    : weekly.every((m) => !m.calendarWeek)
+      ? "Weekly · resets every 7 days"
+      : "Weekly";
   return (
     <section aria-labelledby="missions-title">
       <SectionTitle
@@ -172,7 +178,7 @@ export function MissionsCard({ missions }: { missions: DashboardData["missions"]
             .filter((g) => g.items.length > 0)
             .map((g) => (
               <Panel key={g.cadence} as="div" className="divide-y divide-line">
-                <p className="px-4 pb-2 pt-3 text-[12.5px] font-medium text-ink-3">{g.cadence === "daily" ? "Daily · resets every 24 hours" : "Weekly · resets every 7 days"}</p>
+                <p className="px-4 pb-2 pt-3 text-[12.5px] font-medium text-ink-3">{g.cadence === "daily" ? "Daily · resets every 24 hours" : weeklyLabel}</p>
                 {g.items.map((m) => (
                   <div key={m.id} className="flex items-start gap-3 px-4 py-3">
                     <span
