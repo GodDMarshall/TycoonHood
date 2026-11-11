@@ -12,6 +12,12 @@
  *   tsx scripts/e2e-fixture.ts onboard <userId> <username>
  *   tsx scripts/e2e-fixture.ts fund    <userId> <amount>
  *   tsx scripts/e2e-fixture.ts lesson  <userId>
+ *   tsx scripts/e2e-fixture.ts verify-link <userId>
+ *
+ * `verify-link` issues a verification token exactly as sign-up does and prints
+ * the link the email would carry. A production build (`next start`) has no dev
+ * mailer by design (isDevMode() is off when NODE_ENV=production), so without a
+ * real mailer this is the only way a browser check can reach the link.
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -23,7 +29,7 @@ for (const line of env.split("\n")) {
 }
 
 const { prisma } = await import("@tycoonhood/db");
-const { accounts, ledger, lms } = await import("../src/index");
+const { accounts, ledger, lms, emailVerification } = await import("../src/index");
 
 const [cmd, ...args] = process.argv.slice(2);
 
@@ -95,6 +101,13 @@ switch (cmd) {
       orderBy: [{ module: { sortOrder: "asc" } }, { sortOrder: "asc" }],
     });
     console.log(JSON.stringify(await lms.completeLesson(userId, lesson.id)));
+    break;
+  }
+  case "verify-link": {
+    const [userId] = args;
+    const issued = await emailVerification.issue(userId, { reason: "resend" });
+    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    console.log(`${base}/verify-email/${issued.rawToken}`);
     break;
   }
   default:

@@ -239,14 +239,14 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **OQ-A · The progression ladder.** The directive sketches START → DISCIPLINE → KNOWLEDGE → EXECUTION → BUILDING → LEADERSHIP → TYCOON (seven stages). The live system has five seeded ranks, *Tycoon Initiate → Apprentice → Mastermind → Elite → Legend*, wired to level thresholds and Discord roles. I kept the five and drew them as the Ascent and the Monument's tiers. Renaming or re-cutting ranks is a data migration plus a Discord role change — your call.
 - **OQ-B · Three pillars or four.** The directive names Warrior, Business Mastery and Mindfulness. The academy has a fourth published program, *Financial Planning and Investment Advisory* (Tycoon pillar), whose name already carries the legal flag in §3. I kept all four; the "Investment Advisory" wording still needs counsel or a rename.
 - **OQ-C · "Enroll — free" on every program.** Enrollment is free for every published course in code (DR-6 is still open), while a paid *Warrior Program* product exists in the Vault. The UI states what the code does. Decide DR-6 and the copy follows.
-- **OQ-D · Draft programs on the public Academy.** `/programs` lists DRAFT courses with an "In production" tag (pre-existing behaviour, kept). Hide them until published?
+- **OQ-D · Draft programs on the public Academy.** *(Resolved by DR-29: drafts are hidden.)* `/programs` lists DRAFT courses with an "In production" tag (pre-existing behaviour, kept). Hide them until published?
 - **OQ-E · Hero line.** "Build yourself. / The rest compounds." — chosen by me from §55 of the directive (wealth as the compounding outcome of capability). Overrule freely; it is one string. **Changed 11 Nov 2026 (full-platform build, spec A):** the hero is now the four-line positioning "Master yourself. / Build your skills. / Create your wealth. / Own your freedom." (sentence case; last line in the accent face). It is admin-editable (Admin → Site & CMS, SiteSetting `home`), with the default in `packages/core/src/platform/settings.ts`. The old line is retired from the homepage and footer.
 - **OQ-F · Photography.** *(Resolved by DR-28.)* Real photos are in. Replace any of them with your own shoot by setting a program's cover in Admin → Content, or by swapping the files in `apps/web/public/photos/`.
 - **OQ-G · Named, live presence.** *(DR-24: the world is gone; the question now only concerns showing who is online in Community.)* Should members see *who* is in a room right now (names, avatars), not just counts? It needs realtime infrastructure (the stack has none), a per-member visibility setting, and a moderation posture. DR-22 ships counts until you decide.
 - **OQ-H · Where members land.** ~~Sign-in lands in the HQ (DR-21).~~ Superseded by DR-24: sign-in lands on Today.
 
 - **OQ-I · The house standard and house rules.** The five standard items (Train 30 min, Study one lesson, Deep work 90 min, Read 10 pages, Plan tomorrow) and the five community house rules were written by me as reasonable defaults. Both are yours to change: the standard in Admin → Daily standard, the rules in `components/community/community-frame.tsx`.
-- **OQ-J · Moderators.** Only ADMIN accounts can pin, remove, mute and post announcements. A separate MODERATOR role (staff who cannot touch the economy) does not exist yet.
+- **OQ-J · Moderators.** *(Resolved by DR-29: a MODERATOR role now exists.)* Only ADMIN accounts can pin, remove, mute and post announcements. A separate MODERATOR role (staff who cannot touch the economy) does not exist yet.
 - **OQ-K · Push notifications.** The installable app shows notifications inside the app only. Phone push needs VAPID keys and a decision about what is worth interrupting someone for.
 - **OQ-L · Realtime.** Chat polls every 4 seconds. That is fine into the low thousands of concurrent members; past that, move to a hosted realtime service (e.g. Pusher/Ably) or SSE behind Postgres LISTEN/NOTIFY.
 - **OQ-N · "Burned, not minted."** The rig upgrade copy says the cost is burned. In the ledger it is a spend to the REVENUE system account — it leaves the member's wallet and no new THC is created, but it is not destroyed. The Mining page says exactly that. Decide whether upgrades should truly burn (move to a sink account excluded from supply) or whether "burned" should leave the copy.
@@ -270,6 +270,26 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **Where:** program covers everywhere (Courses, Today, program pages, homepage), challenge banners, the sign-in/register side panel, and the homepage's closing band. An admin cover (Admin → Content) still overrides a program's photo.
 - **Kept drawn:** the rig, the Today sky, rank emblems, medals, the streak flame and the phone preview — those draw live numbers, which a photo cannot.
 - **Fixed alongside:** the CSP's `img-src` only allowed the site itself, so an admin cover given as an `https://` URL would have been silently blocked. It now allows `https:` images.
+
+### DR-29 — The full platform (11 Nov 2026 build spec); partly reverses DR-24 and DR-26
+- **Date:** 2026-11-11 · **Status:** **ADOPTED — owner direction:** Marshall uploaded the "Tycoonhood Complete Product Build Prompt" and asked for the whole platform to be built.
+- **Reversed from DR-24 / DR-26, on the owner's spec:**
+  - The **leaderboard** is back (`/leaderboard`, weekly and all-time XP). Members can opt out in Settings. It ranks XP only, never THC or money.
+  - **Reactions** exist on discussion posts and comments (not in the chat channels).
+  - A **forum** (categories, posts, comments, groups) sits beside the chat channels from DR-26. The chat is unchanged.
+- **Roles:** seven, in `packages/core/src/auth/permissions.ts`: Guest (no session), Member, Student (set automatically on first enrolment), Creator/Affiliate, Instructor, Moderator, Admin. Pages and actions ask `can(user, permission)`; nothing compares role strings. This answers **OQ-J**: Moderators can moderate and post announcements but cannot touch the economy.
+- **Money:**
+  - THC stays an internal, non-monetary credit (unchanged).
+  - Affiliate commissions are a separate programme, tracked in **INR** on paid rupee orders: 10% of what the buyer paid, held 14 days, then reviewed by an admin. Minimum payout ₹500. They have nothing to do with the THC referral reward.
+  - No guaranteed-income wording anywhere.
+- **Payments:**
+  - Razorpay is the rupee rail. With no keys, development runs a clearly labelled sandbox; production without keys hides card checkout.
+  - `rzp_test_…` keys are treated as TEST: they are labelled as test, excluded from revenue, and any commission on them is flagged "do not pay out". Only `rzp_live_…` keys are LIVE.
+  - No payment is ever simulated outside the labelled sandbox.
+- **Curriculum:** four programmes (Warrior, Business Mastery, Financial Planning & Investment, Mindfulness & Wellness), each with 8 modules × 3 taught lessons + a module quiz, then a 12-question final assessment. That is 96 taught lessons. The certificate requires passing the final.
+- **OQ-D answered:** draft programmes are no longer listed publicly; `/programs` shows published ones only.
+- **3D world:** optional only, and it must never gate a feature. Its return is the owner's call (decision card in the build thread).
+- **Founder:** the About page features HARSHA with the photo supplied by the owner (`apps/web/public/founder/harsha.jpg`). Only that photo is used.
 
 ## How to use this file going forward
 Add a Part B entry (or a new `D##` if it's architectural and adopted) for any decision that changes architecture, product scope, the economy, the design contract, or a security posture. Never edit a preserved entry to change its meaning — supersede it with a dated new entry that references the old ID. When an OPEN item is decided, change its status to ADOPTED/REJECTED with the date and a one-line outcome; leave the reasoning intact.

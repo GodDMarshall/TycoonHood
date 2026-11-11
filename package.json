@@ -22,6 +22,7 @@
     "deploy:db": "node scripts/deploy-db.mjs",
     "db:seed:merch": "pnpm --filter @tycoonhood/db seed:merch",
     "e2e": "node scripts/e2e/full-loop.mjs",
+    "e2e:journeys": "node scripts/e2e/journeys.mjs",
     "preflight": "pnpm --filter @tycoonhood/core exec tsx scripts/preflight.ts"
   },
   "engines": {

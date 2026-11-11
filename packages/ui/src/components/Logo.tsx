@@ -1,5 +1,9 @@
 import { cn } from "../cn";
 
+/** Trig in Node and in the browser can differ in the last float digit, which
+ *  breaks hydration of every attribute; three decimals is far below a pixel. */
+const r3 = (n: number) => Math.round(n * 1000) / 1000;
+
 /**
  * The Tycoonhood mark: a reeded coin — milled edge, inner ring, a T cut
  * like a column capital. Logo, favicon, THC glyph and rank seal.
@@ -15,10 +19,10 @@ export function CoinMark({ size = 28, className }: { size?: number; className?: 
     return (
       <line
         key={i}
-        x1={50 + Math.cos(a) * 47}
-        y1={50 + Math.sin(a) * 47}
-        x2={50 + Math.cos(a) * 42.5}
-        y2={50 + Math.sin(a) * 42.5}
+        x1={r3(50 + Math.cos(a) * 47)}
+        y1={r3(50 + Math.sin(a) * 47)}
+        x2={r3(50 + Math.cos(a) * 42.5)}
+        y2={r3(50 + Math.sin(a) * 42.5)}
         strokeWidth={size >= 40 ? 1.6 : 2.4}
       />
     );

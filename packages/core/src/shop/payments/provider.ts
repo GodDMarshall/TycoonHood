@@ -55,13 +55,15 @@ export interface PaymentsStatus {
 export function paymentsStatus(env: Env = process.env): PaymentsStatus {
   if (razorpayConfigured(env)) {
     const webhook = !!env.RAZORPAY_WEBHOOK_SECRET?.trim();
+    const test = env.RAZORPAY_KEY_ID!.trim().startsWith("rzp_test_");
+    const label = test ? "Razorpay test mode is on (test keys) — no real money moves" : "Razorpay is live";
     return {
       provider: "razorpay",
-      mode: "LIVE",
+      mode: test ? "TEST" : "LIVE",
       webhookConfigured: webhook,
       summary: webhook
-        ? "Razorpay is live. Payments are verified in the browser callback and again by the webhook."
-        : "Razorpay is live, but RAZORPAY_WEBHOOK_SECRET is not set — payments are confirmed only by the browser callback.",
+        ? `${label}. Payments are verified in the browser callback and again by the webhook.`
+        : `${label}, but RAZORPAY_WEBHOOK_SECRET is not set — payments are confirmed only by the browser callback.`,
     };
   }
   if (sandboxAllowed(env)) {

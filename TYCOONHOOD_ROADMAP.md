@@ -17,11 +17,40 @@ a real application. Decisions DR-10 to DR-16. Verified by 95 unit tests, a
 buys it with a size and an address, ships it with tracking, and watches the
 referral pay on a real lesson.
 
+**11 November (full-platform build, DR-29):**
+- Seven roles with server-side permissions.
+- Email verification and account suspension.
+- **A1, course authoring in the admin, is done.** That includes modules, lessons, quizzes, final assessments, publishing, reviews and instructors.
+- The four programmes are written in full: 96 taught lessons.
+- Certificates with public verification.
+- Earn: affiliate links, click tracking, INR commissions with a 14-day hold, payouts and fraud flags.
+- Shop: cart, wishlist, coupons, checkout with the Razorpay seam and a labelled sandbox, refunds and order tracking.
+- Community forum: categories, groups, reactions, reports and moderation.
+- A weekly and all-time leaderboard, weekly missions, and the achievements page.
+- Admin: members, site CMS, analytics and audit log.
+- Every public page from the spec.
+
+The roadmap items below were written in September. Where the 11 November build closed one, it is marked.
+
+## NEXT — after the full-platform build (11 November 2026)
+
+1. **Razorpay keys.** Owner action: add test keys, run one test purchase and refund, then switch to live keys. The steps are in `docs/DEPLOYMENT.md`.
+2. **Email delivery.** Set `RESEND_API_KEY` so verification and reset emails reach people in production.
+3. **Real prices and costs in INR** for every product. The seeded values are placeholders.
+4. **Legal review** of the Terms, Privacy, Refund and Earn terms, and of the investment programme's name.
+5. **Small follow-ups:**
+   - A refunded course order should also revoke the enrolment.
+   - Add `archivedAt`, `editedAt` and `paidAt` columns (see `docs/DATABASE.md`).
+   - Add a cart count badge in the navigation.
+   - Change `judgePrice` from dollars to rupees.
+6. **The optional 3D world.** Restore it only if the owner chooses to, as `/world` with a 2D fallback, never gating anything.
+7. **Membership tiers (A3)**, and challenge authoring (A2). Both are still open.
+
 ---
 
 ## NOW — what stands between here and a launch
 
-### A1 — Course, module and lesson authoring in the admin
+### A1 — Course, module and lesson authoring in the admin · **DONE 11 Nov 2026**
 - **Objective:** create, edit, order and publish a full course from `/admin` with no SQL.
 - **Reason:** the Academy is the product. Today every course is a seed script, which means content is a developer task and you cannot write a lesson without me. This is now the single largest gap in the console.
 - **Dependencies:** none. The `catalog` service is the pattern to copy — one door, validation in the service, an idempotent save.

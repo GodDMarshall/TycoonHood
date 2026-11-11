@@ -399,6 +399,11 @@ export class AffiliateService implements EarnHooks {
     if (amountCents <= 0) return;
 
     const flags = await this.fraudFlags(affiliate, order);
+    // A test-mode payment (sandbox, or Razorpay test keys) moved no real money:
+    // the commission is still recorded so the flow can be checked end to end,
+    // but it carries a flag so nobody approves a real payout for it.
+    const testPaid = await this.db.payment.findFirst({ where: { orderId, status: "CAPTURED", mode: "TEST" }, select: { id: true } });
+    if (testPaid) flags.push("test-mode payment — no real money was charged; do not pay out");
     const now = this.now();
 
     try {

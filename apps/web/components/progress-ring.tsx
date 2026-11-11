@@ -34,10 +34,10 @@ export function ProgressRing({
           return (
             <line
               key={i}
-              x1={38 + Math.cos(a) * 34.5}
-              y1={38 + Math.sin(a) * 34.5}
-              x2={38 + Math.cos(a) * 36.5}
-              y2={38 + Math.sin(a) * 36.5}
+              x1={Math.round((38 + Math.cos(a) * 34.5) * 1000) / 1000}
+              y1={Math.round((38 + Math.sin(a) * 34.5) * 1000) / 1000}
+              x2={Math.round((38 + Math.cos(a) * 36.5) * 1000) / 1000}
+              y2={Math.round((38 + Math.sin(a) * 36.5) * 1000) / 1000}
               stroke="var(--color-line-strong)"
               strokeWidth="1"
             />

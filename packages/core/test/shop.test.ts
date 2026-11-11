@@ -306,6 +306,9 @@ describe("Shop — INR rail (sandbox)", () => {
     expect(activeShopProvider({ NODE_ENV: "development" })).toBeNull();
     expect(paymentsStatus({ DEV_MODE: "true", NODE_ENV: "production" }).provider).toBeNull();
     expect(paymentsStatus({ DEV_MODE: "true", NODE_ENV: "test" }).mode).toBe("TEST");
+    // Razorpay test keys are TEST (out of revenue); live keys are LIVE.
+    expect(paymentsStatus({ RAZORPAY_KEY_ID: "rzp_test_abc", RAZORPAY_KEY_SECRET: "s" }).mode).toBe("TEST");
+    expect(paymentsStatus({ RAZORPAY_KEY_ID: "rzp_live_abc", RAZORPAY_KEY_SECRET: "s" }).mode).toBe("LIVE");
   });
 });
 
@@ -343,7 +346,7 @@ describe("Shop — Razorpay signatures and webhook", () => {
     const p = await product({ kind: "DIGITAL", inventory: null, inr: 10_000 });
     await cart.add(user.id, p.id);
     const { order, payment } = await live.startInrCheckout(user.id);
-    expect(payment.mode).toBe("LIVE");
+    expect(payment.mode).toBe("TEST"); // rzp_test_ keys never count as revenue
     expect(calls[0].url).toMatch(/\/v1\/orders$/);
     expect(calls[0].auth).toBe(`Basic ${Buffer.from(`rzp_test_key:${KEY_SECRET}`).toString("base64")}`);
     expect(calls[0].body).toMatchObject({ amount: 10_000, currency: "INR", receipt: order.id });

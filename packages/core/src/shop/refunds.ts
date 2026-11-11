@@ -133,10 +133,12 @@ export class RefundService {
         rail = `INR/${payment.mode}`;
         if (payment.status === "CAPTURED") {
           let raw: unknown = { refundedBy: adminId };
-          if (payment.mode === "LIVE") {
+          // The sandbox moved no money, so there is nothing to send back. Every
+          // Razorpay payment (live, or test-mode keys) is refunded through Razorpay.
+          if (payment.provider !== "sandbox") {
             const provider = this.providerFor(payment.provider);
-            if (!provider) throw new RefundError(`${payment.provider} is not configured — cannot refund a live payment.`);
-            if (!payment.providerPaymentId) throw new RefundError("The live payment has no provider payment id.");
+            if (!provider) throw new RefundError(`${payment.provider} is not configured — cannot refund this payment.`);
+            if (!payment.providerPaymentId) throw new RefundError("The payment has no provider payment id.");
             const r = await provider.refund({
               providerPaymentId: payment.providerPaymentId,
               amountCents: payment.amountCents,

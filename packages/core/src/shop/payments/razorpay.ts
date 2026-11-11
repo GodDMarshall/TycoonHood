@@ -11,7 +11,7 @@
  * published API (POST /v1/orders, POST /v1/payments/:id/refund).
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
-import type { ShopPaymentProvider } from "./provider";
+import type { PaymentMode, ShopPaymentProvider } from "./provider";
 
 const API = "https://api.razorpay.com/v1";
 
@@ -49,9 +49,15 @@ type FetchLike = (url: string, init: { method: string; headers: Record<string, s
   text(): Promise<string>;
 }>;
 
+/** Razorpay key ids say which environment they belong to: rzp_test_… or rzp_live_…. */
+export function razorpayKeyMode(keyId: string | undefined): PaymentMode {
+  return keyId?.trim().startsWith("rzp_test_") ? "TEST" : "LIVE";
+}
+
 export class RazorpayProvider implements ShopPaymentProvider {
   readonly name = "razorpay" as const;
-  readonly mode = "LIVE" as const;
+  /** Razorpay test keys (rzp_test_…) never move money: their payments are TEST and stay out of revenue. */
+  readonly mode: PaymentMode;
   private readonly fetchImpl: FetchLike;
 
   constructor(
@@ -61,6 +67,7 @@ export class RazorpayProvider implements ShopPaymentProvider {
   ) {
     if (!keyId || !keySecret) throw new Error("Razorpay is not configured (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET).");
     this.fetchImpl = fetchImpl ?? (globalThis.fetch as unknown as FetchLike);
+    this.mode = razorpayKeyMode(keyId);
   }
 
   get publicKeyId() {

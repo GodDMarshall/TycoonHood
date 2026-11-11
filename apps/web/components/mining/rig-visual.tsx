@@ -257,7 +257,7 @@ export function RigVisual({ level, maxLevel, fill, full, burstKey = 0, illustrat
                 r="6"
                 fill={`url(#${id}-gold)`}
                 className="rig-burst"
-                style={{ "--bx": `${Math.cos(a) * 70}px`, "--by": `${Math.sin(a) * 50 - 40}px` } as CSSProperties}
+                style={{ "--bx": `${(Math.cos(a) * 70).toFixed(2)}px`, "--by": `${(Math.sin(a) * 50 - 40).toFixed(2)}px` } as CSSProperties}
               />
             );
           })}
