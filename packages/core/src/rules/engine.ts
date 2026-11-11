@@ -10,7 +10,7 @@
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import type { DomainEvent } from "../events/types";
-import { repeatBucket, tryParseCriteria } from "./criteria";
+import { eventAdvances, repeatBucket, tryParseCriteria } from "./criteria";
 import { countEvidence, requiredFor } from "./counters";
 import { RewardsService, MissionCooldownError } from "../rewards/rewards";
 import { XpService } from "../gamification/xp";
@@ -60,6 +60,9 @@ export class RulesEngine {
         continue;
       }
       if (c.event !== event.type) continue;
+      // An event that adds no evidence (a retake of a quiz already counted)
+      // must not pay a repeatable mission again in a new bucket.
+      if (!eventAdvances(c, event)) continue;
 
       const have = await countEvidence(this.db, event.userId, c, now, tz);
       if (have === null) {
@@ -104,7 +107,7 @@ export class RulesEngine {
         out.skipped.push({ slug: a.slug, why: "unreadable criteria" });
         continue;
       }
-      if (c.event !== event.type) continue;
+      if (c.event !== event.type || !eventAdvances(c, event)) continue;
 
       const have = await countEvidence(this.db, event.userId, c, now, tz);
       if (have === null) {

@@ -8,6 +8,7 @@
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { weeklyResetNote } from "@tycoonhood/core";
 import { Badge, Icon, Progress, ThcAmount, XpBar, buttonStyles, cn, type IconName } from "@tycoonhood/ui";
 import { Panel, SectionTitle } from "../app/page";
 import type { DashboardData } from "../../app/(app)/today/dashboard";
@@ -152,12 +153,8 @@ export function ProgressCard({
 
 export function MissionsCard({ missions }: { missions: DashboardData["missions"] }) {
   const groups = (["daily", "weekly"] as const).map((c) => ({ cadence: c, items: missions.filter((m) => m.cadence === c) }));
-  const weekly = missions.filter((m) => m.cadence === "weekly");
-  const weeklyLabel = weekly.every((m) => m.calendarWeek)
-    ? "Weekly · resets every Monday"
-    : weekly.every((m) => !m.calendarWeek)
-      ? "Weekly · resets every 7 days"
-      : "Weekly";
+  const resets = weeklyResetNote(missions.filter((m) => m.cadence === "weekly"));
+  const weeklyLabel = resets ? `Weekly · ${resets}` : "Weekly";
   return (
     <section aria-labelledby="missions-title">
       <SectionTitle

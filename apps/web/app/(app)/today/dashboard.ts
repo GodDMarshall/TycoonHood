@@ -5,7 +5,7 @@
  */
 import "server-only";
 import { prisma } from "@tycoonhood/db";
-import { describeCriteria, missionCadence, profileCompletion, repeatBucket, tryParseCriteria, type ProfileCompletion } from "@tycoonhood/core";
+import { countsStandardDays, describeCriteria, missionCadence, profileCompletion, repeatBucket, tryParseCriteria, type ProfileCompletion } from "@tycoonhood/core";
 import { xpRequiredForLevel } from "@tycoonhood/config";
 
 export type MissionView = {
@@ -18,6 +18,8 @@ export type MissionView = {
   cadence: "daily" | "weekly";
   /** Resets on Monday (a calendar week), rather than 7 days after completion. */
   calendarWeek: boolean;
+  /** A calendar week of standard days: the member's own Monday, not UTC's. */
+  localWeek: boolean;
   doneThisPeriod: boolean;
 };
 
@@ -97,6 +99,7 @@ export async function loadDashboard(user: {
       thcReward: m.thcReward,
       cadence,
       calendarWeek,
+      localWeek: calendarWeek && !!c && countsStandardDays(c),
       doneThisPeriod,
     });
   }

@@ -69,6 +69,7 @@ export {
   InvalidCriteriaError,
   repeatBucket,
   missionCadence,
+  weeklyResetNote,
   countsStandardDays,
 } from "./rules/criteria";
 export type { Criteria } from "./rules/criteria";

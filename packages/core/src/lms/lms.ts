@@ -4,7 +4,7 @@
  * certificate's unique constraint make retries and double-clicks harmless.
  */
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
-import type { PrismaClient } from "@tycoonhood/db";
+import type { Certificate, PrismaClient } from "@tycoonhood/db";
 import { XpService } from "../gamification/xp";
 import { StreakService } from "../gamification/streaks";
 import { randomBytes } from "node:crypto";
@@ -44,6 +44,10 @@ export interface QuizReviewItem {
   correct: boolean;
   explanation: string | null;
 }
+
+/** The title of the notice completing a programme sends; every build has
+ *  sent it, so it also marks a completion as announced. */
+const PROGRAM_COMPLETE = "Program complete: ";
 
 /** A knowledge check's questions as the lesson page sends them to the
  *  browser: the prompt and the options, never the answer or explanation. */
@@ -141,42 +145,61 @@ export class LmsService {
     if (!enrollment || course?.status !== "PUBLISHED") return false;
     if (enrollment.status !== "COMPLETED") return this.refreshProgress(userId, courseId);
     if (certificate) return false;
-    // Completed already (bonus paid): the certificate is all that can be owed.
+    // Completed already: a certificate is all that can be owed. Only the
+    // call that issues it tells anyone, so racing calls notify once.
     const issued = await this.issueCertificateIfEligible(userId, courseId);
-    if (!issued) return false;
+    if (!issued?.created) return false;
+    if (!(await this.completionAnnounced(userId, courseId))) {
+      // The completion itself failed before it was announced (a 0-XP
+      // programme, before that fix): announce it now, with the certificate.
+      // Once only: no later call can create this certificate again.
+      await this.announceCompletion(userId, { id: courseId, title: course.title }, { xp: 0, certificate: issued.certificate });
+      return true;
+    }
     await this.db.notification.create({
       data: {
         userId,
         type: "SYSTEM",
         title: `Certificate issued: ${course.title}`,
-        body: `Certificate ${issued.serial} is in your certificates.`,
-        data: { courseId, href: `/certificates/${issued.serial}` },
+        body: `Certificate ${issued.certificate.serial} is in your certificates.`,
+        data: { courseId, href: `/certificates/${issued.certificate.serial}` },
       },
     });
     return true;
   }
 
   /**
-   * Reconciles every member of a published programme who has every lesson
-   * done. Fail-soft per member, so one bad row cannot stop the rest.
+   * Reconciles the members of a published programme who can be owed
+   * something now: every lesson done but the programme not completed, or,
+   * when it has a final assessment, completed and the final passed but no
+   * certificate. One query finds them, so members who are owed nothing (in
+   * a programme without a final, every completer) are never re-checked.
+   * Fail-soft per member, so one bad row cannot stop the rest.
    */
   async reconcileCourse(courseId: string) {
     const out = { checked: 0, settled: 0, failed: 0 };
     const course = await this.db.course.findUnique({ where: { id: courseId }, select: { status: true } });
     if (course?.status !== "PUBLISHED") return out;
-    const total = await this.db.lesson.count({ where: { module: { courseId } } });
-    if (total === 0) return out;
-    const [done, certified] = await Promise.all([
-      this.db.lessonProgress.groupBy({
-        by: ["userId"],
-        where: { completedAt: { not: null }, lesson: { module: { courseId } } },
-        _count: { _all: true },
-      }),
-      this.db.certificate.findMany({ where: { courseId }, select: { userId: true } }),
-    ]);
-    const holders = new Set(certified.map((c) => c.userId)); // nothing left to owe them
-    for (const row of done) {
-      if (row._count._all < total || holders.has(row.userId)) continue;
+    const lessons = await this.db.lesson.findMany({
+      where: { module: { courseId } },
+      select: { isFinal: true, quiz: { select: { id: true } } },
+    });
+    if (lessons.length === 0) return out;
+    const finalQuizId = lessons.find((l) => l.isFinal)?.quiz?.id;
+    const owed: Prisma.UserWhereInput[] = [{ enrollments: { some: { courseId, status: { not: "COMPLETED" } } } }];
+    if (finalQuizId) {
+      owed.push({
+        enrollments: { some: { courseId, status: "COMPLETED" } },
+        certificates: { none: { courseId } },
+        quizAttempts: { some: { quizId: finalQuizId, passed: true } },
+      });
+    }
+    const members = await this.db.lessonProgress.groupBy({
+      by: ["userId"],
+      where: { completedAt: { not: null }, lesson: { module: { courseId } }, user: { OR: owed } },
+      having: { userId: { _count: { gte: lessons.length } } }, // every lesson done
+    });
+    for (const row of members) {
       out.checked++;
       try {
         if (await this.reconcile(row.userId, courseId)) out.settled++;
@@ -187,27 +210,109 @@ export class LmsService {
     return out;
   }
 
-  /** Issues the certificate when (and only when) the member is eligible. Idempotent. */
-  async issueCertificateIfEligible(userId: string, courseId: string) {
+  /**
+   * One-off repair for a database that ran an earlier build (see
+   * docs/DEPLOYMENT.md). Completing a programme set to 0 XP used to fail
+   * right after marking the enrolment COMPLETED, before the certificate, the
+   * "Program complete" notice and COURSE_COMPLETED, so the member's
+   * first-programme achievement and programme missions never paid. Only
+   * completeCourse marks an enrolment COMPLETED, and it always sends that
+   * notice, so a COMPLETED enrolment without it is such a completion (its
+   * programme's XP may have been changed since). Each one gets any
+   * certificate now due and is announced once; no completion XP is paid.
+   * Safe to run again: a repaired completion has its notice.
+   */
+  async repairUnannouncedCompletions(opts: { courseId?: string } = {}) {
+    const out = { checked: 0, repaired: 0, failed: 0 };
+    const completed = await this.db.enrollment.findMany({
+      where: { status: "COMPLETED", ...(opts.courseId ? { courseId: opts.courseId } : {}) },
+      select: { userId: true, course: { select: { id: true, title: true } } },
+      orderBy: { completedAt: "asc" },
+    });
+    for (const e of completed) {
+      out.checked++;
+      try {
+        if (await this.completionAnnounced(e.userId, e.course.id)) continue;
+        const issued = await this.issueCertificateIfEligible(e.userId, e.course.id);
+        await this.announceCompletion(e.userId, e.course, { xp: 0, certificate: issued?.certificate ?? null });
+        out.repaired++;
+      } catch {
+        out.failed++;
+      }
+    }
+    return out;
+  }
+
+  /**
+   * Issues the certificate when (and only when) the member is eligible.
+   * Idempotent: an existing certificate comes back as it is. `created` is
+   * true only for the call that wrote it, so only that call tells the member.
+   */
+  async issueCertificateIfEligible(
+    userId: string,
+    courseId: string
+  ): Promise<{ certificate: Certificate; created: boolean } | null> {
     const existing = await this.db.certificate.findUnique({ where: { userId_courseId: { userId, courseId } } });
-    if (existing) return existing;
+    if (existing) return { certificate: existing, created: false };
     const e = await this.certificateEligibility(userId, courseId);
     if (!e.eligible) return null;
     try {
-      return await this.db.certificate.create({
+      const certificate = await this.db.certificate.create({
         data: {
           userId,
           courseId,
           serial: `TH-${new Date().getFullYear()}-${randomBytes(4).toString("hex").toUpperCase()}`,
         },
       });
+      return { certificate, created: true };
     } catch (err) {
-      // unique(userId, courseId) makes a concurrent retry clean.
+      // unique(userId, courseId): a concurrent call wrote it first.
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-        return this.db.certificate.findUnique({ where: { userId_courseId: { userId, courseId } } });
+        const certificate = await this.db.certificate.findUnique({ where: { userId_courseId: { userId, courseId } } });
+        return certificate ? { certificate, created: false } : null;
       }
       throw err;
     }
+  }
+
+  /** Whether the member was told they completed the programme (the notice
+   *  completeCourse sends). A completion that failed before it was not. */
+  private async completionAnnounced(userId: string, courseId: string): Promise<boolean> {
+    const notice = await this.db.notification.findFirst({
+      where: { userId, type: "SYSTEM", title: { startsWith: PROGRAM_COMPLETE }, data: { path: ["courseId"], equals: courseId } },
+      select: { id: true },
+    });
+    return !!notice;
+  }
+
+  /**
+   * Tells the member, and the rules engine, that the programme is complete:
+   * the "Program complete" notice and COURSE_COMPLETED. Once per completion:
+   * from the call that completed it, or from a repair of one never announced.
+   * `xp` is the completion bonus paid with it, if any.
+   */
+  private async announceCompletion(
+    userId: string,
+    course: { id: string; title: string },
+    opts: { xp: number; certificate: { serial: string } | null }
+  ) {
+    const { certificate } = opts;
+    const body = [
+      opts.xp > 0 ? `+${opts.xp} XP.` : null,
+      certificate ? `Certificate ${certificate.serial} is in your certificates.` : null,
+    ].filter(Boolean);
+    await this.db.notification.create({
+      data: {
+        userId,
+        type: "SYSTEM",
+        title: `${PROGRAM_COMPLETE}${course.title}`,
+        body: body.length ? body.join(" ") : "You finished every lesson.",
+        data: certificate ? { courseId: course.id, href: `/certificates/${certificate.serial}` } : { courseId: course.id },
+      },
+    });
+
+    const { events: bus } = await import("../events/bus");
+    await bus.emit({ type: "COURSE_COMPLETED", userId, courseId: course.id });
   }
 
   /**
@@ -397,24 +502,9 @@ export class LmsService {
     }
 
     // Certificate — only with every lesson done AND the final assessment passed.
-    const certificate = await this.issueCertificateIfEligible(userId, courseId);
+    const issued = await this.issueCertificateIfEligible(userId, courseId);
 
-    const body = [
-      course.xpOnCompletion > 0 ? `+${course.xpOnCompletion} XP.` : null,
-      certificate ? `Certificate ${certificate.serial} is in your certificates.` : null,
-    ].filter(Boolean);
-    await this.db.notification.create({
-      data: {
-        userId,
-        type: "SYSTEM",
-        title: `Program complete: ${course.title}`,
-        body: body.length ? body.join(" ") : "You finished every lesson.",
-        data: certificate ? { courseId, href: `/certificates/${certificate.serial}` } : { courseId },
-      },
-    });
-
-    const { events: bus } = await import("../events/bus");
-    await bus.emit({ type: "COURSE_COMPLETED", userId, courseId });
+    await this.announceCompletion(userId, course, { xp: course.xpOnCompletion, certificate: issued?.certificate ?? null });
     return true;
   }
 
@@ -446,6 +536,16 @@ export class LmsService {
     const scorePct = quiz.questions.length === 0 ? 0 : Math.round((correct / quiz.questions.length) * 100);
     const passed = scorePct >= quiz.passScore;
 
+    // The member's best pass on this check before this attempt (none: this
+    // is their first), read before the attempt is recorded.
+    const best = passed
+      ? await this.db.quizAttempt.findFirst({
+          where: { userId, quizId, passed: true },
+          orderBy: { scorePct: "desc" },
+          select: { scorePct: true },
+        })
+      : null;
+
     await this.db.quizAttempt.create({
       data: { quizId, userId, scorePct, passed, answers },
     });
@@ -455,12 +555,15 @@ export class LmsService {
       try {
         lessonResult = await this.completeLesson(userId, quiz.lessonId, { viaQuiz: true });
       } finally {
-        // One event per passing attempt, even if completing the lesson failed:
-        // the pass is on record. Rules decide what it is worth; the weekly
-        // "pass 2 knowledge checks" counts first passes, so a retake adds
-        // nothing there. Fail-soft: never throws.
-        const { events } = await import("../events/bus");
-        await events.emit({ type: "QUIZ_PASSED", userId, quizId, scorePct });
+        // Even if completing the lesson failed: the pass is on record. Only a
+        // pass that can add something is announced: the member's first on
+        // this check, or a better score (it may reach a rule's minimum). The
+        // engine counts a check for a rule once (eventAdvances), so retaking
+        // a check already passed never pays again. Fail-soft: never throws.
+        if (!best || scorePct > best.scorePct) {
+          const { events } = await import("../events/bus");
+          await events.emit({ type: "QUIZ_PASSED", userId, quizId, scorePct, previousBest: best?.scorePct ?? null });
+        }
       }
     }
 

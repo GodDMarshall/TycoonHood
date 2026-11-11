@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import { EventBus } from "../src/events/bus";
-import { parseCriteria, InvalidCriteriaError, describeCriteria, missionCadence } from "../src/rules/criteria";
+import { parseCriteria, InvalidCriteriaError, describeCriteria, eventAdvances, missionCadence, weeklyResetNote } from "../src/rules/criteria";
 import { localDayKey, localDayKeyOffset } from "../src/time/day";
 import { LedgerService } from "../src/ledger/ledger";
 import { createTestUser, uid } from "./helpers";
@@ -185,6 +185,41 @@ describe("mission cadence on the member's task board", () => {
   it("describes a windowed quiz rule truthfully: each check counts on its first pass", () => {
     expect(describeCriteria(parseCriteria({ event: "QUIZ_PASSED", count: 2, within: "week" }))).toBe("pass 2 quizzes for the first time this week");
     expect(describeCriteria(parseCriteria({ event: "QUIZ_PASSED", count: 3 }))).toBe("pass 3 quizzes");
+  });
+
+  it("says when weekly missions reset in the Achievements page's terms", () => {
+    const utc = { calendarWeek: true, localWeek: false };
+    const local = { calendarWeek: true, localWeek: true };
+    const rolling = { calendarWeek: false, localWeek: false };
+    expect(weeklyResetNote([utc, utc])).toBe("resets Monday 00:00 UTC");
+    expect(weeklyResetNote([local])).toBe("resets Monday at midnight, your time");
+    // The seeded three: lessons and quizzes by UTC weeks, the standard by the member's.
+    expect(weeklyResetNote([utc, local, utc])).toBe("resets Monday 00:00 UTC; days of the standard count Monday to Sunday, your time");
+    expect(weeklyResetNote([rolling])).toBe("resets every 7 days");
+    expect(weeklyResetNote([utc, rolling])).toBeNull();
+  });
+});
+
+describe("a quiz pass counts for a rule once per quiz", () => {
+  const pass = (scorePct: number, previousBest: number | null) =>
+    ({ type: "QUIZ_PASSED", userId: "u", quizId: "q", scorePct, previousBest }) as const;
+  const anyPass = parseCriteria({ event: "QUIZ_PASSED", count: 1 });
+  const atNinety = parseCriteria({ event: "QUIZ_PASSED", count: 1, minScore: 90 });
+
+  it("counts the first pass, never a retake, for a rule without a minimum score", () => {
+    expect(eventAdvances(anyPass, pass(70, null))).toBe(true);
+    expect(eventAdvances(anyPass, pass(100, 70))).toBe(false);
+  });
+
+  it("counts the first pass that reaches a rule's minimum score, and nothing else", () => {
+    expect(eventAdvances(atNinety, pass(70, null))).toBe(false); // below the minimum
+    expect(eventAdvances(atNinety, pass(95, 70))).toBe(true); // a retake reaches it first
+    expect(eventAdvances(atNinety, pass(100, 95))).toBe(false); // already counted
+    expect(eventAdvances(atNinety, pass(90, null))).toBe(true);
+  });
+
+  it("leaves every other event alone", () => {
+    expect(eventAdvances(parseCriteria({ event: "LESSON_COMPLETED" }), { type: "LESSON_COMPLETED", userId: "u", lessonId: "l", courseId: "c" })).toBe(true);
   });
 });
 

@@ -8,7 +8,7 @@
  * Versioned from the start (`v`), because rules outlive code and a row written
  * today must still be readable when the vocabulary grows.
  */
-import { DOMAIN_EVENTS, isDomainEventType, type DomainEventType } from "../events/types";
+import { DOMAIN_EVENTS, isDomainEventType, type DomainEvent, type DomainEventType } from "../events/types";
 import { localDayKey, localWeekStartKey } from "../time/day";
 
 export type Pillar = "WARRIOR" | "BUILDER" | "TYCOON" | "MIND";
@@ -146,6 +146,20 @@ export function countsStandardDays(c: Criteria): boolean {
 }
 
 /**
+ * Whether this event can add evidence for the rule; the engine evaluates the
+ * rule only then. Every event can, except a quiz pass: a quiz counts for a
+ * rule once, at the member's first pass that reaches the rule's minimum
+ * score (any pass when it has none), as the counter counts it. A retake of a
+ * quiz already counted adds nothing, so it must not pay a repeatable mission
+ * again.
+ */
+export function eventAdvances(c: Criteria, event: DomainEvent): boolean {
+  if (event.type !== "QUIZ_PASSED") return true;
+  const min = c.minScore ?? 0;
+  return event.scorePct >= min && (event.previousBest == null || event.previousBest < min);
+}
+
+/**
  * The bucket a repeatable mission's completion is recorded under: the
  * member's local day, or for a "week" window the calendar week. A week of
  * standard days is the member's own week (its Monday, their time zone), so
@@ -173,6 +187,21 @@ export function missionCadence(m: { cooldownHours: number | null; criteria: unkn
   if (within === "24h" || within === "1d") return "daily";
   if (within === "7d" || within === "168h") return "weekly";
   return null;
+}
+
+/**
+ * When the weekly missions on the member's task board reset, in the
+ * Achievements page's terms. A calendar week resets Monday 00:00 UTC, but a
+ * week of standard days is the member's own: Monday at midnight, their time.
+ * A rolling week resets 7 days on. Null when calendar and rolling weeks mix.
+ */
+export function weeklyResetNote(weekly: { calendarWeek: boolean; localWeek: boolean }[]): string | null {
+  if (weekly.every((m) => m.calendarWeek)) {
+    if (weekly.every((m) => m.localWeek)) return "resets Monday at midnight, your time";
+    if (weekly.some((m) => m.localWeek)) return "resets Monday 00:00 UTC; days of the standard count Monday to Sunday, your time";
+    return "resets Monday 00:00 UTC";
+  }
+  return weekly.every((m) => !m.calendarWeek) ? "resets every 7 days" : null;
 }
 
 /** Human summary for the admin console and the member task board. */
