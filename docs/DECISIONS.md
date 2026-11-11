@@ -53,6 +53,9 @@ to keep building — flag any you want changed and the change is cheap now.
   content is first-party (written in our own admin later), so no sanitizer
   layer sits between the database and the page — that stays true only as
   long as authorship stays internal, noted for Phase 10's editor.
+  **Superseded by DR-30 (2026-11-11):** instructors now author lessons, so
+  all Markdown renders through one sanitising renderer (see
+  TYCOONHOOD_DECISIONS.md).
 
 - **D17** The Miner is a separate deployable (`apps/miner`, mobile-first
   PWA) sharing accounts, sessions (COOKIE_DOMAIN in prod), the ledger, and
