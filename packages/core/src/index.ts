@@ -87,3 +87,11 @@ export {
   VariantRequiredError, ShippingAddressRequiredError,
 } from "./commerce/commerce";
 export type { CheckoutInput, ShippingInput } from "./commerce/commerce";
+
+// --- Full platform (Nov 2026) ---
+export { can, assertCan, isStaff, isAdmin, promoteTo, ForbiddenError, ROLES, ROLE_LABEL } from "./auth/permissions";
+export type { Permission } from "./auth/permissions";
+export * from "./platform";
+export * from "./earn";
+export * from "./shop";
+export * from "./discussions";

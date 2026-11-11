@@ -11,6 +11,10 @@
 
 export const UserRole = {
   MEMBER: 'MEMBER',
+  STUDENT: 'STUDENT',
+  CREATOR: 'CREATOR',
+  INSTRUCTOR: 'INSTRUCTOR',
+  MODERATOR: 'MODERATOR',
   ADMIN: 'ADMIN'
 } as const
 
@@ -65,7 +69,8 @@ export const XpSource = {
   STREAK_BONUS: 'STREAK_BONUS',
   ADMIN_GRANT: 'ADMIN_GRANT',
   WATCH_TASK: 'WATCH_TASK',
-  REFERRAL: 'REFERRAL'
+  REFERRAL: 'REFERRAL',
+  COMMUNITY: 'COMMUNITY'
 } as const
 
 export type XpSource = (typeof XpSource)[keyof typeof XpSource]
@@ -102,7 +107,8 @@ export const NotificationType = {
   THC: 'THC',
   SYSTEM: 'SYSTEM',
   ORDER: 'ORDER',
-  COMMUNITY: 'COMMUNITY'
+  COMMUNITY: 'COMMUNITY',
+  EARNINGS: 'EARNINGS'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -184,3 +190,72 @@ export const ChannelKind = {
 } as const
 
 export type ChannelKind = (typeof ChannelKind)[keyof typeof ChannelKind]
+
+
+export const AffiliateStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  SUSPENDED: 'SUSPENDED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type AffiliateStatus = (typeof AffiliateStatus)[keyof typeof AffiliateStatus]
+
+
+export const CommissionStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  PAID: 'PAID',
+  REVERSED: 'REVERSED'
+} as const
+
+export type CommissionStatus = (typeof CommissionStatus)[keyof typeof CommissionStatus]
+
+
+export const PayoutStatus = {
+  REQUESTED: 'REQUESTED',
+  APPROVED: 'APPROVED',
+  PAID: 'PAID',
+  REJECTED: 'REJECTED'
+} as const
+
+export type PayoutStatus = (typeof PayoutStatus)[keyof typeof PayoutStatus]
+
+
+export const PaymentStatus = {
+  CREATED: 'CREATED',
+  CAPTURED: 'CAPTURED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const RefundStatus = {
+  REQUESTED: 'REQUESTED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus]
+
+
+export const ModerationState = {
+  VISIBLE: 'VISIBLE',
+  HIDDEN: 'HIDDEN',
+  REMOVED: 'REMOVED'
+} as const
+
+export type ModerationState = (typeof ModerationState)[keyof typeof ModerationState]
+
+
+export const ReportStatus = {
+  OPEN: 'OPEN',
+  ACTIONED: 'ACTIONED',
+  DISMISSED: 'DISMISSED'
+} as const
+
+export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]

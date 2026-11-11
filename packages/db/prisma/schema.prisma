@@ -21,8 +21,14 @@ datasource db {
 // Auth.js v5 compatible: User / Account / Session / VerificationToken
 // ============================================================
 
+/// Server-enforced roles. Guests are signed-out visitors.
+/// Permissions live in @tycoonhood/core (auth/permissions.ts), never the client.
 enum UserRole {
   MEMBER
+  STUDENT
+  CREATOR
+  INSTRUCTOR
+  MODERATOR
   ADMIN
 }
 
@@ -76,6 +82,23 @@ model User {
   standardItems  StandardItem[]
   standardTicks  StandardTick[]
   standardDays   StandardDay[]
+
+  /// Set by an admin; suspended members cannot sign in.
+  suspendedAt DateTime?
+
+  courseReviews     CourseReview[]
+  affiliate         AffiliateProfile?
+  cartItems         CartItem[]
+  wishlistItems     WishlistItem[]
+  refundRequests    RefundRequest[]
+  communityPosts    CommunityPost[]
+  communityComments CommunityComment[]
+  reactions         Reaction[]
+  groupMemberships  GroupMembership[]
+  reports           ContentReport[]    @relation("ReportReporter")
+  auditLogs         AuditLog[]
+  couponRedemptions CouponRedemption[]
+  instructorProfile Instructor?
 
   @@index([rankId])
 }
@@ -195,9 +218,12 @@ model Course {
   coverImage  String?
   sortOrder   Int           @default(0)
 
-  /// Instructor display info (spec §12) — richer instructor model in Phase 5 if needed
+  /// Instructor display info (legacy free text; prefer instructorId)
   instructorName String?
   instructorBio  String?
+  instructorId   String?
+  instructor     Instructor?    @relation(fields: [instructorId], references: [id], onDelete: SetNull)
+  reviews        CourseReview[]
 
   /// Prerequisite course (nullable chain)
   prerequisiteId String?
@@ -225,6 +251,10 @@ model CourseModule {
   title       String
   description String?
   sortOrder   Int     @default(0)
+  /// Learning objectives, as a JSON array of strings.
+  objectives  Json?
+  /// What a member must do to complete the module.
+  completion  String?
 
   lessons Lesson[]
 
@@ -244,6 +274,8 @@ model Lesson {
   durationSec Int?
   isPreview   Boolean @default(false) /// visible before enrollment
   xpReward    Int     @default(50)
+  /// The programme's final assessment (required for the certificate).
+  isFinal     Boolean @default(false)
 
   quiz      Quiz?
   resources Resource[]
@@ -368,6 +400,7 @@ enum XpSource {
   ADMIN_GRANT
   WATCH_TASK
   REFERRAL
+  COMMUNITY
 }
 
 model XpEvent {
@@ -530,6 +563,7 @@ enum NotificationType {
   SYSTEM
   ORDER
   COMMUNITY
+  EARNINGS
 }
 
 model Notification {
@@ -667,10 +701,15 @@ model Product {
   /// THC pool, is the binding constraint — so it has to be recorded.
   costCents      Int?
 
-  variants   ProductVariant[]
-  orderItems OrderItem[]
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  variants      ProductVariant[]
+  orderItems    OrderItem[]
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+  /// Seller architecture: null = sold by Tycoonhood. Multi-vendor later.
+  sellerName    String?
+  category      String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   @@index([kind, active])
 }
@@ -693,6 +732,7 @@ model ProductVariant {
   active         Boolean @default(true)
 
   orderItems OrderItem[]
+  cartItems  CartItem[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
@@ -724,12 +764,20 @@ model Order {
   shippedAt       DateTime?
   trackingCarrier String?
   trackingNumber  String?
+  /// Coupon + discount snapshot
+  couponCode      String?
+  discountCents   Int         @default(0)
+  /// Affiliate attribution captured at checkout (th_aff cookie)
+  affiliateCode   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  items   OrderItem[]
-  address ShippingAddress?
+  items          OrderItem[]
+  address        ShippingAddress?
+  payments       Payment[]
+  refundRequests RefundRequest[]
+  commissions    Commission[]
 
   @@index([userId, createdAt])
 }
@@ -1056,4 +1104,432 @@ model StandardDay {
   metAt  DateTime @default(now())
 
   @@id([userId, day])
+}
+
+// ============================================================
+// 12. LMS EXTENSIONS — instructors and reviews
+// ============================================================
+
+model Instructor {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  headline  String?
+  bio       String   @db.Text
+  avatar    String?
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  courses   Course[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CourseReview {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  body      String?  @db.Text
+  hidden    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courseId, userId])
+  @@index([courseId, hidden])
+}
+
+// ============================================================
+// 13. EARN — affiliate programme (money, tracked in minor units)
+// Separate from THC referral rewards. Commissions are only ever
+// created from a PAID order, held for the refund window, then
+// approved by an admin. No commission is paid for signups alone.
+// ============================================================
+
+enum AffiliateStatus {
+  PENDING
+  APPROVED
+  SUSPENDED
+  REJECTED
+}
+
+model AffiliateProfile {
+  id              String          @id @default(cuid())
+  userId          String          @unique
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code            String          @unique
+  status          AffiliateStatus @default(PENDING)
+  /// Where members promote (for review), free text
+  channels        String?         @db.Text
+  /// UPI id or bank details, stored as given; shown only to admins at payout
+  payoutMethod    Json?
+  termsAcceptedAt DateTime
+  statusReason    String?
+  reviewedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  clicks      AffiliateClick[]
+  commissions Commission[]
+  payouts     PayoutRequest[]
+}
+
+model AffiliateClick {
+  id          String           @id @default(cuid())
+  affiliateId String
+  affiliate   AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  /// SHA-256 of IP + daily salt — never the raw IP
+  visitorHash String
+  landingPath String
+  referrer    String?
+  createdAt   DateTime         @default(now())
+
+  @@index([affiliateId, createdAt])
+  @@index([visitorHash, affiliateId, createdAt])
+}
+
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+  REVERSED
+}
+
+model Commission {
+  id          String           @id @default(cuid())
+  affiliateId String
+  affiliate   AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  orderId     String
+  order       Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  /// Commissionable amount (order total after discount, before shipping), minor units
+  baseCents   Int
+  rateBps     Int
+  amountCents Int
+  currency    String           @default("INR")
+  status      CommissionStatus @default(PENDING)
+  reason      String?
+  /// Earliest date an admin may approve (refund window)
+  holdUntil   DateTime
+  payoutId    String?
+  payout      PayoutRequest?   @relation(fields: [payoutId], references: [id], onDelete: SetNull)
+  reviewedAt  DateTime?
+  createdAt   DateTime         @default(now())
+
+  @@unique([orderId])
+  @@index([affiliateId, status])
+}
+
+enum PayoutStatus {
+  REQUESTED
+  APPROVED
+  PAID
+  REJECTED
+}
+
+model PayoutRequest {
+  id          String           @id @default(cuid())
+  affiliateId String
+  affiliate   AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  amountCents Int
+  currency    String           @default("INR")
+  status      PayoutStatus     @default(REQUESTED)
+  method      Json
+  reference   String?
+  reason      String?
+  reviewedAt  DateTime?
+  paidAt      DateTime?
+  createdAt   DateTime         @default(now())
+
+  commissions Commission[]
+
+  @@index([affiliateId, status])
+}
+
+// ============================================================
+// 14. SHOP EXTENSIONS — cart, wishlist, coupons, payments, refunds
+// ============================================================
+
+model CartItem {
+  id        String          @id @default(cuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  /// Product + variant collapsed into one key so (user, line) is unique even when variant is null
+  lineKey   String
+  qty       Int             @default(1)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@unique([userId, lineKey])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Coupon {
+  id               String    @id @default(cuid())
+  code             String    @unique
+  description      String?
+  percentOff       Int?
+  amountOffCents   Int?
+  minSubtotalCents Int       @default(0)
+  maxRedemptions   Int?
+  perUserLimit     Int       @default(1)
+  redeemedCount    Int       @default(0)
+  startsAt         DateTime?
+  endsAt           DateTime?
+  active           Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  redemptions CouponRedemption[]
+}
+
+model CouponRedemption {
+  id        String   @id @default(cuid())
+  couponId  String
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId   String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([couponId, userId])
+}
+
+enum PaymentStatus {
+  CREATED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          String
+  /// TEST payments are sandbox only and are never counted as revenue
+  mode              String        @default("TEST")
+  providerOrderId   String?       @unique
+  providerPaymentId String?       @unique
+  amountCents       Int
+  currency          String
+  status            PaymentStatus @default(CREATED)
+  raw               Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([orderId])
+}
+
+enum RefundStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  REFUNDED
+}
+
+model RefundRequest {
+  id        String       @id @default(cuid())
+  orderId   String
+  order     Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason    String       @db.Text
+  status    RefundStatus @default(REQUESTED)
+  adminNote String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([status, createdAt])
+  @@index([orderId])
+}
+
+// ============================================================
+// 15. COMMUNITY DISCUSSIONS
+// ============================================================
+
+model CommunityCategory {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  description String?
+  sortOrder   Int             @default(0)
+  posts       CommunityPost[]
+}
+
+model CommunityGroup {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  name        String
+  description String            @db.Text
+  pillar      Pillar?
+  createdAt   DateTime          @default(now())
+  members     GroupMembership[]
+  posts       CommunityPost[]
+}
+
+model GroupMembership {
+  id        String         @id @default(cuid())
+  groupId   String
+  group     CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  @@unique([groupId, userId])
+}
+
+enum ModerationState {
+  VISIBLE
+  HIDDEN
+  REMOVED
+}
+
+model CommunityPost {
+  id            String             @id @default(cuid())
+  authorId      String
+  author        User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categoryId    String?
+  category      CommunityCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  groupId       String?
+  group         CommunityGroup?    @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  title         String
+  body          String             @db.Text
+  state         ModerationState    @default(VISIBLE)
+  pinned        Boolean            @default(false)
+  locked        Boolean            @default(false)
+  commentCount  Int                @default(0)
+  reactionCount Int                @default(0)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  comments  CommunityComment[]
+  reactions Reaction[]
+
+  @@index([state, createdAt])
+  @@index([categoryId, state, createdAt])
+  @@index([groupId, state, createdAt])
+  @@index([authorId])
+}
+
+model CommunityComment {
+  id        String          @id @default(cuid())
+  postId    String
+  post      CommunityPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body      String          @db.Text
+  state     ModerationState @default(VISIBLE)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  reactions Reaction[]
+
+  @@index([postId, createdAt])
+}
+
+model Reaction {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String?
+  post      CommunityPost?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  commentId String?
+  comment   CommunityComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  /// "respect" | "insight" | "fire"
+  kind      String
+  /// "post:<id>" or "comment:<id>" — one reaction of each kind per member per target
+  targetKey String
+  createdAt DateTime          @default(now())
+
+  @@unique([userId, targetKey, kind])
+  @@index([postId])
+  @@index([commentId])
+}
+
+enum ReportStatus {
+  OPEN
+  ACTIONED
+  DISMISSED
+}
+
+model ContentReport {
+  id         String       @id @default(cuid())
+  reporterId String
+  reporter   User         @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  /// "post" | "comment" | "user"
+  targetType String
+  targetId   String
+  reason     String       @db.Text
+  status     ReportStatus @default(OPEN)
+  resolution String?
+  resolvedAt DateTime?
+  createdAt  DateTime     @default(now())
+
+  @@unique([reporterId, targetType, targetId])
+  @@index([status, createdAt])
+}
+
+// ============================================================
+// 16. PLATFORM — audit, settings/CMS, contact, testimonials
+// ============================================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action     String
+  targetType String?
+  targetId   String?
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([targetType, targetId])
+}
+
+/// Key/value store for admin-editable settings and homepage content blocks.
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  topic     String
+  message   String   @db.Text
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([handled, createdAt])
+}
+
+/// Genuine member stories only — published by an admin with the member's consent.
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  quote     String   @db.Text
+  consentAt DateTime
+  published Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
 }

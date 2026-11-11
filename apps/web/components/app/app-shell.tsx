@@ -5,12 +5,13 @@
  */
 import type { ReactNode } from "react";
 import { prisma } from "@tycoonhood/db";
-import { community } from "@tycoonhood/core";
+import { community, can } from "@tycoonhood/core";
+import type { UserRole } from "@tycoonhood/db";
 import { MobileTabBar, MobileTopBar, Sidebar, type ShellData } from "./app-chrome";
 
 type ShellUserRow = {
   id: string;
-  role: "MEMBER" | "ADMIN";
+  role: UserRole;
   name: string | null;
   createdAt: Date;
   profile: { displayName: string; username: string; avatarUrl: string | null } | null;
@@ -34,7 +35,7 @@ export async function AppShell({ user, children }: { user: ShellUserRow; childre
       username: user.profile?.username ?? null,
       avatarUrl: user.profile?.avatarUrl ?? null,
       rank: user.rank?.name.replace(/^Tycoon\s+/, "") ?? null,
-      isAdmin: user.role === "ADMIN",
+      isAdmin: can(user, "admin.access"),
     },
     programs: enrollments.map((e) => ({ slug: e.course.slug, title: e.course.title, pct: e.progressPct })),
     unreadCommunity,

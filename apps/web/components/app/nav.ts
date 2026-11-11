@@ -25,13 +25,17 @@ export const PRIMARY_NAV: AppNavItem[] = [
 ];
 
 export const SECONDARY_NAV: AppNavItem[] = [
-  { href: "/store", label: "Store", icon: "store", match: ["/library"] },
+  { href: "/earnings", label: "Earn", icon: "treasury" },
+  { href: "/store", label: "Store", icon: "store", match: ["/library", "/cart", "/checkout", "/wishlist"] },
+  { href: "/leaderboard", label: "Leaderboard", icon: "leaderboard" },
+  { href: "/achievements", label: "Achievements", icon: "trophy" },
   { href: "/wallet", label: "Wallet", icon: "wallet" },
 ];
 
 export const ACCOUNT_NAV: AppNavItem[] = [
   { href: "/profile", label: "Profile", icon: "user" },
   { href: "/orders", label: "Orders", icon: "orders" },
+  { href: "/certificates", label: "Certificates", icon: "seal" },
   { href: "/settings", label: "Settings", icon: "settings" },
 ];
 

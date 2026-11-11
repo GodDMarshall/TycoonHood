@@ -19,11 +19,12 @@ export type NavItem = {
 };
 
 export const GUEST_NAV: NavItem[] = [
-  { href: "/programs", label: "Programs", note: "Four programs, lessons in order", icon: "courses" },
-  { href: "/#how", label: "How it works", note: "Learn, hold the standard, prove it", icon: "checklist" },
-  { href: "/marketplace", label: "Store", note: "Gear and library", icon: "store" },
-  { href: "/thc", label: "THC", note: "The economy, with the books open", icon: "treasury", match: ["/status"] },
-  { href: "/blog", label: "Journal", note: "Essays", icon: "journal" },
+  { href: "/learning", label: "Learn", note: "Four programmes, lessons in order", icon: "courses", match: ["/programs"] },
+  { href: "/earn", label: "Earn", note: "Affiliate and creator programme", icon: "treasury" },
+  { href: "/marketplace", label: "Shop", note: "Merchandise and learning products", icon: "store" },
+  { href: "/connect", label: "Community", note: "Discussions, groups and challenges", icon: "chat" },
+  { href: "/about", label: "About", note: "Harsha, and why Tycoonhood exists", icon: "user" },
+  { href: "/blog", label: "Insights", note: "Essays", icon: "journal" },
 ];
 
 export const ACCOUNT_LINKS: NavItem[] = [

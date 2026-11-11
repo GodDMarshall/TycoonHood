@@ -48,6 +48,7 @@ export type UserMinAggregateOutputType = {
   rankId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  suspendedAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -62,6 +63,7 @@ export type UserMaxAggregateOutputType = {
   rankId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  suspendedAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -76,6 +78,7 @@ export type UserCountAggregateOutputType = {
   rankId: number
   createdAt: number
   updatedAt: number
+  suspendedAt: number
   _all: number
 }
 
@@ -102,6 +105,7 @@ export type UserMinAggregateInputType = {
   rankId?: true
   createdAt?: true
   updatedAt?: true
+  suspendedAt?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -116,6 +120,7 @@ export type UserMaxAggregateInputType = {
   rankId?: true
   createdAt?: true
   updatedAt?: true
+  suspendedAt?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -130,6 +135,7 @@ export type UserCountAggregateInputType = {
   rankId?: true
   createdAt?: true
   updatedAt?: true
+  suspendedAt?: true
   _all?: true
 }
 
@@ -231,6 +237,7 @@ export type UserGroupByOutputType = {
   rankId: string | null
   createdAt: Date
   updatedAt: Date
+  suspendedAt: Date | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -268,6 +275,7 @@ export type UserWhereInput = {
   rankId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  suspendedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   rank?: Prisma.XOR<Prisma.RankDefinitionNullableScalarRelationFilter, Prisma.RankDefinitionWhereInput> | null
   credential?: Prisma.XOR<Prisma.PasswordCredentialNullableScalarRelationFilter, Prisma.PasswordCredentialWhereInput> | null
   profile?: Prisma.XOR<Prisma.ProfileNullableScalarRelationFilter, Prisma.ProfileWhereInput> | null
@@ -298,6 +306,19 @@ export type UserWhereInput = {
   standardItems?: Prisma.StandardItemListRelationFilter
   standardTicks?: Prisma.StandardTickListRelationFilter
   standardDays?: Prisma.StandardDayListRelationFilter
+  courseReviews?: Prisma.CourseReviewListRelationFilter
+  affiliate?: Prisma.XOR<Prisma.AffiliateProfileNullableScalarRelationFilter, Prisma.AffiliateProfileWhereInput> | null
+  cartItems?: Prisma.CartItemListRelationFilter
+  wishlistItems?: Prisma.WishlistItemListRelationFilter
+  refundRequests?: Prisma.RefundRequestListRelationFilter
+  communityPosts?: Prisma.CommunityPostListRelationFilter
+  communityComments?: Prisma.CommunityCommentListRelationFilter
+  reactions?: Prisma.ReactionListRelationFilter
+  groupMemberships?: Prisma.GroupMembershipListRelationFilter
+  reports?: Prisma.ContentReportListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
+  couponRedemptions?: Prisma.CouponRedemptionListRelationFilter
+  instructorProfile?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
 }
 
 export type UserOrderByWithRelationInput = {
@@ -312,6 +333,7 @@ export type UserOrderByWithRelationInput = {
   rankId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  suspendedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   rank?: Prisma.RankDefinitionOrderByWithRelationInput
   credential?: Prisma.PasswordCredentialOrderByWithRelationInput
   profile?: Prisma.ProfileOrderByWithRelationInput
@@ -342,6 +364,19 @@ export type UserOrderByWithRelationInput = {
   standardItems?: Prisma.StandardItemOrderByRelationAggregateInput
   standardTicks?: Prisma.StandardTickOrderByRelationAggregateInput
   standardDays?: Prisma.StandardDayOrderByRelationAggregateInput
+  courseReviews?: Prisma.CourseReviewOrderByRelationAggregateInput
+  affiliate?: Prisma.AffiliateProfileOrderByWithRelationInput
+  cartItems?: Prisma.CartItemOrderByRelationAggregateInput
+  wishlistItems?: Prisma.WishlistItemOrderByRelationAggregateInput
+  refundRequests?: Prisma.RefundRequestOrderByRelationAggregateInput
+  communityPosts?: Prisma.CommunityPostOrderByRelationAggregateInput
+  communityComments?: Prisma.CommunityCommentOrderByRelationAggregateInput
+  reactions?: Prisma.ReactionOrderByRelationAggregateInput
+  groupMemberships?: Prisma.GroupMembershipOrderByRelationAggregateInput
+  reports?: Prisma.ContentReportOrderByRelationAggregateInput
+  auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
+  couponRedemptions?: Prisma.CouponRedemptionOrderByRelationAggregateInput
+  instructorProfile?: Prisma.InstructorOrderByWithRelationInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -359,6 +394,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   rankId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  suspendedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   rank?: Prisma.XOR<Prisma.RankDefinitionNullableScalarRelationFilter, Prisma.RankDefinitionWhereInput> | null
   credential?: Prisma.XOR<Prisma.PasswordCredentialNullableScalarRelationFilter, Prisma.PasswordCredentialWhereInput> | null
   profile?: Prisma.XOR<Prisma.ProfileNullableScalarRelationFilter, Prisma.ProfileWhereInput> | null
@@ -389,6 +425,19 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   standardItems?: Prisma.StandardItemListRelationFilter
   standardTicks?: Prisma.StandardTickListRelationFilter
   standardDays?: Prisma.StandardDayListRelationFilter
+  courseReviews?: Prisma.CourseReviewListRelationFilter
+  affiliate?: Prisma.XOR<Prisma.AffiliateProfileNullableScalarRelationFilter, Prisma.AffiliateProfileWhereInput> | null
+  cartItems?: Prisma.CartItemListRelationFilter
+  wishlistItems?: Prisma.WishlistItemListRelationFilter
+  refundRequests?: Prisma.RefundRequestListRelationFilter
+  communityPosts?: Prisma.CommunityPostListRelationFilter
+  communityComments?: Prisma.CommunityCommentListRelationFilter
+  reactions?: Prisma.ReactionListRelationFilter
+  groupMemberships?: Prisma.GroupMembershipListRelationFilter
+  reports?: Prisma.ContentReportListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
+  couponRedemptions?: Prisma.CouponRedemptionListRelationFilter
+  instructorProfile?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -403,6 +452,7 @@ export type UserOrderByWithAggregationInput = {
   rankId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  suspendedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -425,6 +475,7 @@ export type UserScalarWhereWithAggregatesInput = {
   rankId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  suspendedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -438,6 +489,7 @@ export type UserCreateInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -468,6 +520,19 @@ export type UserCreateInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -482,6 +547,7 @@ export type UserUncheckedCreateInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -511,6 +577,19 @@ export type UserUncheckedCreateInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -524,6 +603,7 @@ export type UserUpdateInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -554,6 +634,19 @@ export type UserUpdateInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -568,6 +661,7 @@ export type UserUncheckedUpdateInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -597,6 +691,19 @@ export type UserUncheckedUpdateInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -611,6 +718,7 @@ export type UserCreateManyInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -624,6 +732,7 @@ export type UserUpdateManyMutationInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -638,6 +747,7 @@ export type UserUncheckedUpdateManyInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -652,6 +762,7 @@ export type UserCountOrderByAggregateInput = {
   rankId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  suspendedAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -671,6 +782,7 @@ export type UserMaxOrderByAggregateInput = {
   rankId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  suspendedAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -685,6 +797,7 @@ export type UserMinOrderByAggregateInput = {
   rankId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  suspendedAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -1192,6 +1305,192 @@ export type UserUpdateOneRequiredWithoutStandardDaysNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStandardDaysInput, Prisma.UserUpdateWithoutStandardDaysInput>, Prisma.UserUncheckedUpdateWithoutStandardDaysInput>
 }
 
+export type UserCreateNestedOneWithoutInstructorProfileInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInstructorProfileInput, Prisma.UserUncheckedCreateWithoutInstructorProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInstructorProfileInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutInstructorProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInstructorProfileInput, Prisma.UserUncheckedCreateWithoutInstructorProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInstructorProfileInput
+  upsert?: Prisma.UserUpsertWithoutInstructorProfileInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInstructorProfileInput, Prisma.UserUpdateWithoutInstructorProfileInput>, Prisma.UserUncheckedUpdateWithoutInstructorProfileInput>
+}
+
+export type UserCreateNestedOneWithoutCourseReviewsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCourseReviewsInput, Prisma.UserUncheckedCreateWithoutCourseReviewsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCourseReviewsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCourseReviewsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCourseReviewsInput, Prisma.UserUncheckedCreateWithoutCourseReviewsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCourseReviewsInput
+  upsert?: Prisma.UserUpsertWithoutCourseReviewsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCourseReviewsInput, Prisma.UserUpdateWithoutCourseReviewsInput>, Prisma.UserUncheckedUpdateWithoutCourseReviewsInput>
+}
+
+export type UserCreateNestedOneWithoutAffiliateInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAffiliateInput, Prisma.UserUncheckedCreateWithoutAffiliateInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAffiliateInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAffiliateNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAffiliateInput, Prisma.UserUncheckedCreateWithoutAffiliateInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAffiliateInput
+  upsert?: Prisma.UserUpsertWithoutAffiliateInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAffiliateInput, Prisma.UserUpdateWithoutAffiliateInput>, Prisma.UserUncheckedUpdateWithoutAffiliateInput>
+}
+
+export type UserCreateNestedOneWithoutCartItemsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCartItemsInput, Prisma.UserUncheckedCreateWithoutCartItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCartItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCartItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCartItemsInput, Prisma.UserUncheckedCreateWithoutCartItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCartItemsInput
+  upsert?: Prisma.UserUpsertWithoutCartItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCartItemsInput, Prisma.UserUpdateWithoutCartItemsInput>, Prisma.UserUncheckedUpdateWithoutCartItemsInput>
+}
+
+export type UserCreateNestedOneWithoutWishlistItemsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWishlistItemsInput, Prisma.UserUncheckedCreateWithoutWishlistItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWishlistItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutWishlistItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWishlistItemsInput, Prisma.UserUncheckedCreateWithoutWishlistItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWishlistItemsInput
+  upsert?: Prisma.UserUpsertWithoutWishlistItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWishlistItemsInput, Prisma.UserUpdateWithoutWishlistItemsInput>, Prisma.UserUncheckedUpdateWithoutWishlistItemsInput>
+}
+
+export type UserCreateNestedOneWithoutCouponRedemptionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCouponRedemptionsInput, Prisma.UserUncheckedCreateWithoutCouponRedemptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCouponRedemptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCouponRedemptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCouponRedemptionsInput, Prisma.UserUncheckedCreateWithoutCouponRedemptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCouponRedemptionsInput
+  upsert?: Prisma.UserUpsertWithoutCouponRedemptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCouponRedemptionsInput, Prisma.UserUpdateWithoutCouponRedemptionsInput>, Prisma.UserUncheckedUpdateWithoutCouponRedemptionsInput>
+}
+
+export type UserCreateNestedOneWithoutRefundRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRefundRequestsInput, Prisma.UserUncheckedCreateWithoutRefundRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefundRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRefundRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRefundRequestsInput, Prisma.UserUncheckedCreateWithoutRefundRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefundRequestsInput
+  upsert?: Prisma.UserUpsertWithoutRefundRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRefundRequestsInput, Prisma.UserUpdateWithoutRefundRequestsInput>, Prisma.UserUncheckedUpdateWithoutRefundRequestsInput>
+}
+
+export type UserCreateNestedOneWithoutGroupMembershipsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupMembershipsInput, Prisma.UserUncheckedCreateWithoutGroupMembershipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupMembershipsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutGroupMembershipsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupMembershipsInput, Prisma.UserUncheckedCreateWithoutGroupMembershipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupMembershipsInput
+  upsert?: Prisma.UserUpsertWithoutGroupMembershipsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGroupMembershipsInput, Prisma.UserUpdateWithoutGroupMembershipsInput>, Prisma.UserUncheckedUpdateWithoutGroupMembershipsInput>
+}
+
+export type UserCreateNestedOneWithoutCommunityPostsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommunityPostsInput, Prisma.UserUncheckedCreateWithoutCommunityPostsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommunityPostsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCommunityPostsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommunityPostsInput, Prisma.UserUncheckedCreateWithoutCommunityPostsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommunityPostsInput
+  upsert?: Prisma.UserUpsertWithoutCommunityPostsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommunityPostsInput, Prisma.UserUpdateWithoutCommunityPostsInput>, Prisma.UserUncheckedUpdateWithoutCommunityPostsInput>
+}
+
+export type UserCreateNestedOneWithoutCommunityCommentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommunityCommentsInput, Prisma.UserUncheckedCreateWithoutCommunityCommentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommunityCommentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCommunityCommentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommunityCommentsInput, Prisma.UserUncheckedCreateWithoutCommunityCommentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommunityCommentsInput
+  upsert?: Prisma.UserUpsertWithoutCommunityCommentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommunityCommentsInput, Prisma.UserUpdateWithoutCommunityCommentsInput>, Prisma.UserUncheckedUpdateWithoutCommunityCommentsInput>
+}
+
+export type UserCreateNestedOneWithoutReactionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReactionsInput, Prisma.UserUncheckedCreateWithoutReactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutReactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReactionsInput, Prisma.UserUncheckedCreateWithoutReactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReactionsInput
+  upsert?: Prisma.UserUpsertWithoutReactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReactionsInput, Prisma.UserUpdateWithoutReactionsInput>, Prisma.UserUncheckedUpdateWithoutReactionsInput>
+}
+
+export type UserCreateNestedOneWithoutReportsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReportsInput, Prisma.UserUncheckedCreateWithoutReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReportsInput, Prisma.UserUncheckedCreateWithoutReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReportsInput
+  upsert?: Prisma.UserUpsertWithoutReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReportsInput, Prisma.UserUpdateWithoutReportsInput>, Prisma.UserUncheckedUpdateWithoutReportsInput>
+}
+
+export type UserCreateNestedOneWithoutAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAuditLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAuditLogsInput
+  upsert?: Prisma.UserUpsertWithoutAuditLogsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.UserUpdateWithoutAuditLogsInput>, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
+}
+
 export type UserCreateWithoutCredentialInput = {
   id?: string
   email: string
@@ -1203,6 +1502,7 @@ export type UserCreateWithoutCredentialInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -1232,6 +1532,19 @@ export type UserCreateWithoutCredentialInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCredentialInput = {
@@ -1246,6 +1559,7 @@ export type UserUncheckedCreateWithoutCredentialInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1274,6 +1588,19 @@ export type UserUncheckedCreateWithoutCredentialInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCredentialInput = {
@@ -1303,6 +1630,7 @@ export type UserUpdateWithoutCredentialInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -1332,6 +1660,19 @@ export type UserUpdateWithoutCredentialInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCredentialInput = {
@@ -1346,6 +1687,7 @@ export type UserUncheckedUpdateWithoutCredentialInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1374,6 +1716,19 @@ export type UserUncheckedUpdateWithoutCredentialInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1387,6 +1742,7 @@ export type UserCreateWithoutAccountsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -1416,6 +1772,19 @@ export type UserCreateWithoutAccountsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1430,6 +1799,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1458,6 +1828,19 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1487,6 +1870,7 @@ export type UserUpdateWithoutAccountsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -1516,6 +1900,19 @@ export type UserUpdateWithoutAccountsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1530,6 +1927,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1558,6 +1956,19 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -1571,6 +1982,7 @@ export type UserCreateWithoutSessionsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -1600,6 +2012,19 @@ export type UserCreateWithoutSessionsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1614,6 +2039,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -1642,6 +2068,19 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1671,6 +2110,7 @@ export type UserUpdateWithoutSessionsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -1700,6 +2140,19 @@ export type UserUpdateWithoutSessionsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1714,6 +2167,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -1742,6 +2196,19 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -1755,6 +2222,7 @@ export type UserCreateWithoutProfileInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -1784,6 +2252,19 @@ export type UserCreateWithoutProfileInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -1798,6 +2279,7 @@ export type UserUncheckedCreateWithoutProfileInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -1826,6 +2308,19 @@ export type UserUncheckedCreateWithoutProfileInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -1855,6 +2350,7 @@ export type UserUpdateWithoutProfileInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -1884,6 +2380,19 @@ export type UserUpdateWithoutProfileInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -1898,6 +2407,7 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1926,6 +2436,19 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutQuizAttemptsInput = {
@@ -1939,6 +2462,7 @@ export type UserCreateWithoutQuizAttemptsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -1968,6 +2492,19 @@ export type UserCreateWithoutQuizAttemptsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -1982,6 +2519,7 @@ export type UserUncheckedCreateWithoutQuizAttemptsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2010,6 +2548,19 @@ export type UserUncheckedCreateWithoutQuizAttemptsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -2039,6 +2590,7 @@ export type UserUpdateWithoutQuizAttemptsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -2068,6 +2620,19 @@ export type UserUpdateWithoutQuizAttemptsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -2082,6 +2647,7 @@ export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2110,6 +2676,19 @@ export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEnrollmentsInput = {
@@ -2123,6 +2702,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -2152,6 +2732,19 @@ export type UserCreateWithoutEnrollmentsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -2166,6 +2759,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2194,6 +2788,19 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -2223,6 +2830,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -2252,6 +2860,19 @@ export type UserUpdateWithoutEnrollmentsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -2266,6 +2887,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2294,6 +2916,19 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLessonProgressInput = {
@@ -2307,6 +2942,7 @@ export type UserCreateWithoutLessonProgressInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -2336,6 +2972,19 @@ export type UserCreateWithoutLessonProgressInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -2350,6 +2999,7 @@ export type UserUncheckedCreateWithoutLessonProgressInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2378,6 +3028,19 @@ export type UserUncheckedCreateWithoutLessonProgressInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -2407,6 +3070,7 @@ export type UserUpdateWithoutLessonProgressInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -2436,6 +3100,19 @@ export type UserUpdateWithoutLessonProgressInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -2450,6 +3127,7 @@ export type UserUncheckedUpdateWithoutLessonProgressInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2478,6 +3156,19 @@ export type UserUncheckedUpdateWithoutLessonProgressInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCertificatesInput = {
@@ -2491,6 +3182,7 @@ export type UserCreateWithoutCertificatesInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -2520,6 +3212,19 @@ export type UserCreateWithoutCertificatesInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCertificatesInput = {
@@ -2534,6 +3239,7 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2562,6 +3268,19 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCertificatesInput = {
@@ -2591,6 +3310,7 @@ export type UserUpdateWithoutCertificatesInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -2620,6 +3340,19 @@ export type UserUpdateWithoutCertificatesInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCertificatesInput = {
@@ -2634,6 +3367,7 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2662,6 +3396,19 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutXpEventsInput = {
@@ -2675,6 +3422,7 @@ export type UserCreateWithoutXpEventsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -2704,6 +3452,19 @@ export type UserCreateWithoutXpEventsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutXpEventsInput = {
@@ -2718,6 +3479,7 @@ export type UserUncheckedCreateWithoutXpEventsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2746,6 +3508,19 @@ export type UserUncheckedCreateWithoutXpEventsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutXpEventsInput = {
@@ -2775,6 +3550,7 @@ export type UserUpdateWithoutXpEventsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -2804,6 +3580,19 @@ export type UserUpdateWithoutXpEventsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutXpEventsInput = {
@@ -2818,6 +3607,7 @@ export type UserUncheckedUpdateWithoutXpEventsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -2846,6 +3636,19 @@ export type UserUncheckedUpdateWithoutXpEventsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRankInput = {
@@ -2859,6 +3662,7 @@ export type UserCreateWithoutRankInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -2888,6 +3692,19 @@ export type UserCreateWithoutRankInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRankInput = {
@@ -2901,6 +3718,7 @@ export type UserUncheckedCreateWithoutRankInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -2930,6 +3748,19 @@ export type UserUncheckedCreateWithoutRankInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRankInput = {
@@ -2973,6 +3804,7 @@ export type UserScalarWhereInput = {
   rankId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  suspendedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
 }
 
 export type UserCreateWithoutAchievementsInput = {
@@ -2986,6 +3818,7 @@ export type UserCreateWithoutAchievementsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -3015,6 +3848,19 @@ export type UserCreateWithoutAchievementsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAchievementsInput = {
@@ -3029,6 +3875,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -3057,6 +3904,19 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAchievementsInput = {
@@ -3086,6 +3946,7 @@ export type UserUpdateWithoutAchievementsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -3115,6 +3976,19 @@ export type UserUpdateWithoutAchievementsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAchievementsInput = {
@@ -3129,6 +4003,7 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -3157,6 +4032,19 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutParticipationsInput = {
@@ -3170,6 +4058,7 @@ export type UserCreateWithoutParticipationsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -3199,6 +4088,19 @@ export type UserCreateWithoutParticipationsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutParticipationsInput = {
@@ -3213,6 +4115,7 @@ export type UserUncheckedCreateWithoutParticipationsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -3241,6 +4144,19 @@ export type UserUncheckedCreateWithoutParticipationsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutParticipationsInput = {
@@ -3270,6 +4186,7 @@ export type UserUpdateWithoutParticipationsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -3299,6 +4216,19 @@ export type UserUpdateWithoutParticipationsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParticipationsInput = {
@@ -3313,6 +4243,7 @@ export type UserUncheckedUpdateWithoutParticipationsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -3341,6 +4272,19 @@ export type UserUncheckedUpdateWithoutParticipationsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMissionCompletionsInput = {
@@ -3354,6 +4298,7 @@ export type UserCreateWithoutMissionCompletionsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -3383,6 +4328,19 @@ export type UserCreateWithoutMissionCompletionsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMissionCompletionsInput = {
@@ -3397,6 +4355,7 @@ export type UserUncheckedCreateWithoutMissionCompletionsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -3425,6 +4384,19 @@ export type UserUncheckedCreateWithoutMissionCompletionsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMissionCompletionsInput = {
@@ -3454,6 +4426,7 @@ export type UserUpdateWithoutMissionCompletionsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -3483,6 +4456,19 @@ export type UserUpdateWithoutMissionCompletionsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
@@ -3497,6 +4483,7 @@ export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -3525,6 +4512,19 @@ export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStreakInput = {
@@ -3538,6 +4538,7 @@ export type UserCreateWithoutStreakInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -3567,6 +4568,19 @@ export type UserCreateWithoutStreakInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStreakInput = {
@@ -3581,6 +4595,7 @@ export type UserUncheckedCreateWithoutStreakInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -3609,6 +4624,19 @@ export type UserUncheckedCreateWithoutStreakInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStreakInput = {
@@ -3638,6 +4666,7 @@ export type UserUpdateWithoutStreakInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -3667,6 +4696,19 @@ export type UserUpdateWithoutStreakInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStreakInput = {
@@ -3681,6 +4723,7 @@ export type UserUncheckedUpdateWithoutStreakInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -3709,6 +4752,19 @@ export type UserUncheckedUpdateWithoutStreakInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -3722,6 +4778,7 @@ export type UserCreateWithoutNotificationsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -3751,6 +4808,19 @@ export type UserCreateWithoutNotificationsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -3765,6 +4835,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -3793,6 +4864,19 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -3822,6 +4906,7 @@ export type UserUpdateWithoutNotificationsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -3851,6 +4936,19 @@ export type UserUpdateWithoutNotificationsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -3865,6 +4963,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -3893,6 +4992,19 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLedgerAccountInput = {
@@ -3906,6 +5018,7 @@ export type UserCreateWithoutLedgerAccountInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -3935,6 +5048,19 @@ export type UserCreateWithoutLedgerAccountInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLedgerAccountInput = {
@@ -3949,6 +5075,7 @@ export type UserUncheckedCreateWithoutLedgerAccountInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -3977,6 +5104,19 @@ export type UserUncheckedCreateWithoutLedgerAccountInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLedgerAccountInput = {
@@ -4006,6 +5146,7 @@ export type UserUpdateWithoutLedgerAccountInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -4035,6 +5176,19 @@ export type UserUpdateWithoutLedgerAccountInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLedgerAccountInput = {
@@ -4049,6 +5203,7 @@ export type UserUncheckedUpdateWithoutLedgerAccountInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -4077,6 +5232,19 @@ export type UserUncheckedUpdateWithoutLedgerAccountInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -4090,6 +5258,7 @@ export type UserCreateWithoutOrdersInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -4119,6 +5288,19 @@ export type UserCreateWithoutOrdersInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -4133,6 +5315,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -4161,6 +5344,19 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -4190,6 +5386,7 @@ export type UserUpdateWithoutOrdersInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -4219,6 +5416,19 @@ export type UserUpdateWithoutOrdersInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -4233,6 +5443,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -4261,6 +5472,19 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDiscordLinkInput = {
@@ -4274,6 +5498,7 @@ export type UserCreateWithoutDiscordLinkInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -4303,6 +5528,19 @@ export type UserCreateWithoutDiscordLinkInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDiscordLinkInput = {
@@ -4317,6 +5555,7 @@ export type UserUncheckedCreateWithoutDiscordLinkInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -4345,6 +5584,19 @@ export type UserUncheckedCreateWithoutDiscordLinkInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDiscordLinkInput = {
@@ -4374,6 +5626,7 @@ export type UserUpdateWithoutDiscordLinkInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -4403,6 +5656,19 @@ export type UserUpdateWithoutDiscordLinkInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDiscordLinkInput = {
@@ -4417,6 +5683,7 @@ export type UserUncheckedUpdateWithoutDiscordLinkInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -4445,6 +5712,19 @@ export type UserUncheckedUpdateWithoutDiscordLinkInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTelegramLinkInput = {
@@ -4458,6 +5738,7 @@ export type UserCreateWithoutTelegramLinkInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -4487,6 +5768,19 @@ export type UserCreateWithoutTelegramLinkInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTelegramLinkInput = {
@@ -4501,6 +5795,7 @@ export type UserUncheckedCreateWithoutTelegramLinkInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -4529,6 +5824,19 @@ export type UserUncheckedCreateWithoutTelegramLinkInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTelegramLinkInput = {
@@ -4558,6 +5866,7 @@ export type UserUpdateWithoutTelegramLinkInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -4587,6 +5896,19 @@ export type UserUpdateWithoutTelegramLinkInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTelegramLinkInput = {
@@ -4601,6 +5923,7 @@ export type UserUncheckedUpdateWithoutTelegramLinkInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -4629,6 +5952,19 @@ export type UserUncheckedUpdateWithoutTelegramLinkInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMinerStateInput = {
@@ -4642,6 +5978,7 @@ export type UserCreateWithoutMinerStateInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -4671,6 +6008,19 @@ export type UserCreateWithoutMinerStateInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMinerStateInput = {
@@ -4685,6 +6035,7 @@ export type UserUncheckedCreateWithoutMinerStateInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -4713,6 +6064,19 @@ export type UserUncheckedCreateWithoutMinerStateInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMinerStateInput = {
@@ -4742,6 +6106,7 @@ export type UserUpdateWithoutMinerStateInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -4771,6 +6136,19 @@ export type UserUpdateWithoutMinerStateInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMinerStateInput = {
@@ -4785,6 +6163,7 @@ export type UserUncheckedUpdateWithoutMinerStateInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -4813,6 +6192,19 @@ export type UserUncheckedUpdateWithoutMinerStateInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReferralsMadeInput = {
@@ -4826,6 +6218,7 @@ export type UserCreateWithoutReferralsMadeInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -4855,6 +6248,19 @@ export type UserCreateWithoutReferralsMadeInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReferralsMadeInput = {
@@ -4869,6 +6275,7 @@ export type UserUncheckedCreateWithoutReferralsMadeInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -4897,6 +6304,19 @@ export type UserUncheckedCreateWithoutReferralsMadeInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReferralsMadeInput = {
@@ -4915,6 +6335,7 @@ export type UserCreateWithoutReferralReceivedInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -4944,6 +6365,19 @@ export type UserCreateWithoutReferralReceivedInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReferralReceivedInput = {
@@ -4958,6 +6392,7 @@ export type UserUncheckedCreateWithoutReferralReceivedInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -4986,6 +6421,19 @@ export type UserUncheckedCreateWithoutReferralReceivedInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReferralReceivedInput = {
@@ -5015,6 +6463,7 @@ export type UserUpdateWithoutReferralsMadeInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -5044,6 +6493,19 @@ export type UserUpdateWithoutReferralsMadeInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralsMadeInput = {
@@ -5058,6 +6520,7 @@ export type UserUncheckedUpdateWithoutReferralsMadeInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -5086,6 +6549,19 @@ export type UserUncheckedUpdateWithoutReferralsMadeInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutReferralReceivedInput = {
@@ -5110,6 +6586,7 @@ export type UserUpdateWithoutReferralReceivedInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -5139,6 +6616,19 @@ export type UserUpdateWithoutReferralReceivedInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralReceivedInput = {
@@ -5153,6 +6643,7 @@ export type UserUncheckedUpdateWithoutReferralReceivedInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -5181,6 +6672,19 @@ export type UserUncheckedUpdateWithoutReferralReceivedInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWatchCompletionsInput = {
@@ -5194,6 +6698,7 @@ export type UserCreateWithoutWatchCompletionsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -5223,6 +6728,19 @@ export type UserCreateWithoutWatchCompletionsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWatchCompletionsInput = {
@@ -5237,6 +6755,7 @@ export type UserUncheckedCreateWithoutWatchCompletionsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -5265,6 +6784,19 @@ export type UserUncheckedCreateWithoutWatchCompletionsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWatchCompletionsInput = {
@@ -5294,6 +6826,7 @@ export type UserUpdateWithoutWatchCompletionsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -5323,6 +6856,19 @@ export type UserUpdateWithoutWatchCompletionsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
@@ -5337,6 +6883,7 @@ export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -5365,6 +6912,19 @@ export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -5378,6 +6938,7 @@ export type UserCreateWithoutMessagesInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -5407,6 +6968,19 @@ export type UserCreateWithoutMessagesInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -5421,6 +6995,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -5449,6 +7024,19 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -5478,6 +7066,7 @@ export type UserUpdateWithoutMessagesInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -5507,6 +7096,19 @@ export type UserUpdateWithoutMessagesInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -5521,6 +7123,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -5549,6 +7152,19 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutChannelReadsInput = {
@@ -5562,6 +7178,7 @@ export type UserCreateWithoutChannelReadsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -5591,6 +7208,19 @@ export type UserCreateWithoutChannelReadsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutChannelReadsInput = {
@@ -5605,6 +7235,7 @@ export type UserUncheckedCreateWithoutChannelReadsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -5633,6 +7264,19 @@ export type UserUncheckedCreateWithoutChannelReadsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutChannelReadsInput = {
@@ -5662,6 +7306,7 @@ export type UserUpdateWithoutChannelReadsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -5691,6 +7336,19 @@ export type UserUpdateWithoutChannelReadsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChannelReadsInput = {
@@ -5705,6 +7363,7 @@ export type UserUncheckedUpdateWithoutChannelReadsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -5733,6 +7392,19 @@ export type UserUncheckedUpdateWithoutChannelReadsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessageReportsInput = {
@@ -5746,6 +7418,7 @@ export type UserCreateWithoutMessageReportsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -5775,6 +7448,19 @@ export type UserCreateWithoutMessageReportsInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessageReportsInput = {
@@ -5789,6 +7475,7 @@ export type UserUncheckedCreateWithoutMessageReportsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -5817,6 +7504,19 @@ export type UserUncheckedCreateWithoutMessageReportsInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessageReportsInput = {
@@ -5846,6 +7546,7 @@ export type UserUpdateWithoutMessageReportsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -5875,6 +7576,19 @@ export type UserUpdateWithoutMessageReportsInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessageReportsInput = {
@@ -5889,6 +7603,7 @@ export type UserUncheckedUpdateWithoutMessageReportsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -5917,6 +7632,19 @@ export type UserUncheckedUpdateWithoutMessageReportsInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommunityMuteInput = {
@@ -5930,6 +7658,7 @@ export type UserCreateWithoutCommunityMuteInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -5959,6 +7688,19 @@ export type UserCreateWithoutCommunityMuteInput = {
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommunityMuteInput = {
@@ -5973,6 +7715,7 @@ export type UserUncheckedCreateWithoutCommunityMuteInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -6001,6 +7744,19 @@ export type UserUncheckedCreateWithoutCommunityMuteInput = {
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommunityMuteInput = {
@@ -6030,6 +7786,7 @@ export type UserUpdateWithoutCommunityMuteInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -6059,6 +7816,19 @@ export type UserUpdateWithoutCommunityMuteInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommunityMuteInput = {
@@ -6073,6 +7843,7 @@ export type UserUncheckedUpdateWithoutCommunityMuteInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -6101,6 +7872,19 @@ export type UserUncheckedUpdateWithoutCommunityMuteInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardItemsInput = {
@@ -6114,6 +7898,7 @@ export type UserCreateWithoutStandardItemsInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -6143,6 +7928,19 @@ export type UserCreateWithoutStandardItemsInput = {
   communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardItemsInput = {
@@ -6157,6 +7955,7 @@ export type UserUncheckedCreateWithoutStandardItemsInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -6185,6 +7984,19 @@ export type UserUncheckedCreateWithoutStandardItemsInput = {
   communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardItemsInput = {
@@ -6214,6 +8026,7 @@ export type UserUpdateWithoutStandardItemsInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -6243,6 +8056,19 @@ export type UserUpdateWithoutStandardItemsInput = {
   communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardItemsInput = {
@@ -6257,6 +8083,7 @@ export type UserUncheckedUpdateWithoutStandardItemsInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -6285,6 +8112,19 @@ export type UserUncheckedUpdateWithoutStandardItemsInput = {
   communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardTicksInput = {
@@ -6298,6 +8138,7 @@ export type UserCreateWithoutStandardTicksInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -6327,6 +8168,19 @@ export type UserCreateWithoutStandardTicksInput = {
   communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardTicksInput = {
@@ -6341,6 +8195,7 @@ export type UserUncheckedCreateWithoutStandardTicksInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -6369,6 +8224,19 @@ export type UserUncheckedCreateWithoutStandardTicksInput = {
   communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardTicksInput = {
@@ -6398,6 +8266,7 @@ export type UserUpdateWithoutStandardTicksInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -6427,6 +8296,19 @@ export type UserUpdateWithoutStandardTicksInput = {
   communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardTicksInput = {
@@ -6441,6 +8323,7 @@ export type UserUncheckedUpdateWithoutStandardTicksInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -6469,6 +8352,19 @@ export type UserUncheckedUpdateWithoutStandardTicksInput = {
   communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardDaysInput = {
@@ -6482,6 +8378,7 @@ export type UserCreateWithoutStandardDaysInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
   credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
@@ -6511,6 +8408,19 @@ export type UserCreateWithoutStandardDaysInput = {
   communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
   standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardDaysInput = {
@@ -6525,6 +8435,7 @@ export type UserUncheckedCreateWithoutStandardDaysInput = {
   rankId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -6553,6 +8464,19 @@ export type UserUncheckedCreateWithoutStandardDaysInput = {
   communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
   standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
   standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardDaysInput = {
@@ -6582,6 +8506,7 @@ export type UserUpdateWithoutStandardDaysInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
@@ -6611,6 +8536,19 @@ export type UserUpdateWithoutStandardDaysInput = {
   communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardDaysInput = {
@@ -6625,6 +8563,7 @@ export type UserUncheckedUpdateWithoutStandardDaysInput = {
   rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -6653,9 +8592,22 @@ export type UserUncheckedUpdateWithoutStandardDaysInput = {
   communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
-export type UserCreateManyRankInput = {
+export type UserCreateWithoutInstructorProfileInput = {
   id?: string
   email: string
   emailVerified?: Date | string | null
@@ -6666,9 +8618,124 @@ export type UserCreateManyRankInput = {
   level?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
 }
 
-export type UserUpdateWithoutRankInput = {
+export type UserUncheckedCreateWithoutInstructorProfileInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutInstructorProfileInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutInstructorProfileInput, Prisma.UserUncheckedCreateWithoutInstructorProfileInput>
+}
+
+export type UserUpsertWithoutInstructorProfileInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutInstructorProfileInput, Prisma.UserUncheckedUpdateWithoutInstructorProfileInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutInstructorProfileInput, Prisma.UserUncheckedCreateWithoutInstructorProfileInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutInstructorProfileInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutInstructorProfileInput, Prisma.UserUncheckedUpdateWithoutInstructorProfileInput>
+}
+
+export type UserUpdateWithoutInstructorProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6679,6 +8746,8 @@ export type UserUpdateWithoutRankInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
   credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -6708,9 +8777,21 @@ export type UserUpdateWithoutRankInput = {
   standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutRankInput = {
+export type UserUncheckedUpdateWithoutInstructorProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6719,8 +8800,10 @@ export type UserUncheckedUpdateWithoutRankInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   xp?: Prisma.IntFieldUpdateOperationsInput | number
   level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -6750,6 +8833,3024 @@ export type UserUncheckedUpdateWithoutRankInput = {
   standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
   standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
   standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCourseReviewsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCourseReviewsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCourseReviewsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCourseReviewsInput, Prisma.UserUncheckedCreateWithoutCourseReviewsInput>
+}
+
+export type UserUpsertWithoutCourseReviewsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCourseReviewsInput, Prisma.UserUncheckedUpdateWithoutCourseReviewsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCourseReviewsInput, Prisma.UserUncheckedCreateWithoutCourseReviewsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCourseReviewsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCourseReviewsInput, Prisma.UserUncheckedUpdateWithoutCourseReviewsInput>
+}
+
+export type UserUpdateWithoutCourseReviewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCourseReviewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutAffiliateInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAffiliateInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAffiliateInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAffiliateInput, Prisma.UserUncheckedCreateWithoutAffiliateInput>
+}
+
+export type UserUpsertWithoutAffiliateInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAffiliateInput, Prisma.UserUncheckedUpdateWithoutAffiliateInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAffiliateInput, Prisma.UserUncheckedCreateWithoutAffiliateInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAffiliateInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAffiliateInput, Prisma.UserUncheckedUpdateWithoutAffiliateInput>
+}
+
+export type UserUpdateWithoutAffiliateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAffiliateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCartItemsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCartItemsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCartItemsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCartItemsInput, Prisma.UserUncheckedCreateWithoutCartItemsInput>
+}
+
+export type UserUpsertWithoutCartItemsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCartItemsInput, Prisma.UserUncheckedUpdateWithoutCartItemsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCartItemsInput, Prisma.UserUncheckedCreateWithoutCartItemsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCartItemsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCartItemsInput, Prisma.UserUncheckedUpdateWithoutCartItemsInput>
+}
+
+export type UserUpdateWithoutCartItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCartItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutWishlistItemsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutWishlistItemsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutWishlistItemsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWishlistItemsInput, Prisma.UserUncheckedCreateWithoutWishlistItemsInput>
+}
+
+export type UserUpsertWithoutWishlistItemsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWishlistItemsInput, Prisma.UserUncheckedUpdateWithoutWishlistItemsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWishlistItemsInput, Prisma.UserUncheckedCreateWithoutWishlistItemsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWishlistItemsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWishlistItemsInput, Prisma.UserUncheckedUpdateWithoutWishlistItemsInput>
+}
+
+export type UserUpdateWithoutWishlistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWishlistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCouponRedemptionsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCouponRedemptionsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCouponRedemptionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCouponRedemptionsInput, Prisma.UserUncheckedCreateWithoutCouponRedemptionsInput>
+}
+
+export type UserUpsertWithoutCouponRedemptionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCouponRedemptionsInput, Prisma.UserUncheckedUpdateWithoutCouponRedemptionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCouponRedemptionsInput, Prisma.UserUncheckedCreateWithoutCouponRedemptionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCouponRedemptionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCouponRedemptionsInput, Prisma.UserUncheckedUpdateWithoutCouponRedemptionsInput>
+}
+
+export type UserUpdateWithoutCouponRedemptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCouponRedemptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutRefundRequestsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRefundRequestsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRefundRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRefundRequestsInput, Prisma.UserUncheckedCreateWithoutRefundRequestsInput>
+}
+
+export type UserUpsertWithoutRefundRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRefundRequestsInput, Prisma.UserUncheckedUpdateWithoutRefundRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRefundRequestsInput, Prisma.UserUncheckedCreateWithoutRefundRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRefundRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRefundRequestsInput, Prisma.UserUncheckedUpdateWithoutRefundRequestsInput>
+}
+
+export type UserUpdateWithoutRefundRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRefundRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutGroupMembershipsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutGroupMembershipsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutGroupMembershipsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupMembershipsInput, Prisma.UserUncheckedCreateWithoutGroupMembershipsInput>
+}
+
+export type UserUpsertWithoutGroupMembershipsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutGroupMembershipsInput, Prisma.UserUncheckedUpdateWithoutGroupMembershipsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupMembershipsInput, Prisma.UserUncheckedCreateWithoutGroupMembershipsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutGroupMembershipsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutGroupMembershipsInput, Prisma.UserUncheckedUpdateWithoutGroupMembershipsInput>
+}
+
+export type UserUpdateWithoutGroupMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCommunityPostsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCommunityPostsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCommunityPostsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommunityPostsInput, Prisma.UserUncheckedCreateWithoutCommunityPostsInput>
+}
+
+export type UserUpsertWithoutCommunityPostsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommunityPostsInput, Prisma.UserUncheckedUpdateWithoutCommunityPostsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommunityPostsInput, Prisma.UserUncheckedCreateWithoutCommunityPostsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommunityPostsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommunityPostsInput, Prisma.UserUncheckedUpdateWithoutCommunityPostsInput>
+}
+
+export type UserUpdateWithoutCommunityPostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommunityPostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCommunityCommentsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCommunityCommentsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCommunityCommentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommunityCommentsInput, Prisma.UserUncheckedCreateWithoutCommunityCommentsInput>
+}
+
+export type UserUpsertWithoutCommunityCommentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommunityCommentsInput, Prisma.UserUncheckedUpdateWithoutCommunityCommentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommunityCommentsInput, Prisma.UserUncheckedCreateWithoutCommunityCommentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommunityCommentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommunityCommentsInput, Prisma.UserUncheckedUpdateWithoutCommunityCommentsInput>
+}
+
+export type UserUpdateWithoutCommunityCommentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommunityCommentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutReactionsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutReactionsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutReactionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReactionsInput, Prisma.UserUncheckedCreateWithoutReactionsInput>
+}
+
+export type UserUpsertWithoutReactionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReactionsInput, Prisma.UserUncheckedUpdateWithoutReactionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReactionsInput, Prisma.UserUncheckedCreateWithoutReactionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReactionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReactionsInput, Prisma.UserUncheckedUpdateWithoutReactionsInput>
+}
+
+export type UserUpdateWithoutReactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutReportsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutReportsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutReportsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReportsInput, Prisma.UserUncheckedCreateWithoutReportsInput>
+}
+
+export type UserUpsertWithoutReportsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReportsInput, Prisma.UserUncheckedUpdateWithoutReportsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReportsInput, Prisma.UserUncheckedCreateWithoutReportsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReportsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReportsInput, Prisma.UserUncheckedUpdateWithoutReportsInput>
+}
+
+export type UserUpdateWithoutReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutAuditLogsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAuditLogsInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAuditLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>
+}
+
+export type UserUpsertWithoutAuditLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAuditLogsInput, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAuditLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAuditLogsInput, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type UserUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateManyRankInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+}
+
+export type UserUpdateWithoutRankInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRankInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutRankInput = {
@@ -6763,6 +11864,7 @@ export type UserUncheckedUpdateManyWithoutRankInput = {
   level?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -6791,6 +11893,17 @@ export type UserCountOutputType = {
   standardItems: number
   standardTicks: number
   standardDays: number
+  courseReviews: number
+  cartItems: number
+  wishlistItems: number
+  refundRequests: number
+  communityPosts: number
+  communityComments: number
+  reactions: number
+  groupMemberships: number
+  reports: number
+  auditLogs: number
+  couponRedemptions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6814,6 +11927,17 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   standardItems?: boolean | UserCountOutputTypeCountStandardItemsArgs
   standardTicks?: boolean | UserCountOutputTypeCountStandardTicksArgs
   standardDays?: boolean | UserCountOutputTypeCountStandardDaysArgs
+  courseReviews?: boolean | UserCountOutputTypeCountCourseReviewsArgs
+  cartItems?: boolean | UserCountOutputTypeCountCartItemsArgs
+  wishlistItems?: boolean | UserCountOutputTypeCountWishlistItemsArgs
+  refundRequests?: boolean | UserCountOutputTypeCountRefundRequestsArgs
+  communityPosts?: boolean | UserCountOutputTypeCountCommunityPostsArgs
+  communityComments?: boolean | UserCountOutputTypeCountCommunityCommentsArgs
+  reactions?: boolean | UserCountOutputTypeCountReactionsArgs
+  groupMemberships?: boolean | UserCountOutputTypeCountGroupMembershipsArgs
+  reports?: boolean | UserCountOutputTypeCountReportsArgs
+  auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+  couponRedemptions?: boolean | UserCountOutputTypeCountCouponRedemptionsArgs
 }
 
 /**
@@ -6966,6 +12090,83 @@ export type UserCountOutputTypeCountStandardDaysArgs<ExtArgs extends runtime.Typ
   where?: Prisma.StandardDayWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCourseReviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CourseReviewWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCartItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CartItemWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWishlistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WishlistItemWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRefundRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RefundRequestWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommunityPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommunityPostWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommunityCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommunityCommentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReactionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountGroupMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GroupMembershipWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentReportWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditLogWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCouponRedemptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CouponRedemptionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -6979,6 +12180,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   rankId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  suspendedAt?: boolean
   rank?: boolean | Prisma.User$rankArgs<ExtArgs>
   credential?: boolean | Prisma.User$credentialArgs<ExtArgs>
   profile?: boolean | Prisma.User$profileArgs<ExtArgs>
@@ -7009,6 +12211,19 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   standardItems?: boolean | Prisma.User$standardItemsArgs<ExtArgs>
   standardTicks?: boolean | Prisma.User$standardTicksArgs<ExtArgs>
   standardDays?: boolean | Prisma.User$standardDaysArgs<ExtArgs>
+  courseReviews?: boolean | Prisma.User$courseReviewsArgs<ExtArgs>
+  affiliate?: boolean | Prisma.User$affiliateArgs<ExtArgs>
+  cartItems?: boolean | Prisma.User$cartItemsArgs<ExtArgs>
+  wishlistItems?: boolean | Prisma.User$wishlistItemsArgs<ExtArgs>
+  refundRequests?: boolean | Prisma.User$refundRequestsArgs<ExtArgs>
+  communityPosts?: boolean | Prisma.User$communityPostsArgs<ExtArgs>
+  communityComments?: boolean | Prisma.User$communityCommentsArgs<ExtArgs>
+  reactions?: boolean | Prisma.User$reactionsArgs<ExtArgs>
+  groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>
+  reports?: boolean | Prisma.User$reportsArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  couponRedemptions?: boolean | Prisma.User$couponRedemptionsArgs<ExtArgs>
+  instructorProfile?: boolean | Prisma.User$instructorProfileArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -7024,6 +12239,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   rankId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  suspendedAt?: boolean
   rank?: boolean | Prisma.User$rankArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -7039,6 +12255,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   rankId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  suspendedAt?: boolean
   rank?: boolean | Prisma.User$rankArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -7054,9 +12271,10 @@ export type UserSelectScalar = {
   rankId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  suspendedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "emailVerified" | "name" | "image" | "role" | "xp" | "level" | "rankId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "emailVerified" | "name" | "image" | "role" | "xp" | "level" | "rankId" | "createdAt" | "updatedAt" | "suspendedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rank?: boolean | Prisma.User$rankArgs<ExtArgs>
   credential?: boolean | Prisma.User$credentialArgs<ExtArgs>
@@ -7088,6 +12306,19 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   standardItems?: boolean | Prisma.User$standardItemsArgs<ExtArgs>
   standardTicks?: boolean | Prisma.User$standardTicksArgs<ExtArgs>
   standardDays?: boolean | Prisma.User$standardDaysArgs<ExtArgs>
+  courseReviews?: boolean | Prisma.User$courseReviewsArgs<ExtArgs>
+  affiliate?: boolean | Prisma.User$affiliateArgs<ExtArgs>
+  cartItems?: boolean | Prisma.User$cartItemsArgs<ExtArgs>
+  wishlistItems?: boolean | Prisma.User$wishlistItemsArgs<ExtArgs>
+  refundRequests?: boolean | Prisma.User$refundRequestsArgs<ExtArgs>
+  communityPosts?: boolean | Prisma.User$communityPostsArgs<ExtArgs>
+  communityComments?: boolean | Prisma.User$communityCommentsArgs<ExtArgs>
+  reactions?: boolean | Prisma.User$reactionsArgs<ExtArgs>
+  groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>
+  reports?: boolean | Prisma.User$reportsArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  couponRedemptions?: boolean | Prisma.User$couponRedemptionsArgs<ExtArgs>
+  instructorProfile?: boolean | Prisma.User$instructorProfileArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -7130,6 +12361,19 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     standardItems: Prisma.$StandardItemPayload<ExtArgs>[]
     standardTicks: Prisma.$StandardTickPayload<ExtArgs>[]
     standardDays: Prisma.$StandardDayPayload<ExtArgs>[]
+    courseReviews: Prisma.$CourseReviewPayload<ExtArgs>[]
+    affiliate: Prisma.$AffiliateProfilePayload<ExtArgs> | null
+    cartItems: Prisma.$CartItemPayload<ExtArgs>[]
+    wishlistItems: Prisma.$WishlistItemPayload<ExtArgs>[]
+    refundRequests: Prisma.$RefundRequestPayload<ExtArgs>[]
+    communityPosts: Prisma.$CommunityPostPayload<ExtArgs>[]
+    communityComments: Prisma.$CommunityCommentPayload<ExtArgs>[]
+    reactions: Prisma.$ReactionPayload<ExtArgs>[]
+    groupMemberships: Prisma.$GroupMembershipPayload<ExtArgs>[]
+    reports: Prisma.$ContentReportPayload<ExtArgs>[]
+    auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+    couponRedemptions: Prisma.$CouponRedemptionPayload<ExtArgs>[]
+    instructorProfile: Prisma.$InstructorPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -7143,6 +12387,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     rankId: string | null
     createdAt: Date
     updatedAt: Date
+    /**
+     * Set by an admin; suspended members cannot sign in.
+     */
+    suspendedAt: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -7567,6 +12815,19 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   standardItems<T extends Prisma.User$standardItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$standardItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StandardItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   standardTicks<T extends Prisma.User$standardTicksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$standardTicksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StandardTickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   standardDays<T extends Prisma.User$standardDaysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$standardDaysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StandardDayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  courseReviews<T extends Prisma.User$courseReviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$courseReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CourseReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  affiliate<T extends Prisma.User$affiliateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$affiliateArgs<ExtArgs>>): Prisma.Prisma__AffiliateProfileClient<runtime.Types.Result.GetResult<Prisma.$AffiliateProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  cartItems<T extends Prisma.User$cartItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cartItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  wishlistItems<T extends Prisma.User$wishlistItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$wishlistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WishlistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  refundRequests<T extends Prisma.User$refundRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refundRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefundRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  communityPosts<T extends Prisma.User$communityPostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$communityPostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommunityPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  communityComments<T extends Prisma.User$communityCommentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$communityCommentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommunityCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reactions<T extends Prisma.User$reactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  groupMemberships<T extends Prisma.User$groupMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$groupMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reports<T extends Prisma.User$reportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  couponRedemptions<T extends Prisma.User$couponRedemptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$couponRedemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CouponRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  instructorProfile<T extends Prisma.User$instructorProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$instructorProfileArgs<ExtArgs>>): Prisma.Prisma__InstructorClient<runtime.Types.Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7607,6 +12868,7 @@ export interface UserFieldRefs {
   readonly rankId: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly suspendedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 
@@ -8670,6 +13932,308 @@ export type User$standardDaysArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.StandardDayScalarFieldEnum | Prisma.StandardDayScalarFieldEnum[]
+}
+
+/**
+ * User.courseReviews
+ */
+export type User$courseReviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CourseReview
+   */
+  select?: Prisma.CourseReviewSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CourseReview
+   */
+  omit?: Prisma.CourseReviewOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseReviewInclude<ExtArgs> | null
+  where?: Prisma.CourseReviewWhereInput
+  orderBy?: Prisma.CourseReviewOrderByWithRelationInput | Prisma.CourseReviewOrderByWithRelationInput[]
+  cursor?: Prisma.CourseReviewWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CourseReviewScalarFieldEnum | Prisma.CourseReviewScalarFieldEnum[]
+}
+
+/**
+ * User.affiliate
+ */
+export type User$affiliateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AffiliateProfile
+   */
+  select?: Prisma.AffiliateProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AffiliateProfile
+   */
+  omit?: Prisma.AffiliateProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AffiliateProfileInclude<ExtArgs> | null
+  where?: Prisma.AffiliateProfileWhereInput
+}
+
+/**
+ * User.cartItems
+ */
+export type User$cartItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CartItem
+   */
+  select?: Prisma.CartItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CartItem
+   */
+  omit?: Prisma.CartItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CartItemInclude<ExtArgs> | null
+  where?: Prisma.CartItemWhereInput
+  orderBy?: Prisma.CartItemOrderByWithRelationInput | Prisma.CartItemOrderByWithRelationInput[]
+  cursor?: Prisma.CartItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CartItemScalarFieldEnum | Prisma.CartItemScalarFieldEnum[]
+}
+
+/**
+ * User.wishlistItems
+ */
+export type User$wishlistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WishlistItem
+   */
+  select?: Prisma.WishlistItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WishlistItem
+   */
+  omit?: Prisma.WishlistItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WishlistItemInclude<ExtArgs> | null
+  where?: Prisma.WishlistItemWhereInput
+  orderBy?: Prisma.WishlistItemOrderByWithRelationInput | Prisma.WishlistItemOrderByWithRelationInput[]
+  cursor?: Prisma.WishlistItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WishlistItemScalarFieldEnum | Prisma.WishlistItemScalarFieldEnum[]
+}
+
+/**
+ * User.refundRequests
+ */
+export type User$refundRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RefundRequest
+   */
+  select?: Prisma.RefundRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RefundRequest
+   */
+  omit?: Prisma.RefundRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RefundRequestInclude<ExtArgs> | null
+  where?: Prisma.RefundRequestWhereInput
+  orderBy?: Prisma.RefundRequestOrderByWithRelationInput | Prisma.RefundRequestOrderByWithRelationInput[]
+  cursor?: Prisma.RefundRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RefundRequestScalarFieldEnum | Prisma.RefundRequestScalarFieldEnum[]
+}
+
+/**
+ * User.communityPosts
+ */
+export type User$communityPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommunityPost
+   */
+  select?: Prisma.CommunityPostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommunityPost
+   */
+  omit?: Prisma.CommunityPostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityPostInclude<ExtArgs> | null
+  where?: Prisma.CommunityPostWhereInput
+  orderBy?: Prisma.CommunityPostOrderByWithRelationInput | Prisma.CommunityPostOrderByWithRelationInput[]
+  cursor?: Prisma.CommunityPostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommunityPostScalarFieldEnum | Prisma.CommunityPostScalarFieldEnum[]
+}
+
+/**
+ * User.communityComments
+ */
+export type User$communityCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommunityComment
+   */
+  select?: Prisma.CommunityCommentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommunityComment
+   */
+  omit?: Prisma.CommunityCommentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityCommentInclude<ExtArgs> | null
+  where?: Prisma.CommunityCommentWhereInput
+  orderBy?: Prisma.CommunityCommentOrderByWithRelationInput | Prisma.CommunityCommentOrderByWithRelationInput[]
+  cursor?: Prisma.CommunityCommentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommunityCommentScalarFieldEnum | Prisma.CommunityCommentScalarFieldEnum[]
+}
+
+/**
+ * User.reactions
+ */
+export type User$reactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Reaction
+   */
+  select?: Prisma.ReactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Reaction
+   */
+  omit?: Prisma.ReactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReactionInclude<ExtArgs> | null
+  where?: Prisma.ReactionWhereInput
+  orderBy?: Prisma.ReactionOrderByWithRelationInput | Prisma.ReactionOrderByWithRelationInput[]
+  cursor?: Prisma.ReactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReactionScalarFieldEnum | Prisma.ReactionScalarFieldEnum[]
+}
+
+/**
+ * User.groupMemberships
+ */
+export type User$groupMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupMembership
+   */
+  select?: Prisma.GroupMembershipSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupMembership
+   */
+  omit?: Prisma.GroupMembershipOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupMembershipInclude<ExtArgs> | null
+  where?: Prisma.GroupMembershipWhereInput
+  orderBy?: Prisma.GroupMembershipOrderByWithRelationInput | Prisma.GroupMembershipOrderByWithRelationInput[]
+  cursor?: Prisma.GroupMembershipWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GroupMembershipScalarFieldEnum | Prisma.GroupMembershipScalarFieldEnum[]
+}
+
+/**
+ * User.reports
+ */
+export type User$reportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentReport
+   */
+  select?: Prisma.ContentReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentReport
+   */
+  omit?: Prisma.ContentReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentReportInclude<ExtArgs> | null
+  where?: Prisma.ContentReportWhereInput
+  orderBy?: Prisma.ContentReportOrderByWithRelationInput | Prisma.ContentReportOrderByWithRelationInput[]
+  cursor?: Prisma.ContentReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentReportScalarFieldEnum | Prisma.ContentReportScalarFieldEnum[]
+}
+
+/**
+ * User.auditLogs
+ */
+export type User$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditLog
+   */
+  select?: Prisma.AuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditLog
+   */
+  omit?: Prisma.AuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditLogInclude<ExtArgs> | null
+  where?: Prisma.AuditLogWhereInput
+  orderBy?: Prisma.AuditLogOrderByWithRelationInput | Prisma.AuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.AuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+}
+
+/**
+ * User.couponRedemptions
+ */
+export type User$couponRedemptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CouponRedemption
+   */
+  select?: Prisma.CouponRedemptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CouponRedemption
+   */
+  omit?: Prisma.CouponRedemptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CouponRedemptionInclude<ExtArgs> | null
+  where?: Prisma.CouponRedemptionWhereInput
+  orderBy?: Prisma.CouponRedemptionOrderByWithRelationInput | Prisma.CouponRedemptionOrderByWithRelationInput[]
+  cursor?: Prisma.CouponRedemptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CouponRedemptionScalarFieldEnum | Prisma.CouponRedemptionScalarFieldEnum[]
+}
+
+/**
+ * User.instructorProfile
+ */
+export type User$instructorProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Instructor
+   */
+  select?: Prisma.InstructorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Instructor
+   */
+  omit?: Prisma.InstructorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstructorInclude<ExtArgs> | null
+  where?: Prisma.InstructorWhereInput
 }
 
 /**

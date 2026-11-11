@@ -10,6 +10,7 @@
  * See TYCOONHOOD_DECISIONS.md DR-3.
  */
 import { redirect } from "next/navigation";
+import { can, type Permission } from "@tycoonhood/core";
 import { getCurrentUser } from "./auth";
 
 /** Gate for member pages. Returns the onboarded user or redirects. */
@@ -32,5 +33,20 @@ export async function requireAdmin() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (user.role !== "ADMIN") redirect("/today");
+  return user;
+}
+
+/** Gate for a staff surface: the user must hold this permission (see core auth/permissions). */
+export async function requirePermission(permission: Permission) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (!can(user, permission)) redirect("/today");
+  return user;
+}
+
+/** For server actions: throws instead of redirecting, so the form can show the error. */
+export async function actorWith(permission: Permission) {
+  const user = await getCurrentUser();
+  if (!user || !can(user, permission)) throw new Error("You do not have permission to do that.");
   return user;
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { community, PAGE_SIZE } from "@tycoonhood/core";
+import { community, PAGE_SIZE, isStaff } from "@tycoonhood/core";
 import { requireUser } from "../../../../lib/guard";
 import { CommunityFrame } from "../../../../components/community/community-frame";
 import { ChatView } from "../../../../components/community/chat-view";
@@ -26,7 +26,7 @@ export default async function ChannelPage({ params }: { params: Promise<{ channe
     community.activeMute(user.id),
   ]);
 
-  const staff = user.role === "ADMIN";
+  const staff = isStaff(user);
   const blocked = channel.archivedAt
     ? "This channel is archived. You can read it, but not post."
     : channel.adminOnly && !staff

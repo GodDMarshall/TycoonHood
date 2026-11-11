@@ -3,27 +3,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@tycoonhood/ui";
 
-const tabs = [
-  ["/admin", "Overview"],
-  ["/admin/members", "Members"],
-  ["/admin/economy", "Economy"],
-  ["/admin/community", "Community"],
-  ["/admin/standard", "Daily standard"],
-  ["/admin/content", "Content"],
-  ["/admin/missions", "Missions"],
-  ["/admin/products", "Products"],
-  ["/admin/videos", "Videos"],
-  ["/admin/challenges", "Challenges"],
-  ["/admin/orders", "Orders"],
-] as const;
+export type AdminTab = { href: string; label: string };
 
-/** Console sections. Scrolls sideways on a phone instead of overflowing the page. */
-export function AdminTabs() {
+/** Console sections. The server decides which tabs a role sees; each page re-checks. */
+export function AdminTabs({ tabs }: { tabs: AdminTab[] }) {
   const pathname = usePathname();
   return (
     <nav aria-label="Console" className="mb-8 overflow-x-auto">
       <ul className="flex w-max gap-1 rounded-lg border border-line bg-bg-1 p-1">
-        {tabs.map(([href, label]) => {
+        {tabs.map(({ href, label }) => {
           const active = href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
           return (
             <li key={href}>

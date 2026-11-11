@@ -296,3 +296,118 @@ export type StandardTick = Prisma.StandardTickModel
  * The record: one row per day the member met the whole standard.
  */
 export type StandardDay = Prisma.StandardDayModel
+/**
+ * Model Instructor
+ * 
+ */
+export type Instructor = Prisma.InstructorModel
+/**
+ * Model CourseReview
+ * 
+ */
+export type CourseReview = Prisma.CourseReviewModel
+/**
+ * Model AffiliateProfile
+ * 
+ */
+export type AffiliateProfile = Prisma.AffiliateProfileModel
+/**
+ * Model AffiliateClick
+ * 
+ */
+export type AffiliateClick = Prisma.AffiliateClickModel
+/**
+ * Model Commission
+ * 
+ */
+export type Commission = Prisma.CommissionModel
+/**
+ * Model PayoutRequest
+ * 
+ */
+export type PayoutRequest = Prisma.PayoutRequestModel
+/**
+ * Model CartItem
+ * 
+ */
+export type CartItem = Prisma.CartItemModel
+/**
+ * Model WishlistItem
+ * 
+ */
+export type WishlistItem = Prisma.WishlistItemModel
+/**
+ * Model Coupon
+ * 
+ */
+export type Coupon = Prisma.CouponModel
+/**
+ * Model CouponRedemption
+ * 
+ */
+export type CouponRedemption = Prisma.CouponRedemptionModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model RefundRequest
+ * 
+ */
+export type RefundRequest = Prisma.RefundRequestModel
+/**
+ * Model CommunityCategory
+ * 
+ */
+export type CommunityCategory = Prisma.CommunityCategoryModel
+/**
+ * Model CommunityGroup
+ * 
+ */
+export type CommunityGroup = Prisma.CommunityGroupModel
+/**
+ * Model GroupMembership
+ * 
+ */
+export type GroupMembership = Prisma.GroupMembershipModel
+/**
+ * Model CommunityPost
+ * 
+ */
+export type CommunityPost = Prisma.CommunityPostModel
+/**
+ * Model CommunityComment
+ * 
+ */
+export type CommunityComment = Prisma.CommunityCommentModel
+/**
+ * Model Reaction
+ * 
+ */
+export type Reaction = Prisma.ReactionModel
+/**
+ * Model ContentReport
+ * 
+ */
+export type ContentReport = Prisma.ContentReportModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model SiteSetting
+ * Key/value store for admin-editable settings and homepage content blocks.
+ */
+export type SiteSetting = Prisma.SiteSettingModel
+/**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel
+/**
+ * Model Testimonial
+ * Genuine member stories only — published by an admin with the member's consent.
+ */
+export type Testimonial = Prisma.TestimonialModel

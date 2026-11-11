@@ -40,6 +40,7 @@ export type CourseModuleMinAggregateOutputType = {
   title: string | null
   description: string | null
   sortOrder: number | null
+  completion: string | null
 }
 
 export type CourseModuleMaxAggregateOutputType = {
@@ -48,6 +49,7 @@ export type CourseModuleMaxAggregateOutputType = {
   title: string | null
   description: string | null
   sortOrder: number | null
+  completion: string | null
 }
 
 export type CourseModuleCountAggregateOutputType = {
@@ -56,6 +58,8 @@ export type CourseModuleCountAggregateOutputType = {
   title: number
   description: number
   sortOrder: number
+  objectives: number
+  completion: number
   _all: number
 }
 
@@ -74,6 +78,7 @@ export type CourseModuleMinAggregateInputType = {
   title?: true
   description?: true
   sortOrder?: true
+  completion?: true
 }
 
 export type CourseModuleMaxAggregateInputType = {
@@ -82,6 +87,7 @@ export type CourseModuleMaxAggregateInputType = {
   title?: true
   description?: true
   sortOrder?: true
+  completion?: true
 }
 
 export type CourseModuleCountAggregateInputType = {
@@ -90,6 +96,8 @@ export type CourseModuleCountAggregateInputType = {
   title?: true
   description?: true
   sortOrder?: true
+  objectives?: true
+  completion?: true
   _all?: true
 }
 
@@ -185,6 +193,8 @@ export type CourseModuleGroupByOutputType = {
   title: string
   description: string | null
   sortOrder: number
+  objectives: runtime.JsonValue | null
+  completion: string | null
   _count: CourseModuleCountAggregateOutputType | null
   _avg: CourseModuleAvgAggregateOutputType | null
   _sum: CourseModuleSumAggregateOutputType | null
@@ -216,6 +226,8 @@ export type CourseModuleWhereInput = {
   title?: Prisma.StringFilter<"CourseModule"> | string
   description?: Prisma.StringNullableFilter<"CourseModule"> | string | null
   sortOrder?: Prisma.IntFilter<"CourseModule"> | number
+  objectives?: Prisma.JsonNullableFilter<"CourseModule">
+  completion?: Prisma.StringNullableFilter<"CourseModule"> | string | null
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
   lessons?: Prisma.LessonListRelationFilter
 }
@@ -226,6 +238,8 @@ export type CourseModuleOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  objectives?: Prisma.SortOrderInput | Prisma.SortOrder
+  completion?: Prisma.SortOrderInput | Prisma.SortOrder
   course?: Prisma.CourseOrderByWithRelationInput
   lessons?: Prisma.LessonOrderByRelationAggregateInput
 }
@@ -239,6 +253,8 @@ export type CourseModuleWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"CourseModule"> | string
   description?: Prisma.StringNullableFilter<"CourseModule"> | string | null
   sortOrder?: Prisma.IntFilter<"CourseModule"> | number
+  objectives?: Prisma.JsonNullableFilter<"CourseModule">
+  completion?: Prisma.StringNullableFilter<"CourseModule"> | string | null
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
   lessons?: Prisma.LessonListRelationFilter
 }, "id">
@@ -249,6 +265,8 @@ export type CourseModuleOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  objectives?: Prisma.SortOrderInput | Prisma.SortOrder
+  completion?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CourseModuleCountOrderByAggregateInput
   _avg?: Prisma.CourseModuleAvgOrderByAggregateInput
   _max?: Prisma.CourseModuleMaxOrderByAggregateInput
@@ -265,6 +283,8 @@ export type CourseModuleScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"CourseModule"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"CourseModule"> | string | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"CourseModule"> | number
+  objectives?: Prisma.JsonNullableWithAggregatesFilter<"CourseModule">
+  completion?: Prisma.StringNullableWithAggregatesFilter<"CourseModule"> | string | null
 }
 
 export type CourseModuleCreateInput = {
@@ -272,6 +292,8 @@ export type CourseModuleCreateInput = {
   title: string
   description?: string | null
   sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
   course: Prisma.CourseCreateNestedOneWithoutModulesInput
   lessons?: Prisma.LessonCreateNestedManyWithoutModuleInput
 }
@@ -282,6 +304,8 @@ export type CourseModuleUncheckedCreateInput = {
   title: string
   description?: string | null
   sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
   lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutModuleInput
 }
 
@@ -290,6 +314,8 @@ export type CourseModuleUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   course?: Prisma.CourseUpdateOneRequiredWithoutModulesNestedInput
   lessons?: Prisma.LessonUpdateManyWithoutModuleNestedInput
 }
@@ -300,6 +326,8 @@ export type CourseModuleUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lessons?: Prisma.LessonUncheckedUpdateManyWithoutModuleNestedInput
 }
 
@@ -309,6 +337,8 @@ export type CourseModuleCreateManyInput = {
   title: string
   description?: string | null
   sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
 }
 
 export type CourseModuleUpdateManyMutationInput = {
@@ -316,6 +346,8 @@ export type CourseModuleUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CourseModuleUncheckedUpdateManyInput = {
@@ -324,6 +356,8 @@ export type CourseModuleUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CourseModuleListRelationFilter = {
@@ -342,6 +376,8 @@ export type CourseModuleCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  objectives?: Prisma.SortOrder
+  completion?: Prisma.SortOrder
 }
 
 export type CourseModuleAvgOrderByAggregateInput = {
@@ -354,6 +390,7 @@ export type CourseModuleMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  completion?: Prisma.SortOrder
 }
 
 export type CourseModuleMinOrderByAggregateInput = {
@@ -362,6 +399,7 @@ export type CourseModuleMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  completion?: Prisma.SortOrder
 }
 
 export type CourseModuleSumOrderByAggregateInput = {
@@ -434,6 +472,8 @@ export type CourseModuleCreateWithoutCourseInput = {
   title: string
   description?: string | null
   sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
   lessons?: Prisma.LessonCreateNestedManyWithoutModuleInput
 }
 
@@ -442,6 +482,8 @@ export type CourseModuleUncheckedCreateWithoutCourseInput = {
   title: string
   description?: string | null
   sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
   lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutModuleInput
 }
 
@@ -480,6 +522,8 @@ export type CourseModuleScalarWhereInput = {
   title?: Prisma.StringFilter<"CourseModule"> | string
   description?: Prisma.StringNullableFilter<"CourseModule"> | string | null
   sortOrder?: Prisma.IntFilter<"CourseModule"> | number
+  objectives?: Prisma.JsonNullableFilter<"CourseModule">
+  completion?: Prisma.StringNullableFilter<"CourseModule"> | string | null
 }
 
 export type CourseModuleCreateWithoutLessonsInput = {
@@ -487,6 +531,8 @@ export type CourseModuleCreateWithoutLessonsInput = {
   title: string
   description?: string | null
   sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
   course: Prisma.CourseCreateNestedOneWithoutModulesInput
 }
 
@@ -496,6 +542,8 @@ export type CourseModuleUncheckedCreateWithoutLessonsInput = {
   title: string
   description?: string | null
   sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
 }
 
 export type CourseModuleCreateOrConnectWithoutLessonsInput = {
@@ -519,6 +567,8 @@ export type CourseModuleUpdateWithoutLessonsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   course?: Prisma.CourseUpdateOneRequiredWithoutModulesNestedInput
 }
 
@@ -528,6 +578,8 @@ export type CourseModuleUncheckedUpdateWithoutLessonsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CourseModuleCreateManyCourseInput = {
@@ -535,6 +587,8 @@ export type CourseModuleCreateManyCourseInput = {
   title: string
   description?: string | null
   sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
 }
 
 export type CourseModuleUpdateWithoutCourseInput = {
@@ -542,6 +596,8 @@ export type CourseModuleUpdateWithoutCourseInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lessons?: Prisma.LessonUpdateManyWithoutModuleNestedInput
 }
 
@@ -550,6 +606,8 @@ export type CourseModuleUncheckedUpdateWithoutCourseInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lessons?: Prisma.LessonUncheckedUpdateManyWithoutModuleNestedInput
 }
 
@@ -558,6 +616,8 @@ export type CourseModuleUncheckedUpdateManyWithoutCourseInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -597,6 +657,8 @@ export type CourseModuleSelect<ExtArgs extends runtime.Types.Extensions.Internal
   title?: boolean
   description?: boolean
   sortOrder?: boolean
+  objectives?: boolean
+  completion?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   lessons?: boolean | Prisma.CourseModule$lessonsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseModuleCountOutputTypeDefaultArgs<ExtArgs>
@@ -608,6 +670,8 @@ export type CourseModuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   title?: boolean
   description?: boolean
   sortOrder?: boolean
+  objectives?: boolean
+  completion?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseModule"]>
 
@@ -617,6 +681,8 @@ export type CourseModuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   title?: boolean
   description?: boolean
   sortOrder?: boolean
+  objectives?: boolean
+  completion?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseModule"]>
 
@@ -626,9 +692,11 @@ export type CourseModuleSelectScalar = {
   title?: boolean
   description?: boolean
   sortOrder?: boolean
+  objectives?: boolean
+  completion?: boolean
 }
 
-export type CourseModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "courseId" | "title" | "description" | "sortOrder", ExtArgs["result"]["courseModule"]>
+export type CourseModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "courseId" | "title" | "description" | "sortOrder" | "objectives" | "completion", ExtArgs["result"]["courseModule"]>
 export type CourseModuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   lessons?: boolean | Prisma.CourseModule$lessonsArgs<ExtArgs>
@@ -653,6 +721,14 @@ export type $CourseModulePayload<ExtArgs extends runtime.Types.Extensions.Intern
     title: string
     description: string | null
     sortOrder: number
+    /**
+     * Learning objectives, as a JSON array of strings.
+     */
+    objectives: runtime.JsonValue | null
+    /**
+     * What a member must do to complete the module.
+     */
+    completion: string | null
   }, ExtArgs["result"]["courseModule"]>
   composites: {}
 }
@@ -1083,6 +1159,8 @@ export interface CourseModuleFieldRefs {
   readonly title: Prisma.FieldRef<"CourseModule", 'String'>
   readonly description: Prisma.FieldRef<"CourseModule", 'String'>
   readonly sortOrder: Prisma.FieldRef<"CourseModule", 'Int'>
+  readonly objectives: Prisma.FieldRef<"CourseModule", 'Json'>
+  readonly completion: Prisma.FieldRef<"CourseModule", 'String'>
 }
     
 

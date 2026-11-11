@@ -18,6 +18,8 @@
  * Every read goes through `canRead`; every projection leaves out what the
  * viewer may not see (a removed message's body, other members' emails).
  */
+import { isStaff } from "../auth/permissions";
+import type { UserRole } from "@tycoonhood/db";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 
@@ -30,7 +32,7 @@ export class CommunityError extends Error {}
 
 export interface Viewer {
   id: string;
-  role: "MEMBER" | "ADMIN";
+  role: UserRole;
 }
 
 type ChannelRow = Prisma.ChannelGetPayload<{ include: { course: { select: { slug: true; title: true } } } }>;
@@ -101,7 +103,7 @@ export function project(m: MessageRow, viewer: Viewer): MessageView {
       username: m.author.profile?.username ?? null,
       avatarUrl: m.author.profile?.avatarUrl ?? null,
       rank: m.author.rank?.name ?? null,
-      staff: m.author.role === "ADMIN",
+      staff: isStaff(m.author),
     },
     replyTo: m.replyTo
       ? {
@@ -143,7 +145,7 @@ export class CommunityService {
   }
 
   async canRead(viewer: Viewer, channel: { courseId: string | null; archivedAt: Date | null }) {
-    if (viewer.role === "ADMIN") return true;
+    if (isStaff(viewer)) return true;
     if (channel.archivedAt) return false;
     if (!channel.courseId) return true;
     const e = await this.db.enrollment.findUnique({
@@ -165,7 +167,7 @@ export class CommunityService {
 
   /** Every channel the viewer can read, house-wide first, with unread counts. */
   async channelsFor(viewer: Viewer, memberSince: Date): Promise<ChannelSummary[]> {
-    const enrolled = viewer.role === "ADMIN" ? null : await this.enrolledCourseIds(viewer.id);
+    const enrolled = isStaff(viewer) ? null : await this.enrolledCourseIds(viewer.id);
     const rows = await this.db.channel.findMany({
       where: {
         archivedAt: null,
@@ -325,7 +327,7 @@ export class CommunityService {
     const ch = await this.channel(viewer, channelSlug);
     if (!ch) throw new CommunityError("That channel does not exist, or it is not yours to read.");
     if (ch.archivedAt) throw new CommunityError("This channel is archived.");
-    const staff = viewer.role === "ADMIN";
+    const staff = isStaff(viewer);
     if (ch.adminOnly && !staff) throw new CommunityError("Only staff post in this channel.");
 
     const mute = await this.activeMute(viewer.id, now);
@@ -403,7 +405,7 @@ export class CommunityService {
   async remove(viewer: Viewer, messageId: string, now = new Date()) {
     const m = await this.db.message.findUnique({ where: { id: messageId }, select: { id: true, authorId: true, deletedAt: true } });
     if (!m) throw new CommunityError("That message no longer exists.");
-    const staff = viewer.role === "ADMIN";
+    const staff = isStaff(viewer);
     if (m.authorId !== viewer.id && !staff) throw new CommunityError("You can only remove your own messages.");
     if (m.deletedAt) return;
     await this.db.message.update({ where: { id: m.id }, data: { deletedAt: now, deletedById: viewer.id, pinnedAt: null } });
@@ -418,7 +420,7 @@ export class CommunityService {
   /** Staff pin a message worth everyone's attention. Pinning a member's message
    *  is the one community act that counts toward an achievement. */
   async setPinned(viewer: Viewer, messageId: string, pinned: boolean, now = new Date()) {
-    if (viewer.role !== "ADMIN") throw new CommunityError("Only staff pin messages.");
+    if (!isStaff(viewer)) throw new CommunityError("Only staff pin messages.");
     const m = await this.db.message.findUnique({
       where: { id: messageId },
       select: { id: true, authorId: true, deletedAt: true, pinnedAt: true, channel: { select: { name: true, slug: true } } },
@@ -478,7 +480,7 @@ export class CommunityService {
   }
 
   async resolveReport(viewer: Viewer, reportId: string, action: "remove" | "dismiss", now = new Date()) {
-    if (viewer.role !== "ADMIN") throw new CommunityError("Only staff resolve reports.");
+    if (!isStaff(viewer)) throw new CommunityError("Only staff resolve reports.");
     const rep = await this.db.messageReport.findUnique({ where: { id: reportId } });
     if (!rep || rep.resolvedAt) return;
     if (action === "remove") {
@@ -492,7 +494,7 @@ export class CommunityService {
   }
 
   async mute(viewer: Viewer, userId: string, until: Date | null, reason: string | null) {
-    if (viewer.role !== "ADMIN") throw new CommunityError("Only staff mute members.");
+    if (!isStaff(viewer)) throw new CommunityError("Only staff mute members.");
     if (userId === viewer.id) throw new CommunityError("You cannot mute yourself.");
     await this.db.communityMute.upsert({
       where: { userId },
@@ -502,7 +504,7 @@ export class CommunityService {
   }
 
   async unmute(viewer: Viewer, userId: string) {
-    if (viewer.role !== "ADMIN") throw new CommunityError("Only staff lift mutes.");
+    if (!isStaff(viewer)) throw new CommunityError("Only staff lift mutes.");
     await this.db.communityMute.deleteMany({ where: { userId } });
   }
 
@@ -546,7 +548,7 @@ export class CommunityService {
     viewer: Viewer,
     input: { id?: string; slug: string; name: string; topic?: string | null; kind: ChannelSummary["kind"]; courseId?: string | null; adminOnly: boolean; slowModeSec: number; sortOrder: number }
   ) {
-    if (viewer.role !== "ADMIN") throw new CommunityError("Only staff manage channels.");
+    if (!isStaff(viewer)) throw new CommunityError("Only staff manage channels.");
     const slug = input.slug.trim().toLowerCase();
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 60) {
       throw new CommunityError("The address must be lowercase letters, numbers and single hyphens.");
@@ -576,7 +578,7 @@ export class CommunityService {
   }
 
   async setArchived(viewer: Viewer, channelId: string, archived: boolean) {
-    if (viewer.role !== "ADMIN") throw new CommunityError("Only staff manage channels.");
+    if (!isStaff(viewer)) throw new CommunityError("Only staff manage channels.");
     await this.db.channel.update({ where: { id: channelId }, data: { archivedAt: archived ? new Date() : null } });
   }
 }
