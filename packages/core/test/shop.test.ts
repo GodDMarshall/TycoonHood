@@ -9,6 +9,7 @@ import {
   paidAfterCancel, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS,
 } from "../src/shop";
 import { cronAuth } from "../src/platform/cron";
+import { CommerceService } from "../src/commerce/commerce";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
 import { TEST_REFUND_NOTE } from "../src/shop/refunds";
 import { IST_TIME_ZONE, formatIst, parseIstDateTime } from "../src/time/ist";
@@ -451,6 +452,40 @@ describe("Shop — Razorpay test keys in production are staff-only", () => {
       vi.unstubAllEnvs();
       vi.unstubAllGlobals();
     }
+  });
+
+  it("a member's order paid in test mode is never shipped in production; staff test orders and live orders still ship", async () => {
+    const commerce = new CommerceService(prisma);
+    const p = await product({ inventory: 5, inr: 20_000 });
+    async function paidOrder(keyId: string, role: "MEMBER" | "ADMIN") {
+      const { provider } = fakeRazorpay(keyId);
+      const svc = new ShopCheckoutService(prisma, { provider: () => provider, providerFor: () => provider });
+      const u = await prisma.user.update({ where: { id: (await createTestUser()).id }, data: { role } });
+      await cart.add(u.id, p.id);
+      const { order, payment } = await svc.startInrCheckout(u.id, { shipping: ADDRESS });
+      const payId = `pay_${uid().slice(0, 12)}`;
+      const signature = hmacSha256Hex(KEY_SECRET, `${payment.providerOrderId}|${payId}`);
+      expect((await svc.verifyRazorpayCallback(u.id, { razorpayOrderId: payment.providerOrderId!, razorpayPaymentId: payId, signature })).outcome).toBe("paid");
+      return order;
+    }
+    // Paid in test mode before the rail was fenced, as every member could.
+    const memberTest = await paidOrder("rzp_test_ship", "MEMBER");
+    const staffTest = await paidOrder("rzp_test_ship", "ADMIN");
+    const memberLive = await paidOrder("rzp_live_ship", "MEMBER");
+
+    vi.stubEnv("NODE_ENV", "production");
+    try {
+      await expect(commerce.markShipped(memberTest.id, "India Post", "EE000000001IN")).rejects.toThrow(
+        "This order was paid in test mode, so no real money was charged. Do not ship it."
+      );
+      expect((await prisma.order.findUniqueOrThrow({ where: { id: memberTest.id } })).status).toBe("PAID");
+      expect((await commerce.markShipped(staffTest.id, "India Post", "EE000000002IN")).status).toBe("FULFILLED");
+      expect((await commerce.markShipped(memberLive.id, "India Post", "EE000000003IN")).status).toBe("FULFILLED");
+    } finally {
+      vi.unstubAllEnvs();
+    }
+    // Outside production, test orders ship as before.
+    expect((await commerce.markShipped(memberTest.id, "India Post", "EE000000001IN")).status).toBe("FULFILLED");
   });
 
   it("preflight warns about test keys in production and a missing webhook secret, and fails on half a key pair", () => {

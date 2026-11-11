@@ -46,6 +46,7 @@ Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are 
 2. Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`, then redeploy. If you can, do this test run on a preview or staging deployment rather than the public site.
    - Test payments move no money. So on any production build (`next build` and `next start`, which includes Vercel previews), card checkout is offered **only to admins**. Members see "Card payments are not available yet" and can still pay with THC. The server enforces this when an order is started, not just the page.
    - Checkout shows a "test mode" banner. Payments are recorded as TEST and excluded from revenue. A commission on a test order is flagged "do not pay out" and cannot be approved.
+   - On a production build, an order a member paid in test mode cannot be marked shipped. An admin's own test order can, so you can try the whole flow.
    - `pnpm preflight` warns while test keys are set in production.
    - On a local `next dev` run, test keys work for every account, as before.
 3. In the Razorpay dashboard, go to Settings → Webhooks and add `https://<your-domain>/api/webhooks/razorpay`.
