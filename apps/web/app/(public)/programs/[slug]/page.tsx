@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { learner, renderMarkdown } from "@tycoonhood/core";
+import { jsonLdHtml, learner, renderMarkdown } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, Notice, PillarBadge, buttonStyles } from "@tycoonhood/ui";
 import { objectivesOf } from "../../../../lib/learning";
 import { getCurrentUser } from "../../../../lib/auth";
@@ -65,7 +65,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />
       <header className="relative overflow-hidden border-b border-line">
         <div className="absolute inset-0 opacity-70" aria-hidden>
           <CoverFill pillar={course.pillar} coverImage={course.coverImage} />

@@ -98,5 +98,6 @@ export * from "./shop";
 export * from "./discussions";
 export * from "./lms/index-authoring";
 
-// --- Author content as HTML: the one Markdown renderer ---
+// --- Author content as HTML: the one Markdown renderer and JSON-LD ---
 export { renderMarkdown, sanitizeContentHtml, EXTERNAL_LINK_REL } from "./content/markdown";
+export { jsonLdHtml } from "./content/json-ld";
