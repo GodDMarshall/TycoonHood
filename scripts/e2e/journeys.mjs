@@ -18,7 +18,9 @@
  *   TH_SHOTS       directory for screenshots (skipped when unset)
  *   TH_WEB         base URL (default http://localhost:3000)
  *   TH_WORLD_ENGINE=1  journey 9 also loads the 3D engine on Chromium's software
- *                  GPU, posing as a hardware one (slow: about a frame a second)
+ *                  GPU, posing as a hardware one, and drives every way back to
+ *                  2D (slow: SwiftShader draws about a frame a second, so its
+ *                  frames are timed as 16 ms ones unless a check says otherwise)
  *
  * Prints PASS/FAIL per check and exits non-zero when any check fails.
  * Every check is something a member or staff member could see on screen; the
@@ -768,8 +770,53 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
   const SOFTWARE = ["software-gpu", "no-webgl2"];
   const MAC_SAFARI = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15";
   const phone = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
+  /** The status line's words for each way the page stays, or goes back to, 2D (world-host.tsx). */
+  const WHY = {
+    device: "The 3D campus is made for a computer. Everything in it is below.",
+    narrow: "The campus needs a window at least 1024 pixels wide.",
+    "reduced-motion": "Your device asks for less motion, so the campus stays 2D.",
+    gpu: "This browser can't draw the campus smoothly.",
+    "load-failed": "The campus didn't finish loading.",
+    "context-lost": "The graphics stopped responding, so the campus closed.",
+    "too-slow": "The campus ran too slowly on this device, so it closed.",
+    chosen: "You're on the 2D view.",
+  };
   await admin();
   const storageState = await (await member()).storageState();
+
+  /**
+   * Every name /world could leak if it ever showed people rather than counts:
+   * usernames, display names, names and emails of the top ten of this week's
+   * board and of all time, of everyone active in the last 24 hours, and of the
+   * e2e admin. Never the viewer, nor a name the viewer shares.
+   */
+  async function leakableNames(viewerEmail) {
+    const me = await q1(`select u.id, u.name, p.username, p."displayName" from "User" u join "Profile" p on p."userId"=u.id where u.email=$1`, [viewerEmail]);
+    const now = new Date();
+    const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - ((now.getUTCDay() + 6) % 7)));
+    const top = (since) =>
+      qa(
+        `select e."userId" as id from "XpEvent" e join "User" u on u.id=e."userId" left join "Profile" p on p."userId"=u.id
+         where u."suspendedAt" is null and e."createdAt" >= $1 and (p.privacy ->> 'leaderboard') is distinct from 'false'
+         group by e."userId" having sum(e.amount) > 0 order by sum(e.amount) desc limit 10`,
+        [since]
+      );
+    const active = await qa(
+      `select "userId" as id from "StandardDay" where "metAt" >= now() - interval '1 day'
+       union select "userId" from "LessonProgress" where "completedAt" >= now() - interval '1 day'
+       union select "authorId" from "Message" where "createdAt" >= now() - interval '1 day'
+       union select "authorId" from "CommunityPost" where "createdAt" >= now() - interval '1 day'
+       union select "userId" from "UserAchievement" where "unlockedAt" >= now() - interval '1 day'
+       union select id from "User" where email = $1`,
+      [ADMIN_EMAIL]
+    );
+    const ids = [...new Set([...(await top(monday)), ...(await top(new Date(0))), ...active].map((r) => r.id))].filter((id) => id !== me.id);
+    const rows = await qa(`select u.email, u.name, p.username, p."displayName" from "User" u join "Profile" p on p."userId"=u.id where u.id = any($1)`, [ids]);
+    const mine = new Set([me.name, me.username, me.displayName].filter(Boolean).map((n) => n.toLowerCase()));
+    const names = new Set();
+    for (const r of rows) for (const n of [r.username, r.displayName, r.name, r.email]) if (n && n.length >= 4 && !mine.has(n.toLowerCase())) names.add(n);
+    return [...names];
+  }
 
   /** Every request a page makes, and every script it ran that carries three.js's renderer. */
   function loads(page) {
@@ -799,6 +846,7 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     return state(page);
   }
   const worldLinks = (page) => page.locator('a[href^="/world"]').count();
+  const line = async (page) => (await page.locator("[data-world-root] [role='status']").innerText().catch(() => "")).trim();
 
   // ── a guest is asked to sign in first
   {
@@ -833,8 +881,8 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     ok("desktop: six cards, Today to Store", heads.join() === SECTIONS.join(), heads.join(", "));
     const text = await bodyText(page);
     ok("desktop: none of the retired HQ names appear", !RETIRED.test(text), text.match(RETIRED)?.[0] ?? "");
-    const said = (await page.locator("[data-world-root] [role='status']").innerText().catch(() => "")).trim();
-    ok("desktop: one line says why the page is 2D", said.length > 0, said);
+    const said = await line(page);
+    ok("desktop: the status line says why, in the page's words", said === WHY.gpu, said);
     await shot(page, "world-desktop");
 
     const hrefs = [...new Set(await page.locator("[data-world-root] a[href^='/']").evaluateAll((as) => as.map((a) => a.getAttribute("href"))))];
@@ -845,9 +893,11 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     }
     ok("desktop: every link on the 2D page opens (200, no redirect)", hrefs.length >= 15 && broken.length === 0, broken.join(", ") || `${hrefs.length} links`);
 
-    const other = (await q1(`select p.username from "Profile" p join "User" u on u.id=p."userId" where u.email=$1`, [ADMIN_EMAIL]))?.username;
+    // The page and its inlined payload: counts only, never a member it could have shown.
     const html = await page.content();
-    ok("desktop: counts only, no other member's name or email in the page", !!other && !html.includes(other) && !html.includes(ADMIN_EMAIL), `looked for @${other}`);
+    const leakable = await leakableNames(S.member.email);
+    const leaked = leakable.filter((n) => html.includes(n));
+    ok("desktop: counts only, none of the board's top members or the day's active members in the page", leakable.length > 0 && leaked.length === 0, leaked.length ? leaked.slice(0, 5).join(", ") : `${leakable.length} names looked for`);
     ok("no console errors (desktop)", errors.length === 0, errors.join(" | "));
     await page.close();
   }
@@ -904,7 +954,7 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     const errors = watch(page);
     await go(page, "/world");
     const d = await decision(page);
-    ok("no WebGL2: the 2D page (no-webgl2)", d?.mode === "2d" && d.reason === "no-webgl2", JSON.stringify(d));
+    ok("no WebGL2: the 2D page (no-webgl2), saying why", d?.mode === "2d" && d.reason === "no-webgl2" && (await line(page)) === WHY.gpu, `${JSON.stringify(d)} "${await line(page)}"`);
     ok("no console errors (no WebGL2)", errors.length === 0, errors.join(" | "));
     await ctx.close();
   }
@@ -916,11 +966,44 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     const errors = watch(page);
     await go(page, "/world");
     const d = await decision(page);
-    ok("reduced motion: the 2D page (reduced-motion)", d?.mode === "2d" && d.reason === "reduced-motion", JSON.stringify(d));
+    ok("reduced motion: the 2D page (reduced-motion), saying why", d?.mode === "2d" && d.reason === "reduced-motion" && (await line(page)) === WHY["reduced-motion"], `${JSON.stringify(d)} "${await line(page)}"`);
     await go(page, "/today");
     await page.waitForTimeout(800);
     ok("reduced motion: /today has no campus link", (await worldLinks(page)) === 0);
     ok("no console errors (reduced motion)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+
+  // ── a narrow window: the line promises nothing the device can't keep
+  {
+    const ctx = await newCtx({ storageState, viewport: { width: 1000, height: 720 } });
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    await go(page, "/world");
+    const d = await decision(page);
+    ok("narrow window (1000 px): the 2D page (narrow), naming the width it needs", d?.reason === "narrow" && (await line(page)) === WHY.narrow, `${JSON.stringify(d)} "${await line(page)}"`);
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.waitForSelector("[data-world-root]:not([data-world-fallback='narrow'])", { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(300);
+    const wide = await state(page);
+    const walk = await page.getByRole("button", { name: "Walk the campus" }).count();
+    ok("widened, on a software GPU: the real reason, and no offer to walk", SOFTWARE.includes(wide?.reason) && (await line(page)) === WHY.gpu && walk === 0, `${JSON.stringify(wide)} "${await line(page)}", ${walk} walk buttons`);
+    ok("no console errors (narrow)", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+  {
+    const ctx = await newCtx({ storageState, reducedMotion: "reduce", viewport: { width: 1000, height: 720 } });
+    const page = await ctx.newPage();
+    const errors = watch(page);
+    await go(page, "/world");
+    const d = await decision(page);
+    ok("reduced motion in a narrow window: reduced-motion, not narrow", d?.reason === "reduced-motion" && (await line(page)) === WHY["reduced-motion"], `${JSON.stringify(d)} "${await line(page)}"`);
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.waitForTimeout(800);
+    const wide = await state(page);
+    const walk = await page.getByRole("button", { name: "Walk the campus" }).count();
+    ok("reduced motion, widened: still reduced-motion, and no offer to walk", wide?.reason === "reduced-motion" && walk === 0, `${JSON.stringify(wide)}, ${walk} walk buttons`);
+    ok("no console errors (reduced motion, narrow)", errors.length === 0, errors.join(" | "));
     await ctx.close();
   }
 
@@ -932,7 +1015,7 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     const seen = loads(page);
     const r = await go(page, "/world");
     const d = await decision(page);
-    ok("phone: /world answers 200 with the 2D page (phone)", r?.status() === 200 && d?.mode === "2d" && d.reason === "phone", `status ${r?.status()} ${JSON.stringify(d)}`);
+    ok("phone: /world answers 200 with the 2D page (phone), saying why", r?.status() === 200 && d?.mode === "2d" && d.reason === "phone" && (await line(page)) === WHY.device, `status ${r?.status()} ${JSON.stringify(d)} "${await line(page)}"`);
     ok("phone: no canvas", (await page.locator("canvas").count()) === 0);
     const w = await noHorizontalScroll(page);
     ok("phone: /world has no horizontal scroll", w.scrollWidth <= w.inner && w.bodyScroll <= w.inner, `scrollWidth ${w.scrollWidth}/${w.bodyScroll}, innerWidth ${w.inner}`);
@@ -962,7 +1045,7 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     const errors = watch(page);
     await go(page, "/world");
     const d = await decision(page);
-    ok("iPad Pro 11: the 2D page (tablet)", d?.mode === "2d" && d.reason === "tablet", JSON.stringify(d));
+    ok("iPad Pro 11: the 2D page (tablet), saying why", d?.mode === "2d" && d.reason === "tablet" && (await line(page)) === WHY.device, `${JSON.stringify(d)} "${await line(page)}"`);
     ok("no console errors (iPad)", errors.length === 0, errors.join(" | "));
     await ctx.close();
   }
@@ -972,7 +1055,7 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     const errors = watch(page);
     await go(page, "/world");
     const d = await decision(page);
-    ok("iPad as a desktop (Mac UA, touch, 1194×834): the 2D page (tablet)", d?.mode === "2d" && d.reason === "tablet", JSON.stringify(d));
+    ok("iPad as a desktop (Mac UA, touch, 1194×834): the 2D page (tablet), saying why", d?.mode === "2d" && d.reason === "tablet" && (await line(page)) === WHY.device, `${JSON.stringify(d)} "${await line(page)}"`);
     await go(page, "/today");
     await page.waitForTimeout(800);
     const sidebar = page.locator("aside", { has: page.locator('nav[aria-label="App"]') });
@@ -1013,10 +1096,16 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
 
   // ── optional: the engine itself, on the software GPU posing as a hardware one
   if (process.env.TH_WORLD_ENGINE !== "1") {
-    skip("engine: loads, draws one canvas, releases its GL context", "set TH_WORLD_ENGINE=1 to run it (SwiftShader draws about a frame a second)");
+    skip("engine: loads, draws one canvas, every way back to 2D, releases its GL context", "set TH_WORLD_ENGINE=1 to run it (SwiftShader draws about a frame a second)");
   } else {
-    const ctx = await newCtx({ storageState });
-    await ctx.addInitScript(() => {
+    /**
+     * In the page, before anything else: WebGL2 asks no longer refuse the
+     * software GPU and report a hardware one; every context is kept, weakly,
+     * in window.__worldGl; and frames are timed as __worldFrameMs apart (16 ms
+     * unless a check changes it), so the frame governor judges the campus and
+     * not SwiftShader's second-long frames.
+     */
+    const engineInit = () => {
       const gl = [];
       window.__worldGl = gl;
       const getContext = window.HTMLCanvasElement.prototype.getContext;
@@ -1027,30 +1116,63 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
           keep = others;
         }
         const made = getContext.call(this, type, keep, ...rest);
-        if (type === "webgl2" && made && !gl.includes(made)) gl.push(made);
+        if (type === "webgl2" && made && !gl.some((r) => r.deref() === made)) gl.push(new WeakRef(made));
         return made;
       };
       const getParameter = window.WebGL2RenderingContext.prototype.getParameter;
       window.WebGL2RenderingContext.prototype.getParameter = function (p) {
         return p === 0x9246 || p === 0x1f01 ? "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)" : getParameter.call(this, p);
       };
-    });
+      window.__worldFrameMs = 16;
+      const raf = window.requestAnimationFrame.bind(window);
+      let frameAt = -1;
+      let fake = window.performance.now();
+      window.requestAnimationFrame = (cb) =>
+        raf((now) => {
+          if (now !== frameAt) {
+            frameAt = now;
+            fake += window.__worldFrameMs;
+          }
+          cb(fake);
+        });
+    };
+    const live = (page) => page.evaluate(() => window.__worldGl.map((r) => r.deref()).filter((g) => g && !g.isContextLost()).length);
+    const canvases = (page) => page.locator("canvas").count();
+    const cards = (page) => page.locator("[data-world-card]").count();
+    const loaded = (page, timeout = 90000) => page.waitForSelector("[data-world-root][data-world-mode='3d'][data-world-engine='loaded']", { timeout }).catch(() => {});
+    const twoD = (page, reason, timeout = 30000) => page.waitForSelector(`[data-world-root][data-world-fallback='${reason}']`, { timeout }).catch(() => {});
+    const up = (x) => x?.mode === "3d" && x.engine === "loaded";
+    const focused = (page) =>
+      page.evaluate(() => {
+        const a = document.activeElement;
+        return a && a !== document.body ? a.getAttribute("role") || a.tagName.toLowerCase() : "body";
+      });
+
+    const ctx = await newCtx({ storageState });
+    await ctx.addInitScript(engineInit);
     const page = await ctx.newPage();
     const errors = watch(page);
     const tooMany = [];
     page.on("console", (m) => /Too many active WebGL contexts/i.test(m.text()) && tooMany.push(m.text()));
     const seen = loads(page);
-    const live = () => page.evaluate(() => window.__worldGl.filter((g) => !g.isContextLost()).length);
-    const loaded = (timeout = 60000) => page.waitForSelector("[data-world-root][data-world-engine='loaded']", { timeout }).catch(() => {});
+    const cdp = await ctx.newCDPSession(page);
+    await cdp.send("HeapProfiler.enable");
+    /** WebGL2 contexts still in memory after a full garbage collection, lost or not. */
+    async function inMemory() {
+      for (let i = 0; i < 3; i++) await cdp.send("HeapProfiler.collectGarbage");
+      const { result: proto } = await cdp.send("Runtime.evaluate", { expression: "WebGL2RenderingContext.prototype", objectGroup: "gl" });
+      const { objects } = await cdp.send("Runtime.queryObjects", { prototypeObjectId: proto.objectId, objectGroup: "gl" });
+      const { result } = await cdp.send("Runtime.callFunctionOn", { objectId: objects.objectId, functionDeclaration: "function () { return this.length; }", returnByValue: true });
+      await cdp.send("Runtime.releaseObjectGroup", { objectGroup: "gl" });
+      return result.value;
+    }
 
-    // SwiftShader may be too slow for the frame governor: closing itself to 2D is a pass too.
-    const up = (x) => (x?.mode === "3d" && x.engine === "loaded") || (x?.mode === "2d" && x.reason === "too-slow");
     await go(page, "/world?world=performance");
-    await loaded();
+    await loaded(page);
     const s = await state(page);
-    const canvases = await page.locator("canvas").count();
     ok("engine: loads on a hardware-class GPU", up(s), JSON.stringify(s));
-    ok("engine: draws exactly one canvas", s?.mode !== "3d" || canvases === 1, `${canvases} canvas`);
+    ok("engine: draws exactly one canvas", (await canvases(page)) === 1, `${await canvases(page)} canvas`);
+    ok("engine: the status line says it is ready", (await line(page)) === "The 3D campus is ready.", await line(page));
     const fetched = campusAssets(seen);
     ok("engine: fetches only its own textures", fetched.length > 0 && fetched.every((u) => /^\/world\/tex\/[^/]+\.jpg$/.test(pathOf(u))), `${fetched.length} requests${fetched.length ? `, e.g. ${pathOf(fetched[0])}` : ""}`);
     await shot(page, "world-3d");
@@ -1058,26 +1180,122 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     await page.locator('aside nav a[href="/today"]').first().click({ timeout: 30000 });
     await page.waitForURL((u) => pathOf(u.href) === "/today", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(500);
-    ok("engine: leaving for /today removes the canvas and frees every GL context", (await page.locator("canvas").count()) === 0 && (await live()) === 0, `${await page.locator("canvas").count()} canvas, ${await live()} live contexts`);
+    const left = { canvases: await canvases(page), live: await live(page), inMemory: await inMemory() };
+    ok("engine: leaving for /today removes the canvas and frees every GL context, down to the memory", left.canvases === 0 && left.live === 0 && left.inMemory === 0, JSON.stringify(left));
 
     await page.locator('aside a[href="/world"]').click({ timeout: 30000 });
     await page.waitForURL((u) => pathOf(u.href) === "/world", { timeout: 30000 }).catch(() => {});
-    await loaded();
+    await loaded(page);
     const back = await state(page);
     ok("engine: coming back loads it again", up(back), JSON.stringify(back));
     ok("engine: no 'Too many active WebGL contexts' warning", tooMany.length === 0, tooMany.join(" | "));
 
-    if (back?.mode === "3d") {
-      await page.getByRole("button", { name: "2D view" }).click({ timeout: 30000 });
-      await page.waitForSelector("[data-world-root][data-world-engine='disposed']", { timeout: 30000 }).catch(() => {});
-      const chosen = await state(page);
-      const walk = await page.getByRole("button", { name: "Walk the campus" }).count();
-      ok("engine: the 2D view button closes it and offers the walk again", chosen?.reason === "chosen" && chosen.engine === "disposed" && (await page.locator("canvas").count()) === 0 && walk === 1 && (await live()) === 0, JSON.stringify(chosen));
-    } else {
-      skip("engine: the 2D view button", `the campus had already closed itself (${back?.reason})`);
-    }
+    // '2D view', from the keyboard: the 2D page is back, and so is focus, on the status line.
+    await page.getByRole("button", { name: "2D view" }).focus();
+    await page.keyboard.press("Enter");
+    await twoD(page, "chosen");
+    const chosen = await state(page);
+    const walk = page.getByRole("button", { name: "Walk the campus" });
+    const after = { ...chosen, canvases: await canvases(page), cards: await cards(page), walk: await walk.count(), live: await live(page), line: await line(page) };
+    ok("engine: '2D view' closes it, brings back the 2D page and offers the walk again", after.reason === "chosen" && after.engine === "disposed" && after.canvases === 0 && after.cards === 6 && after.walk === 1 && after.live === 0 && after.line === WHY.chosen, JSON.stringify(after));
+    ok("engine: after '2D view', focus is on the status line, not lost", (await focused(page)) === "status", await focused(page));
+
+    // 'Walk the campus', from the keyboard: once it is up, focus is in the campus, with a ring that shows.
+    await walk.focus();
+    await page.keyboard.press("Enter");
+    await loaded(page);
+    await page.waitForTimeout(300);
+    const ring = await page.evaluate(() => {
+      const host = document.querySelector("[data-world-root] [role='application']");
+      const mark = host?.nextElementSibling;
+      return { inCampus: !!host && document.activeElement === host, ringShows: !!mark && window.getComputedStyle(mark).display !== "none" };
+    });
+    ok("engine: after 'Walk the campus', focus is in the campus, with a visible focus ring", ring.inCampus && ring.ringShows, JSON.stringify(ring));
+
+    // Reduced motion switched on while it runs.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await twoD(page, "reduced-motion");
+    const calm = { ...(await state(page)), live: await live(page), line: await line(page) };
+    ok("engine: reduced motion switched on closes it (reduced-motion) and releases its GL context", calm.reason === "reduced-motion" && calm.engine === "disposed" && calm.live === 0 && calm.line === WHY["reduced-motion"], JSON.stringify(calm));
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+
+    // The GPU drops the context.
+    await go(page, "/world?world=performance");
+    await loaded(page);
+    await page.evaluate(() => {
+      for (const r of window.__worldGl) {
+        const g = r.deref();
+        if (g && !g.isContextLost()) g.getExtension("WEBGL_lose_context")?.loseContext();
+      }
+    });
+    await twoD(page, "context-lost");
+    const lost = { ...(await state(page)), canvases: await canvases(page), line: await line(page) };
+    ok("engine: a lost GL context closes it (context-lost)", lost.reason === "context-lost" && lost.engine === "disposed" && lost.canvases === 0 && lost.line === WHY["context-lost"], JSON.stringify(lost));
+
+    // A window made too narrow closes it; wide again, the walk is offered.
+    await go(page, "/world?world=performance");
+    await loaded(page);
+    await page.setViewportSize({ width: 900, height: 720 });
+    await twoD(page, "narrow");
+    const thin = { ...(await state(page)), live: await live(page), line: await line(page) };
+    ok("engine: a window made narrower than 1024 px closes it (narrow)", thin.reason === "narrow" && thin.engine === "disposed" && thin.live === 0 && thin.line === WHY.narrow, JSON.stringify(thin));
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await walk.waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
+    ok("engine: wide again, it offers the walk", (await line(page)) === "The window is wide enough now." && (await walk.count()) === 1, await line(page));
+
+    // Frames a second or more apart close it within seconds, at any tier.
+    await walk.click();
+    await loaded(page);
+    await page.evaluate(() => {
+      window.__worldFrameMs = 1200;
+    });
+    await twoD(page, "too-slow", 60000);
+    const slow = { ...(await state(page)), live: await live(page), line: await line(page) };
+    ok("engine: frames over a second apart close it (too-slow)", slow.reason === "too-slow" && slow.engine === "disposed" && slow.live === 0 && slow.line === WHY["too-slow"], JSON.stringify(slow));
     ok("no console errors (engine)", errors.length === 0, errors.join(" | "));
     await ctx.close();
+
+    // Failed and stalled loads. The 2D page stays up throughout, and a stalled load can be stopped or gives up.
+    {
+      const c = await newCtx({ storageState, serviceWorkers: "block" });
+      await c.addInitScript(engineInit);
+      const p = await c.newPage();
+      const errs = watch(p);
+      const stopped = [];
+      p.on("requestfailed", (r) => stopped.push(pathOf(r.url())));
+
+      await p.route("**/world/tex/*.jpg", (r) => r.abort());
+      await go(p, "/world?world=performance");
+      await twoD(p, "load-failed", 60000);
+      const failedLoad = { ...(await state(p)), cards: await cards(p), retry: await p.getByRole("button", { name: "Try again" }).count(), line: await line(p) };
+      ok("engine: textures that fail give the 2D page (load-failed) with 'Try again'", failedLoad.reason === "load-failed" && failedLoad.cards === 6 && failedLoad.retry === 1 && failedLoad.line === WHY["load-failed"], JSON.stringify(failedLoad));
+      await p.unroute("**/world/tex/*.jpg");
+
+      // One texture never answers.
+      const HUNG = "/world/tex/oak_normal.jpg";
+      await p.route(`**${HUNG}`, () => {});
+      await p.goto(`${WEB}/world?world=performance`, { waitUntil: "domcontentloaded", timeout: 60000 });
+      await p.waitForSelector("[data-world-root][data-world-mode='loading']", { timeout: 30000 }).catch(() => {});
+      await p.waitForTimeout(1500);
+      const during = { ...(await state(p)), cards: await cards(p), out: await p.getByRole("button", { name: "2D view" }).count(), line: await line(p) };
+      ok("engine: while it loads, the 2D page stays up, with '2D view'", during.mode === "loading" && during.cards === 6 && during.out === 1 && during.line === "Loading the 3D campus.", JSON.stringify(during));
+      stopped.length = 0;
+      await p.getByRole("button", { name: "2D view" }).click();
+      await twoD(p, "chosen", 10000);
+      await p.waitForTimeout(500);
+      const out = { ...(await state(p)), cards: await cards(p), canvases: await canvases(p), live: await live(p), stopped: stopped.includes(HUNG) };
+      ok("engine: '2D view' while it loads stops it, and the download with it", out.reason === "chosen" && out.cards === 6 && out.canvases === 0 && out.live === 0 && out.stopped, JSON.stringify(out));
+
+      const started = Date.now();
+      await p.goto(`${WEB}/world?world=performance`, { waitUntil: "domcontentloaded", timeout: 60000 });
+      await twoD(p, "load-failed", 60000);
+      const gaveUp = { ...(await state(p)), cards: await cards(p), retry: await p.getByRole("button", { name: "Try again" }).count(), seconds: Math.round((Date.now() - started) / 1000) };
+      ok("engine: a load that stalls gives up by itself (load-failed, 'Try again')", gaveUp.reason === "load-failed" && gaveUp.cards === 6 && gaveUp.retry === 1 && gaveUp.seconds <= 45, JSON.stringify(gaveUp));
+      // The aborted and hung requests are logged by the browser; nothing else may be.
+      const unexpected = errs.filter((e) => !/Failed to load resource/.test(e));
+      ok("no console errors (failed loads), beyond the refused requests", unexpected.length === 0, unexpected.join(" | "));
+      await c.close();
+    }
   }
   await desk.close();
 });
