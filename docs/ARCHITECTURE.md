@@ -39,7 +39,7 @@ A pnpm monorepo with one product app.
   - **THC** is internal, non-monetary credit kept in a double-entry ledger (`ledger/ledger.ts`). Every grant, spend and reversal is a balanced transaction with an idempotency key.
   - **INR** is real money through Razorpay (`shop/payments/*`). It is stored in integer paise.
   - The payment mode comes from the provider: sandbox and `rzp_test_` keys are TEST, and only `rzp_live_` keys are LIVE. Revenue counts LIVE captured payments only.
-- **Audit:** every admin action that changes a user, money, content or settings writes an `AuditLog` row (`platform/audit.ts`).
+- **Audit:** every admin action that changes a user, money, content or settings writes an `AuditLog` row (`platform/audit.ts`). An edit records the fields it changed, from and to (`auditChanges`). Settling a legacy rupee order by hand (`commerce/manual-settlement.ts`) is audited, and refused for an order with a Payment row.
 - **CSP** is in `apps/web/next.config.mjs`. It allows Razorpay's checkout script and frames, and YouTube for lesson video.
 
 ## How the pieces talk

@@ -42,6 +42,7 @@ export { ChallengeService, challenges, ChallengeError } from "./gamification/cha
 export { MissionCooldownError } from "./rewards/rewards";
 export { MiningService, mining, MinerError, RigMaxedError, EpochExhaustedError } from "./mining/mining";
 export { CommerceService, commerce, CommerceError, OutOfStockError, ProductUnavailableError } from "./commerce/commerce";
+export { ManualSettlementService, manualSettlement, ManualSettlementError } from "./commerce/manual-settlement";
 export { DiscordService, discord, InvalidLinkCodeError, activeDiscordTransport } from "./integrations/discord";
 export type { DiscordTransport, RoleSyncResult } from "./integrations/discord";
 export { DiscordAlreadyLinkedError } from "./integrations/discord";

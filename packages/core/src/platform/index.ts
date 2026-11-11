@@ -1,4 +1,4 @@
-export { AuditService, audit } from "./audit";
+export { AuditService, audit, auditChanges, auditValue } from "./audit";
 export type { AuditEntry } from "./audit";
 export { notify } from "./notify";
 

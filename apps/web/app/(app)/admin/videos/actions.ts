@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@tycoonhood/db";
 import { WATCH } from "@tycoonhood/config";
+import { audit, auditChanges } from "@tycoonhood/core";
 import { requireAdmin } from "../../../../lib/guard";
 import { extractVideoId, parseDuration } from "../../../../lib/youtube";
 
@@ -10,9 +11,11 @@ export interface VideoFormState { error?: string; message?: string; notes?: stri
 const str = (v: FormDataEntryValue | null) => String(v ?? "").trim();
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/;
 
+/** What an edit's audit row compares. publishedAt is left out: `active` says the same thing. */
+const VIDEO_FIELDS = ["title", "description", "youtubeVideoId", "durationSec", "requiredSec", "rewardThc", "rewardXp", "active", "sortOrder"] as const;
 
 export async function saveVideoAction(_prev: VideoFormState, fd: FormData): Promise<VideoFormState> {
-  await requireAdmin();
+  const admin = await requireAdmin();
 
   const slug = str(fd.get("slug"));
   if (!SLUG_RE.test(slug)) {
@@ -69,11 +72,22 @@ export async function saveVideoAction(_prev: VideoFormState, fd: FormData): Prom
   };
 
   try {
+    const before = await prisma.watchTask.findUnique({ where: { slug } });
     const saved = await prisma.watchTask.upsert({
       where: { slug },
       create: { slug, ...data },
       update: data,
     });
+    const changes = auditChanges(before, data, VIDEO_FIELDS);
+    if (!before || Object.keys(changes).length > 0) {
+      await audit.log({
+        actorId: admin.id,
+        action: before ? "video.update" : "video.create",
+        targetType: "WatchTask",
+        targetId: saved.id,
+        meta: { slug, changes },
+      });
+    }
     revalidatePath("/admin/videos");
 
     const notes: string[] = [];
@@ -98,10 +112,18 @@ export async function saveVideoAction(_prev: VideoFormState, fd: FormData): Prom
 }
 
 export async function toggleVideoAction(slug: string, next: boolean) {
-  await requireAdmin();
+  const admin = await requireAdmin();
+  const before = await prisma.watchTask.findUniqueOrThrow({ where: { slug }, select: { id: true, active: true } });
   await prisma.watchTask.update({
     where: { slug },
     data: { active: next, publishedAt: next ? new Date() : null },
+  });
+  await audit.log({
+    actorId: admin.id,
+    action: next ? "video.publish" : "video.unpublish",
+    targetType: "WatchTask",
+    targetId: before.id,
+    meta: { slug, active: { from: before.active, to: next } },
   });
   revalidatePath("/admin/videos");
 }

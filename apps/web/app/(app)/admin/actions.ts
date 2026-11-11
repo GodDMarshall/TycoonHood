@@ -2,8 +2,18 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { LedgerService, XpService, commerce, challenges } from "@tycoonhood/core";
+import {
+  AuthoringError,
+  ForbiddenError,
+  LedgerService,
+  XpService,
+  authoring,
+  challenges,
+  commerce,
+  manualSettlement,
+} from "@tycoonhood/core";
 import { getCurrentUser } from "../../../lib/auth";
+import { actorWith } from "../../../lib/guard";
 
 const ledger = new LedgerService(prisma);
 const xp = new XpService(prisma);
@@ -62,16 +72,36 @@ export async function reverseTxAction(txId: string) {
   revalidatePath("/admin/economy");
 }
 
-export async function toggleCoursePublishAction(courseId: string) {
-  await requireAdmin();
-  const c = await prisma.course.findUniqueOrThrow({ where: { id: courseId } });
-  await prisma.course.update({
-    where: { id: courseId },
-    data: { status: c.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED" },
-  });
+/**
+ * Publish or unpublish a program from the Content list. It goes through the
+ * authoring service, which checks the program can go live and audits the
+ * change (course.publish / course.unpublish). An archived program is never
+ * published from here: the list links to its editor instead.
+ */
+export async function toggleCoursePublishAction(
+  courseId: string,
+  _p: { ok?: string; error?: string },
+  _fd: FormData
+): Promise<{ ok?: string; error?: string }> {
+  let published: boolean;
+  try {
+    const admin = await actorWith("courses.publish");
+    const actor = { id: admin.id, role: admin.role };
+    const course = await prisma.course.findUnique({ where: { id: courseId }, select: { status: true } });
+    if (!course) return { error: "That program no longer exists." };
+    if (course.status === "ARCHIVED") return { error: "This program is archived. Open its editor to bring it back." };
+    published = course.status !== "PUBLISHED";
+    if (published) await authoring.publish(actor, courseId);
+    else await authoring.unpublish(actor, courseId);
+  } catch (e) {
+    if (e instanceof AuthoringError || e instanceof ForbiddenError) return { error: e.message };
+    if (e instanceof Error && e.message.startsWith("You do not have permission")) return { error: e.message };
+    throw e;
+  }
   revalidatePath("/admin/content");
   revalidatePath("/courses");
   revalidatePath("/programs");
+  return { ok: published ? "Published." : "Back to draft." };
 }
 
 /**
@@ -169,10 +199,15 @@ export async function shipOrderAction(orderId: string, _prev: ShipState, fd: For
   }
 }
 
+/**
+ * Settle a legacy rupee order by hand. Core refuses any order the payment
+ * flow owns (one with a Payment row) and audits the settlement.
+ */
 export async function settlePendingFiatAction(orderId: string) {
-  const admin = await requireAdmin();
-  await commerce.settleFiatOrder(orderId, `admin_${admin.id}`);
+  const admin = await actorWith("admin.commerce");
+  await manualSettlement.settle({ id: admin.id, role: admin.role }, orderId);
   revalidatePath("/admin/orders");
+  revalidatePath("/orders");
 }
 
 export async function reviewSubmissionAction(participationId: string, submissionId: string, approve: boolean, fd: FormData) {
