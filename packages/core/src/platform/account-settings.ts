@@ -8,7 +8,9 @@
  *    EmailVerificationService.confirm, which makes the switch).
  *  · change password: needs the current password; every OTHER session is
  *    signed out, the one making the change stays. Reset links and a waiting
- *    email change die with the old password.
+ *    email change die with the old password, even a change asked for at the
+ *    same moment: changeEmail checks the password again under a lock on the
+ *    credential row, so the two run one after the other.
  *  · delete account: a request for staff, recorded as a ContactMessage.
  *    Accounts are never hard-deleted from here — ledger rows reference the
  *    user with ON DELETE RESTRICT, and the books must still balance.
@@ -43,9 +45,11 @@ export class AccountSettingsService {
     this.verification = new EmailVerificationService(db);
   }
 
-  private async checkPassword(userId: string, password: string) {
+  /** Returns the hash the password matched, so a later transaction can tell whether it has changed since. */
+  private async checkPassword(userId: string, password: string): Promise<string> {
     const cred = await this.db.passwordCredential.findUnique({ where: { userId } });
     if (!cred || !(await verifyPassword(cred.hash, password))) throw new WrongPasswordError();
+    return cred.hash;
   }
 
   /**
@@ -56,7 +60,7 @@ export class AccountSettingsService {
    */
   async changeEmail(userId: string, newEmailRaw: string, currentPassword: string): Promise<IssuedEmailChange | null> {
     const newEmail = emailSchema.parse(newEmailRaw);
-    await this.checkPassword(userId, currentPassword);
+    const checkedHash = await this.checkPassword(userId, currentPassword);
     const user = await this.db.user.findUniqueOrThrow({ where: { id: userId } });
     if (user.email === newEmail) return null;
     // Addresses are stored lower-cased (registerSchema, emailSchema), so this is the unique email check.
@@ -64,6 +68,15 @@ export class AccountSettingsService {
       throw new EmailTakenError("An account with this email already exists.");
     }
     return this.db.$transaction(async (tx) => {
+      // A new password cancels a waiting change, so this request must not
+      // land behind one set since the check above. Lock the credential row,
+      // which changePassword and resetPassword also lock when they write it,
+      // and refuse if the hash moved. So either the new password lands first
+      // and this request is refused, or this lands first and the new password
+      // then cancels it.
+      const [cred] = await tx.$queryRaw<{ hash: string }[]>`
+        SELECT "hash" FROM "PasswordCredential" WHERE "userId" = ${userId} FOR UPDATE`;
+      if (cred?.hash !== checkedHash) throw new WrongPasswordError();
       await tx.user.update({ where: { id: userId }, data: { pendingEmail: newEmail } });
       const issued = await this.verification.issueEmailChangeIn(tx, { id: userId, email: user.email, pendingEmail: newEmail });
       await this.audit.log(
