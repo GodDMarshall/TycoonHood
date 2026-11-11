@@ -24,8 +24,14 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
   const user = await requireUser();
   const { slug } = await params;
   const { completed } = await searchParams;
-  const d = await courseDetail(user.id, slug);
+  let d = await courseDetail(user.id, slug);
   if (!d) notFound();
+  // Every lesson done but not settled: the programme became finishable
+  // without a new lesson (a final marked on a check already passed, a lesson
+  // removed). Complete it and issue the certificate now. Idempotent.
+  if (d.enrollment && d.total > 0 && d.done === d.total && (d.enrollment.status !== "COMPLETED" || !d.certificate)) {
+    if (await lms.reconcile(user.id, d.course.id)) d = (await courseDetail(user.id, slug)) ?? d;
+  }
   const { course, enrollment, certificate } = d;
   const [eligibility, rating, reviews, reviewGate, mine] = await Promise.all([
     enrollment ? lms.certificateEligibility(user.id, course.id) : Promise.resolve(null),

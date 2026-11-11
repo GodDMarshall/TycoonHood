@@ -283,6 +283,24 @@ export class CommunityService {
     return rows.map((m) => project(m, viewer));
   }
 
+  /**
+   * The open Questions channel of the programme a lesson belongs to, found
+   * through the lesson, never from the programme's slug: an author can rename
+   * a programme while its channels keep their slugs. The same channel the
+   * lesson page lists (lowest sortOrder). Null when the programme has none.
+   */
+  async questionsChannelFor(lessonId: string): Promise<{ slug: string } | null> {
+    return this.db.channel.findFirst({
+      where: {
+        kind: "QUESTIONS",
+        archivedAt: null,
+        course: { modules: { some: { lessons: { some: { id: lessonId } } } } },
+      },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+      select: { slug: true },
+    });
+  }
+
   /** Questions asked about one lesson, newest first, in channels the viewer can read. */
   async lessonQuestions(viewer: Viewer, lessonId: string, limit = 5) {
     const rows = await this.db.message.findMany({

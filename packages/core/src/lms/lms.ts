@@ -38,6 +38,22 @@ export interface CertificateEligibility {
   eligible: boolean;
 }
 
+/** One question of a scored attempt, as the member sees it. No answer key. */
+export interface QuizReviewItem {
+  prompt: string;
+  correct: boolean;
+  explanation: string | null;
+}
+
+/** A knowledge check's questions as the lesson page sends them to the
+ *  browser: the prompt and the options, never the answer or explanation. */
+export function questionsForMember(questions: { prompt: string; options: unknown }[]) {
+  return questions.map((q) => ({
+    prompt: q.prompt,
+    options: Array.isArray(q.options) ? q.options.map(String) : [],
+  }));
+}
+
 export class LmsService {
   private xp: XpService;
   private streaks: StreakService;
@@ -109,6 +125,68 @@ export class LmsService {
     };
   }
 
+  /**
+   * Settles one member's standing in a programme when it can change without
+   * a new lesson completion: an author marks a final, removes a lesson, or
+   * republishes. Completes the programme and issues the certificate if the
+   * member now qualifies. Idempotent; nothing is paid twice. Returns true
+   * when it completed the programme or issued a certificate.
+   */
+  async reconcile(userId: string, courseId: string): Promise<boolean> {
+    const [enrollment, course, certificate] = await Promise.all([
+      this.db.enrollment.findUnique({ where: { userId_courseId: { userId, courseId } }, select: { status: true } }),
+      this.db.course.findUnique({ where: { id: courseId }, select: { status: true, title: true } }),
+      this.db.certificate.findUnique({ where: { userId_courseId: { userId, courseId } }, select: { id: true } }),
+    ]);
+    if (!enrollment || course?.status !== "PUBLISHED") return false;
+    if (enrollment.status !== "COMPLETED") return this.refreshProgress(userId, courseId);
+    if (certificate) return false;
+    // Completed already (bonus paid): the certificate is all that can be owed.
+    const issued = await this.issueCertificateIfEligible(userId, courseId);
+    if (!issued) return false;
+    await this.db.notification.create({
+      data: {
+        userId,
+        type: "SYSTEM",
+        title: `Certificate issued: ${course.title}`,
+        body: `Certificate ${issued.serial} is in your certificates.`,
+        data: { courseId, href: `/certificates/${issued.serial}` },
+      },
+    });
+    return true;
+  }
+
+  /**
+   * Reconciles every member of a published programme who has every lesson
+   * done. Fail-soft per member, so one bad row cannot stop the rest.
+   */
+  async reconcileCourse(courseId: string) {
+    const out = { checked: 0, settled: 0, failed: 0 };
+    const course = await this.db.course.findUnique({ where: { id: courseId }, select: { status: true } });
+    if (course?.status !== "PUBLISHED") return out;
+    const total = await this.db.lesson.count({ where: { module: { courseId } } });
+    if (total === 0) return out;
+    const [done, certified] = await Promise.all([
+      this.db.lessonProgress.groupBy({
+        by: ["userId"],
+        where: { completedAt: { not: null }, lesson: { module: { courseId } } },
+        _count: { _all: true },
+      }),
+      this.db.certificate.findMany({ where: { courseId }, select: { userId: true } }),
+    ]);
+    const holders = new Set(certified.map((c) => c.userId)); // nothing left to owe them
+    for (const row of done) {
+      if (row._count._all < total || holders.has(row.userId)) continue;
+      out.checked++;
+      try {
+        if (await this.reconcile(row.userId, courseId)) out.settled++;
+      } catch {
+        out.failed++;
+      }
+    }
+    return out;
+  }
+
   /** Issues the certificate when (and only when) the member is eligible. Idempotent. */
   async issueCertificateIfEligible(userId: string, courseId: string) {
     const existing = await this.db.certificate.findUnique({ where: { userId_courseId: { userId, courseId } } });
@@ -161,7 +239,9 @@ export class LmsService {
   }
 
   /** Marks a lesson complete; first completion pays XP, touches the streak,
-   *  fires the first-lesson mission, and may complete the course.
+   *  fires the first-lesson mission, and may complete the course. A repeat
+   *  (a retake pass, a double click) pays nothing, but still settles the
+   *  course, which may have become completable since.
    *  Lessons complete in order, and a lesson with a knowledge check completes
    *  only through `submitQuiz` (`viaQuiz`). */
   async completeLesson(userId: string, lessonId: string, opts: { viaQuiz?: boolean } = {}) {
@@ -179,6 +259,11 @@ export class LmsService {
 
     if (lesson.quiz && !opts.viaQuiz) {
       throw new QuizRequiredError("Pass the knowledge check to complete this lesson.");
+    }
+    // A knowledge check whose questions are not written yet cannot be
+    // clicked past: it completes by passing it, once it exists.
+    if (lesson.type === "QUIZ" && !lesson.quiz) {
+      throw new QuizRequiredError("This knowledge check is not ready yet.");
     }
 
     const existing = await this.db.lessonProgress.findUnique({
@@ -201,15 +286,19 @@ export class LmsService {
       create: { userId, lessonId, completedAt: new Date() },
     });
 
-    let courseCompleted = false;
+    let courseCompleted: boolean;
     if (firstCompletion) {
-      await this.xp.awardXp({
-        userId,
-        amount: lesson.xpReward,
-        source: "LESSON_COMPLETED",
-        sourceId: lesson.id,
-        idempotencyKey: `xp:lesson:${lesson.id}:${userId}`,
-      });
+      // A lesson an author set to 0 XP pays nothing (awardXp refuses 0); the
+      // rest of the completion must still run.
+      if (lesson.xpReward > 0) {
+        await this.xp.awardXp({
+          userId,
+          amount: lesson.xpReward,
+          source: "LESSON_COMPLETED",
+          sourceId: lesson.id,
+          idempotencyKey: `xp:lesson:${lesson.id}:${userId}`,
+        });
+      }
       await this.streaks.touch(userId);
       courseCompleted = await this.refreshProgress(userId, course.id);
 
@@ -241,12 +330,18 @@ export class LmsService {
       } catch {
         // The lesson is complete regardless.
       }
+    } else {
+      // Already complete: nothing is paid again. But the programme may have
+      // become completable since (its final passed on a retake, a lesson
+      // removed, a final marked), so settle it now. Idempotent.
+      courseCompleted = await this.refreshProgress(userId, course.id);
     }
 
     return { firstCompletion, courseCompleted, xpAwarded: firstCompletion ? lesson.xpReward : 0 };
   }
 
-  /** Recomputes progressPct; completes the course when everything is done. */
+  /** Recomputes progressPct; completes the course when everything is done.
+   *  True only for the call that completed it. */
   private async refreshProgress(userId: string, courseId: string): Promise<boolean> {
     const [lessonIds, completed] = await Promise.all([
       this.db.lesson.findMany({
@@ -266,8 +361,7 @@ export class LmsService {
     });
 
     if (pct === 100 && enrollment.status !== "COMPLETED") {
-      await this.completeCourse(userId, courseId);
-      return true;
+      return this.completeCourse(userId, courseId);
     }
     // Completed before a final assessment existed (added later by an author):
     // passing it now still earns the certificate.
@@ -275,39 +369,53 @@ export class LmsService {
     return false;
   }
 
-  private async completeCourse(userId: string, courseId: string) {
-    const course = await this.db.course.findUniqueOrThrow({ where: { id: courseId } });
-
-    await this.db.enrollment.update({
-      where: { userId_courseId: { userId, courseId } },
+  /** Completes the programme exactly once: only the call that moves the
+   *  enrolment to COMPLETED pays the bonus, notifies and emits, even when
+   *  two completions race. Returns whether this call did it. */
+  private async completeCourse(userId: string, courseId: string): Promise<boolean> {
+    const moved = await this.db.enrollment.updateMany({
+      where: { userId, courseId, status: { not: "COMPLETED" } },
       data: { status: "COMPLETED", completedAt: new Date() },
     });
+    if (moved.count === 0) {
+      await this.issueCertificateIfEligible(userId, courseId);
+      return false;
+    }
 
-    await this.xp.awardXp({
-      userId,
-      amount: course.xpOnCompletion,
-      source: "COURSE_COMPLETED",
-      sourceId: courseId,
-      idempotencyKey: `xp:course:${courseId}:${userId}`,
-    });
+    const course = await this.db.course.findUniqueOrThrow({ where: { id: courseId } });
+
+    // A programme set to 0 XP pays no bonus (awardXp refuses 0); the
+    // certificate, notification and event below must still happen.
+    if (course.xpOnCompletion > 0) {
+      await this.xp.awardXp({
+        userId,
+        amount: course.xpOnCompletion,
+        source: "COURSE_COMPLETED",
+        sourceId: courseId,
+        idempotencyKey: `xp:course:${courseId}:${userId}`,
+      });
+    }
 
     // Certificate — only with every lesson done AND the final assessment passed.
     const certificate = await this.issueCertificateIfEligible(userId, courseId);
 
+    const body = [
+      course.xpOnCompletion > 0 ? `+${course.xpOnCompletion} XP.` : null,
+      certificate ? `Certificate ${certificate.serial} is in your certificates.` : null,
+    ].filter(Boolean);
     await this.db.notification.create({
       data: {
         userId,
         type: "SYSTEM",
         title: `Program complete: ${course.title}`,
-        body: certificate
-          ? `+${course.xpOnCompletion} XP. Certificate ${certificate.serial} is in your certificates.`
-          : `+${course.xpOnCompletion} XP.`,
+        body: body.length ? body.join(" ") : "You finished every lesson.",
         data: certificate ? { courseId, href: `/certificates/${certificate.serial}` } : { courseId },
       },
     });
 
     const { events: bus } = await import("../events/bus");
     await bus.emit({ type: "COURSE_COMPLETED", userId, courseId });
+    return true;
   }
 
   /** Scores a quiz attempt; passing completes the quiz's lesson. A quiz
@@ -344,7 +452,16 @@ export class LmsService {
 
     let lessonResult = null;
     if (passed) {
-      lessonResult = await this.completeLesson(userId, quiz.lessonId, { viaQuiz: true });
+      try {
+        lessonResult = await this.completeLesson(userId, quiz.lessonId, { viaQuiz: true });
+      } finally {
+        // One event per passing attempt, even if completing the lesson failed:
+        // the pass is on record. Rules decide what it is worth; the weekly
+        // "pass 2 knowledge checks" counts first passes, so a retake adds
+        // nothing there. Fail-soft: never throws.
+        const { events } = await import("../events/bus");
+        await events.emit({ type: "QUIZ_PASSED", userId, quizId, scorePct });
+      }
     }
 
     return {
@@ -354,10 +471,11 @@ export class LmsService {
       correct,
       total: quiz.questions.length,
       lesson: lessonResult,
-      review: quiz.questions.map((q, i) => ({
+      // What the member may see after an attempt: right or wrong per
+      // question, and its explanation. Never the answer key: this goes back
+      // to the browser, and a throwaway attempt must not reveal the final.
+      review: quiz.questions.map((q, i): QuizReviewItem => ({
         prompt: q.prompt,
-        yourAnswer: answers[i],
-        correctIndex: q.correctIndex,
         correct: answers[i] === q.correctIndex,
         explanation: q.explanation,
       })),

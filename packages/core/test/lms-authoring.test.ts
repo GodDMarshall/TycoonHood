@@ -6,14 +6,19 @@
  */
 import { afterAll, describe, expect, it } from "vitest";
 import { prisma } from "@tycoonhood/db";
-import { LmsService, CourseUnavailableError, NotEnrolledError } from "../src/lms/lms";
+import { LmsService, CourseUnavailableError, NotEnrolledError, QuizRequiredError, questionsForMember } from "../src/lms/lms";
 import {
   CourseAuthoringService,
   AuthoringError,
   LessonHasProgressError,
   PublishBlockedError,
+  courseInputSchema,
+  lessonInputSchema,
   type AuthoringActor,
 } from "../src/lms/authoring";
+import { CommunityService } from "../src/community/community";
+import { countEvidence } from "../src/rules/counters";
+import { parseCriteria, weekKey } from "../src/rules/criteria";
 import { LearnerService, ReviewNotAllowedError, rankBySignals } from "../src/lms/learner";
 import { ForbiddenError } from "../src/auth/permissions";
 import { academyRebuildDecision } from "../../db/src/seed-guard";
@@ -348,5 +353,261 @@ describe("Academy seed safety guard", () => {
     if (!refused.rebuild) expect(refused.reason).toMatch(/SEED_ACADEMY_FORCE=1/);
     expect(academyRebuildDecision({ slug: "warrior", progressRows: 3, force: "true" }).rebuild).toBe(false);
     expect(academyRebuildDecision({ slug: "warrior", progressRows: 3, force: "1" })).toEqual({ rebuild: true });
+  });
+});
+
+// ─────────────────────────── completion that cannot get stuck
+
+const notesTitled = (userId: string, title: string) => prisma.notification.findMany({ where: { userId, title } });
+
+/** Lessons marked complete straight in the table: the state a member was left
+ *  in when a completion failed half way, before the programme was settled. */
+async function stuckProgress(userId: string, lessonIds: string[]) {
+  for (const lessonId of lessonIds) await prisma.lessonProgress.create({ data: { userId, lessonId, completedAt: new Date() } });
+}
+
+const courseFields = (b: Awaited<ReturnType<typeof buildCourse>>) => ({
+  title: b.course.title,
+  slug: b.course.slug,
+  pillar: "MIND" as const,
+  description: b.course.description,
+});
+
+describe("XP fields: blank means the default, 0 means nothing", () => {
+  it("parses a blank XP field as the default and a typed 0 as 0", () => {
+    const lesson = { title: "A lesson", type: "READING" as const };
+    expect(lessonInputSchema.parse({ ...lesson, xpReward: "" }).xpReward).toBe(50);
+    expect(lessonInputSchema.parse({ ...lesson, xpReward: "   " }).xpReward).toBe(50);
+    expect(lessonInputSchema.parse({ ...lesson }).xpReward).toBe(50);
+    expect(lessonInputSchema.parse({ ...lesson, xpReward: "0" }).xpReward).toBe(0);
+    expect(lessonInputSchema.parse({ ...lesson, xpReward: "35" }).xpReward).toBe(35);
+    expect(() => lessonInputSchema.parse({ ...lesson, xpReward: "-1" })).toThrow();
+    const course = { title: "A programme", slug: "a-programme", pillar: "MIND" as const, description: "Long enough description." };
+    expect(courseInputSchema.parse({ ...course, xpOnCompletion: "" }).xpOnCompletion).toBe(500);
+    expect(courseInputSchema.parse({ ...course, xpOnCompletion: "0" }).xpOnCompletion).toBe(0);
+  });
+
+  it("a 0-XP lesson and a 0-XP programme still complete, certify and notify", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin);
+    await authoring.updateCourse(admin, b.course.id, { ...courseFields(b), xpOnCompletion: "0" });
+    await authoring.updateLesson(admin, b.read2.id, { title: "Read two", type: "READING", contentMd: "More", xpReward: "0" });
+    const user = await createTestUser();
+    await lms.enroll(user.id, b.course.slug);
+
+    await lms.completeLesson(user.id, b.read1.id);
+    await lms.submitQuiz(user.id, b.quiz1Id, [1]);
+    const zero = await lms.completeLesson(user.id, b.read2.id);
+    expect(zero).toMatchObject({ firstCompletion: true, xpAwarded: 0 });
+    // The rest of the 0-XP completion ran: progress moved on to 3 of 4.
+    const mid = await prisma.enrollment.findUniqueOrThrow({ where: { userId_courseId: { userId: user.id, courseId: b.course.id } } });
+    expect(mid.progressPct).toBe(75);
+    const passed = await lms.submitQuiz(user.id, b.finalQuizId!, [0, 1]);
+    expect(passed.lesson?.courseCompleted).toBe(true);
+
+    const enrollment = await prisma.enrollment.findUniqueOrThrow({ where: { userId_courseId: { userId: user.id, courseId: b.course.id } } });
+    expect(enrollment.status).toBe("COMPLETED");
+    const cert = await prisma.certificate.findUniqueOrThrow({ where: { userId_courseId: { userId: user.id, courseId: b.course.id } } });
+    const [done] = await notesTitled(user.id, "Program complete: Test Programme");
+    expect(done.body).toBe(`Certificate ${cert.serial} is in your certificates.`);
+    // Nothing was paid for the 0-XP lesson or the 0-XP programme.
+    expect(await prisma.xpEvent.count({ where: { userId: user.id, sourceId: { in: [b.read2.id, b.course.id] } } })).toBe(0);
+  });
+});
+
+describe("Certificates reach every member who qualifies", () => {
+  it("marking a passed knowledge check final certifies members who already finished", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin, { final: false });
+    const user = await createTestUser();
+    await lms.enroll(user.id, b.course.slug);
+    await walk(user.id, b, { passFinal: true });
+    expect(await prisma.certificate.findFirst({ where: { userId: user.id, courseId: b.course.id } })).toBeNull();
+
+    await authoring.updateLesson(admin, b.quiz1.id, { title: "Check one", type: "QUIZ", isFinal: true, xpReward: 10 });
+
+    const cert = await prisma.certificate.findUniqueOrThrow({ where: { userId_courseId: { userId: user.id, courseId: b.course.id } } });
+    const [note] = await notesTitled(user.id, "Certificate issued: Test Programme");
+    expect(note.body).toBe(`Certificate ${cert.serial} is in your certificates.`);
+    // The programme was already complete: its bonus is not paid twice.
+    expect(await prisma.xpEvent.count({ where: { userId: user.id, idempotencyKey: `xp:course:${b.course.id}:${user.id}` } })).toBe(1);
+    // Settling again changes nothing.
+    expect(await lms.reconcile(user.id, b.course.id)).toBe(false);
+    expect(await prisma.certificate.count({ where: { userId: user.id, courseId: b.course.id } })).toBe(1);
+  });
+
+  it("removing the only lesson a member had left completes the programme for them", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin);
+    const user = await createTestUser();
+    await lms.enroll(user.id, b.course.slug);
+    await lms.completeLesson(user.id, b.read1.id);
+    await lms.submitQuiz(user.id, b.quiz1Id, [1]);
+    await lms.completeLesson(user.id, b.read2.id);
+
+    await authoring.deleteLesson(admin, b.final!.id);
+
+    const enrollment = await prisma.enrollment.findUniqueOrThrow({ where: { userId_courseId: { userId: user.id, courseId: b.course.id } } });
+    expect(enrollment.status).toBe("COMPLETED");
+    expect(await notesTitled(user.id, "Program complete: Test Programme")).toHaveLength(1);
+    expect(await prisma.xpEvent.count({ where: { userId: user.id, idempotencyKey: `xp:course:${b.course.id}:${user.id}` } })).toBe(1);
+  });
+
+  it("a knowledge check without questions cannot be clicked past; passing it later certifies", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin, { final: false });
+    const user = await createTestUser();
+    await lms.enroll(user.id, b.course.slug);
+    await walk(user.id, b, { passFinal: true });
+
+    // A final added to the live programme, its questions not written yet.
+    const mf = await authoring.addModule(admin, b.course.id, { title: "Final Assessment" });
+    const final = await authoring.addLesson(admin, mf.id, { title: "Final", type: "QUIZ", isFinal: true });
+    await expect(lms.completeLesson(user.id, final.id)).rejects.toBeInstanceOf(QuizRequiredError);
+    expect(await prisma.lessonProgress.count({ where: { userId: user.id, lessonId: final.id } })).toBe(0);
+
+    const q = await authoring.saveQuiz(admin, final.id, { passScore: 100, questions: [{ prompt: "Sky colour?", options: ["Blue", "Red"], correctIndex: 0 }] });
+    const r = await lms.submitQuiz(user.id, q.id, [0]);
+    expect(r.passed).toBe(true);
+    expect(await prisma.certificate.count({ where: { userId: user.id, courseId: b.course.id } })).toBe(1);
+  });
+
+  it("a member left stuck mid-completion is settled by their next pass, and by reconcile", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin);
+    const user = await createTestUser();
+    await lms.enroll(user.id, b.course.slug);
+    // Every lesson on record as complete, the programme never settled.
+    await stuckProgress(user.id, [b.read1.id, b.quiz1.id, b.read2.id, b.final!.id]);
+
+    // A retake pass of the final: nothing is paid for the lesson again, but
+    // the programme completes and the certificate is issued.
+    const r = await lms.submitQuiz(user.id, b.finalQuizId!, [0, 1]);
+    expect(r.lesson).toMatchObject({ firstCompletion: false, courseCompleted: true, xpAwarded: 0 });
+    expect(await prisma.certificate.count({ where: { userId: user.id, courseId: b.course.id } })).toBe(1);
+
+    // Same state for another member, settled without any new activity, by two
+    // racing calls: exactly one completes it, and it pays and notifies once.
+    const other = await createTestUser();
+    await lms.enroll(other.id, b.course.slug);
+    await stuckProgress(other.id, [b.read1.id, b.quiz1.id, b.read2.id, b.final!.id]);
+    await prisma.quizAttempt.create({ data: { userId: other.id, quizId: b.finalQuizId!, scorePct: 100, passed: true, answers: [0, 1] } });
+    const settled = await Promise.all([lms.reconcile(other.id, b.course.id), lms.reconcile(other.id, b.course.id)]);
+    expect(settled.filter(Boolean)).toHaveLength(1);
+    expect(await notesTitled(other.id, "Program complete: Test Programme")).toHaveLength(1);
+    expect(await prisma.xpEvent.count({ where: { userId: other.id, idempotencyKey: `xp:course:${b.course.id}:${other.id}` } })).toBe(1);
+    expect(await prisma.certificate.count({ where: { userId: other.id, courseId: b.course.id } })).toBe(1);
+    expect(await lms.reconcile(other.id, b.course.id)).toBe(false);
+  });
+
+  it("reconcileCourse settles only members with every lesson done", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin, { final: false });
+    const finished = await createTestUser();
+    const halfway = await createTestUser();
+    for (const u of [finished, halfway]) await lms.enroll(u.id, b.course.slug);
+    await stuckProgress(finished.id, [b.read1.id, b.quiz1.id, b.read2.id]);
+    await stuckProgress(halfway.id, [b.read1.id]);
+    expect(await lms.reconcileCourse(b.course.id)).toEqual({ checked: 1, settled: 1, failed: 0 });
+    const status = async (userId: string) =>
+      (await prisma.enrollment.findUniqueOrThrow({ where: { userId_courseId: { userId, courseId: b.course.id } } })).status;
+    expect(await status(finished.id)).toBe("COMPLETED");
+    expect(await status(halfway.id)).toBe("ACTIVE");
+  });
+});
+
+describe("Knowledge checks: what reaches the browser, and what counts", () => {
+  it("an attempt's review and the lesson's questions never carry the answer key", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin);
+    const user = await createTestUser();
+    await lms.enroll(user.id, b.course.slug);
+    const failed = await walk(user.id, b, { passFinal: false });
+    if (!("review" in failed)) throw new Error("expected a scored attempt");
+    expect(failed.review).toEqual([
+      { prompt: "Sky colour?", correct: true, explanation: null },
+      { prompt: "Grass colour?", correct: false, explanation: null },
+    ]);
+    expect(JSON.stringify(failed)).not.toMatch(/correctIndex|yourAnswer/);
+
+    const quiz = await prisma.quiz.findUniqueOrThrow({ where: { id: b.quiz1Id }, include: { questions: true } });
+    const shown = questionsForMember(quiz.questions);
+    expect(shown).toEqual([{ prompt: "Two plus two?", options: ["3", "4"] }]);
+    expect(JSON.stringify(shown)).not.toMatch(/correctIndex|explanation|Arithmetic/);
+  });
+
+  it("passing two different checks in a week pays a weekly quiz mission; a retake adds nothing", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin);
+    const user = await createTestUser();
+    const mission = await prisma.mission.create({
+      data: {
+        slug: `t-quiz-${uid().slice(0, 8)}`,
+        name: "Two checks this week",
+        description: "test",
+        criteria: { event: "QUIZ_PASSED", count: 2, within: "week" },
+        xpReward: 5,
+        repeatable: true,
+        active: true,
+      },
+    });
+    try {
+      await lms.enroll(user.id, b.course.slug);
+      await lms.completeLesson(user.id, b.read1.id);
+      await lms.submitQuiz(user.id, b.quiz1Id, [1]);
+      await lms.submitQuiz(user.id, b.quiz1Id, [1]); // a retake of the same check
+      expect(await prisma.missionCompletion.count({ where: { userId: user.id, missionId: mission.id } })).toBe(0);
+
+      await lms.completeLesson(user.id, b.read2.id);
+      await lms.submitQuiz(user.id, b.finalQuizId!, [0, 1]);
+      const done = await prisma.missionCompletion.findMany({ where: { userId: user.id, missionId: mission.id } });
+      expect(done).toHaveLength(1);
+      expect(done[0].idempotencyKey).toBe(`mission:${mission.id}:${user.id}:${weekKey(new Date())}`);
+    } finally {
+      await prisma.mission.delete({ where: { id: mission.id } });
+    }
+  });
+
+  it("counts each check once, in the window of its first pass", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin);
+    const user = await createTestUser();
+    const now = new Date("2099-06-17T12:00:00Z");
+    const at = (iso: string) => new Date(iso);
+    const attempt = (quizId: string, scorePct: number, createdAt: Date) =>
+      prisma.quizAttempt.create({ data: { userId: user.id, quizId, scorePct, passed: true, answers: [], createdAt } });
+    await attempt(b.quiz1Id, 70, at("2099-06-08T10:00:00Z")); // first passed last week
+    await attempt(b.quiz1Id, 100, at("2099-06-16T10:00:00Z")); // retaken this week
+    await attempt(b.finalQuizId!, 100, at("2099-06-16T11:00:00Z")); // first passed this week
+    await attempt(b.finalQuizId!, 100, at("2099-06-17T09:00:00Z")); // and again
+
+    const c = (o: object) => parseCriteria({ event: "QUIZ_PASSED", ...o });
+    expect(await countEvidence(prisma, user.id, c({ count: 2, within: "week" }), now)).toBe(1);
+    expect(await countEvidence(prisma, user.id, c({ count: 2 }), now)).toBe(2);
+    // At 80%+, quiz1's first qualifying pass is the retake, this week.
+    expect(await countEvidence(prisma, user.id, c({ count: 2, within: "week", minScore: 80 }), now)).toBe(2);
+  });
+});
+
+describe("Ask about this lesson", () => {
+  it("finds the programme's questions channel from the lesson, even after a slug change", async () => {
+    const admin = await staff();
+    const b = await buildCourse(admin);
+    const community = new CommunityService(prisma);
+    const channel = await prisma.channel.create({
+      data: { slug: `${b.course.slug}-questions`, name: "Questions", kind: "QUESTIONS", courseId: b.course.id },
+    });
+    await authoring.updateCourse(admin, b.course.id, { ...courseFields(b), slug: `${b.course.slug}-renamed` });
+
+    expect(await community.questionsChannelFor(b.read2.id)).toEqual({ slug: channel.slug });
+    const user = await createTestUser();
+    await lms.enroll(user.id, `${b.course.slug}-renamed`);
+    const found = (await community.questionsChannelFor(b.read1.id))!;
+    const posted = await community.post({ id: user.id, role: "STUDENT" }, found.slug, { body: "Why does this work?", lessonId: b.read1.id });
+    expect(posted.body).toBe("Why does this work?");
+
+    // No open questions channel: nothing to post to.
+    await prisma.channel.update({ where: { id: channel.id }, data: { archivedAt: new Date() } });
+    expect(await community.questionsChannelFor(b.read1.id)).toBeNull();
   });
 });
