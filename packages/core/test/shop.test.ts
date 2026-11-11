@@ -8,6 +8,7 @@ import {
   PaymentVerificationError,
 } from "../src/shop";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
+import { TEST_REFUND_NOTE } from "../src/shop/refunds";
 import { createTestUser, uid } from "./helpers";
 
 const ledger = new LedgerService(prisma);
@@ -51,6 +52,21 @@ async function coupon(data: Partial<Parameters<typeof prisma.coupon.create>[0]["
   return prisma.coupon.create({
     data: { code: `T${uid().slice(0, 8).toUpperCase()}`, percentOff: 10, active: true, ...data },
   });
+}
+
+const KEY_SECRET = "test_key_secret_for_unit_tests";
+const WEBHOOK_SECRET = "test_webhook_secret_for_unit_tests";
+
+/** A RazorpayProvider over a fake fetch. The key id decides its mode: rzp_test_… is TEST, rzp_live_… is LIVE. */
+function fakeRazorpay(keyId = "rzp_test_key") {
+  const calls: { url: string; body: unknown; auth: string }[] = [];
+  const fetchImpl = async (url: string, init: { method: string; headers: Record<string, string>; body?: string }) => {
+    const body = init.body ? JSON.parse(init.body) : null;
+    calls.push({ url, body, auth: init.headers.Authorization });
+    const id = url.endsWith("/orders") ? `order_${uid().slice(0, 12)}` : `rfnd_${uid().slice(0, 12)}`;
+    return { ok: true, status: 200, json: async () => ({ id, ...body }), text: async () => "" };
+  };
+  return { provider: new RazorpayProvider(keyId, KEY_SECRET, fetchImpl), calls };
 }
 
 let paidSpy = vi.fn(async (_id: string) => {});
@@ -313,9 +329,6 @@ describe("Shop — INR rail (sandbox)", () => {
 });
 
 describe("Shop — Razorpay signatures and webhook", () => {
-  const KEY_SECRET = "test_key_secret_for_unit_tests";
-  const WEBHOOK_SECRET = "test_webhook_secret_for_unit_tests";
-
   it("verifies the checkout signature (valid / tampered / wrong secret)", () => {
     const sig = hmacSha256Hex(KEY_SECRET, "order_ABC|pay_XYZ");
     expect(verifyCheckoutSignature({ razorpayOrderId: "order_ABC", razorpayPaymentId: "pay_XYZ", signature: sig }, KEY_SECRET)).toBe(true);
@@ -327,17 +340,6 @@ describe("Shop — Razorpay signatures and webhook", () => {
     expect(verifyWebhookSignature(body + " ", hmacSha256Hex(WEBHOOK_SECRET, body), WEBHOOK_SECRET)).toBe(false);
     expect(verifyWebhookSignature(body, null, WEBHOOK_SECRET)).toBe(false);
   });
-
-  function fakeRazorpay() {
-    const calls: { url: string; body: unknown; auth: string }[] = [];
-    const fetchImpl = async (url: string, init: { method: string; headers: Record<string, string>; body?: string }) => {
-      const body = init.body ? JSON.parse(init.body) : null;
-      calls.push({ url, body, auth: init.headers.Authorization });
-      const id = url.endsWith("/orders") ? `order_${uid().slice(0, 12)}` : `rfnd_${uid().slice(0, 12)}`;
-      return { ok: true, status: 200, json: async () => ({ id, ...body }), text: async () => "" };
-    };
-    return { provider: new RazorpayProvider("rzp_test_key", KEY_SECRET, fetchImpl), calls };
-  }
 
   it("callback signature → PAID; webhook for the same payment is idempotent", async () => {
     const { provider, calls } = fakeRazorpay();
@@ -478,5 +480,77 @@ describe("Shop — refunds", () => {
     await refundSvc.reject(admin.id, r2.id, "Digital item already delivered");
     expect((await prisma.order.findUniqueOrThrow({ where: { id: o2.id } })).status).toBe("FULFILLED");
     expect(refundedSpy).toHaveBeenCalledTimes(1);
+  });
+
+  /** A Razorpay order paid with these keys: physical, so a refund puts the unit back. */
+  async function paidWithRazorpay(keys: RazorpayProvider) {
+    const shop = new ShopCheckoutService(prisma, { provider: () => keys, providerFor: () => keys });
+    const user = await createTestUser();
+    const p = await product({ inventory: 4, inr: 25_000 });
+    await cart.add(user.id, p.id);
+    const { order, payment } = await shop.startInrCheckout(user.id, { shipping: ADDRESS });
+    await shop.capture({ providerOrderId: payment.providerOrderId!, providerPaymentId: `pay_${uid().slice(0, 12)}`, source: "webhook" });
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(3);
+    return { user, order, payment, product: p };
+  }
+
+  it("a test-key payment is refunded here once the test keys are gone, without calling Razorpay", async () => {
+    const admin = await createTestUser();
+    const { provider: testKeys } = fakeRazorpay("rzp_test_key");
+
+    // KYC cleared and the owner swapped in live keys; later, keys removed altogether.
+    const { provider: liveKeys, calls: liveCalls } = fakeRazorpay("rzp_live_key");
+    for (const providerFor of [() => liveKeys, () => null]) {
+      const { user, order, payment, product: p } = await paidWithRazorpay(testKeys);
+      expect(payment.mode).toBe("TEST");
+      const svc = new RefundService(prisma, { providerFor });
+      const req = await svc.requestRefund(user.id, order.id, "Ordered during the test-key run, please refund");
+      const r = await svc.approve(admin.id, req.id);
+
+      expect(r).toMatchObject({ rail: "INR/TEST", refundedLocally: true });
+      expect(liveCalls).toHaveLength(0);
+      const after = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: { payments: true } });
+      expect(after.status).toBe("REFUNDED");
+      expect(after.payments[0].status).toBe("REFUNDED");
+      expect(after.payments[0].raw).toMatchObject({ refund: { note: TEST_REFUND_NOTE } });
+      expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(4);
+      expect(refundedSpy).toHaveBeenCalledWith(order.id);
+      const told = await prisma.notification.findFirst({ where: { userId: user.id, title: "Refund approved" } });
+      expect(told?.body).toMatch(/no real money/);
+      const logged = await prisma.auditLog.findFirst({ where: { action: "refund.approve", targetId: order.id } });
+      expect(logged?.meta).toMatchObject({ rail: "INR/TEST", refundedLocally: TEST_REFUND_NOTE });
+    }
+  });
+
+  it("a test-key payment still goes back through Razorpay while test keys are configured", async () => {
+    const admin = await createTestUser();
+    const { provider: testKeys, calls } = fakeRazorpay("rzp_test_key");
+    const { user, order } = await paidWithRazorpay(testKeys);
+    const svc = new RefundService(prisma, { providerFor: () => testKeys });
+    const req = await svc.requestRefund(user.id, order.id, "Test refund through Razorpay test mode");
+    await expect(svc.approve(admin.id, req.id)).resolves.toMatchObject({ rail: "INR/TEST", refundedLocally: false });
+    expect(calls.filter((c) => /\/payments\/[^/]+\/refund$/.test(c.url))).toHaveLength(1);
+  });
+
+  it("a live payment is never refunded with test keys", async () => {
+    const admin = await createTestUser();
+    const { provider: liveKeys, calls: liveCalls } = fakeRazorpay("rzp_live_key");
+    const { user, order, payment } = await paidWithRazorpay(liveKeys);
+    expect(payment.mode).toBe("LIVE");
+
+    const { provider: testKeys, calls: testCalls } = fakeRazorpay("rzp_test_key");
+    const wrongKeys = new RefundService(prisma, { providerFor: () => testKeys });
+    const req = await wrongKeys.requestRefund(user.id, order.id, "Damaged on arrival, please refund");
+    await expect(wrongKeys.approve(admin.id, req.id)).rejects.toThrow(/live Razorpay keys/);
+    expect(testCalls).toHaveLength(0);
+    expect((await prisma.refundRequest.findUniqueOrThrow({ where: { id: req.id } })).status).toBe("REQUESTED");
+    const still = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: { payments: true } });
+    expect(still.status).toBe("PAID");
+    expect(still.payments[0].status).toBe("CAPTURED");
+
+    // With live keys it goes back through Razorpay.
+    const rightKeys = new RefundService(prisma, { providerFor: () => liveKeys });
+    await expect(rightKeys.approve(admin.id, req.id)).resolves.toMatchObject({ rail: "INR/LIVE" });
+    expect(liveCalls.filter((c) => /\/payments\/[^/]+\/refund$/.test(c.url))).toHaveLength(1);
   });
 });

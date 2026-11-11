@@ -4,8 +4,11 @@
  *
  * Approval sends the money back on the rail it came in on:
  *   THC        → the ledger reversal of the order's spend (idempotent)
- *   INR, TEST  → the sandbox payment is marked REFUNDED; nothing moved anyway
- *   INR, LIVE  → Razorpay's refund API, then REFUNDED
+ *   INR, TEST  → the sandbox payment is marked REFUNDED; nothing moved anyway.
+ *                A Razorpay test-key payment goes back through Razorpay while
+ *                test keys are configured; once they are not (live keys, or
+ *                none) it is marked REFUNDED here, because no money moved
+ *   INR, LIVE  → Razorpay's refund API with live keys, then REFUNDED
  * then the order becomes REFUNDED, physical units that never shipped go back
  * on the shelf, and the earn hook onOrderRefunded reverses any commission.
  *
@@ -24,6 +27,10 @@ import { razorpayFromEnv, sandboxProvider, type ShopPaymentProvider } from "./pa
 export const REFUND_WINDOW_DAYS = 14;
 export const REFUND_REASON_MIN = 10;
 export const REFUND_REASON_MAX = 1000;
+
+/** Recorded on a test-key payment that is refunded without calling Razorpay. */
+export const TEST_REFUND_NOTE =
+  "Test-mode payment, and the test keys that took it are no longer configured. No money moved, so it was marked refunded here without calling Razorpay.";
 
 export interface RefundOptions {
   providerFor?: (name: string) => ShopPaymentProvider | null;
@@ -120,6 +127,7 @@ export class RefundService {
 
     try {
       let rail: string;
+      let refundedLocally = false;
       if (order.ledgerTxId) {
         rail = "THC";
         await this.ledger.reverse(order.ledgerTxId, {
@@ -133,18 +141,28 @@ export class RefundService {
         rail = `INR/${payment.mode}`;
         if (payment.status === "CAPTURED") {
           let raw: unknown = { refundedBy: adminId };
-          // The sandbox moved no money, so there is nothing to send back. Every
-          // Razorpay payment (live, or test-mode keys) is refunded through Razorpay.
+          // The sandbox moved no money, so there is nothing to send back. A Razorpay
+          // payment goes back through Razorpay, with keys of the same mode: Razorpay
+          // keeps test and live apart, so live keys cannot refund a test payment.
           if (payment.provider !== "sandbox") {
             const provider = this.providerFor(payment.provider);
-            if (!provider) throw new RefundError(`${payment.provider} is not configured — cannot refund this payment.`);
-            if (!payment.providerPaymentId) throw new RefundError("The payment has no provider payment id.");
-            const r = await provider.refund({
-              providerPaymentId: payment.providerPaymentId,
-              amountCents: payment.amountCents,
-              notes: { orderId: order.id, requestId },
-            });
-            raw = r.raw ?? { refundId: r.refundId };
+            if (payment.mode === "TEST" && provider?.mode !== "TEST") {
+              // The test keys that took it are gone, and a test payment moved no money.
+              refundedLocally = true;
+              raw = { refundedBy: adminId, note: TEST_REFUND_NOTE };
+            } else {
+              if (!provider) throw new RefundError(`${payment.provider} is not configured — cannot refund this payment.`);
+              if (payment.mode === "LIVE" && provider.mode !== "LIVE") {
+                throw new RefundError("This live payment can only be refunded with live Razorpay keys configured.");
+              }
+              if (!payment.providerPaymentId) throw new RefundError("The payment has no provider payment id.");
+              const r = await provider.refund({
+                providerPaymentId: payment.providerPaymentId,
+                amountCents: payment.amountCents,
+                notes: { orderId: order.id, requestId },
+              });
+              raw = r.raw ?? { refundId: r.refundId };
+            }
           }
           await this.db.payment.update({
             where: { id: payment.id },
@@ -164,7 +182,13 @@ export class RefundService {
         await this.db.order.update({ where: { id: order.id }, data: { status: "REFUNDED" } });
       }
       await this.db.refundRequest.update({ where: { id: requestId }, data: { status: "REFUNDED" } });
-      await this.audit.log({ actorId: adminId, action: "refund.approve", targetType: "order", targetId: order.id, meta: { requestId, rail, note: note ?? null } });
+      await this.audit.log({
+        actorId: adminId,
+        action: "refund.approve",
+        targetType: "order",
+        targetId: order.id,
+        meta: { requestId, rail, note: note ?? null, ...(refundedLocally ? { refundedLocally: TEST_REFUND_NOTE } : {}) },
+      });
       await notify(
         order.userId,
         "ORDER",
@@ -174,7 +198,7 @@ export class RefundService {
         this.db
       );
       await callEarnHook("onOrderRefunded", order.id);
-      return { orderId: order.id, rail };
+      return { orderId: order.id, rail, refundedLocally };
     } catch (e) {
       // Put the request back so it can be retried once the cause is fixed.
       await this.db.refundRequest.update({ where: { id: requestId }, data: { status: "REQUESTED" } });

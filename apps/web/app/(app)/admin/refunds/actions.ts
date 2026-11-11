@@ -15,7 +15,11 @@ export async function decideRefundAction(requestId: string, _prev: State, fd: Fo
       const r = await refunds.approve(admin.id, requestId, note);
       revalidatePath("/admin/refunds");
       revalidatePath("/admin/orders");
-      return { ok: `Refunded (${r.rail}).` };
+      return {
+        ok: r.refundedLocally
+          ? `Marked refunded (${r.rail}). It was a test payment, so no money moved and Razorpay was not called.`
+          : `Refunded (${r.rail}).`,
+      };
     }
     if (decision === "reject") {
       await refunds.reject(admin.id, requestId, note);
