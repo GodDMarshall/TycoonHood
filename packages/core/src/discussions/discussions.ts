@@ -20,6 +20,7 @@
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { ModerationState, PrismaClient, UserRole } from "@tycoonhood/db";
 import { isStaff } from "../auth/permissions";
+import { clip } from "../text/clip";
 import { AuditService } from "../platform/audit";
 import { notify } from "../platform/notify";
 
@@ -119,10 +120,7 @@ function authorView(a: AuthorRow): AuthorView {
   };
 }
 
-const excerpt = (s: string, n = 220) => {
-  const flat = s.replace(/\s+/g, " ").trim();
-  return flat.length > n ? flat.slice(0, n - 1).trimEnd() + "…" : flat;
-};
+const excerpt = (s: string, n = 220) => clip(s.replace(/\s+/g, " ").trim(), n);
 
 const emptyReactions = (): Record<ReactionKind, number> => ({ respect: 0, insight: 0, fire: 0 });
 

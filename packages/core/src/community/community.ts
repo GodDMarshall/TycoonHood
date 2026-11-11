@@ -19,6 +19,7 @@
  * viewer may not see (a removed message's body, other members' emails).
  */
 import { isStaff } from "../auth/permissions";
+import { clip } from "../text/clip";
 import type { UserRole } from "@tycoonhood/db";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
@@ -85,7 +86,7 @@ const messageInclude = {
 
 type MessageRow = Prisma.MessageGetPayload<{ include: typeof messageInclude }>;
 
-const excerpt = (s: string, n = 120) => (s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s);
+const excerpt = (s: string, n = 120) => clip(s, n);
 
 export function project(m: MessageRow, viewer: Viewer): MessageView {
   const removed = !!m.deletedAt;

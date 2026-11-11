@@ -3,7 +3,7 @@
  * /marketplace filter identically. Server-only.
  */
 import type { Prisma } from "@tycoonhood/db";
-import { isShopCategory } from "@tycoonhood/core";
+import { isShopCategory, sliceWhole } from "@tycoonhood/core";
 
 export interface CatalogueParams {
   q?: string;
@@ -32,7 +32,7 @@ export function normaliseParams(sp: Record<string, string | string[] | undefined
   const rail = one("rail").toLowerCase();
   const sort = one("sort");
   return {
-    q: one("q").slice(0, 80),
+    q: sliceWhole(one("q"), 0, 80),
     category: isShopCategory(category) ? category : "",
     kind: (KINDS as readonly string[]).includes(kind) ? kind : "",
     rail: rail === "thc" || rail === "inr" ? rail : "",

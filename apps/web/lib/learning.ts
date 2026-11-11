@@ -6,7 +6,7 @@
  */
 import "server-only";
 import { prisma } from "@tycoonhood/db";
-import { gateLessons, nextLesson, type Gate } from "@tycoonhood/core";
+import { gateLessons, nextLesson, sliceWhole, type Gate } from "@tycoonhood/core";
 
 export const LESSON_TYPE = { VIDEO: "Video", READING: "Reading", QUIZ: "Knowledge check", ASSIGNMENT: "Assignment" } as const;
 
@@ -142,7 +142,7 @@ export type CourseDetail = NonNullable<Awaited<ReturnType<typeof courseDetail>>>
 
 /** Lessons whose title or text mention the query, across published programs. */
 export async function searchLessons(userId: string, q: string) {
-  const term = q.trim().slice(0, 80);
+  const term = sliceWhole(q.trim(), 0, 80);
   if (term.length < 2) return [];
   const rows = await prisma.lesson.findMany({
     where: {
@@ -170,7 +170,7 @@ export async function searchLessons(userId: string, q: string) {
     const text = (r.contentMd ?? "").replace(/[#*_>`[\]()]/g, "");
     const at = text.toLowerCase().indexOf(term.toLowerCase());
     if (at >= 0 && !r.title.toLowerCase().includes(term.toLowerCase())) {
-      snippet = (at > 60 ? "…" : "") + text.slice(Math.max(0, at - 60), at + 100).replace(/\s+/g, " ").trim() + "…";
+      snippet = (at > 60 ? "…" : "") + sliceWhole(text, Math.max(0, at - 60), at + 100).replace(/\s+/g, " ").trim() + "…";
     }
     out.push({
       id: r.id,

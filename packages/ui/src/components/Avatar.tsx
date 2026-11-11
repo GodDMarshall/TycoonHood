@@ -11,9 +11,11 @@ export function Avatar({
   size?: number;
   className?: string;
 }) {
+  // First character of each word, whole: w[0] would take half of an emoji,
+  // which the server's HTML and the browser render differently (#418).
   const initials = name
     .split(/\s+/)
-    .map((w) => w[0])
+    .map((w) => Array.from(w)[0])
     .slice(0, 2)
     .join("")
     .toUpperCase();

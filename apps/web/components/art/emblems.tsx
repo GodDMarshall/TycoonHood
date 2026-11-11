@@ -178,7 +178,7 @@ export function Medal({ earned, glyph, size = 48, className }: { earned: boolean
       <circle cx="24" cy="34" r="19" fill={`url(#${id}-g)`} stroke={earned ? "#5c4a26" : "#26241f"} />
       <circle cx="24" cy="34" r="14" fill="none" stroke={earned ? "#fbecc4" : "#6b665a"} strokeOpacity="0.4" strokeDasharray="1.5 2.5" />
       <text x="24" y="39.5" textAnchor="middle" fontSize="15" fontWeight="700" fill={earned ? "#3a2c10" : "#8f897c"}>
-        {glyph.slice(0, 1).toUpperCase()}
+        {(Array.from(glyph)[0] ?? "").toUpperCase()}
       </text>
     </svg>
   );

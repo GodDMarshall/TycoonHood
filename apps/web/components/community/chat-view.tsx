@@ -6,6 +6,8 @@
  * reply, remove their own and report anyone else's.
  *
  * Times render in the reader's own clock, so they are filled in after mount.
+ * Messages are grouped into days the same way: by UTC day until then, which
+ * is all the server can know, and by the reader's own day after.
  */
 import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
@@ -55,6 +57,8 @@ function dayLabel(iso: string) {
   return d.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
 }
 const timeOf = (iso: string) => new Date(iso).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+/** The day a message falls on: the UTC day until mounted, then the reader's own. */
+const dayOf = (iso: string, local: boolean) => (local ? new Date(iso).toDateString() : new Date(iso).toISOString().slice(0, 10));
 
 function Body({ text }: { text: string }) {
   return (
@@ -119,14 +123,15 @@ export function ChatView({ channel, me, blocked, initial, pinned: initialPinned,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Keep the reading position when older messages are prepended.
+  // Keep the reading position when older messages are prepended, and stay at
+  // the bottom when the day dividers move to the reader's own days on mount.
   useLayoutEffect(() => {
     const el = scroller.current;
     if (el && preserve.current !== null) {
       el.scrollTop = el.scrollHeight - preserve.current;
       preserve.current = null;
     } else if (stick.current) toBottom();
-  }, [messages]);
+  }, [messages, mounted]);
 
   // Poll for new messages and for removals/pins of what is on screen.
   const lastId = messages[messages.length - 1]?.id;
@@ -328,7 +333,7 @@ export function ChatView({ channel, me, blocked, initial, pinned: initialPinned,
         <ol className="flex flex-col">
           {messages.map((m, i) => {
             const prev = messages[i - 1];
-            const newDay = !prev || new Date(prev.createdAt).toDateString() !== new Date(m.createdAt).toDateString();
+            const newDay = !prev || dayOf(prev.createdAt, mounted) !== dayOf(m.createdAt, mounted);
             const compact =
               !newDay && !!prev && prev.author.id === m.author.id && !m.replyTo && !prev.removed && +new Date(m.createdAt) - +new Date(prev.createdAt) < GROUP_MS;
             const canRemove = !m.removed && (m.mine || me.staff);
