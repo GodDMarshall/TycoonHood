@@ -15,7 +15,9 @@ export type { CouponCheck, CouponInput } from "./coupons";
 export { ShopCheckoutService, shopCheckout, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS } from "./checkout";
 export type { ShopCheckoutOptions, CaptureOutcome } from "./checkout";
 export { RefundService, refunds, refundBlocker, REFUND_WINDOW_DAYS, REFUND_REASON_MIN, REFUND_REASON_MAX } from "./refunds";
-export { orderTimeline, isTestOrder, paidAfterCancel, ShopStatsService, shopStats } from "./tracking";
+export {
+  orderTimeline, isTestOrder, paidAfterCancel, opensLibrary, libraryOrderFor, LIBRARY_ORDER_STATUSES, ShopStatsService, shopStats,
+} from "./tracking";
 export type { TimelineStep, TimelineState, TimelineOrder } from "./tracking";
 export {
   activeShopProvider, paymentsStatus, paymentsStatusFor, razorpayConfigured, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly, sandboxAllowed,

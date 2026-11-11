@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { isTestOrder } from "@tycoonhood/core";
+import { isTestOrder, opensLibrary } from "@tycoonhood/core";
 import { Badge, EmptyState, Icon, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
@@ -20,8 +20,9 @@ export default async function OrdersPage() {
     include: { items: { include: { product: true } }, payments: { select: { mode: true } } },
     take: 100,
   });
+  // Paid is enough: gear in the same order may still be waiting to ship.
   const library = orders.filter(
-    (o) => o.status === "FULFILLED" && o.items.some((i) => i.product.kind === "DIGITAL" || i.product.kind === "COURSE")
+    (o) => opensLibrary(o) && o.items.some((i) => i.product.kind === "DIGITAL" || i.product.kind === "COURSE")
   );
 
   return (

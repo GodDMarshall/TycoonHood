@@ -112,6 +112,26 @@ export function isTestOrder(o: { payments?: { mode: string }[]; paymentProvider?
   return (o.payments ?? []).some((p) => p.mode === "TEST") || o.paymentProvider === "sandbox";
 }
 
+/**
+ * Order statuses that open the DIGITAL items in an order. The store promises
+ * delivery as soon as payment lands, so a paid order counts even while gear in
+ * the same order waits to ship. A refunded or cancelled order never does.
+ */
+export const LIBRARY_ORDER_STATUSES = ["PAID", "FULFILLED"] as const;
+
+/** True when the order's DIGITAL items are the member's to open. */
+export function opensLibrary(o: { status: string }): boolean {
+  return (LIBRARY_ORDER_STATUSES as readonly string[]).includes(o.status);
+}
+
+/** The member's order that opens this DIGITAL product in the library, or null. */
+export function libraryOrderFor(userId: string, productId: string, db: PrismaClient = defaultPrisma) {
+  return db.order.findFirst({
+    where: { userId, status: { in: [...LIBRARY_ORDER_STATUSES] }, items: { some: { productId } } },
+    select: { id: true },
+  });
+}
+
 export class ShopStatsService {
   constructor(private readonly db: PrismaClient = defaultPrisma) {}
 

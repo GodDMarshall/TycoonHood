@@ -6,7 +6,7 @@ import {
   cartTotals, discountFor, checkCouponRules, verifyCheckoutSignature, verifyWebhookSignature,
   setEarnHooks, orderTimeline, refundBlocker, paymentsStatus, activeShopProvider, CartError, CouponError,
   PaymentVerificationError, paymentsStatusFor, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly,
-  paidAfterCancel, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS,
+  paidAfterCancel, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS, opensLibrary, libraryOrderFor,
 } from "../src/shop";
 import { cronAuth } from "../src/platform/cron";
 import { CommerceService } from "../src/commerce/commerce";
@@ -364,6 +364,32 @@ describe("Shop — INR rail (sandbox)", () => {
 
     const steps = orderTimeline(after);
     expect(steps.find((s) => s.key === "paid")?.detail).toMatch(/Test mode/);
+  });
+
+  it("a paid order opens its digital items at once, while gear in the same order waits to ship", async () => {
+    const user = await createTestUser();
+    const admin = await createTestUser();
+    const book = await product({ kind: "DIGITAL", inventory: null, inr: 19_900 });
+    const tee = await product({ inventory: 5, inr: 59_900 });
+    await cart.add(user.id, book.id);
+    await cart.add(user.id, tee.id);
+    const { order } = await checkout.startInrCheckout(user.id, { shipping: ADDRESS });
+    expect(await libraryOrderFor(user.id, book.id, prisma)).toBeNull(); // not paid yet
+
+    await checkout.sandboxCapture(user.id, order.id);
+    const paid = await prisma.order.findUniqueOrThrow({ where: { id: order.id } });
+    expect(paid.status).toBe("PAID"); // the tee has not shipped
+    expect(opensLibrary(paid)).toBe(true);
+    expect(await libraryOrderFor(user.id, book.id, prisma)).toEqual({ id: order.id });
+    expect(await libraryOrderFor((await createTestUser()).id, book.id, prisma)).toBeNull(); // only the buyer's
+
+    // Shipping changes nothing; a refund closes it again.
+    await new CommerceService(prisma).markShipped(order.id, "Delhivery", "DLV123");
+    expect(await libraryOrderFor(user.id, book.id, prisma)).toEqual({ id: order.id });
+    const req = await refundSvc.requestRefund(user.id, order.id, "Ordered the wrong things, sorry");
+    await refundSvc.approve(admin.id, req.id);
+    expect(await libraryOrderFor(user.id, book.id, prisma)).toBeNull();
+    expect(["PENDING", "PAID", "FULFILLED", "CANCELLED", "REFUNDED"].filter((status) => opensLibrary({ status }))).toEqual(["PAID", "FULFILLED"]);
   });
 
   it("the sandbox cannot capture when disabled (production)", async () => {

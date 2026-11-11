@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { isTestOrder, orderTimeline, paidAfterCancel } from "@tycoonhood/core";
+import { isTestOrder, opensLibrary, orderTimeline, paidAfterCancel } from "@tycoonhood/core";
 import { EmptyState, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../../../lib/guard";
 import { Page, PageHeader, Panel } from "../../../../../components/app/page";
@@ -27,6 +27,8 @@ export default async function DonePage({ params }: { params: Promise<{ orderId: 
   // A payment that landed after the order was cancelled is refunded, never kept.
   const late = paidAfterCancel(order);
   const lateRefunded = late && order.payments.some((p) => p.status === "REFUNDED");
+  // Digital items open as soon as the order is paid, even while gear in it waits to ship.
+  const digital = opensLibrary(order) ? order.items.filter((i) => i.product.kind === "DIGITAL") : [];
 
   return (
     <Page width="narrow">
@@ -37,7 +39,7 @@ export default async function DonePage({ params }: { params: Promise<{ orderId: 
           ok
             ? order.status === "FULFILLED"
               ? "Everything in it is yours now."
-              : "We are packing it. The tracking number appears on your order page the moment it ships."
+              : `We are packing it. The tracking number appears on your order page the moment it ships.${digital.length > 0 ? " Digital items are in your library now." : ""}`
             : order.status === "REFUNDED"
               ? "It was refunded in full."
               : late
@@ -55,6 +57,11 @@ export default async function DonePage({ params }: { params: Promise<{ orderId: 
           <OrderTimeline steps={orderTimeline(order)} />
           <div className="flex flex-wrap gap-2">
             <Link href={`/orders/${order.id}`} className={buttonStyles({ size: "sm" })}>View order</Link>
+            {digital.map((i) => (
+              <Link key={i.id} href={`/library/${i.product.slug}`} className={buttonStyles({ size: "sm", variant: "secondary" })}>
+                {digital.length === 1 ? "Open in library" : `Open ${i.product.name}`}
+              </Link>
+            ))}
             {order.items.some((i) => i.product.kind === "COURSE") && (
               <Link href="/courses" className={buttonStyles({ size: "sm", variant: "secondary" })}>Go to your courses</Link>
             )}
