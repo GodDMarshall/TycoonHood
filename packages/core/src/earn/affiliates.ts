@@ -19,7 +19,7 @@
  */
 import { createHash, getRandomValues } from "node:crypto";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
-import type { AffiliateStatus, CommissionStatus, PayoutStatus, PrismaClient, RefundStatus } from "@tycoonhood/db";
+import type { AffiliateStatus, CommissionStatus, OrderStatus, PayoutStatus, PrismaClient, RefundStatus } from "@tycoonhood/db";
 import { AFFILIATE_HOLD_DAYS, AFFILIATE_RATE_BPS, MIN_PAYOUT_CENTS } from "@tycoonhood/config";
 import { promoteTo } from "../auth/permissions";
 import { AuditService } from "../platform/audit";
@@ -194,8 +194,9 @@ export function inr(cents: number): string {
 
 /** What a payout must show before it may be approved or marked paid. */
 export type PayoutCheck = {
+  amountCents: number;
   affiliate: { status: AffiliateStatus };
-  commissions: { order: { refundRequests: { status: RefundStatus }[] } }[];
+  commissions: { amountCents: number; status: CommissionStatus; order: { status: OrderStatus; refundRequests: { status: RefundStatus }[] } }[];
 };
 
 /**
@@ -209,13 +210,26 @@ export function payoutBlocker(p: PayoutCheck): string | null {
   if (p.commissions.some((c) => c.order.refundRequests.some((r) => OPEN_REFUND.includes(r.status)))) {
     return "A refund request is open on an order in this payout. Decide the refund first.";
   }
+  if (p.commissions.some((c) => c.order.status !== "PAID" && c.order.status !== "FULFILLED")) {
+    return "An order in this payout was refunded. Reverse its commission first.";
+  }
+  const sum = p.commissions.reduce((s, c) => s + c.amountCents, 0);
+  if (p.commissions.some((c) => c.status !== "APPROVED") || sum !== p.amountCents) {
+    return "The commissions in this payout do not add up to its amount. Decline it, and the member can request again.";
+  }
   return null;
 }
 
-/** The part of a payout's commissions that payoutBlocker reads. */
+/** The part of a payout that payoutBlocker reads. */
 const PAYOUT_CHECK = {
   affiliate: true,
-  commissions: { select: { order: { select: { refundRequests: { where: { status: { in: OPEN_REFUND } }, select: { status: true } } } } } },
+  commissions: {
+    select: {
+      amountCents: true,
+      status: true,
+      order: { select: { status: true, refundRequests: { where: { status: { in: OPEN_REFUND } }, select: { status: true } } } },
+    },
+  },
 } satisfies Prisma.PayoutRequestInclude;
 
 // ───────────────────────────────────────────────────────── service
@@ -396,7 +410,7 @@ export class AffiliateService implements EarnHooks {
     try {
       await this.attribute(orderId);
     } catch (e) {
-      console.error(`[earn] onOrderPaid(${orderId}) failed`, e);
+      await this.hookFailed("commission.attribute_failed", orderId, e);
     }
   }
 
@@ -404,7 +418,22 @@ export class AffiliateService implements EarnHooks {
     try {
       await this.reverseFor(orderId);
     } catch (e) {
-      console.error(`[earn] onOrderRefunded(${orderId}) failed`, e);
+      // The admin earn page lists refunded orders whose commission still stands.
+      await this.hookFailed("commission.reverse_failed", orderId, e);
+    }
+  }
+
+  /**
+   * A hook never throws into the shop, but a failure is not only logged: it
+   * goes in the audit log, written after the failed transaction rolled back.
+   */
+  private async hookFailed(action: string, orderId: string, e: unknown) {
+    console.error(`[earn] ${action} for order ${orderId}`, e);
+    try {
+      const error = (e instanceof Error ? e.message : String(e)).slice(0, 500);
+      await this.audit.log({ actorId: null, action, targetType: "order", targetId: orderId, meta: { error } });
+    } catch (auditError) {
+      console.error(`[earn] could not audit ${action} for order ${orderId}`, auditError);
     }
   }
 
@@ -518,19 +547,39 @@ export class AffiliateService implements EarnHooks {
     return flags;
   }
 
-  private async reverseFor(orderId: string) {
+  /**
+   * Reverses the commission on a refunded order. The rows are locked first,
+   * in the order requestPayout and movePayout use (affiliate, payout,
+   * commission), and their statuses are read again under the locks, so a
+   * payout being paid at the same moment is either paid first (and this
+   * records a manual clawback) or sees the commission gone.
+   *
+   * A commission in an open payout comes out of it. If that leaves nothing,
+   * or less than the minimum payout, the request is closed instead of lowered
+   * and its other commissions go back to be requested again.
+   */
+  private async reverseFor(orderId: string, actorId: string | null = null) {
+    // The affiliate never changes, so it can be read before locking.
+    const found = await this.db.commission.findUnique({ where: { orderId }, select: { id: true, affiliateId: true } });
+    if (!found) return;
     await this.db.$transaction(async (tx) => {
-      const c = await tx.commission.findUnique({ where: { orderId }, include: { affiliate: true, payout: true } });
-      if (!c) return;
+      await tx.$queryRaw`SELECT id FROM "AffiliateProfile" WHERE id = ${found.affiliateId} FOR UPDATE`;
+      // Every write to payoutId holds the affiliate lock, so this read is stable.
+      const { payoutId } = await tx.commission.findUniqueOrThrow({ where: { id: found.id }, select: { payoutId: true } });
+      if (payoutId) await tx.$queryRaw`SELECT id FROM "PayoutRequest" WHERE id = ${payoutId} FOR UPDATE`;
+      await tx.$queryRaw`SELECT id FROM "Commission" WHERE id = ${found.id} FOR UPDATE`;
+      const c = await tx.commission.findUniqueOrThrow({ where: { id: found.id }, include: { affiliate: true, payout: true } });
       if (c.status === "REVERSED" || c.status === "REJECTED") return;
+      const now = this.now();
 
       if (c.status === "PAID") {
-        await tx.commission.update({
-          where: { id: c.id },
-          data: { status: "REVERSED", reason: "order refunded after this commission was paid — clawback is manual", reviewedAt: this.now() },
+        const n = await tx.commission.updateMany({
+          where: { id: c.id, status: "PAID" },
+          data: { status: "REVERSED", reason: "order refunded after this commission was paid — clawback is manual", reviewedAt: now },
         });
+        if (n.count !== 1) throw new InvalidStateError("This commission changed while it was being reversed.");
         await this.audit.log(
-          { actorId: null, action: "commission.reverse", targetType: "Commission", targetId: c.id, meta: { orderId, afterPayout: true, payoutId: c.payoutId, amountCents: c.amountCents } },
+          { actorId, action: "commission.reverse", targetType: "Commission", targetId: c.id, meta: { orderId, afterPayout: true, payoutId: c.payoutId, amountCents: c.amountCents } },
           tx
         );
         await notify(c.affiliate.userId, "EARNINGS", "A paid commission's order was refunded", `${inr(c.amountCents)} was already paid out. We will contact you about it.`, { href }, tx);
@@ -538,23 +587,46 @@ export class AffiliateService implements EarnHooks {
       }
 
       // PENDING or APPROVED. If it sits in an open payout request, take it out
-      // and lower that request so the request never pays for a refunded order.
-      const detach = c.payoutId && c.payout && OPEN_PAYOUT.includes(c.payout.status);
-      await tx.commission.update({
-        where: { id: c.id },
-        data: { status: "REVERSED", reason: "order refunded", reviewedAt: this.now(), ...(detach ? { payoutId: null } : {}) },
+      // so the request never pays for a refunded order.
+      const payout = c.payout && OPEN_PAYOUT.includes(c.payout.status) ? c.payout : null;
+      const n = await tx.commission.updateMany({
+        where: { id: c.id, status: c.status, payoutId: c.payoutId },
+        data: { status: "REVERSED", reason: "order refunded", reviewedAt: now, ...(payout ? { payoutId: null } : {}) },
       });
-      if (detach) {
-        await tx.payoutRequest.update({
-          where: { id: c.payoutId! },
-          data: { amountCents: { decrement: c.amountCents } },
-        });
+      if (n.count !== 1) throw new InvalidStateError("This commission changed while it was being reversed.");
+
+      let closed: string | null = null;
+      if (payout) {
+        const left = payout.amountCents - c.amountCents;
+        if (left >= MIN_PAYOUT_CENTS) {
+          await tx.payoutRequest.update({ where: { id: payout.id }, data: { amountCents: left } });
+        } else {
+          // Lowering it would leave nothing to pay, or less than anyone may request.
+          closed = left <= 0 ? "Every commission in it was refunded." : `A refund took it below the ${inr(MIN_PAYOUT_CENTS)} minimum.`;
+          await tx.payoutRequest.update({ where: { id: payout.id }, data: { status: "REJECTED", reason: closed, reviewedAt: now } });
+          // Back to the pool, as when a payout is declined.
+          const back = await tx.commission.updateMany({ where: { payoutId: payout.id, status: "APPROVED" }, data: { payoutId: null } });
+          await this.audit.log(
+            { actorId, action: "payout.close", targetType: "PayoutRequest", targetId: payout.id, meta: { reason: closed, from: payout.status, amountCents: payout.amountCents, orderId, commissionId: c.id, returned: back.count } },
+            tx
+          );
+        }
       }
       await this.audit.log(
-        { actorId: null, action: "commission.reverse", targetType: "Commission", targetId: c.id, meta: { orderId, from: c.status, detachedFromPayout: detach ? c.payoutId : null } },
+        { actorId, action: "commission.reverse", targetType: "Commission", targetId: c.id, meta: { orderId, from: c.status, detachedFromPayout: payout?.id ?? null, payoutClosed: closed !== null } },
         tx
       );
       await notify(c.affiliate.userId, "EARNINGS", "A commission was reversed", `The order was refunded, so its ${inr(c.amountCents)} commission no longer applies.`, { href }, tx);
+      if (closed) {
+        await notify(
+          c.affiliate.userId,
+          "EARNINGS",
+          "Payout request closed",
+          `${closed} Any approved commissions left in it are available to request again.`,
+          { href },
+          tx
+        );
+      }
     });
   }
 
@@ -609,6 +681,18 @@ export class AffiliateService implements EarnHooks {
       await notify(c.affiliate.userId, "EARNINGS", "A commission was rejected", `Reason: ${why}`, { href }, tx);
       return tx.commission.findUniqueOrThrow({ where: { id: c.id } });
     });
+  }
+
+  /**
+   * Runs the refund reversal again for a commission whose order was refunded
+   * but which still stands (listUnreversed). Errors reach the admin this time.
+   */
+  async reverseRefunded(adminId: string, commissionId: string) {
+    const c = await this.db.commission.findUnique({ where: { id: commissionId }, include: { order: { select: { status: true } } } });
+    if (!c) throw new EarnError("Commission not found.");
+    if (c.order.status !== "REFUNDED") throw new InvalidStateError(`The order is ${c.order.status.toLowerCase()}, not refunded.`);
+    await this.reverseFor(c.orderId, adminId);
+    return this.db.commission.findUniqueOrThrow({ where: { id: c.id } });
   }
 
   // ─────────────────────────────── payouts
@@ -687,9 +771,15 @@ export class AffiliateService implements EarnHooks {
     extra: { reference?: string; reason?: string },
     message: (p: { amountCents: number }) => [string, string]
   ) {
+    // The affiliate never changes, so it can be read before locking.
+    const found = await this.db.payoutRequest.findUnique({ where: { id: payoutId }, select: { affiliateId: true } });
+    if (!found) throw new EarnError("Payout request not found.");
     return this.db.$transaction(async (tx) => {
-      const p = await tx.payoutRequest.findUnique({ where: { id: payoutId }, include: PAYOUT_CHECK });
-      if (!p) throw new EarnError("Payout request not found.");
+      // The lock order of requestPayout and reverseFor: a refund reversing one of
+      // these commissions waits for this move, or this move sees it done.
+      await tx.$queryRaw`SELECT id FROM "AffiliateProfile" WHERE id = ${found.affiliateId} FOR UPDATE`;
+      await tx.$queryRaw`SELECT id FROM "PayoutRequest" WHERE id = ${payoutId} FOR UPDATE`;
+      const p = await tx.payoutRequest.findUniqueOrThrow({ where: { id: payoutId }, include: PAYOUT_CHECK });
       if (!from.includes(p.status)) throw new InvalidStateError(`This payout is ${p.status.toLowerCase()}.`);
       if (to === "APPROVED" || to === "PAID") {
         const blocked = payoutBlocker(p);
@@ -842,6 +932,32 @@ export class AffiliateService implements EarnHooks {
       this.db.commission.count({ where }),
     ]);
     return { rows, total };
+  }
+
+  /**
+   * Commissions still standing on a refunded order: the reversal failed (the
+   * audit log has commission.reverse_failed, the latest is attached) or never
+   * ran. The admin earn page shows them until each is reversed.
+   */
+  async listUnreversed(take = 50) {
+    const rows = await this.db.commission.findMany({
+      where: { status: { in: ["PENDING", "APPROVED", "PAID"] }, order: { status: "REFUNDED" } },
+      orderBy: { createdAt: "desc" },
+      take: Math.min(take, 200),
+      include: { affiliate: { select: { code: true, user: { select: { email: true } } } } },
+    });
+    const failures = rows.length
+      ? await this.db.auditLog.findMany({
+          where: { action: "commission.reverse_failed", targetType: "order", targetId: { in: rows.map((r) => r.orderId) } },
+          orderBy: { createdAt: "desc" },
+          select: { targetId: true, meta: true, createdAt: true },
+        })
+      : [];
+    return rows.map((r) => {
+      const failure = failures.find((f) => f.targetId === r.orderId);
+      const error = (failure?.meta as { error?: unknown } | null)?.error;
+      return { ...r, lastFailure: failure ? { at: failure.createdAt, error: typeof error === "string" ? error : null } : null };
+    });
   }
 
   async listPayouts(opts: { status?: PayoutStatus; take?: number; skip?: number } = {}) {

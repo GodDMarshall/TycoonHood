@@ -197,7 +197,7 @@ export class RefundService {
         { orderId: order.id, href: `/orders/${order.id}` },
         this.db
       );
-      await callEarnHook("onOrderRefunded", order.id);
+      await callEarnHook("onOrderRefunded", order.id, this.db);
       return { orderId: order.id, rail, refundedLocally };
     } catch (e) {
       // Put the request back so it can be retried once the cause is fixed.

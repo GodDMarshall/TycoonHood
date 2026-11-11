@@ -113,6 +113,22 @@ describe("Shop — earn hooks registry", () => {
     setEarnHooks(null);
     expect(getEarnHooks()).toBeNull();
   });
+
+  it("a hook that throws is audited, and the refund still goes through", async () => {
+    setEarnHooks({ onOrderPaid: paidSpy, onOrderRefunded: async () => Promise.reject(new Error("earn is down")) });
+    const user = await createTestUser();
+    const admin = await createTestUser();
+    const p = await product({ inventory: 3, inr: 30_000 });
+    await cart.add(user.id, p.id);
+    const { order } = await checkout.startInrCheckout(user.id, { shipping: ADDRESS });
+    await checkout.sandboxCapture(user.id, order.id);
+    const req = await refundSvc.requestRefund(user.id, order.id, "Changed my mind, please refund");
+
+    await expect(refundSvc.approve(admin.id, req.id)).resolves.toBeTruthy();
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("REFUNDED");
+    const failed = await prisma.auditLog.findFirstOrThrow({ where: { action: "earn.hook_failed", targetId: order.id } });
+    expect(failed).toMatchObject({ actorId: null, targetType: "order", meta: { hook: "onOrderRefunded", error: "earn is down" } });
+  });
 });
 
 describe("Shop — cart maths", () => {

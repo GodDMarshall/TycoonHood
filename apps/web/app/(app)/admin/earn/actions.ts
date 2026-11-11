@@ -49,6 +49,10 @@ export async function approveCommissionAction(id: string, _p: EarnFormState, _fd
 export async function rejectCommissionAction(id: string, _p: EarnFormState, fd: FormData) {
   return run((a) => affiliates.rejectCommission(a, id, text(fd, "reason")), "Rejected.");
 }
+/** A refunded order's commission whose automatic reversal failed. */
+export async function reverseCommissionAction(id: string, _p: EarnFormState, _fd: FormData) {
+  return run((a) => affiliates.reverseRefunded(a, id), "Reversed. The member has been told.");
+}
 
 // ── payouts
 

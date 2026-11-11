@@ -384,7 +384,7 @@ export class ShopCheckoutService {
       targetId: order.id,
       meta: { rail: "INR", provider: payment.provider, mode: payment.mode, source: args.source, totalCents: payment.amountCents },
     });
-    await callEarnHook("onOrderPaid", order.id);
+    await callEarnHook("onOrderPaid", order.id, this.db);
     return { orderId: order.id, outcome: "paid" };
   }
 

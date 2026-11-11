@@ -23,6 +23,7 @@ import {
   rejectAffiliateAction,
   rejectCommissionAction,
   rejectPayoutAction,
+  reverseCommissionAction,
   suspendAffiliateAction,
 } from "./actions";
 
@@ -99,6 +100,7 @@ export default async function AdminEarnPage({ searchParams }: { searchParams: Pr
         ))}
       </div>
 
+      {tab !== "applications" && <Unreversed />}
       {tab === "applications" && <Applications status={status} skip={skip} page={page} />}
       {tab === "commissions" && <Commissions status={status} skip={skip} page={page} />}
       {tab === "payouts" && <Payouts status={status} skip={skip} page={page} />}
@@ -292,6 +294,46 @@ async function Payouts({ status, skip, page }: { status: string; skip: number; p
       </div>
       <Pager tab="payouts" status={status} page={page} total={total} />
     </>
+  );
+}
+
+// ───────────────────────────────────────────────────────── refunded, not reversed
+
+async function Unreversed() {
+  const rows = await affiliates.listUnreversed();
+  if (rows.length === 0) return null;
+  return (
+    <Card className="mb-4 border-danger/50">
+      <CardContent className="py-3.5">
+        <p className="text-[13px] text-ink-1">Refunded orders with a commission still standing</p>
+        <p className="mt-0.5 text-[12px] text-ink-3">
+          The automatic reversal failed or did not run. Reverse each one so it is never paid out. A payout it is in is
+          lowered, or closed if that leaves less than the minimum.
+        </p>
+        <ul className="mt-3 flex flex-col gap-2">
+          {rows.map((c) => (
+            <li key={c.id} className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[12px] text-ink-2">
+                <span className="figures">{inr(c.amountCents)}</span> to {c.affiliate.code} · order #{c.orderId.slice(-6).toUpperCase()} ·{" "}
+                {commissionLabel[c.status].toLowerCase()}
+                {c.payoutId && " · in a payout"}
+                {c.lastFailure?.error && (
+                  <span className="block text-danger">
+                    Failed {dateFmt.format(c.lastFailure.at)}: {c.lastFailure.error}
+                  </span>
+                )}
+              </span>
+              <ActionButton
+                action={reverseCommissionAction.bind(null, c.id)}
+                label="Reverse"
+                variant="primary"
+                confirmText={c.status === "PAID" ? "This commission was already paid out. Reverse it? The money has to be recovered by hand." : undefined}
+              />
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 

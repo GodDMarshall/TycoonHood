@@ -487,10 +487,195 @@ describe("payouts", () => {
     await expect(earn.approvePayout(admin.id, p2.id)).rejects.toThrow(/affiliate is suspended/);
   });
 
-  it("payoutBlocker reads only refund requests that are still open", () => {
-    const order = (...statuses: ("REQUESTED" | "APPROVED" | "REJECTED" | "REFUNDED")[]) => ({ order: { refundRequests: statuses.map((status) => ({ status })) } });
-    expect(payoutBlocker({ affiliate: { status: "APPROVED" }, commissions: [order("REJECTED", "REFUNDED"), order()] })).toBeNull();
-    expect(payoutBlocker({ affiliate: { status: "APPROVED" }, commissions: [order(), order("REQUESTED")] })).toMatch(/refund request is open/);
-    expect(payoutBlocker({ affiliate: { status: "SUSPENDED" }, commissions: [order()] })).toMatch(/suspended/);
+  it("payoutBlocker reads only refund requests that are still open, refunded orders, and whether the payout adds up", () => {
+    type Refund = "REQUESTED" | "APPROVED" | "REJECTED" | "REFUNDED";
+    const line = (refunds: Refund[] = [], order: "PAID" | "FULFILLED" | "REFUNDED" = "PAID", status: "APPROVED" | "REVERSED" = "APPROVED") => ({
+      amountCents: 30_000,
+      status,
+      order: { status: order, refundRequests: refunds.map((s) => ({ status: s })) },
+    });
+    const payout = (affiliate: "APPROVED" | "SUSPENDED", ...commissions: ReturnType<typeof line>[]) => ({
+      amountCents: commissions.reduce((s, c) => s + c.amountCents, 0),
+      affiliate: { status: affiliate },
+      commissions,
+    });
+    expect(payoutBlocker(payout("APPROVED", line(["REJECTED", "REFUNDED"]), line([], "FULFILLED")))).toBeNull();
+    expect(payoutBlocker(payout("APPROVED", line(), line(["REQUESTED"])))).toMatch(/refund request is open/);
+    expect(payoutBlocker(payout("SUSPENDED", line()))).toMatch(/suspended/);
+    expect(payoutBlocker(payout("APPROVED", line(), line([], "REFUNDED")))).toMatch(/was refunded/);
+    expect(payoutBlocker(payout("APPROVED", line(), line([], "PAID", "REVERSED")))).toMatch(/do not add up/);
+    expect(payoutBlocker({ ...payout("APPROVED", line()), amountCents: 40_000 })).toMatch(/do not add up/);
+  });
+
+  it("a refund that would empty an open payout closes it, and the refunded commission is never paid", async () => {
+    const aff = await approvedAffiliate();
+    const c = await approvedCommission(aff, 60_000); // ₹600 on a ₹6,000 order
+    const p = await earn.requestPayout(aff.user.id);
+    await earn.approvePayout(admin.id, p.id);
+
+    await prisma.order.update({ where: { id: c.orderId }, data: { status: "REFUNDED" } });
+    await earn.onOrderRefunded(c.orderId);
+
+    const after = await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id }, include: { commissions: true } });
+    expect(after).toMatchObject({ status: "REJECTED", amountCents: 60_000, reason: "Every commission in it was refunded." });
+    expect(after.commissions).toEqual([]);
+    expect(await prisma.commission.findUniqueOrThrow({ where: { id: c.id } })).toMatchObject({ status: "REVERSED", payoutId: null });
+    expect(await prisma.auditLog.count({ where: { action: "payout.close", targetId: p.id } })).toBe(1);
+    expect(await prisma.auditLog.count({ where: { action: "commission.reverse_failed", targetId: c.orderId } })).toBe(0);
+    expect(await prisma.notification.count({ where: { userId: aff.user.id, title: "Payout request closed" } })).toBe(1);
+    await expect(earn.markPayoutPaid(admin.id, p.id, "UTR1")).rejects.toThrow(/rejected/);
+
+    // Running the hook again changes nothing.
+    await earn.onOrderRefunded(c.orderId);
+    expect(await prisma.auditLog.count({ where: { action: "commission.reverse", targetId: c.id } })).toBe(1);
+  });
+
+  it("a two-commission payout whose orders are both refunded in turn is lowered, then closed", async () => {
+    const aff = await approvedAffiliate();
+    const first = await approvedCommission(aff, 60_000);
+    const second = await approvedCommission(aff, 60_000);
+    const p = await earn.requestPayout(aff.user.id);
+    expect(p.amountCents).toBe(120_000);
+
+    await prisma.order.update({ where: { id: first.orderId }, data: { status: "REFUNDED" } });
+    await earn.onOrderRefunded(first.orderId);
+    expect(await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id } })).toMatchObject({ status: "REQUESTED", amountCents: 60_000 });
+
+    await prisma.order.update({ where: { id: second.orderId }, data: { status: "REFUNDED" } });
+    await earn.onOrderRefunded(second.orderId);
+    expect(await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id } })).toMatchObject({ status: "REJECTED", reason: "Every commission in it was refunded." });
+    const cs = await prisma.commission.findMany({ where: { id: { in: [first.id, second.id] } } });
+    expect(cs).toHaveLength(2);
+    expect(cs.every((c) => c.status === "REVERSED" && c.payoutId === null)).toBe(true);
+    expect(await prisma.auditLog.count({ where: { action: "commission.reverse_failed", targetId: { in: [first.orderId, second.orderId] } } })).toBe(0);
+    expect(await earn.summary(aff.user.id)).toMatchObject({ availableCents: 0, canRequestPayout: false });
+  });
+
+  it("a refund that takes a payout below the minimum closes it and gives the rest back", async () => {
+    const aff = await approvedAffiliate();
+    const rest = await approvedCommission(aff, 40_000);
+    const refunded = await approvedCommission(aff, 30_000);
+    const p = await earn.requestPayout(aff.user.id);
+    expect(p.amountCents).toBe(70_000);
+
+    await prisma.order.update({ where: { id: refunded.orderId }, data: { status: "REFUNDED" } });
+    await earn.onOrderRefunded(refunded.orderId);
+
+    const after = await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id } });
+    expect(after.status).toBe("REJECTED");
+    expect(after.reason).toBe("A refund took it below the ₹500 minimum.");
+    expect(await prisma.commission.findUniqueOrThrow({ where: { id: rest.id } })).toMatchObject({ status: "APPROVED", payoutId: null });
+    expect(await prisma.commission.findUniqueOrThrow({ where: { id: refunded.id } })).toMatchObject({ status: "REVERSED", payoutId: null });
+    expect(await prisma.auditLog.findFirst({ where: { action: "payout.close", targetId: p.id } })).toMatchObject({ meta: { returned: 1 } });
+    expect(await earn.summary(aff.user.id)).toMatchObject({ availableCents: 40_000, canRequestPayout: false });
+
+    // Topped up later, the member can request again.
+    await approvedCommission(aff, 20_000);
+    expect((await earn.requestPayout(aff.user.id)).amountCents).toBe(60_000);
+  });
+
+  it("a refund that lands while the payout is being paid waits for it, then records a manual clawback", async () => {
+    const aff = await approvedAffiliate();
+    const c = await approvedCommission(aff, 60_000);
+    const p = await earn.requestPayout(aff.user.id);
+    await earn.approvePayout(admin.id, p.id);
+
+    // Pay the way markPayoutPaid does, holding the affiliate's row lock.
+    let release!: () => void;
+    const gate = new Promise<void>((r) => (release = r));
+    let holding!: () => void;
+    const held = new Promise<void>((r) => (holding = r));
+    const paying = prisma.$transaction(
+      async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "AffiliateProfile" WHERE id = ${aff.profile.id} FOR UPDATE`;
+        holding();
+        await gate;
+        await tx.payoutRequest.update({ where: { id: p.id }, data: { status: "PAID", paidAt: new Date(), reference: "UTR-RACE" } });
+        await tx.commission.updateMany({ where: { payoutId: p.id, status: "APPROVED" }, data: { status: "PAID" } });
+      },
+      { timeout: 30_000 }
+    );
+    await held;
+    await prisma.order.update({ where: { id: c.orderId }, data: { status: "REFUNDED" } });
+    const reversing = earn.onOrderRefunded(c.orderId);
+    await new Promise((r) => setTimeout(r, 300)); // the reversal is now waiting for the lock
+    release();
+    await paying;
+    await reversing;
+
+    expect(await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id } })).toMatchObject({ status: "PAID", amountCents: 60_000 });
+    const after = await prisma.commission.findUniqueOrThrow({ where: { id: c.id } });
+    expect(after).toMatchObject({ status: "REVERSED", payoutId: p.id });
+    expect(after.reason).toMatch(/clawback is manual/);
+    expect(await prisma.auditLog.count({ where: { action: "commission.reverse_failed", targetId: c.orderId } })).toBe(0);
+  });
+
+  it("a refund racing markPayoutPaid ends one way or the other, never both", async () => {
+    for (let round = 0; round < 4; round++) {
+      const aff = await approvedAffiliate();
+      const c = await approvedCommission(aff, 60_000);
+      const p = await earn.requestPayout(aff.user.id);
+      await earn.approvePayout(admin.id, p.id);
+      const refund = async () => {
+        await prisma.order.update({ where: { id: c.orderId }, data: { status: "REFUNDED" } });
+        await earn.onOrderRefunded(c.orderId);
+      };
+      const [paid] = await Promise.allSettled([earn.markPayoutPaid(admin.id, p.id, `UTR-${round}`), refund()]);
+
+      const payout = await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id } });
+      const after = await prisma.commission.findUniqueOrThrow({ where: { id: c.id } });
+      expect(after.status).toBe("REVERSED");
+      if (paid.status === "fulfilled") {
+        // Paid first: the reversal saw it and flagged the money to recover.
+        expect(payout.status).toBe("PAID");
+        expect(after.reason).toMatch(/clawback is manual/);
+      } else {
+        // Refunded first: paying was refused and the request closed with nothing in it.
+        expect(payout.status).toBe("REJECTED");
+        expect(after.payoutId).toBeNull();
+      }
+      expect(await prisma.auditLog.count({ where: { action: "commission.reverse_failed", targetId: c.orderId } })).toBe(0);
+    }
+  });
+
+  it("a failed reversal is audited, keeps the payout blocked, and an admin can run it again", async () => {
+    const aff = await approvedAffiliate();
+    const c = await approvedCommission(aff, 60_000);
+    await approvedCommission(aff, 60_000);
+    const p = await earn.requestPayout(aff.user.id);
+    await prisma.order.update({ where: { id: c.orderId }, data: { status: "REFUNDED" } });
+
+    // The database drops the reversal's transaction.
+    const down = new Proxy(prisma, {
+      get: (target, key) => (key === "$transaction" ? () => Promise.reject(new Error("connection reset")) : Reflect.get(target, key)),
+    });
+    await expect(new AffiliateService(down).onOrderRefunded(c.orderId)).resolves.toBeUndefined();
+    const failure = await prisma.auditLog.findFirstOrThrow({ where: { action: "commission.reverse_failed", targetId: c.orderId } });
+    expect(failure).toMatchObject({ actorId: null, targetType: "order", meta: { error: "connection reset" } });
+
+    // The payout cannot go ahead with the refunded order still in it.
+    await expect(earn.approvePayout(admin.id, p.id)).rejects.toThrow(/was refunded/);
+    expect((await earn.listUnreversed()).find((r) => r.id === c.id)).toMatchObject({
+      status: "APPROVED",
+      payoutId: p.id,
+      affiliate: { code: aff.profile.code },
+      lastFailure: { error: "connection reset" },
+    });
+
+    const standing = await approvedCommission(aff, 10_000);
+    await expect(earn.reverseRefunded(admin.id, standing.id)).rejects.toThrow(/not refunded/);
+    expect(await earn.reverseRefunded(admin.id, c.id)).toMatchObject({ status: "REVERSED", payoutId: null });
+    expect(await prisma.auditLog.count({ where: { action: "commission.reverse", targetId: c.id, actorId: admin.id } })).toBe(1);
+    expect((await earn.listUnreversed()).some((r) => r.id === c.id)).toBe(false);
+    expect(await earn.approvePayout(admin.id, p.id)).toMatchObject({ status: "APPROVED", amountCents: 60_000 });
+  });
+
+  it("a payout whose amount no longer matches its commissions is not approved", async () => {
+    const aff = await approvedAffiliate();
+    await approvedCommission(aff, 60_000);
+    const p = await earn.requestPayout(aff.user.id);
+    await prisma.payoutRequest.update({ where: { id: p.id }, data: { amountCents: 70_000 } });
+    await expect(earn.approvePayout(admin.id, p.id)).rejects.toThrow(/do not add up/);
+    expect((await earn.rejectPayout(admin.id, p.id, "Amount does not match")).status).toBe("REJECTED");
   });
 });
