@@ -6,6 +6,9 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["bom1"],
+  "crons": [
+    { "path": "/api/cron/expire-orders", "schedule": "*/10 * * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

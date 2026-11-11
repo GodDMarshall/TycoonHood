@@ -5,6 +5,7 @@ import { prisma } from "@tycoonhood/db";
 import { LedgerService, paymentsStatusFor, shopCheckout } from "@tycoonhood/core";
 import { buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
+import { releaseExpiredHolds } from "../../../lib/stale-orders";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
 import { CheckoutForm } from "../../../components/shop/checkout-form";
 import { TestModeBanner } from "../../../components/shop/test-mode-banner";
@@ -18,8 +19,8 @@ const ledger = new LedgerService(prisma);
 
 export default async function CheckoutPage() {
   const user = await requireUser();
-  // Stale unpaid orders give their stock back before anyone is told "sold out".
-  await shopCheckout.expireStale();
+  // Stale unpaid orders give their stock and coupons back before anyone is told "sold out".
+  await releaseExpiredHolds();
   const quote = await shopCheckout.quoteInr(user.id);
   const { lines, totals } = quote;
   if (lines.length === 0) redirect("/cart");

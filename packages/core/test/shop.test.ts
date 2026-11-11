@@ -6,8 +6,9 @@ import {
   cartTotals, discountFor, checkCouponRules, verifyCheckoutSignature, verifyWebhookSignature,
   setEarnHooks, orderTimeline, refundBlocker, paymentsStatus, activeShopProvider, CartError, CouponError,
   PaymentVerificationError, paymentsStatusFor, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly,
-  paidAfterCancel, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES,
+  paidAfterCancel, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS,
 } from "../src/shop";
+import { cronAuth } from "../src/platform/cron";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
 import { TEST_REFUND_NOTE } from "../src/shop/refunds";
 import { IST_TIME_ZONE, formatIst, parseIstDateTime } from "../src/time/ist";
@@ -706,6 +707,66 @@ describe("Shop — expiring unpaid rupee orders", () => {
     await new ShopCheckoutService(prisma, { providerFor: () => liveKeys }).expireStale();
     expect(await testOrder.state()).toEqual(released);
     expect(liveCalls.filter((cl) => cl.url.includes(testOrder.providerOrderId))).toHaveLength(0);
+  });
+
+  it("the pay page expires only its own order", async () => {
+    const mine = await heldOrder(checkout, PENDING_TTL_MINUTES + 1);
+    const other = await heldOrder(checkout, PENDING_TTL_MINUTES + 1);
+    const recent = await heldOrder(checkout, 5);
+    const none = { cancelled: 0, captured: 0, waiting: 0 };
+    expect(await checkout.expireStale(new Date(), { orderId: recent.order.id, userId: recent.order.userId })).toEqual(none);
+    // Someone else's order is not theirs to expire.
+    expect(await checkout.expireStale(new Date(), { orderId: mine.order.id, userId: other.order.userId })).toEqual(none);
+    expect(await mine.state()).toEqual(held);
+    expect(await checkout.expireStale(new Date(), { orderId: mine.order.id, userId: mine.order.userId })).toEqual({ cancelled: 1, captured: 0, waiting: 0 });
+    expect(await mine.state()).toEqual(released);
+    expect(await other.state()).toEqual(held);
+    expect(await recent.state()).toEqual(held);
+    await checkout.expireStale();
+    expect(await other.state()).toEqual(released);
+  });
+
+  it("page loads sweep at most once a minute per server, and a failed sweep never breaks the page", async () => {
+    const svc = new ShopCheckoutService(prisma, { provider: () => sandbox, sandboxEnabled: () => true });
+    const sweep = vi.spyOn(svc, "expireStale");
+    const stale = await heldOrder(svc, PENDING_TTL_MINUTES + 1);
+    const t0 = new Date();
+
+    expect(await svc.sweepStale(t0)).toMatchObject({ cancelled: expect.any(Number) });
+    expect(await stale.state()).toEqual(released);
+    const next = await heldOrder(svc, PENDING_TTL_MINUTES + 1);
+    expect(await svc.sweepStale(new Date(t0.getTime() + SWEEP_EVERY_MS - 1))).toBeNull(); // too soon: skipped
+    expect(await next.state()).toEqual(held);
+    expect(sweep).toHaveBeenCalledTimes(1);
+
+    sweep.mockRejectedValueOnce(new Error("database unavailable"));
+    const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await expect(svc.sweepStale(new Date(t0.getTime() + SWEEP_EVERY_MS))).resolves.toBeNull();
+    } finally {
+      errors.mockRestore();
+    }
+    expect(sweep).toHaveBeenCalledTimes(2);
+    expect(await svc.sweepStale(new Date(t0.getTime() + 2 * SWEEP_EVERY_MS))).toMatchObject({ cancelled: expect.any(Number) });
+    expect(await next.state()).toEqual(released);
+  });
+
+  it("the scheduled sweep runs only for a caller with CRON_SECRET", () => {
+    const secret = "a-long-random-cron-secret-for-tests";
+    expect(cronAuth(`Bearer ${secret}`, secret)).toBe("ok");
+    expect(cronAuth(`Bearer ${secret}`, ` ${secret}\n`)).toBe("ok"); // the env value is trimmed
+    for (const header of [null, undefined, "", secret, "Bearer", "Bearer ", `bearer ${secret}`, `Basic ${secret}`, `Bearer ${secret}x`, `Bearer ${secret.slice(1)}`]) {
+      expect(cronAuth(header, secret)).toBe("denied");
+    }
+    expect(cronAuth(`Bearer ${secret}`, undefined)).toBe("unset");
+    expect(cronAuth("Bearer ", "   ")).toBe("unset");
+    vi.stubEnv("CRON_SECRET", secret);
+    try {
+      expect(cronAuth(`Bearer ${secret}`)).toBe("ok");
+      expect(cronAuth("Bearer wrong")).toBe("denied");
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 });
 

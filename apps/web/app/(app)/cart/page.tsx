@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cart, paymentsStatusFor, MAX_LINE_QTY } from "@tycoonhood/core";
 import { EmptyState, Notice, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
+import { releaseExpiredHolds } from "../../../lib/stale-orders";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
 import { SubmitButton } from "../../../components/submit-button";
 import { inr, KIND_LABEL } from "../../../components/shop/format";
@@ -13,6 +14,8 @@ export const dynamic = "force-dynamic";
 
 export default async function CartPage() {
   const user = await requireUser();
+  // Stock shown here is checked again at checkout; expired holds go back first.
+  await releaseExpiredHolds();
   const { lines, totals } = await cart.list(user.id);
   const pay = paymentsStatusFor(user);
 

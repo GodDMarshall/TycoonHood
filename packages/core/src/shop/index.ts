@@ -12,7 +12,7 @@ export {
   CouponService, coupons, discountFor, checkCouponRules, validateCouponInput, normaliseCode, COUPON_CODE_RE,
 } from "./coupons";
 export type { CouponCheck, CouponInput } from "./coupons";
-export { ShopCheckoutService, shopCheckout, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES } from "./checkout";
+export { ShopCheckoutService, shopCheckout, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS } from "./checkout";
 export type { ShopCheckoutOptions, CaptureOutcome } from "./checkout";
 export { RefundService, refunds, refundBlocker, REFUND_WINDOW_DAYS, REFUND_REASON_MIN, REFUND_REASON_MAX } from "./refunds";
 export { orderTimeline, isTestOrder, paidAfterCancel, ShopStatsService, shopStats } from "./tracking";

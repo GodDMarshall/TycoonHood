@@ -8,6 +8,7 @@ import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
 import { SHOP_CATEGORIES, categoryLabel, priceInTime } from "@tycoonhood/core";
 import { Badge, CoinMark, EmptyState, Icon, Input, Select, ThcAmount, buttonStyles, type IconName } from "@tycoonhood/ui";
+import { releaseExpiredHolds } from "../../lib/stale-orders";
 import { catalogueQuery, normaliseParams, queryString, SORTS } from "./catalogue-query";
 import { KIND_LABEL, inr } from "./format";
 
@@ -24,6 +25,8 @@ export async function Catalogue({
 }) {
   const p = normaliseParams(searchParams);
   const { where, orderBy } = catalogueQuery(p);
+  // Unpaid orders past their hold give their stock back before it is shown.
+  await releaseExpiredHolds();
   const [products, counts] = await Promise.all([
     prisma.product.findMany({
       where,

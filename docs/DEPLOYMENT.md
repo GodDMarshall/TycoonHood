@@ -18,6 +18,7 @@
 | `AFFILIATE_HASH_SECRET` | yes | A long random string; salts the click hashes |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for card payments | `rzp_test_…` gives test mode; `rzp_live_…` gives real money. In production, test keys offer card checkout to admins only |
 | `RAZORPAY_WEBHOOK_SECRET` | strongly recommended | Lets the webhook confirm payments if the browser closes |
+| `CRON_SECRET` | yes, with rupee checkout | A long random string. Vercel Cron sends it to `/api/cron/expire-orders`, which refuses calls without it. See "Scheduled jobs" |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin |
 | `COOKIE_DOMAIN` | optional | Only if you serve several subdomains |
 | `TRUSTED_PROXY_HOPS` | optional | How many proxies in front of the app add to `X-Forwarded-For`; per-IP limits read the address that many entries from the right. 1 to 5, default 1 (one proxy such as nginx, or Vercel). If the app is exposed directly with no proxy in front, visitors can set that header themselves, so IP-based limits can be spoofed |
@@ -54,6 +55,14 @@ Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are 
 4. Signed in as an admin, buy something with a Razorpay test card. Check that the order shows Paid in `/admin/orders`, then refund it from `/admin/refunds`.
 5. When KYC is approved, swap in the `rzp_live_…` keys and the live webhook secret. From then on every member sees card checkout, and real money flows.
    - A test payment taken before the swap can still be refunded from `/admin/refunds`. It is marked refunded without calling Razorpay, because no money moved.
+
+## Scheduled jobs
+
+`apps/web/vercel.json` calls `/api/cron/expire-orders` every 10 minutes. It ends unpaid rupee orders whose 30-minute hold has run out, so their stock and coupon uses go back even when nobody is browsing the shop.
+
+- Set `CRON_SECRET` on the site project. Vercel sends it with each call as `Authorization: Bearer <CRON_SECRET>`, and the route refuses any call without it. Another scheduler can call the same URL with the same header.
+- Running every 10 minutes needs a Vercel Pro plan. On Hobby, Vercel refuses to deploy a cron that runs more than once a day. If you are on Hobby, change the schedule to once a day (for example `0 0 * * *`).
+- The store, product, cart, wishlist, checkout and admin order pages also run the sweep when they load, at most once a minute per server. So an expired hold never shows as sold out, even without the schedule.
 
 ## Before launch
 

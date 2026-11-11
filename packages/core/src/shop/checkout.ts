@@ -44,6 +44,8 @@ import { verifyWebhookSignature } from "./payments/razorpay";
 export const PENDING_TTL_MINUTES = 30;
 /** Extra time after the hold for an order Razorpay shows as attempted: the member may be retrying. */
 export const PAYING_GRACE_MINUTES = 30;
+/** Page loads run the expiry sweep at most this often, per server instance. */
+export const SWEEP_EVERY_MS = 60_000;
 
 export interface ShopCheckoutOptions {
   /**
@@ -91,6 +93,7 @@ export class ShopCheckoutService {
   private provider: (buyer: HasRole) => ShopPaymentProvider | null;
   private providerFor: (name: string) => ShopPaymentProvider | null;
   private sandboxEnabled: () => boolean;
+  private lastSweepAt = 0;
 
   constructor(private readonly db: PrismaClient = defaultPrisma, opts: ShopCheckoutOptions = {}) {
     this.commerce = new CommerceService(db);
@@ -477,12 +480,20 @@ export class ShopCheckoutService {
    * A Razorpay order is looked up first: one already paid is captured instead,
    * and one the member has started paying waits PAYING_GRACE_MINUTES more.
    * Everything else is cancelled, which gives back the stock and the coupon.
+   * With `orderId` and `userId`, only that member's order is looked at (the pay page).
    */
-  async expireStale(now = new Date()) {
+  async expireStale(now = new Date(), opts: { orderId?: string; userId?: string } = {}) {
     const cutoff = new Date(now.getTime() - PENDING_TTL_MINUTES * 60_000);
     const graceCutoff = new Date(cutoff.getTime() - PAYING_GRACE_MINUTES * 60_000);
     const stale = await this.db.order.findMany({
-      where: { status: "PENDING", paymentProvider: { not: null }, createdAt: { lt: cutoff }, payments: { none: { status: "CAPTURED" } } },
+      where: {
+        status: "PENDING",
+        paymentProvider: { not: null },
+        createdAt: { lt: cutoff },
+        payments: { none: { status: "CAPTURED" } },
+        ...(opts.orderId ? { id: opts.orderId } : {}),
+        ...(opts.userId ? { userId: opts.userId } : {}),
+      },
       select: { id: true, createdAt: true, payments: { orderBy: { createdAt: "desc" }, take: 1 } },
       orderBy: { createdAt: "asc" },
       take: 200,
@@ -495,6 +506,24 @@ export class ShopCheckoutService {
       else if (await this.cancelOrder(o.id, "Payment window expired")) result.cancelled++;
     }
     return result;
+  }
+
+  /**
+   * expireStale for page loads: the store, product, cart, wishlist, checkout
+   * and admin order pages call it before they read stock. At most once per
+   * SWEEP_EVERY_MS on this server instance, and it never throws into the page.
+   * The cron route (/api/cron/expire-orders) also runs expireStale on a
+   * schedule, so holds go on time even when nobody is browsing.
+   */
+  async sweepStale(now = new Date()) {
+    if (now.getTime() - this.lastSweepAt < SWEEP_EVERY_MS) return null;
+    this.lastSweepAt = now.getTime();
+    try {
+      return await this.expireStale(now);
+    } catch (e) {
+      console.error("[shop] stale-order sweep failed", e);
+      return null;
+    }
   }
 
   /** What the sweep does with one stale order's latest payment. */

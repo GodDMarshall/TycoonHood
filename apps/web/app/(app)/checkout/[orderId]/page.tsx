@@ -17,7 +17,8 @@ export const dynamic = "force-dynamic";
 export default async function PayPage({ params }: { params: Promise<{ orderId: string }> }) {
   const user = await requireUser();
   const { orderId } = await params;
-  await shopCheckout.expireStale();
+  // This member's order only: never offer to pay for one whose hold has run out.
+  await shopCheckout.expireStale(new Date(), { orderId, userId: user.id });
   const order = await prisma.order.findFirst({
     where: { id: orderId, userId: user.id },
     include: { payments: { orderBy: { createdAt: "desc" } }, items: { include: { product: true } } },

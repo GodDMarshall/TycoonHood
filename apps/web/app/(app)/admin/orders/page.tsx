@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { Prisma } from "@tycoonhood/db";
 import { prisma } from "@tycoonhood/db";
-import { isTestOrder, paymentsStatus, shopCheckout, shopStats } from "@tycoonhood/core";
+import { isTestOrder, paymentsStatus, shopStats } from "@tycoonhood/core";
 import { Badge, Card, CardContent, Input, Select, SectionRule, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../lib/guard";
+import { releaseExpiredHolds } from "../../../../lib/stale-orders";
 import { settlePendingFiatAction } from "../actions";
 import { ConfirmButton } from "../../../../components/admin-confirm";
 import { ShipForm } from "../../../../components/admin-ship-form";
@@ -54,7 +55,7 @@ export default async function AdminOrders({
   searchParams: Promise<{ page?: string; status?: string; rail?: string; mode?: string; q?: string }>;
 }) {
   await requirePermission("admin.commerce");
-  await shopCheckout.expireStale();
+  await releaseExpiredHolds();
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page ?? "1") || 1);
   const f: Filters = { status: sp.status ?? "", rail: sp.rail ?? "", mode: sp.mode ?? "", q: (sp.q ?? "").trim().slice(0, 80) };

@@ -130,6 +130,9 @@ const isProd = process.env.NODE_ENV === "production";
   // code, but they still mean no real money comes in, so say so.
   const { razorpayPreflight } = await import("../src/index");
   for (const r of razorpayPreflight()) add(r.level, A, r.label, r.detail);
+
+  check(!!env("CRON_SECRET"), A, "the order sweep can run on a schedule", "",
+    "no CRON_SECRET: /api/cron/expire-orders refuses every call, so unpaid orders are let go only when shop pages load", "WARN");
 }
 
 // ─────────────────────────────────────────────── 4. DATABASE
