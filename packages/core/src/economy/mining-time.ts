@@ -7,7 +7,7 @@ export {
   priceInTime,
   judgePrice,
   thcFor,
-  thcPerDollar,
+  thcPerRupee,
   MERCH_ANCHOR,
   suggestPrice,
   dailyYield,

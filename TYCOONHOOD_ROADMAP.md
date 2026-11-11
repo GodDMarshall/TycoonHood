@@ -42,7 +42,7 @@ The roadmap items below were written in September. Where the 11 November build c
    - A refunded course order should also revoke the enrolment.
    - Add `archivedAt`, `editedAt` and `paidAt` columns (see `docs/DATABASE.md`).
    - Add a cart count badge in the navigation.
-   - Change `judgePrice` from dollars to rupees.
+   - Change `judgePrice` from dollars to rupees · **DONE 11 Nov 2026**: it compares rupee prices only, anchored on the ₹2,499 placeholder hoodie.
 6. **The optional 3D world.** Restore it only if the owner chooses to, as `/world` with a 2D fallback, never gating anything.
 7. **Membership tiers (A3)**, and challenge authoring (A2). Both are still open.
 

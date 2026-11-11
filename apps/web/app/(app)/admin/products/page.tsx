@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requirePermission } from "../../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
-import { catalog, judgePrice, suggestPrice, dailyYield, thcPerDollar, MERCH_TARGET_DAYS, SHOP_CATEGORIES, LOW_STOCK_AT, categoryLabel } from "@tycoonhood/core";
+import { catalog, judgePrice, suggestPrice, dailyYield, thcPerRupee, MERCH_TARGET_DAYS, SHOP_CATEGORIES, LOW_STOCK_AT, categoryLabel } from "@tycoonhood/core";
 import { Badge, Card, CardContent, SectionRule } from "@tycoonhood/ui";
 import { ProductForm } from "../../../../components/admin-product-form";
 import { setShopFieldsAction, toggleProductAction } from "./actions";
@@ -26,9 +26,10 @@ export default async function AdminProducts() {
     targetMinDays: MERCH_TARGET_DAYS.min,
     targetMaxDays: MERCH_TARGET_DAYS.max,
     suggested: suggestPrice().toString(),
-    // The house exchange rate, so the form can check a THC price against the
-    // shelf price rather than against a one-size window.
-    thcPerDollar: Math.round(thcPerDollar()),
+    // THC per rupee at the house anchor, so the form can check a THC price
+    // against the rupee shelf price rather than against a one-size window.
+    // Not rounded: at about 7 THC per rupee, rounding would skew the reading.
+    thcPerRupee: thcPerRupee(),
   };
 
   return (
@@ -57,7 +58,7 @@ export default async function AdminProducts() {
         <div className="flex flex-col gap-2">
           {products.map((p) => {
             const stock = catalog.stockOf(p);
-            const time = p.priceThc != null && p.kind === "PHYSICAL" ? judgePrice(p.priceThc, p.priceFiatCents) : null;
+            const time = p.priceThc != null && p.kind === "PHYSICAL" ? judgePrice(p.priceThc, p.priceFiatCents, p.fiatCurrency) : null;
             const margin =
               p.costCents != null && p.priceFiatCents != null
                 ? Math.round(((p.priceFiatCents - p.costCents) / p.priceFiatCents) * 100)

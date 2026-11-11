@@ -2,6 +2,7 @@
 import { useActionState, useMemo, useState } from "react";
 import { Button, Field, Icon, Input, Label, Textarea } from "@tycoonhood/ui";
 import { saveProductAction, type ProductFormState } from "../app/(app)/admin/products/actions";
+import { inr } from "./shop/format";
 
 export interface CourseOption { id: string; title: string }
 
@@ -13,8 +14,8 @@ interface Economics {
   targetMinDays: number;
   targetMaxDays: number;
   suggested: string;
-  /** The house exchange rate, derived from the anchor item. */
-  thcPerDollar: number;
+  /** THC per rupee of shelf price, derived from the anchor item. Not an exchange rate. */
+  thcPerRupee: number;
 }
 
 const KINDS = [
@@ -51,9 +52,9 @@ export function ProductForm({ courses, economics }: { courses: CourseOption[]; e
     const days = n / perDay;
     const human = days < 45 ? `${Math.round(days)} days` : `${(days / 30).toFixed(1)} months`;
 
-    const cents = Number(priceFiat.replace(/[,\s]/g, ""));
-    if (priceFiat.trim() && Number.isFinite(cents) && cents > 0) {
-      const expected = Math.round((economics.thcPerDollar * (cents / 100)) / 100) * 100;
+    const paise = Number(priceFiat.replace(/[,\s]/g, ""));
+    if (priceFiat.trim() && Number.isFinite(paise) && paise > 0) {
+      const expected = Math.round((economics.thcPerRupee * (paise / 100)) / 100) * 100;
       const ratio = n / Math.max(1, expected);
       const verdict = ratio < 0.75 ? "under" : ratio > 1.25 ? "over" : "on";
       return { human, verdict, expected, anchored: true };
@@ -66,7 +67,7 @@ export function ProductForm({ courses, economics }: { courses: CourseOption[]; e
   const margin = useMemo(() => {
     const c = Number(costCents);
     if (!costCents.trim() || !Number.isFinite(c) || c <= 0) return null;
-    return `$${(c / 100).toFixed(2)} out of pocket every time one is redeemed.`;
+    return `${inr(c)} out of pocket every time one is redeemed.`;
   }, [costCents]);
 
   function setRow(i: number, patch: Partial<(typeof rows)[number]>) {
@@ -152,14 +153,14 @@ export function ProductForm({ courses, economics }: { courses: CourseOption[]; e
             <Input id="priceThc" name="priceThc" inputMode="numeric" value={priceThc}
               onChange={(e) => setPriceThc(e.target.value)} placeholder={economics.suggested} />
           </Field>
-          <Field label="Card, in cents" htmlFor="priceFiatCents">
+          <Field label="Card, in paise" htmlFor="priceFiatCents">
             <Input id="priceFiatCents" name="priceFiatCents" inputMode="numeric" value={priceFiat}
-              onChange={(e) => setPriceFiat(e.target.value)} placeholder="4900" />
-            <p className="mt-1 text-[11px] text-ink-3">4900 = $49.00</p>
+              onChange={(e) => setPriceFiat(e.target.value)} placeholder="249900" />
+            <p className="mt-1 text-[11px] text-ink-3">249900 = ₹2,499.00</p>
           </Field>
-          <Field label="Your cost, in cents" htmlFor="costCents">
+          <Field label="Your cost, in paise" htmlFor="costCents">
             <Input id="costCents" name="costCents" inputMode="numeric" value={costCents}
-              onChange={(e) => setCostCents(e.target.value)} placeholder="1800" />
+              onChange={(e) => setCostCents(e.target.value)} placeholder="87000" />
             <p className="mt-1 text-[11px] text-ink-3">Landed cost: goods plus shipping.</p>
           </Field>
         </div>

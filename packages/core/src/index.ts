@@ -72,7 +72,7 @@ export {
 } from "./catalog/catalog";
 export type { ProductInput, VariantInput, ProductKind } from "./catalog/catalog";
 export {
-  priceInTime, judgePrice, thcFor, thcPerDollar, MERCH_ANCHOR,
+  priceInTime, judgePrice, thcFor, thcPerRupee, MERCH_ANCHOR,
   suggestPrice, dailyYield, yieldTable, ratePerHour, capacity, MERCH_TARGET_DAYS,
 } from "./economy/mining-time";
 export type { PlayStyle, PriceInTime, DailyYield } from "./economy/mining-time";

@@ -10,9 +10,9 @@ import { Badge, CoinMark, EmptyState, Icon, ThcAmount, type IconName } from "@ty
 import { activeFiatProvider } from "../../lib/payments";
 import { buyWithThcAction, buyWithCardAction } from "../../app/(public)/marketplace/actions";
 import { BuyPanel } from "../buy-panel";
+import { money } from "../shop/format";
 
 const kindLabel = { DIGITAL: "Digital", PHYSICAL: "Gear", COURSE: "Program access", MEMBERSHIP: "Membership" } as const;
-const fiat = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 export async function ProductShelves({ user }: { user: { id: string } | null }) {
   const fiatProvider = activeFiatProvider();
@@ -113,7 +113,7 @@ export function ProductCard({
           {p.priceThc != null && <ThcAmount amount={p.priceThc} size="sm" />}
           {p.priceThc != null && p.priceFiatCents != null && <span className="text-[12px] text-ink-3">or</span>}
           {p.priceFiatCents != null && (
-            <span className="figures text-[14px] text-ink-1">{fiat(p.priceFiatCents)}</span>
+            <span className="figures text-[14px] text-ink-1">{money(p.priceFiatCents, p.fiatCurrency)}</span>
           )}
           {inStock != null && inStock > 0 && (
             <span className="ml-auto text-[12px] tabular-nums text-ink-3">{inStock} left</span>

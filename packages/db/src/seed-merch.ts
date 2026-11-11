@@ -1,19 +1,28 @@
 /**
  * MERCH + WATCH-TO-EARN SEED.
  *
- * Prices are not typed in. They are DERIVED from the live mining rates via
+ * THC prices are not typed in. They are DERIVED from the live mining rates via
  * suggestPrice(), so the house rule — a physical item costs a regular member
  * roughly two to three months of mining — stays true if the rates are ever
- * tuned. Change MINING in @tycoonhood/config and re-run this; every price
+ * tuned. Change MINING in @tycoonhood/config and re-run this; every THC price
  * moves with it.
  *
- * Costs are placeholders marked as such. Replace them with real landed costs
- * before any of this goes live, or the margin reporting is fiction.
+ * Card prices are rupees (fiatCurrency "INR", amounts in paise) from
+ * PLACEHOLDER_INR, and landed costs are paise from PLACEHOLDER_COST_INR — the
+ * table in placeholder-prices.ts that seed-shop.ts uses too. Both are
+ * PLACEHOLDERS, not decisions: set real prices and real landed costs in
+ * Admin → Products before any of this goes live, or the margin is fiction.
+ *
+ * Re-running never overwrites a rupee price an admin has set: the placeholder
+ * goes in only when the price is missing or not in INR, the same rule as
+ * seed-shop. A cost an admin entered is left alone too (placeholderMoney says
+ * exactly when a cost is replaced).
  *
  * Idempotent — upserts by slug. Run: pnpm db:seed:merch
  */
 import { prisma } from "./client";
-import { suggestPrice, priceInTime } from "@tycoonhood/config";
+import { suggestPrice, judgePrice } from "@tycoonhood/config";
+import { placeholderMoney } from "./placeholder-prices";
 
 /** Rounds to something a human would actually print on a price tag. */
 const tidy = (n: bigint): bigint => {
@@ -38,8 +47,6 @@ async function main() {
       description:
         "420gsm brushed-back cotton, boxy cut, embroidered mark at the chest — no print to crack. The thing you earn, not the thing you buy on impulse.",
       priceThc: anchor,
-      priceFiatCents: 8900,
-      costCents: 3100, // PLACEHOLDER — replace with the real landed cost
       sizes: true,
     },
     {
@@ -49,8 +56,6 @@ async function main() {
       description:
         "240gsm heavyweight cotton, side-seamed, pre-shrunk. Plain enough to wear anywhere, heavy enough to last the year.",
       priceThc: tidy((anchor * 45n) / 100n),
-      priceFiatCents: 3900,
-      costCents: 1200, // PLACEHOLDER
       sizes: true,
     },
     {
@@ -60,8 +65,6 @@ async function main() {
       description:
         "Liquid chalk, fast-drying, no dust and no mess in the bag. One bottle is roughly forty sessions.",
       priceThc: tidy((anchor * 18n) / 100n),
-      priceFiatCents: 1600,
-      costCents: 480, // PLACEHOLDER
       sizes: false,
       inventory: 60,
     },
@@ -72,8 +75,6 @@ async function main() {
       description:
         "Cotton-weave straps with a neoprene wrist pad. Nothing clever — they just do not slip and they do not fray.",
       priceThc: tidy((anchor * 25n) / 100n),
-      priceFiatCents: 2400,
-      costCents: 700, // PLACEHOLDER
       sizes: false,
       inventory: 40,
     },
@@ -84,17 +85,23 @@ async function main() {
       description:
         "A5 hardcover, 192 dot-grid pages, lies flat. Built for the daily review: what you did, what it cost, what it returned.",
       priceThc: tidy((anchor * 22n) / 100n),
-      priceFiatCents: 2200,
-      costCents: 650, // PLACEHOLDER
       sizes: false,
       inventory: 50,
     },
   ];
 
+  const moneyReport: string[] = [];
   for (const p of products) {
     const { sizes, inventory, ...rest } = p;
+    // What the row already holds decides which money fields may be written.
+    const existing = await prisma.product.findUnique({
+      where: { slug: p.slug },
+      select: { priceFiatCents: true, fiatCurrency: true, costCents: true },
+    });
+    const money = placeholderMoney(p.slug, existing);
     const data = {
       ...rest,
+      ...money.data,
       image: null,
       // Seeded as DRAFTS on purpose. Nothing ships until the real costs and
       // the real stock are in, so publishing is a deliberate act in /admin.
@@ -106,6 +113,12 @@ async function main() {
       update: data,
       create: { ...data, slug: p.slug },
     });
+    if (money.clearSizeFiat) {
+      // Size-level card prices were in the old currency, not paise.
+      await prisma.productVariant.updateMany({ where: { productId: product.id }, data: { priceFiatCents: null } });
+    }
+    const { verdict } = judgePrice(product.priceThc!, product.priceFiatCents, product.fiatCurrency);
+    moneyReport.push(`     ${p.slug}: ${product.priceThc!.toLocaleString("en-US")} THC (${verdict}) · ${money.notes.join(" · ")}`);
 
     if (sizes) {
       const prefix = p.slug.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
@@ -165,10 +178,12 @@ async function main() {
     where: { slug: "warrior-hoodie" },
     include: { variants: true },
   });
-  const t = priceInTime(hoodie.priceThc!);
+  const t = judgePrice(hoodie.priceThc!, hoodie.priceFiatCents, hoodie.fiatCurrency);
 
   console.log(`── Merch seed complete`);
   console.log(`   ${products.length} products (all DRAFT — publish them in /admin when costs are real)`);
+  console.log(`   Prices and landed costs:`);
+  for (const line of moneyReport) console.log(line);
   console.log(`   ${hoodie.variants.length} sizes on the hoodie, ${hoodie.variants.reduce((s, v) => s + v.inventory, 0)} units`);
   console.log(`   Hoodie at ${hoodie.priceThc!.toLocaleString("en-US")} THC — ${t.summary}`);
   console.log(`   Verdict: ${t.verdict}`);
@@ -178,7 +193,7 @@ async function main() {
     console.log(`   0 watch tasks — set TH_SEED_VIDEOS, or add them in /admin/videos.`);
     console.log(`     Format per line: slug|youtubeId|durationSeconds|Title`);
   }
-  console.log(`   Costs are PLACEHOLDERS. Replace them before publishing or the margin is fiction.`);
+  console.log(`   Rupee prices and costs marked PLACEHOLDER are not decisions. Set real ones in Admin → Products before publishing, or the margin is fiction.`);
 }
 
 main()

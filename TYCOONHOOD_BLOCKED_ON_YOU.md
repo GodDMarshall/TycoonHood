@@ -15,21 +15,21 @@ that fulfilment cost — not the THC pool — is the binding constraint, so marg
 and burn-rate reporting is fiction until these are real numbers.
 
 What I need, per item: **goods cost + shipping to you + shipping to the member**,
-in cents, landed.
+in paise (₹1 = 100 paise), landed.
 
-| Product | Placeholder cost | THC price | Card price |
+| Product | Placeholder cost | THC price | Placeholder card price |
 |---|---|---|---|
-| Warrior Hoodie | $31.00 | 18,000 | $89.00 |
-| Operator Tee | $12.00 | 8,000 | $39.00 |
-| Nano Chalk | $4.80 | 3,200 | $16.00 |
-| Lifting Straps | $7.00 | 4,500 | $24.00 |
-| The Ledger (notebook) | $6.50 | 4,000 | $22.00 |
+| Warrior Hoodie | ₹870 | 18,000 | ₹2,499 |
+| Operator Tee | ₹370 | 8,000 | ₹1,199 |
+| Nano Chalk | ₹150 | 3,200 | ₹499 |
+| Lifting Straps | ₹200 | 4,500 | ₹699 |
+| The Ledger (notebook) | ₹180 | 4,000 | ₹599 |
 
 **If you leave it:** the five products stay as drafts. Nothing breaks, nothing
 ships, and the marketplace shows only the digital items. This is safe but it is
 also the thing your members are mining *for*.
 
-**Where it goes:** `/admin/products` → "Your cost, in cents" on each product.
+**Where it goes:** `/admin/products` → "Your cost, in paise" on each product.
 Or tell me the numbers and I will put them in.
 
 ---

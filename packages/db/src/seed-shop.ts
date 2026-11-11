@@ -9,12 +9,14 @@
  *     A category an admin already set is never overwritten.
  *
  *  2. Rupee prices. The card rail is INR only (prices in paise). A product
- *     with no INR price gets one from PLACEHOLDER_INR below. These are
- *     PLACEHOLDERS — sensible round numbers, not decisions. The owner sets
- *     real prices in Admin → Products. A product already priced in INR is left
- *     alone. When a product moves from USD to INR, its size-level fiat
- *     overrides are cleared (they were dollars) and costCents is reported,
- *     because it is still a dollar figure until someone re-enters it.
+ *     with no INR price gets one from PLACEHOLDER_INR (placeholder-prices.ts,
+ *     shared with seed-merch.ts). These are PLACEHOLDERS — sensible round
+ *     numbers, not decisions. The owner sets real prices in Admin → Products.
+ *     A product already priced in INR is left alone (needsPlaceholderInr, the
+ *     same rule seed-merch follows). When a product moves from USD to INR,
+ *     its size-level fiat overrides are cleared (they were dollars) and
+ *     costCents is reported, because it is still a dollar figure until
+ *     someone re-enters it.
  *
  *  3. Coupon WELCOME10 — 10% off, one per member, INACTIVE. Admins activate
  *     it in Admin → Coupons. An existing WELCOME10 is not touched.
@@ -23,20 +25,9 @@
  * Run: pnpm --filter @tycoonhood/db seed:shop
  */
 import { prisma } from "./client";
+import { PLACEHOLDER_INR, needsPlaceholderInr, rupees } from "./placeholder-prices";
 
 const DRY = process.argv.includes("--dry");
-
-/** ₹ in paise. PLACEHOLDERS — replace with real prices before launch. */
-const PLACEHOLDER_INR: Record<string, number> = {
-  "warrior-hoodie": 2_499_00,
-  "operator-tee": 1_199_00,
-  "nano-chalk": 499_00,
-  "lifting-straps": 699_00,
-  "ledger-notebook": 599_00,
-  "tycoonhood-training-tee": 999_00,
-  "warrior-program-access": 3_999_00,
-  "founders-playbook": 799_00,
-};
 
 const CATEGORY_BY_KIND: Record<string, string> = {
   PHYSICAL: "merchandise",
@@ -44,8 +35,6 @@ const CATEGORY_BY_KIND: Record<string, string> = {
   MEMBERSHIP: "learning",
   DIGITAL: "digital",
 };
-
-const rupees = (paise: number) => `₹${(paise / 100).toLocaleString("en-IN")}`;
 
 async function main() {
   const products = await prisma.product.findMany({
@@ -63,7 +52,7 @@ async function main() {
     if (!p.category && CATEGORY_BY_KIND[p.kind]) data.category = CATEGORY_BY_KIND[p.kind];
 
     let clearVariantFiat = false;
-    if (p.fiatCurrency !== "INR" || p.priceFiatCents == null) {
+    if (needsPlaceholderInr(p)) {
       const placeholder = PLACEHOLDER_INR[p.slug];
       if (placeholder != null) {
         data.priceFiatCents = placeholder;

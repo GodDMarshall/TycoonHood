@@ -9,6 +9,7 @@
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import { judgePrice, suggestPrice, MERCH_TARGET_DAYS } from "../economy/mining-time";
+import { SHOP_CURRENCY, formatInr } from "../shop/pricing";
 
 export class CatalogError extends Error {}
 
@@ -39,6 +40,8 @@ export interface ProductInput {
   image?: string | null;
   priceThc?: bigint | null;
   priceFiatCents?: number | null;
+  /** Currency of priceFiatCents and costCents. The card rail is INR only, so it defaults to INR (amounts in paise). */
+  fiatCurrency?: string;
   costCents?: number | null;
   /** Ignored when variants are supplied — stock lives on the variant then. */
   inventory?: number | null;
@@ -123,16 +126,17 @@ export function validateProduct(input: ProductInput): string[] {
 export function reviewProduct(input: ProductInput): string[] {
   const notes: string[] = [];
   const thc = input.priceThc ?? null;
+  const currency = input.fiatCurrency ?? SHOP_CURRENCY;
 
   if (input.kind === "PHYSICAL" && thc != null) {
-    const j = judgePrice(thc, input.priceFiatCents);
+    const j = judgePrice(thc, input.priceFiatCents, currency);
     if (j.verdict === "on target") {
       notes.push(j.summary);
-    } else if (j.expected != null && input.priceFiatCents != null) {
+    } else if (j.anchored && j.expected != null) {
       notes.push(`${j.summary} Around ${j.expected.toLocaleString("en-US")} THC would put the two rails in step.`);
     } else if (j.verdict === "too cheap") {
       notes.push(
-        `${j.summary} That is under the ${MERCH_TARGET_DAYS.min}-day floor for an item with no shelf price — ` +
+        `${j.summary} That is under the ${MERCH_TARGET_DAYS.min}-day floor for an item with no rupee shelf price — ` +
           `about ${suggestPrice().toLocaleString("en-US")} THC would land on the rule.`
       );
     } else {
@@ -148,9 +152,8 @@ export function reviewProduct(input: ProductInput): string[] {
     notes.push("The card price is at or below cost — every card sale loses money.");
   }
   if (cost != null && thc != null && input.priceFiatCents == null) {
-    notes.push(
-      `THC-only item costing $${(cost / 100).toFixed(2)} to fulfil — every redemption is real money out.`
-    );
+    const costText = currency === SHOP_CURRENCY ? formatInr(cost) : `${(cost / 100).toFixed(2)} ${currency}`;
+    notes.push(`THC-only item costing ${costText} to fulfil — every redemption is real money out.`);
   }
   if (input.active && input.kind === "PHYSICAL") {
     const stock = (input.variants?.length ?? 0) > 0
@@ -179,6 +182,9 @@ export class CatalogService {
       image: input.image?.trim() || null,
       priceThc: input.priceThc ?? null,
       priceFiatCents: input.priceFiatCents ?? null,
+      // Written with the price it describes, so a new product is not left on
+      // the column's old USD default and off the rupee rail.
+      fiatCurrency: input.fiatCurrency ?? SHOP_CURRENCY,
       costCents: input.costCents ?? null,
       // Stock lives on the variant when sizes exist; null here means the
       // product-level counter is not the one in charge.
