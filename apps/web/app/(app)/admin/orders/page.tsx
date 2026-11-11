@@ -9,9 +9,10 @@ import { releaseExpiredHolds } from "../../../../lib/stale-orders";
 import { settlePendingFiatAction } from "../actions";
 import { ConfirmButton } from "../../../../components/admin-confirm";
 import { ShipForm } from "../../../../components/admin-ship-form";
+import { TextActionForm } from "../../../../components/earn/action-form";
 import { TestModeBanner } from "../../../../components/shop/test-mode-banner";
 import { inr, money, orderRef } from "../../../../components/shop/format";
-import { cancelPendingAction, shipAuditedAction } from "./actions";
+import { cancelPendingAction, refundOrderAction, shipAuditedAction } from "./actions";
 
 export const metadata: Metadata = { title: "Admin · Orders" };
 export const dynamic = "force-dynamic";
@@ -195,6 +196,9 @@ function OrderRow({ o, showAddress = false }: { o: Row; showAddress?: boolean })
             {o.totalThc > 0n ? <ThcAmount amount={o.totalThc} size="sm" /> : <span className="figures text-[13px]">{money(o.totalFiatCents, o.fiatCurrency)}</span>}
             <Badge tone={tone[o.status]}>{o.status}</Badge>
             {o.status === "PAID" && physical && <ShipForm action={shipAuditedAction.bind(null, o.id)} />}
+            {(o.status === "PAID" || o.status === "FULFILLED") && (
+              <TextActionForm action={refundOrderAction.bind(null, o.id)} label="Refund" submitLabel="Refund order" placeholder="Why? The member sees this" />
+            )}
             {o.status === "PENDING" && o.payments.length > 0 && (
               <ConfirmButton action={cancelPendingAction.bind(null, o.id)} label="Cancel" confirmText="Cancel this unpaid order? Its stock and coupon go back. If the member pays afterwards, the payment is queued for refund." />
             )}

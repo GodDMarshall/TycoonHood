@@ -46,7 +46,7 @@ Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are 
 2. Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`, then redeploy. If you can, do this test run on a preview or staging deployment rather than the public site.
    - Test payments move no money. So on any production build (`next build` and `next start`, which includes Vercel previews), card checkout is offered **only to admins**. Members see "Card payments are not available yet" and can still pay with THC. The server enforces this when an order is started, not just the page.
    - Checkout shows a "test mode" banner. Payments are recorded as TEST and excluded from revenue. A commission on a test order is flagged "do not pay out" and cannot be approved.
-   - On a production build, an order a member paid in test mode cannot be marked shipped. An admin's own test order can, so you can try the whole flow.
+   - On a production build, a member's test-mode payment never completes an order, even one started before the keys were fenced. The order is cancelled, its stock goes back, and a refund request is queued for you to approve, which closes it. An admin's own test order goes through and can be shipped, so you can try the whole flow.
    - `pnpm preflight` warns while test keys are set in production.
    - On a local `next dev` run, test keys work for every account, as before.
 3. In the Razorpay dashboard, go to Settings → Webhooks and add `https://<your-domain>/api/webhooks/razorpay`.
@@ -55,17 +55,18 @@ Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are 
    - A failed attempt (`payment.failed`) does not cancel the order. Razorpay lets the member retry on the same order, so it stays open until it is paid, the member cancels it, or its 30-minute hold runs out. Before cancelling an expired order, the app asks Razorpay about it. A paid order is confirmed instead. An order the member has started paying gets 30 more minutes.
    - A refund made in the Razorpay dashboard is counted when Razorpay confirms it (`refund.processed`). A partial refund leaves the order as it is, and a later refund from `/admin/refunds` sends only the rest. Once the whole payment is refunded, the order is marked refunded, unshipped stock goes back and any commission is reversed.
    - If Razorpay cannot complete a refund (`refund.failed`), `/admin/refunds` lists the payment until it is refunded again.
-4. Signed in as an admin, buy something with a Razorpay test card. Check that the order shows Paid in `/admin/orders`, then refund it from `/admin/refunds`.
+   - Live payments that an older version marked refunded may have been refunded only in part. `/admin/refunds` lists them under "Refunds to count" until you press "Check with Razorpay", which counts Razorpay's own record of their refunds. Live keys are needed.
+4. Signed in as an admin, buy something with a Razorpay test card. Check that the order shows Paid in `/admin/orders`, then refund it there with Refund. Members can ask for a refund within 14 days; staff can refund any paid order from `/admin/orders` at any time.
 5. When KYC is approved, swap in the `rzp_live_…` keys and the live webhook secret. From then on every member sees card checkout, and real money flows.
    - A test payment taken before the swap can still be refunded from `/admin/refunds`. It is marked refunded without calling Razorpay, because no money moved.
 
 ## Scheduled jobs
 
-`apps/web/vercel.json` calls `/api/cron/expire-orders` every 10 minutes. It ends unpaid rupee orders whose 30-minute hold has run out, so their stock and coupon uses go back even when nobody is browsing the shop.
+`apps/web/vercel.json` calls `/api/cron/expire-orders` once a day. It ends unpaid rupee orders whose 30-minute hold has run out, so their stock and coupon uses go back even when nobody is browsing the shop.
 
 - Set `CRON_SECRET` on the site project. Vercel sends it with each call as `Authorization: Bearer <CRON_SECRET>`, and the route refuses any call without it. Another scheduler can call the same URL with the same header.
-- Running every 10 minutes needs a Vercel Pro plan. On Hobby, Vercel refuses to deploy a cron that runs more than once a day. If you are on Hobby, change the schedule to once a day (for example `0 0 * * *`).
-- The store, product, cart, wishlist, checkout and admin order pages also run the sweep when they load, at most once a minute per server. So an expired hold never shows as sold out, even without the schedule.
+- Once a day works on every Vercel plan. Hobby refuses to deploy a cron that runs more often. On Pro you can run it every 10 minutes by changing the schedule to `*/10 * * * *`, or point an external scheduler at the URL.
+- The store, product, cart, wishlist, checkout and admin order pages also run the sweep when they load, at most once a minute per server, and checkout always releases the member's own expired holds first. So between the daily runs, an expired hold goes back within about a minute of someone browsing the shop.
 
 ## Before launch
 

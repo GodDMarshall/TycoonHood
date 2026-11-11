@@ -21,6 +21,13 @@
  * (recordFailedRefund) takes a refund we had counted off again, and the
  * admin refunds page lists the payment until it is refunded again.
  *
+ * Staff can refund any paid order themselves, at any age (refundOrder): it
+ * opens a request in the member's name and approves it.
+ *
+ * Live payments marked REFUNDED before refund amounts were kept may have been
+ * refunded only in part (refundUncounted). They are not refunded or counted
+ * again until staff check them with Razorpay (countRefundsWithRazorpay).
+ *
  * Every decision is audited and the member is told.
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
@@ -31,7 +38,7 @@ import { AuditService } from "../platform/audit";
 import { notify } from "../platform/notify";
 import { callEarnHook } from "./earn-registry";
 import { RefundError } from "./errors";
-import { razorpayFromEnv, sandboxProvider, type ShopPaymentProvider } from "./payments";
+import { razorpayFromEnv, sandboxProvider, type ProviderRefundRecord, type ShopPaymentProvider } from "./payments";
 
 export const REFUND_WINDOW_DAYS = 14;
 export const REFUND_REASON_MIN = 10;
@@ -63,6 +70,28 @@ export function refundBlocker(
   if (age > REFUND_WINDOW_DAYS * 86_400_000) return `Refunds can be requested within ${REFUND_WINDOW_DAYS} days of the order.`;
   return null;
 }
+
+/**
+ * Pure: a live Razorpay payment marked REFUNDED before refund amounts were
+ * kept, whose refund was never counted. The old refund.processed handler
+ * marked a payment REFUNDED after any refund, even a partial one, and left the
+ * order standing; migration 20261111180000 then counted it as refunded in
+ * full. Every refund counted since records its Razorpay refund id, and the old
+ * approval recorded `refund` in raw, so neither is one of these.
+ */
+export function refundUncounted(p: { status: string; mode: string; provider: string; refundIds: string[]; raw: unknown }) {
+  const raw = p.raw && typeof p.raw === "object" && !Array.isArray(p.raw) ? (p.raw as Record<string, unknown>) : null;
+  return p.status === "REFUNDED" && p.mode === "LIVE" && p.provider === "razorpay" && p.refundIds.length === 0 && !(raw && "refund" in raw);
+}
+
+/** How countRefundsWithRazorpay left one payment. */
+export type RefundCount = {
+  paymentId: string;
+  orderId: string;
+  outcome: "refunded" | "partial" | "pending" | "none found" | "already counted" | "failed";
+  refundedCents?: number;
+  error?: string;
+};
 
 export class RefundService {
   private commerce: CommerceService;
@@ -149,6 +178,10 @@ export class RefundService {
         const payment = order.payments.find((p) => p.status === "CAPTURED") ?? order.payments.find((p) => p.status === "REFUNDED");
         if (!payment) throw new RefundError("No captured payment on this order — nothing to send back.");
         rail = `INR/${payment.mode}`;
+        if (refundUncounted(payment)) {
+          // Part of it may still be with us: never tell the member it is all coming back.
+          throw new RefundError("This payment was marked refunded before refund amounts were kept, so part of it may not have gone back. Check it with Razorpay on the refunds page first.");
+        }
         if (payment.status === "CAPTURED") {
           // Part of it may already have gone back from the Razorpay dashboard.
           const remaining = payment.amountCents - payment.refundedCents;
@@ -257,6 +290,8 @@ export class RefundService {
     return this.db.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT id FROM "Payment" WHERE id = ${paymentId} FOR UPDATE`;
       const p = await tx.payment.findUniqueOrThrow({ where: { id: paymentId } });
+      // Its earlier refunds were never counted: they are counted together, with this one, from Razorpay's own list.
+      if (refundUncounted(p)) return { payment: p, added: false, uncounted: true };
       if (r.refundId && p.refundIds.includes(r.refundId)) return { payment: p, added: false };
       const refundedCents = Math.min(p.amountCents, p.refundedCents + Math.max(0, r.amountCents));
       const payment = await tx.payment.update({
@@ -282,6 +317,8 @@ export class RefundService {
     const found = await this.db.payment.findUnique({ where: { providerPaymentId: input.providerPaymentId }, select: { id: true, orderId: true } });
     if (!found) return { outcome: "not ours" as const };
     const r = await this.addRefund(found.id, { refundId: input.refundId, amountCents: input.amountCents });
+    // Listed on the admin refunds page until staff count its refunds with Razorpay, this one included.
+    if ("uncounted" in r) return { outcome: "uncounted" as const };
     const full = r.payment.status === "REFUNDED";
     if (r.added) {
       await this.audit.log({
@@ -346,6 +383,127 @@ export class RefundService {
       });
     }
     return { outcome: r.counted ? ("reverted" as const) : ("not counted" as const) };
+  }
+
+  /**
+   * The payments refundUncounted describes. The admin refunds page lists them
+   * until staff count each one with Razorpay.
+   */
+  async listUncountedRefunds() {
+    // raw ? 'refund': a JSON key test Prisma's filters cannot express.
+    const ids = await this.db.$queryRaw<{ id: string }[]>`
+      SELECT id FROM "Payment"
+      WHERE status = 'REFUNDED' AND mode = 'LIVE' AND provider = 'razorpay'
+        AND cardinality("refundIds") = 0 AND NOT (COALESCE(raw, '{}'::jsonb) ? 'refund')
+      ORDER BY "updatedAt" DESC
+      LIMIT 50`;
+    const rows = await this.db.payment.findMany({
+      where: { id: { in: ids.map((r) => r.id) } },
+      orderBy: { updatedAt: "desc" },
+      include: { order: { select: { id: true, status: true, user: { select: { email: true } } } } },
+    });
+    return rows.filter(refundUncounted);
+  }
+
+  /**
+   * Counts the refunds of each payment listUncountedRefunds shows from
+   * Razorpay's own list (live keys needed). All of it back: the payment stays
+   * REFUNDED and an order still standing is unwound. Part of it: the payment is
+   * CAPTURED again with the real amount, so a refund sends only the rest, and
+   * on an order already refunded or cancelled it shows as money still to send
+   * back. A refund still pending at Razorpay leaves the payment to check again later.
+   */
+  async countRefundsWithRazorpay(adminId: string): Promise<RefundCount[]> {
+    const provider = this.providerFor("razorpay");
+    if (!provider?.listRefunds || provider.mode !== "LIVE") {
+      throw new RefundError("These are live payments: set the live Razorpay keys to check them.");
+    }
+    const listRefunds = provider.listRefunds.bind(provider);
+    const results: RefundCount[] = [];
+    for (const p of await this.listUncountedRefunds()) {
+      const base = { paymentId: p.id, orderId: p.orderId };
+      const providerPaymentId = p.providerPaymentId;
+      if (!providerPaymentId) {
+        results.push({ ...base, outcome: "failed", error: "The payment has no Razorpay payment id." });
+        continue;
+      }
+      let counted: { refundedCents: number; full: boolean } | "pending" | "none found" | "already counted";
+      try {
+        // Razorpay is asked under the payment's lock: a refund.processed arriving meanwhile
+        // waits, then is either in this list or counted on its own (addRefund).
+        counted = await this.db.$transaction(
+          async (tx) => {
+            await tx.$queryRaw`SELECT id FROM "Payment" WHERE id = ${p.id} FOR UPDATE`;
+            const cur = await tx.payment.findUniqueOrThrow({ where: { id: p.id } });
+            if (!refundUncounted(cur)) return "already counted" as const;
+            const found: ProviderRefundRecord[] = await listRefunds(providerPaymentId);
+            if (found.some((r) => r.status === "pending")) return "pending" as const;
+            const processed = found.filter((r) => r.status === "processed");
+            if (processed.length === 0) return "none found" as const;
+            const refundedCents = Math.min(cur.amountCents, processed.reduce((s, r) => s + Math.max(0, r.amountCents), 0));
+            const full = refundedCents >= cur.amountCents;
+            await tx.payment.update({
+              where: { id: cur.id },
+              data: { refundedCents, refundIds: processed.map((r) => r.refundId), ...(full ? {} : { status: "CAPTURED" as const }) },
+            });
+            await this.audit.log(
+              {
+                actorId: adminId,
+                action: "refund.counted",
+                targetType: "order",
+                targetId: p.orderId,
+                meta: { paymentId: cur.id, refundedCents, paymentCents: cur.amountCents, refundIds: processed.map((r) => r.refundId) },
+              },
+              tx
+            );
+            return { refundedCents, full };
+          },
+          { timeout: 20_000 }
+        );
+      } catch (e) {
+        results.push({ ...base, outcome: "failed", error: e instanceof Error ? e.message : String(e) });
+        continue;
+      }
+      if (typeof counted === "string") {
+        results.push({ ...base, outcome: counted });
+        continue;
+      }
+      if (counted.full) {
+        const unwind = await this.unwindOrder(p.orderId, { actorId: adminId, source: "refund.counted" });
+        if (unwind.unwound) {
+          const order = await this.db.order.findUniqueOrThrow({ where: { id: p.orderId }, select: { userId: true } });
+          await notify(order.userId, "ORDER", "Order refunded", "Razorpay sent the money back to your original payment method.", { orderId: p.orderId, href: `/orders/${p.orderId}` }, this.db);
+        }
+      }
+      results.push({ ...base, outcome: counted.full ? "refunded" : "partial", refundedCents: counted.refundedCents });
+    }
+    return results;
+  }
+
+  /**
+   * A refund staff start themselves, for a PAID or FULFILLED order of any age
+   * (members may ask only within REFUND_WINDOW_DAYS). A request the member
+   * already opened is the one approved; otherwise one is opened in their name.
+   * Then it is approved, so the money goes back exactly as approve() sends it.
+   */
+  async refundOrder(adminId: string, orderId: string, note: string) {
+    const text = note.trim();
+    if (text.length < 3) throw new RefundError("Say why — the member sees this note.");
+    if (text.length > REFUND_REASON_MAX) throw new RefundError(`Keep it under ${REFUND_REASON_MAX} characters.`);
+    const { requestId, opened } = await this.db.$transaction(async (tx) => {
+      // The lock requestRefund takes, so a member's request cannot open alongside this one.
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`refund:${orderId}`}))`;
+      const order = await tx.order.findUnique({ where: { id: orderId }, select: { userId: true, status: true } });
+      if (!order) throw new RefundError("Order not found.");
+      if (order.status !== "PAID" && order.status !== "FULFILLED") throw new RefundError("Only a paid order can be refunded.");
+      const open = await tx.refundRequest.findFirst({ where: { orderId, status: { in: ["REQUESTED", "APPROVED"] } }, orderBy: { createdAt: "desc" } });
+      if (open?.status === "APPROVED") throw new RefundError("A refund for this order is already going through.");
+      if (open) return { requestId: open.id, opened: false };
+      const req = await tx.refundRequest.create({ data: { orderId, userId: order.userId, reason: "Refund started by staff." } });
+      return { requestId: req.id, opened: true };
+    });
+    if (opened) await this.audit.log({ actorId: adminId, action: "refund.staff_request", targetType: "order", targetId: orderId, meta: { requestId } });
+    return this.approve(adminId, requestId, text);
   }
 
   /**

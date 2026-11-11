@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { PENDING_TTL_MINUTES, razorpayOpenTo, shopCheckout } from "@tycoonhood/core";
+import { PENDING_TTL_MINUTES, razorpayOpenTo } from "@tycoonhood/core";
 import { requireUser } from "../../../../lib/guard";
+import { releaseExpiredOrder } from "../../../../lib/stale-orders";
 import { Page, PageHeader, Panel } from "../../../../components/app/page";
 import { RazorpayButton } from "../../../../components/shop/razorpay-button";
 import { SandboxPay } from "../../../../components/shop/sandbox-pay";
@@ -17,8 +18,9 @@ export const dynamic = "force-dynamic";
 export default async function PayPage({ params }: { params: Promise<{ orderId: string }> }) {
   const user = await requireUser();
   const { orderId } = await params;
-  // This member's order only: never offer to pay for one whose hold has run out.
-  await shopCheckout.expireStale(new Date(), { orderId, userId: user.id });
+  // This member's order only, so one whose hold has run out is not offered for
+  // payment. A slow Razorpay lookup finishes after the response instead.
+  await releaseExpiredOrder(orderId, user.id);
   const order = await prisma.order.findFirst({
     where: { id: orderId, userId: user.id },
     include: { payments: { orderBy: { createdAt: "desc" } }, items: { include: { product: true } } },

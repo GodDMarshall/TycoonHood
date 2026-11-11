@@ -10,14 +10,34 @@ import { shopCheckout } from "@tycoonhood/core";
 const PAGE_WAIT_MS = 1_500;
 
 /**
- * Runs the sweep and waits for it briefly. A slow payment provider cannot hold
- * the page up: after PAGE_WAIT_MS the page renders, and the sweep finishes
- * after the response.
+ * Waits for the jobs at most PAGE_WAIT_MS. A slow payment provider cannot hold
+ * the page up: the page renders, and the jobs finish after the response. They
+ * never throw into the page.
  */
-export async function releaseExpiredHolds() {
-  const sweep = shopCheckout.sweepStale();
-  after(sweep);
+async function within(...jobs: Promise<unknown>[]) {
+  const settled = Promise.all(jobs.map((job) => job.catch((e) => console.error("[shop] releasing expired holds failed", e)))).then(() => undefined);
+  after(settled);
   let timer: ReturnType<typeof setTimeout> | undefined;
-  await Promise.race([sweep, new Promise<void>((resolve) => (timer = setTimeout(resolve, PAGE_WAIT_MS)))]);
+  await Promise.race([settled, new Promise<void>((resolve) => (timer = setTimeout(resolve, PAGE_WAIT_MS)))]);
   clearTimeout(timer);
+}
+
+/**
+ * Runs the sweep and waits for it briefly. With `viewerId`, that member's own
+ * expired orders are released on every load, not once a minute: there are only
+ * a few, and they are what /checkout is about to quote.
+ */
+export async function releaseExpiredHolds(viewerId?: string) {
+  const jobs: Promise<unknown>[] = [shopCheckout.sweepStale()];
+  if (viewerId) jobs.push(shopCheckout.expireStale(new Date(), { userId: viewerId }));
+  await within(...jobs);
+}
+
+/**
+ * The pay page: this member's one order, so a hold that has run out is not
+ * offered for payment. If Razorpay is slow to answer, the page renders first;
+ * a payment that lands after the order is cancelled is queued for refund.
+ */
+export async function releaseExpiredOrder(orderId: string, userId: string) {
+  await within(shopCheckout.expireStale(new Date(), { orderId, userId }));
 }

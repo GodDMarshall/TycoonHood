@@ -1,6 +1,7 @@
 /**
- * The stale-order sweep on a schedule. apps/web/vercel.json runs it every 10
- * minutes; Vercel Cron sends "Authorization: Bearer $CRON_SECRET". It lets
+ * The stale-order sweep on a schedule. apps/web/vercel.json runs it once a
+ * day, which every Vercel plan allows (see docs/DEPLOYMENT.md to run it more
+ * often); Vercel Cron sends "Authorization: Bearer $CRON_SECRET". It lets
  * unpaid rupee orders go once their hold runs out, giving back stock and
  * coupons, even when nobody is browsing the shop. Shop pages also sweep, at
  * most once a minute (lib/stale-orders.ts).

@@ -19,8 +19,9 @@ const ledger = new LedgerService(prisma);
 
 export default async function CheckoutPage() {
   const user = await requireUser();
-  // Stale unpaid orders give their stock and coupons back before anyone is told "sold out".
-  await releaseExpiredHolds();
+  // Stale unpaid orders give their stock and coupons back before anyone is told
+  // "sold out": this member's own every time, everyone else's at most once a minute.
+  await releaseExpiredHolds(user.id);
   const quote = await shopCheckout.quoteInr(user.id);
   const { lines, totals } = quote;
   if (lines.length === 0) redirect("/cart");

@@ -9,10 +9,11 @@
  * Both compared with timingSafeEqual. Untested against live Razorpay from
  * this environment (no keys yet); the request shapes follow Razorpay's
  * published API (POST /v1/orders, POST /v1/payments/:id/refund,
- * GET /v1/orders/:id and GET /v1/orders/:id/payments).
+ * GET /v1/orders/:id, GET /v1/orders/:id/payments and
+ * GET /v1/payments/:id/refunds).
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
-import type { PaymentMode, ProviderOrderCheck, ShopPaymentProvider } from "./provider";
+import type { PaymentMode, ProviderOrderCheck, ProviderRefundRecord, ShopPaymentProvider } from "./provider";
 
 const API = "https://api.razorpay.com/v1";
 /** Order lookups run inside page loads (the expiry sweep), so they give up quickly. */
@@ -135,6 +136,19 @@ export class RazorpayProvider implements ShopPaymentProvider {
     const body = (await pays.json()) as { items?: { id: string; amount: number; currency: string; status: string }[] };
     const c = body.items?.find((p) => p.status === "captured");
     return { status, captured: c ? { providerPaymentId: c.id, amountCents: c.amount, currency: c.currency } : null };
+  }
+
+  /** Every refund Razorpay holds for one payment, at most 100 (a payment never has that many). */
+  async listRefunds(providerPaymentId: string): Promise<ProviderRefundRecord[]> {
+    const res = await this.fetchImpl(`${API}/payments/${encodeURIComponent(providerPaymentId)}/refunds?count=100`, {
+      method: "GET",
+      headers: this.headers(),
+      signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS),
+    });
+    if (!res.ok) throw new Error(`Razorpay refund lookup failed: ${res.status} ${await res.text()}`);
+    const body = (await res.json()) as { items?: { id: string; amount: number; status: string }[] };
+    if (!Array.isArray(body?.items)) throw new Error("Razorpay refund lookup returned no list.");
+    return body.items.map((r) => ({ refundId: r.id, amountCents: r.amount, status: r.status }));
   }
 
   verifyCheckout(args: { razorpayOrderId: string; razorpayPaymentId: string; signature: string }) {

@@ -33,6 +33,14 @@ export interface ProviderRefund {
   raw?: unknown;
 }
 
+/** One refund of a payment, as the provider records it. Amount in paise. */
+export interface ProviderRefundRecord {
+  refundId: string;
+  amountCents: number;
+  /** Razorpay's refund statuses: pending, processed (final) or failed. */
+  status: string;
+}
+
 /** What the provider says about one of its orders. Razorpay's order statuses. */
 export interface ProviderOrderCheck {
   /** created: no attempt yet. attempted: at least one attempt, none captured. paid: a payment was captured. */
@@ -54,6 +62,8 @@ export interface ShopPaymentProvider {
    * the order; throws when it cannot be asked. The sandbox has nobody to ask.
    */
   checkOrder?(providerOrderId: string): Promise<ProviderOrderCheck | null>;
+  /** The refunds of one captured payment, so refunds counted before amounts were kept can be counted again. Throws when it cannot be asked. */
+  listRefunds?(providerPaymentId: string): Promise<ProviderRefundRecord[]>;
 }
 
 type Env = Record<string, string | undefined>;
@@ -75,6 +85,16 @@ export function razorpayStaffOnly(env: Env = process.env) {
 /** Whether this viewer may pay through Razorpay now. Checked on the server, never only in the UI. */
 export function razorpayOpenTo(viewer: HasRole, env: Env = process.env) {
   return razorpayConfigured(env) && (!razorpayStaffOnly(env) || can(viewer, "admin.commerce"));
+}
+
+/**
+ * Whether a test-mode payment by this buyer may complete an order. It moves no
+ * money, so in production only staff with admin.commerce may get goods for one,
+ * whichever keys are set now: a member can still pay in a Razorpay window opened
+ * before the rail was fenced, and capture() refuses that payment.
+ */
+export function testPaymentAllowed(buyer: HasRole, env: Env = process.env) {
+  return env.NODE_ENV !== "production" || can(buyer, "admin.commerce");
 }
 
 export interface PaymentsStatus {

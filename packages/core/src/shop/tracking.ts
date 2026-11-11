@@ -47,7 +47,9 @@ export function orderTimeline(o: TimelineOrder): TimelineStep[] {
       state: "stopped",
       at: o.updatedAt,
       detail: paidAfterCancel(o)
-        ? "Your payment arrived after the order was cancelled, so a full refund was queued. The stock went back."
+        ? captured?.mode === "TEST"
+          ? "Paid in test mode, so no real money was charged. The order was cancelled and the stock went back."
+          : "Your payment arrived after the order was cancelled, so a full refund was queued. The stock went back."
         : "No payment was completed, so nothing was charged and the stock went back.",
     });
   } else {
@@ -100,8 +102,8 @@ export function orderTimeline(o: TimelineOrder): TimelineStep[] {
 
 /**
  * A payment that came in after its order was cancelled (it expired, or was
- * replaced by a new checkout). capture() queues a full refund for it, so the
- * member must never be told that nothing was charged.
+ * replaced by a new checkout), or a test-mode payment capture() refused. A
+ * refund is queued for it, so the member must never be told that nothing was charged.
  */
 export function paidAfterCancel(o: { status: string; payments?: { status: string }[] }) {
   return o.status === "CANCELLED" && (o.payments ?? []).some((p) => p.status === "CAPTURED" || p.status === "REFUNDED");

@@ -196,7 +196,12 @@ export function inr(cents: number): string {
 export type PayoutCheck = {
   amountCents: number;
   affiliate: { status: AffiliateStatus };
-  commissions: { amountCents: number; status: CommissionStatus; order: { status: OrderStatus; refundRequests: { status: RefundStatus }[] } }[];
+  commissions: {
+    amountCents: number;
+    status: CommissionStatus;
+    /** payments: the order's test-mode payments (PAYOUT_CHECK selects only those). */
+    order: { status: OrderStatus; refundRequests: { status: RefundStatus }[]; payments: { mode: string }[] };
+  }[];
 };
 
 /**
@@ -213,6 +218,10 @@ export function payoutBlocker(p: PayoutCheck): string | null {
   if (p.commissions.some((c) => c.order.status !== "PAID" && c.order.status !== "FULFILLED")) {
     return "An order in this payout was refunded. Reverse its commission first.";
   }
+  // A test-mode payment moved no money; its commission may predate approveCommission's check.
+  if (p.commissions.some((c) => c.order.payments.some((pay) => pay.mode === "TEST"))) {
+    return "An order in this payout was paid in test mode, so no real money was charged. Decline the payout, then reject that commission.";
+  }
   const sum = p.commissions.reduce((s, c) => s + c.amountCents, 0);
   if (p.commissions.some((c) => c.status !== "APPROVED") || sum !== p.amountCents) {
     return "The commissions in this payout do not add up to its amount. Decline it, and the member can request again.";
@@ -227,7 +236,13 @@ const PAYOUT_CHECK = {
     select: {
       amountCents: true,
       status: true,
-      order: { select: { status: true, refundRequests: { where: { status: { in: OPEN_REFUND } }, select: { status: true } } } },
+      order: {
+        select: {
+          status: true,
+          refundRequests: { where: { status: { in: OPEN_REFUND } }, select: { status: true } },
+          payments: { where: { mode: "TEST", status: { in: ["CAPTURED", "REFUNDED"] } }, select: { mode: true } },
+        },
+      },
     },
   },
 } satisfies Prisma.PayoutRequestInclude;

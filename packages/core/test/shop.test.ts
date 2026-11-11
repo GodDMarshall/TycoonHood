@@ -7,8 +7,9 @@ import {
   setEarnHooks, orderTimeline, refundBlocker, paymentsStatus, activeShopProvider, CartError, CouponError,
   PaymentVerificationError, paymentsStatusFor, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly,
   paidAfterCancel, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS, opensLibrary, libraryOrderFor,
-  ShopStatsService,
+  ShopStatsService, testPaymentAllowed, refundUncounted, RefundError,
 } from "../src/shop";
+import { platformAnalytics } from "../src/platform/analytics";
 import { cronAuth } from "../src/platform/cron";
 import { CommerceService } from "../src/commerce/commerce";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
@@ -63,18 +64,26 @@ const KEY_SECRET = "test_key_secret_for_unit_tests";
 const WEBHOOK_SECRET = "test_webhook_secret_for_unit_tests";
 
 type FakeRazorpayOrder = { status: "created" | "attempted" | "paid"; payments: { id: string; amount: number; currency: string; status: string }[] };
+type FakeRazorpayRefund = { id: string; amount: number; status: "pending" | "processed" | "failed" };
 
 /**
  * A RazorpayProvider over a fake fetch. The key id decides its mode: rzp_test_… is TEST, rzp_live_… is LIVE.
  * `orders` is what this Razorpay account knows, for order lookups; "unreachable" makes a lookup fail.
+ * `refunds` is what it holds for each payment id, for refund lookups.
  */
 function fakeRazorpay(keyId = "rzp_test_key") {
   const calls: { url: string; method: string; body: unknown; auth: string }[] = [];
   const orders = new Map<string, FakeRazorpayOrder | "unreachable">();
+  const refunds = new Map<string, FakeRazorpayRefund[]>();
   const reply = (status: number, body: unknown) => ({ ok: status < 400, status, json: async () => body, text: async () => JSON.stringify(body) });
   const fetchImpl = async (url: string, init: { method: string; headers: Record<string, string>; body?: string }) => {
     const body = init.body ? JSON.parse(init.body) : null;
     calls.push({ url, method: init.method, body, auth: init.headers.Authorization });
+    if (init.method === "GET" && /\/payments\/[^/]+\/refunds\?count=100$/.test(url)) {
+      const list = refunds.get(decodeURIComponent(url.match(/\/payments\/([^/]+)\/refunds/)?.[1] ?? ""));
+      if (!list) return reply(400, { error: { code: "BAD_REQUEST_ERROR", description: "The id provided does not exist" } });
+      return reply(200, { entity: "collection", count: list.length, items: list.map((r) => ({ entity: "refund", currency: "INR", ...r })) });
+    }
     if (init.method === "GET") {
       const [, id = "", payments] = url.match(/\/orders\/([^/]+)(\/payments)?$/) ?? [];
       const o = orders.get(decodeURIComponent(id));
@@ -89,7 +98,7 @@ function fakeRazorpay(keyId = "rzp_test_key") {
     }
     return reply(200, { id: `rfnd_${uid().slice(0, 12)}`, ...body });
   };
-  return { provider: new RazorpayProvider(keyId, KEY_SECRET, fetchImpl), calls, orders };
+  return { provider: new RazorpayProvider(keyId, KEY_SECRET, fetchImpl), calls, orders, refunds };
 }
 
 let paidSpy = vi.fn(async (_id: string) => {});
@@ -531,6 +540,96 @@ describe("Shop — Razorpay test keys in production are staff-only", () => {
     expect((await commerce.markShipped(memberTest.id, "India Post", "EE000000001IN")).status).toBe("FULFILLED");
   });
 
+  it("a test payment completes an order only for staff in production, whatever keys are set now", () => {
+    for (const viewer of [null, member, { role: "INSTRUCTOR" as const }, { role: "MODERATOR" as const }]) {
+      expect(testPaymentAllowed(viewer, prodTest)).toBe(false);
+      expect(testPaymentAllowed(viewer, prodLive)).toBe(false); // a window opened before the swap
+      expect(testPaymentAllowed(viewer, devTest)).toBe(true);
+    }
+    expect(testPaymentAllowed(admin, prodTest)).toBe(true);
+    expect(testPaymentAllowed(admin, { NODE_ENV: "production" })).toBe(true);
+  });
+
+  it("a member's test-mode payment never completes an order in production, by callback, webhook or sweep; staff's does", async () => {
+    const book = await product({ kind: "DIGITAL", inventory: null, inr: 10_000 });
+    const gear = await product({ inventory: 10, inr: 20_000 });
+    const c = await coupon({ maxRedemptions: 5 });
+    const { provider: testKeys, orders, calls } = fakeRazorpay("rzp_test_fenced");
+    const svc = new ShopCheckoutService(prisma, { provider: () => testKeys, providerFor: () => testKeys });
+    // Started with test keys before the rail was fenced, as every member could.
+    async function started(role: "MEMBER" | "ADMIN") {
+      const user = await prisma.user.update({ where: { id: (await createTestUser()).id }, data: { role } });
+      await cart.add(user.id, book.id);
+      await cart.add(user.id, gear.id);
+      const { order, payment } = await svc.startInrCheckout(user.id, { shipping: ADDRESS, couponCode: c.code });
+      return { user, order, providerOrderId: payment.providerOrderId! };
+    }
+    const byCallback = await started("MEMBER");
+    const byWebhook = await started("MEMBER");
+    const bySweep = await started("MEMBER");
+    const staff = await started("ADMIN");
+    const payId = () => `pay_${uid().slice(0, 12)}`;
+    const signed = (providerOrderId: string, razorpayPaymentId: string) => ({
+      razorpayOrderId: providerOrderId,
+      razorpayPaymentId,
+      signature: hmacSha256Hex(KEY_SECRET, `${providerOrderId}|${razorpayPaymentId}`),
+    });
+
+    vi.stubEnv("NODE_ENV", "production");
+    try {
+      expect((await svc.verifyRazorpayCallback(byCallback.user.id, signed(byCallback.providerOrderId, payId()))).outcome).toBe("refused");
+
+      const body = JSON.stringify({
+        event: "order.paid",
+        payload: { payment: { entity: { id: payId(), order_id: byWebhook.providerOrderId, amount: byWebhook.order.totalFiatCents, currency: "INR", status: "captured" } } },
+      });
+      expect(await svc.handleRazorpayWebhook(body, hmacSha256Hex(WEBHOOK_SECRET, body), WEBHOOK_SECRET)).toMatchObject({ status: 200, body: { outcome: "refused" } });
+
+      // Paid at Razorpay, never confirmed to us: the sweep finds it.
+      await prisma.order.update({ where: { id: bySweep.order.id }, data: { createdAt: new Date(Date.now() - (PENDING_TTL_MINUTES + 1) * 60_000) } });
+      orders.set(bySweep.providerOrderId, { status: "paid", payments: [{ id: payId(), amount: bySweep.order.totalFiatCents, currency: "INR", status: "captured" }] });
+      expect(await svc.expireStale(new Date(), { orderId: bySweep.order.id, userId: bySweep.user.id })).toMatchObject({ captured: 1 });
+
+      // Staff can still try the whole flow.
+      expect((await svc.verifyRazorpayCallback(staff.user.id, signed(staff.providerOrderId, payId()))).outcome).toBe("paid");
+    } finally {
+      vi.unstubAllEnvs();
+    }
+
+    const full = { items: { include: { product: true } }, payments: true, refundRequests: true } as const;
+    for (const [{ user, order }, source] of [[byCallback, "callback"], [byWebhook, "webhook"], [bySweep, "sweep"]] as const) {
+      const after = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: full });
+      expect(after.status).toBe("CANCELLED");
+      expect(after.payments[0]).toMatchObject({ status: "CAPTURED", mode: "TEST" });
+      expect(after.refundRequests.map((r) => [r.status, r.reason])).toEqual([["REQUESTED", expect.stringMatching(/paid in test mode/)]]);
+      expect(opensLibrary(after)).toBe(false);
+      expect(await libraryOrderFor(user.id, book.id, prisma)).toBeNull();
+      expect(orderTimeline(after).find((st) => st.key === "cancelled")?.detail).toMatch(/^Paid in test mode, so no real money was charged/);
+      expect(await prisma.auditLog.findFirst({ where: { action: "payment.test_refused", targetId: order.id } })).toMatchObject({ meta: { source, mode: "TEST" } });
+      expect(await prisma.auditLog.count({ where: { action: "order.paid", targetId: order.id } })).toBe(0);
+      expect(await prisma.notification.count({ where: { userId: user.id, title: "Order cancelled: test payment" } })).toBe(1);
+      expect(await cart.count(user.id)).toBe(2); // the cart is as they left it
+    }
+    // Only the staff order still holds its unit and its coupon use.
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: gear.id } })).inventory).toBe(9);
+    expect((await prisma.coupon.findUniqueOrThrow({ where: { id: c.id } })).redeemedCount).toBe(1);
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: staff.order.id } })).status).toBe("PAID");
+    expect(await libraryOrderFor(staff.user.id, book.id, prisma)).toEqual({ id: staff.order.id });
+    expect(paidSpy).toHaveBeenCalledTimes(1);
+    expect(paidSpy).toHaveBeenCalledWith(staff.order.id);
+
+    // Approving the queued request closes it. The test keys are still set, so it goes back through Razorpay test mode.
+    const admin = await createTestUser();
+    const req = await prisma.refundRequest.findFirstOrThrow({ where: { orderId: byCallback.order.id } });
+    await expect(new RefundService(prisma, { providerFor: () => testKeys }).approve(admin.id, req.id)).resolves.toMatchObject({ rail: "INR/TEST" });
+    expect(calls.filter((cl) => /\/payments\/[^/]+\/refund$/.test(cl.url))).toHaveLength(1);
+    const closed = await prisma.order.findUniqueOrThrow({ where: { id: byCallback.order.id }, include: full });
+    expect(closed.status).toBe("CANCELLED");
+    expect(closed.payments[0].status).toBe("REFUNDED");
+    expect(closed.refundRequests[0].status).toBe("REFUNDED");
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: gear.id } })).inventory).toBe(9); // its unit went back once
+  });
+
   it("preflight warns about test keys in production and a missing webhook secret, and fails on half a key pair", () => {
     expect(razorpayPreflight({ NODE_ENV: "production" })).toEqual([]);
     expect(razorpayPreflight({ NODE_ENV: "production", RAZORPAY_KEY_ID: "rzp_live_abc" })).toEqual([
@@ -666,7 +765,7 @@ describe("Shop — Razorpay signatures and webhook", () => {
   });
 
   it("a payment that lands after the order was cancelled is queued for a full refund, and the order says so", async () => {
-    const { provider } = fakeRazorpay();
+    const { provider } = fakeRazorpay("rzp_live_key"); // real money: a test payment's order says no money moved
     const live = new ShopCheckoutService(prisma, { provider: () => provider, providerFor: () => provider });
     const user = await createTestUser();
     const p = await product({ inventory: 3, inr: 30_000 });
@@ -802,6 +901,46 @@ describe("Shop — expiring unpaid rupee orders", () => {
     expect(await recent.state()).toEqual(held);
     await checkout.expireStale();
     expect(await other.state()).toEqual(released);
+  });
+
+  it("checkout releases the member's own expired holds on every load, even right after a sweep", async () => {
+    const svc = new ShopCheckoutService(prisma, { provider: () => sandbox, sandboxEnabled: () => true });
+    await svc.sweepStale(); // this server just swept, so page loads skip the sweep for a minute
+    const mine = await heldOrder(svc, PENDING_TTL_MINUTES + 1);
+    const other = await heldOrder(svc, PENDING_TTL_MINUTES + 1);
+    expect(await svc.sweepStale()).toBeNull();
+    expect(await other.state()).toEqual(held);
+
+    expect(await svc.expireStale(new Date(), { userId: mine.order.userId })).toEqual({ cancelled: 1, captured: 0, waiting: 0 });
+    expect(await mine.state()).toEqual(released);
+    expect(await other.state()).toEqual(held); // someone else's waits for the sweep
+    await svc.expireStale();
+    expect(await other.state()).toEqual(released);
+  });
+
+  it("a payment Razorpay reports with the wrong amount is flagged once and the order goes, instead of being looked up on every sweep", async () => {
+    const { provider, orders, calls } = fakeRazorpay();
+    const live = new ShopCheckoutService(prisma, { provider: () => provider, providerFor: () => provider });
+    const odd = await heldOrder(live, PENDING_TTL_MINUTES + 1);
+    orders.set(odd.providerOrderId, { status: "paid", payments: [{ id: `pay_${uid().slice(0, 10)}`, amount: 1, currency: "INR", status: "captured" }] });
+    const lookups = () => calls.filter((cl) => cl.method === "GET" && cl.url.includes(odd.providerOrderId)).length;
+    const scope = { orderId: odd.order.id, userId: odd.order.userId };
+
+    expect(await live.expireStale(new Date(), scope)).toEqual({ cancelled: 1, captured: 0, waiting: 0 });
+    expect(await odd.state()).toEqual(released);
+    expect(await prisma.auditLog.findFirst({ where: { action: "payment.sweep_mismatch", targetId: odd.payment.id } })).toMatchObject({
+      actorId: null,
+      meta: { providerOrderId: odd.providerOrderId, error: "Payment amount does not match the order." },
+    });
+    expect(paidSpy).not.toHaveBeenCalled();
+
+    // It has left the sweep: no more lookups and no more audit rows.
+    expect(lookups()).toBe(2);
+    expect(await live.expireStale(new Date(), scope)).toEqual({ cancelled: 0, captured: 0, waiting: 0 });
+    await live.expireStale();
+    expect(lookups()).toBe(2);
+    expect(await prisma.auditLog.count({ where: { action: "payment.sweep_mismatch", targetId: odd.payment.id } })).toBe(1);
+    expect(await prisma.auditLog.count({ where: { action: "payment.amount_mismatch", targetId: odd.payment.id } })).toBe(1);
   });
 
   it("page loads sweep at most once a minute per server, and a failed sweep never breaks the page", async () => {
@@ -1017,6 +1156,9 @@ describe("Shop — refunds", () => {
     expect(refundedSpy).not.toHaveBeenCalled();
     expect(await prisma.auditLog.count({ where: { action: "refund.partial_external", targetId: order.id } })).toBe(1);
     expect((await stats.liveRevenue()).amountCents).toBe(revenue - 10_000);
+    // The admin analytics page counts it the same way as the orders page.
+    const analyticsRevenue = async () => (await platformAnalytics(prisma)).revenue.live.find((m) => m.currency === "INR")?.amountCents ?? 0;
+    expect(await analyticsRevenue()).toBe((await stats.liveRevenue()).amountCents);
 
     // The other ₹150: now the order is unwound, once.
     const part2 = `rfnd_${uid().slice(0, 12)}`;
@@ -1032,6 +1174,7 @@ describe("Shop — refunds", () => {
     expect(await prisma.auditLog.count({ where: { action: "order.unwind", targetId: order.id } })).toBe(1);
     expect(await prisma.notification.count({ where: { userId: user.id, title: "Order refunded" } })).toBe(1);
     expect((await stats.liveRevenue()).amountCents).toBe(revenue - 25_000);
+    expect(await analyticsRevenue()).toBe(revenue - 25_000);
     expect(refundCalls(calls)).toHaveLength(0);
 
     // Unwinding again changes nothing.
@@ -1132,5 +1275,160 @@ describe("Shop — refunds", () => {
     expect(await prisma.payment.findUniqueOrThrow({ where: { id: pay.id } })).toMatchObject({ status: "REFUNDED", refundedCents: 25_000 });
     expect((await svc.listFailedRefunds()).some((x) => x.id === pay.id)).toBe(false);
     expect(refundedSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("staff refund any paid order, at any age, which clears a member's test-paid order from the packing queue", async () => {
+    const admin = await createTestUser();
+    const { provider: testKeys } = fakeRazorpay("rzp_test_key");
+    // Paid in test mode before the fence; the member's 14 days have passed.
+    const { user, order, product: p } = await paidWithRazorpay(testKeys);
+    await prisma.order.update({ where: { id: order.id }, data: { createdAt: new Date(Date.now() - 40 * 86_400_000) } });
+    await expect(refundSvc.requestRefund(user.id, order.id, "Please refund this old order of mine")).rejects.toThrow(/within 14 days/);
+
+    const svc = new RefundService(prisma, { providerFor: () => null }); // the test keys are gone
+    await expect(svc.refundOrder(admin.id, order.id, "  ")).rejects.toThrow("Say why — the member sees this note.");
+    await expect(svc.refundOrder(admin.id, order.id, "x".repeat(1001))).rejects.toBeInstanceOf(RefundError);
+    expect(await svc.refundOrder(admin.id, order.id, "Paid in test mode, so it will not ship")).toMatchObject({ rail: "INR/TEST", refundedLocally: true });
+
+    const after = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: { payments: true, refundRequests: true } });
+    expect(after.status).toBe("REFUNDED");
+    expect(after.payments[0].status).toBe("REFUNDED");
+    expect(after.refundRequests.map((r) => [r.status, r.userId, r.reason, r.adminNote])).toEqual([
+      ["REFUNDED", user.id, "Refund started by staff.", "Paid in test mode, so it will not ship"],
+    ]);
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(4);
+    expect(refundedSpy).toHaveBeenCalledWith(order.id);
+    expect(await prisma.auditLog.findFirst({ where: { action: "refund.staff_request", targetId: order.id } })).toMatchObject({ actorId: admin.id });
+    expect(await prisma.notification.count({ where: { userId: user.id, title: "Refund approved" } })).toBe(1);
+    await expect(svc.refundOrder(admin.id, order.id, "Once more")).rejects.toThrow("Only a paid order can be refunded.");
+    expect(await prisma.order.count({ where: { id: order.id, status: "PAID", items: { some: { product: { kind: "PHYSICAL" } } } } })).toBe(0);
+  });
+
+  it("a staff refund decides the member's open request, never a second one", async () => {
+    const admin = await createTestUser();
+    const { provider: keys, calls } = fakeRazorpay("rzp_live_key");
+    const svc = new RefundService(prisma, { providerFor: () => keys });
+    const { user, order } = await paidWithRazorpay(keys);
+    const req = await svc.requestRefund(user.id, order.id, "The box arrived crushed, please refund");
+
+    await prisma.refundRequest.update({ where: { id: req.id }, data: { status: "APPROVED" } }); // another admin is approving it
+    await expect(svc.refundOrder(admin.id, order.id, "Damaged in transit")).rejects.toThrow("A refund for this order is already going through.");
+    await prisma.refundRequest.update({ where: { id: req.id }, data: { status: "REQUESTED" } });
+
+    expect(await svc.refundOrder(admin.id, order.id, "Damaged in transit")).toMatchObject({ rail: "INR/LIVE", refundedLocally: false });
+    expect(await prisma.refundRequest.findMany({ where: { orderId: order.id }, select: { id: true, status: true, adminNote: true } })).toEqual([
+      { id: req.id, status: "REFUNDED", adminNote: "Damaged in transit" },
+    ]);
+    expect(calls.filter((c) => /\/payments\/[^/]+\/refund$/.test(c.url)).map((c) => c.body)).toEqual([expect.objectContaining({ amount: 25_000 })]);
+    expect(await prisma.auditLog.count({ where: { action: "refund.staff_request", targetId: order.id } })).toBe(0);
+
+    const pending = await prisma.order.create({ data: { userId: user.id, status: "PENDING", totalFiatCents: 100, fiatCurrency: "INR", paymentProvider: "razorpay" } });
+    await expect(svc.refundOrder(admin.id, pending.id, "Not paid yet")).rejects.toThrow("Only a paid order can be refunded.");
+    await expect(svc.refundOrder(admin.id, "no-such-order", "Typo")).rejects.toThrow("Order not found.");
+  });
+
+  /** A live payment the old refund.processed handler marked REFUNDED, counted in full by the migration. */
+  async function legacyRefunded(keys: RazorpayProvider) {
+    const { user, order, product: p } = await paidWithRazorpay(keys);
+    const pay = await prisma.payment.findFirstOrThrow({ where: { orderId: order.id } });
+    await prisma.payment.update({ where: { id: pay.id }, data: { status: "REFUNDED", refundedCents: pay.amountCents } });
+    return { user, order, product: p, pay: await prisma.payment.findUniqueOrThrow({ where: { id: pay.id } }) };
+  }
+
+  it("a payment marked refunded before amounts were kept is never refunded or counted blind", async () => {
+    const admin = await createTestUser();
+    const { provider: keys, calls } = fakeRazorpay("rzp_live_key");
+    const shop = new ShopCheckoutService(prisma, { provider: () => keys, providerFor: () => keys });
+    const svc = new RefundService(prisma, { providerFor: () => keys });
+    const { user, order, pay } = await legacyRefunded(keys);
+    expect(refundUncounted(pay)).toBe(true);
+    expect((await svc.listUncountedRefunds()).map((x) => x.id)).toContain(pay.id);
+
+    // Approving would skip Razorpay and tell the member it is all coming back.
+    const req = await svc.requestRefund(user.id, order.id, "Only part of my money came back");
+    await expect(svc.approve(admin.id, req.id)).rejects.toThrow(/Check it with Razorpay on the refunds page first/);
+    expect((await prisma.refundRequest.findUniqueOrThrow({ where: { id: req.id } })).status).toBe("REQUESTED");
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("PAID");
+
+    // A new refund.processed for it waits to be counted with the others.
+    const body = JSON.stringify({ event: "refund.processed", payload: { refund: { entity: { id: `rfnd_${uid().slice(0, 12)}`, payment_id: pay.providerPaymentId, amount: 5_000, status: "processed" } } } });
+    expect(await shop.handleRazorpayWebhook(body, hmacSha256Hex(WEBHOOK_SECRET, body), WEBHOOK_SECRET)).toMatchObject({ status: 200, body: { outcome: "uncounted" } });
+    expect(await prisma.payment.findUniqueOrThrow({ where: { id: pay.id } })).toMatchObject({ status: "REFUNDED", refundedCents: 25_000, refundIds: [] });
+    expect(calls.filter((c) => /\/payments\/[^/]+\/refund$/.test(c.url))).toHaveLength(0);
+    expect(refundedSpy).not.toHaveBeenCalled();
+
+    // Paid ones the old approval refunded in full, test payments and new refunds are not in doubt.
+    expect(refundUncounted({ ...pay, raw: { previous: null, refund: { id: "rfnd_old" } } })).toBe(false);
+    expect(refundUncounted({ ...pay, mode: "TEST" })).toBe(false);
+    expect(refundUncounted({ ...pay, refundIds: ["rfnd_new"] })).toBe(false);
+    expect(refundUncounted({ ...pay, status: "CAPTURED" })).toBe(false);
+
+    await prisma.payment.update({ where: { id: pay.id }, data: { refundIds: ["rfnd_tidy"] } }); // out of the shared list
+  });
+
+  it("checking with Razorpay counts what it really refunded: in full unwinds the order, in part sends only the rest", async () => {
+    const admin = await createTestUser();
+    const { provider: keys, calls, refunds } = fakeRazorpay("rzp_live_key");
+    const svc = new RefundService(prisma, { providerFor: () => keys });
+    const rf = (amount: number, status: "pending" | "processed" | "failed" = "processed") => ({ id: `rfnd_${uid().slice(0, 12)}`, amount, status });
+
+    const whole = await legacyRefunded(keys); // refunded in two parts at Razorpay
+    const part = await legacyRefunded(keys); // ₹100 of ₹250 back; the order still stands
+    const closedEarly = await legacyRefunded(keys); // ₹50 back, then the old approval closed the order without sending the rest
+    await prisma.order.update({ where: { id: closedEarly.order.id }, data: { status: "REFUNDED" } });
+    const waiting = await legacyRefunded(keys); // nothing found yet, then a refund still pending
+    const wholeRefunds = [rf(20_000), rf(5_000), rf(25_000, "failed")];
+    refunds.set(whole.pay.providerPaymentId!, wholeRefunds);
+    refunds.set(part.pay.providerPaymentId!, [rf(10_000)]);
+    refunds.set(closedEarly.pay.providerPaymentId!, [rf(5_000)]);
+    refunds.set(waiting.pay.providerPaymentId!, []);
+
+    await expect(new RefundService(prisma, { providerFor: () => fakeRazorpay("rzp_test_key").provider }).countRefundsWithRazorpay(admin.id)).rejects.toThrow(
+      "These are live payments: set the live Razorpay keys to check them."
+    );
+    const mine = (rs: { paymentId: string }[], x: { pay: { id: string } }) => rs.find((r) => r.paymentId === x.pay.id);
+    const first = await svc.countRefundsWithRazorpay(admin.id);
+    expect(mine(first, whole)).toMatchObject({ outcome: "refunded", refundedCents: 25_000 });
+    expect(mine(first, part)).toMatchObject({ outcome: "partial", refundedCents: 10_000 });
+    expect(mine(first, closedEarly)).toMatchObject({ outcome: "partial", refundedCents: 5_000 });
+    expect(mine(first, waiting)).toMatchObject({ outcome: "none found" });
+    expect(calls.filter((c) => c.url.endsWith("/refunds?count=100") && c.method === "GET").length).toBeGreaterThanOrEqual(4);
+
+    // In full: the payment stays refunded with the real refunds, and the order is unwound once.
+    expect(await prisma.payment.findUniqueOrThrow({ where: { id: whole.pay.id } })).toMatchObject({
+      status: "REFUNDED", refundedCents: 25_000, refundIds: [wholeRefunds[0].id, wholeRefunds[1].id],
+    });
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: whole.order.id } })).status).toBe("REFUNDED");
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: whole.product.id } })).inventory).toBe(4);
+    expect(refundedSpy).toHaveBeenCalledWith(whole.order.id);
+    expect(await prisma.notification.count({ where: { userId: whole.user.id, title: "Order refunded" } })).toBe(1);
+    expect(await prisma.auditLog.findFirst({ where: { action: "refund.counted", targetId: whole.order.id } })).toMatchObject({ actorId: admin.id, meta: { refundedCents: 25_000 } });
+
+    // In part: the order still stands and a refund now sends only the rest.
+    expect(await prisma.payment.findUniqueOrThrow({ where: { id: part.pay.id } })).toMatchObject({ status: "CAPTURED", refundedCents: 10_000 });
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: part.order.id } })).status).toBe("PAID");
+    expect(refundedSpy).not.toHaveBeenCalledWith(part.order.id);
+    await svc.refundOrder(admin.id, part.order.id, "The rest of the refund");
+    expect(calls.filter((c) => /\/payments\/[^/]+\/refund$/.test(c.url)).map((c) => c.body)).toEqual([expect.objectContaining({ amount: 15_000 })]);
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: part.order.id } })).status).toBe("REFUNDED");
+
+    // In part on an order already closed: listed as money still to send back.
+    expect((await svc.listFailedRefunds()).find((x) => x.id === closedEarly.pay.id)).toMatchObject({ refundedCents: 5_000, order: { status: "REFUNDED" } });
+
+    // Nothing found, then pending: left as it is, and still listed, until Razorpay settles it.
+    expect((await svc.listUncountedRefunds()).map((x) => x.id)).toEqual(expect.arrayContaining([waiting.pay.id]));
+    const pendingRefund = rf(25_000, "pending");
+    refunds.set(waiting.pay.providerPaymentId!, [pendingRefund]);
+    expect(mine(await svc.countRefundsWithRazorpay(admin.id), waiting)).toMatchObject({ outcome: "pending" });
+    expect(await prisma.payment.findUniqueOrThrow({ where: { id: waiting.pay.id } })).toMatchObject({ status: "REFUNDED", refundIds: [] });
+    refunds.set(waiting.pay.providerPaymentId!, [{ ...pendingRefund, status: "processed" }]);
+    expect(mine(await svc.countRefundsWithRazorpay(admin.id), waiting)).toMatchObject({ outcome: "refunded" });
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: waiting.order.id } })).status).toBe("REFUNDED");
+
+    // Counted once: none of them is listed again, and Razorpay's webhook for a counted refund changes nothing.
+    const listed = (await svc.listUncountedRefunds()).map((x) => x.id);
+    for (const x of [whole, part, closedEarly, waiting]) expect(listed).not.toContain(x.pay.id);
+    expect(await svc.recordProviderRefund({ providerPaymentId: whole.pay.providerPaymentId!, refundId: wholeRefunds[0].id, amountCents: 20_000 })).toEqual({ outcome: "already counted" });
+    expect(refundedSpy).toHaveBeenCalledTimes(3); // whole, part (refunded by staff), waiting
   });
 });

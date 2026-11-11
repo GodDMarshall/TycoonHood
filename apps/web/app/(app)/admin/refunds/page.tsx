@@ -3,9 +3,10 @@ import Link from "next/link";
 import { refunds, REFUND_WINDOW_DAYS } from "@tycoonhood/core";
 import { Badge, Card, CardContent, SectionRule, ThcAmount } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../lib/guard";
+import { ActionButton } from "../../../../components/earn/action-form";
 import { RefundDecision } from "../../../../components/shop/refund-decision";
 import { dateTime, money, orderRef } from "../../../../components/shop/format";
-import { decideRefundAction } from "./actions";
+import { countRefundsAction, decideRefundAction } from "./actions";
 
 export const metadata: Metadata = { title: "Admin · Refunds" };
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export default async function AdminRefunds({ searchParams }: { searchParams: Pro
   await requirePermission("admin.commerce");
   const sp = await searchParams;
   const status = (FILTERS.find(([v]) => v === sp.status)?.[0] ?? "REQUESTED") as "REQUESTED";
-  const [list, failed] = await Promise.all([refunds.listQueue(status), refunds.listFailedRefunds()]);
+  const [list, failed, uncounted] = await Promise.all([refunds.listQueue(status), refunds.listFailedRefunds(), refunds.listUncountedRefunds()]);
 
   return (
     <main>
@@ -25,8 +26,30 @@ export default async function AdminRefunds({ searchParams }: { searchParams: Pro
         Members may ask within {REFUND_WINDOW_DAYS} days. Approving sends the money back on the rail it came in on: THC by ledger reversal,
         live rupee payments through Razorpay, test payments by marking them refunded (nothing moved). Unshipped gear goes back on the shelf
         and any affiliate commission is reversed. A refund made in the Razorpay dashboard counts too: a partial one leaves the order as it
-        is, and approving a request then sends only the rest.
+        is, and approving a request then sends only the rest. To refund an order yourself, at any age, use Refund on the orders page.
       </p>
+      {uncounted.length > 0 && (
+        <Card className="mt-6 border-warning/50">
+          <CardContent className="flex flex-col gap-3 py-3.5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] text-ink-1">Refunds to count</p>
+              <p className="mt-0.5 text-[12px] text-ink-3">
+                These live payments were marked refunded before refund amounts were kept, so some may have been refunded only in part, and
+                their orders may still stand. They cannot be refunded here until Razorpay&apos;s own record of their refunds is counted.
+              </p>
+              <ul className="mt-3 flex flex-col gap-1.5">
+                {uncounted.map((p) => (
+                  <li key={p.id} className="figures flex flex-wrap items-center gap-2 text-[12px] text-ink-2">
+                    order #{orderRef(p.order.id)} · {p.order.status.toLowerCase()} · {p.order.user.email} · {money(p.amountCents, p.currency)} paid
+                    {p.providerPaymentId && <span className="text-ink-3">· {p.providerPaymentId}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <ActionButton action={countRefundsAction} label="Check with Razorpay" variant="primary" />
+          </CardContent>
+        </Card>
+      )}
       {failed.length > 0 && (
         <Card className="mt-6 border-danger/50">
           <CardContent className="py-3.5">

@@ -37,7 +37,7 @@ import { callEarnHook } from "./earn-registry";
 import { CheckoutError, PaymentVerificationError } from "./errors";
 import { SHOP_CURRENCY } from "./pricing";
 import { RefundService } from "./refunds";
-import { activeShopProvider, razorpayFromEnv, sandboxProvider, sandboxAllowed, RazorpayProvider } from "./payments";
+import { activeShopProvider, razorpayFromEnv, sandboxProvider, sandboxAllowed, testPaymentAllowed, RazorpayProvider } from "./payments";
 import type { RazorpayWebhookEvent, ShopPaymentProvider } from "./payments";
 import { verifyWebhookSignature } from "./payments/razorpay";
 
@@ -61,7 +61,8 @@ export interface ShopCheckoutOptions {
   sandboxEnabled?: () => boolean;
 }
 
-export type CaptureOutcome = "paid" | "duplicate" | "late";
+/** refused: a test-mode payment that may not complete this buyer's order (see testPaymentAllowed). */
+export type CaptureOutcome = "paid" | "duplicate" | "late" | "refused";
 
 function defaultProviderFor(name: string): ShopPaymentProvider | null {
   if (name === "razorpay") return razorpayFromEnv();
@@ -348,33 +349,57 @@ export class ShopCheckoutService {
     if (claimed.count === 0) return { orderId: payment.orderId, outcome: "duplicate" };
 
     const order = await this.db.order.findUniqueOrThrow({ where: { id: payment.orderId }, include: { items: true } });
-    const paid = await this.db.order.updateMany({
-      where: { id: order.id, status: "PENDING" },
-      data: { status: "PAID", paymentRef: args.providerPaymentId },
-    });
+    // A test payment moves no money. In production only staff may get goods for
+    // one; a member's (from a Razorpay window opened before the rail was fenced,
+    // say, whether it lands by callback, webhook or sweep) never completes the order.
+    const refused =
+      payment.mode === "TEST" && !testPaymentAllowed(await this.db.user.findUnique({ where: { id: order.userId }, select: { role: true } }));
+    const paid = refused
+      ? { count: 0 }
+      : await this.db.order.updateMany({
+          where: { id: order.id, status: "PENDING" },
+          data: { status: "PAID", paymentRef: args.providerPaymentId },
+        });
 
     if (paid.count === 0) {
-      // Money arrived for an order that had already expired or been replaced.
-      // Its stock went back on the shelf, so it is not quietly revived; it goes
-      // straight to the refunds queue for a human to send back.
+      // Money arrived for an order that had already expired or been replaced, or a
+      // test payment that may not complete it. Its stock goes (or went) back on the
+      // shelf, so it is not quietly revived; the payment goes straight to the
+      // refunds queue for a human to send back or, for a test payment, to close.
+      if (refused) await this.cancelOrder(order.id, "Paid in test mode, which only staff may use in production");
       await this.db.refundRequest.create({
         data: {
           orderId: order.id,
           userId: order.userId,
-          reason: "Automatic: the payment arrived after this order had been cancelled. Refund it in full.",
+          reason: refused
+            ? "Automatic: this order was paid in test mode, which only staff may use on the live site. No real money was charged. Approve to close it."
+            : "Automatic: the payment arrived after this order had been cancelled. Refund it in full.",
         },
       });
-      await this.audit.log({ actorId: null, action: "payment.captured_after_cancel", targetType: "order", targetId: order.id, meta: { source: args.source, mode: payment.mode } });
+      await this.audit.log({
+        actorId: null,
+        action: refused ? "payment.test_refused" : "payment.captured_after_cancel",
+        targetType: "order",
+        targetId: order.id,
+        meta: { source: args.source, mode: payment.mode },
+      });
       await this.db.notification.create({
         data: {
           userId: order.userId,
           type: "ORDER",
-          title: "Payment received for a cancelled order",
-          body: "Your payment came through after the order had expired. We have queued a full refund.",
+          ...(refused
+            ? {
+                title: "Order cancelled: test payment",
+                body: "This order was paid in test mode, so no real money was charged and it cannot go through. The items went back on the shelf.",
+              }
+            : {
+                title: "Payment received for a cancelled order",
+                body: "Your payment came through after the order had expired. We have queued a full refund.",
+              }),
           data: { orderId: order.id, href: `/orders/${order.id}` },
         },
       });
-      return { orderId: order.id, outcome: "late" };
+      return { orderId: order.id, outcome: refused ? "refused" : "late" };
     }
 
     const keys = order.items.map((i) => `${i.productId}:${i.variantId ?? "-"}`);
@@ -531,7 +556,7 @@ export class ShopCheckoutService {
 
   /** What the sweep does with one stale order's latest payment. */
   private async staleVerdict(
-    payment: { provider: string; mode: string; providerOrderId: string | null } | undefined,
+    payment: { id: string; provider: string; mode: string; providerOrderId: string | null } | undefined,
     pastGrace: boolean
   ): Promise<"cancel" | "wait" | "captured"> {
     if (!payment?.providerOrderId) return "cancel";
@@ -542,14 +567,29 @@ export class ShopCheckoutService {
       const check = await provider.checkOrder(payment.providerOrderId);
       if (!check) return "cancel"; // unknown to the provider, so nobody can pay it
       if (check.captured) {
-        await this.capture({
-          providerOrderId: payment.providerOrderId,
-          providerPaymentId: check.captured.providerPaymentId,
-          amountCents: check.captured.amountCents,
-          currency: check.captured.currency,
-          raw: { source: "sweep", check } as unknown,
-          source: "sweep",
-        });
+        try {
+          await this.capture({
+            providerOrderId: payment.providerOrderId,
+            providerPaymentId: check.captured.providerPaymentId,
+            amountCents: check.captured.amountCents,
+            currency: check.captured.currency,
+            raw: { source: "sweep", check } as unknown,
+            source: "sweep",
+          });
+        } catch (e) {
+          if (!(e instanceof PaymentVerificationError)) throw e;
+          // Razorpay holds a payment capture() refuses (wrong amount or currency). Asking
+          // again will not change that, so it is flagged once for an admin and the order
+          // goes, instead of being looked up on every sweep while it keeps its stock.
+          await this.audit.log({
+            actorId: null,
+            action: "payment.sweep_mismatch",
+            targetType: "payment",
+            targetId: payment.id,
+            meta: { providerOrderId: payment.providerOrderId, providerPaymentId: check.captured.providerPaymentId, error: e.message },
+          });
+          return "cancel";
+        }
         return "captured";
       }
       // Attempted: the member may be retrying in the Razorpay window right now.

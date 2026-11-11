@@ -487,12 +487,17 @@ describe("payouts", () => {
     await expect(earn.approvePayout(admin.id, p2.id)).rejects.toThrow(/affiliate is suspended/);
   });
 
-  it("payoutBlocker reads only refund requests that are still open, refunded orders, and whether the payout adds up", () => {
+  it("payoutBlocker reads only refund requests that are still open, refunded orders, test payments, and whether the payout adds up", () => {
     type Refund = "REQUESTED" | "APPROVED" | "REJECTED" | "REFUNDED";
-    const line = (refunds: Refund[] = [], order: "PAID" | "FULFILLED" | "REFUNDED" = "PAID", status: "APPROVED" | "REVERSED" = "APPROVED") => ({
+    const line = (
+      refunds: Refund[] = [],
+      order: "PAID" | "FULFILLED" | "REFUNDED" = "PAID",
+      status: "APPROVED" | "REVERSED" = "APPROVED",
+      payments: { mode: string }[] = []
+    ) => ({
       amountCents: 30_000,
       status,
-      order: { status: order, refundRequests: refunds.map((s) => ({ status: s })) },
+      order: { status: order, refundRequests: refunds.map((s) => ({ status: s })), payments },
     });
     const payout = (affiliate: "APPROVED" | "SUSPENDED", ...commissions: ReturnType<typeof line>[]) => ({
       amountCents: commissions.reduce((s, c) => s + c.amountCents, 0),
@@ -505,6 +510,29 @@ describe("payouts", () => {
     expect(payoutBlocker(payout("APPROVED", line(), line([], "REFUNDED")))).toMatch(/was refunded/);
     expect(payoutBlocker(payout("APPROVED", line(), line([], "PAID", "REVERSED")))).toMatch(/do not add up/);
     expect(payoutBlocker({ ...payout("APPROVED", line()), amountCents: 40_000 })).toMatch(/do not add up/);
+    expect(payoutBlocker(payout("APPROVED", line(), line([], "FULFILLED", "APPROVED", [{ mode: "TEST" }])))).toMatch(/paid in test mode/);
+  });
+
+  it("a commission on a test-paid order approved before the test check is never paid out", async () => {
+    const aff = await approvedAffiliate();
+    const c = await approvedCommission(aff, 60_000);
+    // A test-key payment captured before this check: the commission was already approved.
+    const order = await prisma.order.findUniqueOrThrow({ where: { id: c.orderId } });
+    await prisma.payment.create({
+      data: { orderId: order.id, provider: "razorpay", mode: "TEST", status: "CAPTURED", providerOrderId: `order_${uid()}`, amountCents: order.totalFiatCents, currency: "INR" },
+    });
+    const p = await earn.requestPayout(aff.user.id);
+    await expect(earn.approvePayout(admin.id, p.id)).rejects.toThrow(/paid in test mode/);
+    expect(await prisma.payoutRequest.findUniqueOrThrow({ where: { id: p.id } })).toMatchObject({ status: "REQUESTED" });
+
+    // Approved before the payment was found, it is still not marked paid.
+    await prisma.payoutRequest.update({ where: { id: p.id }, data: { status: "APPROVED" } });
+    await expect(earn.markPayoutPaid(admin.id, p.id, "UTR-TEST-1")).rejects.toThrow(/paid in test mode/);
+    expect(await prisma.commission.findUniqueOrThrow({ where: { id: c.id } })).toMatchObject({ status: "APPROVED", payoutId: p.id });
+
+    // The way out the message names: decline the payout, then reject the commission.
+    await earn.rejectPayout(admin.id, p.id, "Test-mode order");
+    expect((await earn.rejectCommission(admin.id, c.id, "Paid in test mode")).status).toBe("REJECTED");
   });
 
   it("a refund that would empty an open payout closes it, and the refunded commission is never paid", async () => {
