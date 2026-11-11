@@ -9,8 +9,11 @@ import {
   QUALITY,
   stepDown,
   FrameGovernor,
+  GOVERNOR,
+  cadenceOf,
   MIN_WORLD_WIDTH,
   type GpuProbe,
+  type Tier,
   type WorldSignals,
 } from "../src/world/gate";
 
@@ -84,6 +87,12 @@ describe("deviceGate: phones and tablets never get the campus", () => {
     const phone = { ua: UA.iphone, maxTouchPoints: 5, coarse: true, screenW: 390, screenH: 844, innerW: 390 };
     expect(deviceGate(sig({ ...phone, reducedMotion: true, saveData: true }))).toBe("phone");
     expect(deviceGate(sig({ reducedMotion: true, saveData: true }))).toBe("reduced-motion");
+  });
+
+  it("names a narrow window only when widening it is all that stands in the way", () => {
+    expect(deviceGate(sig({ innerW: 1000, reducedMotion: true }))).toBe("reduced-motion");
+    expect(deviceGate(sig({ innerW: 1000, saveData: true }))).toBe("save-data");
+    expect(deviceGate(sig({ innerW: 1000 }))).toBe("narrow");
   });
 });
 
@@ -162,10 +171,29 @@ describe("QUALITY, stepDown and FrameGovernor", () => {
     expect(QUALITY.balanced.shadow).toBeGreaterThan(QUALITY.performance.shadow);
   });
 
-  it("fires once after 120 slow frames", () => {
+  /** world.ts's use of the governor: step down, or close at the lowest tier or when hopeless. Times in seconds. */
+  function drive(start: Tier, frameMs: number, seconds: number) {
+    let tier: Tier = start;
+    let t = 0;
+    const events: string[] = [];
+    let closed = false;
+    const g = new FrameGovernor((_median, hopeless) => {
+      const next = hopeless ? null : stepDown(tier);
+      events.push(`${Math.round(t / 100) / 10} ${next ?? "closed"}`);
+      if (next) tier = next;
+      else closed = true;
+    });
+    while (t < seconds * 1000 && !closed) {
+      t += frameMs;
+      g.sample(frameMs);
+    }
+    return events;
+  }
+
+  it("fires once three seconds of slow frames are in", () => {
     let slow = 0;
     const g = new FrameGovernor(() => slow++);
-    for (let i = 0; i < 119; i++) g.sample(30);
+    for (let i = 0; i < 99; i++) g.sample(30);
     expect(slow).toBe(0);
     g.sample(30);
     expect(slow).toBe(1);
@@ -178,25 +206,67 @@ describe("QUALITY, stepDown and FrameGovernor", () => {
     expect(slow).toBe(0);
   });
 
-  it("ignores frames over 250 ms", () => {
-    let slow = 0;
-    const g = new FrameGovernor(() => slow++);
-    for (let i = 0; i < 119; i++) g.sample(30);
-    for (let i = 0; i < 1000; i++) g.sample(400);
-    expect(slow).toBe(0);
-    g.sample(30);
-    expect(slow).toBe(1);
+  it("counts long frames: sustained 400 ms frames step down, then close, within seconds", () => {
+    expect(drive("balanced", 400, 600)).toEqual(["3.2 performance", "9.6 closed"]);
+    expect(drive("performance", 520, 600)).toEqual(["3.1 closed"]);
   });
 
-  it("waits 180 frames after firing before it can fire again", () => {
+  it("closes at once when frames take a second or more, whatever the tier", () => {
+    const seen: Array<[number, boolean]> = [];
+    const g = new FrameGovernor((median, hopeless) => seen.push([median, hopeless]));
+    for (let i = 0; i < 6; i++) g.sample(5000);
+    expect(seen).toEqual([[GOVERNOR.clampMs, true]]);
+    expect(drive("cinematic", 1200, 600)).toEqual(["7.2 closed"]);
+  });
+
+  it("never fires for a lone stall of 2 to 5 seconds among quick frames", () => {
     let slow = 0;
     const g = new FrameGovernor(() => slow++);
-    for (let i = 0; i < 120; i++) g.sample(30);
+    for (let round = 0; round < 200; round++) {
+      for (let i = 0; i < 40; i++) g.sample(16);
+      g.sample(2000 + (round % 4) * 1000);
+    }
+    expect(slow).toBe(0);
+  });
+
+  it("waits three seconds after firing before it judges again", () => {
+    let slow = 0;
+    const g = new FrameGovernor(() => slow++);
+    for (let i = 0; i < 100; i++) g.sample(30);
     expect(slow).toBe(1);
-    for (let i = 0; i < 180 + 119; i++) g.sample(30);
+    for (let i = 0; i < 100 + 99; i++) g.sample(30);
     expect(slow).toBe(1);
     g.sample(30);
     expect(slow).toBe(2);
+  });
+
+  it("judges frames against the display's cadence, not a fixed budget", () => {
+    // A browser held at 30 Hz (Energy Saver, Low Power Mode): steady 33 ms frames are not slow.
+    let slow = 0;
+    const capped = new FrameGovernor(() => slow++);
+    capped.setBase(1000 / 30);
+    for (let i = 0; i < 2000; i++) capped.sample(1000 / 30);
+    expect(slow).toBe(0);
+    // Twice that, at 30 Hz, is.
+    for (let i = 0; i < 100; i++) capped.sample(2000 / 30);
+    expect(slow).toBe(1);
+
+    // At 60 Hz, 40 ms frames are slow, and so are 33 ms ones (every other refresh missed).
+    const sixty = new FrameGovernor(() => slow++);
+    sixty.setBase(1000 / 60);
+    for (let i = 0; i < 100; i++) sixty.sample(40);
+    expect(slow).toBe(2);
+    expect(sixty.slowMs).toBe(GOVERNOR.budgetMs);
+    expect(capped.slowMs).toBeCloseTo(50);
+  });
+
+  it("reads the display's cadence from frame intervals, and only a plausible one", () => {
+    const sixty = [16.6, 16.7, 16.7, 16.8, 16.6, 16.7, 120, 250, 16.7, 33.4];
+    expect(cadenceOf(sixty)).toBeCloseTo(16.7, 0);
+    expect(cadenceOf([33.3, 33.4, 33.2, 33.3, 66.7, 33.3, 400])).toBeCloseTo(33.3, 0);
+    expect(cadenceOf([16.7, 16.7, 16.7])).toBeNull();
+    expect(cadenceOf([120, 140, 160, 180, 200, 220])).toBeNull();
+    expect(cadenceOf([Number.NaN, -5, 0, 16.7, 16.7, 16.7, 16.7, 16.7])).toBeCloseTo(16.7);
   });
 });
 

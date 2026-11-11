@@ -35,6 +35,7 @@ import {
   Scene,
   SphereGeometry,
   type Texture,
+  UniformsLib,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -60,7 +61,7 @@ import type { BuildingId } from "@tycoonhood/core/src/world/state";
 import { disposeAssets, type WorldAssets } from "./assets";
 import { createMaterials, disposeMaterials, type Materials } from "./materials";
 import { Navigator } from "./navigation";
-import { FrameGovernor, QUALITY, stepDown, type Tier } from "./quality";
+import { FrameGovernor, GOVERNOR, QUALITY, cadenceOf, stepDown, type Tier } from "./quality";
 import {
   buildCommunity,
   buildCourses,
@@ -92,12 +93,14 @@ export type WorldHandlers = {
   onPose: (x: number, z: number, yaw: number) => void;
   onFade: (dark: boolean) => void;
   onQuality: (q: Tier) => void;
-  /** Frames stayed slow at the lowest tier: the host switches to 2D. */
+  /** Frames stayed slow at the lowest tier, or took a second or more: the host switches to 2D. */
   onSlow: () => void;
   onFatal: (reason: "context-lost") => void;
 };
 
 const EXTERIOR_BOUNDS = { minX: -88, maxX: 88, minZ: -96, maxZ: 80 };
+/** Frames held still to read the display's cadence: about 0.1 s at 60 Hz. */
+const CADENCE_FRAMES = 6;
 
 export class World {
   private renderer: WebGLRenderer;
@@ -145,6 +148,14 @@ export class World {
   private touches = new Map<number, { x: number; y: number }>();
   private cleanup: (() => void)[] = [];
   private timers = new Set<number>();
+  /**
+   * Frames the governor does not see: the ones just after a stall it should
+   * not judge (the first frames, which compile shaders; a switch of space or
+   * tier, which redraws the shadow map).
+   */
+  private settle = 3;
+  /** While set, frames draw nothing, so their intervals are the display's own. */
+  private cadence: { gaps: number[]; then: (ms: number | null) => void } | null = null;
 
   constructor(
     private container: HTMLElement,
@@ -192,11 +203,17 @@ export class World {
     const smaa = new SMAAEffect({ preset: SMAAPreset.HIGH });
     this.composer.addPass(new EffectPass(this.nav.camera, this.bloom, tone, vignette, smaa));
 
-    // Slow frames step the tier down; slow at the lowest tier means 2D.
-    this.governor = new FrameGovernor(() => {
-      const next = stepDown(this.quality);
-      if (next) this.setQuality(next);
-      else this.h.onSlow();
+    // Slow frames step the tier down; slow at the lowest tier, or a frame a
+    // second at any, means 2D. A slow median that a display could produce
+    // (20 Hz or faster) may be the browser's own cap rather than the GPU, as
+    // with Chrome's Energy Saver: the cadence is read before acting on it.
+    this.governor = new FrameGovernor((median, hopeless) => {
+      if (hopeless) return this.h.onSlow();
+      if (median > GOVERNOR.cadenceMaxMs) return this.slower();
+      this.measureCadence((ms) => {
+        if (ms !== null) this.governor.setBase(ms);
+        if (ms === null || median > this.governor.slowMs) this.slower();
+      });
     });
 
     this.ro = new ResizeObserver(() => this.resize());
@@ -209,6 +226,17 @@ export class World {
     };
     canvas.addEventListener("webglcontextlost", onLost);
     this.cleanup.push(() => canvas.removeEventListener("webglcontextlost", onLost));
+    // Back from a hidden tab: the first interval spans the time away, and the
+    // browser may cap the frame rate now (Energy Saver can switch on meanwhile).
+    const onVisibility = () => {
+      if (document.hidden) return;
+      this.governor.reset();
+      this.measureCadence((ms) => {
+        if (ms !== null) this.governor.setBase(ms);
+      });
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    this.cleanup.push(() => document.removeEventListener("visibilitychange", onVisibility));
 
     this.nav.setSpace(this.exteriorColliders(), EXTERIOR_BOUNDS, 0.6);
     this.nav.place(0, 72, 0, 0.02);
@@ -445,6 +473,7 @@ export class World {
       }
       this.space = id;
       this.useScene(room.scene);
+      this.settle = 2;
       this.nav.setSpace(room.colliders, room.bounds, 0);
       this.nav.place(room.spawn.x, room.spawn.z, room.spawn.yaw);
       this.exitArmed = false;
@@ -466,6 +495,7 @@ export class World {
     this.later(() => {
       this.space = "exterior";
       this.useScene(this.exterior);
+      this.settle = 2;
       this.nav.setSpace(this.exteriorColliders(), EXTERIOR_BOUNDS, 0.6);
       const back = b.entrance.yaw + Math.PI;
       this.nav.place(b.entrance.x - Math.sin(b.entrance.yaw) * -1.5, b.entrance.z - Math.cos(b.entrance.yaw) * -1.5, back);
@@ -545,8 +575,26 @@ export class World {
       this.renderer.shadowMap.needsUpdate = true;
       this.shadowFrames = 0;
     }
+    this.settle = 2;
     this.resize();
     this.h.onQuality(q);
+  }
+
+  /** One tier down, or 2D from the lowest. */
+  private slower() {
+    const next = stepDown(this.quality);
+    if (next) this.setQuality(next);
+    else this.h.onSlow();
+  }
+
+  /** The display's frame interval, which the host read while the campus loaded. */
+  setCadence(ms: number) {
+    this.governor.setBase(ms);
+  }
+
+  /** Hold the picture still for a few frames and read the display's own frame interval. */
+  private measureCadence(then: (ms: number | null) => void) {
+    if (!this.cadence) this.cadence = { gaps: [], then };
   }
 
   // ─────────────────────────────────────────── input
@@ -682,7 +730,18 @@ export class World {
     const dtMs = now - this.last;
     this.last = now;
     if (document.hidden || this.disposed) return;
-    const dt = Math.min(dtMs, 50) / 1000;
+    if (this.cadence) {
+      // Nothing is drawn, so each interval is the display's. The first still
+      // holds the last frame that was.
+      const c = this.cadence;
+      c.gaps.push(dtMs);
+      if (c.gaps.length > CADENCE_FRAMES) {
+        this.cadence = null;
+        c.then(cadenceOf(c.gaps.slice(1)));
+      }
+      return;
+    }
+    const dt = Math.min(Math.max(dtMs, 0), 50) / 1000;
     this.t += dt;
 
     const cam = this.nav.camera;
@@ -750,7 +809,8 @@ export class World {
       this.poseClock = 0;
       this.h.onPose(this.nav.pos.x, this.nav.pos.z, this.nav.yaw);
     }
-    this.governor.sample(dtMs);
+    if (this.settle > 0) this.settle--;
+    else this.governor.sample(dtMs);
   };
 
   private resize() {
@@ -769,12 +829,14 @@ export class World {
 
   /**
    * Release everything: the loop, listeners and observer; every geometry,
-   * material, texture and render target; the composer; the assets; then the
-   * renderer and its GL context; and the canvas. Safe to call twice.
+   * material, texture and render target; the composer; the assets; this
+   * renderer's copies of three's shared textures; then the renderer and its
+   * GL context; and the canvas. Safe to call twice.
    */
   dispose() {
     if (this.disposed) return;
     this.disposed = true;
+    const threeOwn = this.threeSharedTextures();
     cancelAnimationFrame(this.raf);
     for (const id of this.timers) window.clearTimeout(id);
     this.timers.clear();
@@ -790,9 +852,38 @@ export class World {
     this.composer.dispose();
     disposeMaterials(this.m);
     disposeAssets(this.assets);
+    // Each upload of these left a 'dispose' listener on them that holds this
+    // renderer and its GL context, and three keeps them for the page's life:
+    // without this, every closed campus would stay in memory. The next
+    // renderer uploads them again.
+    for (const t of threeOwn) t.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
     this.renderer.domElement.remove();
+  }
+
+  /**
+   * three's module-level textures this renderer may have uploaded: the DFG
+   * lookup every standard material samples (DFGLUTData.js, reached through a
+   * drawn material, since three does not export it), and the area-light
+   * tables the rooms' RectAreaLights use. Read before the materials go.
+   */
+  private threeSharedTextures(): Texture[] {
+    const out: Texture[] = [];
+    for (const mat of this.shared) {
+      const own = this.renderer.properties.get(mat) as { uniforms?: { dfgLUT?: { value?: Texture | null } } } | undefined;
+      const lut = own?.uniforms?.dfgLUT?.value;
+      if (lut?.isTexture) {
+        out.push(lut);
+        break;
+      }
+    }
+    const lib = UniformsLib as unknown as Record<string, Texture | undefined>;
+    for (const key of ["LTC_FLOAT_1", "LTC_FLOAT_2", "LTC_HALF_1", "LTC_HALF_2"]) {
+      const t = lib[key];
+      if (t?.isTexture) out.push(t);
+    }
+    return out;
   }
 }
 

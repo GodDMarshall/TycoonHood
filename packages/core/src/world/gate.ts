@@ -7,7 +7,8 @@
  * signals; this file only decides. A test fails if an import ever appears.
  *
  * The order is the product rule:
- *   1. device: phones, tablets, narrow windows, reduced motion, data saver
+ *   1. device: phones, tablets, reduced motion, data saver, then narrow
+ *      windows (last, because resizing is the one thing that fixes it)
  *   2. GPU: WebGL2 that real hardware draws
  *   3. tier: chosen only once both gates pass. `?world=` may choose the
  *      tier for QA; nothing can skip a gate.
@@ -86,10 +87,11 @@ export function isTier(v: unknown): v is Tier {
 }
 
 /**
- * Phones and tablets never get the campus, nor do narrow windows, reduced
- * motion or data saver. Only the primary pointer counts, so a touchscreen
+ * Phones and tablets never get the campus, nor do reduced motion, data saver
+ * or narrow windows. Only the primary pointer counts, so a touchscreen
  * laptop with a mouse or trackpad stays eligible. iPadOS reports a desktop
- * Mac user agent; its touch points give it away.
+ * Mac user agent; its touch points give it away. A narrow window is named
+ * last: widening it is a promise only when nothing else stands in the way.
  */
 export function deviceGate(s: WorldSignals): WorldFallbackReason | null {
   const small = Math.min(s.screenW, s.screenH) < PHONE_MAX_SIDE;
@@ -97,9 +99,9 @@ export function deviceGate(s: WorldSignals): WorldFallbackReason | null {
     s.coarse || s.hoverNone || TOUCH_UA.test(s.ua) || (/Macintosh/.test(s.ua) && s.maxTouchPoints > 0);
   if (touch) return small ? "phone" : "tablet";
   if (s.maxTouchPoints > 0 && small) return "phone";
-  if (s.innerW < MIN_WORLD_WIDTH) return "narrow";
   if (s.reducedMotion) return "reduced-motion";
   if (s.saveData) return "save-data";
+  if (s.innerW < MIN_WORLD_WIDTH) return "narrow";
   return null;
 }
 
@@ -157,26 +159,92 @@ export function stepDown(q: Tier): Tier | null {
 }
 
 /**
+ * How the frame governor judges frames.
+ *
+ * It reads requestAnimationFrame intervals, and a browser can run those
+ * below the display's rate: Chrome's Energy Saver and Safari's Low Power
+ * Mode hold them at 30 Hz however idle the GPU is. So a frame is slow only
+ * against the display's own cadence (`base`): it must span one and a half
+ * display intervals, and the 26 ms budget of a 60 Hz display.
+ */
+export const GOVERNOR = {
+  /** The frame budget at 60 Hz: a median over it is slow. */
+  budgetMs: 26,
+  /** The longest interval a display, or a browser's cap, produces: 20 Hz. */
+  cadenceMaxMs: 50,
+  /** No frame counts for more than this, so one stall cannot outweigh a window. */
+  clampMs: 1000,
+  /** A window is this much frame time, and at least `minSamples` frames. */
+  windowMs: 3000,
+  minSamples: 6,
+  /** After it fires, this much frame time passes unjudged while the tier settles. */
+  cooldownMs: 3000,
+} as const;
+
+/**
+ * The display's frame interval, from requestAnimationFrame intervals taken
+ * while nothing heavy is drawn; null when there are too few, or when they
+ * are too long to be a display's (the page was busy, not the screen). Long
+ * tasks only ever add time, so a low percentile is the display.
+ */
+export function cadenceOf(gaps: readonly number[]): number | null {
+  const g = gaps.filter((x) => Number.isFinite(x) && x > 0).sort((a, b) => a - b);
+  if (g.length < 5) return null;
+  const ms = g[Math.floor(g.length / 5)];
+  return ms <= GOVERNOR.cadenceMaxMs ? ms : null;
+}
+
+/**
  * Median-of-window frame timing; asks for a lower tier when frames run long.
- * It is fed frame durations and never reads a clock itself.
+ * It is fed frame intervals and never reads a clock itself; the caller
+ * leaves out the frames after a stall it knows about (a hidden tab, a scene
+ * switch, a change of tier).
+ *
+ *   - Long frames count, clamped to `clampMs`: a device drawing one frame a
+ *     second is judged like any other, and one stall never decides a window.
+ *   - A window is three seconds of frames (six at least), so a slow device
+ *     is judged in seconds, however few frames it draws.
+ *   - It fires when the median frame is slow, saying whether that median is
+ *     hopeless: a frame a second or slower, which no tier can rescue.
  */
 export class FrameGovernor {
   private samples: number[] = [];
+  private elapsed = 0;
   private cooldown = 0;
-  constructor(private readonly onSlow: () => void) {}
+  private base = 1000 / 60;
+  constructor(private readonly onSlow: (median: number, hopeless: boolean) => void) {}
+
+  /** The display's own frame interval; frames are judged against it. */
+  setBase(ms: number) {
+    if (Number.isFinite(ms) && ms > 0) this.base = Math.min(ms, GOVERNOR.cadenceMaxMs);
+  }
+
+  /** A frame longer than this is slow. */
+  get slowMs() {
+    return Math.max(GOVERNOR.budgetMs, 1.5 * this.base);
+  }
+
+  /** Forget the frames gathered so far. */
+  reset() {
+    this.samples = [];
+    this.elapsed = 0;
+  }
+
   sample(ms: number) {
-    if (ms > 250) return;
+    if (!(ms > 0)) return;
     if (this.cooldown > 0) {
-      this.cooldown--;
+      this.cooldown -= ms;
       return;
     }
-    this.samples.push(ms);
-    if (this.samples.length < 120) return;
-    const med = [...this.samples].sort((a, b) => a - b)[60];
-    this.samples = [];
-    if (med > 26) {
-      this.cooldown = 180;
-      this.onSlow();
-    }
+    this.samples.push(Math.min(ms, GOVERNOR.clampMs));
+    this.elapsed += ms;
+    const n = this.samples.length;
+    if (n < GOVERNOR.minSamples || this.elapsed < GOVERNOR.windowMs) return;
+    // The lower median: most frames in the window must be slow.
+    const median = [...this.samples].sort((a, b) => a - b)[(n - 1) >> 1];
+    this.reset();
+    if (median <= this.slowMs) return;
+    this.cooldown = GOVERNOR.cooldownMs;
+    this.onSlow(median, median >= GOVERNOR.clampMs);
   }
 }

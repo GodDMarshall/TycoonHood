@@ -3,4 +3,4 @@
  * lives in core's gate.ts, which world-host.tsx runs through probe.ts before
  * three.js is fetched; the engine only reads the table and steps down.
  */
-export { QUALITY, stepDown, FrameGovernor, type Tier } from "@tycoonhood/core/src/world/gate";
+export { QUALITY, stepDown, FrameGovernor, GOVERNOR, cadenceOf, type Tier } from "@tycoonhood/core/src/world/gate";
