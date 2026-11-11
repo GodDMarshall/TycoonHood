@@ -104,6 +104,11 @@ to keep building — flag any you want changed and the change is cheap now.
   identical to payments: coded Resend adapter activates with a key; until
   then the dev mailer logs, and the UI shows the link under an explicit
   "dev mode — no email was sent" label.
+  **Updated 2026-11-11:** the UI never shows the link now. In dev mode the
+  reply says the link is in the server log; in production without
+  `RESEND_API_KEY` nothing can be sent, and the reply says so and points to
+  Contact (`packages/core/src/platform/mail-outcome.ts`). A reset also spends
+  every other reset link and cancels a waiting email change (DR-32).
 
 - **D26** The Discord bot is serverless: an Ed25519-verified Interactions
   Endpoint inside the web app (`/api/integrations/discord/interactions`),

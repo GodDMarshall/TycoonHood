@@ -36,7 +36,7 @@ install you already have), write `.env`, install dependencies, apply
 migrations, seed real content, and run 26 end-to-end checks. It stops and
 explains itself if anything fails.
 
-**You need Node 20+.** If you don't have it: https://nodejs.org (LTS).
+**You need Node 22.12 or newer.** If you don't have it: https://nodejs.org (LTS).
 
 ## 4. Start it
 

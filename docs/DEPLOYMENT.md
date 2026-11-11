@@ -4,7 +4,7 @@
 
 ## Requirements
 
-- Node 20+ and pnpm 9.
+- Node 22.12 or later (the Markdown sanitiser, sanitize-html 2.18, needs it; `.nvmrc` pins 22) and pnpm 9.
 - PostgreSQL 16, managed (for example Neon, Supabase or RDS).
 - A host for Next.js (for example Vercel, Railway or Render). `apps/web` is the only app you need. `apps/miner` only redirects.
 
