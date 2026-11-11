@@ -236,6 +236,7 @@ export default async function SettingsPage() {
                 {label}
               </label>
             ))}
+            <p className="text-[13px] text-ink-3">The leaderboard lists XP, so hiding your level and XP keeps you off it too.</p>
             <div>
               <Button size="sm" type="submit">Save</Button>
             </div>

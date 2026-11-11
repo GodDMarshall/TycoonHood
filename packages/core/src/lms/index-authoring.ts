@@ -18,6 +18,8 @@ export {
   PILLARS,
   LESSON_TYPES,
   RESOURCE_KINDS,
+  REVIEW_MODERATORS,
+  canModerateReviews,
 } from "./authoring";
 export type { AuthoringActor, CourseInput, ModuleInput, LessonInput, QuizInput, ResourceInput, InstructorInput } from "./authoring";
 export { LearnerService, learner, ReviewNotAllowedError, reviewSchema, rankBySignals } from "./learner";

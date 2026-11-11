@@ -8,6 +8,7 @@
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { notificationLink } from "@tycoonhood/core";
 import { Badge, Icon, Progress, ThcAmount, XpBar, buttonStyles, cn, type IconName } from "@tycoonhood/ui";
 import { Panel, SectionTitle } from "../app/page";
 import type { DashboardData } from "../../app/(app)/today/dashboard";
@@ -444,7 +445,7 @@ export function NotificationsCard({ notifications, unread }: { notifications: Da
       ) : (
         <Panel as="ul" className="divide-y divide-line">
           {notifications.map((n) => {
-            const href = (n.data as { href?: string } | null)?.href;
+            const href = notificationLink(n.data);
             const body = (
               <>
                 <span className="flex items-center gap-2 text-[14px] text-ink-1">
@@ -456,7 +457,7 @@ export function NotificationsCard({ notifications, unread }: { notifications: Da
             );
             return (
               <li key={n.id}>
-                <Link href={href && href.startsWith("/") ? href : "/notifications"} className="block px-4 py-3 hover:bg-bg-2">
+                <Link href={href ?? "/notifications"} className="block px-4 py-3 hover:bg-bg-2">
                   {body}
                 </Link>
               </li>

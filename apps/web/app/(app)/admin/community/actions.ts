@@ -40,7 +40,11 @@ export async function resolveReportAction(reportId: string, action: "remove" | "
 
 export async function unmuteAction(userId: string) {
   const v = await staff();
-  await community.unmute(v, userId);
+  // The list offers Lift only where the rule allows it; core refuses the rest.
+  await guard(async () => {
+    await community.unmute(v, userId);
+    return {};
+  });
   revalidatePath("/admin/community");
 }
 

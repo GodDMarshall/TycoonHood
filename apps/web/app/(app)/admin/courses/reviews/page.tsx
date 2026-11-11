@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { prisma } from "@tycoonhood/db";
+import { REVIEW_MODERATORS, can } from "@tycoonhood/core";
 import { Badge } from "@tycoonhood/ui";
-import { requirePermission } from "../../../../../lib/guard";
+import { requireAnyPermission } from "../../../../../lib/guard";
 import { Panel, SectionTitle } from "../../../../../components/app/page";
 import { InlineAction } from "../../../../../components/learning/admin/inline-action";
 import { setReviewHiddenAction } from "../actions";
@@ -9,9 +10,12 @@ import { setReviewHiddenAction } from "../actions";
 export const metadata: Metadata = { title: "Admin · Reviews" };
 export const dynamic = "force-dynamic";
 
-/** Every program review, newest first. Hidden reviews stay stored but leave the average and the page. */
+/** Every program review, newest first. Hidden reviews stay stored but leave the average and the page.
+ *  Course staff and community moderators both moderate reviews here. */
 export default async function AdminReviews({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
-  await requirePermission("courses.author");
+  const user = await requireAnyPermission(...REVIEW_MODERATORS);
+  // Moderators do not see members' emails elsewhere, so not here either.
+  const showEmail = can(user, "courses.author");
   const { show } = await searchParams;
   const hiddenOnly = show === "hidden";
   const reviews = await prisma.courseReview.findMany({
@@ -49,7 +53,7 @@ export default async function AdminReviews({ searchParams }: { searchParams: Pro
                   {r.hidden && <Badge tone="warning">Hidden</Badge>}
                   <span className="text-ink-1">{r.course.title}</span>
                   <span className="text-ink-3">
-                    · {r.user.profile?.displayName ?? r.user.email}
+                    · {r.user.profile?.displayName ?? (showEmail ? r.user.email : "Member")}
                     {r.user.profile ? ` (@${r.user.profile.username})` : ""} · {fmt.format(r.updatedAt)}
                   </span>
                   <span className="ml-auto">

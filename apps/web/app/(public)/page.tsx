@@ -21,7 +21,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { cms, getSetting } from "@tycoonhood/core";
+import { cms, discussions, getSetting } from "@tycoonhood/core";
 import { Icon, ThcAmount, buttonStyles, type IconName } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../lib/auth";
 import { lessonMinutes } from "../../lib/learning";
@@ -115,7 +115,7 @@ export default async function HomePage() {
     prisma.profile.count({ where: { onboardedAt: { not: null } } }),
     prisma.certificate.count(),
     prisma.lessonProgress.count({ where: { completedAt: { not: null } } }),
-    prisma.communityPost.count({ where: { state: "VISIBLE" } }),
+    discussions.openPostCount(),
   ]);
   const on = home.sections;
 

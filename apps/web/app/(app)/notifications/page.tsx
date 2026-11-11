@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
+import { notificationLink } from "@tycoonhood/core";
 import { Icon, cn, type IconName } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
 import { Page, PageHeader, Panel } from "../../../components/app/page";
@@ -34,6 +35,9 @@ const when = (d: Date) => {
 
 /** Where a notification leads, from the data it carries. Nothing invented. */
 function hrefOf(n: { type: string; data: unknown }) {
+  // Discussions and announcements carry their page in data.href.
+  const link = notificationLink(n.data);
+  if (link) return link;
   const d = (n.data ?? {}) as { channel?: string; messageId?: string; courseId?: string; orderId?: string };
   if (n.type === "COMMUNITY" && d.channel) return `/community/${d.channel}${d.messageId ? `#m-${d.messageId}` : ""}`;
   if (n.type === "ORDER") return "/orders";

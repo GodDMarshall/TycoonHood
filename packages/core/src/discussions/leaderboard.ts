@@ -5,8 +5,12 @@
  * achievements). Nothing in discussions or chat writes XP, so the board
  * cannot be climbed by talking.
  *
- * Privacy: Profile.privacy.leaderboard. Missing means visible; `false` means the
- * member is left off the board for everyone, and sees themselves as hidden.
+ * Privacy, from Profile.privacy (a missing key means shown):
+ *   · `leaderboard: false` leaves the member off the board for everyone, and
+ *     they see themselves as hidden.
+ *   · `level: false` ("Show my level and XP") does the same, since the board
+ *     lists XP and a place in that order would give the figure away.
+ *   · `rank: false` keeps their rank name off their row.
  * Suspended members never appear.
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
@@ -35,10 +39,14 @@ export interface Leaderboard {
   viewer: { hidden: boolean; xp: number; position: number | null };
 }
 
-/** True unless the member explicitly opted out. */
-export function onLeaderboard(privacy: unknown): boolean {
+function privacyFlag(privacy: unknown, key: string): boolean {
   if (!privacy || typeof privacy !== "object" || Array.isArray(privacy)) return true;
-  return (privacy as Record<string, unknown>).leaderboard !== false;
+  return (privacy as Record<string, unknown>)[key] !== false;
+}
+
+/** True unless the member opted out of the board or hid their level and XP. */
+export function onLeaderboard(privacy: unknown): boolean {
+  return privacyFlag(privacy, "leaderboard") && privacyFlag(privacy, "level");
 }
 
 export class LeaderboardService {
@@ -57,6 +65,7 @@ export class LeaderboardService {
       WHERE u."suspendedAt" IS NULL
         AND e."createdAt" >= ${since} AND e."createdAt" < ${until}
         AND (p.privacy ->> 'leaderboard') IS DISTINCT FROM 'false'
+        AND (p.privacy ->> 'level') IS DISTINCT FROM 'false'
       GROUP BY e."userId"
       HAVING SUM(e.amount) > 0
       ORDER BY xp DESC, MAX(e."createdAt") ASC, e."userId" ASC
@@ -68,7 +77,7 @@ export class LeaderboardService {
         id: true,
         name: true,
         rank: { select: { name: true } },
-        profile: { select: { displayName: true, username: true, avatarUrl: true } },
+        profile: { select: { displayName: true, username: true, avatarUrl: true, privacy: true } },
       },
     });
     const byId = new Map(people.map((p) => [p.id, p]));
@@ -85,7 +94,7 @@ export class LeaderboardService {
         name: p?.profile?.displayName ?? p?.name ?? "Member",
         username: p?.profile?.username ?? null,
         avatarUrl: p?.profile?.avatarUrl ?? null,
-        rank: p?.rank?.name ?? null,
+        rank: privacyFlag(p?.profile?.privacy, "rank") ? p?.rank?.name ?? null : null,
         xp,
         me: t.userId === viewerId,
       });
@@ -111,6 +120,7 @@ export class LeaderboardService {
             WHERE u."suspendedAt" IS NULL
               AND e."createdAt" >= ${since} AND e."createdAt" < ${until}
               AND (p.privacy ->> 'leaderboard') IS DISTINCT FROM 'false'
+              AND (p.privacy ->> 'level') IS DISTINCT FROM 'false'
             GROUP BY e."userId"
             HAVING SUM(e.amount) > ${xp}
           ) t`;

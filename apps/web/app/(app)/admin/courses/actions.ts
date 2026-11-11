@@ -5,9 +5,9 @@
  */
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { authoring, AuthoringError, ForbiddenError, type Permission } from "@tycoonhood/core";
+import { authoring, AuthoringError, ForbiddenError, REVIEW_MODERATORS, type Permission } from "@tycoonhood/core";
 import type { UserRole } from "@tycoonhood/db";
-import { actorWith } from "../../../../lib/guard";
+import { actorWith, actorWithAny } from "../../../../lib/guard";
 import { isZodError, zodMessage } from "../../../../lib/form-errors";
 
 export interface CourseAdminState {
@@ -28,15 +28,15 @@ function refresh(courseId?: string) {
   revalidatePath("/learning");
 }
 
-/** Runs a write as a permitted actor and turns known failures into a message for the form. */
+/** Runs a write as a permitted actor (one permission, or any of a list) and turns known failures into a message for the form. */
 async function run(
-  permission: Permission,
+  permission: Permission | readonly Permission[],
   write: (actor: { id: string; role: UserRole }) => Promise<unknown>,
   ok: string,
   courseId?: string
 ): Promise<CourseAdminState> {
   try {
-    const user = await actorWith(permission);
+    const user = typeof permission === "string" ? await actorWith(permission) : await actorWithAny(...permission);
     await write({ id: user.id, role: user.role });
   } catch (e) {
     if (isZodError(e)) return { error: zodMessage(e) };
@@ -212,5 +212,5 @@ export async function deleteInstructorAction(id: string, _prev: CourseAdminState
 // ── reviews
 
 export async function setReviewHiddenAction(reviewId: string, hidden: boolean, _prev: CourseAdminState, _fd: FormData) {
-  return run("courses.author", (a) => authoring.setReviewHidden(a, reviewId, hidden), hidden ? "Hidden." : "Visible again.");
+  return run(REVIEW_MODERATORS, (a) => authoring.setReviewHidden(a, reviewId, hidden), hidden ? "Hidden." : "Visible again.");
 }

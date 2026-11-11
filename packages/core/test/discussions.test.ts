@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { prisma } from "@tycoonhood/db";
-import { DiscussionService, DiscussionError, POSTS_PER_HOUR } from "../src/discussions/discussions";
+import { DiscussionService, DiscussionError, POSTS_PER_HOUR, openPostWhere } from "../src/discussions/discussions";
 import { LeaderboardService, onLeaderboard } from "../src/discussions/leaderboard";
 import { can, isStaff } from "../src/auth/permissions";
 import { parseCriteria, windowStart, weekKey, describeCriteria } from "../src/rules/criteria";
@@ -239,6 +239,116 @@ describe("discussions", () => {
       await d.setArchived(mod, "category", c.id, false);
     }
   });
+
+  it("archived groups close to members: no reading, commenting, reacting or editing; staff keep access", async () => {
+    const [a, b, mod] = [await member(), await member(), await withRole("MODERATOR")];
+    const g = await group();
+    await d.joinGroup(a, g.id);
+    const t0 = new Date();
+    const p = await d.createPost(a, { title: "Before the archive", body: "Body", groupId: g.id }, t0);
+    const cm = await d.comment(b, p.id, "Open for now");
+    const later = new Date(t0.getTime() + 60_000); // inside the edit window
+    await d.setArchived(mod, "group", g.id, true);
+    try {
+      expect(await d.post(b, p.id)).toBeNull();
+      expect(await d.post(a, p.id)).toBeNull(); // the author too: the group is closed
+      expect((await d.listPosts(b, { groupId: g.id })).posts).toEqual([]);
+      await expect(d.comment(b, p.id, "Still here?")).rejects.toThrow(/archived/);
+      await expect(d.toggleReaction(b, { type: "post", id: p.id }, "fire")).rejects.toThrow(/archived/);
+      await expect(d.toggleReaction(a, { type: "comment", id: cm.id }, "respect")).rejects.toThrow(/archived/);
+      await expect(d.editPost(a, p.id, { title: "Edited after", body: "Body" }, later)).rejects.toThrow(/archived/);
+
+      expect((await d.post(mod, p.id))?.archived).toBe(true);
+      expect((await d.listPosts(mod, { groupId: g.id })).posts.map((x) => x.id)).toContain(p.id);
+      await expect(d.comment(mod, p.id, "Closing note")).resolves.toBeTruthy();
+      expect((await d.toggleReaction(mod, { type: "post", id: p.id }, "respect")).on).toBe(true);
+    } finally {
+      await d.setArchived(mod, "group", g.id, false);
+    }
+    // Restored, the same member can comment again: it was the archive that refused.
+    expect((await d.post(b, p.id))?.archived).toBe(false);
+    await expect(d.comment(b, p.id, "Back again")).resolves.toBeTruthy();
+  });
+
+  it("archived categories stay readable, but members cannot comment, react or edit there", async () => {
+    const [a, b, mod] = [await member(), await member(), await withRole("MODERATOR")];
+    const c = await category();
+    const t0 = new Date();
+    const later = new Date(t0.getTime() + 60_000); // inside the edit window
+    const p = await d.createPost(a, { title: "Read-only soon", body: "Body", categoryId: c.id }, t0);
+    const cm = await d.comment(b, p.id, "Before the archive");
+    expect((await d.post(a, p.id, later))?.editableUntil).not.toBeNull();
+    await d.setArchived(mod, "category", c.id, true);
+    try {
+      const view = await d.post(b, p.id);
+      expect(view?.archived).toBe(true);
+      expect(view?.comments.map((x) => x.body)).toEqual(["Before the archive"]);
+      expect((await d.post(a, p.id, later))?.editableUntil).toBeNull();
+      await expect(d.comment(b, p.id, "After the archive")).rejects.toThrow(/archived/);
+      await expect(d.toggleReaction(b, { type: "post", id: p.id }, "insight")).rejects.toThrow(/archived/);
+      await expect(d.toggleReaction(a, { type: "comment", id: cm.id }, "insight")).rejects.toThrow(/archived/);
+      await expect(d.editPost(a, p.id, { title: "Edited after", body: "Body" }, later)).rejects.toThrow(/archived/);
+      await expect(d.comment(mod, p.id, "Staff note")).resolves.toBeTruthy();
+    } finally {
+      await d.setArchived(mod, "category", c.id, false);
+    }
+    await expect(d.comment(b, p.id, "Open again")).resolves.toBeTruthy();
+  });
+
+  it("posts in archived groups and categories leave Today's feed and the public counts", async () => {
+    const [a, mod] = [await member(), await withRole("MODERATOR")];
+    const c = await category();
+    const g = await group();
+    await d.joinGroup(a, g.id);
+    const ids = [
+      (await d.createPost(a, { title: "Category post", body: "Body", categoryId: c.id })).id,
+      (await d.createPost(a, { title: "Group post", body: "Body", groupId: g.id })).id,
+    ].sort();
+    // The same filter Today's community card uses.
+    const onToday = async () =>
+      (await prisma.communityPost.findMany({ where: { AND: [openPostWhere(await d.archived()), { id: { in: ids } }] }, select: { id: true } }))
+        .map((x) => x.id)
+        .sort();
+    expect(await onToday()).toEqual(ids);
+    const before = await d.publicCounts();
+    const openBefore = await d.openPostCount();
+    expect(openBefore).toBe(before.discussions);
+
+    await d.setArchived(mod, "category", c.id, true);
+    await d.setArchived(mod, "group", g.id, true);
+    try {
+      expect(await onToday()).toEqual([]);
+      const after = await d.publicCounts();
+      expect(after).toEqual({ discussions: before.discussions - 2, groups: before.groups - 1, categories: before.categories - 1 });
+      expect(await d.openPostCount()).toBe(openBefore - 2);
+    } finally {
+      await d.setArchived(mod, "category", c.id, false);
+      await d.setArchived(mod, "group", g.id, false);
+    }
+    expect(await onToday()).toEqual(ids);
+  });
+
+  it("hiding or removing a comment clears its text from the post author's notification", async () => {
+    const [a, b, mod] = [await member(), await member(), await withRole("MODERATOR")];
+    const c = await category();
+    const p = await d.createPost(a, { title: "Notify me", body: "Body", categoryId: c.id });
+    const removed = await d.comment(b, p.id, "Something rude about you");
+    const hidden = await d.comment(b, p.id, "Something to hide");
+    const deleted = await d.comment(b, p.id, "Something I regret");
+    const kept = await d.comment(b, p.id, "Something fine");
+    const noteFor = (commentId: string) =>
+      prisma.notification.findFirstOrThrow({ where: { userId: a.id, type: "COMMUNITY", data: { path: ["commentId"], equals: commentId } } });
+    expect((await noteFor(removed.id)).body).toBe("Something rude about you");
+
+    await d.moderate(mod, { type: "comment", id: removed.id }, "REMOVED");
+    await d.moderate(mod, { type: "comment", id: hidden.id }, "HIDDEN");
+    await d.deleteComment(b, deleted.id);
+
+    for (const cm of [removed, hidden, deleted]) expect((await noteFor(cm.id)).body).toBeNull();
+    expect((await noteFor(kept.id)).body).toBe("Something fine");
+    // The title names the post, not the comment, and the link still leads to the post.
+    expect((await noteFor(removed.id)).title).toContain("commented on");
+  });
 });
 
 describe("leaderboard", () => {
@@ -274,8 +384,11 @@ describe("leaderboard", () => {
 
   it("all-time sums every event; privacy default is visible", async () => {
     expect(onLeaderboard(null)).toBe(true);
-    expect(onLeaderboard({ level: false })).toBe(true);
+    expect(onLeaderboard({ rank: false })).toBe(true);
     expect(onLeaderboard({ leaderboard: false })).toBe(false);
+    // The board lists XP, so hiding level and XP keeps a member off it too.
+    expect(onLeaderboard({ level: false })).toBe(false);
+    expect(onLeaderboard({ level: false, leaderboard: true })).toBe(false);
     const a = await member();
     await xp(a.id, 7, new Date("2001-01-01T00:00:00Z"));
     await xp(a.id, 5, new Date());
@@ -283,6 +396,34 @@ describe("leaderboard", () => {
     expect(board.viewer.xp).toBe(12);
     expect(board.viewer.position).toBeGreaterThan(0);
     await prisma.xpEvent.deleteMany({ where: { userId: a.id } });
+  });
+
+  it("leaves off members who hid their level and XP, and drops a hidden rank from a row", async () => {
+    const [viewer, noXp, noRank] = [await member(), await member(), await member()];
+    const rank = await prisma.rankDefinition.findFirstOrThrow({ orderBy: { sortOrder: "asc" } });
+    await prisma.user.updateMany({ where: { id: { in: [viewer.id, noXp.id, noRank.id] } }, data: { rankId: rank.id } });
+    await prisma.profile.update({ where: { userId: noXp.id }, data: { privacy: { level: false, rank: false, leaderboard: true } } });
+    await prisma.profile.update({ where: { userId: noRank.id }, data: { privacy: { level: true, rank: false, leaderboard: true } } });
+    try {
+      await xp(viewer.id, 200, new Date(monday.getTime() + 3_600_000));
+      await xp(noXp.id, 400, new Date(monday.getTime() + 3_600_000));
+      await xp(noRank.id, 600, new Date(monday.getTime() + 3_600_000));
+
+      for (const period of ["week", "all"] as const) {
+        const board = await lb.board(viewer.id, period, now, 200);
+        expect(board.rows.map((r) => r.userId)).not.toContain(noXp.id);
+        expect(board.rows.find((r) => r.userId === noRank.id)).toMatchObject({ xp: 600, rank: null });
+        const me = board.rows.find((r) => r.userId === viewer.id);
+        expect(me?.rank).toBe(rank.name);
+        // The hidden member does not count ahead of anyone either.
+        expect(board.viewer.position).toBe(me?.position);
+      }
+
+      const own = await lb.board(noXp.id, "week", now);
+      expect(own.viewer).toEqual({ hidden: true, xp: 400, position: null });
+    } finally {
+      await prisma.xpEvent.deleteMany({ where: { userId: { in: [viewer.id, noXp.id, noRank.id] } } });
+    }
   });
 });
 

@@ -16,6 +16,7 @@ export {
   COMMENTS_PER_HOUR,
   POSTS_PAGE_SIZE,
   ARCHIVE_SETTING,
+  openPostWhere,
 } from "./discussions";
 export type {
   DiscussionViewer,

@@ -94,6 +94,8 @@ export interface PostDetail extends Omit<PostSummary, "excerpt"> {
   myReactions: ReactionKind[];
   comments: CommentView[];
   reported: boolean;
+  /** In an archived group or category: read-only for members. */
+  archived: boolean;
 }
 
 const authorSelect = {
@@ -144,6 +146,27 @@ function visibleWhere(viewer: DiscussionViewer): Prisma.CommunityPostWhereInput 
   return { OR: [{ state: "VISIBLE" }, { state: "HIDDEN", authorId: viewer.id }] };
 }
 
+type ArchiveSets = { categories: string[]; groups: string[] };
+
+/** Visible posts outside archived groups and categories: what Today and public counts show. */
+export function openPostWhere(arch: ArchiveSets): Prisma.CommunityPostWhereInput {
+  return {
+    AND: [
+      { state: "VISIBLE" },
+      arch.groups.length ? { OR: [{ groupId: null }, { groupId: { notIn: arch.groups } }] } : {},
+      arch.categories.length ? { OR: [{ categoryId: null }, { categoryId: { notIn: arch.categories } }] } : {},
+    ],
+  };
+}
+
+function inArchivedGroup(arch: ArchiveSets, p: { groupId: string | null }) {
+  return !!p.groupId && arch.groups.includes(p.groupId);
+}
+
+function inArchive(arch: ArchiveSets, p: { groupId: string | null; categoryId: string | null }) {
+  return inArchivedGroup(arch, p) || (!!p.categoryId && arch.categories.includes(p.categoryId));
+}
+
 export class DiscussionService {
   private audit: AuditService;
   constructor(private readonly db: PrismaClient = defaultPrisma) {
@@ -182,6 +205,12 @@ export class DiscussionService {
 
   private assertStaff(viewer: DiscussionViewer) {
     if (!isStaff(viewer)) throw new DiscussionError("Only community staff can do that.");
+  }
+
+  /** An archived group or category is closed to members' writing; staff can still answer. */
+  private async assertOpen(viewer: DiscussionViewer, p: { groupId: string | null; categoryId: string | null }) {
+    if (isStaff(viewer)) return;
+    if (inArchive(await this.archived(), p)) throw new DiscussionError("This discussion is archived.");
   }
 
   // ─────────────────────────────── categories
@@ -324,6 +353,8 @@ export class DiscussionService {
     const pageSize = Math.min(Math.max(opts.pageSize ?? POSTS_PAGE_SIZE, 1), 50);
     const page = Math.max(1, Math.floor(opts.page ?? 1));
     const arch = await this.archived();
+    // Archived groups are readable by staff only, as in group().
+    if (opts.groupId && !isStaff(viewer) && arch.groups.includes(opts.groupId)) return { posts: [], total: 0, page, pages: 1 };
     const where: Prisma.CommunityPostWhereInput = {
       AND: [
         visibleWhere(viewer),
@@ -388,7 +419,8 @@ export class DiscussionService {
     return { counts, mine };
   }
 
-  /** A post with its comments, if this viewer may see it. Null otherwise — callers 404. */
+  /** A post with its comments, if this viewer may see it. Null otherwise — callers 404.
+   *  A post in an archived group is staff-only; one in an archived category stays readable. */
   async post(viewer: DiscussionViewer, postId: string, now = new Date()): Promise<PostDetail | null> {
     const p = await this.db.communityPost.findUnique({
       where: { id: postId },
@@ -401,6 +433,9 @@ export class DiscussionService {
     });
     if (!p || !canSee(viewer, p)) return null;
     const staff = isStaff(viewer);
+    const arch = await this.archived();
+    if (!staff && inArchivedGroup(arch, p)) return null;
+    const archived = inArchive(arch, p);
     const comments = p.comments.filter((c) => c.state === "VISIBLE" || staff || (c.state === "HIDDEN" && c.authorId === viewer.id));
     const keys = [`post:${p.id}`, ...comments.map((c) => `comment:${c.id}`)];
     const [{ counts, mine }, reported] = await Promise.all([
@@ -425,10 +460,12 @@ export class DiscussionService {
       author: authorView(p.author),
       category: p.category,
       group: p.group,
-      editableUntil: p.authorId === viewer.id && p.state !== "REMOVED" && now.getTime() < editDeadline ? new Date(editDeadline).toISOString() : null,
+      editableUntil:
+        p.authorId === viewer.id && p.state !== "REMOVED" && (staff || !archived) && now.getTime() < editDeadline ? new Date(editDeadline).toISOString() : null,
       reactions: counts.get(`post:${p.id}`) ?? emptyReactions(),
       myReactions: mine.get(`post:${p.id}`) ?? [],
       reported: !!reported,
+      archived,
       comments: comments.map((c) => ({
         id: c.id,
         // A removed comment keeps its place in the thread; only staff read it.
@@ -513,11 +550,15 @@ export class DiscussionService {
   }
 
   async editPost(viewer: DiscussionViewer, postId: string, input: { title: string; body: string }, now = new Date()) {
-    const p = await this.db.communityPost.findUnique({ where: { id: postId }, select: { id: true, authorId: true, state: true, createdAt: true } });
+    const p = await this.db.communityPost.findUnique({
+      where: { id: postId },
+      select: { id: true, authorId: true, state: true, createdAt: true, groupId: true, categoryId: true },
+    });
     if (!p || p.authorId !== viewer.id || p.state === "REMOVED") throw new DiscussionError("You can only edit your own posts.");
     if (now.getTime() > p.createdAt.getTime() + EDIT_WINDOW_MIN * 60_000) {
       throw new DiscussionError(`Posts can be edited for ${EDIT_WINDOW_MIN} minutes. Add a comment instead.`);
     }
+    await this.assertOpen(viewer, p);
     await this.assertCanWrite(viewer, now);
     const title = this.cleanTitle(input.title ?? "");
     const body = this.cleanBody(input.body ?? "", POST_BODY_MAX);
@@ -537,11 +578,12 @@ export class DiscussionService {
     const body = this.cleanBody(rawBody ?? "", COMMENT_MAX);
     const p = await this.db.communityPost.findUnique({
       where: { id: postId },
-      select: { id: true, authorId: true, state: true, locked: true, title: true },
+      select: { id: true, authorId: true, state: true, locked: true, title: true, groupId: true, categoryId: true },
     });
     const staff = isStaff(viewer);
     if (!p || (p.state !== "VISIBLE" && !staff)) throw new DiscussionError("That post no longer exists.");
     if (p.locked && !staff) throw new DiscussionError("This discussion is locked. Staff closed it to new comments.");
+    await this.assertOpen(viewer, p);
     if (!staff) {
       const recent = await this.db.communityComment.count({ where: { authorId: viewer.id, createdAt: { gt: new Date(now.getTime() - HOUR) } } });
       if (recent >= COMMENTS_PER_HOUR) throw new DiscussionError(`You can comment ${COMMENTS_PER_HOUR} times an hour. Take a breath and come back.`);
@@ -572,13 +614,23 @@ export class DiscussionService {
     await this.setCommentState(c, "REMOVED");
   }
 
-  /** Change a comment's state and keep the post's visible-comment counter true. */
+  /** Change a comment's state and keep the post's visible-comment counter true. A hidden
+   *  or removed comment's text also leaves the notification its post's author got for it. */
   private async setCommentState(c: { id: string; state: ModerationState; postId: string }, state: ModerationState) {
     if (c.state === state) return;
     const delta = (state === "VISIBLE" ? 1 : 0) - (c.state === "VISIBLE" ? 1 : 0);
     await this.db.$transaction(async (tx) => {
       await tx.communityComment.update({ where: { id: c.id }, data: { state } });
       if (delta !== 0) await tx.communityPost.update({ where: { id: c.postId }, data: { commentCount: { increment: delta } } });
+      if (state !== "VISIBLE") {
+        const post = await tx.communityPost.findUnique({ where: { id: c.postId }, select: { authorId: true } });
+        if (post) {
+          await tx.notification.updateMany({
+            where: { userId: post.authorId, type: "COMMUNITY", data: { path: ["commentId"], equals: c.id } },
+            data: { body: null },
+          });
+        }
+      }
     });
   }
 
@@ -590,22 +642,29 @@ export class DiscussionService {
     let postId: string;
     let authorId: string;
     let postTitle: string;
+    let place: { groupId: string | null; categoryId: string | null };
     if (target.type === "post") {
-      const p = await this.db.communityPost.findUnique({ where: { id: target.id }, select: { id: true, authorId: true, state: true, title: true } });
+      const p = await this.db.communityPost.findUnique({
+        where: { id: target.id },
+        select: { id: true, authorId: true, state: true, title: true, groupId: true, categoryId: true },
+      });
       if (!p || p.state !== "VISIBLE") throw new DiscussionError("That post no longer exists.");
       postId = p.id;
       authorId = p.authorId;
       postTitle = p.title;
+      place = p;
     } else {
       const c = await this.db.communityComment.findUnique({
         where: { id: target.id },
-        select: { id: true, authorId: true, state: true, post: { select: { id: true, state: true, title: true } } },
+        select: { id: true, authorId: true, state: true, post: { select: { id: true, state: true, title: true, groupId: true, categoryId: true } } },
       });
       if (!c || c.state !== "VISIBLE" || c.post.state !== "VISIBLE") throw new DiscussionError("That comment no longer exists.");
       postId = c.post.id;
       authorId = c.authorId;
       postTitle = c.post.title;
+      place = c.post;
     }
+    await this.assertOpen(viewer, place);
     if (authorId === viewer.id) throw new DiscussionError("You cannot react to your own writing.");
 
     const targetKey = `${target.type}:${target.id}`;
@@ -789,15 +848,20 @@ export class DiscussionService {
 
   // ─────────────────────────────── public counts
 
-  /** Real counts for the public Community page. */
+  /** Real counts for the public Community page. Archived groups and categories, and their posts, are left out. */
   async publicCounts() {
     const arch = await this.archived();
     const [discussions, groups, categories] = await Promise.all([
-      this.db.communityPost.count({ where: { state: "VISIBLE" } }),
+      this.db.communityPost.count({ where: openPostWhere(arch) }),
       this.db.communityGroup.count({ where: { id: { notIn: arch.groups } } }),
       this.db.communityCategory.count({ where: { id: { notIn: arch.categories } } }),
     ]);
     return { discussions, groups, categories };
+  }
+
+  /** Visible posts outside archived groups and categories, for the home page figure. */
+  async openPostCount() {
+    return this.db.communityPost.count({ where: openPostWhere(await this.archived()) });
   }
 }
 

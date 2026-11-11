@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { community } from "@tycoonhood/core";
+import { community, liftRefusal } from "@tycoonhood/core";
 import { Badge, Button, Input, Label, Select, Textarea } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../lib/guard";
 import { DiscussionsAdmin } from "./discussions-admin";
@@ -118,11 +118,15 @@ export default async function AdminCommunity() {
                         {m.reason ? ` · ${m.reason}` : ""}
                       </span>
                     </span>
-                    <form action={unmuteAction.bind(null, m.userId)}>
-                      <Button type="submit" size="sm" variant="ghost">
-                        Lift
-                      </Button>
-                    </form>
+                    {liftRefusal(user, m) === null ? (
+                      <form action={unmuteAction.bind(null, m.userId)}>
+                        <Button type="submit" size="sm" variant="ghost">
+                          Lift
+                        </Button>
+                      </form>
+                    ) : (
+                      <span className="text-[12.5px] text-ink-3">{m.userId === user.id ? "Your mute" : "Set by an admin"}</span>
+                    )}
                   </li>
                 ))}
               </ul>
