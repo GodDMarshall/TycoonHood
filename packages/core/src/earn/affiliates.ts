@@ -530,6 +530,10 @@ export class AffiliateService implements EarnHooks {
       const c = await tx.commission.findUnique({ where: { id: commissionId }, include: { order: true, affiliate: true } });
       if (!c) throw new EarnError("Commission not found.");
       if (c.status !== "PENDING") throw new InvalidStateError(`This commission is ${c.status.toLowerCase()}.`);
+      // A test-mode payment (sandbox, or Razorpay test keys) moved no money, so
+      // there is nothing to share. The flag set at creation is not enough on its own.
+      const testPaid = await tx.payment.count({ where: { orderId: c.orderId, mode: "TEST", status: { in: ["CAPTURED", "REFUNDED"] } } });
+      if (testPaid > 0) throw new InvalidStateError("This order was paid in test mode, so no real money was charged. Reject this commission instead.");
       if (this.now() < c.holdUntil) throw new HoldPeriodError(c.holdUntil);
       if (c.order.status !== "PAID" && c.order.status !== "FULFILLED") {
         throw new InvalidStateError(`The order is ${c.order.status.toLowerCase()}, so this commission cannot be approved.`);

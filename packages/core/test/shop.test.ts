@@ -5,7 +5,7 @@ import {
   CartService, CouponService, ShopCheckoutService, RefundService, RazorpayProvider, SandboxProvider,
   cartTotals, discountFor, checkCouponRules, verifyCheckoutSignature, verifyWebhookSignature,
   setEarnHooks, orderTimeline, refundBlocker, paymentsStatus, activeShopProvider, CartError, CouponError,
-  PaymentVerificationError,
+  PaymentVerificationError, paymentsStatusFor, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly,
 } from "../src/shop";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
 import { TEST_REFUND_NOTE } from "../src/shop/refunds";
@@ -364,6 +364,89 @@ describe("Shop — INR rail (sandbox)", () => {
     // Razorpay test keys are TEST (out of revenue); live keys are LIVE.
     expect(paymentsStatus({ RAZORPAY_KEY_ID: "rzp_test_abc", RAZORPAY_KEY_SECRET: "s" }).mode).toBe("TEST");
     expect(paymentsStatus({ RAZORPAY_KEY_ID: "rzp_live_abc", RAZORPAY_KEY_SECRET: "s" }).mode).toBe("LIVE");
+  });
+});
+
+describe("Shop — Razorpay test keys in production are staff-only", () => {
+  const keys = { RAZORPAY_KEY_ID: "rzp_test_abc", RAZORPAY_KEY_SECRET: "s" };
+  const prodTest = { NODE_ENV: "production", ...keys };
+  const prodLive = { NODE_ENV: "production", RAZORPAY_KEY_ID: "rzp_live_abc", RAZORPAY_KEY_SECRET: "s" };
+  const devTest = { NODE_ENV: "development", ...keys };
+  const member = { role: "MEMBER" as const };
+  const admin = { role: "ADMIN" as const };
+
+  it("offers the rail only to staff with admin.commerce, and tells members plainly", () => {
+    expect(razorpayStaffOnly(prodTest)).toBe(true);
+    expect(razorpayStaffOnly(prodLive)).toBe(false);
+    expect(razorpayStaffOnly(devTest)).toBe(false);
+    for (const viewer of [null, member, { role: "STUDENT" as const }, { role: "INSTRUCTOR" as const }, { role: "MODERATOR" as const }]) {
+      expect(razorpayOpenTo(viewer, prodTest)).toBe(false);
+      expect(activeShopProvider(prodTest, viewer)).toBeNull();
+      expect(paymentsStatusFor(viewer, prodTest)).toMatchObject({ provider: null, mode: null, staffOnly: true });
+      expect(paymentsStatusFor(viewer, prodTest).summary).toBe("Card payments are not available yet. You can still pay with THC.");
+    }
+    expect(razorpayOpenTo(admin, prodTest)).toBe(true);
+    expect(activeShopProvider(prodTest, admin)).toMatchObject({ name: "razorpay", mode: "TEST" });
+    expect(paymentsStatusFor(admin, prodTest)).toMatchObject({ provider: "razorpay", mode: "TEST", staffOnly: true });
+    expect(paymentsStatus(prodTest).summary).toMatch(/only staff with commerce access see card checkout/);
+
+    // Live keys in production, test keys outside it, and the dev sandbox are unchanged.
+    for (const env of [prodLive, devTest]) {
+      expect(activeShopProvider(env, member)?.name).toBe("razorpay");
+      expect(paymentsStatusFor(member, env)).toMatchObject({ provider: "razorpay", staffOnly: false });
+    }
+    expect(activeShopProvider({ DEV_MODE: "true", NODE_ENV: "development" }, member)?.name).toBe("sandbox");
+    expect(paymentsStatusFor(member, { DEV_MODE: "true", NODE_ENV: "development" }).provider).toBe("sandbox");
+  });
+
+  it("startInrCheckout refuses members on the server with the default wiring; staff still get a test order", async () => {
+    const urls: string[] = [];
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("RAZORPAY_KEY_ID", "rzp_test_staffonly");
+    vi.stubEnv("RAZORPAY_KEY_SECRET", KEY_SECRET);
+    vi.stubGlobal("fetch", async (url: string, init: { body?: string }) => {
+      urls.push(url);
+      const body = init.body ? JSON.parse(init.body) : {};
+      return { ok: true, status: 200, json: async () => ({ id: `order_${uid().slice(0, 12)}`, ...body }), text: async () => "" };
+    });
+    try {
+      const svc = new ShopCheckoutService(prisma); // provider: activeShopProvider(process.env, buyer)
+      const p = await product({ kind: "DIGITAL", inventory: null, inr: 10_000 });
+      for (const role of ["MEMBER", "INSTRUCTOR"] as const) {
+        const u = await prisma.user.update({ where: { id: (await createTestUser()).id }, data: { role } });
+        await cart.add(u.id, p.id);
+        await expect(svc.startInrCheckout(u.id)).rejects.toThrow("Card payments are not available right now. You can still pay with THC.");
+        expect(await prisma.order.count({ where: { userId: u.id } })).toBe(0);
+        expect(await cart.count(u.id)).toBe(1);
+      }
+      expect(urls).toHaveLength(0);
+
+      const staff = await prisma.user.update({ where: { id: (await createTestUser()).id }, data: { role: "ADMIN" } });
+      await cart.add(staff.id, p.id);
+      const { order, payment } = await svc.startInrCheckout(staff.id);
+      expect(order.paymentProvider).toBe("razorpay");
+      expect(payment).toMatchObject({ provider: "razorpay", mode: "TEST" });
+      expect(urls).toEqual(["https://api.razorpay.com/v1/orders"]);
+    } finally {
+      vi.unstubAllEnvs();
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("preflight warns about test keys in production and a missing webhook secret, and fails on half a key pair", () => {
+    expect(razorpayPreflight({ NODE_ENV: "production" })).toEqual([]);
+    expect(razorpayPreflight({ NODE_ENV: "production", RAZORPAY_KEY_ID: "rzp_live_abc" })).toEqual([
+      { level: "FAIL", label: "Razorpay has both keys", detail: "RAZORPAY_KEY_SECRET is missing, so card checkout is off" },
+    ]);
+    expect(razorpayPreflight({ NODE_ENV: "production", RAZORPAY_KEY_SECRET: "s" })[0]).toMatchObject({ level: "FAIL", detail: expect.stringMatching(/^RAZORPAY_KEY_ID is missing/) });
+
+    const [testKeys, noWebhook] = razorpayPreflight(prodTest);
+    expect(testKeys).toMatchObject({ level: "WARN", label: "Razorpay uses live keys" });
+    expect(testKeys.detail).toMatch(/only staff with commerce access/);
+    expect(noWebhook).toMatchObject({ level: "WARN", label: "the Razorpay webhook is configured" });
+
+    expect(razorpayPreflight({ ...prodLive, RAZORPAY_WEBHOOK_SECRET: "w" }).map((r) => r.level)).toEqual(["OK", "OK"]);
+    expect(razorpayPreflight({ ...devTest, RAZORPAY_WEBHOOK_SECRET: "w" })[0]).toMatchObject({ level: "OK", label: "Razorpay test keys" });
   });
 });
 

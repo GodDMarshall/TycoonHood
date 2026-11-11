@@ -125,6 +125,11 @@ const isProd = process.env.NODE_ENV === "production";
     add("WARN", A, "card payments are configured",
       "no Stripe key: the card rail is hidden and only THC checkout works. Fine if that is the plan.");
   }
+
+  // The shop's rupee rail. Test keys in production are refused to members in
+  // code, but they still mean no real money comes in, so say so.
+  const { razorpayPreflight } = await import("../src/index");
+  for (const r of razorpayPreflight()) add(r.level, A, r.label, r.detail);
 }
 
 // ─────────────────────────────────────────────── 4. DATABASE

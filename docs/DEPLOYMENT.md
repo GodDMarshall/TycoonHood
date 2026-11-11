@@ -16,7 +16,7 @@
 | `NEXT_PUBLIC_SITE_URL` | yes | e.g. `https://tycoonhood.com`; used in emails, certificates and affiliate links |
 | `RESEND_API_KEY`, `MAIL_FROM` | yes for launch | Without them, verification and reset emails are not sent in production |
 | `AFFILIATE_HASH_SECRET` | yes | A long random string; salts the click hashes |
-| `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for card payments | `rzp_test_…` gives test mode; `rzp_live_…` gives real money |
+| `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for card payments | `rzp_test_…` gives test mode; `rzp_live_…` gives real money. In production, test keys offer card checkout to admins only |
 | `RAZORPAY_WEBHOOK_SECRET` | strongly recommended | Lets the webhook confirm payments if the browser closes |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin |
 | `COOKIE_DOMAIN` | optional | Only if you serve several subdomains |
@@ -42,12 +42,17 @@ Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are 
 ## Turning on Razorpay
 
 1. In the Razorpay dashboard, go to Settings → API Keys and generate **test** keys first.
-2. Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`, then redeploy. Checkout shows a "test mode" banner, and payments are recorded as TEST, excluded from revenue, with any commission flagged "do not pay out".
+2. Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`, then redeploy. If you can, do this test run on a preview or staging deployment rather than the public site.
+   - Test payments move no money. So on any production build (`next build` and `next start`, which includes Vercel previews), card checkout is offered **only to admins**. Members see "Card payments are not available yet" and can still pay with THC. The server enforces this when an order is started, not just the page.
+   - Checkout shows a "test mode" banner. Payments are recorded as TEST and excluded from revenue. A commission on a test order is flagged "do not pay out" and cannot be approved.
+   - `pnpm preflight` warns while test keys are set in production.
+   - On a local `next dev` run, test keys work for every account, as before.
 3. In the Razorpay dashboard, go to Settings → Webhooks and add `https://<your-domain>/api/webhooks/razorpay`.
    - Events: `payment.captured`, `payment.failed`, `order.paid`, `refund.processed`.
    - Choose a secret and set the same value as `RAZORPAY_WEBHOOK_SECRET`.
-4. Buy something with a Razorpay test card. Check that the order shows Paid in `/admin/orders`, then refund it from `/admin/refunds`.
-5. When KYC is approved, swap in the `rzp_live_…` keys and the live webhook secret. Real money flows from then on.
+4. Signed in as an admin, buy something with a Razorpay test card. Check that the order shows Paid in `/admin/orders`, then refund it from `/admin/refunds`.
+5. When KYC is approved, swap in the `rzp_live_…` keys and the live webhook secret. From then on every member sees card checkout, and real money flows.
+   - A test payment taken before the swap can still be refunded from `/admin/refunds`. It is marked refunded without calling Razorpay, because no money moved.
 
 ## Before launch
 

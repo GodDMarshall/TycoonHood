@@ -102,7 +102,7 @@ export default async function AdminOrders({
         </CardContent></Card>
         <Card><CardContent className="py-4">
           <p className="text-[12px] text-ink-3">Card rail</p>
-          <p className="mt-1 text-[15px]">{pay.provider === "razorpay" ? "Razorpay · live" : pay.provider === "sandbox" ? "Sandbox · test" : "Off"}</p>
+          <p className="mt-1 text-[15px]">{pay.provider === "razorpay" ? (pay.mode === "LIVE" ? "Razorpay · live" : pay.staffOnly ? "Razorpay · test, staff only" : "Razorpay · test") : pay.provider === "sandbox" ? "Sandbox · test" : "Off"}</p>
           <p className="text-[12px] text-ink-3">{pay.summary}</p>
         </CardContent></Card>
       </div>

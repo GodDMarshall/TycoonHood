@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { LedgerService, paymentsStatus, shopCheckout } from "@tycoonhood/core";
+import { LedgerService, paymentsStatusFor, shopCheckout } from "@tycoonhood/core";
 import { buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
@@ -24,7 +24,9 @@ export default async function CheckoutPage() {
   const { lines, totals } = quote;
   if (lines.length === 0) redirect("/cart");
 
-  const pay = paymentsStatus();
+  // As this member sees it: with Razorpay test keys in production, only staff
+  // with admin.commerce get the rupee rail. startInrCheckout checks it again.
+  const pay = paymentsStatusFor(user);
   const wallet = await ledger.ensureUserAccount(user.id);
   const balance = await ledger.getBalance(wallet.id);
   const blocked = lines.find((l) => l.problem);

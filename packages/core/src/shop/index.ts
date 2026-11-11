@@ -18,8 +18,8 @@ export { RefundService, refunds, refundBlocker, REFUND_WINDOW_DAYS, REFUND_REASO
 export { orderTimeline, isTestOrder, ShopStatsService, shopStats } from "./tracking";
 export type { TimelineStep, TimelineState, TimelineOrder } from "./tracking";
 export {
-  activeShopProvider, paymentsStatus, razorpayConfigured, sandboxAllowed,
+  activeShopProvider, paymentsStatus, paymentsStatusFor, razorpayConfigured, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly, sandboxAllowed,
   RazorpayProvider, razorpayFromEnv, verifyCheckoutSignature, verifyWebhookSignature,
   SandboxProvider, sandboxProvider,
 } from "./payments";
-export type { ShopPaymentProvider, PaymentMode, PaymentsStatus, RazorpayWebhookEvent } from "./payments";
+export type { ShopPaymentProvider, PaymentMode, PaymentsStatus, RailCheck, RazorpayWebhookEvent } from "./payments";

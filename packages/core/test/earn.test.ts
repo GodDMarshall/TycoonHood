@@ -218,6 +218,40 @@ describe("commissions", () => {
     expect(await prisma.auditLog.count({ where: { action: "commission.approve", targetId: c.id } })).toBe(1);
   });
 
+  it("refuses to approve a commission on an order paid in test mode", async () => {
+    const aff = await approvedAffiliate();
+    const buyer = await createTestUser();
+    await prisma.user.update({ where: { id: buyer.id }, data: { createdAt: new Date(Date.now() - 30 * DAY) } });
+    const afterHold = new AffiliateService(prisma, () => new Date(Date.now() + AFFILIATE_HOLD_DAYS * DAY + 60_000));
+    const withPayment = async (mode: "TEST" | "LIVE", provider = "razorpay") => {
+      const order = await paidOrder(buyer.id, aff.profile.code, 100_000);
+      await prisma.payment.create({
+        data: { orderId: order.id, provider, mode, status: "CAPTURED", providerOrderId: `order_${uid()}`, amountCents: 100_000, currency: "INR" },
+      });
+      await earn.onOrderPaid(order.id);
+      return prisma.commission.findUniqueOrThrow({ where: { orderId: order.id } });
+    };
+
+    // Razorpay test keys, the sandbox, and a test payment later marked refunded.
+    const rzpTest = await withPayment("TEST");
+    const sandbox = await withPayment("TEST", "sandbox");
+    const refunded = await withPayment("TEST");
+    await prisma.payment.updateMany({ where: { orderId: refunded.orderId }, data: { status: "REFUNDED" } });
+    for (const c of [rzpTest, sandbox, refunded]) {
+      expect(c.reason).toMatch(/test-mode payment/);
+      await expect(afterHold.approveCommission(admin.id, c.id)).rejects.toThrow(/paid in test mode/);
+      expect((await prisma.commission.findUniqueOrThrow({ where: { id: c.id } })).status).toBe("PENDING");
+    }
+    expect(await prisma.auditLog.count({ where: { action: "commission.approve", targetId: { in: [rzpTest.id, sandbox.id, refunded.id] } } })).toBe(0);
+    // It can still be rejected, which is what the message asks for.
+    expect((await earn.rejectCommission(admin.id, rzpTest.id, "Test-mode order")).status).toBe("REJECTED");
+
+    // A live payment is approved as before.
+    const live = await withPayment("LIVE");
+    expect(live.reason).toBeNull();
+    expect((await afterHold.approveCommission(admin.id, live.id)).status).toBe("APPROVED");
+  });
+
   it("rejection needs a reason the member can see", async () => {
     const aff = await approvedAffiliate();
     const buyer = await createTestUser();

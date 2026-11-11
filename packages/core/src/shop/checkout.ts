@@ -21,6 +21,7 @@
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient, Prisma } from "@tycoonhood/db";
+import type { HasRole } from "../auth/permissions";
 import { CommerceService, requireShipping, type ShippingInput } from "../commerce/commerce";
 import { LedgerService, InsufficientFundsError } from "../ledger/ledger";
 import { AuditService } from "../platform/audit";
@@ -37,8 +38,12 @@ import { verifyWebhookSignature } from "./payments/razorpay";
 export const PENDING_TTL_MINUTES = 30;
 
 export interface ShopCheckoutOptions {
-  /** The provider new orders go to. Defaults to activeShopProvider(). */
-  provider?: () => ShopPaymentProvider | null;
+  /**
+   * The provider this buyer's new orders go to. Defaults to
+   * activeShopProvider(process.env, buyer), which keeps Razorpay test keys in
+   * production for staff with admin.commerce.
+   */
+  provider?: (buyer: HasRole) => ShopPaymentProvider | null;
   /** Looks a provider up by the name on a Payment row (refunds, verification). */
   providerFor?: (name: string) => ShopPaymentProvider | null;
   /** Whether the sandbox may capture. Defaults to sandboxAllowed() — false in production. */
@@ -75,7 +80,7 @@ export class ShopCheckoutService {
   private cart: CartService;
   private coupons: CouponService;
   private audit: AuditService;
-  private provider: () => ShopPaymentProvider | null;
+  private provider: (buyer: HasRole) => ShopPaymentProvider | null;
   private providerFor: (name: string) => ShopPaymentProvider | null;
   private sandboxEnabled: () => boolean;
 
@@ -85,7 +90,7 @@ export class ShopCheckoutService {
     this.cart = new CartService(db);
     this.coupons = new CouponService(db);
     this.audit = new AuditService(db);
-    this.provider = opts.provider ?? (() => activeShopProvider());
+    this.provider = opts.provider ?? ((buyer) => activeShopProvider(process.env, buyer));
     this.providerFor = opts.providerFor ?? defaultProviderFor;
     this.sandboxEnabled = opts.sandboxEnabled ?? (() => sandboxAllowed());
   }
@@ -204,8 +209,11 @@ export class ShopCheckoutService {
     userId: string,
     input: { shipping?: ShippingInput | null; couponCode?: string | null; affiliateCode?: string | null } = {}
   ) {
-    const provider = this.provider();
-    if (!provider) throw new CheckoutError("Card payments are not configured on this deployment. You can still pay with THC.");
+    // The rail depends on who is buying (test keys in production are staff-only),
+    // so the role is read here, on the server, from the database.
+    const buyer = await this.db.user.findUnique({ where: { id: userId }, select: { role: true } });
+    const provider = this.provider(buyer);
+    if (!provider) throw new CheckoutError("Card payments are not available right now. You can still pay with THC.");
 
     const { lines, totals } = await this.readyCart(userId);
     if (!totals.inr.payable) {

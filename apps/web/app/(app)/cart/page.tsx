@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { cart, paymentsStatus, MAX_LINE_QTY } from "@tycoonhood/core";
+import { cart, paymentsStatusFor, MAX_LINE_QTY } from "@tycoonhood/core";
 import { EmptyState, Notice, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function CartPage() {
   const user = await requireUser();
   const { lines, totals } = await cart.list(user.id);
-  const pay = paymentsStatus();
+  const pay = paymentsStatusFor(user);
 
   return (
     <Page>

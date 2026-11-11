@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { PENDING_TTL_MINUTES, shopCheckout } from "@tycoonhood/core";
+import { PENDING_TTL_MINUTES, razorpayOpenTo, shopCheckout } from "@tycoonhood/core";
 import { requireUser } from "../../../../lib/guard";
 import { Page, PageHeader, Panel } from "../../../../components/app/page";
 import { RazorpayButton } from "../../../../components/shop/razorpay-button";
@@ -28,6 +28,9 @@ export default async function PayPage({ params }: { params: Promise<{ orderId: s
   if (!payment?.providerOrderId) notFound();
 
   const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+  // Checked again here, not only at checkout: Razorpay test keys in production
+  // are for staff with admin.commerce, so nobody else is shown the button.
+  const razorpayKey = payment.provider === "razorpay" && razorpayOpenTo(user) ? keyId : undefined;
   const expires = new Date(order.createdAt.getTime() + PENDING_TTL_MINUTES * 60_000);
 
   return (
@@ -48,9 +51,9 @@ export default async function PayPage({ params }: { params: Promise<{ orderId: s
           <dd className="figures text-right font-semibold">{inr(order.totalFiatCents)}</dd>
         </dl>
 
-        {payment.provider === "razorpay" && keyId ? (
+        {razorpayKey ? (
           <RazorpayButton
-            keyId={keyId}
+            keyId={razorpayKey}
             providerOrderId={payment.providerOrderId}
             amountPaise={payment.amountCents}
             orderRef={orderRef(order.id)}
@@ -60,7 +63,7 @@ export default async function PayPage({ params }: { params: Promise<{ orderId: s
         ) : payment.provider === "sandbox" ? (
           <SandboxPay pay={sandboxPayAction.bind(null, order.id)} fail={sandboxFailAction.bind(null, order.id)} amount={inr(order.totalFiatCents)} />
         ) : (
-          <p className="text-[13px] text-danger">This payment method is no longer configured. Cancel this order and check out again.</p>
+          <p className="text-[13px] text-danger">This payment method is not available right now. Cancel this order and check out again.</p>
         )}
 
         <form action={abandonOrderAction.bind(null, order.id)} className="border-t border-line pt-4">
