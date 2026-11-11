@@ -211,6 +211,13 @@ export class DiscussionService {
     if (inArchive(await this.archived(), p)) throw new DiscussionError("This discussion is archived.");
   }
 
+  /** Whether a notice about this post would lead the user somewhere they can open:
+   *  a post in an archived group is staff-only, as in post(). */
+  private async canOpen(userId: string, p: { groupId: string | null }) {
+    if (!p.groupId || !inArchivedGroup(await this.archived(), p)) return true;
+    return isStaff(await this.db.user.findUnique({ where: { id: userId }, select: { role: true } }));
+  }
+
   // ─────────────────────────────── categories
 
   /** Categories members can post in, in order. Staff may ask for archived ones too. */
@@ -568,7 +575,25 @@ export class DiscussionService {
     const p = await this.db.communityPost.findUnique({ where: { id: postId }, select: { id: true, authorId: true, state: true } });
     if (!p || p.authorId !== viewer.id) throw new DiscussionError("You can only delete your own posts.");
     if (p.state === "REMOVED") return;
-    await this.db.communityPost.update({ where: { id: p.id }, data: { state: "REMOVED", pinned: false } });
+    await this.setPostState(p, "REMOVED");
+  }
+
+  /** Change a post's state. A hidden or removed post is unpinned, and its title leaves the
+   *  reaction notices its commenters got. Its author keeps theirs: they wrote the title. */
+  private async setPostState(p: { id: string; authorId: string }, state: ModerationState) {
+    await this.db.$transaction(async (tx) => {
+      await tx.communityPost.update({ where: { id: p.id }, data: { state, ...(state !== "VISIBLE" ? { pinned: false } : {}) } });
+      if (state !== "VISIBLE") {
+        await tx.notification.updateMany({
+          where: {
+            userId: { not: p.authorId },
+            type: "COMMUNITY",
+            AND: [{ data: { path: ["kind"], equals: "reaction" } }, { data: { path: ["postId"], equals: p.id } }],
+          },
+          data: { body: null },
+        });
+      }
+    });
   }
 
   async comment(viewer: DiscussionViewer, postId: string, rawBody: string, now = new Date()) {
@@ -586,11 +611,12 @@ export class DiscussionService {
       const recent = await this.db.communityComment.count({ where: { authorId: viewer.id, createdAt: { gt: new Date(now.getTime() - HOUR) } } });
       if (recent >= COMMENTS_PER_HOUR) throw new DiscussionError(`You can comment ${COMMENTS_PER_HOUR} times an hour. Take a breath and come back.`);
     }
+    const tellAuthor = p.authorId !== viewer.id && (await this.canOpen(p.authorId, p));
 
     const c = await this.db.$transaction(async (tx) => {
       const c = await tx.communityComment.create({ data: { postId: p.id, authorId: viewer.id, body, createdAt: now } });
       await tx.communityPost.update({ where: { id: p.id }, data: { commentCount: { increment: 1 } } });
-      if (p.authorId !== viewer.id) {
+      if (tellAuthor) {
         const who = await tx.profile.findUnique({ where: { userId: viewer.id }, select: { displayName: true } });
         await notify(
           p.authorId,
@@ -695,7 +721,8 @@ export class DiscussionService {
       throw e;
     }
 
-    // Batched: at most one reaction notification per post per author per hour.
+    // Batched: at most one reaction notification per post per author per hour,
+    // and none that would lead the author to a post they cannot open.
     const recent = await this.db.notification.findFirst({
       where: {
         userId: authorId,
@@ -705,7 +732,7 @@ export class DiscussionService {
       },
       select: { id: true },
     });
-    if (!recent) {
+    if (!recent && (await this.canOpen(authorId, place))) {
       await notify(authorId, "COMMUNITY", `People are reacting to ${target.type === "post" ? "your post" : "your comment"}`, `On “${excerpt(postTitle, 80)}”.`, {
         kind: "reaction",
         postId,
@@ -807,9 +834,9 @@ export class DiscussionService {
   async moderate(viewer: DiscussionViewer, target: { type: TargetType; id: string }, state: ModerationState, now = new Date()) {
     this.assertStaff(viewer);
     if (target.type === "post") {
-      const p = await this.db.communityPost.findUnique({ where: { id: target.id }, select: { id: true, state: true } });
+      const p = await this.db.communityPost.findUnique({ where: { id: target.id }, select: { id: true, authorId: true } });
       if (!p) throw new DiscussionError("That post no longer exists.");
-      await this.db.communityPost.update({ where: { id: p.id }, data: { state, ...(state !== "VISIBLE" ? { pinned: false } : {}) } });
+      await this.setPostState(p, state);
     } else {
       const c = await this.db.communityComment.findUnique({ where: { id: target.id }, select: { id: true, state: true, postId: true } });
       if (!c) throw new DiscussionError("That comment no longer exists.");

@@ -1,5 +1,36 @@
 import { describe, it, expect } from "vitest";
-import { safeNextPath, NEXT_PATH_MAX } from "../src/auth/next-path";
+import { safeNextPath, safeSitePath, NEXT_PATH_MAX } from "../src/auth/next-path";
+
+describe("safeSitePath — a link to a page on this site", () => {
+  it("keeps a path on this site, normalised, sign-in pages included", () => {
+    expect(safeSitePath("/orders/abc?tab=1#top")).toBe("/orders/abc?tab=1#top");
+    expect(safeSitePath("/courses/./warrior/../business")).toBe("/courses/business");
+    for (const raw of ["/forgot-password", "/login", "/register?ref=ABC123", "/reset-password/some-token", "/verify-email/some-token"]) {
+      expect(safeSitePath(raw), raw).toBe(raw);
+    }
+  });
+
+  it("refuses everything that leaves the site, as sign-in's return path does", () => {
+    for (const raw of [
+      "orders/abc",
+      "//evil.example",
+      "/\\evil.example",
+      "/\t/evil.example",
+      "https://evil.example",
+      "javascript:alert(1)",
+      "/.//evil.example",
+      "/%2e%2e//evil.example",
+      "/100%-sure",
+      `/${"a".repeat(NEXT_PATH_MAX)}`,
+      "",
+      undefined,
+      42,
+    ]) {
+      expect(safeSitePath(raw), JSON.stringify(raw)).toBeNull();
+      expect(safeNextPath(raw), JSON.stringify(raw)).toBeNull();
+    }
+  });
+});
 
 describe("safeNextPath — where sign-in may send someone", () => {
   it("keeps a path on this site, with its query and fragment", () => {

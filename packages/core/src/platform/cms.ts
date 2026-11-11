@@ -9,7 +9,7 @@ import { z } from "zod";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient, UserRole } from "@tycoonhood/db";
 import { assertCan } from "../auth/permissions";
-import { safeNextPath } from "../auth/next-path";
+import { safeSitePath } from "../auth/next-path";
 import { AuditService } from "./audit";
 import type { Actor } from "./members";
 
@@ -53,7 +53,7 @@ export const announcementSchema = z.object({
     .string()
     .trim()
     .max(300)
-    .refine((s) => !s || safeNextPath(s) !== null, "Links must be a path on this site, like /learning.")
+    .refine((s) => !s || safeSitePath(s) !== null, "Links must be a path on this site, like /learning.")
     .optional(),
   /** null = every member. */
   role: z.enum(["MEMBER", "STUDENT", "CREATOR", "INSTRUCTOR", "MODERATOR", "ADMIN"]).nullable(),

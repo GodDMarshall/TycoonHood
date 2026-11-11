@@ -12,7 +12,8 @@ const AUTH_PAGES = ["/login", "/register", "/forgot-password", "/reset-password"
 
 const BASE = "http://next-path.invalid";
 
-export function safeNextPath(raw: unknown): string | null {
+/** The normalised path and its decoded, lower-case pathname, or null when it leaves the site. */
+function sitePath(raw: unknown): { path: string; pathname: string } | null {
   if (typeof raw !== "string" || raw.length === 0 || raw.length > NEXT_PATH_MAX) return null;
   // One leading slash: "//host" and "/\host" point at another site, and a
   // scheme ("https:", "javascript:") never starts with "/".
@@ -39,7 +40,21 @@ export function safeNextPath(raw: unknown): string | null {
   } catch {
     return null;
   }
-  if (AUTH_PAGES.some((page) => pathname === page || pathname.startsWith(`${page}/`))) return null;
+  return { path, pathname };
+}
 
-  return path;
+/**
+ * A link to a page on this site, such as a notification's or an announcement's:
+ * the same rule as sign-in's return path, except that the sign-in pages are
+ * pages like any other.
+ */
+export function safeSitePath(raw: unknown): string | null {
+  return sitePath(raw)?.path ?? null;
+}
+
+export function safeNextPath(raw: unknown): string | null {
+  const site = sitePath(raw);
+  if (!site) return null;
+  if (AUTH_PAGES.some((page) => site.pathname === page || site.pathname.startsWith(`${page}/`))) return null;
+  return site.path;
 }

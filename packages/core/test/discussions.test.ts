@@ -270,6 +270,35 @@ describe("discussions", () => {
     await expect(d.comment(b, p.id, "Back again")).resolves.toBeTruthy();
   });
 
+  it("staff writing in an archived group sends members no links they cannot open", async () => {
+    const [a, b, mod, author] = [await member(), await member(), await withRole("MODERATOR"), await withRole("MODERATOR")];
+    const g = await group();
+    await d.joinGroup(a, g.id);
+    const p = await d.createPost(a, { title: "A member's post", body: "Body", groupId: g.id });
+    const cm = await d.comment(b, p.id, "A member's comment");
+    const staffPost = await d.createPost(author, { title: "A moderator's post", body: "Body", groupId: g.id });
+    const notes = (userId: string, postId: string) =>
+      prisma.notification.count({ where: { userId, type: "COMMUNITY", data: { path: ["postId"], equals: postId } } });
+    const before = { a: await notes(a.id, p.id), b: await notes(b.id, p.id) };
+    await d.setArchived(mod, "group", g.id, true);
+    try {
+      await d.comment(mod, p.id, "Closing note");
+      await d.toggleReaction(mod, { type: "post", id: p.id }, "respect");
+      await d.toggleReaction(mod, { type: "comment", id: cm.id }, "respect");
+      // The post is staff-only now, so its member author and commenter are not sent there.
+      expect(await notes(a.id, p.id)).toBe(before.a);
+      expect(await notes(b.id, p.id)).toBe(before.b);
+      // Staff can still open it, so a moderator's own post still tells them.
+      await d.comment(mod, staffPost.id, "Noted");
+      expect(await notes(author.id, staffPost.id)).toBe(1);
+    } finally {
+      await d.setArchived(mod, "group", g.id, false);
+    }
+    // Restored, the post opens for its author again, and they are told again.
+    await d.comment(mod, p.id, "Reopened");
+    expect(await notes(a.id, p.id)).toBe(before.a + 1);
+  });
+
   it("archived categories stay readable, but members cannot comment, react or edit there", async () => {
     const [a, b, mod] = [await member(), await member(), await withRole("MODERATOR")];
     const c = await category();
@@ -348,6 +377,36 @@ describe("discussions", () => {
     expect((await noteFor(kept.id)).body).toBe("Something fine");
     // The title names the post, not the comment, and the link still leads to the post.
     expect((await noteFor(removed.id)).title).toContain("commented on");
+  });
+
+  it("hiding or removing a post clears its title from the reaction notices its commenters got", async () => {
+    const [x, b, c2, mod] = [await member(), await member(), await member(), await withRole("MODERATOR")];
+    const c = await category();
+    const thread = async (title: string) => {
+      const p = await d.createPost(x, { title, body: "Body", categoryId: c.id });
+      const cm = await d.comment(b, p.id, "A comment");
+      await d.toggleReaction(c2, { type: "comment", id: cm.id }, "respect"); // b is told, with the post's title
+      await d.toggleReaction(c2, { type: "post", id: p.id }, "fire"); // x is told about their own post
+      return p;
+    };
+    const removed = await thread("Removed by staff");
+    const hidden = await thread("Hidden by staff");
+    const deleted = await thread("Deleted by its author");
+    const kept = await thread("Still up");
+    const reactionNote = (userId: string, postId: string) =>
+      prisma.notification.findFirstOrThrow({
+        where: { userId, type: "COMMUNITY", AND: [{ data: { path: ["kind"], equals: "reaction" } }, { data: { path: ["postId"], equals: postId } }] },
+      });
+    expect(await reactionNote(b.id, removed.id)).toMatchObject({ title: "People are reacting to your comment", body: "On “Removed by staff”." });
+
+    await d.moderate(mod, { type: "post", id: removed.id }, "REMOVED");
+    await d.moderate(mod, { type: "post", id: hidden.id }, "HIDDEN");
+    await d.deletePost(x, deleted.id);
+
+    for (const p of [removed, hidden, deleted]) expect((await reactionNote(b.id, p.id)).body, p.title).toBeNull();
+    expect((await reactionNote(b.id, kept.id)).body).toBe("On “Still up”.");
+    // The post's author wrote the title, so their own notice keeps it.
+    expect((await reactionNote(x.id, removed.id)).body).toBe("On “Removed by staff”.");
   });
 });
 
