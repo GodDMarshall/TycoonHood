@@ -395,6 +395,7 @@ export const ModelName = {
   Account: 'Account',
   Session: 'Session',
   VerificationToken: 'VerificationToken',
+  EmailHold: 'EmailHold',
   Profile: 'Profile',
   Course: 'Course',
   CourseModule: 'CourseModule',
@@ -478,7 +479,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "passwordCredential" | "account" | "session" | "verificationToken" | "profile" | "course" | "courseModule" | "lesson" | "resource" | "quiz" | "quizQuestion" | "quizAttempt" | "enrollment" | "lessonProgress" | "certificate" | "xpEvent" | "levelDefinition" | "rankDefinition" | "achievement" | "userAchievement" | "challenge" | "challengeParticipation" | "mission" | "missionCompletion" | "streak" | "notification" | "ledgerAccount" | "ledgerTransaction" | "ledgerEntry" | "product" | "productVariant" | "order" | "orderItem" | "shippingAddress" | "discordLink" | "telegramLink" | "post" | "minerState" | "referral" | "watchTask" | "watchCompletion" | "channel" | "message" | "channelRead" | "messageReport" | "communityMute" | "standardItem" | "standardTick" | "standardDay" | "instructor" | "courseReview" | "affiliateProfile" | "affiliateClick" | "commission" | "payoutRequest" | "cartItem" | "wishlistItem" | "coupon" | "couponRedemption" | "payment" | "refundRequest" | "communityCategory" | "communityGroup" | "groupMembership" | "communityPost" | "communityComment" | "reaction" | "contentReport" | "auditLog" | "siteSetting" | "contactMessage" | "testimonial"
+    modelProps: "user" | "passwordCredential" | "account" | "session" | "verificationToken" | "emailHold" | "profile" | "course" | "courseModule" | "lesson" | "resource" | "quiz" | "quizQuestion" | "quizAttempt" | "enrollment" | "lessonProgress" | "certificate" | "xpEvent" | "levelDefinition" | "rankDefinition" | "achievement" | "userAchievement" | "challenge" | "challengeParticipation" | "mission" | "missionCompletion" | "streak" | "notification" | "ledgerAccount" | "ledgerTransaction" | "ledgerEntry" | "product" | "productVariant" | "order" | "orderItem" | "shippingAddress" | "discordLink" | "telegramLink" | "post" | "minerState" | "referral" | "watchTask" | "watchCompletion" | "channel" | "message" | "channelRead" | "messageReport" | "communityMute" | "standardItem" | "standardTick" | "standardDay" | "instructor" | "courseReview" | "affiliateProfile" | "affiliateClick" | "commission" | "payoutRequest" | "cartItem" | "wishlistItem" | "coupon" | "couponRedemption" | "payment" | "refundRequest" | "communityCategory" | "communityGroup" | "groupMembership" | "communityPost" | "communityComment" | "reaction" | "contentReport" | "auditLog" | "siteSetting" | "contactMessage" | "testimonial"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -849,6 +850,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.VerificationTokenCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.VerificationTokenCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmailHold: {
+      payload: Prisma.$EmailHoldPayload<ExtArgs>
+      fields: Prisma.EmailHoldFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmailHoldFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmailHoldFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>
+        }
+        findFirst: {
+          args: Prisma.EmailHoldFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmailHoldFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>
+        }
+        findMany: {
+          args: Prisma.EmailHoldFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>[]
+        }
+        create: {
+          args: Prisma.EmailHoldCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>
+        }
+        createMany: {
+          args: Prisma.EmailHoldCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmailHoldCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>[]
+        }
+        delete: {
+          args: Prisma.EmailHoldDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>
+        }
+        update: {
+          args: Prisma.EmailHoldUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmailHoldDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmailHoldUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmailHoldUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>[]
+        }
+        upsert: {
+          args: Prisma.EmailHoldUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailHoldPayload>
+        }
+        aggregate: {
+          args: Prisma.EmailHoldAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmailHold>
+        }
+        groupBy: {
+          args: Prisma.EmailHoldGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailHoldGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmailHoldCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailHoldCountAggregateOutputType> | number
         }
       }
     }
@@ -5991,6 +6066,19 @@ export const VerificationTokenScalarFieldEnum = {
 export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
+export const EmailHoldScalarFieldEnum = {
+  id: 'id',
+  address: 'address',
+  userId: 'userId',
+  changedTo: 'changedTo',
+  undoToken: 'undoToken',
+  expires: 'expires',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailHoldScalarFieldEnum = (typeof EmailHoldScalarFieldEnum)[keyof typeof EmailHoldScalarFieldEnum]
+
+
 export const ProfileScalarFieldEnum = {
   userId: 'userId',
   username: 'username',
@@ -7503,6 +7591,7 @@ export type GlobalOmitConfig = {
   account?: Prisma.AccountOmit
   session?: Prisma.SessionOmit
   verificationToken?: Prisma.VerificationTokenOmit
+  emailHold?: Prisma.EmailHoldOmit
   profile?: Prisma.ProfileOmit
   course?: Prisma.CourseOmit
   courseModule?: Prisma.CourseModuleOmit

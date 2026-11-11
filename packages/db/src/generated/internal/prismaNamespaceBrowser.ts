@@ -54,6 +54,7 @@ export const ModelName = {
   Account: 'Account',
   Session: 'Session',
   VerificationToken: 'VerificationToken',
+  EmailHold: 'EmailHold',
   Profile: 'Profile',
   Course: 'Course',
   CourseModule: 'CourseModule',
@@ -206,6 +207,19 @@ export const VerificationTokenScalarFieldEnum = {
 } as const
 
 export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
+
+
+export const EmailHoldScalarFieldEnum = {
+  id: 'id',
+  address: 'address',
+  userId: 'userId',
+  changedTo: 'changedTo',
+  undoToken: 'undoToken',
+  expires: 'expires',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailHoldScalarFieldEnum = (typeof EmailHoldScalarFieldEnum)[keyof typeof EmailHoldScalarFieldEnum]
 
 
 export const ProfileScalarFieldEnum = {

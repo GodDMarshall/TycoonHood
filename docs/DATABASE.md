@@ -1,6 +1,6 @@
 # Database
 
-PostgreSQL 16 through Prisma. There are 73 models in `packages/db/prisma/schema.prisma`.
+PostgreSQL 16 through Prisma. There are 74 models in `packages/db/prisma/schema.prisma`.
 
 ## Migrations
 
@@ -18,6 +18,7 @@ Migrations are hand-written SQL under `packages/db/prisma/migrations/`. They are
 | `20261001000000_academy_community` | Chat channels, messages, reports, mutes, daily standard |
 | `20261111000000_full_platform` | Everything below |
 | `20261111190000_pending_email` | `User.pendingEmail`: an email change waiting for its link to be used. Nullable and not unique; additive only |
+| `20261111200000_email_hold` | `EmailHold`: the address an email change replaced, held for its account for 7 days, with the hash of the single-use link that undoes the change. One new table; additive only |
 
 `20261111000000_full_platform` is **additive only**: no column is dropped or renamed. CHECK constraints guard the money columns (amounts ≥ 0, rate between 0 and 10 000 bps, coupon percent 1–100).
 
