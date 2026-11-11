@@ -4,7 +4,7 @@
  * to decide money or rank.
  */
 import { prisma, type NotificationType, type Prisma, type PrismaClient } from "@tycoonhood/db";
-import { safeNextPath } from "../auth/next-path";
+import { safeSitePath } from "../auth/next-path";
 
 export async function notify(
   userId: string,
@@ -23,5 +23,5 @@ export async function notify(
  */
 export function notificationLink(data: unknown): string | null {
   if (!data || typeof data !== "object" || Array.isArray(data)) return null;
-  return safeNextPath((data as { href?: unknown }).href);
+  return safeSitePath((data as { href?: unknown }).href);
 }

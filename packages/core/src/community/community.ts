@@ -28,6 +28,10 @@ export const MESSAGE_MAX = 2000;
 export const PROOF_URL_MAX = 500;
 export const REPORT_REASON_MAX = 300;
 export const PAGE_SIZE = 50;
+/** A mute or a lift checks one row and writes only that row. When the row changes in
+ *  between, it checks the new one, at most this many times in all. */
+const MUTE_ATTEMPTS = 3;
+const MUTE_CHANGED = "This mute changed just now. Check it and try again.";
 
 export class CommunityError extends Error {}
 
@@ -522,28 +526,48 @@ export class CommunityService {
   }
 
   /** Staff share moderation, with one rule above it: a non-admin cannot mute an
-   *  admin, or replace a mute an admin set. Nobody mutes themselves. */
+   *  admin, or replace a mute an admin set. Nobody mutes themselves. The write
+   *  replaces only the row that was checked; if another mute lands in between,
+   *  the check runs again against that one. */
   async mute(viewer: Viewer, userId: string, until: Date | null, reason: string | null) {
     if (!isStaff(viewer)) throw new CommunityError("Only staff mute members.");
     if (userId === viewer.id) throw new CommunityError("You cannot mute yourself.");
-    if (!isAdmin(viewer)) {
-      if (await this.isAdminId(userId)) throw new CommunityError("Only an admin can mute an admin.");
-      const current = await this.activeMute(userId);
-      if (current && (await this.isAdminId(current.mutedById))) throw new CommunityError("An admin set this mute. Only an admin can change it.");
+    if (!isAdmin(viewer) && (await this.isAdminId(userId))) throw new CommunityError("Only an admin can mute an admin.");
+    for (let attempt = 0; attempt < MUTE_ATTEMPTS; attempt++) {
+      const current = await this.db.communityMute.findUnique({ where: { userId }, select: { mutedById: true, createdAt: true, until: true } });
+      const live = !!current && (!current.until || current.until > new Date());
+      if (live && !isAdmin(viewer) && (await this.isAdminId(current.mutedById))) {
+        throw new CommunityError("An admin set this mute. Only an admin can change it.");
+      }
+      const data = { until, reason, mutedById: viewer.id, createdAt: new Date() };
+      if (current) {
+        const { count } = await this.db.communityMute.updateMany({ where: { userId, mutedById: current.mutedById, createdAt: current.createdAt }, data });
+        if (count > 0) return;
+      } else {
+        try {
+          await this.db.communityMute.create({ data: { userId, ...data } });
+          return;
+        } catch (e) {
+          if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) throw e;
+        }
+      }
     }
-    await this.db.communityMute.upsert({
-      where: { userId },
-      update: { until, reason, mutedById: viewer.id, createdAt: new Date() },
-      create: { userId, until, reason, mutedById: viewer.id },
-    });
+    throw new CommunityError(MUTE_CHANGED);
   }
 
+  /** Lifts the mute that was checked, and only that one; if another mute lands in
+   *  between, the check runs again against that one. */
   async unmute(viewer: Viewer, userId: string) {
     if (!isStaff(viewer)) throw new CommunityError("Only staff lift mutes.");
-    const m = await this.db.communityMute.findUnique({ where: { userId }, select: { mutedById: true } });
-    const refusal = liftRefusal(viewer, { userId, setByAdmin: !!m && (await this.isAdminId(m.mutedById)) });
-    if (refusal) throw new CommunityError(refusal);
-    if (m) await this.db.communityMute.deleteMany({ where: { userId } });
+    for (let attempt = 0; attempt < MUTE_ATTEMPTS; attempt++) {
+      const m = await this.db.communityMute.findUnique({ where: { userId }, select: { mutedById: true, createdAt: true } });
+      const refusal = liftRefusal(viewer, { userId, setByAdmin: !!m && (await this.isAdminId(m.mutedById)) });
+      if (refusal) throw new CommunityError(refusal);
+      if (!m) return;
+      const { count } = await this.db.communityMute.deleteMany({ where: { userId, mutedById: m.mutedById, createdAt: m.createdAt } });
+      if (count > 0) return;
+    }
+    throw new CommunityError(MUTE_CHANGED);
   }
 
   /** Active mutes, newest first, each marked with whether an admin set it. */

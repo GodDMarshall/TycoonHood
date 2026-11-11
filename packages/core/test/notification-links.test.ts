@@ -25,6 +25,12 @@ describe("notificationLink", () => {
     }
   });
 
+  it("follows the sign-in pages too: they are pages on this site", () => {
+    for (const href of ["/forgot-password", "/login", "/register", "/reset-password/some-token"]) {
+      expect(notificationLink({ href }), href).toBe(href);
+    }
+  });
+
   it("is null when there is no href to follow", () => {
     for (const data of [null, undefined, "x", 3, ["/learning"], {}, { channel: "general", messageId: "m1" }, { href: 42 }]) {
       expect(notificationLink(data), JSON.stringify(data)).toBeNull();
@@ -53,6 +59,12 @@ describe("announcement links", () => {
   it("accept a path on this site", () => {
     expect(announcementSchema.parse({ ...base, href: "/learning" }).href).toBe("/learning");
     expect(announcementSchema.parse({ ...base, href: "" }).href).toBe("");
+  });
+
+  it("accept the sign-in pages, which work when signed in", () => {
+    for (const href of ["/forgot-password", "/login", "/register"]) {
+      expect(announcementSchema.parse({ ...base, title: "Please reset your password", href }).href, href).toBe(href);
+    }
   });
 
   it("refuse links that would leave the site", () => {
