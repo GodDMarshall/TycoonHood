@@ -405,14 +405,17 @@ describe("leaderboard", () => {
     await prisma.profile.update({ where: { userId: noXp.id }, data: { privacy: { level: false, rank: false, leaderboard: true } } });
     await prisma.profile.update({ where: { userId: noRank.id }, data: { privacy: { level: true, rank: false, leaderboard: true } } });
     try {
-      await xp(viewer.id, 200, new Date(monday.getTime() + 3_600_000));
-      await xp(noXp.id, 400, new Date(monday.getTime() + 3_600_000));
-      await xp(noRank.id, 600, new Date(monday.getTime() + 3_600_000));
+      // Amounts far above anything else in a shared database, so all three
+      // land in the top 200 of the all-time board whatever else is there.
+      const base = 50_000_000;
+      await xp(viewer.id, base + 200, new Date(monday.getTime() + 3_600_000));
+      await xp(noXp.id, base + 400, new Date(monday.getTime() + 3_600_000));
+      await xp(noRank.id, base + 600, new Date(monday.getTime() + 3_600_000));
 
       for (const period of ["week", "all"] as const) {
         const board = await lb.board(viewer.id, period, now, 200);
         expect(board.rows.map((r) => r.userId)).not.toContain(noXp.id);
-        expect(board.rows.find((r) => r.userId === noRank.id)).toMatchObject({ xp: 600, rank: null });
+        expect(board.rows.find((r) => r.userId === noRank.id)).toMatchObject({ xp: base + 600, rank: null });
         const me = board.rows.find((r) => r.userId === viewer.id);
         expect(me?.rank).toBe(rank.name);
         // The hidden member does not count ahead of anyone either.
@@ -420,7 +423,7 @@ describe("leaderboard", () => {
       }
 
       const own = await lb.board(noXp.id, "week", now);
-      expect(own.viewer).toEqual({ hidden: true, xp: 400, position: null });
+      expect(own.viewer).toEqual({ hidden: true, xp: base + 400, position: null });
     } finally {
       await prisma.xpEvent.deleteMany({ where: { userId: { in: [viewer.id, noXp.id, noRank.id] } } });
     }
