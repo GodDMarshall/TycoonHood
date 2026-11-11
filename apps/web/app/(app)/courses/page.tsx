@@ -25,7 +25,15 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
 
   return (
     <Page>
-      <PageHeader title="Courses" description="Each program is a sequence. Lessons open in order, so you always know the one next step." />
+      <PageHeader
+        title="Courses"
+        description="Each program is a sequence. Lessons open in order, so you always know the one next step."
+        actions={
+          <Link href="/courses/history" className={buttonStyles({ variant: "ghost", size: "sm" })}>
+            <Icon name="clock" size={15} /> Learning history
+          </Link>
+        }
+      />
 
       <form role="search" action="/courses" className="mb-10 flex max-w-xl gap-2">
         <div className="relative flex-1">

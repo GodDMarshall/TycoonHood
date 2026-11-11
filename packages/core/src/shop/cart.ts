@@ -74,6 +74,16 @@ export function cartTotals(lines: Pick<CartLineView, "lineKey" | "qty" | "unitTh
   };
 }
 
+/**
+ * Pure: the cart badge in the app's navigation. Hidden (null) when the cart is
+ * empty; the number shown is capped at "99+", the accessible name is exact.
+ */
+export function cartBadge(itemCount: number): { text: string; label: string } | null {
+  const n = Number.isFinite(itemCount) ? Math.floor(itemCount) : 0;
+  if (n <= 0) return null;
+  return { text: n > 99 ? "99+" : String(n), label: `Cart, ${n} ${n === 1 ? "item" : "items"}` };
+}
+
 function checkQty(qty: number) {
   if (!Number.isInteger(qty) || qty < 1 || qty > MAX_LINE_QTY) {
     throw new CartError(`Quantity must be between 1 and ${MAX_LINE_QTY}.`);

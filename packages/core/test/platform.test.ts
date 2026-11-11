@@ -84,6 +84,36 @@ describe("Email verification — token lifecycle", () => {
   it("ignores garbage tokens", async () => {
     await expect(verification.verify("nope")).rejects.toBeInstanceOf(InvalidVerificationTokenError);
   });
+
+  it("knows whether a usable link is out: issued yes; revoked, expired or spent no", async () => {
+    const user = await createTestUser();
+    expect(await verification.hasLiveLink(user.email)).toBe(false);
+
+    // Issued, then revoked because it could not be sent.
+    await verification.issue(user.id);
+    expect(await verification.hasLiveLink(user.email)).toBe(true);
+    await verification.revokeFor(user.email);
+    expect(await verification.hasLiveLink(user.email)).toBe(false);
+
+    // Expired.
+    const { rawToken } = await verification.issue(user.id);
+    await prisma.verificationToken.update({ where: { token: sha256(rawToken) }, data: { expires: new Date(Date.now() - 1000) } });
+    expect(await verification.hasLiveLink(user.email)).toBe(false);
+
+    // Spent.
+    const fresh = await verification.issue(user.id);
+    expect(await verification.hasLiveLink(user.email)).toBe(true);
+    await verification.verify(fresh.rawToken);
+    expect(await verification.hasLiveLink(user.email)).toBe(false);
+  });
+
+  it("a password-reset token for the same member is not a confirmation link", async () => {
+    const user = await createTestUser();
+    await prisma.verificationToken.create({
+      data: { identifier: `pwreset:${user.id}`, token: sha256(uid()), expires: new Date(Date.now() + 60_000) },
+    });
+    expect(await verification.hasLiveLink(user.email)).toBe(false);
+  });
 });
 
 describe("Suspended accounts", () => {

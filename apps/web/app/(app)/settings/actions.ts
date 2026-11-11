@@ -8,14 +8,17 @@ import {
   AlreadyVerifiedError,
   discord,
   EmailTakenError,
+  emailChangeReply,
   emailVerification,
   profiles,
   sessions,
   UsernameTakenError,
+  verificationResendReply,
   VerificationRateLimitError,
   WrongPasswordError,
 } from "@tycoonhood/core";
 import { getCurrentSession, getCurrentUser, SESSION_COOKIE } from "../../../lib/auth";
+import { mailMode } from "../../../lib/mail";
 import { sendVerificationEmail } from "../../../lib/mail/verification";
 import { rateLimit } from "../../../lib/rate-limit";
 import { isZodError, zodMessage } from "../../../lib/form-errors";
@@ -98,22 +101,21 @@ export async function updateProfileAction(_prev: FormState, fd: FormData): Promi
 
 export async function resendVerificationAction(_prev: FormState, _fd: FormData): Promise<FormState> {
   const { user } = await current();
+  if (user.emailVerified) return { ok: "Your email is already verified." };
+  // With no mail provider, say so without issuing a link: issuing would
+  // replace any link already sent and use up one of the three an hour.
+  if (mailMode() === "off") return verificationResendReply("no-mailer", user.email);
   try {
-    const sent = await sendVerificationEmail(await emailVerification.resend(user.id));
-    if (!sent.sent) {
-      return {
-        error:
-          sent.reason === "no-mailer"
-            ? "Email isn't configured on this deployment yet, so we can't send the link. Contact us and we'll help."
-            : "Couldn't send the email just now — try again in a minute.",
-      };
-    }
+    const outcome = await sendVerificationEmail(await emailVerification.resend(user.id));
+    // A new link replaced the old one, or none is left if sending failed, so
+    // the banner and the settings page re-render with where the link stands.
+    revalidatePath("/settings");
+    return verificationResendReply(outcome, user.email);
   } catch (e) {
     if (e instanceof VerificationRateLimitError) return { error: e.message };
     if (e instanceof AlreadyVerifiedError) return { ok: "Your email is already verified." };
     throw e;
   }
-  return { ok: `Sent. Check ${user.email} (and spam).` };
 }
 
 export async function changeEmailAction(_prev: FormState, fd: FormData): Promise<FormState> {
@@ -123,11 +125,9 @@ export async function changeEmailAction(_prev: FormState, fd: FormData): Promise
   try {
     const updated = await accountSettings.changeEmail(user.id, String(fd.get("email") ?? ""), String(fd.get("password") ?? ""));
     if (!updated.emailVerified) {
-      const sent = await sendVerificationEmail(await emailVerification.issue(user.id, { reason: "email-change" }));
+      const outcome = await sendVerificationEmail(await emailVerification.issue(user.id, { reason: "email-change" }));
       revalidatePath("/settings");
-      return sent.sent
-        ? { ok: `Email changed. We sent a confirmation link to ${updated.email}.` }
-        : { ok: "Email changed. We couldn't send the confirmation link just now — use “Resend” in a minute." };
+      return emailChangeReply(outcome, updated.email);
     }
   } catch (e) {
     if (isZodError(e)) return { error: zodMessage(e) };

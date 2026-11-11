@@ -1,12 +1,14 @@
 /**
  * The member app shell (server half). Loads what the chrome shows — the
- * member's programs and their progress, unread counts — and hands it to the
- * client chrome. Pages render inside <main>; each page sets its own width.
+ * member's programs and their progress, unread counts, the cart count — and
+ * hands it to the client chrome. Pages render inside <main>; each page sets
+ * its own width.
  */
 import type { ReactNode } from "react";
 import { prisma } from "@tycoonhood/db";
-import { community, can } from "@tycoonhood/core";
+import { community, can, cartBadge } from "@tycoonhood/core";
 import type { UserRole } from "@tycoonhood/db";
+import { cartItemCount } from "../../lib/cart-count";
 import { MobileTabBar, MobileTopBar, Sidebar, type ShellData } from "./app-chrome";
 
 type ShellUserRow = {
@@ -19,7 +21,7 @@ type ShellUserRow = {
 };
 
 export async function AppShell({ user, children }: { user: ShellUserRow; children: ReactNode }) {
-  const [enrollments, unreadNotifications, unreadCommunity] = await Promise.all([
+  const [enrollments, unreadNotifications, unreadCommunity, inCart] = await Promise.all([
     prisma.enrollment.findMany({
       where: { userId: user.id, status: { in: ["ACTIVE", "COMPLETED"] } },
       orderBy: { course: { sortOrder: "asc" } },
@@ -27,6 +29,7 @@ export async function AppShell({ user, children }: { user: ShellUserRow; childre
     }),
     prisma.notification.count({ where: { userId: user.id, readAt: null } }),
     community.unreadTotal({ id: user.id, role: user.role }, user.createdAt),
+    cartItemCount(user.id),
   ]);
 
   const data: ShellData = {
@@ -40,6 +43,7 @@ export async function AppShell({ user, children }: { user: ShellUserRow; childre
     programs: enrollments.map((e) => ({ slug: e.course.slug, title: e.course.title, pct: e.progressPct })),
     unreadCommunity,
     unreadNotifications,
+    cart: cartBadge(inCart),
   };
 
   return (

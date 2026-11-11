@@ -20,9 +20,12 @@ import {
   getSetting,
   InvalidVerificationTokenError,
   safeNextPath,
+  mailWentOut,
+  passwordResetReply,
 } from "@tycoonhood/core";
 import { sendVerificationEmail } from "../../lib/mail/verification";
-import { activeMailer } from "../../lib/mail";
+import { sendPasswordResetEmail } from "../../lib/mail/password-reset";
+import { mailMode } from "../../lib/mail";
 import { clearSessionCookie, deviceInfo, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
 import { cookies } from "next/headers";
 import { rateLimit } from "../../lib/rate-limit";
@@ -87,11 +90,12 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
     }
 
     // Verification never blocks the journey: the member goes on to onboarding
-    // and the app shows a banner until the link is clicked. A mail failure is
-    // logged, not shown — they can resend from the banner or settings.
+    // and the app shows a banner until the link is clicked. A link that could
+    // not be sent is revoked, so the banner says it was not sent (rather than
+    // "we sent a link") and offers to try again or contact us.
     try {
-      const sent = await sendVerificationEmail(await emailVerification.issue(user.id, { reason: "register" }));
-      if (!sent.sent) console.warn(`[verify] verification email not sent for ${user.id}: ${sent.reason}`);
+      const outcome = await sendVerificationEmail(await emailVerification.issue(user.id, { reason: "register" }));
+      if (!mailWentOut(outcome)) console.warn(`[verify] verification email not sent for ${user.id}: ${outcome}`);
     } catch (e) {
       console.error("[verify] could not issue verification email", e);
     }
@@ -139,45 +143,38 @@ export async function logoutAction() {
   redirect("/login");
 }
 
+/**
+ * The forgot-password form's state. It never carries the reset link: that
+ * only ever travels by email (TYCOONHOOD_DECISIONS.md DR-2 / P0-2).
+ */
 export interface ForgotState {
-  sent?: boolean;
+  /** The reply after a request — the same words whether or not an account uses the address. */
+  done?: string;
   error?: string;
-  /** DEV MODE ONLY — surfaced with an explicit label so the flow is
-   *  exercisable without an inbox. Never populated when a real mailer runs. */
-  devLink?: string;
 }
 
 export async function forgotPasswordAction(_prev: ForgotState, formData: FormData): Promise<ForgotState> {
   const blocked = await throttled("pwreset");
   if (blocked) return { error: blocked };
 
+  // No mail provider at all: say so before anything is looked up, so every
+  // address gets the same answer and it reveals nothing about accounts.
+  const mode = mailMode();
+  if (mode === "off") return passwordResetReply("off");
+
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   if (!email || !email.includes("@")) return { error: "Enter the email you signed up with." };
 
-  const mailer = activeMailer();
-  if (!mailer) {
-    return { error: "Password reset email isn't configured on this deployment yet. Contact the house." };
-  }
-
   const { issued } = await passwordReset.requestReset(email);
-  // Identical response either way — no account enumeration.
-  if (!issued) return { sent: true };
-
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const link = `${base}/reset-password/${issued.rawToken}`;
-  const result = await mailer.send({
-    to: issued.email,
-    subject: "Reset your Tycoonhood password",
-    text: `Someone (hopefully you) asked to reset this account's password.\n\nReset link (valid 30 minutes, single use):\n${link}\n\nIf this wasn't you, ignore this email — your password is unchanged and your sessions are untouched.`,
-  });
-
-  // Never return the reset link to the browser. The dev mailer logs it
-  // server-side for local development; in production the link only travels by
-  // real email. (TYCOONHOOD_DECISIONS.md DR-2 / P0-2.)
-  if (!result.delivered && mailer.name !== "dev") {
-    return { error: "Couldn't send the email just now — try again in a minute." };
+  if (issued) {
+    const outcome = await sendPasswordResetEmail(issued);
+    // A failed send is logged, not shown: an error only for addresses that
+    // have an account would reveal which ones do. The reply below already
+    // says what to do if nothing arrives.
+    if (!mailWentOut(outcome)) console.warn(`[reset] reset email not sent for ${issued.userId}: ${outcome}`);
   }
-  return { sent: true };
+  // Identical response either way — no account enumeration.
+  return passwordResetReply(mode);
 }
 
 export interface ResetState {

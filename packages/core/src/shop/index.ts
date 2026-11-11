@@ -5,7 +5,7 @@ export { setEarnHooks, getEarnHooks } from "./earn-registry";
 export { SHOP_CATEGORIES, categoryLabel, isShopCategory, LOW_STOCK_AT } from "./categories";
 export type { ShopCategory } from "./categories";
 export { SHOP_CURRENCY, MAX_LINE_QTY, MIN_INR_CHARGE_PAISE, unitPrices, lineKeyOf, parseLineKey, formatInr } from "./pricing";
-export { CartService, cart, cartTotals } from "./cart";
+export { CartService, cart, cartTotals, cartBadge } from "./cart";
 export type { CartLineView, CartTotals, RailTotal } from "./cart";
 export { WishlistService, wishlist } from "./wishlist";
 export {

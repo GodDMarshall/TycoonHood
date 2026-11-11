@@ -3,7 +3,7 @@ import { prisma } from "@tycoonhood/db";
 import { LedgerService, InsufficientFundsError } from "../src/ledger/ledger";
 import {
   CartService, CouponService, ShopCheckoutService, RefundService, RazorpayProvider, SandboxProvider,
-  cartTotals, discountFor, checkCouponRules, verifyCheckoutSignature, verifyWebhookSignature,
+  cartTotals, cartBadge, discountFor, checkCouponRules, verifyCheckoutSignature, verifyWebhookSignature,
   setEarnHooks, orderTimeline, refundBlocker, paymentsStatus, activeShopProvider, CartError, CouponError,
   PaymentVerificationError,
 } from "../src/shop";
@@ -138,6 +138,32 @@ describe("Shop — cart maths", () => {
     await cart.add(user.id, p.id, m.id, 2);
     const { lines } = await cart.list(user.id);
     expect(lines.map((l) => l.lineKey).sort()).toEqual([`${p.id}:${m.id}`, `${p.id}:${s.id}`].sort());
+  });
+});
+
+describe("Shop — cart badge", () => {
+  it("is hidden for an empty cart and names the exact count", () => {
+    expect(cartBadge(0)).toBeNull();
+    expect(cartBadge(-2)).toBeNull();
+    expect(cartBadge(Number.NaN)).toBeNull();
+    expect(cartBadge(1)).toEqual({ text: "1", label: "Cart, 1 item" });
+    expect(cartBadge(3)).toEqual({ text: "3", label: "Cart, 3 items" });
+    expect(cartBadge(99)).toEqual({ text: "99", label: "Cart, 99 items" });
+    // The eye gets a short cap; a screen reader still hears the real number.
+    expect(cartBadge(140)).toEqual({ text: "99+", label: "Cart, 140 items" });
+  });
+
+  it("counts quantities across lines, not lines, and only the member's own", async () => {
+    const [user, other] = await Promise.all([createTestUser(), createTestUser()]);
+    const [a, b] = await Promise.all([product({}), product({ kind: "DIGITAL", inventory: null })]);
+    await cart.add(user.id, a.id, null, 3);
+    await cart.add(user.id, b.id, null, 2);
+    await cart.add(other.id, a.id, null, 1);
+    expect(await cart.count(user.id)).toBe(5);
+    expect(cartBadge(await cart.count(user.id))?.label).toBe("Cart, 5 items");
+    await cart.clear(user.id);
+    expect(cartBadge(await cart.count(user.id))).toBeNull();
+    expect(await cart.count(other.id)).toBe(1);
   });
 });
 

@@ -30,3 +30,7 @@ export { platformAnalytics } from "./analytics";
 export type { PlatformAnalytics, DayCount, MoneyLine } from "./analytics";
 export { clientIpFrom, trustedProxyHops, MAX_TRUSTED_PROXY_HOPS } from "./client-ip";
 export type { ForwardingHeaders } from "./client-ip";
+export {
+  mailWentOut, verifyLinkState, verificationResendReply, emailChangeReply, passwordResetReply,
+} from "./mail-outcome";
+export type { MailMode, MailOutcome, VerifyLinkState } from "./mail-outcome";

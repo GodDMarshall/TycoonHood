@@ -3,7 +3,8 @@ import Link from "next/link";
 import { requirePermission } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
 import { can, DELETION_TOPIC, LedgerService } from "@tycoonhood/core";
-import { Card, CardContent, SectionRule, Stat, ThcAmount } from "@tycoonhood/ui";
+import { Card, CardContent, Notice, SectionRule, Stat, ThcAmount } from "@tycoonhood/ui";
+import { mailMode } from "../../../lib/mail";
 
 export const metadata: Metadata = { title: "Admin · Overview" };
 export const dynamic = "force-dynamic";
@@ -68,6 +69,14 @@ export default async function AdminOverview() {
     <main>
       <h2 className="text-[20px] font-semibold tracking-[-0.01em]">Overview</h2>
       <p className="mt-1 text-[14px] text-ink-3">What needs attention in the areas you look after.</p>
+
+      {show.content && mailMode() === "off" && (
+        <Notice tone="warning" title="Email is not set up" className="mt-6">
+          No mail provider is configured, so confirmation and password-reset emails are not being sent. Members are told email isn&rsquo;t
+          available right now, and anyone who forgets their password cannot reset it. Set <code className="figures">RESEND_API_KEY</code> and{" "}
+          <code className="figures">MAIL_FROM</code> (a sender verified with Resend) in the site&rsquo;s environment, then redeploy. See LAUNCH.md, steps 3 and 5.
+        </Notice>
+      )}
 
       {moderation && (
         <>

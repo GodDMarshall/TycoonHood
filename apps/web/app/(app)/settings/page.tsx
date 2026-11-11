@@ -6,6 +6,8 @@ import { prisma } from "@tycoonhood/db";
 import { accountSettings, activeDiscordTransport, discord, profileCompletion, sessions } from "@tycoonhood/core";
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Field, Input, Notice, SectionRule, Select, Textarea } from "@tycoonhood/ui";
 import { getCurrentSession } from "../../../lib/auth";
+import { mailMode } from "../../../lib/mail";
+import { verifyLinkStateFor } from "../../../lib/mail/verification";
 import {
   changeEmailAction,
   changePasswordAction,
@@ -37,12 +39,15 @@ export default async function SettingsPage() {
   await requireUser();
   const session = (await getCurrentSession())!;
   const user = session.user;
-  const [deviceSessions, link, profile, pendingDeletion] = await Promise.all([
+  const [deviceSessions, link, profile, pendingDeletion, confirmLink] = await Promise.all([
     sessions.listForUser(user.id),
     discord.linkFor(user.id),
     prisma.profile.findUniqueOrThrow({ where: { userId: user.id } }),
     accountSettings.pendingDeletion(user.id),
+    user.emailVerified ? null : verifyLinkStateFor(user.email),
   ]);
+  const mail = mailMode();
+  const contact = <Link href="/contact" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">contact us</Link>;
   const privacy = (profile.privacy ?? {}) as Record<string, boolean>;
   const transport = activeDiscordTransport();
   const completion = profileCompletion({ emailVerified: user.emailVerified, profile });
@@ -107,10 +112,18 @@ export default async function SettingsPage() {
             <span className="text-[14px] text-ink-1">{user.email}</span>
             {user.emailVerified ? <Badge tone="success">Verified</Badge> : <Badge tone="warning">Not verified</Badge>}
           </div>
-          {!user.emailVerified && (
-            <ActionForm action={resendVerificationAction} submit="Resend confirmation email">
+          {confirmLink === "off" && (
+            <p className="text-[13px] text-ink-2">
+              We couldn&rsquo;t send you a confirmation link: email isn&rsquo;t available right now. Try again later, or {contact}.
+            </p>
+          )}
+          {confirmLink && confirmLink !== "off" && (
+            <ActionForm action={resendVerificationAction} submit={confirmLink === "unsent" ? "Send a new link" : "Resend confirmation email"}>
               <p className="text-[13px] text-ink-2">
-                We sent a confirmation link when you joined. It is valid for 24 hours. You can ask for up to three new links an hour.
+                {confirmLink === "sent" && <>We sent a confirmation link to this address. </>}
+                {confirmLink === "logged" && <>Dev mode: nothing was emailed. The confirmation link for this address is in the server log. </>}
+                {confirmLink === "unsent" && <>We couldn&rsquo;t send a confirmation link to this address, or it has expired. Send a new one, or {contact}. </>}
+                Links work for 24 hours, and you can ask for up to three an hour.
               </p>
             </ActionForm>
           )}
@@ -125,7 +138,11 @@ export default async function SettingsPage() {
                   <Input id="email-password" name="password" type="password" autoComplete="current-password" required />
                 </Field>
               </div>
-              <p className="text-[12.5px] text-ink-3">The new address starts unverified; we&rsquo;ll send it a confirmation link.</p>
+              <p className="text-[12.5px] text-ink-3">
+                {mail === "live" && <>The new address starts unverified; we&rsquo;ll send it a confirmation link.</>}
+                {mail === "dev" && <>The new address starts unverified. Dev mode: its confirmation link goes to the server log, not by email.</>}
+                {mail === "off" && <>The new address starts unverified. Email isn&rsquo;t available right now, so we can&rsquo;t send it a confirmation link yet.</>}
+              </p>
             </ActionForm>
           </div>
         </CardContent>

@@ -117,9 +117,19 @@ export class EmailVerificationService {
     return updated;
   }
 
-  /** Drop every outstanding verification token for an address (email change). */
+  /** Drop every outstanding verification token for an address (email change, or a link that could not be sent). */
   async revokeFor(email: string) {
     await this.db.verificationToken.deleteMany({ where: { identifier: email } });
+  }
+
+  /**
+   * Whether a usable confirmation link exists for this address: issued, not
+   * spent, not expired. The web app revokes any link it could not send, so
+   * this is also how it knows one went out.
+   */
+  async hasLiveLink(email: string): Promise<boolean> {
+    const live = await this.db.verificationToken.count({ where: { identifier: email, expires: { gt: new Date() } } });
+    return live > 0;
   }
 }
 

@@ -1,7 +1,7 @@
 /** DEV MAILER — honest dev boundary (D11). Only when DEV_MODE: logs the
- *  full message server-side and never claims real delivery. The reset
- *  action pairs this with a loudly-labeled on-screen link so the flow is
- *  fully exercisable without an inbox. */
+ *  full message, link included, server-side and never claims real
+ *  delivery. The pages say "Dev mode: nothing was emailed"; no link is
+ *  ever shown in the browser (DR-2). */
 import { isDevMode } from "@tycoonhood/config";
 import type { Mailer } from "./mailer";
 

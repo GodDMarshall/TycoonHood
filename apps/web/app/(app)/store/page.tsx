@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { LedgerService, cart, wishlist } from "@tycoonhood/core";
+import { LedgerService, wishlist } from "@tycoonhood/core";
 import { Icon, ThcAmount } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
+import { cartItemCount } from "../../../lib/cart-count";
 import { Page, PageHeader } from "../../../components/app/page";
 import { Catalogue } from "../../../components/shop/catalogue";
 
@@ -17,7 +18,7 @@ export default async function StorePage({ searchParams }: { searchParams: Promis
   const user = await requireUser();
   const [wallet, inCart, saved, sp] = await Promise.all([
     ledger.ensureUserAccount(user.id),
-    cart.count(user.id),
+    cartItemCount(user.id),
     wishlist.ids(user.id),
     searchParams,
   ]);

@@ -20,7 +20,12 @@ export type ShellData = {
   programs: { slug: string; title: string; pct: number }[];
   unreadCommunity: number;
   unreadNotifications: number;
+  /** The cart badge beside Store, worked out on the server; null when the cart is empty. */
+  cart: { text: string; label: string } | null;
 };
+
+/** Where the cart badge sits: the nav entry that also lights up on /cart. */
+const CART_ENTRY = "/store";
 
 function Count({ n, className }: { n: number; className?: string }) {
   if (n <= 0) return null;
@@ -34,6 +39,39 @@ function Count({ n, className }: { n: number; className?: string }) {
       {n > 99 ? "99+" : n}
       <span className="sr-only"> unread</span>
     </span>
+  );
+}
+
+/**
+ * The number of items in the cart, beside Store. It is its own link to the
+ * cart, named for screen readers ("Cart, 3 items"); nothing renders at 0.
+ */
+function CartBadge({
+  cart,
+  size,
+  className,
+  onNavigate,
+}: {
+  cart: ShellData["cart"];
+  size: "sm" | "md";
+  className?: string;
+  onNavigate?: () => void;
+}) {
+  if (!cart) return null;
+  return (
+    <Link
+      href="/cart"
+      aria-label={cart.label}
+      title={cart.label}
+      onClick={onNavigate}
+      className={cn(
+        "inline-flex items-center justify-center rounded-full bg-gold font-semibold tabular-nums text-bg-0 transition-colors hover:bg-gold-bright",
+        size === "sm" ? "h-6 min-w-6 px-1.5 text-[11px]" : "h-8 min-w-8 px-2 text-[12.5px]",
+        className,
+      )}
+    >
+      {cart.text}
+    </Link>
   );
 }
 
@@ -190,8 +228,11 @@ export function Sidebar({ data }: { data: ShellData }) {
         <SectionLabel>More</SectionLabel>
         <ul className="flex flex-col gap-0.5">
           {SECONDARY_NAV.map((item) => (
-            <li key={item.href}>
+            <li key={item.href} className={item.href === CART_ENTRY ? "relative" : undefined}>
               <SideLink item={item} active={isActive(pathname, item)} />
+              {item.href === CART_ENTRY && (
+                <CartBadge cart={data.cart} size="sm" className="absolute right-2 top-1/2 -translate-y-1/2" />
+              )}
             </li>
           ))}
           {data.user.isAdmin && (
@@ -353,9 +394,16 @@ export function MobileTabBar({ data }: { data: ShellData }) {
             {ACCOUNT_NAV.map((i) => (
               <SheetLink key={i.href} href={i.href} icon={i.icon} label={i.label} onNavigate={() => setMore(false)} />
             ))}
-            {SECONDARY_NAV.map((i) => (
-              <SheetLink key={i.href} href={i.href} icon={i.icon} label={i.label} onNavigate={() => setMore(false)} />
-            ))}
+            {SECONDARY_NAV.map((i) =>
+              i.href === CART_ENTRY && data.cart ? (
+                <div key={i.href} className="relative">
+                  <SheetLink href={i.href} icon={i.icon} label={i.label} onNavigate={() => setMore(false)} />
+                  <CartBadge cart={data.cart} size="md" onNavigate={() => setMore(false)} className="absolute right-3 top-1/2 -translate-y-1/2" />
+                </div>
+              ) : (
+                <SheetLink key={i.href} href={i.href} icon={i.icon} label={i.label} onNavigate={() => setMore(false)} />
+              ),
+            )}
             <SheetLink href="/notifications" icon="bell" label="Notifications" onNavigate={() => setMore(false)} />
             {data.user.isAdmin && <SheetLink href="/admin" icon="shield" label="Admin" onNavigate={() => setMore(false)} />}
           </div>
