@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { marked } from "marked";
 import { prisma } from "@tycoonhood/db";
-import { community } from "@tycoonhood/core";
+import { community, renderMarkdown } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, Progress, buttonStyles, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../../../../lib/guard";
 import { courseDetail, LESSON_TYPE } from "../../../../../../lib/learning";
@@ -77,7 +76,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
     where: { id: lessonId },
     include: { quiz: { include: { questions: { orderBy: { sortOrder: "asc" } } } }, resources: true },
   });
-  const html = full.contentMd ? await marked.parse(full.contentMd) : "";
+  const html = full.contentMd ? renderMarkdown(full.contentMd) : "";
   const done = state === "done";
   const prev = d.lessons[idx - 1] ?? null;
   const next = d.lessons[idx + 1] ?? null;

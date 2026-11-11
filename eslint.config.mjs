@@ -45,6 +45,25 @@ export default [
     },
   },
 
+  // One Markdown renderer: packages/core/src/content/markdown.ts sanitises what
+  // marked produces, and nothing else renders Markdown or calls the sanitiser.
+  // The typescript-eslint rule, so a later no-restricted-imports block cannot
+  // silently replace this one.
+  {
+    ignores: ["packages/core/src/content/markdown.ts"],
+    rules: {
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            { name: "marked", message: "Render Markdown with renderMarkdown() from @tycoonhood/core. It sanitises the HTML." },
+            { name: "sanitize-html", message: "Use renderMarkdown() or sanitizeContentHtml() from @tycoonhood/core." },
+          ],
+        },
+      ],
+    },
+  },
+
   // Node scripts (.mjs operator tools) run outside the browser: declare Node globals.
   {
     files: ["**/*.mjs", "**/scripts/**/*.mjs"],

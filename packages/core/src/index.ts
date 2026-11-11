@@ -97,3 +97,6 @@ export * from "./earn";
 export * from "./shop";
 export * from "./discussions";
 export * from "./lms/index-authoring";
+
+// --- Author content as HTML: the one Markdown renderer ---
+export { renderMarkdown, sanitizeContentHtml, EXTERNAL_LINK_REL } from "./content/markdown";

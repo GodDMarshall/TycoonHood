@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { marked } from "marked";
 import { prisma } from "@tycoonhood/db";
+import { renderMarkdown } from "@tycoonhood/core";
 import { SectionRule } from "@tycoonhood/ui";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   const post = await prisma.post.findUnique({ where: { slug } });
   if (!post || !post.publishedAt) notFound();
 
-  const html = await marked.parse(post.contentMd);
+  const html = renderMarkdown(post.contentMd);
 
   return (
     <main className="mx-auto max-w-[var(--measure)] px-[var(--gutter)] py-16 md:py-24">
@@ -29,7 +29,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         {dateFmt.format(post.publishedAt)} · {post.authorName}
       </p>
       <SectionRule className="my-8" />
-      {/* First-party content authored in our own CMS — rendered server-side */}
+      {/* Authored in our own CMS; renderMarkdown sanitises the HTML. */}
       <article className="md-content" dangerouslySetInnerHTML={{ __html: html }} />
     </main>
   );

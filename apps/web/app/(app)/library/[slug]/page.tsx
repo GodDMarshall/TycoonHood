@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { requireUser } from "../../../../lib/guard";
 import { notFound, redirect } from "next/navigation";
-import { marked } from "marked";
 import { prisma } from "@tycoonhood/db";
+import { renderMarkdown } from "@tycoonhood/core";
 import { Badge } from "@tycoonhood/ui";
 import { Page } from "../../../../components/app/page";
 import { getCurrentUser } from "../../../../lib/auth";
@@ -24,7 +24,7 @@ export default async function LibraryItem({ params }: { params: Promise<{ slug: 
   if (!owned) redirect("/store");
 
   const html = product.contentMd
-    ? await marked.parse(product.contentMd)
+    ? renderMarkdown(product.contentMd)
     : "<p>This item's content is being prepared — you own it, and it will appear here.</p>";
 
   return (

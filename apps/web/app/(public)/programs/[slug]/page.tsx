@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { marked } from "marked";
 import { prisma } from "@tycoonhood/db";
-import { learner } from "@tycoonhood/core";
+import { learner, renderMarkdown } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, Notice, PillarBadge, buttonStyles } from "@tycoonhood/ui";
 import { objectivesOf } from "../../../../lib/learning";
 import { getCurrentUser } from "../../../../lib/auth";
@@ -50,7 +49,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   const rating = await learner.rating(course.id);
   // Lesson bodies are public only for preview lessons.
   const previews = new Map<string, string>();
-  for (const l of lessons) if (l.isPreview && l.contentMd) previews.set(l.id, await marked.parse(l.contentMd));
+  for (const l of lessons) if (l.isPreview && l.contentMd) previews.set(l.id, renderMarkdown(l.contentMd));
   const isFinance = course.pillar === "TYCOON";
 
   const jsonLd = {

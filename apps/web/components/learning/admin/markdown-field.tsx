@@ -1,7 +1,8 @@
 "use client";
-/** Markdown body with a Write / Preview toggle. The preview uses the same renderer as the lesson page. */
+/** Markdown body with a Write / Preview toggle. The preview uses the same sanitising renderer as the lesson page. */
 import { useState } from "react";
-import { marked } from "marked";
+// Deep path, not the package barrel: the barrel would pull Prisma into the browser bundle.
+import { renderMarkdown } from "@tycoonhood/core/src/content/markdown";
 import { Label, Textarea, cn } from "@tycoonhood/ui";
 
 export function MarkdownField({ name, defaultValue, label = "Body (Markdown)", rows = 18 }: { name: string; defaultValue?: string | null; label?: string; rows?: number }) {
@@ -37,7 +38,7 @@ export function MarkdownField({ name, defaultValue, label = "Body (Markdown)", r
       {tab === "preview" && (
         <div
           className="md-content min-h-[200px] rounded-md border border-line bg-bg-0 p-5"
-          dangerouslySetInnerHTML={{ __html: value.trim() ? (marked.parse(value, { async: false }) as string) : "<p>Nothing to preview yet.</p>" }}
+          dangerouslySetInnerHTML={{ __html: value.trim() ? renderMarkdown(value) : "<p>Nothing to preview yet.</p>" }}
         />
       )}
       <p className="text-[12.5px] text-ink-3">{value.split(/\s+/).filter(Boolean).length} words</p>
