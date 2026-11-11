@@ -297,7 +297,8 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **Who gets it:** desktops with a hardware GPU only.
   - Phones, tablets (an iPad that asks for the desktop site included), windows under 1024px, reduced motion, data saver, no WebGL2 and software GPUs get the 2D page at the same address. That page is complete on its own: one card per building, with the member's figures and every link.
   - The device decides after the page loads, before anything 3D is downloaded: the device first, then the GPU (one probe canvas, released at once), then the quality tier. `?world=cinematic|balanced|performance` picks the tier for QA; no override skips a gate.
-  - A failed load, a lost GPU, slow frames or the member's own "2D view" returns to the 2D page and disposes the engine down to its GL context.
+  - The 2D page stays up while the campus loads, with a "2D view" button that stops the downloads.
+  - A failed load, a load that makes no progress for 20 seconds, a lost GPU, slow frames (judged against the display's own frame rate, so a browser capped at 30 Hz is not "slow"), reduced motion switched on, a window made narrower than 1024px, or the member's own "2D view" returns to the 2D page and disposes the engine down to its GL context.
 - **One way in:** a link at the foot of the desktop sidebar, marked "optional", shown only where the campus can open and never prefetched. It is not in the tab bar, the More sheet or `components/app/nav.ts`. There is no homepage fly-over and no HQ stage; DR-21 stays retired.
 - **Landing:** sign-in, register and onboarding still land on `/today`, and the homepage is unchanged. `/login?next=/world` returns to `/world`, as it does for any page.
 - **Names:** product names only: Today, Courses, Community, Leaderboard, Mining and Store. The DR-24 vocabulary (Command Center, Arena, Vault, Treasury, Network, HQ) stays retired.
@@ -307,7 +308,7 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **No decorative loops:** nothing in the scene moves unless the member moves.
 - **Versions:** `three`, `postprocessing`, `n8ao` and `@types/three` are pinned to exact versions and upgraded together.
 - **Security:** the page calls `requireUser()` (DR-3). Its loader, `packages/core/src/world/load.ts`, only reads. `/world` is `noindex`, disallowed in `robots.ts` and absent from the sitemap. The CSP is unchanged.
-- **Checked by:** the core tests `packages/core/test/world-*.test.ts`, and browser journey 9 in `scripts/e2e/journeys.mjs` (with `TH_WORLD_ENGINE=1` it also loads the engine on Chromium's software GPU).
+- **Checked by:** the core tests `packages/core/test/world-*.test.ts`, and browser journey 9 in `scripts/e2e/journeys.mjs` (with `TH_WORLD_ENGINE=1` it also loads the engine on Chromium's software GPU and drives each way back to 2D).
 - **Supersedes:** only DR-24's removal of `/world` and its temporary redirect to `/today`. The rest of DR-24 stands, and DR-17, DR-18 and DR-21 to DR-23 stay superseded.
 
 ## How to use this file going forward

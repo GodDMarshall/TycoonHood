@@ -7,9 +7,11 @@
  * host shows it unchanged until the device decides, once, in an effect after
  * hydration: the device gate first, the GPU only if that passes. Only a 3D
  * decision fetches the engine, with import(), so a 2D visit and every other
- * page never download three.js. Every way back to 2D (a failed load, a lost
- * GPU, slow frames, reduced motion, the member's own choice) disposes the
- * engine down to its GL context.
+ * page never download three.js. The 2D page stays up while the campus loads,
+ * with a way to stop it, and a load that makes no progress for 20 seconds
+ * gives up. Every way back to 2D (a failed or stalled load, a lost GPU, slow
+ * frames, reduced motion, a window made too narrow, the member's own choice)
+ * stops the downloads and disposes the engine down to its GL context.
  *
  * The root carries the state for tests: data-world-mode (deciding, loading,
  * 3d, 2d), data-world-fallback (why it is 2D) and data-world-engine (idle,
@@ -18,7 +20,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon, buttonStyles, cn } from "@tycoonhood/ui";
 import type { BuildingId, WorldState } from "@tycoonhood/core/src/world/state";
-import type { Tier, WorldDecision, WorldFallbackReason } from "@tycoonhood/core/src/world/gate";
+import { MIN_WORLD_WIDTH, cadenceOf, type Tier, type WorldDecision, type WorldFallbackReason } from "@tycoonhood/core/src/world/gate";
 import type { WorldAssets } from "./engine/assets";
 import type { Projected, Prompt, RoomData, Space, World, WorldHandlers } from "./engine/world";
 import { decide, deviceEligible } from "./probe";
@@ -43,7 +45,7 @@ type Engine = "idle" | "loading" | "loaded" | "disposed";
 const WHY: Record<WorldFallbackReason, string> = {
   phone: "The 3D campus is made for a computer. Everything in it is below.",
   tablet: "The 3D campus is made for a computer. Everything in it is below.",
-  narrow: "Make the window at least 1024 pixels wide to walk the campus.",
+  narrow: "The campus needs a window at least 1024 pixels wide.",
   "reduced-motion": "Your device asks for less motion, so the campus stays 2D.",
   "save-data": "Data saver is on, so the campus stays 2D.",
   "no-webgl2": "This browser can't draw the campus smoothly.",
@@ -56,6 +58,10 @@ const WHY: Record<WorldFallbackReason, string> = {
 
 const KEYS = "3D campus. W A S D or arrow keys to walk, Enter to go in, Escape to leave.";
 const MOTION = "(prefers-reduced-motion: reduce)";
+/** A load that makes no progress for this long gives up, and the page stays 2D with 'Try again'. */
+const STALL_MS = 20_000;
+/** How long a window stays too narrow before the campus closes, so a drag across the line doesn't close it. */
+const NARROW_MS = 250;
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
@@ -80,6 +86,30 @@ function feed(w: World, s: WorldState) {
   w.setPresence(s.presence);
 }
 
+/**
+ * The display's own frame interval, read with an empty frame loop while the
+ * campus loads and nothing heavy is drawn. Some browsers cap the frame rate
+ * (30 Hz in Chrome's Energy Saver or Safari's Low Power Mode), and the engine
+ * judges its frames against this, not against 60 Hz.
+ */
+function watchCadence(): () => number | null {
+  const gaps: number[] = [];
+  let last = -1;
+  let id = requestAnimationFrame(function tick(now) {
+    if (last >= 0 && gaps.push(now - last) > 240) gaps.shift();
+    last = now;
+    id = requestAnimationFrame(tick);
+  });
+  let result: number | null | undefined;
+  return () => {
+    if (result === undefined) {
+      cancelAnimationFrame(id);
+      result = cadenceOf(gaps);
+    }
+    return result;
+  };
+}
+
 export function WorldHost({ state, fallback }: { state: WorldState; fallback: ReactNode }) {
   const [view, setView] = useState<View>({ mode: "deciding" });
   const [engine, setEngine] = useState<Engine>("idle");
@@ -94,11 +124,22 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
   const [help, setHelp] = useState(true);
   const [labels, setLabels] = useState<string[]>([]);
   const [height, setHeight] = useState("max(520px, calc(100dvh - 4rem))");
+  /** What the status line says once the campus is up: where the member is. */
+  const [said, setSaid] = useState<string | null>(null);
 
+  const strip = useRef<HTMLDivElement>(null);
+  const status = useRef<HTMLParagraphElement>(null);
+  const page = useRef<HTMLDivElement>(null);
   const frame = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
   const world = useRef<World | null>(null);
   const run = useRef(0);
+  /** Stops the texture downloads of the load in flight. */
+  const loads = useRef<AbortController | null>(null);
+  /** Where focus goes after the next switch, when the element that had it is gone. */
+  const refocus = useRef<"status" | "campus" | null>(null);
+  /** Whether this device's GPU has passed, so a widened window can be offered the campus without asking again. */
+  const gpuChecked = useRef(false);
   const nodes = useRef(new Map<string, HTMLElement>());
   const stateRef = useRef(state);
 
@@ -106,21 +147,31 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
     stateRef.current = state;
   }, [state]);
 
-  /** Back to 2D: abandon any load in flight and release the engine, down to its GL context. */
+  /** Focus is nowhere, or on something this host is about to remove. */
+  const focusLost = useCallback(() => {
+    const a = document.activeElement;
+    return !a || a === document.body || !!frame.current?.contains(a) || !!strip.current?.contains(a);
+  }, []);
+
+  /** Back to 2D: stop any load in flight and release the engine, down to its GL context. */
   const toTwoD = useCallback((reason: WorldFallbackReason, retry = false) => {
     run.current++;
+    loads.current?.abort();
+    loads.current = null;
     const w = world.current;
     world.current = null;
     w?.dispose();
+    refocus.current = focusLost() ? "status" : null;
     setEngine((e) => (e === "idle" ? e : "disposed"));
     setView({ mode: "2d", reason, retry });
+    setSaid(null);
     setSpace("exterior");
     setPrompt(null);
     setFocus(null);
     setHover(null);
     setDark(false);
     setLabels([]);
-  }, []);
+  }, [focusLost]);
 
   /** Labels follow their anchors in container pixels. Runs every frame; never renders. */
   const project = useCallback((points: Projected[]) => {
@@ -162,15 +213,29 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
       return;
     }
     const tier = d.tier;
+    gpuChecked.current = true;
     setView({ mode: "loading" });
     setEngine("loading");
     setProgress(0);
+    setSaid(null);
+
+    const abort = new AbortController();
+    loads.current = abort;
+    const cadence = watchCadence();
+    // The watchdog: restarted by every step of the load, it gives up after STALL_MS without one.
+    let stall = 0;
+    const wake = () => {
+      window.clearTimeout(stall);
+      stall = window.setTimeout(() => live() && toTwoD("load-failed", true), STALL_MS);
+    };
+    wake();
 
     const handlers: WorldHandlers = {
       onSpace: (s) => {
         setSpace(s);
         setFocus(null);
         setHover(null);
+        setSaid(s === "exterior" ? "You're back on the campus." : `You're in ${SECTION[s].name}.`);
       },
       onPrompt: setPrompt,
       onHover: setHover,
@@ -193,31 +258,52 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
         ]);
         release = lib.disposeAssets;
         if (!live()) return;
-        assets = await lib.loadWorldAssets({ anisotropy: 8, onProgress: (p) => live() && setProgress(p) });
+        wake();
+        assets = await lib.loadWorldAssets({
+          anisotropy: 8,
+          signal: abort.signal,
+          onProgress: (p) => {
+            if (!live()) return;
+            wake();
+            setProgress(p);
+          },
+        });
         const el = host.current;
         if (!live() || !el) throw new Error("The campus was closed while it loaded.");
         const w = new engineModule.World(el, assets, tier, handlers);
         assets = null; // the world owns them now, and releases them in dispose()
         world.current = w;
+        loads.current = null;
+        const ms = cadence();
+        if (ms !== null) w.setCadence(ms);
         feed(w, stateRef.current);
+        // The 2D page is about to go: if focus was on it, it moves to the campus that replaces it.
+        if (page.current?.contains(document.activeElement)) refocus.current = "campus";
         setEngine("loaded");
         setView({ mode: "3d", tier });
       } catch {
         if (assets && release) release(assets);
         if (live()) toTwoD("load-failed", true);
+      } finally {
+        window.clearTimeout(stall);
+        cadence();
       }
     })();
 
     return () => {
       cancelled = true;
+      abort.abort();
+      window.clearTimeout(stall);
+      cadence();
       const w = world.current;
       world.current = null;
       w?.dispose();
     };
   }, [attempt, toTwoD, project]);
 
-  const active = view.mode === "loading" || view.mode === "3d";
+  const loading = view.mode === "loading";
   const ready = view.mode === "3d";
+  const active = loading || ready;
 
   // Reduced motion switched on while the campus is open: close it.
   useEffect(() => {
@@ -231,13 +317,29 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
   }, [active, toTwoD]);
 
   // After '2D view', or a window that was too narrow: offer the campus again while the device gate passes.
+  // A window that was narrow from the start never reached the GPU check, so the
+  // first time it is wide enough the whole decision runs once: the campus is
+  // offered only if it would open, and otherwise the line gives the real reason.
   const reopenable = view.mode === "2d" && (view.reason === "chosen" || view.reason === "narrow");
   useEffect(() => {
     if (!reopenable) {
       setOffer(false);
       return;
     }
-    const check = () => setOffer(deviceEligible());
+    const check = () => {
+      if (!deviceEligible()) return setOffer(false);
+      if (!gpuChecked.current) {
+        gpuChecked.current = true;
+        let d: WorldDecision;
+        try {
+          d = decide();
+        } catch {
+          d = { mode: "2d", reason: "no-webgl2" };
+        }
+        if (d.mode === "2d") return setView({ mode: "2d", reason: d.reason, retry: false });
+      }
+      setOffer(true);
+    };
     check();
     const mq = window.matchMedia(MOTION);
     window.addEventListener("resize", check);
@@ -249,18 +351,44 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
   }, [reopenable]);
 
   // The campus fills the window below whatever sits above it (banners included), never under 520 px.
+  // A window made narrower than the campus allows closes it, as it would never have opened.
   useEffect(() => {
     if (!active) return;
+    let narrow = 0;
     const fit = () => {
       const el = frame.current;
-      if (!el) return;
-      const top = Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY));
-      setHeight(`max(520px, calc(100dvh - ${top}px))`);
+      if (el) {
+        const top = Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY));
+        setHeight(`max(520px, calc(100dvh - ${top}px))`);
+      }
+      window.clearTimeout(narrow);
+      if (window.innerWidth < MIN_WORLD_WIDTH) {
+        narrow = window.setTimeout(() => window.innerWidth < MIN_WORLD_WIDTH && toTwoD("narrow"), NARROW_MS);
+      }
     };
     fit();
     window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
-  }, [active]);
+    return () => {
+      window.removeEventListener("resize", fit);
+      window.clearTimeout(narrow);
+    };
+  }, [active, toTwoD]);
+
+  // Focus never falls to the page's body when the control that had it goes away:
+  // back on 2D it lands on the status line; while a load the member started
+  // runs, it waits there; once the campus is up, it moves into the campus.
+  useEffect(() => {
+    const want = refocus.current;
+    if (!want) return;
+    if (view.mode === "loading") {
+      if (focusLost()) status.current?.focus();
+      return;
+    }
+    refocus.current = null;
+    if (!focusLost()) return;
+    if (view.mode === "2d") status.current?.focus();
+    else if (view.mode === "3d" && want === "campus") host.current?.focus();
+  }, [view.mode, focusLost]);
 
   // Live data reaches the rooms and the markers by the doors.
   useEffect(() => {
@@ -282,7 +410,22 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
     []
   );
 
-  const line = view.mode === "2d" ? (offer && view.reason === "narrow" ? "The window is wide enough now." : WHY[view.reason]) : active ? "Loading the 3D campus." : null;
+  const line =
+    view.mode === "2d"
+      ? offer && view.reason === "narrow"
+        ? "The window is wide enough now."
+        : WHY[view.reason]
+      : loading
+        ? "Loading the 3D campus."
+        : ready
+          ? (said ?? "The 3D campus is ready.")
+          : null;
+  const percent = Math.round(progress * 100);
+  /** 'Walk the campus' and 'Try again': once the campus is up, focus goes into it. */
+  const reopen = () => {
+    refocus.current = "campus";
+    setAttempt((a) => a + 1);
+  };
   const here = space === "exterior" ? null : SECTION[space];
   const inside = here !== null;
 
@@ -293,39 +436,61 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
       data-world-fallback={view.mode === "2d" ? view.reason : undefined}
       data-world-engine={engine}
       data-world-tier={view.mode === "3d" ? view.tier : undefined}
+      className="relative"
     >
       {/* One status line, above the 2D page. Its space is kept from the first paint, so nothing jumps. */}
-      <div className={cn("mx-auto w-full max-w-[1120px] px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10", active && "sr-only")}>
-        <div className={cn("flex min-h-[50px] flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border px-4 py-2", view.mode === "2d" ? "border-line bg-bg-1" : "border-transparent")}>
-          <p role="status" className="min-w-0 flex-1 text-[14px] text-ink-2">
+      <div ref={strip} className={cn("mx-auto w-full max-w-[1120px] px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10", ready && "sr-only")}>
+        <div
+          className={cn(
+            "flex min-h-[50px] flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border px-4 py-2",
+            view.mode === "2d" || loading ? "border-line bg-bg-1" : "border-transparent"
+          )}
+        >
+          <p ref={status} role="status" tabIndex={-1} className="min-w-0 flex-1 text-[14px] text-ink-2">
             {line}
             {view.mode === "deciding" && <noscript>The 3D campus needs JavaScript. Everything in it is below.</noscript>}
           </p>
+          {loading && (
+            <div
+              role="progressbar"
+              aria-label="Loading the 3D campus"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percent}
+              className="h-1 w-32 overflow-hidden rounded-full bg-line"
+            >
+              {/* Nothing to count while the engine itself downloads: a short pulsing bar until the textures start. */}
+              <div className={cn("h-full rounded-full bg-gold transition-[width] duration-300", percent === 0 && "animate-pulse")} style={{ width: `${Math.max(8, percent)}%` }} />
+            </div>
+          )}
+          {loading && (
+            <button type="button" onClick={() => toTwoD("chosen")} className={buttonStyles({ variant: "secondary", size: "sm" })}>
+              2D view
+            </button>
+          )}
           {view.mode === "2d" && view.retry && (
-            <button type="button" onClick={() => setAttempt((a) => a + 1)} className={buttonStyles({ variant: "secondary", size: "sm" })}>
+            <button type="button" onClick={reopen} className={buttonStyles({ variant: "secondary", size: "sm" })}>
               Try again
             </button>
           )}
           {view.mode === "2d" && offer && (
-            <button type="button" onClick={() => setAttempt((a) => a + 1)} className={buttonStyles({ variant: "secondary", size: "sm" })}>
+            <button type="button" onClick={reopen} className={buttonStyles({ variant: "secondary", size: "sm" })}>
               Walk the campus
             </button>
           )}
         </div>
       </div>
 
-      {!active ? (
-        fallback
-      ) : (
-        <div ref={frame} className="relative overflow-hidden bg-bg-0 text-ink-1" style={{ height }}>
+      {/* The 2D page stays until the campus is up. */}
+      {!ready && <div ref={page}>{fallback}</div>}
+
+      {/* While it loads, the campus is laid out but hidden over the 2D page, so the engine can size itself. */}
+      {active && (
+        <div ref={frame} className={cn("overflow-hidden bg-bg-0 text-ink-1", ready ? "relative" : "invisible absolute inset-x-0 top-0")} style={{ height }}>
           <h1 className="sr-only">3D campus</h1>
-          <div
-            ref={host}
-            role="application"
-            tabIndex={0}
-            aria-label={KEYS}
-            className="absolute inset-0 outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--color-ink-3)]"
-          />
+          <div ref={host} role="application" tabIndex={0} aria-label={KEYS} className="peer absolute inset-0" />
+          {/* The campus's focus ring. The canvas covers the host, so the ring is drawn over it. */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden shadow-[inset_0_0_0_2px_var(--color-gold)] peer-focus-visible:block" />
 
           {/* Labels over the buildings and stations, moved by the engine every frame. */}
           <div className="pointer-events-none absolute inset-0">
@@ -481,16 +646,6 @@ export function WorldHost({ state, fallback }: { state: WorldState; fallback: Re
 
           {/* A short fade between spaces. */}
           <div className={cn("pointer-events-none absolute inset-0 bg-black transition-opacity duration-[400ms]", dark ? "opacity-100" : "opacity-0")} />
-
-          {!ready && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-bg-0">
-              <p className="text-[15px] text-ink-2">Loading the campus</p>
-              <div className="h-1 w-64 overflow-hidden rounded-full bg-line">
-                <div className="h-full rounded-full bg-gold transition-[width] duration-300" style={{ width: `${Math.round(progress * 100)}%` }} />
-              </div>
-              <p className="text-[12.5px] tabular-nums text-ink-3">{Math.round(progress * 100)}%</p>
-            </div>
-          )}
         </div>
       )}
     </section>
