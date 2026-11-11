@@ -41,12 +41,18 @@ export function onLeaderboard(privacy: unknown): boolean {
   return (privacy as Record<string, unknown>).leaderboard !== false;
 }
 
+/** The period's bounds: this week from Monday, or all time. */
+function span(period: LeaderboardPeriod, now: Date): { since: Date; until: Date } {
+  const since = period === "week" ? weekStart(now) : new Date(0);
+  const until = period === "week" ? new Date(since.getTime() + 7 * 86_400_000) : new Date("9999-12-31T00:00:00Z");
+  return { since, until };
+}
+
 export class LeaderboardService {
   constructor(private readonly db: PrismaClient = defaultPrisma) {}
 
   async board(viewerId: string | null, period: LeaderboardPeriod, now = new Date(), size = LEADERBOARD_SIZE): Promise<Leaderboard> {
-    const since = period === "week" ? weekStart(now) : new Date(0);
-    const until = period === "week" ? new Date(since.getTime() + 7 * 86_400_000) : new Date("9999-12-31T00:00:00Z");
+    const { since, until } = span(period, now);
     const limit = Math.min(Math.max(size, 1), 200);
 
     const top = await this.db.$queryRaw<{ userId: string; xp: number }[]>`
@@ -91,34 +97,41 @@ export class LeaderboardService {
       });
     });
 
-    let viewer: Leaderboard["viewer"] = { hidden: false, xp: 0, position: null };
-    if (viewerId) {
-      const profile = await this.db.profile.findUnique({ where: { userId: viewerId }, select: { privacy: true } });
-      const mine = await this.db.xpEvent.aggregate({
-        where: { userId: viewerId, createdAt: { gte: since, lt: until } },
-        _sum: { amount: true },
-      });
-      const xp = mine._sum.amount ?? 0;
-      if (!onLeaderboard(profile?.privacy)) {
-        viewer = { hidden: true, xp, position: null };
-      } else if (xp > 0) {
-        const ahead = await this.db.$queryRaw<{ n: number }[]>`
-          SELECT count(*)::int AS n FROM (
-            SELECT e."userId"
-            FROM "XpEvent" e
-            JOIN "User" u ON u.id = e."userId"
-            LEFT JOIN "Profile" p ON p."userId" = u.id
-            WHERE u."suspendedAt" IS NULL
-              AND e."createdAt" >= ${since} AND e."createdAt" < ${until}
-              AND (p.privacy ->> 'leaderboard') IS DISTINCT FROM 'false'
-            GROUP BY e."userId"
-            HAVING SUM(e.amount) > ${xp}
-          ) t`;
-        viewer = { hidden: false, xp, position: Number(ahead[0]?.n ?? 0) + 1 };
-      }
-    }
-
+    const viewer = viewerId ? await this.viewerStanding(viewerId, since, until) : { hidden: false, xp: 0, position: null };
     return { period, since: period === "week" ? since.toISOString() : null, rows, viewer };
+  }
+
+  /**
+   * The viewer's own place only, the same figures as board().viewer: no top
+   * rows and nobody else's identity, for pages that show the viewer alone.
+   */
+  async standing(viewerId: string, period: LeaderboardPeriod, now = new Date()): Promise<Leaderboard["viewer"]> {
+    const { since, until } = span(period, now);
+    return this.viewerStanding(viewerId, since, until);
+  }
+
+  private async viewerStanding(viewerId: string, since: Date, until: Date): Promise<Leaderboard["viewer"]> {
+    const profile = await this.db.profile.findUnique({ where: { userId: viewerId }, select: { privacy: true } });
+    const mine = await this.db.xpEvent.aggregate({
+      where: { userId: viewerId, createdAt: { gte: since, lt: until } },
+      _sum: { amount: true },
+    });
+    const xp = mine._sum.amount ?? 0;
+    if (!onLeaderboard(profile?.privacy)) return { hidden: true, xp, position: null };
+    if (!(xp > 0)) return { hidden: false, xp: 0, position: null };
+    const ahead = await this.db.$queryRaw<{ n: number }[]>`
+      SELECT count(*)::int AS n FROM (
+        SELECT e."userId"
+        FROM "XpEvent" e
+        JOIN "User" u ON u.id = e."userId"
+        LEFT JOIN "Profile" p ON p."userId" = u.id
+        WHERE u."suspendedAt" IS NULL
+          AND e."createdAt" >= ${since} AND e."createdAt" < ${until}
+          AND (p.privacy ->> 'leaderboard') IS DISTINCT FROM 'false'
+        GROUP BY e."userId"
+        HAVING SUM(e.amount) > ${xp}
+      ) t`;
+    return { hidden: false, xp, position: Number(ahead[0]?.n ?? 0) + 1 };
   }
 }
 

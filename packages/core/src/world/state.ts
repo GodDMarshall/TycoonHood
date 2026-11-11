@@ -70,8 +70,12 @@ export interface WorldState {
     wallet: string;
   };
   store: { cart: number; wishlist: number; orders: number; affiliate: "NONE" | AffiliateStatus };
-  /** House-wide counts for the last 24 hours. The store never shows one. */
-  presence: { today: number; courses: number; community: number; leaderboard: number; mining: number; store: null };
+  /**
+   * House-wide counts for the last 24 hours. The store never shows one.
+   * community counts chat messages and every post; discussions only the
+   * posts in the main discussions feed.
+   */
+  presence: { today: number; courses: number; community: number; leaderboard: number; mining: number; store: null; discussions: number };
 }
 
 export function levelProgress(xp: number, level: number): Omit<WorldState["me"], "rank"> {
@@ -139,5 +143,11 @@ export function rankBuckets(
   for (const g of groups) if (g.rankId) counts.set(g.rankId, (counts.get(g.rankId) ?? 0) + g.members);
   return [...defs]
     .sort((a, b) => a.sortOrder - b.sortOrder)
-    .map((d) => ({ name: d.name, members: counts.get(d.id) ?? 0, you: myRankId !== null && d.id === myRankId }));
+    .map((d) => {
+      const you = myRankId !== null && d.id === myRankId;
+      const members = counts.get(d.id) ?? 0;
+      // The counts can be a minute old and the member's rank never is: just after
+      // a rank-up their new rank holds at least them.
+      return { name: d.name, members: you ? Math.max(1, members) : members, you };
+    });
 }

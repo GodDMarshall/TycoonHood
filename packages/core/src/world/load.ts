@@ -6,8 +6,8 @@
  * campus changes nothing; it only looks.
  *
  * PRIVATE. The result holds the viewer's own figures and house-wide counts
- * (DR-22). Other members are numbers, never people: board() reads the
- * leaderboard's rows and they are dropped here, unread.
+ * (DR-22). Other members are numbers, never people: the week's place comes
+ * from standing(), which reads no one else's row.
  *
  * House-wide counts (presence and members per rank) hold nobody's data, so
  * they are kept for 60 seconds per process; `fresh: true` reads them anew.
@@ -16,6 +16,7 @@ import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import { StandardService } from "../standard/standard";
 import { LeaderboardService } from "../discussions/leaderboard";
+import { DiscussionService } from "../discussions/discussions";
 import { CommunityService } from "../community/community";
 import { CartService } from "../shop/cart";
 import { nextLesson } from "../lms/gating";
@@ -43,7 +44,7 @@ const houseMemo = new WeakMap<PrismaClient, { at: number; value: Promise<HouseCo
 /** Counts across the whole house for the 24 hours before `now`. */
 async function readHouse(db: PrismaClient, now: Date): Promise<HouseCounts> {
   const since = new Date(now.getTime() - DAY_MS);
-  const [standards, lessons, messages, posts, unlocks, claims, ranks] = await Promise.all([
+  const [standards, lessons, messages, posts, discussions, unlocks, claims, ranks] = await Promise.all([
     // Members, not days: one member can meet two local days inside 24 hours.
     db.$queryRaw<{ n: number }[]>`
       SELECT count(DISTINCT "userId")::int AS n FROM "StandardDay" WHERE "metAt" >= ${since}`,
@@ -52,6 +53,17 @@ async function readHouse(db: PrismaClient, now: Date): Promise<HouseCounts> {
       where: { createdAt: { gte: since }, deletedAt: null, channel: { courseId: null, archivedAt: null } },
     }),
     db.communityPost.count({ where: { state: "VISIBLE", createdAt: { gte: since } } }),
+    // The posts a member sees in the discussions feed: no group posts, no archived categories.
+    new DiscussionService(db).archived().then(({ categories }) =>
+      db.communityPost.count({
+        where: {
+          state: "VISIBLE",
+          groupId: null,
+          createdAt: { gte: since },
+          ...(categories.length ? { OR: [{ categoryId: null }, { categoryId: { notIn: categories } }] } : {}),
+        },
+      })
+    ),
     db.userAchievement.count({ where: { unlockedAt: { gte: since } } }),
     db.ledgerTransaction.count({ where: { reason: "REWARD_MINING", status: "POSTED", createdAt: { gte: since } } }),
     db.user.groupBy({
@@ -68,6 +80,7 @@ async function readHouse(db: PrismaClient, now: Date): Promise<HouseCounts> {
       leaderboard: unlocks,
       mining: claims,
       store: null,
+      discussions,
     },
     ranks: ranks.map((r) => ({ rankId: r.rankId, members: r._count._all })),
   };
@@ -86,9 +99,13 @@ function houseCounts(db: PrismaClient, now: Date, fresh: boolean): Promise<House
   return value;
 }
 
+/**
+ * `unread` is the member's unread total when the caller already has it (the
+ * web app's sidebar reads the same figure), so it is worked out once.
+ */
 export async function loadWorldState(
   userId: string,
-  opts: { now?: Date; db?: PrismaClient; fresh?: boolean } = {}
+  opts: { now?: Date; db?: PrismaClient; fresh?: boolean; unread?: number } = {}
 ): Promise<WorldState> {
   const db = opts.db ?? defaultPrisma;
   const now = opts.now ?? new Date();
@@ -149,9 +166,9 @@ export async function loadWorldState(
       },
     }),
     db.certificate.count({ where: { userId } }),
-    new CommunityService(db).unreadTotal({ id: userId, role: user.role }, user.createdAt),
+    opts.unread ?? new CommunityService(db).unreadTotal({ id: userId, role: user.role }, user.createdAt),
     db.challengeParticipation.count({ where: { userId, status: "JOINED" } }),
-    new LeaderboardService(db).board(userId, "week", now, 1).then((b) => b.viewer),
+    new LeaderboardService(db).standing(userId, "week", now),
     db.achievement.findMany({ where: { active: true }, select: { id: true, isSecret: true } }),
     db.userAchievement.findMany({ where: { userId }, select: { achievementId: true } }),
     db.minerState.findUnique({ where: { userId }, select: { rigLevel: true, lastClaimAt: true } }),

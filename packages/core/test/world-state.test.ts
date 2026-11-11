@@ -110,6 +110,17 @@ describe("ranks", () => {
     expect(rankBuckets(defs, [], null).some((b) => b.you)).toBe(false);
   });
 
+  it("counts the viewer in their own rank, even when the counts predate their rank-up", () => {
+    // Counts read before the member moved from Recruit to Builder.
+    const buckets = rankBuckets(defs, [{ rankId: "r1", members: 22 }], "r2");
+    expect(buckets).toEqual([
+      { name: "Recruit", members: 22, you: false },
+      { name: "Builder", members: 1, you: true },
+      { name: "Tycoon", members: 0, you: false },
+    ]);
+    expect(rankBuckets(defs, [{ rankId: "r2", members: 7 }], "r2").find((b) => b.you)?.members).toBe(7);
+  });
+
   it("places the viewer on the ladder", () => {
     expect(rankOf(defs, "r2")).toEqual({ name: "Builder", index: 2, total: 3 });
     expect(rankOf(defs, null)).toBeNull();
@@ -143,7 +154,7 @@ describe("the contract", () => {
     },
     mining: miningView({ rigLevel: 2, lastClaimAt: new Date(NOW.getTime() - 3_600_000) }, 5_000n, NOW),
     store: { cart: 2, wishlist: 1, orders: 3, affiliate: "PENDING" },
-    presence: { today: 5, courses: 12, community: 30, leaderboard: 2, mining: 9, store: null },
+    presence: { today: 5, courses: 12, community: 30, leaderboard: 2, mining: 9, store: null, discussions: 4 },
   };
 
   it("is JSON-safe", () => {

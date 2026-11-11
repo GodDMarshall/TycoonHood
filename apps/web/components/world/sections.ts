@@ -116,6 +116,11 @@ export function presenceLine(id: BuildingId, s: WorldState): string | null {
   return SECTION[id].presence(s.presence[id]);
 }
 
+/** The Discussions station's sentence: the discussions feed's posts only, not chat. */
+export function discussionsLine(s: WorldState): string | null {
+  return lastDay("discussion post", "discussion posts")(s.presence.discussions);
+}
+
 /** A building's links. A member hidden from the leaderboard also gets the setting that hides them. */
 export function linksFor(id: BuildingId, s: WorldState): SectionLink[] {
   const links = SECTION[id].links;

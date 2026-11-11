@@ -12,7 +12,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon, buttonStyles, cn, type IconName } from "@tycoonhood/ui";
 import type { BuildingId, WorldState } from "@tycoonhood/core/src/world/state";
-import { SECTION, facts, lessonHref, linksFor, num, presenceLine, storageLine, weekLine, type Fact } from "../sections";
+import { SECTION, discussionsLine, facts, lessonHref, linksFor, num, presenceLine, storageLine, weekLine, type Fact } from "../sections";
 
 const PILLAR_COLOR: Record<string, string> = {
   WARRIOR: "var(--color-warrior)",
@@ -238,7 +238,7 @@ export function StationPanel({ stationKey, s }: { stationKey: string; s: WorldSt
         </Frame>
       );
     case "community-1": {
-      const line = presenceLine("community", s);
+      const line = discussionsLine(s);
       return (
         <Frame title="Discussions">
           {line && <p>{line}.</p>}

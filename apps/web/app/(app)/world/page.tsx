@@ -14,6 +14,6 @@ export const dynamic = "force-dynamic";
  */
 export default async function WorldPage() {
   const user = await requireUser();
-  const state = await getWorldState(user.id);
+  const state = await getWorldState(user.id, user.role, user.createdAt.getTime());
   return <WorldHost state={state} fallback={<WorldFallback state={state} />} />;
 }
