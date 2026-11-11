@@ -13,6 +13,7 @@ import { Avatar, Icon, Logo, cn, type IconName } from "@tycoonhood/ui";
 import { logoutAction } from "../../app/(auth)/actions";
 import { ACCOUNT_NAV, PRIMARY_NAV, SECONDARY_NAV, TAB_NAV, TAB_OVERFLOW_NAV, isActive, type AppNavItem } from "./nav";
 import { InstallAppButton } from "./install-app";
+import { WorldLink } from "../world/world-link";
 
 export type ShellUser = { name: string; username: string | null; avatarUrl: string | null; rank: string | null; isAdmin: boolean };
 export type ShellData = {
@@ -208,6 +209,7 @@ export function Sidebar({ data }: { data: ShellData }) {
           count={data.unreadNotifications}
         />
         <InstallAppButton variant="sidebar" />
+        <WorldLink />
         <div className="mt-1">
           <UserMenu user={data.user} />
         </div>

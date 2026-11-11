@@ -57,7 +57,12 @@ const nextConfig = {
   transpilePackages: ["@tycoonhood/db", "@tycoonhood/core", "@tycoonhood/config", "@tycoonhood/ui"],
   serverExternalPackages: ["@prisma/client", "prisma", "pg", "@node-rs/argon2"],
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      // The 3D campus's textures (DR-30), fetched only once a device draws it.
+      // Not content-hashed, so cached for a day, never as immutable.
+      { source: "/world/tex/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }] },
+    ];
   },
   // The academy rebuild (DR-24) renamed member rooms. Old links — in
   // notifications, bookmarks, emails — keep working. Temporary on purpose:
@@ -65,7 +70,6 @@ const nextConfig = {
   async redirects() {
     return [
       { source: "/dashboard", destination: "/today", permanent: false },
-      { source: "/world", destination: "/today", permanent: false },
       { source: "/academy", destination: "/courses", permanent: false },
       { source: "/academy/:slug", destination: "/courses/:slug", permanent: false },
       { source: "/academy/:slug/lesson/:lessonId", destination: "/courses/:slug/lesson/:lessonId", permanent: false },
