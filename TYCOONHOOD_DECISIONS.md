@@ -252,6 +252,7 @@ Each needs a product-level judgment. I have not made these for you; I state the 
 - **OQ-N · "Burned, not minted."** The rig upgrade copy says the cost is burned. In the ledger it is a spend to the REVENUE system account — it leaves the member's wallet and no new THC is created, but it is not destroyed. The Mining page says exactly that. Decide whether upgrades should truly burn (move to a sink account excluded from supply) or whether "burned" should leave the copy.
 - **OQ-O · The old Miner app.** `apps/miner` now only forwards (308) to `/mining`. Its old components, actions and auth file are unused but still compile. Delete the app, or keep it as a redirect for old installs/bookmarks?
 - **OQ-M · Memberships.** Everything is still free to join and enroll in (OQ-C). The academy now has the shape of a paid product; pricing is your call.
+- **OQ-P · An email change the owner did not make.** Someone who knows the password and controls the new address can confirm a change before the owner reacts (DR-32). Two ways to close it: (1) an undo link in the "your email was changed" notice, valid about 7 days, that restores the old address, signs out every session and asks for a new password (the old address must be held for those days so no one else can register it); (2) holding the switch for a waiting period during which the old address can cancel it. Either changes how every member's email change works, so it is your call.
 
 ### DR-27 — The Miner lives inside the app; the product is illustrated
 
@@ -302,6 +303,7 @@ Each needs a product-level judgment. I have not made these for you; I state the 
   - With no mail provider, an email change is refused: its link could never arrive.
   - Resending the change link shares the confirmation-resend limit: three an hour per member.
 - **Not unique:** two accounts may wait for the same address. The unique `email` decides who gets it; the other confirmation fails with a clear message and the waiting change is dropped.
+- **Not closed:** someone who knows the password and controls the new address can still move the account with one click on the link. The link is sent before the notice to the current address. Afterwards the old address is told and pointed to Contact, but there is no undo link and no staff tool to put an address back. How to close this is OQ-P.
 
 ## How to use this file going forward
 Add a Part B entry (or a new `D##` if it's architectural and adopted) for any decision that changes architecture, product scope, the economy, the design contract, or a security posture. Never edit a preserved entry to change its meaning — supersede it with a dated new entry that references the old ID. When an OPEN item is decided, change its status to ADOPTED/REJECTED with the date and a one-line outcome; leave the reasoning intact.
