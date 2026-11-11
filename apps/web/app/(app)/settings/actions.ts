@@ -105,6 +105,10 @@ export async function resendVerificationAction(_prev: FormState, _fd: FormData):
   // With no mail provider, say so without issuing a link: issuing would
   // replace any link already sent and use up one of the three an hour.
   if (mailMode() === "off") return verificationResendReply("no-mailer", user.email);
+  // A cheap first gate for bursts in this process. The limit that counts is
+  // core's: three an hour, counted and recorded in one locked transaction.
+  const r = rateLimit(`verify-resend:${user.id}`, 5, 60 * 60_000);
+  if (!r.ok) return { error: "Too many attempts. Try again later." };
   try {
     const outcome = await sendVerificationEmail(await emailVerification.resend(user.id));
     // A new link replaced the old one, or none is left if sending failed, so

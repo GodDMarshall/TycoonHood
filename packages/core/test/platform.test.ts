@@ -9,6 +9,7 @@ import {
   InvalidVerificationTokenError,
   VerificationRateLimitError,
   AlreadyVerifiedError,
+  VERIFY_RESEND_LIMIT,
 } from "../src/platform/email-verification";
 import { SettingsService, SETTING_DEFAULTS, resolveSetting, InvalidSettingError } from "../src/platform/settings";
 import { profileCompletion, ProfileService } from "../src/platform/profile";
@@ -71,6 +72,20 @@ describe("Email verification — token lifecycle", () => {
     await verification.resend(user.id);
     await verification.resend(user.id);
     await expect(verification.resend(user.id)).rejects.toBeInstanceOf(VerificationRateLimitError);
+  });
+
+  it("parallel resends cannot get past the limit", async () => {
+    const user = await createTestUser();
+    await verification.issue(user.id);
+    const results = await Promise.allSettled(Array.from({ length: 8 }, () => verification.resend(user.id)));
+    const sent = results.filter((r) => r.status === "fulfilled");
+    const refused = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+    expect(sent).toHaveLength(VERIFY_RESEND_LIMIT);
+    for (const r of refused) expect(r.reason).toBeInstanceOf(VerificationRateLimitError);
+    const rows = await prisma.auditLog.count({ where: { action: "auth.verify.resend", targetType: "User", targetId: user.id } });
+    expect(rows).toBe(VERIFY_RESEND_LIMIT);
+    // Each resend replaces the link before it, so one link is left.
+    expect(await prisma.verificationToken.count({ where: { identifier: user.email } })).toBe(1);
   });
 
   it("a token for an old address dies when the email changes", async () => {
