@@ -144,9 +144,10 @@ export async function changeEmailAction(_prev: FormState, fd: FormData): Promise
     throw e;
   }
   if (!issued) return { ok: "That is already your email." };
-  const outcome = await sendEmailChangeLink(issued);
-  // After the response, so a slow or failing mail provider never holds up the request.
-  after(() => sendEmailChangeRequestedNotice(issued));
+  // The current address hears about the request no later than the new one gets its link: the
+  // notice is sent first and both go out before the reply. Neither waits on the other, and the
+  // notice never throws, so a failure of either cannot stop the other.
+  const [, outcome] = await Promise.all([sendEmailChangeRequestedNotice(issued), sendEmailChangeLink(issued)]);
   revalidatePath("/settings");
   return emailChangeReply(outcome, issued.newEmail);
 }
