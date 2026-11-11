@@ -1,6 +1,6 @@
 # Architecture
 
-Last updated 11 November 2026 (full-platform build, DR-29).
+Last updated 11 November 2026 (full-platform build, DR-29; the optional 3D campus, DR-31).
 
 ## Shape
 
@@ -22,6 +22,7 @@ A pnpm monorepo with one product app.
 - `(app)`: everything that needs a session.
   - Today, Courses, Certificates, Community (chat, discussions, groups), Leaderboard, Achievements, Mining, Store, Cart, Wishlist, Checkout, Orders, Earnings, Wallet, Profile, Notifications, Settings.
   - Admin lives under `/admin`.
+  - `/world` is the optional 3D campus (DR-31). Its 2D page is the first paint, and the whole page on phones, tablets and software GPUs.
 - `api/webhooks/razorpay`: the payment webhook. The signature is checked before anything is read.
 - `/r/[code]`: the affiliate link. It records a hashed click (raw IPs are never stored), sets a 30-day cookie and redirects.
 
@@ -41,6 +42,8 @@ A pnpm monorepo with one product app.
   - The payment mode comes from the provider: sandbox and `rzp_test_` keys are TEST, and only `rzp_live_` keys are LIVE. Revenue counts LIVE captured payments only.
 - **Audit:** every admin action that changes a user, money, content or settings writes an `AuditLog` row (`platform/audit.ts`). An edit records the fields it changed, from and to (`auditChanges`). Settling a legacy rupee order by hand (`commerce/manual-settlement.ts`) is audited, and refused for an order with a Payment row.
 - **CSP** is in `apps/web/next.config.mjs`. It allows Razorpay's checkout script and frames, and YouTube for lesson video.
+- **The 3D campus** (`/world`, DR-31) calls `requireUser()` in the page. Its loader, `packages/core/src/world/load.ts`, only reads: the member's own figures and house-wide counts, never another member's name or email. The CSP did not change for it.
+  - **Bundle rule:** three.js reaches the browser only through `components/world/world-host.tsx`, by `import()` once the device and GPU gates pass. An ESLint rule (`eslint.config.mjs`) rejects any other import of `three`, `postprocessing`, `n8ao` or the engine folders, and `node scripts/world/check-bundle.mjs`, run after `pnpm build:web`, fails if any route's chunks carry three.
 
 ## How the pieces talk
 
@@ -63,3 +66,4 @@ A pnpm monorepo with one product app.
 | Earn | `earn/affiliates.ts` | `(public)/earn`, `earnings`, `admin/earn`, `r/[code]` |
 | Platform | `platform/*` (settings, CMS, members, analytics, audit) | `admin/members/**`, `admin/site`, `admin/analytics`, `admin/audit` |
 | Mining (THC) | `mining/*`, `growth/*` | `mining/**` |
+| 3D campus (optional, DR-31) | `world/*` (gate, state contract, loader) | `world`, `components/world/**`, `lib/world-state.ts`, `public/world/tex`, `scripts/world/*` |

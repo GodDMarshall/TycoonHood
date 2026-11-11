@@ -114,3 +114,6 @@ export * from "./lms/index-authoring";
 // --- Author content as HTML: the one Markdown renderer and JSON-LD ---
 export { renderMarkdown, sanitizeContentHtml, EXTERNAL_LINK_REL } from "./content/markdown";
 export { jsonLdHtml } from "./content/json-ld";
+
+// --- The optional 3D campus (DR-31) ---
+export * from "./world";

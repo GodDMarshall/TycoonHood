@@ -6,9 +6,10 @@
  */
 import type { ReactNode } from "react";
 import { prisma } from "@tycoonhood/db";
-import { community, can, cartBadge } from "@tycoonhood/core";
+import { can, cartBadge } from "@tycoonhood/core";
 import type { UserRole } from "@tycoonhood/db";
 import { cartItemCount } from "../../lib/cart-count";
+import { unreadCommunity as unreadFor } from "../../lib/unread";
 import { MobileTabBar, MobileTopBar, Sidebar, type ShellData } from "./app-chrome";
 
 type ShellUserRow = {
@@ -28,7 +29,7 @@ export async function AppShell({ user, children }: { user: ShellUserRow; childre
       select: { progressPct: true, course: { select: { slug: true, title: true } } },
     }),
     prisma.notification.count({ where: { userId: user.id, readAt: null } }),
-    community.unreadTotal({ id: user.id, role: user.role }, user.createdAt),
+    unreadFor(user.id, user.role, user.createdAt.getTime()),
     cartItemCount(user.id),
   ]);
 

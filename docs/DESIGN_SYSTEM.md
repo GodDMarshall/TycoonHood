@@ -89,6 +89,10 @@ App compositions (`apps/web/components`):
 - **Website:** Programs · How it works · Store · THC · Journal, *Sign in* and *Join free*. A signed-in member sees one
   button: *Open the app*. Members who open `/programs` or `/marketplace` are taken to `/courses` or `/store`.
 - Every list of destinations is one array (`components/app/nav.ts`), so the sidebar, tabs and sheet cannot disagree.
+- **3D campus (DR-31):** the one exception. A quiet link at the foot of the desktop sidebar, under the install button,
+  reads *3D campus* and is marked *optional*. It appears only where the campus can open (no touch screen as the main
+  pointer, a window at least 1024px wide, no reduced motion or data saver) and is never prefetched. It is not in
+  `nav.ts`, so the tab bar and the More sheet never show it.
 
 ## 5. Screens
 
@@ -102,6 +106,22 @@ App compositions (`apps/web/components`):
 | Profile | the record: streaks, met days, lessons, certificates, rank and what earns it, achievements |
 | Admin → Community / Daily standard | reports queue, mutes, channels, announcements · the house standard |
 
+### Optional 3D campus (`/world`, DR-31)
+
+- **The 2D page is complete on its own.** One card per building (Today, Courses, Community, Leaderboard, Mining,
+  Store) with the member's own figures, a count for the last 24 hours where there is one, and every link. Phones,
+  tablets, narrow windows, reduced motion, data saver, no WebGL2 and software GPUs see only this page, with one plain
+  line that says why.
+- **The only entry** is the sidebar link marked *optional* (see §4).
+- **The HUD** is the place name, Leave (Esc), 2D view, Help, the building dock and the door prompt; labels over the
+  buildings and stations, where the station in front of the member opens into a small panel; and, inside a building,
+  a panel with its figures and links. Panels are solid `bg-1`. Nothing else: no chips, minimap, mono uppercase, serif
+  accents or glass.
+- **Gold** marks one thing: *Continue*, the next lesson.
+- **Nothing loops for decoration.** The scene moves only when the member moves.
+- **Product names only**, in sentence case. Every action is a link into the 2D app; nothing in the campus changes
+  anything by itself.
+
 ## 6. Asset strategy
 
 | Kind | Used for | Why |
@@ -110,10 +130,12 @@ App compositions (`apps/web/components`):
 | App icons | `apps/web/public/icons` (generated from `app/icon.svg`) | home-screen install |
 | Photography | none yet | there is no photography that is ours; see OQ-F |
 
-No stock photography, no AI people, no cartoon illustration, no 3D.
+No stock photography, no AI people, no cartoon illustration, no 3D. The one exception is the optional 3D campus at
+`/world` (DR-31).
 
 ## 7. Don'ts
 
-Game HUDs, 3D worlds, "rooms" and "districts", monospace uppercase labels, blueprint grids, purple/neon, gradient
-text, glass cards, candlestick charts, "to the moon", wolves and lions, luxury-car flexing, emoji as icons, fake
-numbers, leaderboards, anything that rewards chat volume.
+3D anywhere except `/world` (DR-31); game HUDs; "rooms" and "districts" as product language; monospace uppercase
+labels; blueprint grids; purple/neon; gradient text; glass cards; candlestick charts; "to the moon"; wolves and lions;
+luxury-car flexing; emoji as icons; fake numbers; leaderboards that rank money or THC, or that reward chat volume (the
+DR-29 leaderboard ranks XP only); anything else that rewards chat volume.
