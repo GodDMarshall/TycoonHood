@@ -18,7 +18,7 @@
  * Every read goes through `canRead`; every projection leaves out what the
  * viewer may not see (a removed message's body, other members' emails).
  */
-import { isStaff } from "../auth/permissions";
+import { isAdmin, isStaff } from "../auth/permissions";
 import { clip } from "../text/clip";
 import type { UserRole } from "@tycoonhood/db";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
@@ -130,6 +130,18 @@ export function cleanUrl(raw: string | null | undefined): string | null {
   }
   if (u.protocol !== "https:" && u.protocol !== "http:") throw new CommunityError("Proof links must start with http:// or https://.");
   return u.toString();
+}
+
+/**
+ * Why this viewer may not lift this mute, or null when they may. Staff share
+ * moderation, except that nobody lifts their own mute and only an admin lifts
+ * a mute an admin set.
+ */
+export function liftRefusal(viewer: Viewer, mute: { userId: string; setByAdmin: boolean }): string | null {
+  if (!isStaff(viewer)) return "Only staff lift mutes.";
+  if (mute.userId === viewer.id) return "You cannot lift your own mute.";
+  if (mute.setByAdmin && !isAdmin(viewer)) return "An admin set this mute. Only an admin can lift it.";
+  return null;
 }
 
 export class CommunityService {
@@ -402,14 +414,24 @@ export class CommunityService {
 
   // ─────────────────────────────── moderation
 
-  /** Authors remove their own messages; staff remove anyone's. */
+  /** Authors remove their own messages; staff remove anyone's. A removed reply's
+   *  text also leaves the notification the member it answered got for it. */
   async remove(viewer: Viewer, messageId: string, now = new Date()) {
-    const m = await this.db.message.findUnique({ where: { id: messageId }, select: { id: true, authorId: true, deletedAt: true } });
+    const m = await this.db.message.findUnique({
+      where: { id: messageId },
+      select: { id: true, authorId: true, deletedAt: true, replyTo: { select: { authorId: true } } },
+    });
     if (!m) throw new CommunityError("That message no longer exists.");
     const staff = isStaff(viewer);
     if (m.authorId !== viewer.id && !staff) throw new CommunityError("You can only remove your own messages.");
     if (m.deletedAt) return;
     await this.db.message.update({ where: { id: m.id }, data: { deletedAt: now, deletedById: viewer.id, pinnedAt: null } });
+    if (m.replyTo) {
+      await this.db.notification.updateMany({
+        where: { userId: m.replyTo.authorId, type: "COMMUNITY", data: { path: ["messageId"], equals: m.id } },
+        data: { body: null },
+      });
+    }
     if (staff) {
       await this.db.messageReport.updateMany({
         where: { messageId: m.id, resolvedAt: null },
@@ -494,9 +516,21 @@ export class CommunityService {
     }
   }
 
+  /** Whether this user is an admin now. A mute records who set it by id only. */
+  private async isAdminId(userId: string) {
+    return isAdmin(await this.db.user.findUnique({ where: { id: userId }, select: { role: true } }));
+  }
+
+  /** Staff share moderation, with one rule above it: a non-admin cannot mute an
+   *  admin, or replace a mute an admin set. Nobody mutes themselves. */
   async mute(viewer: Viewer, userId: string, until: Date | null, reason: string | null) {
     if (!isStaff(viewer)) throw new CommunityError("Only staff mute members.");
     if (userId === viewer.id) throw new CommunityError("You cannot mute yourself.");
+    if (!isAdmin(viewer)) {
+      if (await this.isAdminId(userId)) throw new CommunityError("Only an admin can mute an admin.");
+      const current = await this.activeMute(userId);
+      if (current && (await this.isAdminId(current.mutedById))) throw new CommunityError("An admin set this mute. Only an admin can change it.");
+    }
     await this.db.communityMute.upsert({
       where: { userId },
       update: { until, reason, mutedById: viewer.id, createdAt: new Date() },
@@ -506,15 +540,25 @@ export class CommunityService {
 
   async unmute(viewer: Viewer, userId: string) {
     if (!isStaff(viewer)) throw new CommunityError("Only staff lift mutes.");
-    await this.db.communityMute.deleteMany({ where: { userId } });
+    const m = await this.db.communityMute.findUnique({ where: { userId }, select: { mutedById: true } });
+    const refusal = liftRefusal(viewer, { userId, setByAdmin: !!m && (await this.isAdminId(m.mutedById)) });
+    if (refusal) throw new CommunityError(refusal);
+    if (m) await this.db.communityMute.deleteMany({ where: { userId } });
   }
 
+  /** Active mutes, newest first, each marked with whether an admin set it. */
   async activeMutes(now = new Date()) {
-    return this.db.communityMute.findMany({
+    const rows = await this.db.communityMute.findMany({
       where: { OR: [{ until: null }, { until: { gt: now } }] },
       orderBy: { createdAt: "desc" },
       include: { user: { select: { profile: { select: { displayName: true, username: true } } } } },
     });
+    const muters = await this.db.user.findMany({
+      where: { id: { in: [...new Set(rows.map((r) => r.mutedById))] } },
+      select: { id: true, role: true },
+    });
+    const adminIds = new Set(muters.filter((u) => isAdmin(u)).map((u) => u.id));
+    return rows.map((r) => ({ ...r, setByAdmin: adminIds.has(r.mutedById) }));
   }
 
   // ─────────────────────────────── channels (staff)

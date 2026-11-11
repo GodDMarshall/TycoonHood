@@ -61,3 +61,18 @@ export async function actorWith(permission: Permission) {
   if (!user || !can(user, permission)) throw new Error("You do not have permission to do that.");
   return user;
 }
+
+/** Gate for a staff surface that any one of these permissions opens. */
+export async function requireAnyPermission(...permissions: Permission[]) {
+  const user = await getCurrentUser();
+  if (!user) redirect(await loginPath());
+  if (!permissions.some((p) => can(user, p))) redirect("/today");
+  return user;
+}
+
+/** For server actions: like actorWith, but any one of these permissions will do. */
+export async function actorWithAny(...permissions: Permission[]) {
+  const user = await getCurrentUser();
+  if (!user || !permissions.some((p) => can(user, p))) throw new Error("You do not have permission to do that.");
+  return user;
+}

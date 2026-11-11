@@ -95,7 +95,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
           ))}
         </Panel>
       )}
-      <p className="mt-6 text-[12.5px] text-ink-3">Top {board.rows.length > 0 ? Math.min(board.rows.length, 50) : 50} shown. Members who opt out in Settings are left off.</p>
+      <p className="mt-6 text-[12.5px] text-ink-3">Top {board.rows.length > 0 ? Math.min(board.rows.length, 50) : 50} shown. Members who hide their XP or opt out in Settings are left off.</p>
     </Page>
   );
 }

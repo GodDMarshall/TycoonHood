@@ -27,7 +27,7 @@ export { LmsService, lms, NotEnrolledError, LessonLockedError, QuizRequiredError
 export { gateLessons, nextLesson, orderLessons } from "./lms/gating";
 export type { Gate, GateLesson, LessonState } from "./lms/gating";
 export {
-  CommunityService, community, CommunityError, cleanUrl,
+  CommunityService, community, CommunityError, cleanUrl, liftRefusal,
   MESSAGE_MAX, PROOF_URL_MAX, REPORT_REASON_MAX, PAGE_SIZE,
 } from "./community/community";
 export type { Viewer, ChannelSummary, MessageView } from "./community/community";

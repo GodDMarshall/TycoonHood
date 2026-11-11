@@ -16,10 +16,17 @@
 import { z } from "zod";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { Prisma, PrismaClient, UserRole } from "@tycoonhood/db";
-import { assertCan, can, ForbiddenError } from "../auth/permissions";
+import { assertCan, can, ForbiddenError, type HasRole, type Permission } from "../auth/permissions";
 import { AuditService } from "../platform/audit";
 
 export type AuthoringActor = { id: string; role: UserRole };
+
+/** Who may hide a programme review: course staff, and community moderators. */
+export const REVIEW_MODERATORS = ["courses.author", "community.moderate"] as const satisfies readonly Permission[];
+
+export function canModerateReviews(user: HasRole): boolean {
+  return REVIEW_MODERATORS.some((p) => can(user, p));
+}
 
 export class AuthoringError extends Error {
   constructor(message: string) {
@@ -470,7 +477,7 @@ export class CourseAuthoringService {
 
   /** Course staff and community moderators can both hide a review. */
   async setReviewHidden(actor: AuthoringActor, reviewId: string, hidden: boolean) {
-    if (!can(actor, "courses.author") && !can(actor, "community.moderate")) throw new ForbiddenError();
+    if (!canModerateReviews(actor)) throw new ForbiddenError();
     const r = await this.db.courseReview.update({ where: { id: reviewId }, data: { hidden } });
     await this.log(actor, hidden ? "review.hide" : "review.unhide", "CourseReview", r.id, { courseId: r.courseId });
     return r;

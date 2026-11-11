@@ -5,7 +5,7 @@
  */
 import "server-only";
 import { prisma } from "@tycoonhood/db";
-import { parseCriteria, describeCriteria, profileCompletion, type ProfileCompletion } from "@tycoonhood/core";
+import { discussions, openPostWhere, parseCriteria, describeCriteria, profileCompletion, type ProfileCompletion } from "@tycoonhood/core";
 import { xpRequiredForLevel } from "@tycoonhood/config";
 
 export type MissionView = {
@@ -47,6 +47,8 @@ export async function loadDashboard(user: {
   profile: { displayName: string; username: string; bio: string | null; avatarUrl: string | null; timezone: string | null; goals: string[]; referralCode: string | null } | null;
 }) {
   const since7d = new Date(Date.now() - 7 * 24 * HOUR);
+  // Posts in archived groups and categories are closed, so they stay off Today.
+  const archive = await discussions.archived();
   const [missions, completions, affiliate, referralGroups, orders, posts, groupCount, notifications, unread] = await Promise.all([
     prisma.mission.findMany({ where: { active: true, repeatable: true }, orderBy: { name: "asc" } }),
     prisma.missionCompletion.findMany({
@@ -62,7 +64,7 @@ export async function loadDashboard(user: {
       select: { id: true, status: true, createdAt: true, totalThc: true, totalFiatCents: true, fiatCurrency: true, _count: { select: { items: true } } },
     }),
     prisma.communityPost.findMany({
-      where: { state: "VISIBLE" },
+      where: openPostWhere(archive),
       orderBy: { createdAt: "desc" },
       take: 3,
       select: {

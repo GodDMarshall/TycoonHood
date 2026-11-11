@@ -1,6 +1,6 @@
 export { AuditService, audit } from "./audit";
 export type { AuditEntry } from "./audit";
-export { notify } from "./notify";
+export { notify, notificationLink } from "./notify";
 
 // --- PLATFORM agent (Nov 2026): verification, settings, profile, admin ---
 export { AccountSuspendedError } from "../auth/account";

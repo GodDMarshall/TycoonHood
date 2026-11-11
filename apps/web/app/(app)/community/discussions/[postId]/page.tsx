@@ -19,8 +19,10 @@ const when = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", 
 
 export async function generateMetadata({ params }: { params: Promise<{ postId: string }> }): Promise<Metadata> {
   const { postId } = await params;
-  const p = await prisma.communityPost.findUnique({ where: { id: postId }, select: { title: true, state: true } });
-  return { title: p && p.state === "VISIBLE" ? p.title : "Discussion" };
+  const p = await prisma.communityPost.findUnique({ where: { id: postId }, select: { title: true, state: true, groupId: true } });
+  // A post in an archived group is staff-only, so its title stays out of the tab.
+  const closed = !!p?.groupId && (await discussions.archived()).groups.includes(p.groupId);
+  return { title: p && p.state === "VISIBLE" && !closed ? p.title : "Discussion" };
 }
 
 function StateBadge({ state }: { state: "VISIBLE" | "HIDDEN" | "REMOVED" }) {
@@ -41,6 +43,8 @@ export default async function PostPage({ params, searchParams }: { params: Promi
   const editing = sp.edit === "1" && !!post.editableUntil;
   const back = post.group ? { href: `/community/groups/${post.group.slug}`, label: post.group.name } : { href: post.category ? `/community/discussions?c=${post.category.slug}` : "/community/discussions", label: post.category?.name ?? "Discussions" };
   const live = post.state === "VISIBLE";
+  // Archived: members can read but not comment or react. Staff can still answer.
+  const readOnly = post.archived && !staff;
 
   return (
     <Page width="narrow">
@@ -55,6 +59,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
           <div className="mb-2 flex flex-wrap items-center gap-2">
             {post.pinned && <Badge tone="gold">Pinned</Badge>}
             {post.locked && <Badge>Locked</Badge>}
+            {post.archived && <Badge tone="warning">Archived</Badge>}
             <StateBadge state={post.state} />
           </div>
           <h1 id="post-title" className="text-[24px] font-semibold leading-tight tracking-[-0.02em] sm:text-[28px]">
@@ -89,7 +94,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
         )}
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-y border-line py-3">
-          <Reactions postId={post.id} target={{ type: "post", id: post.id }} counts={post.reactions} mine={post.myReactions} own={post.mine} disabled={!live} />
+          <Reactions postId={post.id} target={{ type: "post", id: post.id }} counts={post.reactions} mine={post.myReactions} own={post.mine} disabled={!live || readOnly} />
           <div className="flex flex-wrap items-center gap-1">
             {post.editableUntil && !editing && (
               <Link href={`/community/discussions/${post.id}?edit=1`} className="inline-flex h-7 items-center rounded px-1.5 text-[12.5px] text-ink-3 hover:bg-bg-2 hover:text-ink-1">
@@ -143,12 +148,14 @@ export default async function PostPage({ params, searchParams }: { params: Promi
         {post.comments.length > 0 && (
           <ol className="mb-6 flex flex-col divide-y divide-line">
             {post.comments.map((c) => (
-              <Comment key={c.id} c={c} postId={post.id} staff={staff} live={live} />
+              <Comment key={c.id} c={c} postId={post.id} staff={staff} live={live} readOnly={readOnly} />
             ))}
           </ol>
         )}
 
-        {!live && !staff ? null : post.locked && !staff ? (
+        {!live && !staff ? null : readOnly ? (
+          <Notice tone="info">This discussion is archived. You can read it, but not comment or react.</Notice>
+        ) : post.locked && !staff ? (
           <Notice tone="info">This discussion is locked. Staff closed it to new comments.</Notice>
         ) : muted ? (
           <Notice tone="warning">You can read but not post{mute?.until ? ` until ${mute.until.toUTCString().slice(0, 22)} UTC` : ""}.</Notice>
@@ -160,7 +167,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
   );
 }
 
-function Comment({ c, postId, staff, live }: { c: CommentView; postId: string; staff: boolean; live: boolean }) {
+function Comment({ c, postId, staff, live, readOnly }: { c: CommentView; postId: string; staff: boolean; live: boolean; readOnly: boolean }) {
   return (
     <li id={`c-${c.id}`} className="flex scroll-mt-20 gap-3 py-4">
       <Avatar name={c.author.name} src={c.author.avatarUrl} size={30} className="mt-0.5" />
@@ -173,7 +180,7 @@ function Comment({ c, postId, staff, live }: { c: CommentView; postId: string; s
         </p>
         {c.body === null ? <p className="mt-1 text-[14px] italic text-ink-3">Removed.</p> : <BodyText text={c.body} className="mt-1 text-[14.5px]" />}
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Reactions postId={postId} target={{ type: "comment", id: c.id }} counts={c.reactions} mine={c.myReactions} own={c.mine} disabled={!live || c.state !== "VISIBLE"} />
+          <Reactions postId={postId} target={{ type: "comment", id: c.id }} counts={c.reactions} mine={c.myReactions} own={c.mine} disabled={!live || readOnly || c.state !== "VISIBLE"} />
           {c.mine && c.state !== "REMOVED" && (
             <form action={deleteCommentAction.bind(null, postId, c.id)}>
               <button type="submit" className="inline-flex h-7 items-center rounded px-1.5 text-[12.5px] text-ink-3 hover:bg-bg-2 hover:text-danger">
