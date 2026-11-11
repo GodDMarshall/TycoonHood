@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
 import type { AffiliateStatus, CommissionStatus, PayoutStatus } from "@tycoonhood/db";
-import { affiliates } from "@tycoonhood/core";
+import { affiliates, payoutBlocker } from "@tycoonhood/core";
 import { AFFILIATE_HOLD_DAYS } from "@tycoonhood/config";
 import { Badge, Card, CardContent, EmptyState, cn } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../lib/guard";
@@ -23,6 +23,7 @@ import {
   rejectAffiliateAction,
   rejectCommissionAction,
   rejectPayoutAction,
+  reverseCommissionAction,
   suspendAffiliateAction,
 } from "./actions";
 
@@ -99,6 +100,7 @@ export default async function AdminEarnPage({ searchParams }: { searchParams: Pr
         ))}
       </div>
 
+      {tab !== "applications" && <Unreversed />}
       {tab === "applications" && <Applications status={status} skip={skip} page={page} />}
       {tab === "commissions" && <Commissions status={status} skip={skip} page={page} />}
       {tab === "payouts" && <Payouts status={status} skip={skip} page={page} />}
@@ -177,6 +179,9 @@ async function Commissions({ status, skip, page }: { status: string; skip: numbe
           const flagged = c.reason?.startsWith("flagged:") ?? false;
           const holdPassed = now >= c.holdUntil;
           const orderOk = c.order.status === "PAID" || c.order.status === "FULFILLED";
+          const refundOpen = c.order.refundRequests.length > 0;
+          const affiliateOk = c.affiliate.status === "APPROVED";
+          const live = c.status === "PENDING" || c.status === "APPROVED";
           return (
             <Card key={c.id} className={cn(flagged && c.status === "PENDING" && "border-warning/50")}>
               <CardContent className="py-3.5">
@@ -199,8 +204,10 @@ async function Commissions({ status, skip, page }: { status: string; skip: numbe
                   </div>
                   <span className="flex flex-wrap items-center gap-2">
                     {flagged && c.status === "PENDING" && <Badge tone="warning">Flagged</Badge>}
+                    {live && refundOpen && <Badge tone="warning">Refund requested</Badge>}
+                    {live && !affiliateOk && <Badge tone={affiliateTone[c.affiliate.status]}>Affiliate {c.affiliate.status.toLowerCase()}</Badge>}
                     <Badge tone={commissionTone[c.status]}>{commissionLabel[c.status]}</Badge>
-                    {c.status === "PENDING" && holdPassed && orderOk && (
+                    {c.status === "PENDING" && holdPassed && orderOk && !refundOpen && affiliateOk && (
                       <ActionButton
                         action={approveCommissionAction.bind(null, c.id)}
                         label="Approve"
@@ -236,48 +243,97 @@ async function Payouts({ status, skip, page }: { status: string; skip: number; p
   return (
     <>
       <div className="flex flex-col gap-2">
-        {rows.map((p) => (
-          <Card key={p.id}>
-            <CardContent className="py-3.5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <p className="text-[13px] text-ink-1">
-                    <span className="figures">{inr(p.amountCents)}</span> to @{p.affiliate.user.profile?.username ?? p.affiliate.user.email}{" "}
-                    <span className="text-ink-3">({p.affiliate.code})</span>
-                  </p>
-                  <p className="figures mt-0.5 text-[11px] text-ink-3">
-                    Requested {dateFmt.format(p.createdAt)} · {p._count.commissions} commission{p._count.commissions === 1 ? "" : "s"}
-                    {p.paidAt && ` · paid ${dateFmt.format(p.paidAt)}`}
-                    {p.reference && ` · ref ${p.reference}`}
-                  </p>
-                  <p className="mt-1.5 text-[12px] text-ink-2">Send to: {describeMethod(p.method)}</p>
-                  {p.reason && <p className="mt-1 text-[12px] text-ink-3">Reason: {p.reason}</p>}
+        {rows.map((p) => {
+          const open = p.status === "REQUESTED" || p.status === "APPROVED";
+          // The same check approvePayout and markPayoutPaid enforce on the server.
+          const blocked = open ? payoutBlocker(p) : null;
+          return (
+            <Card key={p.id} className={cn(blocked && "border-warning/50")}>
+              <CardContent className="py-3.5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] text-ink-1">
+                      <span className="figures">{inr(p.amountCents)}</span> to @{p.affiliate.user.profile?.username ?? p.affiliate.user.email}{" "}
+                      <span className="text-ink-3">({p.affiliate.code})</span>
+                    </p>
+                    <p className="figures mt-0.5 text-[11px] text-ink-3">
+                      Requested {dateFmt.format(p.createdAt)} · {p._count.commissions} commission{p._count.commissions === 1 ? "" : "s"}
+                      {p.paidAt && ` · paid ${dateFmt.format(p.paidAt)}`}
+                      {p.reference && ` · ref ${p.reference}`}
+                    </p>
+                    <p className="mt-1.5 text-[12px] text-ink-2">Send to: {describeMethod(p.method)}</p>
+                    {p.reason && <p className="mt-1 text-[12px] text-ink-3">Reason: {p.reason}</p>}
+                    {blocked && <p className="mt-1.5 text-[12px] text-warning">{blocked}</p>}
+                  </div>
+                  <span className="flex flex-wrap items-center gap-2">
+                    {open && p.affiliate.status !== "APPROVED" && (
+                      <Badge tone={affiliateTone[p.affiliate.status]}>Affiliate {p.affiliate.status.toLowerCase()}</Badge>
+                    )}
+                    <Badge tone={payoutTone[p.status]}>{payoutLabel[p.status]}</Badge>
+                    {p.status === "REQUESTED" && !blocked && (
+                      <ActionButton action={approvePayoutAction.bind(null, p.id)} label="Approve" variant="primary" />
+                    )}
+                    {p.status === "APPROVED" && !blocked && (
+                      <TextActionForm
+                        action={markPayoutPaidAction.bind(null, p.id)}
+                        label="Mark paid"
+                        field="reference"
+                        placeholder="UTR / transaction reference"
+                        variant="primary"
+                      />
+                    )}
+                    {(p.status === "REQUESTED" || p.status === "APPROVED") && (
+                      <TextActionForm action={rejectPayoutAction.bind(null, p.id)} label="Decline" placeholder="Reason (the member sees it)" />
+                    )}
+                  </span>
                 </div>
-                <span className="flex flex-wrap items-center gap-2">
-                  <Badge tone={payoutTone[p.status]}>{payoutLabel[p.status]}</Badge>
-                  {p.status === "REQUESTED" && (
-                    <ActionButton action={approvePayoutAction.bind(null, p.id)} label="Approve" variant="primary" />
-                  )}
-                  {p.status === "APPROVED" && (
-                    <TextActionForm
-                      action={markPayoutPaidAction.bind(null, p.id)}
-                      label="Mark paid"
-                      field="reference"
-                      placeholder="UTR / transaction reference"
-                      variant="primary"
-                    />
-                  )}
-                  {(p.status === "REQUESTED" || p.status === "APPROVED") && (
-                    <TextActionForm action={rejectPayoutAction.bind(null, p.id)} label="Decline" placeholder="Reason (the member sees it)" />
-                  )}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
       <Pager tab="payouts" status={status} page={page} total={total} />
     </>
+  );
+}
+
+// ───────────────────────────────────────────────────────── refunded, not reversed
+
+async function Unreversed() {
+  const rows = await affiliates.listUnreversed();
+  if (rows.length === 0) return null;
+  return (
+    <Card className="mb-4 border-danger/50">
+      <CardContent className="py-3.5">
+        <p className="text-[13px] text-ink-1">Refunded orders with a commission still standing</p>
+        <p className="mt-0.5 text-[12px] text-ink-3">
+          The automatic reversal failed or did not run. Reverse each one so it is never paid out. A payout it is in is
+          lowered, or closed if that leaves less than the minimum.
+        </p>
+        <ul className="mt-3 flex flex-col gap-2">
+          {rows.map((c) => (
+            <li key={c.id} className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[12px] text-ink-2">
+                <span className="figures">{inr(c.amountCents)}</span> to {c.affiliate.code} · order #{c.orderId.slice(-6).toUpperCase()} ·{" "}
+                {commissionLabel[c.status].toLowerCase()}
+                {c.payoutId && " · in a payout"}
+                {c.lastFailure?.error && (
+                  <span className="block text-danger">
+                    Failed {dateFmt.format(c.lastFailure.at)}: {c.lastFailure.error}
+                  </span>
+                )}
+              </span>
+              <ActionButton
+                action={reverseCommissionAction.bind(null, c.id)}
+                label="Reverse"
+                variant="primary"
+                confirmText={c.status === "PAID" ? "This commission was already paid out. Reverse it? The money has to be recovered by hand." : undefined}
+              />
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 

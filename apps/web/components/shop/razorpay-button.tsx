@@ -14,8 +14,9 @@ declare global {
 const SRC = "https://checkout.razorpay.com/v1/checkout.js";
 
 /**
- * Razorpay Checkout.js — loaded only on this page and only when live keys
- * exist (the server decides; this component is never rendered otherwise).
+ * Razorpay Checkout.js — loaded only on this page, and only when Razorpay
+ * keys are set and this member may use them (the server decides with
+ * razorpayOpenTo; test keys in production are for staff only).
  * The success response goes to the server, which verifies the HMAC signature
  * before anything is marked paid.
  */
@@ -66,7 +67,8 @@ export function RazorpayButton({
           if (res?.error) setError(res.error);
         }),
     });
-    rzp.on("payment.failed", (r) => setError(r.error?.description ?? "The payment failed. You can try again."));
+    // A failed attempt leaves the order open, so the member can try again here.
+    rzp.on("payment.failed", (r) => setError(`${r.error?.description ?? "The payment did not go through."} You can try again.`));
     rzp.open();
   }
 

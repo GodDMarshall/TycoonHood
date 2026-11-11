@@ -12,14 +12,20 @@ export {
   CouponService, coupons, discountFor, checkCouponRules, validateCouponInput, normaliseCode, COUPON_CODE_RE,
 } from "./coupons";
 export type { CouponCheck, CouponInput } from "./coupons";
-export { ShopCheckoutService, shopCheckout, PENDING_TTL_MINUTES } from "./checkout";
+export { ShopCheckoutService, shopCheckout, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES, SWEEP_EVERY_MS } from "./checkout";
 export type { ShopCheckoutOptions, CaptureOutcome } from "./checkout";
-export { RefundService, refunds, refundBlocker, REFUND_WINDOW_DAYS, REFUND_REASON_MIN, REFUND_REASON_MAX } from "./refunds";
-export { orderTimeline, isTestOrder, ShopStatsService, shopStats } from "./tracking";
+export { RefundService, refunds, refundBlocker, refundUncounted, REFUND_WINDOW_DAYS, REFUND_REASON_MIN, REFUND_REASON_MAX } from "./refunds";
+export type { RefundCount } from "./refunds";
+export {
+  orderTimeline, isTestOrder, paidAfterCancel, opensLibrary, libraryOrderFor, LIBRARY_ORDER_STATUSES, ShopStatsService, shopStats,
+} from "./tracking";
 export type { TimelineStep, TimelineState, TimelineOrder } from "./tracking";
 export {
-  activeShopProvider, paymentsStatus, razorpayConfigured, sandboxAllowed,
+  activeShopProvider, paymentsStatus, paymentsStatusFor, razorpayConfigured, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly, sandboxAllowed,
+  testPaymentAllowed,
   RazorpayProvider, razorpayFromEnv, verifyCheckoutSignature, verifyWebhookSignature,
   SandboxProvider, sandboxProvider,
 } from "./payments";
-export type { ShopPaymentProvider, PaymentMode, PaymentsStatus, RazorpayWebhookEvent } from "./payments";
+export type {
+  ShopPaymentProvider, PaymentMode, PaymentsStatus, ProviderOrderCheck, ProviderRefundRecord, RailCheck, RazorpayWebhookEvent,
+} from "./payments";

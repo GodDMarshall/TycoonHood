@@ -6,7 +6,10 @@
  * already have settled the order.
  *
  * Subscribe in the Razorpay dashboard to: payment.captured, order.paid,
- * payment.failed, refund.processed.
+ * payment.failed, refund.processed, refund.failed. payment.failed only records
+ * the attempt: the member can retry on the same Razorpay order, so the order
+ * stays open. A refund is counted once per refund id; only a refund of the
+ * whole payment unwinds the order.
  */
 import { NextResponse } from "next/server";
 import { shopCheckout } from "@tycoonhood/core";

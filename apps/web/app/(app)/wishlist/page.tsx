@@ -3,6 +3,7 @@ import Link from "next/link";
 import { wishlist, unitPrices } from "@tycoonhood/core";
 import { Badge, EmptyState, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
+import { releaseExpiredHolds } from "../../../lib/stale-orders";
 import { Page, PageHeader, Panel } from "../../../components/app/page";
 import { SubmitButton } from "../../../components/submit-button";
 import { stockOf } from "../../../components/shop/catalogue";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default async function WishlistPage() {
   const user = await requireUser();
+  await releaseExpiredHolds();
   const items = await wishlist.list(user.id);
   return (
     <Page>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { REFUND_REASON_MAX, isTestOrder, orderTimeline, refundBlocker } from "@tycoonhood/core";
+import { REFUND_REASON_MAX, isTestOrder, opensLibrary, orderTimeline, refundBlocker } from "@tycoonhood/core";
 import { Badge, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../../lib/guard";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../../components/app/page";
@@ -32,6 +32,7 @@ export default async function OrderPage({ params }: { params: Promise<{ orderId:
   const open = o.refundRequests.some((r) => r.status === "REQUESTED" || r.status === "APPROVED");
   const blocker = refundBlocker(o, open);
   const fiat = o.totalThc === 0n;
+  const library = opensLibrary(o);
 
   return (
     <Page width="narrow">
@@ -57,6 +58,11 @@ export default async function OrderPage({ params }: { params: Promise<{ orderId:
                 <span className="text-ink-2">
                   {i.qty}× {i.product.name}
                   {i.variantLabel && ` (${i.variantLabel})`}
+                  {library && i.product.kind === "DIGITAL" && (
+                    <Link href={`/library/${i.product.slug}`} className="ml-2 text-gold hover:text-gold-bright">
+                      Open in library
+                    </Link>
+                  )}
                 </span>
                 <span className="figures shrink-0">
                   {i.unitPriceThc != null && !fiat

@@ -1,6 +1,6 @@
 import { Icon } from "@tycoonhood/ui";
 
-/** Persistent label for anything paid through the sandbox. Shown wherever a TEST payment appears. */
+/** Persistent label for test-mode payments (the sandbox, or Razorpay test keys). Shown wherever a TEST payment appears. */
 export function TestModeBanner({ className = "" }: { className?: string }) {
   return (
     <div
@@ -10,7 +10,7 @@ export function TestModeBanner({ className = "" }: { className?: string }) {
       <Icon name="alert" size={16} className="mt-[2px] shrink-0" />
       <p>
         <strong className="font-semibold">Test mode — no real money is charged.</strong>{" "}
-        <span className="text-ink-2">Razorpay keys are not configured, so rupee payments run in a sandbox. Test orders never count as revenue.</span>
+        <span className="text-ink-2">Rupee payments here are test payments. Test orders never count as revenue.</span>
       </p>
     </div>
   );

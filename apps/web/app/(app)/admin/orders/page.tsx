@@ -2,15 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { Prisma } from "@tycoonhood/db";
 import { prisma } from "@tycoonhood/db";
-import { isTestOrder, paymentsStatus, shopCheckout, shopStats } from "@tycoonhood/core";
+import { isTestOrder, paymentsStatus, shopStats } from "@tycoonhood/core";
 import { Badge, Card, CardContent, Input, Select, SectionRule, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../lib/guard";
+import { releaseExpiredHolds } from "../../../../lib/stale-orders";
 import { settlePendingFiatAction } from "../actions";
 import { ConfirmButton } from "../../../../components/admin-confirm";
 import { ShipForm } from "../../../../components/admin-ship-form";
+import { TextActionForm } from "../../../../components/earn/action-form";
 import { TestModeBanner } from "../../../../components/shop/test-mode-banner";
 import { inr, money, orderRef } from "../../../../components/shop/format";
-import { cancelPendingAction, shipAuditedAction } from "./actions";
+import { cancelPendingAction, refundOrderAction, shipAuditedAction } from "./actions";
 
 export const metadata: Metadata = { title: "Admin · Orders" };
 export const dynamic = "force-dynamic";
@@ -54,7 +56,7 @@ export default async function AdminOrders({
   searchParams: Promise<{ page?: string; status?: string; rail?: string; mode?: string; q?: string }>;
 }) {
   await requirePermission("admin.commerce");
-  await shopCheckout.expireStale();
+  await releaseExpiredHolds();
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page ?? "1") || 1);
   const f: Filters = { status: sp.status ?? "", rail: sp.rail ?? "", mode: sp.mode ?? "", q: (sp.q ?? "").trim().slice(0, 80) };
@@ -102,7 +104,7 @@ export default async function AdminOrders({
         </CardContent></Card>
         <Card><CardContent className="py-4">
           <p className="text-[12px] text-ink-3">Card rail</p>
-          <p className="mt-1 text-[15px]">{pay.provider === "razorpay" ? "Razorpay · live" : pay.provider === "sandbox" ? "Sandbox · test" : "Off"}</p>
+          <p className="mt-1 text-[15px]">{pay.provider === "razorpay" ? (pay.mode === "LIVE" ? "Razorpay · live" : pay.staffOnly ? "Razorpay · test, staff only" : "Razorpay · test") : pay.provider === "sandbox" ? "Sandbox · test" : "Off"}</p>
           <p className="text-[12px] text-ink-3">{pay.summary}</p>
         </CardContent></Card>
       </div>
@@ -194,6 +196,9 @@ function OrderRow({ o, showAddress = false }: { o: Row; showAddress?: boolean })
             {o.totalThc > 0n ? <ThcAmount amount={o.totalThc} size="sm" /> : <span className="figures text-[13px]">{money(o.totalFiatCents, o.fiatCurrency)}</span>}
             <Badge tone={tone[o.status]}>{o.status}</Badge>
             {o.status === "PAID" && physical && <ShipForm action={shipAuditedAction.bind(null, o.id)} />}
+            {(o.status === "PAID" || o.status === "FULFILLED") && (
+              <TextActionForm action={refundOrderAction.bind(null, o.id)} label="Refund" submitLabel="Refund order" placeholder="Why? The member sees this" />
+            )}
             {o.status === "PENDING" && o.payments.length > 0 && (
               <ConfirmButton action={cancelPendingAction.bind(null, o.id)} label="Cancel" confirmText="Cancel this unpaid order? Its stock and coupon go back. If the member pays afterwards, the payment is queued for refund." />
             )}

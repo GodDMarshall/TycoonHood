@@ -10,10 +10,16 @@
  * transaction as the coupon redemption; then the active provider (Razorpay,
  * or the TEST sandbox) creates its order and a Payment row records it. The
  * order turns PAID only on a VERIFIED capture — the Razorpay callback with a
- * valid signature, the signed webhook, or the sandbox's simulated capture —
- * and every one of those converges on capture(), which is idempotent on the
- * payment. A failed or expired payment cancels the order and gives back the
- * stock and the coupon.
+ * valid signature, the signed webhook, the sandbox's simulated capture, or
+ * the expiry sweep finding the payment at Razorpay — and every one of those
+ * converges on capture(), which is idempotent on the payment.
+ *
+ * A failed attempt does not end the order: Razorpay Checkout lets the member
+ * retry on the same order, so payment.failed is only recorded. The order is
+ * cancelled, giving back the stock and the coupon, when the member abandons
+ * it, an admin cancels it, or expireStale finds it unpaid after the hold. The
+ * sweep asks Razorpay first, so it never cancels an order that was paid, and
+ * gives one the member is still paying for PAYING_GRACE_MINUTES more.
  *
  * After a capture: order PAID → cart lines cleared → fulfilment exactly as
  * commerce does it (course grants, notifications, PURCHASE_MADE) → the earn
@@ -21,6 +27,7 @@
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient, Prisma } from "@tycoonhood/db";
+import type { HasRole } from "../auth/permissions";
 import { CommerceService, requireShipping, type ShippingInput } from "../commerce/commerce";
 import { LedgerService, InsufficientFundsError } from "../ledger/ledger";
 import { AuditService } from "../platform/audit";
@@ -29,23 +36,33 @@ import { CouponService } from "./coupons";
 import { callEarnHook } from "./earn-registry";
 import { CheckoutError, PaymentVerificationError } from "./errors";
 import { SHOP_CURRENCY } from "./pricing";
-import { activeShopProvider, razorpayFromEnv, sandboxProvider, sandboxAllowed, RazorpayProvider } from "./payments";
+import { RefundService } from "./refunds";
+import { activeShopProvider, razorpayFromEnv, sandboxProvider, sandboxAllowed, testPaymentAllowed, RazorpayProvider } from "./payments";
 import type { RazorpayWebhookEvent, ShopPaymentProvider } from "./payments";
 import { verifyWebhookSignature } from "./payments/razorpay";
 
 /** How long a rupee order may wait for its payment before its stock goes back. */
 export const PENDING_TTL_MINUTES = 30;
+/** Extra time after the hold for an order Razorpay shows as attempted: the member may be retrying. */
+export const PAYING_GRACE_MINUTES = 30;
+/** Page loads run the expiry sweep at most this often, per server instance. */
+export const SWEEP_EVERY_MS = 60_000;
 
 export interface ShopCheckoutOptions {
-  /** The provider new orders go to. Defaults to activeShopProvider(). */
-  provider?: () => ShopPaymentProvider | null;
+  /**
+   * The provider this buyer's new orders go to. Defaults to
+   * activeShopProvider(process.env, buyer), which keeps Razorpay test keys in
+   * production for staff with admin.commerce.
+   */
+  provider?: (buyer: HasRole) => ShopPaymentProvider | null;
   /** Looks a provider up by the name on a Payment row (refunds, verification). */
   providerFor?: (name: string) => ShopPaymentProvider | null;
   /** Whether the sandbox may capture. Defaults to sandboxAllowed() — false in production. */
   sandboxEnabled?: () => boolean;
 }
 
-export type CaptureOutcome = "paid" | "duplicate" | "late";
+/** refused: a test-mode payment that may not complete this buyer's order (see testPaymentAllowed). */
+export type CaptureOutcome = "paid" | "duplicate" | "late" | "refused";
 
 function defaultProviderFor(name: string): ShopPaymentProvider | null {
   if (name === "razorpay") return razorpayFromEnv();
@@ -75,9 +92,11 @@ export class ShopCheckoutService {
   private cart: CartService;
   private coupons: CouponService;
   private audit: AuditService;
-  private provider: () => ShopPaymentProvider | null;
+  private provider: (buyer: HasRole) => ShopPaymentProvider | null;
   private providerFor: (name: string) => ShopPaymentProvider | null;
   private sandboxEnabled: () => boolean;
+  private refunds: RefundService;
+  private lastSweepAt = 0;
 
   constructor(private readonly db: PrismaClient = defaultPrisma, opts: ShopCheckoutOptions = {}) {
     this.commerce = new CommerceService(db);
@@ -85,9 +104,10 @@ export class ShopCheckoutService {
     this.cart = new CartService(db);
     this.coupons = new CouponService(db);
     this.audit = new AuditService(db);
-    this.provider = opts.provider ?? (() => activeShopProvider());
+    this.provider = opts.provider ?? ((buyer) => activeShopProvider(process.env, buyer));
     this.providerFor = opts.providerFor ?? defaultProviderFor;
     this.sandboxEnabled = opts.sandboxEnabled ?? (() => sandboxAllowed());
+    this.refunds = new RefundService(db, { providerFor: this.providerFor });
   }
 
   /** Reserves every line or none: on the first failure, what was taken goes back. */
@@ -204,8 +224,11 @@ export class ShopCheckoutService {
     userId: string,
     input: { shipping?: ShippingInput | null; couponCode?: string | null; affiliateCode?: string | null } = {}
   ) {
-    const provider = this.provider();
-    if (!provider) throw new CheckoutError("Card payments are not configured on this deployment. You can still pay with THC.");
+    // The rail depends on who is buying (test keys in production are staff-only),
+    // so the role is read here, on the server, from the database.
+    const buyer = await this.db.user.findUnique({ where: { id: userId }, select: { role: true } });
+    const provider = this.provider(buyer);
+    if (!provider) throw new CheckoutError("Card payments are not available right now. You can still pay with THC.");
 
     const { lines, totals } = await this.readyCart(userId);
     if (!totals.inr.payable) {
@@ -303,7 +326,7 @@ export class ShopCheckoutService {
     amountCents?: number;
     currency?: string;
     raw?: unknown;
-    source: "callback" | "webhook" | "sandbox";
+    source: "callback" | "webhook" | "sandbox" | "sweep";
   }): Promise<{ orderId: string; outcome: CaptureOutcome }> {
     const payment = await this.db.payment.findUnique({ where: { providerOrderId: args.providerOrderId } });
     if (!payment) throw new PaymentVerificationError("Unknown payment order.");
@@ -326,46 +349,70 @@ export class ShopCheckoutService {
     if (claimed.count === 0) return { orderId: payment.orderId, outcome: "duplicate" };
 
     const order = await this.db.order.findUniqueOrThrow({ where: { id: payment.orderId }, include: { items: true } });
-    const paid = await this.db.order.updateMany({
-      where: { id: order.id, status: "PENDING" },
-      data: { status: "PAID", paymentRef: args.providerPaymentId },
-    });
+    // A test payment moves no money. In production only staff may get goods for
+    // one; a member's (from a Razorpay window opened before the rail was fenced,
+    // say, whether it lands by callback, webhook or sweep) never completes the order.
+    const refused =
+      payment.mode === "TEST" && !testPaymentAllowed(await this.db.user.findUnique({ where: { id: order.userId }, select: { role: true } }));
+    const paid = refused
+      ? { count: 0 }
+      : await this.db.order.updateMany({
+          where: { id: order.id, status: "PENDING" },
+          data: { status: "PAID", paymentRef: args.providerPaymentId },
+        });
 
     if (paid.count === 0) {
-      // Money arrived for an order that had already expired or been replaced.
-      // Its stock went back on the shelf, so it is not quietly revived; it goes
-      // straight to the refunds queue for a human to send back.
+      // Money arrived for an order that had already expired or been replaced, or a
+      // test payment that may not complete it. Its stock goes (or went) back on the
+      // shelf, so it is not quietly revived; the payment goes straight to the
+      // refunds queue for a human to send back or, for a test payment, to close.
+      if (refused) await this.cancelOrder(order.id, "Paid in test mode, which only staff may use in production");
       await this.db.refundRequest.create({
         data: {
           orderId: order.id,
           userId: order.userId,
-          reason: "Automatic: the payment arrived after this order had been cancelled. Refund it in full.",
+          reason: refused
+            ? "Automatic: this order was paid in test mode, which only staff may use on the live site. No real money was charged. Approve to close it."
+            : "Automatic: the payment arrived after this order had been cancelled. Refund it in full.",
         },
       });
-      await this.audit.log({ actorId: null, action: "payment.captured_after_cancel", targetType: "order", targetId: order.id, meta: { source: args.source, mode: payment.mode } });
+      await this.audit.log({
+        actorId: null,
+        action: refused ? "payment.test_refused" : "payment.captured_after_cancel",
+        targetType: "order",
+        targetId: order.id,
+        meta: { source: args.source, mode: payment.mode },
+      });
       await this.db.notification.create({
         data: {
           userId: order.userId,
           type: "ORDER",
-          title: "Payment received for a cancelled order",
-          body: "Your payment came through after the order had expired. We have queued a full refund.",
+          ...(refused
+            ? {
+                title: "Order cancelled: test payment",
+                body: "This order was paid in test mode, so no real money was charged and it cannot go through. The items went back on the shelf.",
+              }
+            : {
+                title: "Payment received for a cancelled order",
+                body: "Your payment came through after the order had expired. We have queued a full refund.",
+              }),
           data: { orderId: order.id, href: `/orders/${order.id}` },
         },
       });
-      return { orderId: order.id, outcome: "late" };
+      return { orderId: order.id, outcome: refused ? "refused" : "late" };
     }
 
     const keys = order.items.map((i) => `${i.productId}:${i.variantId ?? "-"}`);
     await this.cart.clear(order.userId, keys);
     await this.commerce.fulfillOrder(order.id);
     await this.audit.log({
-      actorId: args.source === "webhook" ? null : order.userId,
+      actorId: args.source === "webhook" || args.source === "sweep" ? null : order.userId,
       action: "order.paid",
       targetType: "order",
       targetId: order.id,
       meta: { rail: "INR", provider: payment.provider, mode: payment.mode, source: args.source, totalCents: payment.amountCents },
     });
-    await callEarnHook("onOrderPaid", order.id);
+    await callEarnHook("onOrderPaid", order.id, this.db);
     return { orderId: order.id, outcome: "paid" };
   }
 
@@ -410,21 +457,30 @@ export class ShopCheckoutService {
     });
   }
 
-  /** "Simulate a failed payment" — walks the failure path in TEST mode. */
+  /**
+   * "Simulate a failed payment" — TEST mode only. The sandbox has no retry, so
+   * the order is cancelled and the stock and coupon go back.
+   */
   async sandboxFail(userId: string, orderId: string) {
     const payment = await this.sandboxPayment(userId, orderId);
-    await this.failPayment({ providerOrderId: payment.providerOrderId, reason: "Simulated failure (test mode)" });
+    await this.cancelOrder(payment.orderId, "Simulated failure (test mode)", userId);
   }
 
-  /** A failed payment cancels its order and gives the stock and coupon back. */
-  async failPayment(args: { providerOrderId: string; providerPaymentId?: string | null; reason?: string; raw?: unknown }) {
+  /**
+   * One failed attempt (Razorpay's payment.failed). The member can retry on the
+   * same Razorpay order, so the order stays PENDING with its stock and coupon,
+   * and the payment stays open. Only the attempt is recorded.
+   */
+  async recordFailedAttempt(args: { providerOrderId: string; providerPaymentId?: string | null; reason?: string | null }) {
     const payment = await this.db.payment.findUnique({ where: { providerOrderId: args.providerOrderId } });
     if (!payment) return null;
-    await this.db.payment.updateMany({
-      where: { id: payment.id, status: "CREATED" },
-      data: { status: "FAILED", raw: (args.raw ?? { reason: args.reason ?? "failed" }) as Prisma.InputJsonValue },
+    await this.audit.log({
+      actorId: null,
+      action: "payment.attempt_failed",
+      targetType: "payment",
+      targetId: payment.id,
+      meta: { orderId: payment.orderId, providerPaymentId: args.providerPaymentId ?? null, reason: args.reason?.slice(0, 300) ?? null },
     });
-    await this.cancelOrder(payment.orderId, args.reason ?? "Payment failed");
     return payment.orderId;
   }
 
@@ -447,17 +503,102 @@ export class ShopCheckoutService {
     return this.cancelOrder(orderId, "Cancelled by the member", userId);
   }
 
-  /** Cancels rupee orders that waited longer than PENDING_TTL_MINUTES for payment. */
-  async expireStale(now = new Date()) {
+  /**
+   * Ends rupee orders that waited longer than PENDING_TTL_MINUTES for payment.
+   * A Razorpay order is looked up first: one already paid is captured instead,
+   * and one the member has started paying waits PAYING_GRACE_MINUTES more.
+   * Everything else is cancelled, which gives back the stock and the coupon.
+   * With `orderId` and `userId`, only that member's order is looked at (the pay page).
+   */
+  async expireStale(now = new Date(), opts: { orderId?: string; userId?: string } = {}) {
     const cutoff = new Date(now.getTime() - PENDING_TTL_MINUTES * 60_000);
+    const graceCutoff = new Date(cutoff.getTime() - PAYING_GRACE_MINUTES * 60_000);
     const stale = await this.db.order.findMany({
-      where: { status: "PENDING", paymentProvider: { not: null }, createdAt: { lt: cutoff }, payments: { none: { status: "CAPTURED" } } },
-      select: { id: true },
+      where: {
+        status: "PENDING",
+        paymentProvider: { not: null },
+        createdAt: { lt: cutoff },
+        payments: { none: { status: "CAPTURED" } },
+        ...(opts.orderId ? { id: opts.orderId } : {}),
+        ...(opts.userId ? { userId: opts.userId } : {}),
+      },
+      select: { id: true, createdAt: true, payments: { orderBy: { createdAt: "desc" }, take: 1 } },
+      orderBy: { createdAt: "asc" },
       take: 200,
     });
-    let n = 0;
-    for (const o of stale) if (await this.cancelOrder(o.id, "Payment window expired")) n++;
-    return n;
+    const result = { cancelled: 0, captured: 0, waiting: 0 };
+    for (const o of stale) {
+      const verdict = await this.staleVerdict(o.payments[0], o.createdAt < graceCutoff);
+      if (verdict === "captured") result.captured++;
+      else if (verdict === "wait") result.waiting++;
+      else if (await this.cancelOrder(o.id, "Payment window expired")) result.cancelled++;
+    }
+    return result;
+  }
+
+  /**
+   * expireStale for page loads: the store, product, cart, wishlist, checkout
+   * and admin order pages call it before they read stock. At most once per
+   * SWEEP_EVERY_MS on this server instance, and it never throws into the page.
+   * The cron route (/api/cron/expire-orders) also runs expireStale on a
+   * schedule, so holds go on time even when nobody is browsing.
+   */
+  async sweepStale(now = new Date()) {
+    if (now.getTime() - this.lastSweepAt < SWEEP_EVERY_MS) return null;
+    this.lastSweepAt = now.getTime();
+    try {
+      return await this.expireStale(now);
+    } catch (e) {
+      console.error("[shop] stale-order sweep failed", e);
+      return null;
+    }
+  }
+
+  /** What the sweep does with one stale order's latest payment. */
+  private async staleVerdict(
+    payment: { id: string; provider: string; mode: string; providerOrderId: string | null } | undefined,
+    pastGrace: boolean
+  ): Promise<"cancel" | "wait" | "captured"> {
+    if (!payment?.providerOrderId) return "cancel";
+    const provider = this.providerFor(payment.provider);
+    // The sandbox has nobody to ask, and keys of the other mode cannot see the order.
+    if (!provider?.checkOrder || provider.mode !== payment.mode) return "cancel";
+    try {
+      const check = await provider.checkOrder(payment.providerOrderId);
+      if (!check) return "cancel"; // unknown to the provider, so nobody can pay it
+      if (check.captured) {
+        try {
+          await this.capture({
+            providerOrderId: payment.providerOrderId,
+            providerPaymentId: check.captured.providerPaymentId,
+            amountCents: check.captured.amountCents,
+            currency: check.captured.currency,
+            raw: { source: "sweep", check } as unknown,
+            source: "sweep",
+          });
+        } catch (e) {
+          if (!(e instanceof PaymentVerificationError)) throw e;
+          // Razorpay holds a payment capture() refuses (wrong amount or currency). Asking
+          // again will not change that, so it is flagged once for an admin and the order
+          // goes, instead of being looked up on every sweep while it keeps its stock.
+          await this.audit.log({
+            actorId: null,
+            action: "payment.sweep_mismatch",
+            targetType: "payment",
+            targetId: payment.id,
+            meta: { providerOrderId: payment.providerOrderId, providerPaymentId: check.captured.providerPaymentId, error: e.message },
+          });
+          return "cancel";
+        }
+        return "captured";
+      }
+      // Attempted: the member may be retrying in the Razorpay window right now.
+      return check.status !== "created" && !pastGrace ? "wait" : "cancel";
+    } catch (e) {
+      // Not knowing is not a reason to cancel: try again on the next sweep.
+      console.error("[shop] could not check a stale order with the payment provider", e);
+      return "wait";
+    }
   }
 
   /**
@@ -494,21 +635,19 @@ export class ShopCheckoutService {
           return { status: 200, body: { ok: true, outcome: r.outcome } };
         }
         case "payment.failed": {
+          // One attempt failed; the member can retry on the same order, so it stays open.
           if (!pay?.order_id) return { status: 200, body: { ignored: "no order" } };
-          await this.failPayment({
-            providerOrderId: pay.order_id,
-            providerPaymentId: pay.id,
-            reason: pay.error_description ?? "Payment failed",
-            raw: event as unknown,
-          });
+          await this.recordFailedAttempt({ providerOrderId: pay.order_id, providerPaymentId: pay.id, reason: pay.error_description });
           return { status: 200, body: { ok: true } };
         }
-        case "refund.processed": {
+        case "refund.processed":
+        case "refund.failed": {
+          // Counted once per refund id. Only a refund of the whole payment unwinds the order.
           const ref = event.payload?.refund?.entity;
-          if (ref?.payment_id) {
-            await this.db.payment.updateMany({ where: { providerPaymentId: ref.payment_id, status: "CAPTURED" }, data: { status: "REFUNDED" } });
-          }
-          return { status: 200, body: { ok: true } };
+          if (!ref?.id || !ref.payment_id) return { status: 200, body: { ignored: "no refund" } };
+          const input = { providerPaymentId: ref.payment_id, refundId: ref.id, amountCents: ref.amount };
+          const r = event.event === "refund.processed" ? await this.refunds.recordProviderRefund(input) : await this.refunds.recordFailedRefund(input);
+          return { status: 200, body: { ok: true, outcome: r.outcome } };
         }
         default:
           return { status: 200, body: { ignored: event.event } };

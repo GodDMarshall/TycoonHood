@@ -3,9 +3,10 @@ import Link from "next/link";
 import { refunds, REFUND_WINDOW_DAYS } from "@tycoonhood/core";
 import { Badge, Card, CardContent, SectionRule, ThcAmount } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../lib/guard";
+import { ActionButton } from "../../../../components/earn/action-form";
 import { RefundDecision } from "../../../../components/shop/refund-decision";
 import { dateTime, money, orderRef } from "../../../../components/shop/format";
-import { decideRefundAction } from "./actions";
+import { countRefundsAction, decideRefundAction } from "./actions";
 
 export const metadata: Metadata = { title: "Admin · Refunds" };
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export default async function AdminRefunds({ searchParams }: { searchParams: Pro
   await requirePermission("admin.commerce");
   const sp = await searchParams;
   const status = (FILTERS.find(([v]) => v === sp.status)?.[0] ?? "REQUESTED") as "REQUESTED";
-  const list = await refunds.listQueue(status);
+  const [list, failed, uncounted] = await Promise.all([refunds.listQueue(status), refunds.listFailedRefunds(), refunds.listUncountedRefunds()]);
 
   return (
     <main>
@@ -24,8 +25,51 @@ export default async function AdminRefunds({ searchParams }: { searchParams: Pro
       <p className="mt-2 max-w-2xl text-[14px] text-ink-2">
         Members may ask within {REFUND_WINDOW_DAYS} days. Approving sends the money back on the rail it came in on: THC by ledger reversal,
         live rupee payments through Razorpay, test payments by marking them refunded (nothing moved). Unshipped gear goes back on the shelf
-        and any affiliate commission is reversed.
+        and any affiliate commission is reversed. A refund made in the Razorpay dashboard counts too: a partial one leaves the order as it
+        is, and approving a request then sends only the rest. To refund an order yourself, at any age, use Refund on the orders page.
       </p>
+      {uncounted.length > 0 && (
+        <Card className="mt-6 border-warning/50">
+          <CardContent className="flex flex-col gap-3 py-3.5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] text-ink-1">Refunds to count</p>
+              <p className="mt-0.5 text-[12px] text-ink-3">
+                These live payments were marked refunded before refund amounts were kept, so some may have been refunded only in part, and
+                their orders may still stand. They cannot be refunded here until Razorpay&apos;s own record of their refunds is counted.
+              </p>
+              <ul className="mt-3 flex flex-col gap-1.5">
+                {uncounted.map((p) => (
+                  <li key={p.id} className="figures flex flex-wrap items-center gap-2 text-[12px] text-ink-2">
+                    order #{orderRef(p.order.id)} · {p.order.status.toLowerCase()} · {p.order.user.email} · {money(p.amountCents, p.currency)} paid
+                    {p.providerPaymentId && <span className="text-ink-3">· {p.providerPaymentId}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <ActionButton action={countRefundsAction} label="Check with Razorpay" variant="primary" />
+          </CardContent>
+        </Card>
+      )}
+      {failed.length > 0 && (
+        <Card className="mt-6 border-danger/50">
+          <CardContent className="py-3.5">
+            <p className="text-[13px] text-ink-1">Money still to send back</p>
+            <p className="mt-0.5 text-[12px] text-ink-3">
+              These orders were refunded or cancelled, but the payment is still with us and no refund request is open. Usually Razorpay could
+              not complete the refund. Refund each one from the Razorpay dashboard. It is counted here when Razorpay confirms it.
+            </p>
+            <ul className="mt-3 flex flex-col gap-1.5">
+              {failed.map((p) => (
+                <li key={p.id} className="figures flex flex-wrap items-center gap-2 text-[12px] text-ink-2">
+                  order #{orderRef(p.order.id)} · {p.order.status.toLowerCase()} · {p.order.user.email} · {money(p.amountCents - p.refundedCents, p.currency)} to send
+                  {p.providerPaymentId && <span className="text-ink-3">· {p.providerPaymentId}</span>}
+                  {p.mode === "TEST" && <Badge tone="warning">Test</Badge>}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
       <nav className="mb-4 mt-6 flex flex-wrap gap-1.5" aria-label="Filter refunds">
         {FILTERS.map(([v, l]) => (
           <Link key={v} href={`/admin/refunds?status=${v}`}
@@ -55,7 +99,19 @@ export default async function AdminRefunds({ searchParams }: { searchParams: Pro
                       {pay?.mode === "TEST" && <Badge tone="warning">Test</Badge>}
                       {pay?.mode === "LIVE" && <Badge tone="gold">Live</Badge>}
                       {o.shippedAt && <Badge>Shipped</Badge>}
+                      {pay && <span>· payment {pay.status.toLowerCase()}</span>}
+                      {pay && pay.refundedCents > 0 && pay.refundedCents < pay.amountCents && (
+                        <span>
+                          · {money(pay.refundedCents, pay.currency)} of {money(pay.amountCents, pay.currency)} refunded
+                        </span>
+                      )}
                     </p>
+                    {r.status === "REQUESTED" && pay?.status === "CAPTURED" && pay.refundedCents > 0 && (
+                      <p className="mt-1 text-[12px] text-warning">
+                        {money(pay.refundedCents, pay.currency)} was already refunded in Razorpay. Approving sends the other{" "}
+                        {money(pay.amountCents - pay.refundedCents, pay.currency)}.
+                      </p>
+                    )}
                     <p className="mt-2 text-[13.5px] text-ink-2">“{r.reason}”</p>
                     {r.adminNote && <p className="mt-1 text-[12.5px] text-ink-3">Note: {r.adminNote}</p>}
                   </div>

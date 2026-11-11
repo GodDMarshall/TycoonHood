@@ -41,7 +41,17 @@ export function orderTimeline(o: TimelineOrder): TimelineStep[] {
   const steps: TimelineStep[] = [{ key: "placed", label: "Order placed", state: "done", at: o.createdAt }];
 
   if (o.status === "CANCELLED") {
-    steps.push({ key: "cancelled", label: "Cancelled", state: "stopped", at: o.updatedAt, detail: "No payment was completed, so nothing was charged and the stock went back." });
+    steps.push({
+      key: "cancelled",
+      label: "Cancelled",
+      state: "stopped",
+      at: o.updatedAt,
+      detail: paidAfterCancel(o)
+        ? captured?.mode === "TEST"
+          ? "Paid in test mode, so no real money was charged. The order was cancelled and the stock went back."
+          : "Your payment arrived after the order was cancelled, so a full refund was queued. The stock went back."
+        : "No payment was completed, so nothing was charged and the stock went back.",
+    });
   } else {
     steps.push({
       key: "paid",
@@ -90,25 +100,55 @@ export function orderTimeline(o: TimelineOrder): TimelineStep[] {
   return steps;
 }
 
+/**
+ * A payment that came in after its order was cancelled (it expired, or was
+ * replaced by a new checkout), or a test-mode payment capture() refused. A
+ * refund is queued for it, so the member must never be told that nothing was charged.
+ */
+export function paidAfterCancel(o: { status: string; payments?: { status: string }[] }) {
+  return o.status === "CANCELLED" && (o.payments ?? []).some((p) => p.status === "CAPTURED" || p.status === "REFUNDED");
+}
+
 /** True when any payment on the order is a sandbox (TEST) payment. */
 export function isTestOrder(o: { payments?: { mode: string }[]; paymentProvider?: string | null }) {
   return (o.payments ?? []).some((p) => p.mode === "TEST") || o.paymentProvider === "sandbox";
+}
+
+/**
+ * Order statuses that open the DIGITAL items in an order. The store promises
+ * delivery as soon as payment lands, so a paid order counts even while gear in
+ * the same order waits to ship. A refunded or cancelled order never does.
+ */
+export const LIBRARY_ORDER_STATUSES = ["PAID", "FULFILLED"] as const;
+
+/** True when the order's DIGITAL items are the member's to open. */
+export function opensLibrary(o: { status: string }): boolean {
+  return (LIBRARY_ORDER_STATUSES as readonly string[]).includes(o.status);
+}
+
+/** The member's order that opens this DIGITAL product in the library, or null. */
+export function libraryOrderFor(userId: string, productId: string, db: PrismaClient = defaultPrisma) {
+  return db.order.findFirst({
+    where: { userId, status: { in: [...LIBRARY_ORDER_STATUSES] }, items: { some: { productId } } },
+    select: { id: true },
+  });
 }
 
 export class ShopStatsService {
   constructor(private readonly db: PrismaClient = defaultPrisma) {}
 
   /**
-   * Real rupee revenue: LIVE payments captured and not refunded. TEST payments
-   * are excluded by construction. Any revenue figure on any page must use this.
+   * Real rupee revenue: LIVE payments captured and not refunded, less any part
+   * refunded already. TEST payments are excluded by construction. Any revenue
+   * figure on any page must use this.
    */
   async liveRevenue(since?: Date) {
     const r = await this.db.payment.aggregate({
       where: { mode: "LIVE", status: "CAPTURED", currency: "INR", ...(since ? { createdAt: { gte: since } } : {}) },
-      _sum: { amountCents: true },
+      _sum: { amountCents: true, refundedCents: true },
       _count: true,
     });
-    return { amountCents: r._sum.amountCents ?? 0, payments: r._count, currency: "INR" as const };
+    return { amountCents: (r._sum.amountCents ?? 0) - (r._sum.refundedCents ?? 0), payments: r._count, currency: "INR" as const };
   }
 
   /** Count of TEST payments captured, shown beside revenue so nobody mistakes them for money. */

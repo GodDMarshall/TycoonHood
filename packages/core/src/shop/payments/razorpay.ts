@@ -8,12 +8,16 @@
  *
  * Both compared with timingSafeEqual. Untested against live Razorpay from
  * this environment (no keys yet); the request shapes follow Razorpay's
- * published API (POST /v1/orders, POST /v1/payments/:id/refund).
+ * published API (POST /v1/orders, POST /v1/payments/:id/refund,
+ * GET /v1/orders/:id, GET /v1/orders/:id/payments and
+ * GET /v1/payments/:id/refunds).
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
-import type { PaymentMode, ShopPaymentProvider } from "./provider";
+import type { PaymentMode, ProviderOrderCheck, ProviderRefundRecord, ShopPaymentProvider } from "./provider";
 
 const API = "https://api.razorpay.com/v1";
+/** Order lookups run inside page loads (the expiry sweep), so they give up quickly. */
+const LOOKUP_TIMEOUT_MS = 8_000;
 
 export function hmacSha256Hex(secret: string, payload: string) {
   return createHmac("sha256", secret).update(payload).digest("hex");
@@ -42,7 +46,7 @@ export function verifyWebhookSignature(rawBody: string, signature: string | null
   return safeEqualHex(hmacSha256Hex(webhookSecret, rawBody), signature);
 }
 
-type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body?: string }) => Promise<{
+type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body?: string; signal?: AbortSignal }) => Promise<{
   ok: boolean;
   status: number;
   json(): Promise<unknown>;
@@ -106,6 +110,45 @@ export class RazorpayProvider implements ShopPaymentProvider {
     if (!res.ok) throw new Error(`Razorpay refund failed: ${res.status} ${await res.text()}`);
     const body = (await res.json()) as { id: string };
     return { refundId: body.id, raw: body };
+  }
+
+  /**
+   * The order's status and its captured payment, if any. Null when Razorpay
+   * does not know the order under these keys (400 "The id provided does not
+   * exist", which also covers an order of another account).
+   */
+  async checkOrder(providerOrderId: string): Promise<ProviderOrderCheck | null> {
+    const get = (path: string) =>
+      this.fetchImpl(`${API}${path}`, { method: "GET", headers: this.headers(), signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS) });
+    const id = encodeURIComponent(providerOrderId);
+    const res = await get(`/orders/${id}`);
+    if (!res.ok) {
+      const text = await res.text();
+      if (res.status === 404 || (res.status === 400 && /does not exist|is not a valid id/i.test(text))) return null;
+      throw new Error(`Razorpay order lookup failed: ${res.status} ${text}`);
+    }
+    const { status } = (await res.json()) as { status?: string };
+    if (status !== "created" && status !== "attempted" && status !== "paid") throw new Error(`Razorpay order lookup returned status ${String(status)}.`);
+    if (status === "created") return { status, captured: null };
+
+    const pays = await get(`/orders/${id}/payments`);
+    if (!pays.ok) throw new Error(`Razorpay payment lookup failed: ${pays.status} ${await pays.text()}`);
+    const body = (await pays.json()) as { items?: { id: string; amount: number; currency: string; status: string }[] };
+    const c = body.items?.find((p) => p.status === "captured");
+    return { status, captured: c ? { providerPaymentId: c.id, amountCents: c.amount, currency: c.currency } : null };
+  }
+
+  /** Every refund Razorpay holds for one payment, at most 100 (a payment never has that many). */
+  async listRefunds(providerPaymentId: string): Promise<ProviderRefundRecord[]> {
+    const res = await this.fetchImpl(`${API}/payments/${encodeURIComponent(providerPaymentId)}/refunds?count=100`, {
+      method: "GET",
+      headers: this.headers(),
+      signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS),
+    });
+    if (!res.ok) throw new Error(`Razorpay refund lookup failed: ${res.status} ${await res.text()}`);
+    const body = (await res.json()) as { items?: { id: string; amount: number; status: string }[] };
+    if (!Array.isArray(body?.items)) throw new Error("Razorpay refund lookup returned no list.");
+    return body.items.map((r) => ({ refundId: r.id, amountCents: r.amount, status: r.status }));
   }
 
   verifyCheckout(args: { razorpayOrderId: string; razorpayPaymentId: string; signature: string }) {

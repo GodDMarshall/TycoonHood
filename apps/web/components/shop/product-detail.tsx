@@ -8,6 +8,7 @@ import { prisma } from "@tycoonhood/db";
 import { MAX_LINE_QTY, categoryLabel, priceInTime, unitPrices } from "@tycoonhood/core";
 import { Badge, CoinMark, Icon, ThcAmount, type IconName } from "@tycoonhood/ui";
 import { addToCartAction, toggleWishlistAction } from "../../app/(app)/store/actions";
+import { releaseExpiredHolds } from "../../lib/stale-orders";
 import { AddToCart, GuestAddToCart } from "./add-to-cart";
 import { stockOf } from "./catalogue";
 import { KIND_LABEL, inr } from "./format";
@@ -24,6 +25,8 @@ export async function ProductDetail({
   base: "/store" | "/marketplace";
   user: { id: string } | null;
 }) {
+  // Unpaid orders past their hold give their stock back before it is shown.
+  await releaseExpiredHolds();
   const p = await prisma.product.findUnique({
     where: { slug },
     include: { variants: { where: { active: true }, orderBy: { sortOrder: "asc" } } },

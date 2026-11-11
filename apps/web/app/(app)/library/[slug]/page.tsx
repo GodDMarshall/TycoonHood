@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { requireUser } from "../../../../lib/guard";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { renderMarkdown } from "@tycoonhood/core";
+import { libraryOrderFor, renderMarkdown } from "@tycoonhood/core";
 import { Badge } from "@tycoonhood/ui";
 import { Page } from "../../../../components/app/page";
 import { getCurrentUser } from "../../../../lib/auth";
@@ -17,10 +17,8 @@ export default async function LibraryItem({ params }: { params: Promise<{ slug: 
   const product = await prisma.product.findUnique({ where: { slug } });
   if (!product || product.kind !== "DIGITAL") notFound();
 
-  const owned = await prisma.order.findFirst({
-    where: { userId: user.id, status: "FULFILLED", items: { some: { productId: product.id } } },
-    select: { id: true },
-  });
+  // Paid is enough: gear in the same order may still be waiting to ship.
+  const owned = await libraryOrderFor(user.id, product.id);
   if (!owned) redirect("/store");
 
   const html = product.contentMd

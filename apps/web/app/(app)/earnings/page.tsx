@@ -139,6 +139,7 @@ export default async function EarningsPage() {
           <p className="mt-1.5 text-[12px] text-ink-3">
             Approved commissions not yet in a payout. Minimum payout {inr(s.minPayoutCents)}.
             {s.inPayoutCents > 0 && ` ${inr(s.inPayoutCents)} is in your open request.`}
+            {s.heldCents > 0 && ` ${inr(s.heldCents)} is on hold while a refund request is decided.`}
           </p>
         </div>
         <div className="shrink-0">

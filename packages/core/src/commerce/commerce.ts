@@ -15,7 +15,8 @@
  * always did.
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
-import type { PrismaClient } from "@tycoonhood/db";
+import type { Prisma, PrismaClient } from "@tycoonhood/db";
+import { can } from "../auth/permissions";
 import { LedgerService, InsufficientFundsError } from "../ledger/ledger";
 import { LmsService } from "../lms/lms";
 
@@ -156,15 +157,15 @@ export class CommerceService {
     if (affected === 0) throw new OutOfStockError("Sold out.");
   }
 
-  /** Puts `qty` units back. NULL (unlimited) inventory stays NULL. */
-  async releaseUnits(productId: string, variantId: string | null, qty: number) {
+  /** Puts `qty` units back, inside `db` when it is a transaction. NULL (unlimited) inventory stays NULL. */
+  async releaseUnits(productId: string, variantId: string | null, qty: number, db: Prisma.TransactionClient = this.db) {
     if (qty < 1) return;
     if (variantId) {
-      await this.db.$executeRaw`
+      await db.$executeRaw`
         UPDATE "ProductVariant" SET "inventory" = "inventory" + ${qty} WHERE "id" = ${variantId}`;
       return;
     }
-    await this.db.$executeRaw`
+    await db.$executeRaw`
       UPDATE "Product" SET "inventory" = "inventory" + ${qty}
       WHERE "id" = ${productId} AND "inventory" IS NOT NULL`;
   }
@@ -339,6 +340,16 @@ export class CommerceService {
     });
     if (order.status !== "PAID") {
       throw new CommerceError("Only a paid order can be shipped.");
+    }
+    // A test payment moves no money. In production only staff with
+    // admin.commerce may pay that way (shop/payments/provider.ts), so a
+    // member's order paid in test mode is never shipped.
+    if (process.env.NODE_ENV === "production") {
+      const testPaid = await this.db.payment.count({ where: { orderId, mode: "TEST", status: "CAPTURED" } });
+      const buyer = testPaid > 0 ? await this.db.user.findUnique({ where: { id: order.userId }, select: { role: true } }) : null;
+      if (testPaid > 0 && !can(buyer, "admin.commerce")) {
+        throw new CommerceError("This order was paid in test mode, so no real money was charged. Do not ship it.");
+      }
     }
     const updated = await this.db.order.update({
       where: { id: orderId },

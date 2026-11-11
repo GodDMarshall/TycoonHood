@@ -1,8 +1,9 @@
 /**
  * PLATFORM ANALYTICS (spec J) — every figure is a count or sum of real rows.
  *
- * Revenue rule: only CAPTURED payments in LIVE mode are revenue. TEST
- * (sandbox) payments are reported on their own line and never added in.
+ * Revenue rule: only CAPTURED payments in LIVE mode are revenue, less any
+ * part already refunded (as shopStats.liveRevenue counts it). TEST (sandbox)
+ * payments are reported on their own line and never added in.
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
@@ -94,7 +95,7 @@ export async function platformAnalytics(db: PrismaClient = defaultPrisma): Promi
     db.certificate.count(),
     db.certificate.count({ where: { issuedAt: { gte: since30 } } }),
     db.order.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.payment.groupBy({ by: ["mode", "currency"], where: { status: "CAPTURED" }, _sum: { amountCents: true }, _count: { _all: true } }),
+    db.payment.groupBy({ by: ["mode", "currency"], where: { status: "CAPTURED" }, _sum: { amountCents: true, refundedCents: true }, _count: { _all: true } }),
     db.affiliateProfile.count({ where: { status: "APPROVED" } }),
     db.affiliateProfile.count({ where: { status: "PENDING" } }),
     db.affiliateClick.count({ where: { createdAt: { gte: since30 } } }),
@@ -120,7 +121,8 @@ export async function platformAnalytics(db: PrismaClient = defaultPrisma): Promi
   const money = paymentGroups.map((g) => ({
     mode: g.mode,
     currency: g.currency,
-    amountCents: g._sum.amountCents ?? 0,
+    // A partial refund leaves the payment CAPTURED; only what was kept counts.
+    amountCents: (g._sum.amountCents ?? 0) - (g._sum.refundedCents ?? 0),
     payments: g._count._all,
   }));
 

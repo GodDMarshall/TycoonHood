@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { LedgerService, paymentsStatus, shopCheckout } from "@tycoonhood/core";
+import { LedgerService, paymentsStatusFor, shopCheckout } from "@tycoonhood/core";
 import { buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
+import { releaseExpiredHolds } from "../../../lib/stale-orders";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
 import { CheckoutForm } from "../../../components/shop/checkout-form";
 import { TestModeBanner } from "../../../components/shop/test-mode-banner";
@@ -18,13 +19,16 @@ const ledger = new LedgerService(prisma);
 
 export default async function CheckoutPage() {
   const user = await requireUser();
-  // Stale unpaid orders give their stock back before anyone is told "sold out".
-  await shopCheckout.expireStale();
+  // Stale unpaid orders give their stock and coupons back before anyone is told
+  // "sold out": this member's own every time, everyone else's at most once a minute.
+  await releaseExpiredHolds(user.id);
   const quote = await shopCheckout.quoteInr(user.id);
   const { lines, totals } = quote;
   if (lines.length === 0) redirect("/cart");
 
-  const pay = paymentsStatus();
+  // As this member sees it: with Razorpay test keys in production, only staff
+  // with admin.commerce get the rupee rail. startInrCheckout checks it again.
+  const pay = paymentsStatusFor(user);
   const wallet = await ledger.ensureUserAccount(user.id);
   const balance = await ledger.getBalance(wallet.id);
   const blocked = lines.find((l) => l.problem);
