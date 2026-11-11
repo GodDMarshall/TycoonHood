@@ -34,8 +34,9 @@ const csp = [
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.razorpay.com https://www.youtube.com https://s.ytimg.com",
-  // Video lessons play from YouTube's privacy-enhanced domain.
-  "frame-src https://js.stripe.com https://hooks.stripe.com https://api.razorpay.com https://checkout.razorpay.com https://www.youtube-nocookie.com",
+  // Video lessons play in YouTube's privacy-enhanced player or Vimeo's player
+  // (lib/video.ts embeds both; Vimeo with dnt=1).
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://api.razorpay.com https://checkout.razorpay.com https://www.youtube-nocookie.com https://player.vimeo.com",
   "connect-src 'self' https://api.stripe.com https://api.razorpay.com https://lumberjack.razorpay.com",
   "upgrade-insecure-requests",
 ].join("; ");
