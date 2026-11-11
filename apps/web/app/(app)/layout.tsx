@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../../lib/auth";
+import { loginPath } from "../../lib/guard";
 import { AppShell } from "../../components/app/app-shell";
 import { VerifyBanner } from "../../components/app/verify-banner";
 import { MaintenanceBanner } from "../../components/maintenance-banner";
@@ -12,7 +13,8 @@ import { resendVerificationAction } from "./settings/actions";
  */
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  // Same target as the page guards, so the return path survives whichever redirect wins.
+  if (!user) redirect(await loginPath());
   if (!user.profile?.onboardedAt) redirect("/onboarding");
   return (
     <AppShell user={user}>

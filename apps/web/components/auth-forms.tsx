@@ -69,11 +69,19 @@ export function RegisterForm({
   );
 }
 
-export function LoginForm({ action }: { action: Action }) {
+export function LoginForm({
+  action,
+  next = null,
+}: {
+  action: Action;
+  /** A checked path on this site to return to after signing in. */
+  next?: string | null;
+}) {
   const [state, formAction, pending] = useActionState(action, initial);
   return (
     <Door eyebrow="Members" title={<>Welcome <span className="accent">back.</span></>} lead="Pick up where you left off — your streak is waiting.">
         <form action={formAction} className="flex flex-col gap-4">
+          {next && <input type="hidden" name="next" value={next} />}
           {state.error && <Notice tone="danger">{state.error}</Notice>}
           <Field label="Email" htmlFor="email" error={state.fieldErrors?.email?.[0]}>
             <Input id="email" name="email" type="email" autoComplete="email" />

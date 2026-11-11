@@ -19,6 +19,7 @@ import {
   emailVerification,
   getSetting,
   InvalidVerificationTokenError,
+  safeNextPath,
 } from "@tycoonhood/core";
 import { sendVerificationEmail } from "../../lib/mail/verification";
 import { activeMailer } from "../../lib/mail";
@@ -26,11 +27,28 @@ import { clearSessionCookie, deviceInfo, setSessionCookie, SESSION_COOKIE } from
 import { cookies } from "next/headers";
 import { rateLimit } from "../../lib/rate-limit";
 
+const THROTTLE_WINDOW_MS = 10 * 60_000;
+
+function tooManyAttempts(retryAfterSec: number): string {
+  return `Too many attempts. Try again in ~${Math.max(1, Math.ceil(retryAfterSec / 60))} min.`;
+}
+
 /** Throttle credential endpoints by client IP: 10 attempts / 10 minutes. */
 async function throttled(bucket: string): Promise<string | null> {
   const { ip } = await deviceInfo();
-  const r = rateLimit(`${bucket}:${ip ?? "unknown"}`, 10, 10 * 60_000);
-  return r.ok ? null : `Too many attempts. Try again in ~${Math.max(1, Math.ceil(r.retryAfterSec / 60))} min.`;
+  const r = rateLimit(`${bucket}:${ip ?? "unknown"}`, 10, THROTTLE_WINDOW_MS);
+  return r.ok ? null : tooManyAttempts(r.retryAfterSec);
+}
+
+/**
+ * Throttle sign-in per account as well, so guesses spread over many addresses
+ * still stop: 20 attempts / 10 minutes per email. It counts every address
+ * typed, whether or not an account has it, and says exactly what the per-IP
+ * limit says, so it never reveals whether an account exists.
+ */
+function throttledAccount(email: string): string | null {
+  const r = rateLimit(`login-email:${email.trim().toLowerCase()}`, 20, THROTTLE_WINDOW_MS);
+  return r.ok ? null : tooManyAttempts(r.retryAfterSec);
 }
 
 export interface AuthFormState {
@@ -93,10 +111,12 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
     password: formData.get("password"),
   });
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
-  const blocked = await throttled("login");
+  // The IP check runs first, so one address cannot fill someone's account bucket on its own.
+  const blocked = (await throttled("login")) ?? throttledAccount(parsed.data.email);
   if (blocked) return { error: blocked };
 
-  let destination = "/today";
+  // Back to the page that sent them here, when it is a safe path on this site.
+  let destination = safeNextPath(formData.get("next")) ?? "/today";
   try {
     const user = await accounts.authenticate(parsed.data);
     const { raw } = await sessions.create(user.id, await deviceInfo());

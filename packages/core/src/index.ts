@@ -49,6 +49,7 @@ export { NullChainAdapter, activeChainAdapter } from "./chain/adapter";
 export type { ChainAdapter, ChainAnchor } from "./chain/adapter";
 export type { Submission } from "./gamification/challenges";
 export { PasswordResetService, passwordReset, InvalidResetTokenError, newPasswordSchema } from "./auth/password-reset";
+export { safeNextPath, NEXT_PATH_MAX } from "./auth/next-path";
 export { DiscordInteractionHandler, discordInteractions, verifyDiscordSignature } from "./integrations/discord-interactions";
 export type { DiscordInteraction, DiscordResponse } from "./integrations/discord-interactions";
 

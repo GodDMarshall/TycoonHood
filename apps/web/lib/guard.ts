@@ -9,14 +9,25 @@
  *
  * See TYCOONHOOD_DECISIONS.md DR-3.
  */
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { can, type Permission } from "@tycoonhood/core";
+import { can, safeNextPath, type Permission } from "@tycoonhood/core";
 import { getCurrentUser } from "./auth";
+import { PATH_HEADER } from "./path-header";
+
+/**
+ * Where to send a signed-out visitor: /login, carrying the page they asked for
+ * (recorded by middleware.ts) as ?next= when it is a safe path on this site.
+ */
+export async function loginPath(): Promise<string> {
+  const next = safeNextPath((await headers()).get(PATH_HEADER));
+  return next ? `/login?next=${encodeURIComponent(next)}` : "/login";
+}
 
 /** Gate for member pages. Returns the onboarded user or redirects. */
 export async function requireUser() {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  if (!user) redirect(await loginPath());
   if (!user.profile?.onboardedAt) redirect("/onboarding");
   return user;
 }
@@ -24,14 +35,14 @@ export async function requireUser() {
 /** Gate for member pages that must load before onboarding is complete. */
 export async function requireSignedIn() {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  if (!user) redirect(await loginPath());
   return user;
 }
 
 /** Gate for admin pages. Re-checks role in the page itself, not just the layout. */
 export async function requireAdmin() {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  if (!user) redirect(await loginPath());
   if (user.role !== "ADMIN") redirect("/today");
   return user;
 }
@@ -39,7 +50,7 @@ export async function requireAdmin() {
 /** Gate for a staff surface: the user must hold this permission (see core auth/permissions). */
 export async function requirePermission(permission: Permission) {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  if (!user) redirect(await loginPath());
   if (!can(user, permission)) redirect("/today");
   return user;
 }

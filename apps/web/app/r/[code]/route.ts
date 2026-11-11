@@ -10,6 +10,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { affiliates, AFFILIATE_CODE_PATTERN } from "@tycoonhood/core";
 import { rateLimit } from "../../../lib/rate-limit";
+import { clientIpFromHeaders } from "../../../lib/client-ip";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ function safeDestination(to: string | null): string {
     const base = "http://same.invalid";
     const u = new URL(to, base);
     if (u.origin !== base) return "/";
+    if (u.pathname.startsWith("//")) return "/"; // "/.//evil" normalises to "//evil"
     if (u.pathname.startsWith("/r/")) return "/"; // no redirect loops
     return `${u.pathname}${u.search}${u.hash}`;
   } catch {
@@ -44,7 +46,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ code
 
   if (!AFFILIATE_CODE_PATTERN.test(code)) return res;
 
-  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || req.headers.get("x-real-ip") || null;
+  const ip = clientIpFromHeaders(req.headers);
   // Light limit: a person clicking links is far below this; a script is not.
   if (!rateLimit(`aff-click:${ip ?? "unknown"}`, 30, 60_000).ok) return res;
 

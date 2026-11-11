@@ -3,7 +3,7 @@
  *  (e.g. ".tycoonhood.com") so www and miner share sign-in. */
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
-import { sessions, SESSION_TTL_MS } from "@tycoonhood/core";
+import { sessions, SESSION_TTL_MS, clientIpFrom, trustedProxyHops } from "@tycoonhood/core";
 
 export const SESSION_COOKIE = "th_session";
 
@@ -11,7 +11,11 @@ export async function deviceInfo() {
   const h = await headers();
   return {
     userAgent: h.get("user-agent"),
-    ip: (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || null,
+    // Same rule as apps/web/lib/client-ip.ts: trust only what our own proxies appended.
+    ip: clientIpFrom(
+      { forwardedFor: h.get("x-forwarded-for"), realIp: h.get("x-real-ip") },
+      trustedProxyHops(process.env.TRUSTED_PROXY_HOPS),
+    ),
   };
 }
 
