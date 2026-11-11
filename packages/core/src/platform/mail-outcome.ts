@@ -56,17 +56,20 @@ export function verificationResendReply(outcome: MailOutcome, email: string): { 
   }
 }
 
-/** The reply after a member changes their email. The change itself has already happened. */
-export function emailChangeReply(outcome: MailOutcome, email: string): { ok: string } {
+/**
+ * The reply after a member asks to change their email. Nothing has changed
+ * yet: the account moves only when the link sent to the new address is used.
+ */
+export function emailChangeReply(outcome: MailOutcome, email: string): { ok?: string; error?: string } {
   switch (outcome) {
     case "sent":
-      return { ok: `Email changed. We sent a confirmation link to ${email}.` };
+      return { ok: `We sent a confirmation link to ${email}. Your email changes when you use it.` };
     case "logged":
-      return { ok: `Email changed. Dev mode: nothing was emailed. The confirmation link for ${email} is in the server log.` };
+      return { ok: `Dev mode: nothing was emailed. The confirmation link for ${email} is in the server log. Your email changes when you use it.` };
     case "no-mailer":
-      return { ok: `Email changed to ${email}. We couldn't send a confirmation link: email isn't available right now. ${HELP}` };
+      return { error: `We couldn't send a confirmation link: email isn't available right now. Your email has not changed. ${HELP}` };
     case "failed":
-      return { ok: `Email changed to ${email}. We couldn't send a confirmation link. ${HELP}` };
+      return { error: `We couldn't send a confirmation link to ${email}. Your email has not changed. ${HELP}` };
   }
 }
 

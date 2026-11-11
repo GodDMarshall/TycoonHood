@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { requireAdmin } from "../../../../lib/guard";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { Badge, Button, Card, CardContent, Input, Label, SectionRule } from "@tycoonhood/ui";
+import { Badge, Card, CardContent, Input, Label, SectionRule } from "@tycoonhood/ui";
 import { setCourseCoverAction, toggleCoursePublishAction } from "../actions";
 import { ActionForm } from "../../../../components/admin/action-form";
+import { InlineAction } from "../../../../components/learning/admin/inline-action";
 import { CoverFill } from "../../../../components/art/photo";
 
 export const metadata: Metadata = { title: "Admin · Content" };
@@ -29,11 +30,20 @@ export default async function AdminContent() {
               </p>
               <span className="flex items-center gap-2">
                 <Badge tone={c.status === "PUBLISHED" ? "success" : "neutral"}>{c.status}</Badge>
-                <form action={toggleCoursePublishAction.bind(null, c.id)}>
-                  <Button size="sm" variant="outline" type="submit">
-                    {c.status === "PUBLISHED" ? "Unpublish" : "Publish"}
-                  </Button>
-                </form>
+                {c.status === "ARCHIVED" ? (
+                  <Link
+                    href={`/admin/courses/${c.id}`}
+                    className="text-[13px] text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold"
+                  >
+                    Open in the editor
+                  </Link>
+                ) : (
+                  <InlineAction
+                    action={toggleCoursePublishAction.bind(null, c.id)}
+                    label={c.status === "PUBLISHED" ? "Unpublish" : "Publish"}
+                    variant="outline"
+                  />
+                )}
               </span>
               <div className="flex w-full flex-col gap-4 border-t border-line pt-3 sm:flex-row sm:items-start">
                 <div className="relative aspect-[16/7] w-full shrink-0 overflow-hidden rounded-md bg-bg-2 sm:w-48" aria-hidden>

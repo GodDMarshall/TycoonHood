@@ -1,4 +1,4 @@
-export { AuditService, audit } from "./audit";
+export { AuditService, audit, auditChanges, auditValue } from "./audit";
 export type { AuditEntry } from "./audit";
 export { notify, notificationLink } from "./notify";
 
@@ -7,9 +7,14 @@ export { AccountSuspendedError } from "../auth/account";
 export {
   EmailVerificationService, emailVerification,
   InvalidVerificationTokenError, AlreadyVerifiedError, VerificationRateLimitError,
+  EmailChangeEndedError, EmailChangeTakenError, NoEmailChangeError,
   VERIFY_TTL_MS, VERIFY_RESEND_LIMIT, VERIFY_RESEND_WINDOW_MS,
 } from "./email-verification";
-export type { IssuedVerification } from "./email-verification";
+export type { IssuedVerification, IssuedEmailChange, Confirmation } from "./email-verification";
+export {
+  maskEmail, emailChangeLinkMail, emailChangeRequestedMail, emailChangedMail, passwordChangedMail,
+} from "./account-mail";
+export type { MailCopy } from "./account-mail";
 export {
   SettingsService, settings, getSetting, setSetting, resolveSetting, InvalidSettingError,
   SETTING_DEFAULTS, SETTING_SCHEMAS, HOME_SECTIONS, HOME_SECTION_LABEL,

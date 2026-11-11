@@ -4,6 +4,7 @@
  * generic message is the credentials one, on purpose.
  */
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import {
   accounts,
   sessions,
@@ -17,6 +18,7 @@ import {
   ReferralError,
   AccountSuspendedError,
   emailVerification,
+  EmailChangeEndedError,
   getSetting,
   InvalidVerificationTokenError,
   safeNextPath,
@@ -25,8 +27,9 @@ import {
 } from "@tycoonhood/core";
 import { sendVerificationEmail } from "../../lib/mail/verification";
 import { sendPasswordResetEmail } from "../../lib/mail/password-reset";
+import { sendEmailChangedNotice, sendPasswordChangedNotice } from "../../lib/mail/account";
 import { mailMode } from "../../lib/mail";
-import { clearSessionCookie, deviceInfo, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
+import { clearSessionCookie, deviceInfo, getCurrentSession, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
 import { cookies } from "next/headers";
 import { rateLimit } from "../../lib/rate-limit";
 
@@ -186,29 +189,54 @@ export async function resetPasswordAction(token: string, _prev: ResetState, form
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
   if (password !== confirm) return { error: "Passwords don't match." };
+  let user;
   try {
-    await passwordReset.resetPassword(token, password);
+    user = await passwordReset.resetPassword(token, password);
   } catch (e) {
     if (e instanceof InvalidResetTokenError) return { error: e.message };
     throw e;
   }
+  // After the response: a notice never holds up or undoes the reset.
+  const { id, email } = user;
+  after(() => sendPasswordChangedNotice(id, email, "reset"));
   return { done: true };
 }
 
 export interface VerifyState {
-  done?: boolean;
+  /** What the link did: confirmed the member's address, or moved the account to a new one. */
+  done?: "verified" | "email-changed";
+  /** The account's address now, after an email change. */
+  email?: string;
+  /** Whether this browser is signed in as the member the link was for. */
+  signedIn?: boolean;
   error?: string;
+  /** False when a new link cannot help: the email change it was for is over. */
+  retry?: boolean;
 }
 
-/** Consumes a verification link. A POST behind a button, so mail scanners that prefetch links cannot spend it. */
+/**
+ * Uses a link from an email: a confirmation link, or the link that confirms
+ * an email change. A POST behind a button, so mail scanners that prefetch
+ * links cannot spend it.
+ */
 export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: FormData): Promise<VerifyState> {
   const blocked = await throttled("verify");
   if (blocked) return { error: blocked };
+  // An email change signs out every other session; this browser's stays if it is the member's.
+  const session = await getCurrentSession();
+  let result;
   try {
-    await emailVerification.verify(token);
+    result = await emailVerification.confirm(token, { keepSessionId: session?.id });
   } catch (e) {
+    if (e instanceof EmailChangeEndedError) return { error: e.message, retry: false };
     if (e instanceof InvalidVerificationTokenError) return { error: e.message };
     throw e;
   }
-  return { done: true };
+  const signedIn = session?.user.id === result.user.id;
+  if (result.kind === "email-change") {
+    const { user, previousEmail } = result;
+    after(() => sendEmailChangedNotice(user.id, previousEmail, user.email));
+    return { done: "email-changed", email: user.email, signedIn };
+  }
+  return { done: "verified", signedIn };
 }

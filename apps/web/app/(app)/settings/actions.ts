@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { after } from "next/server";
 import { prisma } from "@tycoonhood/db";
 import {
   accountSettings,
@@ -10,6 +11,7 @@ import {
   EmailTakenError,
   emailChangeReply,
   emailVerification,
+  NoEmailChangeError,
   profiles,
   sessions,
   UsernameTakenError,
@@ -20,6 +22,7 @@ import {
 import { getCurrentSession, getCurrentUser, SESSION_COOKIE } from "../../../lib/auth";
 import { mailMode } from "../../../lib/mail";
 import { sendVerificationEmail } from "../../../lib/mail/verification";
+import { sendEmailChangeLink, sendEmailChangeRequestedNotice, sendPasswordChangedNotice } from "../../../lib/mail/account";
 import { rateLimit } from "../../../lib/rate-limit";
 import { isZodError, zodMessage } from "../../../lib/form-errors";
 
@@ -105,6 +108,10 @@ export async function resendVerificationAction(_prev: FormState, _fd: FormData):
   // With no mail provider, say so without issuing a link: issuing would
   // replace any link already sent and use up one of the three an hour.
   if (mailMode() === "off") return verificationResendReply("no-mailer", user.email);
+  // A cheap first gate for bursts in this process. The limit that counts is
+  // core's: three an hour, counted and recorded in one locked transaction.
+  const r = rateLimit(`verify-resend:${user.id}`, 5, 60 * 60_000);
+  if (!r.ok) return { error: "Too many attempts. Try again later." };
   try {
     const outcome = await sendVerificationEmail(await emailVerification.resend(user.id));
     // A new link replaced the old one, or none is left if sending failed, so
@@ -118,24 +125,55 @@ export async function resendVerificationAction(_prev: FormState, _fd: FormData):
   }
 }
 
+/**
+ * Ask to move the account to another address. Nothing changes until the link
+ * sent there is used; the current address gets a notice either way.
+ */
 export async function changeEmailAction(_prev: FormState, fd: FormData): Promise<FormState> {
   const { user } = await current();
   const r = rateLimit(`email-change:${user.id}`, 5, 60 * 60_000);
   if (!r.ok) return { error: "Too many attempts. Try again later." };
+  // With no mail provider the link cannot go out, so the change could never be confirmed: ask for nothing.
+  if (mailMode() === "off") return emailChangeReply("no-mailer", "");
+  let issued;
   try {
-    const updated = await accountSettings.changeEmail(user.id, String(fd.get("email") ?? ""), String(fd.get("password") ?? ""));
-    if (!updated.emailVerified) {
-      const outcome = await sendVerificationEmail(await emailVerification.issue(user.id, { reason: "email-change" }));
-      revalidatePath("/settings");
-      return emailChangeReply(outcome, updated.email);
-    }
+    issued = await accountSettings.changeEmail(user.id, String(fd.get("email") ?? ""), String(fd.get("password") ?? ""));
   } catch (e) {
     if (isZodError(e)) return { error: zodMessage(e) };
     if (e instanceof WrongPasswordError || e instanceof EmailTakenError) return { error: e.message };
     throw e;
   }
+  if (!issued) return { ok: "That is already your email." };
+  const outcome = await sendEmailChangeLink(issued);
+  // After the response, so a slow or failing mail provider never holds up the request.
+  after(() => sendEmailChangeRequestedNotice(issued));
   revalidatePath("/settings");
-  return { ok: "That is already your email." };
+  return emailChangeReply(outcome, issued.newEmail);
+}
+
+/** Send the link for a waiting email change again, within the three-an-hour limit confirmation links share. */
+export async function resendEmailChangeAction(_prev: FormState, _fd: FormData): Promise<FormState> {
+  const { user } = await current();
+  if (!user.pendingEmail) return { error: "There is no email change waiting." };
+  if (mailMode() === "off") return verificationResendReply("no-mailer", user.pendingEmail);
+  const r = rateLimit(`verify-resend:${user.id}`, 5, 60 * 60_000);
+  if (!r.ok) return { error: "Too many attempts. Try again later." };
+  try {
+    const issued = await emailVerification.resendEmailChange(user.id);
+    const outcome = await sendEmailChangeLink(issued);
+    revalidatePath("/settings");
+    return verificationResendReply(outcome, issued.newEmail);
+  } catch (e) {
+    if (e instanceof VerificationRateLimitError || e instanceof NoEmailChangeError) return { error: e.message };
+    throw e;
+  }
+}
+
+/** Drop the waiting email change: the address and its link. */
+export async function cancelEmailChangeAction() {
+  const { user } = await current();
+  await accountSettings.cancelEmailChange(user.id);
+  revalidatePath("/settings");
 }
 
 export async function changePasswordAction(_prev: FormState, fd: FormData): Promise<FormState> {
@@ -144,15 +182,25 @@ export async function changePasswordAction(_prev: FormState, fd: FormData): Prom
   if (!r.ok) return { error: "Too many attempts. Try again later." };
   const next = String(fd.get("newPassword") ?? "");
   if (next !== String(fd.get("confirm") ?? "")) return { error: "The new passwords don't match." };
+  let cancelled: string | null;
   try {
-    await accountSettings.changePassword(session.user.id, String(fd.get("currentPassword") ?? ""), next, session.id);
+    ({ cancelledEmailChange: cancelled } = await accountSettings.changePassword(
+      session.user.id,
+      String(fd.get("currentPassword") ?? ""),
+      next,
+      session.id
+    ));
   } catch (e) {
     if (isZodError(e)) return { error: zodMessage(e) };
     if (e instanceof WrongPasswordError) return { error: e.message };
     throw e;
   }
+  const { id, email } = session.user;
+  after(() => sendPasswordChangedNotice(id, email, "settings"));
   revalidatePath("/settings");
-  return { ok: "Password changed. Every other device was signed out." };
+  return {
+    ok: `Password changed. Every other device was signed out.${cancelled ? ` Your email change to ${cancelled} was cancelled.` : ""}`,
+  };
 }
 
 export async function signOutOtherDevicesAction() {

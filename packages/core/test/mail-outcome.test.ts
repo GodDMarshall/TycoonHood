@@ -61,22 +61,29 @@ describe("verificationResendReply", () => {
   });
 });
 
-describe("emailChangeReply", () => {
-  it("always confirms the change, and claims the link went out only when it did", () => {
+describe("emailChangeReply — nothing changes until the new address is confirmed", () => {
+  it("never says the email changed, and claims the link went out only when it did", () => {
     for (const o of OUTCOMES) {
       const r = emailChangeReply(o, "new@b.test");
-      expect(r.ok).toMatch(/^Email changed/);
-      expect(CLAIMS_DELIVERY.test(r.ok.replace(/^Email changed\.\s*/, "")), o).toBe(o === "sent");
+      expect(text(r), o).not.toMatch(/email changed|email (is|was|has been) changed/i);
+      expect(CLAIMS_DELIVERY.test(text(r)), o).toBe(o === "sent");
     }
+    expect(emailChangeReply("sent", "new@b.test").ok).toBe("We sent a confirmation link to new@b.test. Your email changes when you use it.");
   });
 
-  it("when the link was not sent, says so and what to do", () => {
+  it("when the link was not sent, it is an error that says the email has not changed and what to do", () => {
     for (const o of ["no-mailer", "failed"] as const) {
       const r = emailChangeReply(o, "new@b.test");
-      expect(r.ok).toContain("new@b.test");
-      expect(r.ok).toMatch(/couldn't send a confirmation link/);
-      expect(r.ok).toMatch(/try again later, or contact us/i);
+      expect(r.ok).toBeUndefined();
+      expect(r.error).toMatch(/couldn't send a confirmation link/);
+      expect(r.error).toMatch(/your email has not changed/i);
+      expect(r.error).toMatch(/try again later, or contact us/i);
     }
+    expect(emailChangeReply("no-mailer", "new@b.test").error).toMatch(/email isn't available right now/);
+  });
+
+  it("dev mode says nothing was emailed", () => {
+    expect(emailChangeReply("logged", "new@b.test").ok).toMatch(/^Dev mode: nothing was emailed/);
   });
 });
 

@@ -17,6 +17,7 @@ Migrations are hand-written SQL under `packages/db/prisma/migrations/`. They are
 | `20260924010000_watch_xp_source` | XP source for watch tasks |
 | `20261001000000_academy_community` | Chat channels, messages, reports, mutes, daily standard |
 | `20261111000000_full_platform` | Everything below |
+| `20261111190000_pending_email` | `User.pendingEmail`: an email change waiting for its link to be used. Nullable and not unique; additive only |
 
 `20261111000000_full_platform` is **additive only**: no column is dropped or renamed. CHECK constraints guard the money columns (amounts ≥ 0, rate between 0 and 10 000 bps, coupon percent 1–100).
 

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createHash } from "node:crypto";
 import { prisma } from "@tycoonhood/db";
+import type { Prisma } from "@tycoonhood/db";
 import { AccountService, AccountSuspendedError, InvalidCredentialsError } from "../src/auth/account";
 import { SessionService } from "../src/auth/session";
 import { ForbiddenError } from "../src/auth/permissions";
@@ -9,7 +10,14 @@ import {
   InvalidVerificationTokenError,
   VerificationRateLimitError,
   AlreadyVerifiedError,
+  EmailChangeEndedError,
+  EmailChangeTakenError,
+  NoEmailChangeError,
+  VERIFY_RESEND_LIMIT,
+  type EmailChangeCancelReason,
 } from "../src/platform/email-verification";
+import { PasswordResetService, InvalidResetTokenError } from "../src/auth/password-reset";
+import { EmailTakenError } from "../src/auth/account";
 import { SettingsService, SETTING_DEFAULTS, resolveSetting, InvalidSettingError } from "../src/platform/settings";
 import { profileCompletion, ProfileService } from "../src/platform/profile";
 import { MemberAdminService, MemberAdminError } from "../src/platform/members";
@@ -24,7 +32,18 @@ const settingsSvc = new SettingsService(prisma);
 const members = new MemberAdminService(prisma);
 const accountSettings = new AccountSettingsService(prisma);
 const cms = new CmsService(prisma);
+const resets = new PasswordResetService(prisma);
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
+
+const PASSWORD = "first password ok";
+const address = (tag: string) => `${tag}-${uid().slice(0, 8)}@tycoonhood.test`;
+
+/** A member who signs in with a password, as registration makes one. */
+async function memberWithPassword() {
+  const email = address("acct");
+  const user = await accounts.register({ email, password: PASSWORD, name: "Account Case" });
+  return { user, email };
+}
 
 describe("Email verification — token lifecycle", () => {
   it("stores only the hash, keyed by email, expiring in 24h", async () => {
@@ -73,11 +92,29 @@ describe("Email verification — token lifecycle", () => {
     await expect(verification.resend(user.id)).rejects.toBeInstanceOf(VerificationRateLimitError);
   });
 
-  it("a token for an old address dies when the email changes", async () => {
+  it("parallel resends cannot get past the limit", async () => {
     const user = await createTestUser();
-    await prisma.passwordCredential.create({ data: { userId: user.id, hash: await (await import("../src/auth/password")).hashPassword("long enough password") } });
+    await verification.issue(user.id);
+    const results = await Promise.allSettled(Array.from({ length: 8 }, () => verification.resend(user.id)));
+    const sent = results.filter((r) => r.status === "fulfilled");
+    const refused = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+    expect(sent).toHaveLength(VERIFY_RESEND_LIMIT);
+    for (const r of refused) expect(r.reason).toBeInstanceOf(VerificationRateLimitError);
+    const rows = await prisma.auditLog.count({ where: { action: "auth.verify.resend", targetType: "User", targetId: user.id } });
+    expect(rows).toBe(VERIFY_RESEND_LIMIT);
+    // Each resend replaces the link before it, so one link is left.
+    expect(await prisma.verificationToken.count({ where: { identifier: user.email } })).toBe(1);
+  });
+
+  it("a token for an old address dies when an email change takes effect", async () => {
+    const { user } = await memberWithPassword();
     const { rawToken } = await verification.issue(user.id);
-    await accountSettings.changeEmail(user.id, `new-${uid().slice(0, 8)}@tycoonhood.test`, "long enough password");
+    const change = await accountSettings.changeEmail(user.id, address("new"), PASSWORD);
+    // Asking is not changing: the current address's link still works until then.
+    expect(await verification.hasLiveLink(user.email)).toBe(true);
+    await verification.confirm(change!.rawToken);
+    // Deleted by the change itself, not only refused later because no account has that address now.
+    expect(await verification.hasLiveLink(user.email)).toBe(false);
     await expect(verification.verify(rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
   });
 
@@ -242,6 +279,336 @@ describe("Account settings", () => {
     const b = await accountSettings.requestDeletion(user.id);
     expect(a.id).toBe(b.id);
     expect(await prisma.user.findUnique({ where: { id: user.id } })).not.toBeNull();
+  });
+});
+
+describe("Reset links die when the account is secured", () => {
+  it("a password change kills an outstanding reset link", async () => {
+    const { user, email } = await memberWithPassword();
+    const { issued } = await resets.requestReset(email);
+    await accountSettings.changePassword(user.id, PASSWORD, "second password ok");
+    await expect(resets.resetPassword(issued!.rawToken, "attacker password 1")).rejects.toBeInstanceOf(InvalidResetTokenError);
+    await expect(accounts.authenticate({ email, password: "second password ok" })).resolves.toBeTruthy();
+  });
+
+  it("an email change kills an outstanding reset link once it takes effect", async () => {
+    const { user, email } = await memberWithPassword();
+    const { issued } = await resets.requestReset(email);
+    const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    await verification.confirm(change!.rawToken);
+    await expect(resets.resetPassword(issued!.rawToken, "attacker password 1")).rejects.toBeInstanceOf(InvalidResetTokenError);
+    await expect(accounts.authenticate({ email: change!.newEmail, password: PASSWORD })).resolves.toBeTruthy();
+  });
+
+  it("a reset spends every reset link the member has, and is audited", async () => {
+    const { user, email } = await memberWithPassword();
+    const { issued } = await resets.requestReset(email);
+    await prisma.verificationToken.create({
+      data: { identifier: `pwreset:${user.id}`, token: sha256(uid()), expires: new Date(Date.now() + 60_000) },
+    });
+    await resets.resetPassword(issued!.rawToken, "brand new password 2");
+    expect(await prisma.verificationToken.count({ where: { identifier: `pwreset:${user.id}` } })).toBe(0);
+    expect(await prisma.auditLog.count({ where: { action: "account.password.reset", targetId: user.id } })).toBe(1);
+  });
+});
+
+describe("Email change — waits for the new address", () => {
+  it("is only a request: the current address still signs in and still gets reset links", async () => {
+    const { user, email } = await memberWithPassword();
+    const next = address("next");
+    const change = await accountSettings.changeEmail(user.id, next.toUpperCase(), PASSWORD);
+    expect(change).toMatchObject({ userId: user.id, currentEmail: email, newEmail: next });
+
+    const after = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(after.email).toBe(email);
+    expect(after.pendingEmail).toBe(next);
+    await expect(accounts.authenticate({ email, password: PASSWORD })).resolves.toBeTruthy();
+    await expect(accounts.authenticate({ email: next, password: PASSWORD })).rejects.toBeInstanceOf(InvalidCredentialsError);
+    expect((await resets.requestReset(email)).issued).not.toBeNull();
+    expect((await resets.requestReset(next)).issued).toBeNull();
+
+    // One link, stored as a hash under the member's change identifier.
+    const row = await prisma.verificationToken.findUnique({ where: { token: sha256(change!.rawToken) } });
+    expect(row?.identifier).toBe(`emailchange:${user.id}`);
+    expect(await verification.hasLiveEmailChangeLink(user.id)).toBe(true);
+    const log = await prisma.auditLog.findFirst({ where: { action: "account.email.change.request", targetId: user.id } });
+    expect(log?.meta).toMatchObject({ from: email, to: next });
+  });
+
+  it("needs the password, and refuses an address another account uses", async () => {
+    const { user } = await memberWithPassword();
+    const other = await memberWithPassword();
+    await expect(accountSettings.changeEmail(user.id, address("x"), "wrong password here")).rejects.toBeInstanceOf(WrongPasswordError);
+    await expect(accountSettings.changeEmail(user.id, other.email.toUpperCase(), PASSWORD)).rejects.toBeInstanceOf(EmailTakenError);
+    expect(await accountSettings.changeEmail(user.id, user.email, PASSWORD)).toBeNull();
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).pendingEmail).toBeNull();
+  });
+
+  it("confirming moves the account, verified, and kills the old links and every other session", async () => {
+    const { user, email } = await memberWithPassword();
+    const { rawToken: oldLink } = await verification.issue(user.id);
+    const here = await sessions.create(user.id);
+    const elsewhere = await sessions.create(user.id);
+    const next = address("moved");
+    const change = await accountSettings.changeEmail(user.id, next, PASSWORD);
+
+    const done = await verification.confirm(change!.rawToken, { keepSessionId: here.session.id });
+    expect(done.kind).toBe("email-change");
+    expect(done.kind === "email-change" && done.previousEmail).toBe(email);
+    expect(done.user.email).toBe(next);
+    expect(done.user.emailVerified).toBeInstanceOf(Date);
+    expect(done.user.pendingEmail).toBeNull();
+
+    expect(await sessions.resolve(here.raw)).not.toBeNull();
+    expect(await sessions.resolve(elsewhere.raw)).toBeNull();
+    await expect(verification.verify(oldLink)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    expect(await prisma.verificationToken.count({ where: { identifier: { in: [email, `emailchange:${user.id}`] } } })).toBe(0);
+    await expect(accounts.authenticate({ email, password: PASSWORD })).rejects.toBeInstanceOf(InvalidCredentialsError);
+    await expect(accounts.authenticate({ email: next, password: PASSWORD })).resolves.toBeTruthy();
+    const log = await prisma.auditLog.findFirst({ where: { action: "account.email.change", targetId: user.id } });
+    expect(log?.meta).toMatchObject({ from: email, to: next });
+  });
+
+  it("keeps only this member's session: a session of someone else's browser is no exemption", async () => {
+    const { user } = await memberWithPassword();
+    const stranger = await memberWithPassword();
+    const mine = await sessions.create(user.id);
+    const theirs = await sessions.create(stranger.user.id);
+    const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    await verification.confirm(change!.rawToken, { keepSessionId: theirs.session.id });
+    expect(await sessions.resolve(mine.raw)).toBeNull();
+    expect(await sessions.resolve(theirs.raw)).not.toBeNull();
+  });
+
+  it("a link works once, expires, and is replaced by a newer request", async () => {
+    const { user, email } = await memberWithPassword();
+    const first = await accountSettings.changeEmail(user.id, address("first"), PASSWORD);
+    const second = await accountSettings.changeEmail(user.id, address("second"), PASSWORD);
+    await expect(verification.confirm(first!.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+
+    await prisma.verificationToken.update({ where: { token: sha256(second!.rawToken) }, data: { expires: new Date(Date.now() - 1000) } });
+    await expect(verification.confirm(second!.rawToken)).rejects.toThrow(/expired/);
+    let now = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(now.email).toBe(email);
+    expect(now.pendingEmail).toBe(second!.newEmail); // still waiting: a new link can be sent
+
+    const third = await verification.resendEmailChange(user.id);
+    await verification.confirm(third.rawToken);
+    await expect(verification.confirm(third.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    now = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(now.email).toBe(second!.newEmail);
+  });
+
+  it("an address another account took in the meantime fails cleanly and drops the request", async () => {
+    const { user, email } = await memberWithPassword();
+    const wanted = address("contested");
+    const change = await accountSettings.changeEmail(user.id, wanted, PASSWORD);
+    await accounts.register({ email: wanted, password: "someone else entirely", name: "Quicker" });
+
+    const err = await verification.confirm(change!.rawToken).catch((e) => e);
+    expect(err).toBeInstanceOf(EmailChangeTakenError);
+    expect(err).toBeInstanceOf(EmailChangeEndedError);
+    expect(err).toBeInstanceOf(InvalidVerificationTokenError);
+    expect(err.message).toMatch(/belongs to another account/);
+    const now = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(now.email).toBe(email);
+    expect(now.pendingEmail).toBeNull();
+    expect(await prisma.verificationToken.count({ where: { identifier: `emailchange:${user.id}` } })).toBe(0);
+    const log = await prisma.auditLog.findFirst({ where: { action: "account.email.change.cancel", targetId: user.id } });
+    expect(log?.meta).toMatchObject({ to: wanted, reason: "taken" });
+  });
+
+  it("two accounts may wait for the same address; the first to confirm gets it", async () => {
+    const a = await memberWithPassword();
+    const b = await memberWithPassword();
+    const wanted = address("shared");
+    const ca = await accountSettings.changeEmail(a.user.id, wanted, PASSWORD);
+    const cb = await accountSettings.changeEmail(b.user.id, wanted, PASSWORD);
+    await verification.confirm(cb!.rawToken);
+    await expect(verification.confirm(ca!.rawToken)).rejects.toBeInstanceOf(EmailChangeTakenError);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: b.user.id } })).email).toBe(wanted);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: a.user.id } })).email).toBe(a.email);
+  });
+
+  it("two confirmations racing for one address: one wins, the other fails cleanly", async () => {
+    const a = await memberWithPassword();
+    const b = await memberWithPassword();
+    const wanted = address("race");
+    const ca = await accountSettings.changeEmail(a.user.id, wanted, PASSWORD);
+    const cb = await accountSettings.changeEmail(b.user.id, wanted, PASSWORD);
+    const results = await Promise.allSettled([verification.confirm(ca!.rawToken), verification.confirm(cb!.rawToken)]);
+    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+    const lost = results.find((r): r is PromiseRejectedResult => r.status === "rejected");
+    expect(lost?.reason).toBeInstanceOf(EmailChangeTakenError);
+    const owners = await prisma.user.findMany({ where: { id: { in: [a.user.id, b.user.id] } } });
+    expect(owners.filter((u) => u.email === wanted)).toHaveLength(1);
+    expect(owners.every((u) => u.pendingEmail === null)).toBe(true);
+  });
+
+  it("a password change cancels a waiting change", async () => {
+    const { user, email } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("hijack"), PASSWORD);
+    const { cancelledEmailChange } = await accountSettings.changePassword(user.id, PASSWORD, "second password ok");
+    expect(cancelledEmailChange).toBe(change!.newEmail);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).pendingEmail).toBeNull();
+    await expect(verification.confirm(change!.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(email);
+    const log = await prisma.auditLog.findFirst({ where: { action: "account.email.change.cancel", targetId: user.id } });
+    expect(log?.meta).toMatchObject({ to: change!.newEmail, reason: "password-change" });
+  });
+
+  it("a password reset cancels a waiting change", async () => {
+    const { user, email } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("hijack"), PASSWORD);
+    const { issued } = await resets.requestReset(email);
+    await resets.resetPassword(issued!.rawToken, "reset password ok");
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).pendingEmail).toBeNull();
+    await expect(verification.confirm(change!.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+  });
+
+  it("the member can cancel it", async () => {
+    const { user } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("oops"), PASSWORD);
+    expect(await accountSettings.cancelEmailChange(user.id)).toBe(change!.newEmail);
+    expect(await accountSettings.cancelEmailChange(user.id)).toBeNull();
+    expect(await verification.hasLiveEmailChangeLink(user.id)).toBe(false);
+    await expect(verification.confirm(change!.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+  });
+
+  it("resending the link shares the three-an-hour limit with confirmation resends", async () => {
+    const { user } = await memberWithPassword();
+    await expect(verification.resendEmailChange(user.id)).rejects.toBeInstanceOf(NoEmailChangeError);
+    const change = await accountSettings.changeEmail(user.id, address("again"), PASSWORD);
+    await verification.resend(user.id);
+    await verification.resend(user.id);
+    const again = await verification.resendEmailChange(user.id);
+    expect(again.newEmail).toBe(change!.newEmail);
+    await expect(verification.confirm(change!.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError); // replaced
+    await expect(verification.resendEmailChange(user.id)).rejects.toBeInstanceOf(VerificationRateLimitError);
+    await expect(verification.resend(user.id)).rejects.toBeInstanceOf(VerificationRateLimitError);
+  });
+
+  it("a link whose change is over says so, and is spent", async () => {
+    const { user, email } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("ended"), PASSWORD);
+    await prisma.user.update({ where: { id: user.id }, data: { pendingEmail: null } });
+    const err = await verification.confirm(change!.rawToken).catch((e) => e);
+    expect(err).toBeInstanceOf(EmailChangeEndedError);
+    expect(err.message).toMatch(/cancelled.*has not changed/);
+    expect(await prisma.verificationToken.count({ where: { token: sha256(change!.rawToken) } })).toBe(0);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(email);
+  });
+
+  it("a link that could not be sent can be revoked, so none is live", async () => {
+    const { user } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("bounce"), PASSWORD);
+    await verification.revokeEmailChangeLink(change!);
+    expect(await verification.hasLiveEmailChangeLink(user.id)).toBe(false);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).pendingEmail).toBe(change!.newEmail);
+  });
+});
+
+// ── An email change racing a new password. Each helper builds the client one
+// racing request uses, and runs `meanwhile` once at a chosen point in it.
+
+type Client = typeof prisma;
+const bound = (target: object, value: unknown) => (typeof value === "function" ? value.bind(target) : value);
+
+/** `meanwhile` runs when the request opens its first transaction, which starts after it. In changeEmail that is just after the password check. */
+function beforeFirstTransaction(meanwhile: () => Promise<unknown>): Client {
+  let armed = true;
+  return new Proxy(prisma, {
+    get(target, prop) {
+      const value: unknown = Reflect.get(target, prop);
+      if (prop !== "$transaction" || !armed || typeof value !== "function") return bound(target, value);
+      armed = false;
+      return async (...args: unknown[]) => {
+        await meanwhile();
+        return Reflect.apply(value, target, args);
+      };
+    },
+  });
+}
+
+/** `meanwhile` runs inside the request's first transaction, just before it first writes the member's row. */
+function beforeFirstUserWrite(meanwhile: () => Promise<unknown>): Client {
+  let armed = true;
+  return new Proxy(prisma, {
+    get(target, prop) {
+      if (prop !== "$transaction") return bound(target, Reflect.get(target, prop));
+      return (fn: (tx: Prisma.TransactionClient) => Promise<unknown>) =>
+        target.$transaction((tx) => {
+          const user = new Proxy(tx.user, {
+            get(delegate, p) {
+              const value: unknown = Reflect.get(delegate, p);
+              if (p !== "update" || !armed || typeof value !== "function") return bound(delegate, value);
+              armed = false;
+              return async (...args: unknown[]) => {
+                await meanwhile();
+                return Reflect.apply(value, delegate, args);
+              };
+            },
+          });
+          return fn(new Proxy(tx, { get: (t, p) => (p === "user" ? user : bound(t, Reflect.get(t, p))) }));
+        });
+    },
+  });
+}
+
+/** Wait until a statement in this database is blocked on a lock, or `finished()` says the other request is done. */
+async function untilBlockedOnLock(finished: () => boolean) {
+  for (let i = 0; i < 150 && !finished(); i++) {
+    const [{ n }] = await prisma.$queryRaw<{ n: number }[]>`
+      SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock'`;
+    if (n > 0) return;
+    await new Promise((r) => setTimeout(r, 20));
+  }
+}
+
+const NEW_PASSWORD = "owners new password";
+const newPasswordBy: [string, EmailChangeCancelReason, (userId: string, email: string) => Promise<unknown>][] = [
+  ["a password change in Settings", "password-change", (userId) => accountSettings.changePassword(userId, PASSWORD, NEW_PASSWORD)],
+  ["a reset", "password-reset", async (_userId, email) => resets.resetPassword((await resets.requestReset(email)).issued!.rawToken, NEW_PASSWORD)],
+];
+
+describe("Email change racing a new password", () => {
+  it.each(newPasswordBy)("%s that lands after the request's password check refuses the request", async (_how, _reason, setNewPassword) => {
+    const { user, email } = await memberWithPassword();
+    const racing = new AccountSettingsService(beforeFirstTransaction(() => setNewPassword(user.id, email)));
+    await expect(racing.changeEmail(user.id, address("hijack"), PASSWORD)).rejects.toBeInstanceOf(WrongPasswordError);
+
+    const now = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(now.email).toBe(email);
+    expect(now.pendingEmail).toBeNull();
+    expect(await verification.hasLiveEmailChangeLink(user.id)).toBe(false);
+    expect(await prisma.auditLog.count({ where: { action: "account.email.change.request", targetId: user.id } })).toBe(0);
+    await expect(accounts.authenticate({ email, password: NEW_PASSWORD })).resolves.toBeTruthy();
+  });
+
+  it.each(newPasswordBy)("%s that arrives while the request is being written waits for it, then cancels it", async (_how, reason, setNewPassword) => {
+    const { user, email } = await memberWithPassword();
+    let newPassword: Promise<unknown> | undefined;
+    let finished = false;
+    const racing = new AccountSettingsService(
+      beforeFirstUserWrite(async () => {
+        newPassword = setNewPassword(user.id, email);
+        newPassword.then(
+          () => (finished = true),
+          () => (finished = true)
+        );
+        await untilBlockedOnLock(() => finished);
+        expect(finished).toBe(false); // it waits for the lock this request holds
+      })
+    );
+    const change = await racing.changeEmail(user.id, address("hijack"), PASSWORD);
+    await newPassword;
+
+    const now = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(now.email).toBe(email);
+    expect(now.pendingEmail).toBeNull();
+    await expect(verification.confirm(change!.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    const log = await prisma.auditLog.findFirst({ where: { action: "account.email.change.cancel", targetId: user.id } });
+    expect(log?.meta).toMatchObject({ to: change!.newEmail, reason });
   });
 });
 

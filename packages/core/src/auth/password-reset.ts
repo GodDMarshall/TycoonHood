@@ -3,7 +3,11 @@
  * (D15): raw tokens live only in the email link; the database stores the
  * SHA-256. Tokens are single-use, expire in 30 minutes, and a successful
  * reset destroys every session the account has — proving email control
- * signs you out everywhere else.
+ * signs you out everywhere else. It also spends every other reset link and
+ * cancels an email change waiting for confirmation, and it is audited.
+ *
+ * Reset links die when the account is secured another way too: a password
+ * change in Settings and a confirmed email change both delete them.
  *
  * Anti-enumeration: requestReset() does the same work and returns the
  * same shape whether or not the email exists. The caller reveals nothing
@@ -15,9 +19,12 @@ import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import { hashPassword } from "./password";
 import { SessionService } from "./session";
+import { AuditService } from "../platform/audit";
+import { EmailVerificationService, RESET_TOKEN_PREFIX, resetTokenId } from "../platform/email-verification";
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 const RESET_TTL_MS = 30 * 60 * 1000;
+const INVALID = "That reset link is invalid or expired — request a fresh one.";
 
 /** Mirrors registerSchema's password rule — one standard, two doors. */
 export const newPasswordSchema = z
@@ -34,8 +41,12 @@ export interface ResetRequest {
 
 export class PasswordResetService {
   private sessions: SessionService;
+  private audit: AuditService;
+  private verification: EmailVerificationService;
   constructor(private readonly db: PrismaClient = defaultPrisma) {
     this.sessions = new SessionService(db);
+    this.audit = new AuditService(db);
+    this.verification = new EmailVerificationService(db);
   }
 
   /** Issue a reset token. Constant-shape work whether the email exists or not. */
@@ -49,7 +60,7 @@ export class PasswordResetService {
     const user = await this.db.user.findUnique({ where: { email } });
     if (!user) return { issued: null };
 
-    const identifier = `pwreset:${user.id}`;
+    const identifier = resetTokenId(user.id);
     await this.db.verificationToken.deleteMany({ where: { identifier } });
     await this.db.verificationToken.create({ data: { identifier, token: hashed, expires } });
     return { issued: { userId: user.id, email, rawToken, expires } };
@@ -68,21 +79,27 @@ export class PasswordResetService {
 
     const hashed = sha256(rawToken);
     const token = await this.db.verificationToken.findFirst({
-      where: { token: hashed, identifier: { startsWith: "pwreset:" } },
+      where: { token: hashed, identifier: { startsWith: RESET_TOKEN_PREFIX } },
     });
     if (!token || token.expires < new Date()) {
-      throw new InvalidResetTokenError("That reset link is invalid or expired — request a fresh one.");
+      throw new InvalidResetTokenError(INVALID);
     }
-    const userId = token.identifier.slice("pwreset:".length);
+    const userId = token.identifier.slice(RESET_TOKEN_PREFIX.length);
 
     const passwordHash = await hashPassword(parsed.data);
-    await this.db.passwordCredential.upsert({
-      where: { userId },
-      update: { hash: passwordHash },
-      create: { userId, hash: passwordHash },
-    });
-    await this.db.verificationToken.delete({
-      where: { identifier_token: { identifier: token.identifier, token: token.token } },
+    await this.db.$transaction(async (tx) => {
+      // Spend this link first: a second use of it, even a parallel one, finds nothing.
+      const spent = await tx.verificationToken.deleteMany({ where: { token: token.token } });
+      if (spent.count === 0) throw new InvalidResetTokenError(INVALID);
+      await tx.passwordCredential.upsert({
+        where: { userId },
+        update: { hash: passwordHash },
+        create: { userId, hash: passwordHash },
+      });
+      // Every other reset link, and any email change waiting for confirmation, die with the old password.
+      await tx.verificationToken.deleteMany({ where: { identifier: token.identifier } });
+      await this.verification.cancelEmailChange(userId, "password-reset", tx);
+      await this.audit.log({ actorId: userId, action: "account.password.reset", targetType: "User", targetId: userId }, tx);
     });
     await this.sessions.destroyAllForUser(userId);
 

@@ -8,11 +8,14 @@ import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Field, Input, 
 import { getCurrentSession } from "../../../lib/auth";
 import { mailMode } from "../../../lib/mail";
 import { verifyLinkStateFor } from "../../../lib/mail/verification";
+import { emailChangeLinkStateFor } from "../../../lib/mail/account";
 import {
+  cancelEmailChangeAction,
   changeEmailAction,
   changePasswordAction,
   generateLinkCodeAction,
   requestDeletionAction,
+  resendEmailChangeAction,
   resendVerificationAction,
   savePrivacyAction,
   signOutEverywhereAction,
@@ -39,12 +42,13 @@ export default async function SettingsPage() {
   await requireUser();
   const session = (await getCurrentSession())!;
   const user = session.user;
-  const [deviceSessions, link, profile, pendingDeletion, confirmLink] = await Promise.all([
+  const [deviceSessions, link, profile, pendingDeletion, confirmLink, changeLink] = await Promise.all([
     sessions.listForUser(user.id),
     discord.linkFor(user.id),
     prisma.profile.findUniqueOrThrow({ where: { userId: user.id } }),
     accountSettings.pendingDeletion(user.id),
     user.emailVerified ? null : verifyLinkStateFor(user.email),
+    user.pendingEmail ? emailChangeLinkStateFor(user.id) : null,
   ]);
   const mail = mailMode();
   const contact = <Link href="/contact" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">contact us</Link>;
@@ -127,23 +131,54 @@ export default async function SettingsPage() {
               </p>
             </ActionForm>
           )}
+          {user.pendingEmail && (
+            <div className="flex flex-col gap-3 border-t border-line pt-5">
+              <p className="text-[14px] text-ink-1">
+                Waiting for you to confirm <span className="font-medium">{user.pendingEmail}</span> — until then you sign in with {user.email}.
+              </p>
+              {changeLink === "off" && (
+                <p className="text-[13px] text-ink-2">
+                  We can&rsquo;t send the confirmation link: email isn&rsquo;t available right now. Try again later, or {contact}.
+                </p>
+              )}
+              {changeLink && changeLink !== "off" && (
+                <ActionForm action={resendEmailChangeAction} submit={changeLink === "unsent" ? "Send a new link" : "Resend the link"}>
+                  <p className="text-[13px] text-ink-2">
+                    {changeLink === "sent" && <>We sent a confirmation link to {user.pendingEmail}. </>}
+                    {changeLink === "logged" && <>Dev mode: nothing was emailed. The confirmation link for {user.pendingEmail} is in the server log. </>}
+                    {changeLink === "unsent" && <>We couldn&rsquo;t send a confirmation link to {user.pendingEmail}, or it has expired. Send a new one, or {contact}. </>}
+                    Links work for 24 hours, and you can ask for up to three an hour.
+                  </p>
+                </ActionForm>
+              )}
+              <form action={cancelEmailChangeAction}>
+                <Button variant="ghost" size="sm" type="submit">Cancel the change</Button>
+              </form>
+            </div>
+          )}
           <div className="border-t border-line pt-5">
             <p className="mb-3 text-[14px] font-medium text-ink-1">Change email</p>
-            <ActionForm action={changeEmailAction} submit="Change email">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="New email" htmlFor="new-email">
-                  <Input id="new-email" name="email" type="email" autoComplete="email" required />
-                </Field>
-                <Field label="Current password" htmlFor="email-password">
-                  <Input id="email-password" name="password" type="password" autoComplete="current-password" required />
-                </Field>
-              </div>
-              <p className="text-[12.5px] text-ink-3">
-                {mail === "live" && <>The new address starts unverified; we&rsquo;ll send it a confirmation link.</>}
-                {mail === "dev" && <>The new address starts unverified. Dev mode: its confirmation link goes to the server log, not by email.</>}
-                {mail === "off" && <>The new address starts unverified. Email isn&rsquo;t available right now, so we can&rsquo;t send it a confirmation link yet.</>}
+            {mail === "off" ? (
+              <p className="text-[13px] text-ink-2">
+                Email isn&rsquo;t available right now, so we can&rsquo;t send the confirmation link a new address needs. Try again later, or {contact}.
               </p>
-            </ActionForm>
+            ) : (
+              <ActionForm action={changeEmailAction} submit="Change email">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="New email" htmlFor="new-email">
+                    <Input id="new-email" name="email" type="email" autoComplete="email" required />
+                  </Field>
+                  <Field label="Current password" htmlFor="email-password">
+                    <Input id="email-password" name="password" type="password" autoComplete="current-password" required />
+                  </Field>
+                </div>
+                <p className="text-[12.5px] text-ink-3">
+                  {mail === "live" && <>We&rsquo;ll email a confirmation link to the new address, and tell {user.email} about the request. </>}
+                  {mail === "dev" && <>Dev mode: the confirmation link goes to the server log, not by email. </>}
+                  Your email changes only when the link is used, and that signs out every device except the one you use it on.
+                </p>
+              </ActionForm>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -163,7 +198,9 @@ export default async function SettingsPage() {
                 <Input id="confirm" name="confirm" type="password" autoComplete="new-password" minLength={10} required />
               </Field>
             </div>
-            <p className="text-[12.5px] text-ink-3">Changing your password signs out every other device. This one stays signed in.</p>
+            <p className="text-[12.5px] text-ink-3">
+              Changing your password signs out every other device and cancels an email change waiting for confirmation. This one stays signed in.
+            </p>
           </ActionForm>
         </CardContent>
       </Card>
