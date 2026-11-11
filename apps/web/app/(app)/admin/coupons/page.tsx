@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { coupons } from "@tycoonhood/core";
+import { coupons, formatIst } from "@tycoonhood/core";
 import { Badge, Card, CardContent, Input, Label, Select, SectionRule } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../lib/guard";
 import { ActionForm } from "../../../../components/admin/action-form";
 import { SubmitButton } from "../../../../components/submit-button";
-import { inr, shortDate } from "../../../../components/shop/format";
+import { inr } from "../../../../components/shop/format";
 import { createCouponAction, setCouponActiveAction } from "./actions";
 
 export const metadata: Metadata = { title: "Admin · Coupons" };
@@ -20,7 +20,7 @@ export default async function AdminCoupons() {
       <h1 className="display text-h2">Coupons</h1>
       <p className="mt-2 max-w-2xl text-[14px] text-ink-2">
         Codes take money off rupee checkouts only — THC prices are never discounted. Redemptions are counted atomically with the order, so a
-        limit of 100 means 100. A code whose payment fails is given back.
+        limit of 100 means 100. A code whose payment fails is given back. Start and end times are India time (IST).
       </p>
 
       <SectionRule label={`${list.length} ${list.length === 1 ? "code" : "codes"}`} className="mb-4 mt-8" />
@@ -42,8 +42,8 @@ export default async function AdminCoupons() {
                       used {c.redeemedCount}
                       {c.maxRedemptions != null && ` of ${c.maxRedemptions}`} · {c.perUserLimit} per member
                       {c.minSubtotalCents > 0 && ` · min ${inr(c.minSubtotalCents)}`}
-                      {c.startsAt && ` · from ${shortDate.format(c.startsAt)}`}
-                      {c.endsAt && ` · until ${shortDate.format(c.endsAt)}`}
+                      {c.startsAt && ` · from ${formatIst(c.startsAt)}`}
+                      {c.endsAt && ` · until ${formatIst(c.endsAt)}`}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -76,8 +76,8 @@ export default async function AdminCoupons() {
           <div className="flex flex-col gap-1.5"><Label htmlFor="c-max">Max redemptions (empty = no cap)</Label><Input id="c-max" name="maxRedemptions" inputMode="numeric" /></div>
           <div className="flex flex-col gap-1.5"><Label htmlFor="c-per">Per member</Label><Input id="c-per" name="perUserLimit" inputMode="numeric" defaultValue="1" /></div>
           <div />
-          <div className="flex flex-col gap-1.5"><Label htmlFor="c-start">Starts (optional)</Label><Input id="c-start" name="startsAt" type="datetime-local" /></div>
-          <div className="flex flex-col gap-1.5"><Label htmlFor="c-end">Ends (optional)</Label><Input id="c-end" name="endsAt" type="datetime-local" /></div>
+          <div className="flex flex-col gap-1.5"><Label htmlFor="c-start">Starts, IST (optional)</Label><Input id="c-start" name="startsAt" type="datetime-local" /></div>
+          <div className="flex flex-col gap-1.5"><Label htmlFor="c-end">Ends, IST (optional)</Label><Input id="c-end" name="endsAt" type="datetime-local" /></div>
         </div>
         <label className="flex items-center gap-2 text-[13px] text-ink-2">
           <input type="checkbox" name="active" className="accent-[var(--color-gold)]" /> Active now (leave off to review first)

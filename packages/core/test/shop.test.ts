@@ -9,6 +9,7 @@ import {
 } from "../src/shop";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
 import { TEST_REFUND_NOTE } from "../src/shop/refunds";
+import { IST_TIME_ZONE, formatIst, parseIstDateTime } from "../src/time/ist";
 import { createTestUser, uid } from "./helpers";
 
 const ledger = new LedgerService(prisma);
@@ -169,6 +170,44 @@ describe("Shop — coupons", () => {
     expect(checkCouponRules({ ...base, startsAt: new Date("2026-12-01") }, 100, now)).toMatch(/not valid yet/);
     expect(checkCouponRules({ ...base, endsAt: new Date("2026-11-01") }, 100, now)).toMatch(/expired/);
     expect(checkCouponRules({ ...base, maxRedemptions: 2, redeemedCount: 2 }, 100, now)).toMatch(/fully used/);
+  });
+
+  it("reads the start and end typed in the admin form as India time and stores the UTC instant", async () => {
+    // A datetime-local value has no offset; it means India time whatever zone the server runs in.
+    expect(parseIstDateTime("2026-11-30T23:59")?.toISOString()).toBe("2026-11-30T18:29:00.000Z");
+    expect(parseIstDateTime("2026-12-01T00:00:00")?.toISOString()).toBe("2026-11-30T18:30:00.000Z");
+    expect(parseIstDateTime(" 2026-01-01T05:29 ")?.toISOString()).toBe("2025-12-31T23:59:00.000Z");
+    for (const bad of ["", "2026-11-30", "2026-02-30T10:00", "2026-11-30T24:00", "2026-11-30T23:60", "30/11/2026 23:59", "2026-11-30T23:59Z"]) {
+      expect(parseIstDateTime(bad)).toBeNull();
+    }
+
+    // Shown back to staff in India time, matching the platform's own Asia/Kolkata rules.
+    expect(formatIst(new Date("2026-11-30T18:29:00Z"))).toBe("30 Nov 2026, 23:59 IST");
+    expect(formatIst(new Date("2026-11-30T18:30:00Z"))).toBe("1 Dec 2026, 00:00 IST");
+    for (const iso of ["2026-06-15T20:45:00Z", "2027-01-31T18:30:00Z"]) {
+      const parts = Object.fromEntries(
+        new Intl.DateTimeFormat("en-GB", { timeZone: IST_TIME_ZONE, day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+          .formatToParts(new Date(iso))
+          .map((p) => [p.type, p.value])
+      );
+      expect(formatIst(new Date(iso))).toBe(`${parts.day} ${parts.month} ${parts.year}, ${parts.hour}:${parts.minute} IST`);
+    }
+
+    // A code meant to run until 23:59 IST on 30 Nov stops then, not 5.5 hours later.
+    const c = await couponSvc.create({
+      code: `IST${uid().slice(0, 6).toUpperCase()}`,
+      percentOff: 10,
+      startsAt: parseIstDateTime("2026-11-01T00:00"),
+      endsAt: parseIstDateTime("2026-11-30T23:59"),
+      active: true,
+    });
+    const stored = await prisma.coupon.findUniqueOrThrow({ where: { id: c.id } });
+    expect(stored.startsAt?.toISOString()).toBe("2026-10-31T18:30:00.000Z");
+    expect(stored.endsAt?.toISOString()).toBe("2026-11-30T18:29:00.000Z");
+    expect(checkCouponRules(stored, 100, new Date("2026-10-31T18:29:00Z"))).toMatch(/not valid yet/);
+    expect(checkCouponRules(stored, 100, new Date("2026-10-31T18:30:00Z"))).toBeNull();
+    expect(checkCouponRules(stored, 100, new Date("2026-11-30T18:29:00Z"))).toBeNull();
+    expect(checkCouponRules(stored, 100, new Date("2026-11-30T18:29:01Z"))).toMatch(/expired/);
   });
 
   it("enforces the per-member limit at redemption", async () => {

@@ -1,14 +1,25 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { audit, coupons, CouponError, type CouponInput } from "@tycoonhood/core";
+import { audit, coupons, CouponError, parseIstDateTime, type CouponInput } from "@tycoonhood/core";
 import { actorWith } from "../../../../lib/guard";
 
 type State = { ok?: string; error?: string };
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 const optInt = (s: string) => (s ? Number(s) : null);
 
+/** A datetime-local field, read as India time. null = left empty; undefined = not a real date and time. */
+function istField(fd: FormData, k: string): Date | null | undefined {
+  const v = str(fd, k);
+  return v ? (parseIstDateTime(v) ?? undefined) : null;
+}
+
 export async function createCouponAction(_prev: State, fd: FormData): Promise<State> {
   const admin = await actorWith("admin.commerce");
+  const startsAt = istField(fd, "startsAt");
+  const endsAt = istField(fd, "endsAt");
+  if (startsAt === undefined || endsAt === undefined) {
+    return { error: "Enter the start and end as a date and time, or leave them empty." };
+  }
   const type = str(fd, "type");
   const value = str(fd, "value");
   const rupees = Number(value);
@@ -20,8 +31,8 @@ export async function createCouponAction(_prev: State, fd: FormData): Promise<St
     minSubtotalCents: str(fd, "minSubtotal") ? Math.round(Number(str(fd, "minSubtotal")) * 100) : 0,
     maxRedemptions: optInt(str(fd, "maxRedemptions")),
     perUserLimit: optInt(str(fd, "perUserLimit")) ?? 1,
-    startsAt: str(fd, "startsAt") ? new Date(str(fd, "startsAt")) : null,
-    endsAt: str(fd, "endsAt") ? new Date(str(fd, "endsAt")) : null,
+    startsAt,
+    endsAt,
     active: fd.get("active") === "on",
   };
   try {

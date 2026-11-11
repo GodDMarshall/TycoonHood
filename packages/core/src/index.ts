@@ -55,6 +55,7 @@ export type { DiscordInteraction, DiscordResponse } from "./integrations/discord
 
 // --- Phase 1: the spine (spec §14, §17, §19) ---
 export { localDayKey, localDayKeyOffset, isSameLocalDay, dayKeyToDate } from "./time/day";
+export { IST_TIME_ZONE, parseIstDateTime, formatIst } from "./time/ist";
 export { DOMAIN_EVENTS, isDomainEventType } from "./events/types";
 export type { DomainEvent, DomainEventType } from "./events/types";
 export { EventBus, events } from "./events/bus";
