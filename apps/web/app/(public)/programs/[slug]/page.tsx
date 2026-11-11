@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { marked } from "marked";
 import { prisma } from "@tycoonhood/db";
-import { Badge, Icon, PillarBadge, buttonStyles } from "@tycoonhood/ui";
+import { learner } from "@tycoonhood/core";
+import { Avatar, Badge, Icon, Notice, PillarBadge, buttonStyles } from "@tycoonhood/ui";
+import { objectivesOf } from "../../../../lib/learning";
 import { getCurrentUser } from "../../../../lib/auth";
 import { PILLAR_WORLD } from "../../../../components/pillar-art";
 import { CoverFill } from "../../../../components/art/photo";
@@ -12,7 +15,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const course = await prisma.course.findUnique({ where: { slug } });
-  if (!course) return { title: "Program" };
+  if (!course || course.status !== "PUBLISHED") return { title: "Program" };
   return {
     title: course.title,
     description: course.subtitle ?? course.description.slice(0, 160),
@@ -30,15 +33,25 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
     include: {
       modules: { orderBy: { sortOrder: "asc" }, include: { lessons: { orderBy: { sortOrder: "asc" } } } },
       prerequisite: true,
+      instructor: true,
     },
   });
-  if (!course) notFound();
+  // Drafts and archived programmes are never shown publicly.
+  if (!course || course.status !== "PUBLISHED") notFound();
   const user = await getCurrentUser();
   const member = !!user?.profile?.onboardedAt;
   // Members study inside the app; the public page is the brochure.
   if (member) redirect(`/courses/${slug}`);
   const lessons = course.modules.flatMap((m) => m.lessons);
   const lessonXp = lessons.reduce((n, l) => n + l.xpReward, 0);
+  const checks = lessons.filter((l) => l.type === "QUIZ" && !l.isFinal).length;
+  const hasFinal = lessons.some((l) => l.isFinal);
+  const minutes = lessons.reduce((n, l) => n + (l.durationSec ? Math.round(l.durationSec / 60) : 0), 0);
+  const rating = await learner.rating(course.id);
+  // Lesson bodies are public only for preview lessons.
+  const previews = new Map<string, string>();
+  for (const l of lessons) if (l.isPreview && l.contentMd) previews.set(l.id, await marked.parse(l.contentMd));
+  const isFinance = course.pillar === "TYCOON";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -47,6 +60,8 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
     description: course.description,
     provider: { "@type": "Organization", name: "Tycoonhood" },
     isAccessibleForFree: true,
+    ...(course.instructor ? { instructor: { "@type": "Person", name: course.instructor.name } } : {}),
+    ...(rating.count > 0 ? { aggregateRating: { "@type": "AggregateRating", ratingValue: rating.average, ratingCount: rating.count, bestRating: 5, worstRating: 1 } } : {}),
   };
 
   return (
@@ -68,11 +83,21 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
           </nav>
           <div className="flex flex-wrap items-center gap-2">
             <PillarBadge pillar={course.pillar} />
-            {course.status !== "PUBLISHED" && <Badge>In production — content pending</Badge>}
+            {rating.count > 0 && (
+              <Badge tone="gold">
+                {rating.average?.toFixed(1)} / 5 · {rating.count} review{rating.count === 1 ? "" : "s"}
+              </Badge>
+            )}
           </div>
           <h1 className="display mt-5 max-w-[16ch] text-display">{course.title}</h1>
           {course.subtitle && <p className="accent mt-3 text-[clamp(1.4rem,1.1rem+1vw,2rem)]">{course.subtitle}</p>}
           <p className="mt-6 max-w-[60ch] text-lead text-ink-2">{course.description}</p>
+          {isFinance && (
+            <Notice tone="warning" title="Educational only" className="mt-6 max-w-[60ch]">
+              This programme teaches concepts. It is not personalised financial, investment, tax or legal advice, and nothing in it is a recommendation to buy
+              or sell anything. Speak to a licensed professional about your own situation.
+            </Notice>
+          )}
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <Link href={member ? `/courses/${course.slug}` : "/register"} className={buttonStyles({ size: "lg" })}>
               {member ? "Open in the app" : "Join free to enroll"}
@@ -109,24 +134,50 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
                   <div>
                     <h3 className="display text-[21px]">{m.title}</h3>
                     {m.description && <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-2">{m.description}</p>}
+                    {objectivesOf(m.objectives).length > 0 && (
+                      <ul className="mt-3 list-disc space-y-0.5 pl-5 text-[13.5px] leading-relaxed text-ink-2">
+                        {objectivesOf(m.objectives).map((o) => (
+                          <li key={o}>{o}</li>
+                        ))}
+                      </ul>
+                    )}
+                    {m.completion && <p className="mt-2 text-[12.5px] text-ink-3">To complete: {m.completion}</p>}
                   </div>
                 </div>
                 <ul>
-                  {m.lessons.map((l) => (
-                    <li key={l.id} className="flex items-center gap-4 border-b border-line px-6 py-3.5 last:border-0">
-                      <Icon name={typeIcon[l.type]} size={16} className="text-ink-3" />
-                      <span className="flex-1 text-[14.5px]">
-                        {l.title}
-                        {l.isPreview && (
-                          <Badge tone="mind" className="ml-3">
-                            Preview
-                          </Badge>
+                  {m.lessons.map((l) => {
+                    const row = (
+                      <>
+                        <Icon name={typeIcon[l.type]} size={16} className="text-ink-3" />
+                        <span className="flex-1 text-[14.5px]">
+                          {l.title}
+                          {l.isPreview && (
+                            <Badge tone="mind" className="ml-3">
+                              Preview
+                            </Badge>
+                          )}
+                        </span>
+                        <span className="figures hidden text-[11.5px] text-ink-3 sm:inline">
+                          {l.isFinal ? "Final assessment" : typeLabel[l.type]}
+                          {l.durationSec ? ` · ${Math.round(l.durationSec / 60)} min` : ""}
+                        </span>
+                        <span className="figures w-16 text-right text-[12px] text-gold">+{l.xpReward} XP</span>
+                      </>
+                    );
+                    const body = previews.get(l.id);
+                    return (
+                      <li key={l.id} className="border-b border-line last:border-0">
+                        {body ? (
+                          <details className="group">
+                            <summary className="flex cursor-pointer list-none items-center gap-4 px-6 py-3.5 hover:bg-bg-2">{row}</summary>
+                            <div className="md-content border-t border-line px-6 py-6" dangerouslySetInnerHTML={{ __html: body }} />
+                          </details>
+                        ) : (
+                          <div className="flex items-center gap-4 px-6 py-3.5">{row}</div>
                         )}
-                      </span>
-                      <span className="figures hidden text-[11.5px] text-ink-3 sm:inline">{typeLabel[l.type]}</span>
-                      <span className="figures w-16 text-right text-[12px] text-gold">+{l.xpReward} XP</span>
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
               </li>
             ))}
@@ -138,10 +189,15 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
             <p className="eyebrow">What completion pays</p>
             <dl className="mt-5 flex flex-col divide-y divide-line">
               {[
+                ["Modules", `${course.modules.length}`],
                 ["Lessons", `${lessons.length}`],
+                ["Knowledge checks", `${checks}`],
+                ...(minutes ? [["Estimated time", minutes >= 60 ? `${Math.round(minutes / 60)} h` : `${minutes} min`]] : []),
+                ["Final assessment", hasFinal ? "Yes" : "In preparation"],
                 ["XP across lessons", `+${lessonXp.toLocaleString("en-US")}`],
                 ["XP on completion", `+${course.xpOnCompletion.toLocaleString("en-US")}`],
-                ["Certificate", "Public serial"],
+                ["Certificate", hasFinal ? "Public serial" : "—"],
+                ["Rating", rating.count > 0 ? `${rating.average?.toFixed(1)} / 5 (${rating.count})` : "No reviews yet"],
                 ["Cost", "Free"],
               ].map(([k, v]) => (
                 <div key={k} className="flex items-baseline justify-between py-3">
@@ -157,6 +213,19 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
               Progress, quizzes and certificates are tracked in your Academy. Education, not advice.
             </p>
           </div>
+          {course.instructor && (
+            <Link
+              href={`/instructors/${course.instructor.slug}`}
+              className="mt-4 flex items-center gap-3 rounded-lg border border-line bg-bg-1 p-4 transition-colors hover:border-line-strong"
+            >
+              <Avatar name={course.instructor.name} src={course.instructor.avatar} size={48} />
+              <span className="min-w-0">
+                <span className="block text-[12px] text-ink-3">Instructor</span>
+                <span className="block text-[15px] font-medium text-ink-1">{course.instructor.name}</span>
+                {course.instructor.headline && <span className="block text-[12.5px] text-ink-2">{course.instructor.headline}</span>}
+              </span>
+            </Link>
+          )}
         </aside>
       </div>
     </main>

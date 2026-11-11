@@ -2,20 +2,20 @@ import Link from "next/link";
 import { CoinMark } from "@tycoonhood/ui";
 
 const columns: [string, [string, string][]][] = [
-  ["Academy", [["/programs", "Programs"], ["/#how", "How it works"], ["/marketplace", "Store"], ["/register", "Join free"]]],
-  ["Open books", [["/status", "Live figures"], ["/thc", "How THC works"], ["/roadmap", "Roadmap"]]],
-  ["Tycoonhood", [["/about", "About"], ["/blog", "Journal"], ["/faq", "FAQ"]]],
-  ["Legal", [["/terms", "Terms"], ["/privacy", "Privacy"], ["/thc#disclosure", "THC disclosure"]]],
+  ["Learn", [["/learning", "Learning"], ["/programs", "Programmes"], ["/#how", "How it works"], ["/register", "Join free"]]],
+  ["Earn & shop", [["/earn", "Earn"], ["/earn/terms", "Affiliate terms"], ["/marketplace", "Shop"], ["/thc", "How THC works"]]],
+  ["Tycoonhood", [["/about", "About Harsha"], ["/connect", "Community"], ["/success-stories", "Success stories"], ["/blog", "Insights"], ["/faq", "FAQ"], ["/contact", "Contact"]]],
+  ["Legal", [["/terms", "Terms"], ["/privacy", "Privacy"], ["/refund-policy", "Refund policy"], ["/thc#disclosure", "THC disclosure"], ["/status", "Open books"]]],
 ];
 
 export function SiteFooter() {
   return (
     <footer className="relative mt-20 border-t border-line bg-bg-1/60">
-      <div className="mx-auto grid max-w-[88rem] gap-12 px-[var(--gutter)] py-16 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
-        <div className="flex flex-col gap-5">
+      <div className="mx-auto grid max-w-[88rem] gap-12 px-[var(--gutter)] py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+        <div className="flex flex-col gap-5 sm:col-span-2 lg:col-span-1">
           <CoinMark size={34} />
-          <p className="display max-w-[16ch] text-[26px] leading-[1.05]">
-            Build yourself. <span className="accent">The rest compounds.</span>
+          <p className="display max-w-[18ch] text-[24px] leading-[1.1]">
+            Master yourself. Build your skills. Create your wealth. <span className="accent">Own your freedom.</span>
           </p>
         </div>
         {columns.map(([title, items]) => (

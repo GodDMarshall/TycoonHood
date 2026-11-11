@@ -15,7 +15,12 @@ import {
   InvalidResetTokenError,
   referrals,
   ReferralError,
+  AccountSuspendedError,
+  emailVerification,
+  getSetting,
+  InvalidVerificationTokenError,
 } from "@tycoonhood/core";
+import { sendVerificationEmail } from "../../lib/mail/verification";
 import { activeMailer } from "../../lib/mail";
 import { clearSessionCookie, deviceInfo, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
 import { cookies } from "next/headers";
@@ -42,6 +47,9 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
   const blocked = await throttled("register");
   if (blocked) return { error: blocked };
+  if (!(await getSetting("platform")).signupsOpen) {
+    return { error: "New sign-ups are paused for the moment. Please check back soon." };
+  }
 
   try {
     const user = await accounts.register(parsed.data);
@@ -58,6 +66,16 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
       } catch (e) {
         if (!(e instanceof ReferralError)) throw e;
       }
+    }
+
+    // Verification never blocks the journey: the member goes on to onboarding
+    // and the app shows a banner until the link is clicked. A mail failure is
+    // logged, not shown — they can resend from the banner or settings.
+    try {
+      const sent = await sendVerificationEmail(await emailVerification.issue(user.id, { reason: "register" }));
+      if (!sent.sent) console.warn(`[verify] verification email not sent for ${user.id}: ${sent.reason}`);
+    } catch (e) {
+      console.error("[verify] could not issue verification email", e);
     }
 
     const { raw } = await sessions.create(user.id, await deviceInfo());
@@ -88,6 +106,7 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
     if (!profile?.onboardedAt) destination = "/onboarding";
   } catch (e) {
     if (e instanceof InvalidCredentialsError) return { error: e.message };
+    if (e instanceof AccountSuspendedError) return { error: e.message };
     throw e;
   }
   redirect(destination);
@@ -154,6 +173,24 @@ export async function resetPasswordAction(token: string, _prev: ResetState, form
     await passwordReset.resetPassword(token, password);
   } catch (e) {
     if (e instanceof InvalidResetTokenError) return { error: e.message };
+    throw e;
+  }
+  return { done: true };
+}
+
+export interface VerifyState {
+  done?: boolean;
+  error?: string;
+}
+
+/** Consumes a verification link. A POST behind a button, so mail scanners that prefetch links cannot spend it. */
+export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: FormData): Promise<VerifyState> {
+  const blocked = await throttled("verify");
+  if (blocked) return { error: blocked };
+  try {
+    await emailVerification.verify(token);
+  } catch (e) {
+    if (e instanceof InvalidVerificationTokenError) return { error: e.message };
     throw e;
   }
   return { done: true };

@@ -1,15 +1,31 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { community, CommunityError, lms, LessonLockedError, NotEnrolledError, QuizRequiredError } from "@tycoonhood/core";
+import {
+  community,
+  CommunityError,
+  CourseUnavailableError,
+  learner,
+  lms,
+  LessonLockedError,
+  NotEnrolledError,
+  QuizRequiredError,
+  ReviewNotAllowedError,
+} from "@tycoonhood/core";
+import { isZodError, zodMessage } from "../../../lib/form-errors";
 import { getCurrentUser } from "../../../lib/auth";
 import { rateLimit } from "../../../lib/rate-limit";
 
 export async function enrollAction(slug: string) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  await lms.enroll(user.id, slug);
-  revalidatePath("/", "layout"); // the sidebar lists your programs
+  try {
+    await lms.enroll(user.id, slug);
+  } catch (e) {
+    if (e instanceof CourseUnavailableError) redirect("/courses");
+    throw e;
+  }
+  revalidatePath("/", "layout"); // the sidebar lists your programs and your role may have changed
   redirect(`/courses/${slug}`);
 }
 
@@ -29,6 +45,7 @@ export async function completeLessonAction(slug: string, lessonId: string) {
   } catch (e) {
     if (e instanceof NotEnrolledError) redirect(`/courses/${slug}`);
     if (e instanceof LessonLockedError || e instanceof QuizRequiredError) redirect(`/courses/${slug}/lesson/${lessonId}`);
+    if (e instanceof CourseUnavailableError) redirect("/courses");
     throw e;
   }
   revalidatePath("/", "layout");
@@ -77,7 +94,7 @@ export async function submitQuizAction(
     }
     return { result, nextHref };
   } catch (e) {
-    if (e instanceof LessonLockedError || e instanceof NotEnrolledError) return { error: e.message };
+    if (e instanceof LessonLockedError || e instanceof NotEnrolledError || e instanceof CourseUnavailableError) return { error: e.message };
     throw e;
   }
 }
@@ -103,4 +120,26 @@ export async function askAboutLessonAction(slug: string, lessonId: string, _prev
   revalidatePath(`/courses/${slug}/lesson/${lessonId}`);
   revalidatePath(`/community/${channel}`);
   return { ok: true, channel };
+}
+
+export interface ReviewState {
+  ok?: string;
+  error?: string;
+}
+
+/** Rate a program 1–5 with optional text. One review per member; saving again edits it. */
+export async function saveReviewAction(slug: string, courseId: string, _prev: ReviewState, fd: FormData): Promise<ReviewState> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (!rateLimit(`review:${user.id}`, 5, 60_000).ok) return { error: "Too many saves. Try again in a minute." };
+  try {
+    await learner.saveReview(user.id, courseId, { rating: Number(fd.get("rating") ?? 0), body: String(fd.get("body") ?? "") });
+  } catch (e) {
+    if (e instanceof ReviewNotAllowedError) return { error: e.message };
+    if (isZodError(e)) return { error: zodMessage(e) };
+    throw e;
+  }
+  revalidatePath(`/courses/${slug}`);
+  revalidatePath(`/programs/${slug}`);
+  return { ok: "Review saved." };
 }

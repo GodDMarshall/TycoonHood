@@ -553,6 +553,10 @@ export class CommunityService {
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 60) {
       throw new CommunityError("The address must be lowercase letters, numbers and single hyphens.");
     }
+    // These are routes under /community, so a channel can't take them.
+    if (["discussions", "groups", "new"].includes(slug)) {
+      throw new CommunityError("That address is reserved. Choose another.");
+    }
     const name = input.name.trim();
     if (name.length < 2 || name.length > 40) throw new CommunityError("Give the channel a name of 2 to 40 characters.");
     const slowModeSec = Math.max(0, Math.min(3600, Math.floor(input.slowModeSec || 0)));

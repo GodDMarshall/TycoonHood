@@ -58,7 +58,7 @@ interface Resolved {
   physical: boolean;
 }
 
-function requireShipping(input: ShippingInput | null | undefined): ShippingInput {
+export function requireShipping(input: ShippingInput | null | undefined): ShippingInput {
   if (!input) throw new ShippingAddressRequiredError("This item ships — we need a delivery address.");
   const need: (keyof ShippingInput)[] = ["fullName", "line1", "city", "postalCode", "country"];
   for (const k of need) {
@@ -136,6 +136,42 @@ export class CommerceService {
           SET "inventory" = CASE WHEN "inventory" IS NULL THEN NULL ELSE "inventory" - 1 END
           WHERE "id" = ${r.productId} AND ("inventory" IS NULL OR "inventory" >= 1)`;
     if (affected === 0) throw new OutOfStockError("Sold out.");
+  }
+
+  /**
+   * Multi-unit form of takeStock for the cart checkout (shop/checkout.ts):
+   * the same single guarded statement, decrementing by `qty`. Throws
+   * OutOfStockError when fewer than `qty` units remain.
+   */
+  async reserveUnits(productId: string, variantId: string | null, qty: number) {
+    if (!Number.isInteger(qty) || qty < 1) throw new CommerceError("Quantity must be a whole number of at least 1.");
+    const affected = variantId
+      ? await this.db.$executeRaw`
+          UPDATE "ProductVariant" SET "inventory" = "inventory" - ${qty}
+          WHERE "id" = ${variantId} AND "inventory" >= ${qty}`
+      : await this.db.$executeRaw`
+          UPDATE "Product"
+          SET "inventory" = CASE WHEN "inventory" IS NULL THEN NULL ELSE "inventory" - ${qty} END
+          WHERE "id" = ${productId} AND ("inventory" IS NULL OR "inventory" >= ${qty})`;
+    if (affected === 0) throw new OutOfStockError("Sold out.");
+  }
+
+  /** Puts `qty` units back. NULL (unlimited) inventory stays NULL. */
+  async releaseUnits(productId: string, variantId: string | null, qty: number) {
+    if (qty < 1) return;
+    if (variantId) {
+      await this.db.$executeRaw`
+        UPDATE "ProductVariant" SET "inventory" = "inventory" + ${qty} WHERE "id" = ${variantId}`;
+      return;
+    }
+    await this.db.$executeRaw`
+      UPDATE "Product" SET "inventory" = "inventory" + ${qty}
+      WHERE "id" = ${productId} AND "inventory" IS NOT NULL`;
+  }
+
+  /** Public door to fulfilment for the cart checkout (same grant + notify + event path). */
+  async fulfillOrder(orderId: string) {
+    await this.fulfill(orderId);
   }
 
   private async restoreStock(productId: string, variantId: string | null) {

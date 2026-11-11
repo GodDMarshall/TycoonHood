@@ -1,0 +1,526 @@
+/**
+ * CHECKOUT — the whole cart, on one of two rails.
+ *
+ * THC rail. Stock is reserved line by line through commerce's guarded UPDATE
+ * (DR-10), the order is written, then ONE ledger spend for the total is posted
+ * (idempotent on `order:<id>`). Any failure gives back every unit already
+ * reserved and cancels the order, so "not enough THC" leaves nothing taken.
+ *
+ * INR rail. Stock is reserved and a PENDING order is written in the same
+ * transaction as the coupon redemption; then the active provider (Razorpay,
+ * or the TEST sandbox) creates its order and a Payment row records it. The
+ * order turns PAID only on a VERIFIED capture — the Razorpay callback with a
+ * valid signature, the signed webhook, or the sandbox's simulated capture —
+ * and every one of those converges on capture(), which is idempotent on the
+ * payment. A failed or expired payment cancels the order and gives back the
+ * stock and the coupon.
+ *
+ * After a capture: order PAID → cart lines cleared → fulfilment exactly as
+ * commerce does it (course grants, notifications, PURCHASE_MADE) → the earn
+ * hook onOrderPaid(orderId).
+ */
+import { prisma as defaultPrisma } from "@tycoonhood/db";
+import type { PrismaClient, Prisma } from "@tycoonhood/db";
+import { CommerceService, requireShipping, type ShippingInput } from "../commerce/commerce";
+import { LedgerService, InsufficientFundsError } from "../ledger/ledger";
+import { AuditService } from "../platform/audit";
+import { CartService, type CartLineView } from "./cart";
+import { CouponService } from "./coupons";
+import { callEarnHook } from "./earn-registry";
+import { CheckoutError, PaymentVerificationError } from "./errors";
+import { SHOP_CURRENCY } from "./pricing";
+import { activeShopProvider, razorpayFromEnv, sandboxProvider, sandboxAllowed, RazorpayProvider } from "./payments";
+import type { RazorpayWebhookEvent, ShopPaymentProvider } from "./payments";
+import { verifyWebhookSignature } from "./payments/razorpay";
+
+/** How long a rupee order may wait for its payment before its stock goes back. */
+export const PENDING_TTL_MINUTES = 30;
+
+export interface ShopCheckoutOptions {
+  /** The provider new orders go to. Defaults to activeShopProvider(). */
+  provider?: () => ShopPaymentProvider | null;
+  /** Looks a provider up by the name on a Payment row (refunds, verification). */
+  providerFor?: (name: string) => ShopPaymentProvider | null;
+  /** Whether the sandbox may capture. Defaults to sandboxAllowed() — false in production. */
+  sandboxEnabled?: () => boolean;
+}
+
+export type CaptureOutcome = "paid" | "duplicate" | "late";
+
+function defaultProviderFor(name: string): ShopPaymentProvider | null {
+  if (name === "razorpay") return razorpayFromEnv();
+  if (name === "sandbox") return sandboxProvider;
+  return null;
+}
+
+const addressCreate = (s: ShippingInput) => ({
+  create: {
+    fullName: s.fullName.trim(),
+    line1: s.line1.trim(),
+    line2: s.line2?.trim() || null,
+    city: s.city.trim(),
+    region: s.region?.trim() || null,
+    postalCode: s.postalCode.trim(),
+    country: s.country.trim().toUpperCase(),
+    phone: s.phone?.trim() || null,
+  },
+});
+
+const lineMemo = (lines: CartLineView[]) =>
+  lines.map((l) => `${l.qty}× ${l.name}${l.variantLabel ? ` (${l.variantLabel})` : ""}`).join(", ").slice(0, 300);
+
+export class ShopCheckoutService {
+  private commerce: CommerceService;
+  private ledger: LedgerService;
+  private cart: CartService;
+  private coupons: CouponService;
+  private audit: AuditService;
+  private provider: () => ShopPaymentProvider | null;
+  private providerFor: (name: string) => ShopPaymentProvider | null;
+  private sandboxEnabled: () => boolean;
+
+  constructor(private readonly db: PrismaClient = defaultPrisma, opts: ShopCheckoutOptions = {}) {
+    this.commerce = new CommerceService(db);
+    this.ledger = new LedgerService(db);
+    this.cart = new CartService(db);
+    this.coupons = new CouponService(db);
+    this.audit = new AuditService(db);
+    this.provider = opts.provider ?? (() => activeShopProvider());
+    this.providerFor = opts.providerFor ?? defaultProviderFor;
+    this.sandboxEnabled = opts.sandboxEnabled ?? (() => sandboxAllowed());
+  }
+
+  /** Reserves every line or none: on the first failure, what was taken goes back. */
+  private async reserveAll(lines: CartLineView[]) {
+    const taken: CartLineView[] = [];
+    try {
+      for (const l of lines) {
+        await this.commerce.reserveUnits(l.productId, l.variantId, l.qty);
+        taken.push(l);
+      }
+    } catch (e) {
+      for (const l of taken) await this.commerce.releaseUnits(l.productId, l.variantId, l.qty);
+      throw e;
+    }
+  }
+
+  private async releaseAll(lines: { productId: string; variantId: string | null; qty: number }[]) {
+    for (const l of lines) await this.commerce.releaseUnits(l.productId, l.variantId, l.qty);
+  }
+
+  private async readyCart(userId: string) {
+    const { lines, totals } = await this.cart.list(userId);
+    if (lines.length === 0) throw new CheckoutError("Your cart is empty.");
+    const blocked = lines.find((l) => l.problem);
+    if (blocked) throw new CheckoutError(`${blocked.name}: ${blocked.problem}`);
+    return { lines, totals };
+  }
+
+  // ------------------------------------------------------------------ THC
+
+  async checkoutThc(userId: string, input: { shipping?: ShippingInput | null } = {}) {
+    const { lines, totals } = await this.readyCart(userId);
+    if (!totals.thc.payable) {
+      const names = lines.filter((l) => l.unitThc == null).map((l) => l.name);
+      throw new CheckoutError(`Not payable with THC: ${names.join(", ")}. Remove ${names.length === 1 ? "it" : "them"} or pay in rupees.`);
+    }
+    const shipping = totals.needsAddress ? requireShipping(input.shipping) : null;
+    const total = totals.thc.total;
+
+    // Cheap early answer; the ledger's own check below is the real guard.
+    const wallet = await this.ledger.ensureUserAccount(userId);
+    if ((await this.ledger.getBalance(wallet.id)) < total) {
+      throw new InsufficientFundsError("Not enough THC for this cart.");
+    }
+
+    await this.reserveAll(lines);
+
+    let order;
+    try {
+      order = await this.db.order.create({
+        data: {
+          userId,
+          totalThc: total,
+          items: {
+            create: lines.map((l) => ({
+              productId: l.productId,
+              variantId: l.variantId,
+              variantLabel: l.variantLabel,
+              qty: l.qty,
+              unitPriceThc: l.unitThc,
+            })),
+          },
+          ...(shipping ? { address: addressCreate(shipping) } : {}),
+        },
+      });
+    } catch (e) {
+      await this.releaseAll(lines);
+      throw e;
+    }
+
+    let tx;
+    try {
+      tx = await this.ledger.spend({
+        userId,
+        amount: total,
+        idempotencyKey: `order:${order.id}`,
+        sourceType: "order",
+        sourceId: order.id,
+        memo: lineMemo(lines),
+      });
+    } catch (e) {
+      await this.releaseAll(lines);
+      await this.db.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } });
+      throw e;
+    }
+
+    await this.db.order.update({ where: { id: order.id }, data: { status: "PAID", ledgerTxId: tx.id } });
+    await this.cart.clear(userId, lines.map((l) => l.lineKey));
+    await this.commerce.fulfillOrder(order.id);
+    await this.audit.log({ actorId: userId, action: "order.paid", targetType: "order", targetId: order.id, meta: { rail: "THC", total: total.toString() } });
+    return this.db.order.findUniqueOrThrow({ where: { id: order.id }, include: { items: true } });
+  }
+
+  // ------------------------------------------------------------------ INR
+
+  /** Re-prices the cart for the rupee rail with an optional coupon. Read-only. */
+  async quoteInr(userId: string, couponCode?: string | null) {
+    const { lines, totals } = await this.cart.list(userId);
+    const subtotal = totals.inr.total;
+    let discountCents = 0;
+    let couponError: string | null = null;
+    let code: string | null = null;
+    if (couponCode?.trim()) {
+      const check = await this.coupons.validate(couponCode, userId, subtotal);
+      if (check.ok) {
+        discountCents = check.discountCents;
+        code = check.coupon.code;
+      } else couponError = check.reason;
+    }
+    return { lines, totals, subtotalCents: subtotal, discountCents, totalCents: subtotal - discountCents, couponCode: code, couponError };
+  }
+
+  async startInrCheckout(
+    userId: string,
+    input: { shipping?: ShippingInput | null; couponCode?: string | null; affiliateCode?: string | null } = {}
+  ) {
+    const provider = this.provider();
+    if (!provider) throw new CheckoutError("Card payments are not configured on this deployment. You can still pay with THC.");
+
+    const { lines, totals } = await this.readyCart(userId);
+    if (!totals.inr.payable) {
+      const names = lines.filter((l) => l.unitInrPaise == null).map((l) => l.name);
+      throw new CheckoutError(`No rupee price for: ${names.join(", ")}. Remove ${names.length === 1 ? "it" : "them"} or pay with THC.`);
+    }
+    const shipping = totals.needsAddress ? requireShipping(input.shipping) : null;
+    const subtotal = totals.inr.total;
+
+    // One open rupee order per member: an abandoned one gives its stock back first.
+    const open = await this.db.order.findMany({
+      where: { userId, status: "PENDING", paymentProvider: { not: null } },
+      select: { id: true },
+    });
+    for (const o of open) await this.cancelOrder(o.id, "Replaced by a new checkout");
+
+    await this.reserveAll(lines);
+
+    let order;
+    try {
+      order = await this.db.$transaction(async (tx) => {
+        const created = await tx.order.create({
+          data: {
+            userId,
+            totalFiatCents: subtotal,
+            fiatCurrency: SHOP_CURRENCY,
+            paymentProvider: provider.name,
+            affiliateCode: input.affiliateCode?.trim().slice(0, 64) || null,
+            items: {
+              create: lines.map((l) => ({
+                productId: l.productId,
+                variantId: l.variantId,
+                variantLabel: l.variantLabel,
+                qty: l.qty,
+                unitPriceFiatC: l.unitInrPaise,
+              })),
+            },
+            ...(shipping ? { address: addressCreate(shipping) } : {}),
+          },
+        });
+        if (!input.couponCode?.trim()) return created;
+        const r = await this.coupons.redeemInTx(tx, { code: input.couponCode, userId, orderId: created.id, subtotalCents: subtotal });
+        return tx.order.update({
+          where: { id: created.id },
+          data: { couponCode: r.code, discountCents: r.discountCents, totalFiatCents: subtotal - r.discountCents },
+        });
+      });
+    } catch (e) {
+      await this.releaseAll(lines);
+      throw e;
+    }
+
+    let created;
+    try {
+      created = await provider.createOrder({
+        amountCents: order.totalFiatCents,
+        currency: SHOP_CURRENCY,
+        receipt: order.id,
+        notes: { orderId: order.id },
+      });
+    } catch (e) {
+      await this.cancelOrder(order.id, "Payment provider refused the order");
+      console.error("[shop] provider createOrder failed", e);
+      throw new CheckoutError("The payment provider could not start this payment. Nothing was charged — try again in a moment.");
+    }
+
+    const payment = await this.db.payment.create({
+      data: {
+        orderId: order.id,
+        provider: provider.name,
+        mode: provider.mode,
+        providerOrderId: created.providerOrderId,
+        amountCents: order.totalFiatCents,
+        currency: SHOP_CURRENCY,
+        raw: (created.raw ?? undefined) as Prisma.InputJsonValue | undefined,
+      },
+    });
+    await this.audit.log({
+      actorId: userId,
+      action: "order.create",
+      targetType: "order",
+      targetId: order.id,
+      meta: { rail: "INR", provider: provider.name, mode: provider.mode, totalCents: order.totalFiatCents, coupon: order.couponCode },
+    });
+    return { order, payment };
+  }
+
+  /**
+   * THE convergence point for a verified payment. Idempotent on the payment:
+   * a second call (webhook after callback, a retried webhook) changes nothing.
+   */
+  async capture(args: {
+    providerOrderId: string;
+    providerPaymentId: string;
+    amountCents?: number;
+    currency?: string;
+    raw?: unknown;
+    source: "callback" | "webhook" | "sandbox";
+  }): Promise<{ orderId: string; outcome: CaptureOutcome }> {
+    const payment = await this.db.payment.findUnique({ where: { providerOrderId: args.providerOrderId } });
+    if (!payment) throw new PaymentVerificationError("Unknown payment order.");
+    if (args.amountCents != null && args.amountCents !== payment.amountCents) {
+      await this.audit.log({ actorId: null, action: "payment.amount_mismatch", targetType: "payment", targetId: payment.id, meta: { expected: payment.amountCents, got: args.amountCents } });
+      throw new PaymentVerificationError("Payment amount does not match the order.");
+    }
+    if (args.currency && args.currency.toUpperCase() !== payment.currency.toUpperCase()) {
+      throw new PaymentVerificationError("Payment currency does not match the order.");
+    }
+
+    const claimed = await this.db.payment.updateMany({
+      where: { id: payment.id, status: { in: ["CREATED", "FAILED"] } },
+      data: {
+        status: "CAPTURED",
+        providerPaymentId: args.providerPaymentId,
+        raw: (args.raw ?? { source: args.source }) as Prisma.InputJsonValue,
+      },
+    });
+    if (claimed.count === 0) return { orderId: payment.orderId, outcome: "duplicate" };
+
+    const order = await this.db.order.findUniqueOrThrow({ where: { id: payment.orderId }, include: { items: true } });
+    const paid = await this.db.order.updateMany({
+      where: { id: order.id, status: "PENDING" },
+      data: { status: "PAID", paymentRef: args.providerPaymentId },
+    });
+
+    if (paid.count === 0) {
+      // Money arrived for an order that had already expired or been replaced.
+      // Its stock went back on the shelf, so it is not quietly revived; it goes
+      // straight to the refunds queue for a human to send back.
+      await this.db.refundRequest.create({
+        data: {
+          orderId: order.id,
+          userId: order.userId,
+          reason: "Automatic: the payment arrived after this order had been cancelled. Refund it in full.",
+        },
+      });
+      await this.audit.log({ actorId: null, action: "payment.captured_after_cancel", targetType: "order", targetId: order.id, meta: { source: args.source, mode: payment.mode } });
+      await this.db.notification.create({
+        data: {
+          userId: order.userId,
+          type: "ORDER",
+          title: "Payment received for a cancelled order",
+          body: "Your payment came through after the order had expired. We have queued a full refund.",
+          data: { orderId: order.id, href: `/orders/${order.id}` },
+        },
+      });
+      return { orderId: order.id, outcome: "late" };
+    }
+
+    const keys = order.items.map((i) => `${i.productId}:${i.variantId ?? "-"}`);
+    await this.cart.clear(order.userId, keys);
+    await this.commerce.fulfillOrder(order.id);
+    await this.audit.log({
+      actorId: args.source === "webhook" ? null : order.userId,
+      action: "order.paid",
+      targetType: "order",
+      targetId: order.id,
+      meta: { rail: "INR", provider: payment.provider, mode: payment.mode, source: args.source, totalCents: payment.amountCents },
+    });
+    await callEarnHook("onOrderPaid", order.id);
+    return { orderId: order.id, outcome: "paid" };
+  }
+
+  /** The Razorpay Checkout.js success handler, verified with the key secret. */
+  async verifyRazorpayCallback(
+    userId: string,
+    args: { razorpayOrderId: string; razorpayPaymentId: string; signature: string }
+  ) {
+    const payment = await this.db.payment.findUnique({ where: { providerOrderId: args.razorpayOrderId }, include: { order: true } });
+    if (!payment || payment.order.userId !== userId || payment.provider !== "razorpay") {
+      throw new PaymentVerificationError("That payment does not belong to this order.");
+    }
+    const provider = this.providerFor("razorpay");
+    if (!(provider instanceof RazorpayProvider)) throw new PaymentVerificationError("Razorpay is not configured.");
+    if (!provider.verifyCheckout(args)) {
+      await this.audit.log({ actorId: userId, action: "payment.bad_signature", targetType: "payment", targetId: payment.id, meta: { source: "callback" } });
+      throw new PaymentVerificationError("The payment signature did not verify. Nothing was recorded as paid.");
+    }
+    return this.capture({ providerOrderId: args.razorpayOrderId, providerPaymentId: args.razorpayPaymentId, source: "callback" });
+  }
+
+  private async sandboxPayment(userId: string, orderId: string) {
+    if (!this.sandboxEnabled()) throw new CheckoutError("Test payments are disabled on this deployment.");
+    const payment = await this.db.payment.findFirst({
+      where: { orderId, provider: "sandbox", mode: "TEST", order: { userId } },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!payment?.providerOrderId) throw new CheckoutError("No test payment is waiting on this order.");
+    return payment as typeof payment & { providerOrderId: string };
+  }
+
+  /** "Pay (test)" — simulates a successful capture. TEST mode only, never in production. */
+  async sandboxCapture(userId: string, orderId: string) {
+    const payment = await this.sandboxPayment(userId, orderId);
+    return this.capture({
+      providerOrderId: payment.providerOrderId,
+      providerPaymentId: sandboxProvider.newPaymentId(),
+      amountCents: payment.amountCents,
+      currency: payment.currency,
+      raw: { sandbox: true },
+      source: "sandbox",
+    });
+  }
+
+  /** "Simulate a failed payment" — walks the failure path in TEST mode. */
+  async sandboxFail(userId: string, orderId: string) {
+    const payment = await this.sandboxPayment(userId, orderId);
+    await this.failPayment({ providerOrderId: payment.providerOrderId, reason: "Simulated failure (test mode)" });
+  }
+
+  /** A failed payment cancels its order and gives the stock and coupon back. */
+  async failPayment(args: { providerOrderId: string; providerPaymentId?: string | null; reason?: string; raw?: unknown }) {
+    const payment = await this.db.payment.findUnique({ where: { providerOrderId: args.providerOrderId } });
+    if (!payment) return null;
+    await this.db.payment.updateMany({
+      where: { id: payment.id, status: "CREATED" },
+      data: { status: "FAILED", raw: (args.raw ?? { reason: args.reason ?? "failed" }) as Prisma.InputJsonValue },
+    });
+    await this.cancelOrder(payment.orderId, args.reason ?? "Payment failed");
+    return payment.orderId;
+  }
+
+  /** PENDING → CANCELLED, once. Stock, coupon and the open payment are released. */
+  async cancelOrder(orderId: string, reason: string, actorId: string | null = null) {
+    const done = await this.db.order.updateMany({ where: { id: orderId, status: "PENDING" }, data: { status: "CANCELLED" } });
+    if (done.count === 0) return false;
+    const items = await this.db.orderItem.findMany({ where: { orderId } });
+    await this.releaseAll(items);
+    await this.coupons.release(orderId);
+    await this.db.payment.updateMany({ where: { orderId, status: "CREATED" }, data: { status: "FAILED" } });
+    await this.audit.log({ actorId, action: "order.cancel", targetType: "order", targetId: orderId, meta: { reason } });
+    return true;
+  }
+
+  /** The member walks away from their own unpaid order. */
+  async abandon(userId: string, orderId: string) {
+    const order = await this.db.order.findFirst({ where: { id: orderId, userId, status: "PENDING" } });
+    if (!order) return false;
+    return this.cancelOrder(orderId, "Cancelled by the member", userId);
+  }
+
+  /** Cancels rupee orders that waited longer than PENDING_TTL_MINUTES for payment. */
+  async expireStale(now = new Date()) {
+    const cutoff = new Date(now.getTime() - PENDING_TTL_MINUTES * 60_000);
+    const stale = await this.db.order.findMany({
+      where: { status: "PENDING", paymentProvider: { not: null }, createdAt: { lt: cutoff }, payments: { none: { status: "CAPTURED" } } },
+      select: { id: true },
+      take: 200,
+    });
+    let n = 0;
+    for (const o of stale) if (await this.cancelOrder(o.id, "Payment window expired")) n++;
+    return n;
+  }
+
+  /**
+   * The Razorpay webhook. Verifies X-Razorpay-Signature over the raw body,
+   * then routes the event. Always idempotent: Razorpay retries, and the same
+   * payment.captured may arrive after the browser callback already settled it.
+   */
+  async handleRazorpayWebhook(rawBody: string, signature: string | null, webhookSecret: string): Promise<{ status: number; body: Record<string, unknown> }> {
+    if (!verifyWebhookSignature(rawBody, signature, webhookSecret)) {
+      return { status: 400, body: { error: "bad signature" } };
+    }
+    let event: RazorpayWebhookEvent;
+    try {
+      event = JSON.parse(rawBody) as RazorpayWebhookEvent;
+    } catch {
+      return { status: 400, body: { error: "bad json" } };
+    }
+    const pay = event.payload?.payment?.entity;
+    try {
+      switch (event.event) {
+        case "payment.captured":
+        case "order.paid": {
+          if (!pay?.order_id) return { status: 200, body: { ignored: "no order" } };
+          const known = await this.db.payment.findUnique({ where: { providerOrderId: pay.order_id } });
+          if (!known) return { status: 200, body: { ignored: "not ours" } };
+          const r = await this.capture({
+            providerOrderId: pay.order_id,
+            providerPaymentId: pay.id,
+            amountCents: pay.amount,
+            currency: pay.currency,
+            raw: event as unknown,
+            source: "webhook",
+          });
+          return { status: 200, body: { ok: true, outcome: r.outcome } };
+        }
+        case "payment.failed": {
+          if (!pay?.order_id) return { status: 200, body: { ignored: "no order" } };
+          await this.failPayment({
+            providerOrderId: pay.order_id,
+            providerPaymentId: pay.id,
+            reason: pay.error_description ?? "Payment failed",
+            raw: event as unknown,
+          });
+          return { status: 200, body: { ok: true } };
+        }
+        case "refund.processed": {
+          const ref = event.payload?.refund?.entity;
+          if (ref?.payment_id) {
+            await this.db.payment.updateMany({ where: { providerPaymentId: ref.payment_id, status: "CAPTURED" }, data: { status: "REFUNDED" } });
+          }
+          return { status: 200, body: { ok: true } };
+        }
+        default:
+          return { status: 200, body: { ignored: event.event } };
+      }
+    } catch (e) {
+      if (e instanceof PaymentVerificationError) {
+        // A mismatch is our record of fraud or a bug, not something Razorpay should retry.
+        return { status: 200, body: { rejected: e.message } };
+      }
+      throw e;
+    }
+  }
+}
+
+export const shopCheckout = new ShopCheckoutService();

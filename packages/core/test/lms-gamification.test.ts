@@ -125,21 +125,26 @@ describe("LMS — course completion", () => {
 
     // XP: lessons + first-lesson mission + course bonus + first-course achievement
     // + the day's check-in (the first lesson ticked "Study": showing up).
-    const mission = await prisma.mission.findUniqueOrThrow({ where: { slug: "first-lesson" } });
-    const showUp = await prisma.mission.findUniqueOrThrow({ where: { slug: "daily-check-in" } });
+    // Weekly missions (e.g. "Five Lessons This Week") also pay, so sum every
+    // mission the user completed rather than naming them one by one.
     const ach = await prisma.achievement.findUniqueOrThrow({ where: { slug: "first-course" } });
+    const done = await prisma.missionCompletion.findMany({ where: { userId: user.id }, include: { mission: true } });
+    const slugs = done.map((d) => d.mission.slug);
+    expect(slugs).toEqual(expect.arrayContaining(["first-lesson", "daily-check-in"]));
+    const missionXp = done.reduce((n, d) => n + d.mission.xpReward, 0);
     const lessonXp = lessons.reduce((n, l) => n + l.xpReward, 0);
     const fresh = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
-    expect(fresh.xp).toBe(lessonXp + mission.xpReward + course.xpOnCompletion + ach.xpReward + showUp.xpReward);
+    expect(fresh.xp).toBe(lessonXp + missionXp + course.xpOnCompletion + ach.xpReward);
 
     const unlocked = await prisma.userAchievement.findFirst({
       where: { userId: user.id, achievement: { slug: "first-course" } },
     });
     expect(unlocked).not.toBeNull();
 
-    // THC: first-lesson mission + first-course achievement + the day's check-in
+    // THC: every completed mission's reward + the first-course achievement
+    const missionThc = done.reduce((n, d) => n + d.mission.thcReward, 0n);
     const wallet = await ledger.ensureUserAccount(user.id);
-    expect(await ledger.getBalance(wallet.id)).toBe(mission.thcReward + ach.thcReward + showUp.thcReward);
+    expect(await ledger.getBalance(wallet.id)).toBe(missionThc + ach.thcReward);
   });
 });
 

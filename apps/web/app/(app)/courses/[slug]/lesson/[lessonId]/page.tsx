@@ -7,7 +7,7 @@ import { community } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, Progress, buttonStyles, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../../../../lib/guard";
 import { courseDetail, LESSON_TYPE } from "../../../../../../lib/learning";
-import { extractVideoId } from "../../../../../../lib/youtube";
+import { LessonVideo, ResourceList } from "../../../../../../components/learning/lesson-video";
 import { askAboutLessonAction, completeLessonAction, submitQuizAction } from "../../../actions";
 import { QuizForm } from "../../../../../../components/quiz-form";
 import { SubmitButton } from "../../../../../../components/submit-button";
@@ -78,7 +78,6 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
     include: { quiz: { include: { questions: { orderBy: { sortOrder: "asc" } } } }, resources: true },
   });
   const html = full.contentMd ? await marked.parse(full.contentMd) : "";
-  const videoId = full.videoUrl ? extractVideoId(full.videoUrl) : null;
   const done = state === "done";
   const prev = d.lessons[idx - 1] ?? null;
   const next = d.lessons[idx + 1] ?? null;
@@ -149,7 +148,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
             <span>{lesson.moduleTitle}</span>
             <span aria-hidden>·</span>
             <span>
-              {LESSON_TYPE[lesson.type]}
+              {lesson.isFinal ? "Final assessment" : LESSON_TYPE[lesson.type]}
               {lesson.minutes ? `, ${lesson.minutes} min` : ""}
             </span>
             {done && (
@@ -161,33 +160,14 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           </p>
           <h1 className="mt-3 text-[28px] font-semibold leading-tight tracking-[-0.02em] sm:text-[34px]">{lesson.title}</h1>
 
-          {videoId && (
-            <div className="mt-6 aspect-video overflow-hidden rounded-lg border border-line bg-black">
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`}
-                title={lesson.title}
-                className="size-full"
-                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                allowFullScreen
-                loading="lazy"
-              />
-            </div>
-          )}
+          <LessonVideo url={full.videoUrl} title={lesson.title} />
 
           {html && <div className="md-content mt-8" dangerouslySetInnerHTML={{ __html: html }} />}
 
           {full.resources.length > 0 && (
-            <Panel className="mt-8 p-5">
+            <Panel className="mt-8 px-5 pb-2 pt-4">
               <h2 className="text-[15px] font-semibold">Resources</h2>
-              <ul className="mt-2 flex flex-col gap-1">
-                {full.resources.map((r) => (
-                  <li key={r.id}>
-                    <a href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[14px] text-gold underline-offset-4 hover:underline">
-                      <Icon name="external" size={14} /> {r.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <ResourceList resources={full.resources} />
             </Panel>
           )}
 

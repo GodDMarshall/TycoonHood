@@ -22,6 +22,19 @@ import { TodayMiningCard } from "../../../components/mining/today-mining-card";
 import { DaySky, skyPhase } from "../../../components/art/day-sky";
 import { ProgressRing, RankEmblem, StreakFlame } from "../../../components/art/emblems";
 import { addOwnItemAction, removeOwnItemAction, setTickAction } from "./actions";
+import { loadDashboard } from "./dashboard";
+import {
+  CommunityActivityCard,
+  EarningsCard,
+  MissionsCard,
+  NextActions,
+  NotificationsCard,
+  OrdersCard,
+  ProfileCompletionCard,
+  ProgressCard,
+  ReferralsCard,
+  type NextAction,
+} from "../../../components/today/dashboard-cards";
 
 export const metadata: Metadata = { title: "Today" };
 export const dynamic = "force-dynamic";
@@ -65,7 +78,7 @@ export default async function TodayPage() {
   const viewer = { id: user.id, role: user.role };
   const tz = user.profile?.timezone ?? null;
 
-  const [today, history, streak, next, ranks, steps, announcements, wins, challenges, rig] = await Promise.all([
+  const [today, history, streak, next, ranks, steps, announcements, wins, challenges, rig, dash] = await Promise.all([
     standard.today(user.id),
     standard.history(user.id, 28),
     prisma.streak.findUnique({ where: { userId: user.id } }),
@@ -90,6 +103,7 @@ export default async function TodayPage() {
       take: 3,
     }),
     mining.preview(user.id),
+    loadDashboard(user),
   ]);
 
   const { greeting, date, hour } = localParts(tz);
@@ -131,6 +145,36 @@ export default async function TodayPage() {
   const rank = ranks[rankIdx];
   const nextRank = ranks[rankIdx + 1];
   const toNextRank = nextRank ? Math.max(0, xpRequiredForLevel(nextRank.minLevel) - user.xp) : 0;
+
+  // Recommended next actions: only the ones that are actually open for this member.
+  const actions: NextAction[] = [];
+  if (!user.emailVerified) {
+    actions.push({ key: "verify", icon: "info", label: "Verify your email", detail: `Confirm ${user.email} so we can reach you.`, href: "/settings#email" });
+  }
+  if (dash.completion.missing.some((m) => m.key !== "email")) {
+    actions.push({
+      key: "profile",
+      icon: "user",
+      label: "Finish your profile",
+      detail: `${dash.completion.score}% complete — ${dash.completion.missing.filter((m) => m.key !== "email").length} left.`,
+      href: "/settings#profile",
+    });
+  }
+  if (next) {
+    actions.push({
+      key: "lesson",
+      icon: "play",
+      label: next.done === 0 ? `Start ${next.title}` : "Continue your lesson",
+      detail: next.next!.title,
+      href: `/courses/${next.slug}/lesson/${next.next!.id}`,
+    });
+  }
+  if (dash.groupCount === 0) {
+    actions.push({ key: "group", icon: "chat", label: "Join a group", detail: "Find people working on the same thing.", href: "/community/groups" });
+  }
+  if (!dash.affiliateStatus) {
+    actions.push({ key: "affiliate", icon: "treasury", label: "Become an affiliate", detail: "Earn a commission on purchases you refer.", href: "/earn" });
+  }
 
   return (
     <Page width="wide">
@@ -214,6 +258,8 @@ export default async function TodayPage() {
             </section>
           )}
 
+          <NextActions actions={actions} />
+
           <section id="standard" aria-labelledby="standard-title" className="scroll-mt-20">
             <SectionTitle
               id="standard-title"
@@ -273,9 +319,29 @@ export default async function TodayPage() {
               </Panel>
             )}
           </section>
+          <MissionsCard missions={dash.missions} />
+
+          <CommunityActivityCard posts={dash.posts} groupCount={dash.groupCount} />
         </div>
 
         <aside className="flex flex-col gap-8" aria-label="Your record and the house">
+          <ProfileCompletionCard completion={dash.completion} />
+
+          <ProgressCard
+            xp={dash.xp}
+            rank={rank ? rank.name.replace(/^Tycoon\s+/, "") : null}
+            nextRank={nextRank ? { name: nextRank.name.replace(/^Tycoon\s+/, ""), minLevel: nextRank.minLevel, xpAway: toNextRank } : null}
+            emblem={rank ? <RankEmblem tier={rankIdx} of={ranks.length} size={52} /> : undefined}
+          />
+
+          <NotificationsCard notifications={dash.notifications} unread={dash.unread} />
+
+          <EarningsCard earnings={dash.earnings} affiliateStatus={dash.affiliateStatus} />
+
+          <ReferralsCard referrals={dash.referrals} />
+
+          <OrdersCard orders={dash.orders} />
+
           <section aria-labelledby="record">
             <SectionTitle
               id="record"
@@ -306,22 +372,6 @@ export default async function TodayPage() {
               <div className="mt-5 border-t border-line pt-5">
                 <RecordGrid days={history.days} metDays={history.metDays} />
               </div>
-              {rank && (
-                <div className="mt-5 flex gap-4 border-t border-line pt-5">
-                  <RankEmblem tier={rankIdx} of={ranks.length} size={52} />
-                  <div className="min-w-0">
-                    <p className="text-[12.5px] text-ink-3">Rank</p>
-                    <p className="mt-0.5 text-[15px] font-medium">
-                      {rank.name.replace(/^Tycoon\s+/, "")} <span className="font-normal text-ink-3">· level {user.level}</span>
-                    </p>
-                    {nextRank && (
-                      <p className="mt-1 text-[13px] text-ink-3">
-                        {nextRank.name.replace(/^Tycoon\s+/, "")} at level {nextRank.minLevel} — {toNextRank.toLocaleString("en-US")} XP of verified work away.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
             </Panel>
           </section>
 

@@ -19,6 +19,9 @@ export const DOMAIN_EVENTS = [
   "PURCHASE_MADE",
   "VIDEO_WATCHED",
   "COMMUNITY_CONTRIBUTION",
+  // A member started a discussion post. Worth nothing unless staff configure a
+  // mission for it (repeatable missions cap it at once per local day).
+  "DISCUSSION_POSTED",
 ] as const;
 
 export type DomainEventType = (typeof DOMAIN_EVENTS)[number];
@@ -44,4 +47,5 @@ export type DomainEvent =
   | ({ type: "MINING_CLAIMED"; amount: bigint } & Base)
   | ({ type: "PURCHASE_MADE"; orderId: string } & Base)
   | ({ type: "VIDEO_WATCHED"; videoTaskId: string } & Base)
-  | ({ type: "COMMUNITY_CONTRIBUTION" } & Base);
+  | ({ type: "COMMUNITY_CONTRIBUTION" } & Base)
+  | ({ type: "DISCUSSION_POSTED"; postId: string } & Base);

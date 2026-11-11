@@ -44,8 +44,9 @@ export async function SiteHeader() {
             heading="Tycoonhood"
             items={GUEST_NAV}
             secondary={[
-              { href: "/about", label: "About", note: "", icon: "info" },
+              { href: "/success-stories", label: "Success stories", note: "", icon: "trophy" },
               { href: "/faq", label: "FAQ", note: "", icon: "quiz" },
+              { href: "/contact", label: "Contact", note: "", icon: "send" },
             ]}
             footer={
               member ? (

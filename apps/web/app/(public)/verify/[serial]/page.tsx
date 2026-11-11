@@ -15,6 +15,9 @@ export default async function VerifyCertificate({ params }: { params: Promise<{ 
     include: { course: true, user: { include: { profile: true } } },
   });
   if (!cert) notFound();
+  // Name per privacy: shown only when the member makes their courses public.
+  const privacy = (cert.user.profile?.privacy ?? {}) as Record<string, unknown>;
+  const showName = !!cert.user.profile && privacy.courses === true;
 
   return (
     <main className="mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
@@ -26,12 +29,12 @@ export default async function VerifyCertificate({ params }: { params: Promise<{ 
           <h1 className="display text-[28px]">{cert.course.title}</h1>
           <p className="text-[15px] text-ink-1">
             Completed by{" "}
-            {cert.user.profile ? (
+            {showName && cert.user.profile ? (
               <Link href={`/u/${cert.user.profile.username}`} className="font-semibold text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
                 {cert.user.profile.displayName}
               </Link>
             ) : (
-              "a Tycoonhood member"
+              "a Tycoonhood member (name private)"
             )}
           </p>
           <SectionRule className="my-2 w-40" />

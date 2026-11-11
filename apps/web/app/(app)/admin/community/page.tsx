@@ -3,7 +3,8 @@ import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
 import { community } from "@tycoonhood/core";
 import { Badge, Button, Input, Label, Select, Textarea } from "@tycoonhood/ui";
-import { requireAdmin } from "../../../../lib/guard";
+import { requirePermission } from "../../../../lib/guard";
+import { DiscussionsAdmin } from "./discussions-admin";
 import { Panel, SectionTitle } from "../../../../components/app/page";
 import { ActionForm } from "../../../../components/admin/action-form";
 import {
@@ -23,7 +24,7 @@ const KIND = { CHAT: "Discussion", ANNOUNCEMENTS: "Announcements", WINS: "Wins",
 const ago = (d: Date) => d.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 export default async function AdminCommunity() {
-  await requireAdmin();
+  const user = await requirePermission("community.moderate");
   const [reports, mutes, channels, courses] = await Promise.all([
     community.openReports(),
     community.activeMutes(),
@@ -234,6 +235,8 @@ export default async function AdminCommunity() {
           </ActionForm>
         </Panel>
       </section>
+
+      <DiscussionsAdmin viewer={{ id: user.id, role: user.role }} />
     </div>
   );
 }

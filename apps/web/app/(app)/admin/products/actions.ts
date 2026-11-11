@@ -1,7 +1,8 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { catalog, CatalogError, reviewProduct, PRODUCT_KINDS, type ProductInput, type VariantInput } from "@tycoonhood/core";
-import { requireAdmin } from "../../../../lib/guard";
+import { prisma } from "@tycoonhood/db";
+import { audit, catalog, CatalogError, isShopCategory, reviewProduct, PRODUCT_KINDS, type ProductInput, type VariantInput } from "@tycoonhood/core";
+import { actorWith } from "../../../../lib/guard";
 
 export interface ProductFormState {
   error?: string;
@@ -64,7 +65,7 @@ export async function saveProductAction(
   _prev: ProductFormState,
   fd: FormData
 ): Promise<ProductFormState> {
-  await requireAdmin();
+  const admin = await actorWith("admin.commerce");
 
   const kindRaw = str(fd.get("kind"));
   if (!(PRODUCT_KINDS as readonly string[]).includes(kindRaw)) {
@@ -102,7 +103,9 @@ export async function saveProductAction(
 
   try {
     const saved = await catalog.save(input);
+    await audit.log({ actorId: admin.id, action: "product.save", targetType: "product", targetId: saved.id, meta: { slug: saved.slug, active: saved.active } });
     revalidatePath("/admin/products");
+    revalidatePath("/store");
     revalidatePath("/marketplace");
     return {
       message: `Saved "${saved.name}".${saved.active ? " It is live in the marketplace now." : " It is saved but not live — tick Live when you are ready."}`,
@@ -119,14 +122,16 @@ export async function saveProductAction(
 }
 
 export async function toggleProductAction(slug: string, next: boolean) {
-  await requireAdmin();
+  const admin = await actorWith("admin.commerce");
   await catalog.setActive(slug, next);
+  await audit.log({ actorId: admin.id, action: next ? "product.publish" : "product.unpublish", targetType: "product", targetId: slug });
+  revalidatePath("/store");
   revalidatePath("/admin/products");
   revalidatePath("/marketplace");
 }
 
 export async function restockAction(_prev: ProductFormState, fd: FormData): Promise<ProductFormState> {
-  await requireAdmin();
+  const admin = await actorWith("admin.commerce");
   const variantId = str(fd.get("variantId"));
   const units = Number(str(fd.get("units")));
   if (!variantId || !Number.isFinite(units) || units === 0) {
@@ -134,6 +139,7 @@ export async function restockAction(_prev: ProductFormState, fd: FormData): Prom
   }
   try {
     const v = await catalog.restock(variantId, Math.round(units));
+    await audit.log({ actorId: admin.id, action: "product.restock", targetType: "variant", targetId: variantId, meta: { units: Math.round(units), now: v.inventory } });
     revalidatePath("/admin/products");
     revalidatePath("/marketplace");
     return { message: `${v.label}: now ${v.inventory} in stock.` };
@@ -141,4 +147,24 @@ export async function restockAction(_prev: ProductFormState, fd: FormData): Prom
     if (e instanceof CatalogError) return { error: e.message };
     throw e;
   }
+}
+
+/**
+ * Storefront fields the catalogue form does not carry: category and seller.
+ * Written here, beside the catalog service, so catalog.save stays untouched.
+ */
+export async function setShopFieldsAction(productId: string, _prev: { ok?: string; error?: string }, fd: FormData): Promise<{ ok?: string; error?: string }> {
+  const admin = await actorWith("admin.commerce");
+  const category = str(fd.get("category"));
+  const sellerName = str(fd.get("sellerName")).slice(0, 80);
+  if (category && !isShopCategory(category)) return { error: "Pick a category from the list." };
+  const p = await prisma.product.update({
+    where: { id: productId },
+    data: { category: category || null, sellerName: sellerName || null },
+  });
+  await audit.log({ actorId: admin.id, action: "product.shop_fields", targetType: "product", targetId: p.id, meta: { category: p.category, sellerName: p.sellerName } });
+  revalidatePath("/admin/products");
+  revalidatePath("/store");
+  revalidatePath("/marketplace");
+  return { ok: "Saved." };
 }

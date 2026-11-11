@@ -21,6 +21,7 @@ const THIRTY_DAYS = 30 * 24 * 60 * 60;
 function safeDestination(to: string | null): string {
   if (!to || to.length > 500) return "/";
   if (!to.startsWith("/") || to.startsWith("//") || to.includes("\\")) return "/";
+  // eslint-disable-next-line no-control-regex -- rejecting control characters is the point
   if (/[\u0000-\u001f\u007f]/.test(to)) return "/";
   try {
     const base = "http://same.invalid";

@@ -83,6 +83,11 @@ export async function countEvidence(
       });
 
     case "STREAK": {
+      // Days the standard was met inside a window ("hold the standard 5 days
+      // this week"): `count` + `within`, no `days`. The met-day record is the store.
+      if (c.days === undefined && c.count !== undefined && since) {
+        return db.standardDay.count({ where: { userId, day: { gte: since } } });
+      }
       const s = await db.streak.findUnique({ where: { userId }, select: { current: true } });
       return s?.current ?? 0;
     }
@@ -112,6 +117,12 @@ export async function countEvidence(
         },
       });
 
+    case "DISCUSSION_POSTED":
+      // Posts still standing (staff-hidden or removed ones do not count).
+      return db.communityPost.count({
+        where: { authorId: userId, state: "VISIBLE", ...(when ? { createdAt: when } : {}) },
+      });
+
     case "COMMUNITY_CONTRIBUTION":
       // Volume is never a signal (it is the first thing farmed). The one
       // trustworthy source: messages staff chose to pin, still standing.
@@ -123,5 +134,5 @@ export async function countEvidence(
 
 /** STREAK compares against `days`; everything else against `count`. */
 export function requiredFor(c: Criteria): number {
-  return c.event === "STREAK" ? c.days ?? 1 : c.count ?? 1;
+  return c.event === "STREAK" ? c.days ?? c.count ?? 1 : c.count ?? 1;
 }

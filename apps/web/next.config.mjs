@@ -20,7 +20,9 @@ try {
  * styles, so 'unsafe-inline' is required for style-src and script-src under
  * the stable (non-nonce) setup. Everything else is locked to self. Stripe
  * frames/scripts are allowed because checkout redirects through them; drop
- * those entries if the card rail is ever removed.
+ * those entries if the card rail is ever removed. Razorpay: Checkout.js from
+ * checkout.razorpay.com, its modal frames api.razorpay.com, and it reports to
+ * api/lumberjack.razorpay.com.
  */
 const csp = [
   "default-src 'self'",
@@ -31,10 +33,10 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.youtube.com https://s.ytimg.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.razorpay.com https://www.youtube.com https://s.ytimg.com",
   // Video lessons play from YouTube's privacy-enhanced domain.
-  "frame-src https://js.stripe.com https://hooks.stripe.com https://www.youtube-nocookie.com",
-  "connect-src 'self' https://api.stripe.com",
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://api.razorpay.com https://checkout.razorpay.com https://www.youtube-nocookie.com",
+  "connect-src 'self' https://api.stripe.com https://api.razorpay.com https://lumberjack.razorpay.com",
   "upgrade-insecure-requests",
 ].join("; ");
 
@@ -64,7 +66,6 @@ const nextConfig = {
     return [
       { source: "/dashboard", destination: "/today", permanent: false },
       { source: "/world", destination: "/today", permanent: false },
-      { source: "/leaderboard", destination: "/profile", permanent: false },
       { source: "/academy", destination: "/courses", permanent: false },
       { source: "/academy/:slug", destination: "/courses/:slug", permanent: false },
       { source: "/academy/:slug/lesson/:lessonId", destination: "/courses/:slug/lesson/:lessonId", permanent: false },

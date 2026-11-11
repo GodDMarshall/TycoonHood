@@ -18,6 +18,11 @@ export function lessonMinutes(l: { durationSec: number | null; contentMd: string
   return words ? Math.max(1, Math.ceil(words / WORDS_PER_MINUTE)) : null;
 }
 
+/** Module objectives are stored as a JSON array of strings. */
+export function objectivesOf(v: unknown): string[] {
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.trim().length > 0) : [];
+}
+
 const lessonSelect = (userId: string) =>
   ({
     id: true,
@@ -27,6 +32,7 @@ const lessonSelect = (userId: string) =>
     durationSec: true,
     contentMd: true,
     isPreview: true,
+    isFinal: true,
     quiz: { select: { id: true } },
     progress: { where: { userId }, select: { completedAt: true } },
   }) as const;
@@ -96,6 +102,8 @@ export async function courseDetail(userId: string, slug: string) {
       enrollments: { where: { userId } },
       certificates: { where: { userId } },
       channels: { where: { archivedAt: null }, orderBy: { sortOrder: "asc" }, select: { slug: true, name: true, kind: true } },
+      instructor: true,
+      resources: { orderBy: { title: "asc" } },
     },
   });
   if (!c || c.status !== "PUBLISHED") return null;
@@ -112,10 +120,14 @@ export async function courseDetail(userId: string, slug: string) {
     certificate: c.certificates[0] ?? null,
     channels: c.channels,
     lessons: flat.map((l) => ({ ...l, minutes: lessonMinutes(l), gate: gate(l.id) })),
+    instructor: c.instructor,
+    resources: c.resources,
     modules: c.modules.map((m) => ({
       id: m.id,
       title: m.title,
       description: m.description,
+      objectives: objectivesOf(m.objectives),
+      completion: m.completion,
       lessons: flat.filter((l) => l.moduleId === m.id).map((l) => ({ ...l, minutes: lessonMinutes(l), gate: gate(l.id) })),
     })),
     done,

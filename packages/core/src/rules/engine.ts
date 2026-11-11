@@ -10,7 +10,7 @@
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import type { DomainEvent } from "../events/types";
-import { tryParseCriteria } from "./criteria";
+import { tryParseCriteria, weekKey } from "./criteria";
 import { countEvidence, requiredFor } from "./counters";
 import { RewardsService, MissionCooldownError } from "../rewards/rewards";
 import { XpService } from "../gamification/xp";
@@ -71,7 +71,9 @@ export class RulesEngine {
 
       // Repeatable missions bucket by the MEMBER'S local day, so a check-in at
       // 05:00 IST counts for today rather than yesterday (spec §19).
-      const occurrence = m.repeatable ? localDayKey(now, tz) : undefined;
+      // A "week" window buckets by calendar week instead, so a weekly mission
+      // pays once per week rather than once per day after its target is met.
+      const occurrence = m.repeatable ? (c.within === "week" ? weekKey(now) : localDayKey(now, tz)) : undefined;
       try {
         const r = await this.rewards.completeMission({
           userId: event.userId,

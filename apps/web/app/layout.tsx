@@ -8,14 +8,14 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: { default: "Tycoonhood — build yourself, the rest compounds", template: "%s · Tycoonhood" },
+  title: { default: "Tycoonhood — master yourself, build your skills, create your wealth", template: "%s · Tycoonhood" },
   description:
     "A serious academy for discipline, business and money: programs that open lesson by lesson, a daily standard, and a community that posts proof. Free to join.",
   applicationName: "Tycoonhood",
   openGraph: {
     type: "website",
     siteName: "Tycoonhood",
-    title: "Tycoonhood — build yourself, the rest compounds",
+    title: "Tycoonhood — master yourself, build your skills, create your wealth",
     description:
       "Programs that open lesson by lesson, a daily standard you hold every day, and a community that posts proof.",
   },

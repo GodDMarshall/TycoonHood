@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge, Icon, buttonStyles, cn } from "@tycoonhood/ui";
+import { learner } from "@tycoonhood/core";
 import { requireUser } from "../../../lib/guard";
 import { catalog, LESSON_TYPE, searchLessons } from "../../../lib/learning";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
@@ -13,8 +14,14 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
   const user = await requireUser();
   const { q = "" } = await searchParams;
   const query = q.trim();
-  const [courses, results] = await Promise.all([catalog(user.id), query ? searchLessons(user.id, query) : Promise.resolve(null)]);
+  const [courses, results, history, suggested] = await Promise.all([
+    catalog(user.id),
+    query ? searchLessons(user.id, query) : Promise.resolve(null),
+    learner.history(user.id, 5),
+    learner.youMightStart(user.id, 2),
+  ]);
   const current = courses.filter((c) => c.enrollment && c.next);
+  const day = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
 
   return (
     <Page>
@@ -107,6 +114,28 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
             </section>
           )}
 
+          {suggested.length > 0 && (
+            <section aria-labelledby="suggested" className="mb-12">
+              <SectionTitle id="suggested">You might start</SectionTitle>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {suggested.map((c) => (
+                  <Link
+                    key={c.id}
+                    href={`/courses/${c.slug}`}
+                    className="group flex min-w-0 items-center gap-4 rounded-lg border border-line bg-bg-1 p-3 transition-colors hover:border-line-strong"
+                  >
+                    <CourseCover pillar={c.pillar} coverImage={c.coverImage} compact className="aspect-square w-16 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[15px] font-medium text-ink-1">{c.title}</p>
+                      {c.subtitle && <p className="mt-0.5 line-clamp-2 text-[13px] text-ink-3">{c.subtitle}</p>}
+                    </div>
+                    <Icon name="arrow-right" size={18} className="mr-2 text-ink-3 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
           <section aria-labelledby="programs">
             <SectionTitle id="programs">All programs</SectionTitle>
             {courses.length === 0 ? (
@@ -122,6 +151,33 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
               <Badge tone="neutral">Free</Badge> Every published program is free to enroll in.
             </p>
           </section>
+
+          {history.length > 0 && (
+            <section aria-labelledby="history" className="mt-12">
+              <SectionTitle
+                id="history"
+                action={
+                  <Link href="/courses/history" className="text-[13px] text-ink-3 hover:text-ink-1">
+                    Full history
+                  </Link>
+                }
+              >
+                Recently completed
+              </SectionTitle>
+              <Panel as="ul" className="divide-y divide-line">
+                {history.map((h) => (
+                  <li key={h.lesson.id} className="flex items-center gap-4 px-5 py-3">
+                    <Icon name="check" size={15} className="text-success" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[14.5px] text-ink-1">{h.lesson.title}</span>
+                      <span className="block truncate text-[12.5px] text-ink-3">{h.lesson.module.course.title}</span>
+                    </span>
+                    <span className="text-[12.5px] tabular-nums text-ink-3">{h.completedAt ? day.format(h.completedAt) : ""}</span>
+                  </li>
+                ))}
+              </Panel>
+            </section>
+          )}
         </>
       )}
     </Page>

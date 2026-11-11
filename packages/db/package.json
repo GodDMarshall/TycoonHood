@@ -16,7 +16,9 @@
     "migrate:deploy": "dotenv -e ../../.env -- prisma migrate deploy",
     "migrate:sql": "dotenv -e ../../.env -- tsx scripts/migrate-sql.ts",
     "migrate:status": "dotenv -e ../../.env -- tsx scripts/migrate-sql.ts --status",
-    "seed:merch": "dotenv -e ../../.env -- tsx src/seed-merch.ts"
+    "seed:merch": "dotenv -e ../../.env -- tsx src/seed-merch.ts",
+    "seed:shop": "dotenv -e ../../.env -- tsx src/seed-shop.ts",
+    "seed:community": "dotenv -e ../../.env -- tsx src/seed-community.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.0.2",

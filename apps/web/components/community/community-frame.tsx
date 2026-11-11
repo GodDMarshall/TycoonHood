@@ -8,6 +8,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { ChannelSummary } from "@tycoonhood/core";
 import { Icon, cn, type IconName } from "@tycoonhood/ui";
+import { HOUSE_RULES } from "../../lib/community-guidelines";
 
 export const CHANNEL_ICON: Record<ChannelSummary["kind"], IconName> = {
   ANNOUNCEMENTS: "megaphone",
@@ -75,13 +76,41 @@ export function HouseRules() {
     <div>
       <h2 className="text-[14px] font-semibold text-ink-1">House rules</h2>
       <ol className="mt-2 flex list-decimal flex-col gap-1.5 pl-5 text-[13.5px] leading-relaxed text-ink-2">
-        <li>Be useful. Ask specific questions; give concrete answers.</li>
-        <li>Wins need proof — a link, a number, a result.</li>
-        <li>No selling, recruiting or spam. Staff remove it and may mute.</li>
-        <li>Disagree with ideas, never with people.</li>
-        <li>Report, don&rsquo;t argue. Staff read every report.</li>
+        {HOUSE_RULES.map((r) => (
+          <li key={r}>{r}</li>
+        ))}
       </ol>
     </div>
+  );
+}
+
+const SECTIONS = [
+  { key: "chat", label: "Chat", href: "/community" },
+  { key: "discussions", label: "Discussions", href: "/community/discussions" },
+  { key: "groups", label: "Groups", href: "/community/groups" },
+] as const;
+
+/** Chat · Discussions · Groups — the community's three rooms. */
+export function CommunityTabs({ active, className }: { active: (typeof SECTIONS)[number]["key"]; className?: string }) {
+  return (
+    <nav aria-label="Community sections" className={cn("flex gap-1 rounded-md border border-line bg-bg-1 p-1", className)}>
+      {SECTIONS.map((s) => {
+        const on = s.key === active;
+        return (
+          <Link
+            key={s.key}
+            href={s.href}
+            aria-current={on ? "page" : undefined}
+            className={cn(
+              "flex h-8 flex-1 items-center justify-center rounded-[6px] px-3 text-[13.5px] font-medium transition-colors",
+              on ? "bg-bg-3 text-ink-1" : "text-ink-2 hover:bg-bg-2 hover:text-ink-1"
+            )}
+          >
+            {s.label}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
 
@@ -105,9 +134,10 @@ export function CommunityFrame({
           mode === "channel" && "hidden"
         )}
       >
-        <div className="mb-4 flex items-center justify-between px-2">
+        <div className="mb-3 flex items-center justify-between px-2">
           <h1 className="text-[18px] font-semibold tracking-[-0.01em]">Community</h1>
         </div>
+        <CommunityTabs active="chat" className="mb-5" />
         <ChannelList channels={channels} active={active} />
         <p className="mt-6 px-2 text-[12.5px] leading-relaxed text-ink-3">Program channels open when you enroll in the program.</p>
         <div className={cn("mt-6 px-2", mode === "list" ? "lg:hidden" : "hidden")}>

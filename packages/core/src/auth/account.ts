@@ -12,6 +12,12 @@ import type { OnboardingInput } from "./schemas";
 export class EmailTakenError extends Error {}
 export class UsernameTakenError extends Error {}
 export class InvalidCredentialsError extends Error {}
+/** Thrown only after a correct password, so it reveals nothing to a guesser. */
+export class AccountSuspendedError extends Error {
+  constructor() {
+    super("This account is suspended. Contact us if you think this is a mistake.");
+  }
+}
 
 export class AccountService {
 
@@ -49,6 +55,7 @@ export class AccountService {
       "$argon2id$v=19$m=19456,t=2,p=1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
     const ok = await verifyPassword(hash, input.password);
     if (!ok || !user) throw new InvalidCredentialsError("Email or password is incorrect.");
+    if (user.suspendedAt) throw new AccountSuspendedError();
     return user;
   }
 

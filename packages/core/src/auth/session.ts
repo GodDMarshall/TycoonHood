@@ -54,6 +54,10 @@ export class SessionService {
     });
     if (!session) return null;
 
+    // A suspended member's sessions stop resolving at once (suspension also
+    // deletes them; this covers any created in between).
+    if (session.user.suspendedAt) return null;
+
     if (session.expires.getTime() <= Date.now()) {
       await this.db.session.delete({ where: { id: session.id } }).catch(() => {});
       return null;

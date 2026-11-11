@@ -95,3 +95,4 @@ export * from "./platform";
 export * from "./earn";
 export * from "./shop";
 export * from "./discussions";
+export * from "./lms/index-authoring";

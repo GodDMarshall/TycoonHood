@@ -9,12 +9,34 @@ import { XpService } from "../gamification/xp";
 import { StreakService } from "../gamification/streaks";
 import { randomBytes } from "node:crypto";
 import { gateLessons } from "./gating";
+import { promoteTo } from "../auth/permissions";
 
 export class NotEnrolledError extends Error {}
 /** The lesson is behind one the member has not finished. */
 export class LessonLockedError extends Error {}
 /** A lesson with a knowledge check completes only by passing it. */
 export class QuizRequiredError extends Error {}
+/** The program is not published (DRAFT or ARCHIVED): members cannot see or join it. */
+export class CourseUnavailableError extends Error {}
+
+/**
+ * What stands between a member and the certificate. A certificate is issued
+ * only when every lesson is complete AND the programme's final assessment
+ * (the lesson marked isFinal) has a passing attempt. A programme without a
+ * final assessment completes (XP, status) but issues no certificate.
+ */
+export interface CertificateEligibility {
+  totalLessons: number;
+  completedLessons: number;
+  lessonsLeft: number;
+  hasFinal: boolean;
+  finalLessonId: string | null;
+  finalTitle: string | null;
+  finalPassed: boolean;
+  /** Best score on the final assessment so far, if attempted. */
+  finalBestScore: number | null;
+  eligible: boolean;
+}
 
 export class LmsService {
   private xp: XpService;
@@ -25,13 +47,89 @@ export class LmsService {
     this.streaks = new StreakService(db);
   }
 
+  /**
+   * Free enrolment (DR-6 still open: every published programme is free).
+   * DRAFT and ARCHIVED programmes cannot be joined. A member's first
+   * enrolment promotes MEMBER → STUDENT (never demotes a staff role).
+   */
   async enroll(userId: string, courseSlug: string) {
-    const course = await this.db.course.findUniqueOrThrow({ where: { slug: courseSlug } });
-    return this.db.enrollment.upsert({
+    const course = await this.db.course.findUnique({ where: { slug: courseSlug } });
+    if (!course || course.status !== "PUBLISHED") {
+      throw new CourseUnavailableError("This program is not open for enrolment.");
+    }
+    const enrollment = await this.db.enrollment.upsert({
       where: { userId_courseId: { userId, courseId: course.id } },
       update: {},
       create: { userId, courseId: course.id },
     });
+    const user = await this.db.user.findUnique({ where: { id: userId }, select: { role: true } });
+    if (user) {
+      const next = promoteTo(user.role, "STUDENT");
+      if (next !== user.role) await this.db.user.update({ where: { id: userId }, data: { role: next } });
+    }
+    return enrollment;
+  }
+
+  /** What is left before this member's certificate can be issued. */
+  async certificateEligibility(userId: string, courseId: string): Promise<CertificateEligibility> {
+    const lessons = await this.db.lesson.findMany({
+      where: { module: { courseId } },
+      select: {
+        id: true,
+        title: true,
+        isFinal: true,
+        quiz: { select: { id: true } },
+        progress: { where: { userId }, select: { completedAt: true } },
+      },
+    });
+    const completedLessons = lessons.filter((l) => !!l.progress[0]?.completedAt).length;
+    const final = lessons.find((l) => l.isFinal) ?? null;
+    let finalPassed = false;
+    let finalBestScore: number | null = null;
+    if (final?.quiz) {
+      const best = await this.db.quizAttempt.findFirst({
+        where: { userId, quizId: final.quiz.id },
+        orderBy: { scorePct: "desc" },
+        select: { scorePct: true, passed: true },
+      });
+      finalBestScore = best?.scorePct ?? null;
+      finalPassed = !!(await this.db.quizAttempt.findFirst({ where: { userId, quizId: final.quiz.id, passed: true }, select: { id: true } }));
+    }
+    const lessonsLeft = lessons.length - completedLessons;
+    return {
+      totalLessons: lessons.length,
+      completedLessons,
+      lessonsLeft,
+      hasFinal: !!final,
+      finalLessonId: final?.id ?? null,
+      finalTitle: final?.title ?? null,
+      finalPassed,
+      finalBestScore,
+      eligible: lessons.length > 0 && lessonsLeft === 0 && !!final && finalPassed,
+    };
+  }
+
+  /** Issues the certificate when (and only when) the member is eligible. Idempotent. */
+  async issueCertificateIfEligible(userId: string, courseId: string) {
+    const existing = await this.db.certificate.findUnique({ where: { userId_courseId: { userId, courseId } } });
+    if (existing) return existing;
+    const e = await this.certificateEligibility(userId, courseId);
+    if (!e.eligible) return null;
+    try {
+      return await this.db.certificate.create({
+        data: {
+          userId,
+          courseId,
+          serial: `TH-${new Date().getFullYear()}-${randomBytes(4).toString("hex").toUpperCase()}`,
+        },
+      });
+    } catch (err) {
+      // unique(userId, courseId) makes a concurrent retry clean.
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        return this.db.certificate.findUnique({ where: { userId_courseId: { userId, courseId } } });
+      }
+      throw err;
+    }
   }
 
   /**
@@ -77,6 +175,7 @@ export class LmsService {
       where: { userId_courseId: { userId, courseId: course.id } },
     });
     if (!enrollment) throw new NotEnrolledError("Enroll in the program before completing lessons.");
+    if (course.status !== "PUBLISHED") throw new CourseUnavailableError("This program is not open right now.");
 
     if (lesson.quiz && !opts.viaQuiz) {
       throw new QuizRequiredError("Pass the knowledge check to complete this lesson.");
@@ -170,6 +269,9 @@ export class LmsService {
       await this.completeCourse(userId, courseId);
       return true;
     }
+    // Completed before a final assessment existed (added later by an author):
+    // passing it now still earns the certificate.
+    if (pct === 100) await this.issueCertificateIfEligible(userId, courseId);
     return false;
   }
 
@@ -189,26 +291,18 @@ export class LmsService {
       idempotencyKey: `xp:course:${courseId}:${userId}`,
     });
 
-    // Certificate — unique(userId, courseId) makes retries clean.
-    try {
-      await this.db.certificate.create({
-        data: {
-          userId,
-          courseId,
-          serial: `TH-${new Date().getFullYear()}-${randomBytes(4).toString("hex").toUpperCase()}`,
-        },
-      });
-    } catch (e) {
-      if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) throw e;
-    }
+    // Certificate — only with every lesson done AND the final assessment passed.
+    const certificate = await this.issueCertificateIfEligible(userId, courseId);
 
     await this.db.notification.create({
       data: {
         userId,
         type: "SYSTEM",
         title: `Program complete: ${course.title}`,
-        body: `+${course.xpOnCompletion} XP. Your certificate is on your dashboard.`,
-        data: { courseId },
+        body: certificate
+          ? `+${course.xpOnCompletion} XP. Certificate ${certificate.serial} is in your certificates.`
+          : `+${course.xpOnCompletion} XP.`,
+        data: certificate ? { courseId, href: `/certificates/${certificate.serial}` } : { courseId },
       },
     });
 
@@ -228,6 +322,8 @@ export class LmsService {
       where: { userId_courseId: { userId, courseId: quiz.lesson.module.courseId } },
     });
     if (!enrolled) throw new NotEnrolledError("Enroll in the program before taking its knowledge checks.");
+    const owning = await this.db.course.findUnique({ where: { id: quiz.lesson.module.courseId }, select: { status: true } });
+    if (owning?.status !== "PUBLISHED") throw new CourseUnavailableError("This program is not open right now.");
     const gate = await this.lessonGate(userId, quiz.lesson.module.courseId, quiz.lessonId);
     if (gate.state === "locked") {
       throw new LessonLockedError(
