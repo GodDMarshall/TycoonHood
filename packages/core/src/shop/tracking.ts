@@ -41,7 +41,15 @@ export function orderTimeline(o: TimelineOrder): TimelineStep[] {
   const steps: TimelineStep[] = [{ key: "placed", label: "Order placed", state: "done", at: o.createdAt }];
 
   if (o.status === "CANCELLED") {
-    steps.push({ key: "cancelled", label: "Cancelled", state: "stopped", at: o.updatedAt, detail: "No payment was completed, so nothing was charged and the stock went back." });
+    steps.push({
+      key: "cancelled",
+      label: "Cancelled",
+      state: "stopped",
+      at: o.updatedAt,
+      detail: paidAfterCancel(o)
+        ? "Your payment arrived after the order was cancelled, so a full refund was queued. The stock went back."
+        : "No payment was completed, so nothing was charged and the stock went back.",
+    });
   } else {
     steps.push({
       key: "paid",
@@ -88,6 +96,15 @@ export function orderTimeline(o: TimelineOrder): TimelineStep[] {
     steps.push({ key: "refunded", label: "Refunded", state: "done", at: o.updatedAt });
   }
   return steps;
+}
+
+/**
+ * A payment that came in after its order was cancelled (it expired, or was
+ * replaced by a new checkout). capture() queues a full refund for it, so the
+ * member must never be told that nothing was charged.
+ */
+export function paidAfterCancel(o: { status: string; payments?: { status: string }[] }) {
+  return o.status === "CANCELLED" && (o.payments ?? []).some((p) => p.status === "CAPTURED" || p.status === "REFUNDED");
 }
 
 /** True when any payment on the order is a sandbox (TEST) payment. */

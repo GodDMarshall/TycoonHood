@@ -10,10 +10,16 @@
  * transaction as the coupon redemption; then the active provider (Razorpay,
  * or the TEST sandbox) creates its order and a Payment row records it. The
  * order turns PAID only on a VERIFIED capture — the Razorpay callback with a
- * valid signature, the signed webhook, or the sandbox's simulated capture —
- * and every one of those converges on capture(), which is idempotent on the
- * payment. A failed or expired payment cancels the order and gives back the
- * stock and the coupon.
+ * valid signature, the signed webhook, the sandbox's simulated capture, or
+ * the expiry sweep finding the payment at Razorpay — and every one of those
+ * converges on capture(), which is idempotent on the payment.
+ *
+ * A failed attempt does not end the order: Razorpay Checkout lets the member
+ * retry on the same order, so payment.failed is only recorded. The order is
+ * cancelled, giving back the stock and the coupon, when the member abandons
+ * it, an admin cancels it, or expireStale finds it unpaid after the hold. The
+ * sweep asks Razorpay first, so it never cancels an order that was paid, and
+ * gives one the member is still paying for PAYING_GRACE_MINUTES more.
  *
  * After a capture: order PAID → cart lines cleared → fulfilment exactly as
  * commerce does it (course grants, notifications, PURCHASE_MADE) → the earn
@@ -36,6 +42,8 @@ import { verifyWebhookSignature } from "./payments/razorpay";
 
 /** How long a rupee order may wait for its payment before its stock goes back. */
 export const PENDING_TTL_MINUTES = 30;
+/** Extra time after the hold for an order Razorpay shows as attempted: the member may be retrying. */
+export const PAYING_GRACE_MINUTES = 30;
 
 export interface ShopCheckoutOptions {
   /**
@@ -311,7 +319,7 @@ export class ShopCheckoutService {
     amountCents?: number;
     currency?: string;
     raw?: unknown;
-    source: "callback" | "webhook" | "sandbox";
+    source: "callback" | "webhook" | "sandbox" | "sweep";
   }): Promise<{ orderId: string; outcome: CaptureOutcome }> {
     const payment = await this.db.payment.findUnique({ where: { providerOrderId: args.providerOrderId } });
     if (!payment) throw new PaymentVerificationError("Unknown payment order.");
@@ -367,7 +375,7 @@ export class ShopCheckoutService {
     await this.cart.clear(order.userId, keys);
     await this.commerce.fulfillOrder(order.id);
     await this.audit.log({
-      actorId: args.source === "webhook" ? null : order.userId,
+      actorId: args.source === "webhook" || args.source === "sweep" ? null : order.userId,
       action: "order.paid",
       targetType: "order",
       targetId: order.id,
@@ -418,21 +426,30 @@ export class ShopCheckoutService {
     });
   }
 
-  /** "Simulate a failed payment" — walks the failure path in TEST mode. */
+  /**
+   * "Simulate a failed payment" — TEST mode only. The sandbox has no retry, so
+   * the order is cancelled and the stock and coupon go back.
+   */
   async sandboxFail(userId: string, orderId: string) {
     const payment = await this.sandboxPayment(userId, orderId);
-    await this.failPayment({ providerOrderId: payment.providerOrderId, reason: "Simulated failure (test mode)" });
+    await this.cancelOrder(payment.orderId, "Simulated failure (test mode)", userId);
   }
 
-  /** A failed payment cancels its order and gives the stock and coupon back. */
-  async failPayment(args: { providerOrderId: string; providerPaymentId?: string | null; reason?: string; raw?: unknown }) {
+  /**
+   * One failed attempt (Razorpay's payment.failed). The member can retry on the
+   * same Razorpay order, so the order stays PENDING with its stock and coupon,
+   * and the payment stays open. Only the attempt is recorded.
+   */
+  async recordFailedAttempt(args: { providerOrderId: string; providerPaymentId?: string | null; reason?: string | null }) {
     const payment = await this.db.payment.findUnique({ where: { providerOrderId: args.providerOrderId } });
     if (!payment) return null;
-    await this.db.payment.updateMany({
-      where: { id: payment.id, status: "CREATED" },
-      data: { status: "FAILED", raw: (args.raw ?? { reason: args.reason ?? "failed" }) as Prisma.InputJsonValue },
+    await this.audit.log({
+      actorId: null,
+      action: "payment.attempt_failed",
+      targetType: "payment",
+      targetId: payment.id,
+      meta: { orderId: payment.orderId, providerPaymentId: args.providerPaymentId ?? null, reason: args.reason?.slice(0, 300) ?? null },
     });
-    await this.cancelOrder(payment.orderId, args.reason ?? "Payment failed");
     return payment.orderId;
   }
 
@@ -455,17 +472,61 @@ export class ShopCheckoutService {
     return this.cancelOrder(orderId, "Cancelled by the member", userId);
   }
 
-  /** Cancels rupee orders that waited longer than PENDING_TTL_MINUTES for payment. */
+  /**
+   * Ends rupee orders that waited longer than PENDING_TTL_MINUTES for payment.
+   * A Razorpay order is looked up first: one already paid is captured instead,
+   * and one the member has started paying waits PAYING_GRACE_MINUTES more.
+   * Everything else is cancelled, which gives back the stock and the coupon.
+   */
   async expireStale(now = new Date()) {
     const cutoff = new Date(now.getTime() - PENDING_TTL_MINUTES * 60_000);
+    const graceCutoff = new Date(cutoff.getTime() - PAYING_GRACE_MINUTES * 60_000);
     const stale = await this.db.order.findMany({
       where: { status: "PENDING", paymentProvider: { not: null }, createdAt: { lt: cutoff }, payments: { none: { status: "CAPTURED" } } },
-      select: { id: true },
+      select: { id: true, createdAt: true, payments: { orderBy: { createdAt: "desc" }, take: 1 } },
+      orderBy: { createdAt: "asc" },
       take: 200,
     });
-    let n = 0;
-    for (const o of stale) if (await this.cancelOrder(o.id, "Payment window expired")) n++;
-    return n;
+    const result = { cancelled: 0, captured: 0, waiting: 0 };
+    for (const o of stale) {
+      const verdict = await this.staleVerdict(o.payments[0], o.createdAt < graceCutoff);
+      if (verdict === "captured") result.captured++;
+      else if (verdict === "wait") result.waiting++;
+      else if (await this.cancelOrder(o.id, "Payment window expired")) result.cancelled++;
+    }
+    return result;
+  }
+
+  /** What the sweep does with one stale order's latest payment. */
+  private async staleVerdict(
+    payment: { provider: string; mode: string; providerOrderId: string | null } | undefined,
+    pastGrace: boolean
+  ): Promise<"cancel" | "wait" | "captured"> {
+    if (!payment?.providerOrderId) return "cancel";
+    const provider = this.providerFor(payment.provider);
+    // The sandbox has nobody to ask, and keys of the other mode cannot see the order.
+    if (!provider?.checkOrder || provider.mode !== payment.mode) return "cancel";
+    try {
+      const check = await provider.checkOrder(payment.providerOrderId);
+      if (!check) return "cancel"; // unknown to the provider, so nobody can pay it
+      if (check.captured) {
+        await this.capture({
+          providerOrderId: payment.providerOrderId,
+          providerPaymentId: check.captured.providerPaymentId,
+          amountCents: check.captured.amountCents,
+          currency: check.captured.currency,
+          raw: { source: "sweep", check } as unknown,
+          source: "sweep",
+        });
+        return "captured";
+      }
+      // Attempted: the member may be retrying in the Razorpay window right now.
+      return check.status !== "created" && !pastGrace ? "wait" : "cancel";
+    } catch (e) {
+      // Not knowing is not a reason to cancel: try again on the next sweep.
+      console.error("[shop] could not check a stale order with the payment provider", e);
+      return "wait";
+    }
   }
 
   /**
@@ -502,13 +563,9 @@ export class ShopCheckoutService {
           return { status: 200, body: { ok: true, outcome: r.outcome } };
         }
         case "payment.failed": {
+          // One attempt failed; the member can retry on the same order, so it stays open.
           if (!pay?.order_id) return { status: 200, body: { ignored: "no order" } };
-          await this.failPayment({
-            providerOrderId: pay.order_id,
-            providerPaymentId: pay.id,
-            reason: pay.error_description ?? "Payment failed",
-            raw: event as unknown,
-          });
+          await this.recordFailedAttempt({ providerOrderId: pay.order_id, providerPaymentId: pay.id, reason: pay.error_description });
           return { status: 200, body: { ok: true } };
         }
         case "refund.processed": {

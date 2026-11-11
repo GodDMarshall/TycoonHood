@@ -66,7 +66,8 @@ export function RazorpayButton({
           if (res?.error) setError(res.error);
         }),
     });
-    rzp.on("payment.failed", (r) => setError(r.error?.description ?? "The payment failed. You can try again."));
+    // A failed attempt leaves the order open, so the member can try again here.
+    rzp.on("payment.failed", (r) => setError(`${r.error?.description ?? "The payment did not go through."} You can try again.`));
     rzp.open();
   }
 

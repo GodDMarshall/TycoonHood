@@ -50,6 +50,7 @@ Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are 
 3. In the Razorpay dashboard, go to Settings → Webhooks and add `https://<your-domain>/api/webhooks/razorpay`.
    - Events: `payment.captured`, `payment.failed`, `order.paid`, `refund.processed`.
    - Choose a secret and set the same value as `RAZORPAY_WEBHOOK_SECRET`.
+   - A failed attempt (`payment.failed`) does not cancel the order. Razorpay lets the member retry on the same order, so it stays open until it is paid, the member cancels it, or its 30-minute hold runs out. Before cancelling an expired order, the app asks Razorpay about it. A paid order is confirmed instead. An order the member has started paying gets 30 more minutes.
 4. Signed in as an admin, buy something with a Razorpay test card. Check that the order shows Paid in `/admin/orders`, then refund it from `/admin/refunds`.
 5. When KYC is approved, swap in the `rzp_live_…` keys and the live webhook secret. From then on every member sees card checkout, and real money flows.
    - A test payment taken before the swap can still be refunded from `/admin/refunds`. It is marked refunded without calling Razorpay, because no money moved.

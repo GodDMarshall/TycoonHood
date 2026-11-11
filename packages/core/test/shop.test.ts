@@ -6,6 +6,7 @@ import {
   cartTotals, discountFor, checkCouponRules, verifyCheckoutSignature, verifyWebhookSignature,
   setEarnHooks, orderTimeline, refundBlocker, paymentsStatus, activeShopProvider, CartError, CouponError,
   PaymentVerificationError, paymentsStatusFor, razorpayOpenTo, razorpayPreflight, razorpayStaffOnly,
+  paidAfterCancel, PENDING_TTL_MINUTES, PAYING_GRACE_MINUTES,
 } from "../src/shop";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
 import { TEST_REFUND_NOTE } from "../src/shop/refunds";
@@ -58,16 +59,34 @@ async function coupon(data: Partial<Parameters<typeof prisma.coupon.create>[0]["
 const KEY_SECRET = "test_key_secret_for_unit_tests";
 const WEBHOOK_SECRET = "test_webhook_secret_for_unit_tests";
 
-/** A RazorpayProvider over a fake fetch. The key id decides its mode: rzp_test_… is TEST, rzp_live_… is LIVE. */
+type FakeRazorpayOrder = { status: "created" | "attempted" | "paid"; payments: { id: string; amount: number; currency: string; status: string }[] };
+
+/**
+ * A RazorpayProvider over a fake fetch. The key id decides its mode: rzp_test_… is TEST, rzp_live_… is LIVE.
+ * `orders` is what this Razorpay account knows, for order lookups; "unreachable" makes a lookup fail.
+ */
 function fakeRazorpay(keyId = "rzp_test_key") {
-  const calls: { url: string; body: unknown; auth: string }[] = [];
+  const calls: { url: string; method: string; body: unknown; auth: string }[] = [];
+  const orders = new Map<string, FakeRazorpayOrder | "unreachable">();
+  const reply = (status: number, body: unknown) => ({ ok: status < 400, status, json: async () => body, text: async () => JSON.stringify(body) });
   const fetchImpl = async (url: string, init: { method: string; headers: Record<string, string>; body?: string }) => {
     const body = init.body ? JSON.parse(init.body) : null;
-    calls.push({ url, body, auth: init.headers.Authorization });
-    const id = url.endsWith("/orders") ? `order_${uid().slice(0, 12)}` : `rfnd_${uid().slice(0, 12)}`;
-    return { ok: true, status: 200, json: async () => ({ id, ...body }), text: async () => "" };
+    calls.push({ url, method: init.method, body, auth: init.headers.Authorization });
+    if (init.method === "GET") {
+      const [, id = "", payments] = url.match(/\/orders\/([^/]+)(\/payments)?$/) ?? [];
+      const o = orders.get(decodeURIComponent(id));
+      if (o === "unreachable") return reply(503, { error: { code: "SERVER_ERROR", description: "Service unavailable" } });
+      if (!o) return reply(400, { error: { code: "BAD_REQUEST_ERROR", description: "The id provided does not exist" } });
+      return reply(200, payments ? { entity: "collection", count: o.payments.length, items: o.payments } : { id, entity: "order", status: o.status });
+    }
+    if (url.endsWith("/orders")) {
+      const id = `order_${uid().slice(0, 12)}`;
+      orders.set(id, { status: "created", payments: [] });
+      return reply(200, { id, ...body });
+    }
+    return reply(200, { id: `rfnd_${uid().slice(0, 12)}`, ...body });
   };
-  return { provider: new RazorpayProvider(keyId, KEY_SECRET, fetchImpl), calls };
+  return { provider: new RazorpayProvider(keyId, KEY_SECRET, fetchImpl), calls, orders };
 }
 
 let paidSpy = vi.fn(async (_id: string) => {});
@@ -522,28 +541,171 @@ describe("Shop — Razorpay signatures and webhook", () => {
     expect(paidSpy).toHaveBeenCalledTimes(1);
   });
 
-  it("payment.failed cancels the order and restores stock; a late capture is queued for refund", async () => {
+  it("payment.failed leaves the order open; a retry on the same Razorpay order is paid and fulfilled", async () => {
+    const { provider } = fakeRazorpay();
+    const live = new ShopCheckoutService(prisma, { provider: () => provider, providerFor: () => provider });
+    const user = await createTestUser();
+    const c = await coupon({ maxRedemptions: 1 });
+    const p = await product({ inventory: 3, inr: 30_000 });
+    await cart.add(user.id, p.id);
+    const { order, payment } = await live.startInrCheckout(user.id, { shipping: ADDRESS, couponCode: c.code });
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(2);
+
+    const failed = JSON.stringify({
+      event: "payment.failed",
+      payload: {
+        payment: {
+          entity: { id: "pay_failed1", order_id: payment.providerOrderId, amount: order.totalFiatCents, currency: "INR", status: "failed", error_description: "Your payment was declined by the bank." },
+        },
+      },
+    });
+    const r = await live.handleRazorpayWebhook(failed, hmacSha256Hex(WEBHOOK_SECRET, failed), WEBHOOK_SECRET);
+    expect(r).toMatchObject({ status: 200, body: { ok: true } });
+    // Only the attempt is recorded: the order, its stock, its coupon and its payment stay open.
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("PENDING");
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(2);
+    expect((await prisma.coupon.findUniqueOrThrow({ where: { id: c.id } })).redeemedCount).toBe(1);
+    expect((await prisma.payment.findUniqueOrThrow({ where: { id: payment.id } })).status).toBe("CREATED");
+    const attempt = await prisma.auditLog.findFirstOrThrow({ where: { action: "payment.attempt_failed", targetId: payment.id } });
+    expect(attempt.actorId).toBeNull();
+    expect(attempt.meta).toMatchObject({ orderId: order.id, providerPaymentId: "pay_failed1", reason: "Your payment was declined by the bank." });
+    expect(await prisma.auditLog.count({ where: { action: "order.cancel", targetId: order.id } })).toBe(0);
+
+    // The member retries in the same Razorpay window and it goes through: paid, not refunded.
+    const retryId = `pay_${uid().slice(0, 12)}`;
+    const signature = hmacSha256Hex(KEY_SECRET, `${payment.providerOrderId}|${retryId}`);
+    const paid = await live.verifyRazorpayCallback(user.id, { razorpayOrderId: payment.providerOrderId!, razorpayPaymentId: retryId, signature });
+    expect(paid.outcome).toBe("paid");
+    const after = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: { payments: true } });
+    expect(after.status).toBe("PAID"); // physical: waits to be shipped
+    expect(after.payments[0]).toMatchObject({ status: "CAPTURED", providerPaymentId: retryId });
+    expect(await prisma.refundRequest.count({ where: { orderId: order.id } })).toBe(0);
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(2);
+    expect((await prisma.coupon.findUniqueOrThrow({ where: { id: c.id } })).redeemedCount).toBe(1);
+    expect(await cart.count(user.id)).toBe(0);
+    expect(paidSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("a payment that lands after the order was cancelled is queued for a full refund, and the order says so", async () => {
     const { provider } = fakeRazorpay();
     const live = new ShopCheckoutService(prisma, { provider: () => provider, providerFor: () => provider });
     const user = await createTestUser();
     const p = await product({ inventory: 3, inr: 30_000 });
     await cart.add(user.id, p.id);
     const { order, payment } = await live.startInrCheckout(user.id, { shipping: ADDRESS });
-    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(2);
-
-    const failed = JSON.stringify({
-      event: "payment.failed",
-      payload: { payment: { entity: { id: "pay_failed1", order_id: payment.providerOrderId, amount: 30_000, currency: "INR", status: "failed" } } },
-    });
-    await live.handleRazorpayWebhook(failed, hmacSha256Hex(WEBHOOK_SECRET, failed), WEBHOOK_SECRET);
-    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("CANCELLED");
+    expect(await live.abandon(user.id, order.id)).toBe(true);
     expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(3);
+    const full = { items: { include: { product: true } }, payments: true, refundRequests: true } as const;
+    const cancelled = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: full });
+    expect(paidAfterCancel(cancelled)).toBe(false);
+    expect(orderTimeline(cancelled).find((st) => st.key === "cancelled")?.detail).toMatch(/nothing was charged/);
 
     const late = await live.capture({ providerOrderId: payment.providerOrderId!, providerPaymentId: `pay_${uid().slice(0, 10)}`, source: "webhook" });
     expect(late.outcome).toBe("late");
-    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe("CANCELLED");
-    expect(await prisma.refundRequest.count({ where: { orderId: order.id, status: "REQUESTED" } })).toBe(1);
+    const after = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: full });
+    expect(after.status).toBe("CANCELLED");
+    expect(after.refundRequests.map((rr) => rr.status)).toEqual(["REQUESTED"]);
+    expect(paidAfterCancel(after)).toBe(true);
+    const steps = orderTimeline(after);
+    expect(steps.find((st) => st.key === "cancelled")?.detail).toMatch(/arrived after the order was cancelled, so a full refund was queued/);
+    expect(steps.find((st) => st.key === "cancelled")?.detail).not.toMatch(/nothing was charged/);
+    expect(steps.find((st) => st.key === "refund")).toMatchObject({ label: "Refund requested", state: "current" });
+    expect((await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory).toBe(3); // not revived
     expect(paidSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("Shop — expiring unpaid rupee orders", () => {
+  const minutesAgo = (n: number) => new Date(Date.now() - n * 60_000);
+
+  /** A rupee order with a coupon, held since `ageMinutes` ago. */
+  async function heldOrder(svc: ShopCheckoutService, ageMinutes: number) {
+    const user = await createTestUser();
+    const c = await coupon({ maxRedemptions: 5 });
+    const p = await product({ inventory: 2, inr: 40_000 });
+    await cart.add(user.id, p.id);
+    const { order, payment } = await svc.startInrCheckout(user.id, { shipping: ADDRESS, couponCode: c.code });
+    await prisma.order.update({ where: { id: order.id }, data: { createdAt: minutesAgo(ageMinutes) } });
+    const state = async () => ({
+      order: (await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).status,
+      payment: (await prisma.payment.findUniqueOrThrow({ where: { id: payment.id } })).status,
+      inventory: (await prisma.product.findUniqueOrThrow({ where: { id: p.id } })).inventory,
+      redeemed: (await prisma.coupon.findUniqueOrThrow({ where: { id: c.id } })).redeemedCount,
+    });
+    return { order, payment, providerOrderId: payment.providerOrderId!, state };
+  }
+  const held = { order: "PENDING", payment: "CREATED", inventory: 1, redeemed: 1 };
+  const released = { order: "CANCELLED", payment: "FAILED", inventory: 2, redeemed: 0 };
+
+  it("asks Razorpay first: never cancels a paid order, waits for one being paid, cancels the rest", async () => {
+    const { provider, orders, calls } = fakeRazorpay();
+    const live = new ShopCheckoutService(prisma, { provider: () => provider, providerFor: () => provider });
+
+    const fresh = await heldOrder(live, 5); // inside the hold: not looked at
+    const untried = await heldOrder(live, PENDING_TTL_MINUTES + 1); // never attempted
+    const retrying = await heldOrder(live, PENDING_TTL_MINUTES + 1); // attempted, inside the grace period
+    const gaveUp = await heldOrder(live, PENDING_TTL_MINUTES + PAYING_GRACE_MINUTES + 1); // attempted, grace over
+    const paid = await heldOrder(live, PENDING_TTL_MINUTES + 1); // paid at Razorpay, never confirmed to us
+    const unknown = await heldOrder(live, PENDING_TTL_MINUTES + 1); // Razorpay does not know it
+    const down = await heldOrder(live, PENDING_TTL_MINUTES + PAYING_GRACE_MINUTES + 30); // Razorpay cannot be reached
+
+    const failedAttempt = { id: `pay_${uid().slice(0, 10)}`, amount: 36_000, currency: "INR", status: "failed" };
+    orders.set(retrying.providerOrderId, { status: "attempted", payments: [failedAttempt] });
+    orders.set(gaveUp.providerOrderId, { status: "attempted", payments: [{ ...failedAttempt, id: `pay_${uid().slice(0, 10)}` }] });
+    const paidId = `pay_${uid().slice(0, 10)}`;
+    orders.set(paid.providerOrderId, {
+      status: "paid",
+      payments: [{ ...failedAttempt, id: `pay_${uid().slice(0, 10)}` }, { id: paidId, amount: paid.order.totalFiatCents, currency: "INR", status: "captured" }],
+    });
+    orders.delete(unknown.providerOrderId);
+    orders.set(down.providerOrderId, "unreachable");
+    const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const r = await live.expireStale();
+      expect(r.cancelled).toBeGreaterThanOrEqual(3);
+      expect(r.captured).toBeGreaterThanOrEqual(1);
+      expect(r.waiting).toBeGreaterThanOrEqual(2);
+    } finally {
+      errors.mockRestore();
+    }
+
+    expect(await fresh.state()).toEqual(held);
+    expect(calls.some((cl) => cl.method === "GET" && cl.url.includes(fresh.providerOrderId))).toBe(false);
+    expect(await untried.state()).toEqual(released);
+    expect(await retrying.state()).toEqual(held);
+    expect(await gaveUp.state()).toEqual(released);
+    expect(await unknown.state()).toEqual(released);
+    expect(await down.state()).toEqual(held);
+
+    // The paid one is captured as the webhook would have: paid, kept, not refunded.
+    expect(await paid.state()).toEqual({ order: "PAID", payment: "CAPTURED", inventory: 1, redeemed: 1 });
+    expect((await prisma.payment.findUniqueOrThrow({ where: { id: paid.payment.id } })).providerPaymentId).toBe(paidId);
+    expect(await prisma.refundRequest.count({ where: { orderId: paid.order.id } })).toBe(0);
+    const audit = await prisma.auditLog.findFirstOrThrow({ where: { action: "order.paid", targetId: paid.order.id } });
+    expect(audit.actorId).toBeNull();
+    expect(audit.meta).toMatchObject({ source: "sweep" });
+    expect(paidSpy).toHaveBeenCalledWith(paid.order.id);
+
+    // Once Razorpay answers again, an unpaid order past the grace period goes.
+    orders.set(down.providerOrderId, { status: "created", payments: [] });
+    await live.expireStale();
+    expect(await down.state()).toEqual(released);
+  });
+
+  it("cancels without asking when nobody can be asked: the sandbox, or keys of the other mode", async () => {
+    const sandboxOrder = await heldOrder(checkout, PENDING_TTL_MINUTES + 1);
+    await checkout.expireStale();
+    expect(await sandboxOrder.state()).toEqual(released);
+
+    const { provider: testKeys } = fakeRazorpay("rzp_test_key");
+    const { provider: liveKeys, calls: liveCalls } = fakeRazorpay("rzp_live_key");
+    const tookTest = new ShopCheckoutService(prisma, { provider: () => testKeys, providerFor: () => testKeys });
+    const testOrder = await heldOrder(tookTest, PENDING_TTL_MINUTES + 1);
+    // The test keys were swapped for live ones, which cannot see a test order.
+    await new ShopCheckoutService(prisma, { providerFor: () => liveKeys }).expireStale();
+    expect(await testOrder.state()).toEqual(released);
+    expect(liveCalls.filter((cl) => cl.url.includes(testOrder.providerOrderId))).toHaveLength(0);
   });
 });
 

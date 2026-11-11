@@ -20,7 +20,7 @@ export default async function AdminCoupons() {
       <h1 className="display text-h2">Coupons</h1>
       <p className="mt-2 max-w-2xl text-[14px] text-ink-2">
         Codes take money off rupee checkouts only — THC prices are never discounted. Redemptions are counted atomically with the order, so a
-        limit of 100 means 100. A code whose payment fails is given back. Start and end times are India time (IST).
+        limit of 100 means 100. A code on an order that is never paid is given back. Start and end times are India time (IST).
       </p>
 
       <SectionRule label={`${list.length} ${list.length === 1 ? "code" : "codes"}`} className="mb-4 mt-8" />

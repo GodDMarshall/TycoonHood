@@ -33,6 +33,14 @@ export interface ProviderRefund {
   raw?: unknown;
 }
 
+/** What the provider says about one of its orders. Razorpay's order statuses. */
+export interface ProviderOrderCheck {
+  /** created: no attempt yet. attempted: at least one attempt, none captured. paid: a payment was captured. */
+  status: "created" | "attempted" | "paid";
+  /** The captured payment on the order, if there is one. Amount in paise. */
+  captured: { providerPaymentId: string; amountCents: number; currency: string } | null;
+}
+
 export interface ShopPaymentProvider {
   readonly name: "razorpay" | "sandbox";
   readonly mode: PaymentMode;
@@ -40,6 +48,12 @@ export interface ShopPaymentProvider {
   createOrder(input: { amountCents: number; currency: string; receipt: string; notes?: Record<string, string> }): Promise<CreatedProviderOrder>;
   /** Refunds a captured payment in full (or `amountCents`). */
   refund(input: { providerPaymentId: string; amountCents: number; notes?: Record<string, string> }): Promise<ProviderRefund>;
+  /**
+   * Looks one of the provider's orders up, so the expiry sweep never cancels an
+   * order that was paid or is being paid. Null when the provider does not know
+   * the order; throws when it cannot be asked. The sandbox has nobody to ask.
+   */
+  checkOrder?(providerOrderId: string): Promise<ProviderOrderCheck | null>;
 }
 
 type Env = Record<string, string | undefined>;

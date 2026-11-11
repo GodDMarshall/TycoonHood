@@ -8,8 +8,8 @@
  * limit is serialised with a transaction-scoped advisory lock on
  * (coupon, member), so the same member double-submitting cannot exceed it.
  *
- * A redemption whose order is cancelled (payment failed or expired) is
- * released again — a failed card should not burn somebody's code.
+ * A redemption whose order is cancelled (abandoned, replaced, or expired
+ * unpaid) is released again — an unpaid order should not burn somebody's code.
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { Coupon, Prisma, PrismaClient } from "@tycoonhood/db";

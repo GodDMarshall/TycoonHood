@@ -6,7 +6,8 @@
  * already have settled the order.
  *
  * Subscribe in the Razorpay dashboard to: payment.captured, order.paid,
- * payment.failed, refund.processed.
+ * payment.failed, refund.processed. payment.failed only records the attempt:
+ * the member can retry on the same Razorpay order, so the order stays open.
  */
 import { NextResponse } from "next/server";
 import { shopCheckout } from "@tycoonhood/core";
