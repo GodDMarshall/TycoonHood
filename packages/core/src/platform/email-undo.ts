@@ -22,9 +22,10 @@
  * platform/email-hold, which also explains the locks).
  */
 import { createHash, randomBytes } from "node:crypto";
-import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
+import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import { hashPassword } from "../auth/password";
+import { withDeadlockRetry } from "../db/retry";
 import { RESET_TTL_MS } from "../auth/password-reset";
 import { AuditService } from "./audit";
 import { lockEmailOf } from "./email-hold";
@@ -55,24 +56,6 @@ export class EmailUndoService {
     this.audit = new AuditService(db);
   }
 
-  /**
-   * Run `work` again when Postgres ends it to break a deadlock (Prisma P2034).
-   * An undo locks the credential row and then deletes the account's links; a
-   * password reset spends its link and then writes the credential, so the two
-   * can meet head on. Postgres then ends one of them. If that is the undo, it
-   * starts over, reads everything again under its locks, and finishes.
-   */
-  private async withDeadlockRetry<T>(work: () => Promise<T>): Promise<T> {
-    for (let attempt = 1; ; attempt++) {
-      try {
-        return await work();
-      } catch (e) {
-        const deadlock = e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2034";
-        if (!deadlock || attempt >= 3) throw e;
-      }
-    }
-  }
-
   /** Use an undo link from the "your email was changed" notice. Single use. */
   async undo(rawToken: string): Promise<UndoneEmailChange> {
     if (!rawToken || rawToken.length > 200) throw new InvalidUndoLinkError(NOT_VALID);
@@ -82,7 +65,8 @@ export class EmailUndoService {
     // The password nobody knows. Hashing is slow, so it happens before the transaction.
     const unknownPasswordHash = await hashPassword(randomBytes(32).toString("base64url"));
     try {
-      return await this.withDeadlockRetry(() => this.db.$transaction(async (tx) => {
+      // Should Postgres still end it to break a deadlock, it starts over and reads everything again under its locks.
+      return await withDeadlockRetry(() => this.db.$transaction(async (tx) => {
         await lockEmailOf(tx, found.userId);
         // Read again under the lock: a change that took effect meanwhile ended this link.
         const hold = await tx.emailHold.findUnique({ where: { undoToken } });

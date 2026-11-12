@@ -31,6 +31,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient, User, VerificationToken } from "@tycoonhood/db";
+import { withDeadlockRetry } from "../db/retry";
 import { AuditService } from "./audit";
 import { addressHeldFor, holdReplacedAddress, lockEmailOf, type IssuedUndo } from "./email-hold";
 
@@ -321,7 +322,8 @@ export class EmailVerificationService {
     const userId = token.identifier.slice(EMAIL_CHANGE_TOKEN_PREFIX.length);
     let wanted = null as string | null;
     try {
-      return await this.db.$transaction(async (tx) => {
+      // Should Postgres still end it to break a deadlock, it starts over: the link is unspent again.
+      return await withDeadlockRetry(() => this.db.$transaction(async (tx) => {
         await lockEmailOf(tx, userId);
         const spent = await tx.verificationToken.deleteMany({ where: { token: token.token } });
         if (spent.count === 0) throw new InvalidVerificationTokenError("That link is not valid, or it has already been used.");
@@ -352,7 +354,7 @@ export class EmailVerificationService {
           tx
         );
         return { kind: "email-change" as const, user: updated, previousEmail: user.email, undo };
-      });
+      }));
     } catch (e) {
       const taken = e instanceof EmailChangeTakenError || (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002");
       if (taken && wanted) {
