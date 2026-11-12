@@ -1,19 +1,23 @@
 /**
- * The web app's email-change confirmation (verifyEmailAction), run as
- * written: which address gets the notice with the undo link, and what
- * happens when it cannot be sent. Three stand-ins: the mail provider, which
- * records what it is given and accepts or refuses it; Next's after(), whose
- * work the test runs when the response would have gone; and the request's
- * session and device.
+ * The web app's email-change actions, run as written: which address gets
+ * the notice with the undo link when a change is confirmed
+ * (verifyEmailAction), what happens when it cannot be sent, and how a
+ * refused request words its time (changeEmailAction). Stand-ins: the mail
+ * provider, which records what it is given and accepts or refuses it;
+ * Next's after(), whose work the test runs when the response would have
+ * gone, and its cache; and the request's session and device.
  */
 import { createHash } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import { AccountService } from "../src/auth/account";
+import { SessionService } from "../src/auth/session";
 import { AccountSettingsService } from "../src/platform/account-settings";
 import { EmailVerificationService } from "../src/platform/email-verification";
+import { formatDayTime } from "../src/time/format";
 import { uid } from "./helpers";
 
+const request = vi.hoisted(() => ({ session: null as unknown }));
 const mail = vi.hoisted(() => ({
   provider: "accepts" as "accepts" | "refuses" | "none",
   outbox: [] as { to: string; subject: string; text: string; accepted: boolean }[],
@@ -39,8 +43,10 @@ vi.mock("../../../apps/web/node_modules/next/server.js", () => ({
     mail.afterResponse.push(work);
   },
 }));
+vi.mock("../../../apps/web/node_modules/next/cache.js", () => ({ revalidatePath: () => {} }));
 vi.mock("../../../apps/web/lib/auth", () => ({
-  getCurrentSession: async () => null,
+  getCurrentSession: async () => request.session,
+  getCurrentUser: async () => (request.session as { user?: unknown } | null)?.user ?? null,
   // A fresh throttle key per request, so the per-IP limit never trips here.
   deviceInfo: async () => ({ userAgent: null, ip: `test-${Math.random()}` }),
   setSessionCookie: async () => {},
@@ -56,8 +62,12 @@ function webModule<T>(path: string): Promise<T> {
 type VerifyState = { done?: "verified" | "email-changed"; email?: string; signedIn?: boolean; error?: string; retry?: boolean };
 const actions = () =>
   webModule<{ verifyEmailAction: (token: string, prev: VerifyState, fd: FormData) => Promise<VerifyState> }>("app/(auth)/actions.ts");
+type FormState = { ok?: string; error?: string };
+const settingsActions = () =>
+  webModule<{ changeEmailAction: (prev: FormState, fd: FormData) => Promise<FormState> }>("app/(app)/settings/actions.ts");
 
 const accounts = new AccountService(prisma);
+const sessions = new SessionService(prisma);
 const accountSettings = new AccountSettingsService(prisma);
 const verification = new EmailVerificationService(prisma);
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
@@ -80,6 +90,7 @@ async function responseSent() {
 }
 
 afterEach(() => {
+  request.session = null;
   mail.provider = "accepts";
   mail.outbox.length = 0;
   mail.afterResponse.length = 0;
@@ -131,5 +142,24 @@ describe("Confirming an email change in the web app", () => {
     expect(mail.outbox).toEqual([expect.objectContaining({ to: oldEmail, subject: "A Tycoonhood account changed its email" })]);
     expect(mail.outbox[0]!.text).not.toMatch(/undo-email/);
     expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(newEmail);
+  });
+});
+
+describe("Asking for an email change in the web app", () => {
+  it("a request refused as too soon names the moment it opens in the member's own zone", async () => {
+    const { changeEmailAction } = await settingsActions();
+    const { user, link } = await memberAsking(true);
+    await verification.confirm(link); // the old address is held, and the change can be undone for 7 days
+    const zone = "Australia/Sydney";
+    await prisma.profile.create({ data: { userId: user.id, username: `zone${uid().slice(0, 8)}`, displayName: "Zone Case", timezone: zone } });
+    request.session = await sessions.resolve((await sessions.create(user.id)).raw);
+    const form = new FormData();
+    form.set("email", address("second"));
+    form.set("password", PASSWORD);
+    const state = await changeEmailAction({}, form);
+    const hold = await prisma.emailHold.findFirstOrThrow({ where: { userId: user.id } });
+    const opens = new Date(Math.ceil(hold.expires.getTime() / 60_000) * 60_000);
+    expect(state.error).toContain(`from ${formatDayTime(opens, zone)}.`);
+    expect(state.error).not.toContain("IST");
   });
 });

@@ -37,6 +37,7 @@
  */
 import { createHash, randomBytes } from "node:crypto";
 import type { Prisma } from "@tycoonhood/db";
+import { formatIst } from "../time/ist";
 
 export const EMAIL_HOLD_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -49,16 +50,27 @@ export interface IssuedUndo {
 }
 
 /**
+ * The refusal of another change, naming the first whole minute one is
+ * allowed: a date and a time, because on the day the hold ends it still
+ * refuses until then. India time, labelled, unless `format` words it in the
+ * member's own zone, as the web app does.
+ */
+export function emailChangeTooSoonMessage(until: Date, format: (at: Date) => string = formatIst): string {
+  const opens = new Date(Math.ceil(until.getTime() / 60_000) * 60_000);
+  return (
+    `Your email changed less than 7 days ago, so to keep your account safe it can change again from ${format(opens)}. ` +
+    "If you didn't make that change, use the undo link we sent to your old address."
+  );
+}
+
+/**
  * Asked for an email change while the last one can still be undone. Only an
- * undo (or the 7 days running out) opens the way to another change.
+ * undo (or the 7 days running out) opens the way to another change. `until`
+ * is the exact moment; the message names it in India time.
  */
 export class EmailChangeTooSoonError extends Error {
   constructor(readonly until: Date) {
-    const day = until.toLocaleDateString("en-IN", { day: "numeric", month: "long", timeZone: "Asia/Kolkata" });
-    super(
-      `Your email changed less than 7 days ago, so to keep your account safe it can change again from ${day}. ` +
-        "If you didn't make that change, use the undo link we sent to your old address."
-    );
+    super(emailChangeTooSoonMessage(until));
   }
 }
 

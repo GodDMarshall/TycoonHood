@@ -9,9 +9,12 @@ import {
   AlreadyVerifiedError,
   discord,
   EmailChangeTooSoonError,
+  emailChangeTooSoonMessage,
   EmailTakenError,
   emailChangeReply,
   emailVerification,
+  formatDayTime,
+  memberZone,
   NoEmailChangeError,
   privacyFromForm,
   profiles,
@@ -136,9 +139,12 @@ export async function changeEmailAction(_prev: FormState, fd: FormData): Promise
     issued = await accountSettings.changeEmail(user.id, String(fd.get("email") ?? ""), String(fd.get("password") ?? ""));
   } catch (e) {
     if (isZodError(e)) return { error: zodMessage(e) };
-    if (e instanceof WrongPasswordError || e instanceof EmailTakenError || e instanceof EmailChangeTooSoonError) {
-      return { error: e.message };
+    if (e instanceof EmailChangeTooSoonError) {
+      // When it opens, in the member's own zone, as every date on their pages reads.
+      const zone = memberZone(user.profile?.timezone);
+      return { error: emailChangeTooSoonMessage(e.until, (at) => formatDayTime(at, zone)) };
     }
+    if (e instanceof WrongPasswordError || e instanceof EmailTakenError) return { error: e.message };
     throw e;
   }
   if (!issued) return { ok: "That is already your email." };

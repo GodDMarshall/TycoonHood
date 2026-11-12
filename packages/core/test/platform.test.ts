@@ -24,7 +24,9 @@ import { profileCompletion, ProfileService, privacyFromForm, privacyShows, shows
 import { MemberAdminService, MemberAdminError } from "../src/platform/members";
 import { AccountSettingsService, WrongPasswordError } from "../src/platform/account-settings";
 import { CmsService } from "../src/platform/cms";
-import { EMAIL_HOLD_MS, EmailChangeTooSoonError } from "../src/platform/email-hold";
+import { EMAIL_HOLD_MS, EmailChangeTooSoonError, emailChangeTooSoonMessage } from "../src/platform/email-hold";
+import { formatIst } from "../src/time/ist";
+import { formatDayTime } from "../src/time/format";
 import { EmailUndoService, InvalidUndoLinkError, type UndoneEmailChange } from "../src/platform/email-undo";
 import { createTestUser, uid } from "./helpers";
 
@@ -886,18 +888,27 @@ describe("Email change — the old address is held, with an undo link", () => {
     await expect(accounts.register({ email: oldEmail, ...SQUATTER })).rejects.toThrow(TAKEN);
   });
 
-  it("no second change while the last one can still be undone: refused, with the day it opens", async () => {
+  it("no second change while the last one can still be undone: refused, with the date and time it opens", async () => {
     const { user, newEmail } = await changedMember();
     const refused = await accountSettings.changeEmail(user.id, address("second"), PASSWORD).catch((e) => e);
     expect(refused).toBeInstanceOf(EmailChangeTooSoonError);
     const hold = await prisma.emailHold.findFirstOrThrow({ where: { userId: user.id } });
     expect(refused.until.getTime()).toBe(hold.expires.getTime());
-    expect(refused.message).toContain(hold.expires.toLocaleDateString("en-IN", { day: "numeric", month: "long", timeZone: "Asia/Kolkata" }));
+    // The first whole minute it is allowed, not just the day: on that day it still refuses until then.
+    const opens = new Date(Math.ceil(hold.expires.getTime() / 60_000) * 60_000);
+    expect(refused.message).toContain(`from ${formatIst(opens)}.`);
     expect(refused.message).toMatch(/undo link/);
     const now = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
     expect(now.email).toBe(newEmail);
     expect(now.pendingEmail).toBeNull();
     expect(await prisma.verificationToken.count({ where: { identifier: `emailchange:${user.id}` } })).toBe(0);
+  });
+
+  it("the refusal names the first minute a change is allowed, in India time unless given the member's zone", () => {
+    const until = new Date("2026-11-19T14:30:30Z"); // 20:00:30 IST; 01:30:30 the next day in Sydney
+    expect(emailChangeTooSoonMessage(until)).toContain("from 19 Nov 2026, 20:01 IST.");
+    expect(emailChangeTooSoonMessage(new Date("2026-11-19T14:30:00Z"))).toContain("from 19 Nov 2026, 20:00 IST.");
+    expect(emailChangeTooSoonMessage(until, (at) => formatDayTime(at, "Australia/Sydney"))).toContain("from 20 Nov, 01:31.");
   });
 
   it("a change is allowed again once the last one's undo was used", async () => {
