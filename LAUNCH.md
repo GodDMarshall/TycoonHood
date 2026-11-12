@@ -47,6 +47,9 @@ The first production deploy creates this admin account. **Without these two
 the deploy stops before it touches the database**, with a message saying so,
 and nothing goes live. Never paste the password into a chat or a commit.
 
+Type the address in any case you like. It is stored the way sign-in reads it,
+trimmed and in lower case.
+
 After launch you can delete `ADMIN_PASSWORD` from Vercel. The seed only sets
 the password when it creates the account, so a later deploy never resets it.
 
@@ -94,18 +97,32 @@ Merging `build/full-platform` into `main` starts the production deploy.
 `scripts/vercel-build.sh` runs on every Vercel build:
 
 - **Production** (`VERCEL_ENV=production`):
-  1. applies any pending migrations over the direct connection;
-  2. if `SEED_ON_DEPLOY=1`: runs the seeds, in order (base and admin,
+  1. takes the deploy lock: if another build is migrating or seeding the
+     same database, it says so and waits for it to finish;
+  2. applies any pending migrations over the direct connection;
+  3. if `SEED_ON_DEPLOY=1`: runs the seeds, in order (base and admin,
      academy, content, shop, community);
-  3. builds the site.
+  4. lets go of the lock and builds the site.
 - **Preview** (any other branch): builds the site only. **A preview never
   touches the database.**
 
 Any failure stops the deploy, and the last good deployment stays live.
 
-Every seed is safe to run twice. `SEED_ON_DEPLOY` still comes off after the
-first deploy, so a later deploy cannot rewrite content your staff have edited.
-`seed:merch` is never run by a deploy: its prices are placeholders.
+Two production builds can run at once, for example when you redeploy while
+one is still building. The second waits at step 1, then finds the migrations
+applied and nothing left for the seeds to add.
+
+Every seed is safe to run again on the live database. A re-run adds what is
+missing and never rewrites what staff can change in the admin: prices, stock,
+what is on sale, programmes and their lessons, essays, missions, community
+categories and groups, coupons, a challenge's dates and status, passwords,
+and roles (unless no admin can sign in). It only refreshes what no admin
+screen edits: levels, ranks, achievements, and a challenge's name,
+description and rewards.
+`SEED_ON_DEPLOY` still comes off after the first deploy, because a re-run
+brings back a seeded item staff deleted. `docs/DEPLOYMENT.md`, "Running the
+seeds again", has the details. `seed:merch` is never run by a deploy: its
+prices are placeholders.
 
 ## 5 · After the first deploy (10 min)
 
