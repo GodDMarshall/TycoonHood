@@ -38,6 +38,7 @@ A pnpm monorepo with one product app.
   - Confirmation resends are limited to three an hour per member. The count and the new link are written under one database lock, so parallel requests cannot pass it.
 - **Authorisation** is enforced in the data-access layer, `apps/web/lib/guard.ts`, never in a layout. `requireUser()`, `requirePermission(p)` and `actorWith(p)` run at the top of every protected page and server action.
 - **Permissions** are one table, `packages/core/src/auth/permissions.ts`. Code asks `can(user, "admin.commerce")` and never compares role strings. The admin navigation (`apps/web/lib/admin-nav.ts`) shows only the sections a role can open, and each admin page checks again on its own.
+  - Some permissions are scoped by ownership as well (DR-34). `courses.author` edits only the programmes taught by the instructor profile linked to the account; core checks it on every authoring write (`assertCanEditCourse` in `lms/authoring.ts`), finding the programme from the target's own id. `courses.manage` (Admin) reaches every programme, the instructor profiles and their links to accounts.
 - **Money** has two separate rails:
   - **THC** is internal, non-monetary credit kept in a double-entry ledger (`ledger/ledger.ts`). Every grant, spend and reversal is a balanced transaction with an idempotency key.
   - **INR** is real money through Razorpay (`shop/payments/*`). It is stored in integer paise.

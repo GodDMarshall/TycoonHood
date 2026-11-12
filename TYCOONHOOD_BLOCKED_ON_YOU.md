@@ -73,6 +73,17 @@ Mining tasks with videos need your real YouTube links, added in
 `/admin/videos`. Claude never invents video IDs: a wrong ID pays members for
 watching someone else's channel.
 
+### 11. Who teaches as Harsha
+The four house programmes are taught as the instructor profile "Harsha",
+which is not linked to any account. An Instructor account edits only the
+programmes of the profile linked to it (DR-34). If someone other than an
+administrator should edit these programmes, give their account the
+Instructor role, then link it under Admin → Courses → Instructors by its
+email or username.
+
+**If you leave it:** nothing breaks. Administrators edit the programmes, and
+an instructor sees none to edit.
+
 ## Decisions you can overrule at any time
 
 The economy constants (THC rewards, affiliate rate, hold days, minimum payout)
