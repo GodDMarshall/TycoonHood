@@ -133,6 +133,8 @@ Nothing in the repository was changed. Everything below was produced and checked
    - Where: `earn/affiliates.ts:212-213`, `:824`, `:897` and `:981`; `apps/web/app/(app)/admin/earn/page.tsx:54` and `:256-269`.
    - Smallest change: affiliate queries filter `affiliateId: { not: null }`, and the code narrows the value before use. Contributor payouts get their own queries (MONEY).
 6. **One test expects the UTC fallback.** `packages/core/test/rules-engine.test.ts:246-249` ("falls back to UTC on a garbage zone") expects UTC. After e.4 the fallback is India time; the test changes with `time/day.ts` (P0c).
+7. **The essay editor never writes `Post.status`.** `savePostAction` (`apps/web/app/(app)/admin/actions.ts`) writes only `publishedAt`, and `seed-content.ts` creates its essays the same way. Migration 000700 backfills `status` from `publishedAt` and adds `Post_live_has_time`. So unpublishing an essay the backfill marked PUBLISHED or SCHEDULED clears its time but keeps its status, and the CHECK refuses it: the editor gets an error page. An essay published or seeded after 000700 is stored as DRAFT and would vanish once the blog reads `status`.
+   - Smallest change: the action writes `status` in the same update as `publishedAt` (DRAFT with no time, SCHEDULED for a future time, PUBLISHED otherwise, as the backfill does), on create and on edit, and the seed creates its essays the same way. A later save also corrects an essay stored live as DRAFT. Tests: `packages/core/test/admin-post-save.test.ts`, and the essay check in `seed-rerun.test.ts`.
 
 **Departures from LEAD_DECISIONS.** Each one is deliberate and comes with its reason.
 

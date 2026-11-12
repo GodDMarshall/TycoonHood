@@ -110,8 +110,13 @@ Start where you are weakest. That is where the XP is.`,
   const essays = await SeedRecord.load("essays", [posts.map((p) => p.slug)], async (slugs) =>
     (await prisma.post.findMany({ where: { slug: { in: slugs } }, select: { slug: true } })).map((r) => r.slug)
   );
+  // The status the essay's time gives it, as migration 20261113000700 backfilled
+  // posts; on a fresh database the migrations run before this seed, so the
+  // backfill never sees these essays. Every essay here is dated in the past.
+  const now = new Date();
   for (const p of posts) {
-    await essays.once(p.slug, () => prisma.post.upsert({ where: { slug: p.slug }, update: {}, create: p }));
+    const status = p.publishedAt > now ? ("SCHEDULED" as const) : ("PUBLISHED" as const);
+    await essays.once(p.slug, () => prisma.post.upsert({ where: { slug: p.slug }, update: {}, create: { ...p, status } }));
   }
 
   // ---------------- Public challenges ----------------

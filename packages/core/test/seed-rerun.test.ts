@@ -83,7 +83,8 @@ async function editLikeStaff(db: PrismaClient) {
     where: { slug: "why-tycoonhood-exists" },
     data: { title: "Why we built Tycoonhood", excerpt: "Rewritten by staff.", contentMd: "Staff copy.", authorName: "The House" },
   });
-  await db.post.update({ where: { slug: "thc-utility-before-speculation" }, data: { publishedAt: null } });
+  // The action clears the time and the status together: Post_live_has_time refuses a PUBLISHED post with no time.
+  await db.post.update({ where: { slug: "thc-utility-before-speculation" }, data: { publishedAt: null, status: "DRAFT" } });
 
   // Admin → Courses: details with the instructor cleared, a lesson, a module,
   // the founder's profile, one programme unpublished and one archived.
@@ -179,6 +180,18 @@ describe("seeds are safe to re-run on a live database", () => {
     };
     const run = [...build.matchAll(/^\s*pnpm (?:--filter @tycoonhood\/db )?((?:db:)?seed[\w:]*)\s*$/gm)].map((m) => fileOf(m[1]));
     expect(run).toEqual([...DEPLOY_SEEDS]);
+  });
+
+  it("seeds each essay with the status its time gives it, as migration 20261113000700 backfilled posts", async () => {
+    // On a fresh database the migrations run before the seeds, so the backfill finds no
+    // essay: the seed writes the status itself, or a live essay reads as a draft.
+    const essays = await t.db.post.findMany({ select: { slug: true, status: true, publishedAt: true }, orderBy: { slug: "asc" } });
+    expect(essays.length).toBeGreaterThan(0);
+    const now = new Date();
+    expect(essays.map((e) => [e.slug, e.status])).toEqual(
+      essays.map((e) => [e.slug, e.publishedAt === null ? "DRAFT" : e.publishedAt <= now ? "PUBLISHED" : "SCHEDULED"])
+    );
+    expect(essays.every((e) => e.status === "PUBLISHED")).toBe(true);
   });
 
   it("a second run on an untouched database changes nothing", async () => {
