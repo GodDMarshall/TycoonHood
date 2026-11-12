@@ -1,115 +1,13 @@
 # TYCOONHOOD — PROJECT STATUS
 
-**Last verified:** 1 October 2026, by a full run in a Linux sandbox
-(PostgreSQL 16, Node 22, pnpm 9.15.9), after the academy rebuild (DR-24..26).
-**Not deployed.** Nothing here has served a real member.
+**12 November 2026: ready to launch, not deployed yet.**
 
-Every line below is the recorded output of a command, not a claim.
+This file used to hold the 1 October status; that version is in the git
+history. The current picture lives in three places:
 
----
-
-## Gates
-
-| Gate | Command | Result |
-|---|---|---|
-| Types | `pnpm typecheck` | clean · 6 projects |
-| Lint | `pnpm lint` | clean |
-| Tests | `pnpm test` | **121 / 121** |
-| Web build | `pnpm build:web` | 56 entries |
-| Miner build | `pnpm build:miner` | 5 pages |
-| Deployment harness | `pnpm --filter @tycoonhood/core exec tsx scripts/verify-platform.ts` | **28 / 28** |
-| Browser end-to-end | `pnpm e2e` | **58 / 58** (39 commerce/growth + 19 academy) |
-| Responsive + accessibility | 36 page/audience pairs × 1440·1280·1024·768·390·360, axe WCAG 2.1 AA | 0 overflow · 0 violations |
-| Installable app | Chromium installability check + offline navigation | installable (only "incognito" reported) · offline page served |
-
-The browser run is the one worth reading. It opens a real Chromium against
-both production builds and, as an admin and then as a member:
-
-1. authors a hoodie with five sizes, a THC price and a landed cost
-2. authors a watch-to-earn video task from a pasted YouTube URL
-3. signs a new member up through an invite link
-4. buys size M with a delivery address, paying in THC
-5. confirms only size M lost stock
-6. finds the parcel in the pack-and-send queue with the address on screen
-7. ships it with a carrier and tracking number
-8. confirms the member can see that tracking number
-9. completes a lesson and confirms the referrer was paid
-
-It then deletes what it created and checks that it left nothing behind.
-
----
-
-## What works, end to end
-
-- **Identity** — register, sign in, sessions, password reset, onboarding,
-  privacy controls. Argon2id, own session table, 256-bit tokens hashed at rest.
-- **The ledger** — double-entry, BigInt, fixed 1-quadrillion supply, deferred
-  zero-sum constraint trigger, idempotency keys, provable supply.
-- **Academy** — courses, modules, lessons, quizzes, progress, certificates.
-- **Gamification** — XP, 50 levels, 5 ranks, achievements, streaks, missions,
-  challenges, leaderboard. Missions are **data**: a new one starts paying
-  without a deploy.
-- **The Miner** — a Mining tab inside the member app (DR-27): `/mining` (the
-  animated rig), `/mining/tasks`, `/mining/squad`, `/mining/ranks`. The old
-  standalone app on :3001 only forwards there.
-- **Merch** — sizes with their own stock, atomic stock-taking, shipping
-  addresses, tracking, and prices quoted in months of mining.
-- **Growth** — referrals that pay on real work, and watch-to-earn timed by the
-  server rather than the browser.
-- **Admin** — overview, members, economy, content, missions, products, videos,
-  challenges, orders.
-- **The academy app** (DR-24..26) — a standard member app: Today with the daily
-  standard and a guided start, Courses with lessons that open in order and
-  quiz-gated completion, an in-app community (program channels, questions tied
-  to lessons, wins with proof, slow mode, reports, mutes, pins), Profile as a
-  serious record, Notifications, Store, Challenges. Admin → Community and
-  Daily standard. Installable on phone and desktop. See `docs/DESIGN_SYSTEM.md`.
-- **The website** — homepage, programs, store, THC, journal, legal; every figure
-  is a query.
-
-## What does not exist
-
-Stated plainly, because a status file that overstates is worse than none:
-
-- Course / module / lesson authoring in the admin. Content is seeded by script.
-- Challenge authoring in the admin.
-- Membership tiers and subscriptions — **the business model is not built.**
-- Analytics beyond the economy overview.
-- The AI layer.
-- Telegram (cut, D18).
-
-## What is blocking, and on whom
-
-Seven items, all on you, written up in `TYCOONHOOD_BLOCKED_ON_YOU.md`. The two
-that actually stop things: real landed costs for the five products, and your
-YouTube video ids. The one that is pure risk: **this project is not under
-version control.**
-
----
-
-## First run on a clean machine
-
-```powershell
-cd D:\TycoonHood
-powershell -NoProfile -ExecutionPolicy Bypass -File .\setup-windows.ps1
-```
-
-That installs dependencies, starts or connects a database, applies migrations,
-seeds content, and runs the harness. Then:
-
-```powershell
-pnpm dev            # the site and the app → http://localhost:3000 (Miner: /mining)
-```
-
-Seed the merch catalogue (drafts, priced from the live mining rate):
-
-```powershell
-pnpm db:seed:merch
-```
-
-Re-verify everything at any time:
-
-```powershell
-pnpm verify         # typecheck + lint + test + both builds
-pnpm e2e            # the browser run described above
-```
+| Question | Where |
+|---|---|
+| What works, classified, and what does not | [`TYCOONHOOD_STATE.md`](TYCOONHOOD_STATE.md) |
+| What was run, and what it showed | [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) |
+| What only the owner can do before launch | [`TYCOONHOOD_BLOCKED_ON_YOU.md`](TYCOONHOOD_BLOCKED_ON_YOU.md) |
+| How it goes live | [`LAUNCH.md`](LAUNCH.md) |

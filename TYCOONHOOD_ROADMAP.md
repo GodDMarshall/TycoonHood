@@ -32,19 +32,27 @@ referral pay on a real lesson.
 
 The roadmap items below were written in September. Where the 11 November build closed one, it is marked.
 
-## NEXT — after the full-platform build (11 November 2026)
+**12 November (launch preparation):**
+- Account security: an email change waits for the new address, the old address can undo it for 7 days, no second change while the last can be undone, and a sign-in cannot outlive a password change (DR-32).
+- Money: an order settles once and ships once even under races; a refunded order cannot be shipped; rupee messages use one formatter.
+- Display: dates in the member's time zone (India time by default); text cuts on whole characters; the cart count shows on phones.
+- Deployment: one Vercel project whose production builds migrate the database and, the first time, seed it (DR-33).
 
-1. **Razorpay keys.** Owner action: add test keys, run one test purchase and refund, then switch to live keys. The steps are in `docs/DEPLOYMENT.md`.
-2. **Email delivery.** Set `RESEND_API_KEY` so verification and reset emails reach people in production.
-3. **Real prices and costs in INR** for every product. The seeded values are placeholders.
+## NEXT — after the launch on 13 November 2026
+
+1. **Owner actions for launch:** the admin account, the domain and Resend. See `TYCOONHOOD_BLOCKED_ON_YOU.md` items 1 to 3.
+2. **Razorpay keys** once KYC clears: test keys first, one test purchase and refund, then live keys. The steps are in `docs/DEPLOYMENT.md`.
+3. **Real prices and costs in INR** for the merch, then publish it.
 4. **Legal review** of the Terms, Privacy, Refund and Earn terms, and of the investment programme's name.
-5. **Small follow-ups:**
+5. **Hosting fit:** a Vercel Pro plan for a business site; a paid Neon plan before traffic is steady; a Neon branch for preview deployments so previews stop sharing the production database.
+6. **Speed for India:** move the database to Neon `aws-ap-south-1` (Mumbai) and the functions to `bom1`. Pages are about a quarter of a second slower from Washington.
+7. **Small follow-ups:**
    - A refunded course order should also revoke the enrolment.
    - Add `archivedAt`, `editedAt` and `paidAt` columns (see `docs/DATABASE.md`).
-   - Add a cart count badge in the navigation.
+   - Add a cart count badge in the navigation · **DONE 12 Nov 2026** (on phones too).
    - Change `judgePrice` from dollars to rupees · **DONE 11 Nov 2026**: it compares rupee prices only, anchored on the ₹2,499 placeholder hoodie.
-6. **The optional 3D world.** Restore it only if the owner chooses to, as `/world` with a 2D fallback, never gating anything.
-7. **Membership tiers (A3)**, and challenge authoring (A2). Both are still open.
+8. **The optional 3D world** · **DONE 11 Nov 2026** (DR-31). Still to do: a check on real graphics hardware.
+9. **Membership tiers (A3)**, and challenge authoring (A2). Both are still open.
 
 ---
 

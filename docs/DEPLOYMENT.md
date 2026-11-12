@@ -1,6 +1,8 @@
 # Deployment
 
-**Nothing has been deployed by this build.** These are the steps for when you deploy.
+Reference for running Tycoonhood in production. The step-by-step launch on the
+`tycoonhood` Vercel project is [`LAUNCH.md`](../LAUNCH.md); what still needs the
+owner is [`TYCOONHOOD_BLOCKED_ON_YOU.md`](../TYCOONHOOD_BLOCKED_ON_YOU.md).
 
 ## Requirements
 
@@ -12,21 +14,61 @@
 
 | Variable | Required | Notes |
 |---|---|---|
-| `DATABASE_URL` | yes | Postgres connection string |
+| `DATABASE_URL` | yes | Postgres connection string. On serverless hosts use the pooled one |
+| `DATABASE_URL_UNPOOLED` | on Vercel | The direct connection. `scripts/vercel-build.sh` migrates and seeds over it; the Neon integration sets it |
 | `NEXT_PUBLIC_SITE_URL` | yes | e.g. `https://tycoonhood.com`; used in emails, certificates and affiliate links |
 | `RESEND_API_KEY`, `MAIL_FROM` | yes for launch | Without them, verification and reset emails are not sent in production |
 | `AFFILIATE_HASH_SECRET` | yes | A long random string; salts the click hashes |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for card payments | `rzp_test_…` gives test mode; `rzp_live_…` gives real money. In production, test keys offer card checkout to admins only |
 | `RAZORPAY_WEBHOOK_SECRET` | strongly recommended | Lets the webhook confirm payments if the browser closes |
 | `CRON_SECRET` | yes, with rupee checkout | A long random string. Vercel Cron sends it to `/api/cron/expire-orders`, which refuses calls without it. See "Scheduled jobs" |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin. The password is set only when the account is created |
+| `SEED_ON_DEPLOY` | first Vercel deploy only | `1` makes a production build run the seeds. Remove it after the first successful deploy |
+| `ENABLE_EXPERIMENTAL_COREPACK` | on Vercel | `1` makes Vercel use the pnpm version pinned in `package.json` |
 | `COOKIE_DOMAIN` | optional | Only if you serve several subdomains |
 | `TRUSTED_PROXY_HOPS` | optional | How many proxies in front of the app add to `X-Forwarded-For`; per-IP limits read the address that many entries from the right. 1 to 5, default 1 (one proxy such as nginx, or Vercel). If the app is exposed directly with no proxy in front, visitors can set that header themselves, so IP-based limits can be spoofed |
 | `DISCORD_*` | optional | Discord role sync |
 | `DEV_MODE` | **never in production** | Must be unset or `false` in production. With `NODE_ENV=production` the sandbox and dev mailer are off regardless |
 | `ALLOW_DEFAULT_ADMIN`, `ALLOW_TESTS_ON_THIS_DB` | **never in production** | Local only |
 
-## First deploy
+## Deploying on Vercel
+
+The site is one Vercel project with Root Directory `apps/web` (files outside it
+included) and Node 22.x. `apps/web/vercel.json` sets the install and build
+commands, the function region and the daily cron. The build command runs
+`scripts/vercel-build.sh` from the repository root:
+
+1. On a **production** build (`VERCEL_ENV=production`) it applies pending
+   migrations with `pnpm db:migrate:sql`, over `DATABASE_URL_UNPOOLED` when it
+   is set. It stops the build if `DATABASE_URL` is missing, and, when
+   `SEED_ON_DEPLOY=1`, if `ADMIN_EMAIL` or `ADMIN_PASSWORD` is missing, before
+   it touches the database.
+2. With `SEED_ON_DEPLOY=1` it then runs `db:seed`, `db:seed:academy`,
+   `db:seed:content`, `seed:shop` and `seed:community`, in that order.
+3. It builds the site.
+
+**Preview builds never touch the database.** They are built from branches that
+are not merged yet, and on this project they receive the same `DATABASE_URL`
+as production. They are behind Vercel login, but a preview someone uses still
+reads and writes the production database, so use previews to look, not to
+test sign-ups or orders. A separate Neon branch for previews would remove this.
+
+Functions run in `iad1`, the region of the Neon database: every page makes
+several queries, so the functions belong next to the database. If the database
+moves to Mumbai (`aws-ap-south-1`), change `regions` to `["bom1"]`.
+
+A failed step fails the deploy, and the previous deployment stays live. A
+migration that ran before a later step failed stays applied, and the previous
+deployment then runs against it. So write each migration to be safe for the
+code that is live before it: add tables and columns, and drop them only in a
+later release.
+
+The whole sequence was rehearsed on 12 November 2026 against an empty
+PostgreSQL 16 database from a fresh clone with no `.env`: 12 migrations, the
+five seeds and the build in 81 seconds, then a second run that changed
+nothing, then `next start` serving the pages and the cron endpoint.
+
+## First deploy on another host
 
 ```
 pnpm install --frozen-lockfile

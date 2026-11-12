@@ -346,5 +346,20 @@ Each needs a product-level judgment. I have not made these for you; I state the 
   - An undo that Postgres ends to break a deadlock with a password reset at the same moment starts over (up to 3 tries) instead of failing.
 - **Trade-off:** whoever controls the old mailbox can undo a genuine change within 7 days. That is the same trust the old address had before the change. And a member waits 7 days between email changes unless they use the undo.
 
+### DR-33 — One Vercel project; production builds migrate the database, and the first one seeds it
+- **Date:** 2026-11-12 · **Status:** **ADOPTED** — the owner chose "Yes, deploy it for me" on 12 November, for a launch on 13 November. Supersedes LAUNCH.md's two-project plan and its "migrations are never run from a build" rule.
+- **Why the build:** the database credentials are Vercel "sensitive" variables. Nobody can read them back, so a migration run from a laptop needs the owner to copy the connection string out of Neon by hand. The build is the one place that already has them.
+- **Now:**
+  - The site is the Vercel project `tycoonhood`, Root Directory `apps/web`. `apps/miner` only redirects (DR-27) and is not deployed.
+  - `scripts/vercel-build.sh`: a production build applies pending migrations over the direct connection; with `SEED_ON_DEPLOY=1` it runs the five seeds in order; then it builds. A preview build only builds: previews come from unmerged branches and receive the production `DATABASE_URL`.
+  - `SEED_ON_DEPLOY` is set for the first deploy only. Every seed is idempotent, but a later re-run would rewrite content staff have edited since.
+  - The admin account comes from `ADMIN_EMAIL` and `ADMIN_PASSWORD`, which the owner sets in Vercel. No password passes through chat or a commit. With `SEED_ON_DEPLOY=1`, the build stops before touching the database if either is missing, and the seed itself refuses to run without a password (DR-5).
+  - `AFFILIATE_HASH_SECRET` and `CRON_SECRET` were generated and stored as sensitive variables.
+  - Functions run in `iad1`, the Neon database's region, not `bom1`: a page makes several queries, and each would otherwise cross the world.
+  - Both `vercel.json` files lost their `"//"` comment key, which Vercel's schema rejects; it failed the deploy of 11 November before the build started.
+- **Rejected:** running migrations by hand before each promotion (needs the connection string copied out of Neon each time, and is easy to forget); a Vercel deploy hook or GitHub Action holding a second copy of the credentials (two places to rotate).
+- **Trade-offs:** a migration that applies before a later step fails stays applied while the previous deployment keeps running, so migrations must stay safe for the code live before them. Previews can still read and write the production database when someone uses one; they are behind Vercel login, and a Neon preview branch is the fix. Pages from India travel to Washington and back: moving the database and functions to Mumbai is on the roadmap.
+- **Rehearsed** on 12 November from a fresh clone with no `.env`, against an empty PostgreSQL 16: 12 migrations, five seeds and the build in 81 seconds; a second run changed nothing; `next start` served the pages and the cron endpoint. See `docs/TEST_REPORT.md`.
+
 ## How to use this file going forward
 Add a Part B entry (or a new `D##` if it's architectural and adopted) for any decision that changes architecture, product scope, the economy, the design contract, or a security posture. Never edit a preserved entry to change its meaning — supersede it with a dated new entry that references the old ID. When an OPEN item is decided, change its status to ADOPTED/REJECTED with the date and a one-line outcome; leave the reasoning intact.
