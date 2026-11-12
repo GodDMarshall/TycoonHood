@@ -10,11 +10,16 @@
  *
  * Notices are best effort. They are sent after the change they report has
  * happened, and a mail failure is logged, never thrown, so it can never block
- * or undo that change.
+ * or undo that change. One is not: the notice that carries the link undoing
+ * an email change. That link exists only in the request that made the
+ * change, so the caller reads the outcome, records a notice that went out on
+ * the hold, and puts the change back if it did not (see verifyEmailAction
+ * and platform/email-notice).
  */
 import { cache } from "react";
 import {
   emailChangedMail,
+  emailChangedUnconfirmedMail,
   emailChangeLinkMail,
   emailChangeRequestedMail,
   emailChangeUndoneMail,
@@ -56,23 +61,32 @@ async function notice(to: string, copy: MailCopy, what: string): Promise<void> {
   }
 }
 
-/** The link that confirms a new address, to that address. Revoked if it could not be sent. */
+/** The link that confirms a new address, to that address, saying from when it works if the change waits. Revoked if it could not be sent. */
 export async function sendEmailChangeLink(issued: IssuedEmailChange): Promise<MailOutcome> {
   const link = `${siteUrl()}/verify-email/${issued.rawToken}`;
-  const outcome = await deliver(issued.newEmail, emailChangeLinkMail(link), `email-change link for ${issued.userId}`);
+  const outcome = await deliver(issued.newEmail, emailChangeLinkMail(link, issued.opensAt), `email-change link for ${issued.userId}`);
   if (!mailWentOut(outcome)) await emailVerification.revokeEmailChangeLink(issued);
   return outcome;
 }
 
-/** To the current address: a change was asked for, and what to do if it wasn't them. */
+/** To the current address: a change was asked for, when it can happen if it waits, and what to do if it wasn't them. */
 export function sendEmailChangeRequestedNotice(issued: IssuedEmailChange): Promise<void> {
-  return notice(issued.currentEmail, emailChangeRequestedMail(issued.newEmail, siteUrl()), `email-change notice for ${issued.userId}`);
+  return notice(
+    issued.currentEmail,
+    emailChangeRequestedMail(issued.newEmail, siteUrl(), issued.opensAt),
+    `email-change notice for ${issued.userId}`
+  );
 }
 
-/** To the old address, once the change has happened, with the link that undoes it. */
-export function sendEmailChangedNotice(userId: string, previousEmail: string, newEmail: string, undoToken: string): Promise<void> {
+/** To the old address, once the change has happened, with the link that undoes it. The caller reads the outcome. */
+export function sendEmailChangedNotice(userId: string, previousEmail: string, newEmail: string, undoToken: string): Promise<MailOutcome> {
   const undoLink = `${siteUrl()}/undo-email/${undoToken}`;
-  return notice(previousEmail, emailChangedMail(newEmail, undoLink), `email-changed notice for ${userId}`);
+  return deliver(previousEmail, emailChangedMail(newEmail, undoLink), `email-changed notice for ${userId}`);
+}
+
+/** To an old address that was never confirmed, once the change has happened: told, with no undo link. */
+export function sendEmailChangedUnconfirmedNotice(userId: string, previousEmail: string, newEmail: string): Promise<void> {
+  return notice(previousEmail, emailChangedUnconfirmedMail(newEmail, siteUrl()), `email-changed notice for ${userId}`);
 }
 
 /** After an undo: a confirmation to the address put back, and a notice to the address taken off. */

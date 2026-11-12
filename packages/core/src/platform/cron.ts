@@ -18,3 +18,27 @@ export function cronAuth(authorization: string | null | undefined, secret: strin
   const digest = (v: string) => createHash("sha256").update(v).digest();
   return timingSafeEqual(digest(given), digest(want)) ? "ok" : "denied";
 }
+
+/**
+ * What `pnpm preflight` reports about CRON_SECRET. Without it both daily
+ * sweeps refuse every call (cronAuth "unset"). The email-change sweep is
+ * the backstop that puts back a change whose undo notice never went out
+ * (platform/email-notice), so in production its absence fails the
+ * preflight (DR-32: CRON_SECRET is required); elsewhere it only warns.
+ */
+export function cronPreflight(env: Record<string, string | undefined> = process.env): {
+  level: "FAIL" | "WARN" | "OK";
+  label: string;
+  detail: string;
+} {
+  const label = "the daily sweeps can run on a schedule";
+  if (env.CRON_SECRET?.trim()) return { level: "OK", label, detail: "/api/cron/expire-orders and /api/cron/email-holds" };
+  return {
+    level: env.NODE_ENV === "production" ? "FAIL" : "WARN",
+    label,
+    detail:
+      "no CRON_SECRET: /api/cron/expire-orders and /api/cron/email-holds refuse every call. Unpaid orders are let go only " +
+      "when shop pages load, and an email change whose undo notice never went out stands until its account asks for a " +
+      "change or a reset, or staff open it in the admin",
+  };
+}

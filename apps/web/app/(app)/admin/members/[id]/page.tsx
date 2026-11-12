@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requirePermission } from "../../../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
-import { can, ROLES, ROLE_LABEL } from "@tycoonhood/core";
+import { can, emailUndo, ROLES, ROLE_LABEL, undoLinkState, type UndoLinkState } from "@tycoonhood/core";
 import { Badge, Card, CardContent, Field, SectionRule, Select, ThcAmount } from "@tycoonhood/ui";
 import { ActionForm } from "../../../../../components/admin/action-form";
 import { ConfirmButton } from "../../../../../components/admin-confirm";
@@ -15,6 +15,14 @@ export const metadata: Metadata = { title: "Admin · Member" };
 export const dynamic = "force-dynamic";
 
 const dt = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+/** What staff are told about a held address's undo link (platform/email-notice). */
+const UNDO_LINK: Record<UndoLinkState, string> = {
+  sent: "Its undo link was sent and still works.",
+  sending: "Its undo link is being sent. If it cannot be, the change is put back.",
+  unsent: "Its undo link was never sent, so the change is about to be put back.",
+  ended: "Its undo link no longer works.",
+};
+
 const money = (cents: number, currency: string) => {
   try {
     return new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(cents / 100);
@@ -26,6 +34,8 @@ const money = (cents: number, currency: string) => {
 export default async function AdminMember({ params }: { params: Promise<{ id: string }> }) {
   const actor = await requirePermission("admin.users");
   const { id } = await params;
+  // A change whose undo notice never went out is put back before the page reads the account.
+  await emailUndo.putBackUnnotified({ userId: id }).catch((e) => console.error(`[admin] putting back an untold email change for ${id} failed`, e));
   const m = await prisma.user.findUnique({
     where: { id },
     include: {
@@ -98,7 +108,7 @@ export default async function AdminMember({ params }: { params: Promise<{ id: st
             {holds.map((h) => (
               <p key={h.id}>
                 Previous address <span className="font-medium">{h.address}</span>, held until {dt.format(h.expires)}.{" "}
-                <span className="text-ink-3">{h.undoToken ? "Its undo link still works." : "Its undo link no longer works."}</span>
+                <span className="text-ink-3">{UNDO_LINK[undoLinkState(h)]}</span>
               </p>
             ))}
             <p>Onboarded: {m.profile?.onboardedAt ? dt.format(m.profile.onboardedAt) : "not yet"}</p>

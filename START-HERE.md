@@ -61,7 +61,7 @@ Sign in as admin:
 | 1 · Run TycoonHood | starts web + miner together |
 | 2 · Verify everything | typecheck, lint, 60 tests, both builds |
 | 3 · Platform verification | 26 end-to-end checks against your database |
-| DB · Re-seed | rebuilds courses and content |
+| DB · Re-seed | runs the base, academy and content seeds again: adds what is missing, keeps your edits |
 | DB · Open Prisma Studio | browse the database in your browser |
 | DB · Start Postgres (Docker) | starts the local database container |
 
@@ -88,6 +88,12 @@ $env:ADMIN_EMAIL="you@yourdomain.com"
 $env:ADMIN_PASSWORD="a real password"
 pnpm deploy:db
 ```
+
+Use Neon's direct connection string, the one without `-pooler` in its
+address: migrations hold a lock that a pooled connection cannot keep. If
+`DATABASE_URL_UNPOOLED` is also set in that window, it must be the same
+database: `deploy:db` names the database it will use, and stops if the two
+differ.
 
 That prepares the production database and verifies it. The Vercel import is
 two clicks in their dashboard — see `docs/RUNBOOK.md`.

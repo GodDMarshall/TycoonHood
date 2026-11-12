@@ -2,30 +2,37 @@
  * ACADEMY CONTENT SEED — builds the four launch programmes from the
  * curriculum files in ./curriculum (format: ./curriculum/types.ts).
  *
- * WARNING: This seed OWNS the launch curriculum. For each programme it
- * deletes and rebuilds the course's modules (cascading lessons, quizzes and
- * LessonProgress), then marks the course PUBLISHED. It therefore REFUSES to
- * rebuild a course that has any LessonProgress rows unless SEED_ACADEMY_FORCE=1
- * is set (see seed-guard.ts). After launch, edit courses in /admin/courses.
+ * Each programme is built ONCE. From then on it belongs to staff, who edit its
+ * lessons, modules, quizzes, details, status and instructor in /admin/courses,
+ * and a re-run leaves it exactly as they left it (DR-33). The rule is
+ * academyRebuildDecision in seed-guard.ts: a programme is built when the seed
+ * has no record of building it (SiteSetting "seed.academy.built") and it has
+ * no modules.
  *
- * Each programme becomes:
+ * A build makes, in one transaction:
  *   modules (objectives + completion) → lessons (minutes → durationSec)
  *   → quizzes with explanations, then a last module "Final Assessment"
- *   holding one QUIZ lesson with isFinal = true (required for the certificate).
+ *   holding one QUIZ lesson with isFinal = true (required for the certificate);
+ * then marks the course PUBLISHED, gives it its two community channels and
+ * records it as built. A build that fails leaves nothing half made, so the
+ * next run builds it cleanly. The founder's profile teaches a built programme
+ * only if it has no instructor: one an administrator assigned keeps it, even
+ * through SEED_ACADEMY_FORCE=1, because the instructor decides who may edit
+ * the programme (DR-34).
+ *
+ * SEED_ACADEMY_FORCE=1 rebuilds every programme from the files anyway. It
+ * deletes the modules, which cascades to lessons, quizzes and every member's
+ * LessonProgress on them, and undoes every staff edit to the curriculum.
  *
  * A missing curriculum file is skipped with a warning, so the seed runs while
  * the remaining programmes are still being written.
  *
- * Each programme is taught by the founder's profile only if it has no
- * instructor yet. One an administrator assigned to someone else keeps them:
- * the instructor decides who may edit a programme (DR-34).
- *
  * Run: pnpm --filter @tycoonhood/db seed:academy
- *      SEED_ACADEMY_FORCE=1 pnpm --filter @tycoonhood/db seed:academy   (destroys progress)
+ *      SEED_ACADEMY_FORCE=1 pnpm --filter @tycoonhood/db seed:academy   (destroys edits and progress)
  */
-import { prisma } from "./client";
+import { prisma, type Prisma } from "./client";
 import type { LessonSrc, Programme } from "./curriculum/types";
-import { academyInstructorDecision, academyRebuildDecision } from "./seed-guard";
+import { academyInstructorDecision, academyRebuildDecision, ACADEMY_BUILT_SETTING } from "./seed-guard";
 
 /** Curriculum file → its named export. Loaded dynamically so a missing file is skippable. */
 const SOURCES: { file: string; exportName: string }[] = [
@@ -75,15 +82,25 @@ async function loadProgramme(file: string, exportName: string): Promise<Programm
   }
 }
 
+/** The programmes the seed has built, by slug. */
+async function builtSlugs(): Promise<Set<string>> {
+  const row = await prisma.siteSetting.findUnique({ where: { key: ACADEMY_BUILT_SETTING } });
+  const slugs = (row?.value as { slugs?: unknown } | undefined)?.slugs;
+  return new Set(Array.isArray(slugs) ? slugs.filter((x): x is string => typeof x === "string") : []);
+}
+
+async function recordBuilt(db: Prisma.TransactionClient | typeof prisma, slugs: Set<string>) {
+  const value = { slugs: [...slugs].sort() };
+  await db.siteSetting.upsert({ where: { key: ACADEMY_BUILT_SETTING }, update: { value }, create: { key: ACADEMY_BUILT_SETTING, value } });
+}
+
 async function main() {
   const force = process.env.SEED_ACADEMY_FORCE;
-  const founder = await prisma.instructor.upsert({
-    where: { slug: FOUNDER.slug },
-    update: { name: FOUNDER.name, headline: FOUNDER.headline, bio: FOUNDER.bio, avatar: FOUNDER.avatar },
-    create: FOUNDER,
-  });
+  // Created once. Staff edit the founder's profile in /admin/courses.
+  const founder = await prisma.instructor.upsert({ where: { slug: FOUNDER.slug }, update: {}, create: FOUNDER });
   console.log(`✓ instructor ${founder.name}`);
 
+  const built = await builtSlugs();
   for (const src of SOURCES) {
     const programme = await loadProgramme(src.file, src.exportName);
     if (!programme) continue;
@@ -95,140 +112,155 @@ async function main() {
       continue;
     }
 
-    const teacher = academyInstructorDecision({ slug, current: course.instructorId, founderId: founder.id });
-    if (teacher.note) console.log(`• ${teacher.note}`);
-
-    const progressRows = await prisma.lessonProgress.count({ where: { lesson: { module: { courseId: course.id } } } });
-    const decision = academyRebuildDecision({ slug, progressRows, force });
+    const [modules, progressRows] = await Promise.all([
+      prisma.courseModule.count({ where: { courseId: course.id } }),
+      prisma.lessonProgress.count({ where: { lesson: { module: { courseId: course.id } } } }),
+    ]);
+    const decision = academyRebuildDecision({ slug, built: built.has(slug), modules, progressRows, force });
     if (!decision.rebuild) {
-      console.error(`✗ ${decision.reason}`);
-      // Still give it the founder if it has no instructor; that touches no member data.
-      await prisma.course.updateMany({ where: { id: course.id, instructorId: null }, data: { instructorId: founder.id } });
+      console.log(`· ${decision.reason}`);
+      // Built by a seed from before the record existed: record it, so it stays
+      // built even if staff later remove every module.
+      if (!built.has(slug)) {
+        built.add(slug);
+        await recordBuilt(prisma, built);
+      }
       continue;
     }
     if (progressRows > 0) console.warn(`⚠ SEED_ACADEMY_FORCE=1: erasing ${progressRows} progress row(s) in ${slug}`);
 
-    // Deterministic rebuild (the seed owns the launch curriculum).
-    await prisma.courseModule.deleteMany({ where: { courseId: course.id } });
+    // A build never takes a programme from an instructor an administrator assigned (DR-34).
+    const teacher = academyInstructorDecision({ slug, current: course.instructorId, founderId: founder.id });
+    if (teacher.note) console.log(`• ${teacher.note}`);
 
-    let lessonCount = 0;
-    for (const [mi, m] of programme.modules.entries()) {
-      const mod = await prisma.courseModule.create({
-        data: {
-          courseId: course.id,
-          title: m.title,
-          description: m.description,
-          objectives: m.objectives ?? [],
-          completion: m.completion ?? null,
-          sortOrder: mi,
-        },
-      });
-      for (const [li, l] of m.lessons.entries()) {
-        const lesson = await prisma.lesson.create({
-          data: {
-            moduleId: mod.id,
-            title: l.title,
-            type: l.type,
-            sortOrder: li,
-            contentMd: l.md,
-            isPreview: l.preview ?? false,
-            xpReward: l.xp ?? DEFAULT_XP[l.type],
-            durationSec: l.minutes ? l.minutes * 60 : null,
-          },
+    built.add(slug);
+    const lessonCount = await prisma.$transaction(
+      async (tx) => {
+        await tx.courseModule.deleteMany({ where: { courseId: course.id } });
+        const count = await buildCurriculum(tx, course.id, programme);
+        await tx.course.update({
+          where: { id: course.id },
+          data: { status: "PUBLISHED", instructorId: teacher.instructorId, description: DESCRIPTIONS[slug] ?? course.description },
         });
-        lessonCount++;
-        if (l.quiz) {
-          await prisma.quiz.create({
-            data: {
-              lessonId: lesson.id,
-              passScore: l.quiz.passScore ?? 70,
-              questions: {
-                create: l.quiz.questions.map((q, qi) => ({
-                  sortOrder: qi,
-                  prompt: q.prompt,
-                  options: q.options,
-                  correctIndex: q.correct,
-                  explanation: q.why,
-                })),
-              },
-            },
-          });
-        }
-      }
-    }
+        await programChannels(tx, course.id, slug);
+        await recordBuilt(tx, built);
+        return count;
+      },
+      // A programme is a few hundred inserts; over a remote connection that takes a while.
+      { timeout: 120_000, maxWait: 10_000 }
+    );
+    console.log(`✓ ${slug}: ${programme.modules.length} modules + final, ${lessonCount} lessons — PUBLISHED`);
+  }
+}
 
-    // The final assessment: its own last module, one QUIZ lesson, isFinal.
-    const fa = programme.finalAssessment;
-    if (fa && fa.questions.length > 0) {
-      const finalModule = await prisma.courseModule.create({
+/** Creates a programme's modules, lessons and quizzes from its curriculum file. Returns the lesson count. */
+async function buildCurriculum(tx: Prisma.TransactionClient, courseId: string, programme: Programme) {
+  let lessonCount = 0;
+  for (const [mi, m] of programme.modules.entries()) {
+    const mod = await tx.courseModule.create({
+      data: {
+        courseId,
+        title: m.title,
+        description: m.description,
+        objectives: m.objectives ?? [],
+        completion: m.completion ?? null,
+        sortOrder: mi,
+      },
+    });
+    for (const [li, l] of m.lessons.entries()) {
+      const lesson = await tx.lesson.create({
         data: {
-          courseId: course.id,
-          title: "Final Assessment",
-          description: "One assessment across every module. Pass it to earn your certificate.",
-          objectives: ["Demonstrate the core ideas of every module in this programme."],
-          completion: `Pass the final assessment with ${fa.passScore}% or more. Retries are unlimited and every answer is explained.`,
-          sortOrder: programme.modules.length,
-        },
-      });
-      const lesson = await prisma.lesson.create({
-        data: {
-          moduleId: finalModule.id,
-          title: "Final Assessment",
-          type: "QUIZ",
-          sortOrder: 0,
-          contentMd: fa.intro,
-          isFinal: true,
-          xpReward: FINAL_XP,
-          durationSec: Math.max(10, fa.questions.length * 2) * 60,
+          moduleId: mod.id,
+          title: l.title,
+          type: l.type,
+          sortOrder: li,
+          contentMd: l.md,
+          isPreview: l.preview ?? false,
+          xpReward: l.xp ?? DEFAULT_XP[l.type],
+          durationSec: l.minutes ? l.minutes * 60 : null,
         },
       });
       lessonCount++;
-      await prisma.quiz.create({
-        data: {
-          lessonId: lesson.id,
-          passScore: fa.passScore,
-          questions: {
-            create: fa.questions.map((q, qi) => ({
-              sortOrder: qi,
-              prompt: q.prompt,
-              options: q.options,
-              correctIndex: q.correct,
-              explanation: q.why,
-            })),
+      if (l.quiz) {
+        await tx.quiz.create({
+          data: {
+            lessonId: lesson.id,
+            passScore: l.quiz.passScore ?? 70,
+            questions: {
+              create: l.quiz.questions.map((q, qi) => ({
+                sortOrder: qi,
+                prompt: q.prompt,
+                options: q.options,
+                correctIndex: q.correct,
+                explanation: q.why,
+              })),
+            },
           },
-        },
-      });
-    } else {
-      console.warn(`⚠ ${slug}: no final assessment questions — members will not be able to earn a certificate`);
+        });
+      }
     }
-
-    await prisma.course.update({
-      where: { id: course.id },
-      data: { status: "PUBLISHED", instructorId: teacher.instructorId, description: DESCRIPTIONS[slug] ?? course.description },
-    });
-    console.log(`✓ ${slug}: ${programme.modules.length} modules + final, ${lessonCount} lessons — PUBLISHED`);
-    await programChannels(course.id, slug);
   }
 
-  // Programmes whose file is missing still get their instructor.
-  await prisma.course.updateMany({
-    where: { slug: { in: Object.keys(DESCRIPTIONS) }, instructorId: null },
-    data: { instructorId: founder.id },
-  });
+  // The final assessment: its own last module, one QUIZ lesson, isFinal.
+  const fa = programme.finalAssessment;
+  if (fa && fa.questions.length > 0) {
+    const finalModule = await tx.courseModule.create({
+      data: {
+        courseId,
+        title: "Final Assessment",
+        description: "One assessment across every module. Pass it to earn your certificate.",
+        objectives: ["Demonstrate the core ideas of every module in this programme."],
+        completion: `Pass the final assessment with ${fa.passScore}% or more. Retries are unlimited and every answer is explained.`,
+        sortOrder: programme.modules.length,
+      },
+    });
+    const lesson = await tx.lesson.create({
+      data: {
+        moduleId: finalModule.id,
+        title: "Final Assessment",
+        type: "QUIZ",
+        sortOrder: 0,
+        contentMd: fa.intro,
+        isFinal: true,
+        xpReward: FINAL_XP,
+        durationSec: Math.max(10, fa.questions.length * 2) * 60,
+      },
+    });
+    lessonCount++;
+    await tx.quiz.create({
+      data: {
+        lessonId: lesson.id,
+        passScore: fa.passScore,
+        questions: {
+          create: fa.questions.map((q, qi) => ({
+            sortOrder: qi,
+            prompt: q.prompt,
+            options: q.options,
+            correctIndex: q.correct,
+            explanation: q.why,
+          })),
+        },
+      },
+    });
+  } else {
+    console.warn(`⚠ ${programme.slug}: no final assessment questions — members will not be able to earn a certificate`);
+  }
+  return lessonCount;
 }
 
 /**
  * A published program gets its two community channels. Mirrors
  * CommunityService.ensureProgramChannels (core cannot be imported from db)
- * and the 20261001000000_academy_community migration. Idempotent.
+ * and the 20261001000000_academy_community migration. A channel that already
+ * exists is left as staff set it.
  */
-async function programChannels(courseId: string, slug: string) {
+async function programChannels(tx: Prisma.TransactionClient, courseId: string, slug: string) {
   const rows = [
     { suffix: "discussion", name: "Discussion", kind: "CHAT" as const, sortOrder: 0, topic: "Talk about the work of this program with the people doing it." },
     { suffix: "questions", name: "Questions", kind: "QUESTIONS" as const, sortOrder: 1, topic: "Stuck on a lesson? Ask here. Questions from the lesson page land here with the lesson attached." },
   ];
   for (const r of rows) {
-    await prisma.channel.upsert({
+    await tx.channel.upsert({
       where: { slug: `${slug}-${r.suffix}` },
       update: {},
       create: { slug: `${slug}-${r.suffix}`, name: r.name, kind: r.kind, topic: r.topic, courseId, slowModeSec: 10, sortOrder: r.sortOrder },

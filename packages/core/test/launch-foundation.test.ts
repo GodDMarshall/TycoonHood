@@ -346,10 +346,9 @@ describe("seeded rupee prices are placeholders that never overwrite a real one",
     }
   });
 
-  it("sets a price only when it is missing or not in rupees", () => {
-    expect(needsPlaceholderInr({ priceFiatCents: 2_799_00, fiatCurrency: "INR" })).toBe(false);
-    expect(needsPlaceholderInr({ priceFiatCents: null, fiatCurrency: "INR" })).toBe(true);
-    expect(needsPlaceholderInr({ priceFiatCents: 8_900, fiatCurrency: "USD" })).toBe(true);
+  it("sets a price only while the row is not in rupees", () => {
+    expect(needsPlaceholderInr({ fiatCurrency: "INR" })).toBe(false);
+    expect(needsPlaceholderInr({ fiatCurrency: "USD" })).toBe(true);
   });
 
   it("a new merch item gets the rupee placeholders, marked as such", () => {
@@ -373,13 +372,19 @@ describe("seeded rupee prices are placeholders that never overwrite a real one",
     expect(m.notes.join(" · ")).toBe("₹1,199 (PLACEHOLDER), was USD 39.00 · cost ₹370 (PLACEHOLDER), was USD 12.00");
   });
 
-  it("replaces a stale dollar cost under a rupee price, and fills a missing price only", () => {
+  it("replaces a stale dollar cost under a rupee price, and never puts back a price or cost staff removed", () => {
     // seed-shop moved the price to rupees but left the old 3100 US cents behind.
     const stale = placeholderMoney("warrior-hoodie", { priceFiatCents: 2_499_00, fiatCurrency: "INR", costCents: 3_100 });
     expect(stale.data).toEqual({ costCents: 870_00 });
-    // No card price yet: the placeholder price goes in, the admin's cost stays.
+    // A rupee row with no card price is sold for THC only: no price goes back
+    // in, and the admin's cost stays.
     const unpriced = placeholderMoney("nano-chalk", { priceFiatCents: null, fiatCurrency: "INR", costCents: 160_00 });
-    expect(unpriced.data).toEqual({ priceFiatCents: 499_00, fiatCurrency: "INR" });
+    expect(unpriced.data).toEqual({});
+    expect(unpriced.notes.join(" · ")).toBe("no card price (THC only), kept · cost ₹160 kept");
+    // A cost cleared in the admin stays cleared.
+    const noCost = placeholderMoney("nano-chalk", { priceFiatCents: 549_00, fiatCurrency: "INR", costCents: null });
+    expect(noCost.data).toEqual({});
+    expect(noCost.notes.join(" · ")).toBe("₹549 already set in INR, kept · no landed cost, kept");
   });
 
   it("writes nothing for an item with no placeholder", () => {

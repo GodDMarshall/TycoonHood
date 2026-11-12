@@ -10,7 +10,7 @@ import {
   ShopStatsService, testPaymentAllowed, refundUncounted, RefundError,
 } from "../src/shop";
 import { platformAnalytics } from "../src/platform/analytics";
-import { cronAuth } from "../src/platform/cron";
+import { cronAuth, cronPreflight } from "../src/platform/cron";
 import { CommerceError, CommerceService } from "../src/commerce/commerce";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
 import { TEST_REFUND_NOTE } from "../src/shop/refunds";
@@ -1010,6 +1010,17 @@ describe("Shop — expiring unpaid rupee orders", () => {
     } finally {
       vi.unstubAllEnvs();
     }
+  });
+
+  it("preflight fails without CRON_SECRET in production, naming both daily sweeps, and only warns outside it", () => {
+    // DR-32: required, because the email-change sweep needs it as much as the order sweep does.
+    const missing = cronPreflight({ NODE_ENV: "production" });
+    expect(missing.level).toBe("FAIL");
+    expect(missing.detail).toMatch(/\/api\/cron\/expire-orders/);
+    expect(missing.detail).toMatch(/\/api\/cron\/email-holds/);
+    expect(cronPreflight({ NODE_ENV: "production", CRON_SECRET: "   " }).level).toBe("FAIL"); // blank is unset, as cronAuth reads it
+    expect(cronPreflight({ NODE_ENV: "development" })).toMatchObject({ level: "WARN", detail: missing.detail });
+    expect(cronPreflight({ NODE_ENV: "production", CRON_SECRET: "a-long-random-cron-secret" }).level).toBe("OK");
   });
 });
 

@@ -41,6 +41,7 @@ export type UserMinAggregateOutputType = {
   email: string | null
   emailVerified: Date | null
   pendingEmail: string | null
+  pendingEmailAt: Date | null
   name: string | null
   image: string | null
   role: $Enums.UserRole | null
@@ -57,6 +58,7 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   emailVerified: Date | null
   pendingEmail: string | null
+  pendingEmailAt: Date | null
   name: string | null
   image: string | null
   role: $Enums.UserRole | null
@@ -73,6 +75,7 @@ export type UserCountAggregateOutputType = {
   email: number
   emailVerified: number
   pendingEmail: number
+  pendingEmailAt: number
   name: number
   image: number
   role: number
@@ -101,6 +104,7 @@ export type UserMinAggregateInputType = {
   email?: true
   emailVerified?: true
   pendingEmail?: true
+  pendingEmailAt?: true
   name?: true
   image?: true
   role?: true
@@ -117,6 +121,7 @@ export type UserMaxAggregateInputType = {
   email?: true
   emailVerified?: true
   pendingEmail?: true
+  pendingEmailAt?: true
   name?: true
   image?: true
   role?: true
@@ -133,6 +138,7 @@ export type UserCountAggregateInputType = {
   email?: true
   emailVerified?: true
   pendingEmail?: true
+  pendingEmailAt?: true
   name?: true
   image?: true
   role?: true
@@ -236,6 +242,7 @@ export type UserGroupByOutputType = {
   email: string
   emailVerified: Date | null
   pendingEmail: string | null
+  pendingEmailAt: Date | null
   name: string | null
   image: string | null
   role: $Enums.UserRole
@@ -275,6 +282,7 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   pendingEmail?: Prisma.StringNullableFilter<"User"> | string | null
+  pendingEmailAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   name?: Prisma.StringNullableFilter<"User"> | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -328,6 +336,7 @@ export type UserWhereInput = {
   couponRedemptions?: Prisma.CouponRedemptionListRelationFilter
   instructorProfile?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
   emailHolds?: Prisma.EmailHoldListRelationFilter
+  contactMessages?: Prisma.ContactMessageListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -335,6 +344,7 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   pendingEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -388,6 +398,7 @@ export type UserOrderByWithRelationInput = {
   couponRedemptions?: Prisma.CouponRedemptionOrderByRelationAggregateInput
   instructorProfile?: Prisma.InstructorOrderByWithRelationInput
   emailHolds?: Prisma.EmailHoldOrderByRelationAggregateInput
+  contactMessages?: Prisma.ContactMessageOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -398,6 +409,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   pendingEmail?: Prisma.StringNullableFilter<"User"> | string | null
+  pendingEmailAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   name?: Prisma.StringNullableFilter<"User"> | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -451,6 +463,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   couponRedemptions?: Prisma.CouponRedemptionListRelationFilter
   instructorProfile?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
   emailHolds?: Prisma.EmailHoldListRelationFilter
+  contactMessages?: Prisma.ContactMessageListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -458,6 +471,7 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   pendingEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -482,6 +496,7 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   emailVerified?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   pendingEmail?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  pendingEmailAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
@@ -498,6 +513,7 @@ export type UserCreateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -550,6 +566,7 @@ export type UserCreateInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -557,6 +574,7 @@ export type UserUncheckedCreateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -609,6 +627,7 @@ export type UserUncheckedCreateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -616,6 +635,7 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -668,6 +688,7 @@ export type UserUpdateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -675,6 +696,7 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -727,6 +749,7 @@ export type UserUncheckedUpdateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -734,6 +757,7 @@ export type UserCreateManyInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -750,6 +774,7 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -765,6 +790,7 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -781,6 +807,7 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   pendingEmail?: Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -802,6 +829,7 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   pendingEmail?: Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -818,6 +846,7 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   pendingEmail?: Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -1534,11 +1563,28 @@ export type UserUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.UserUpdateWithoutAuditLogsInput>, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
 }
 
+export type UserCreateNestedOneWithoutContactMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContactMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutContactMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContactMessagesInput
+  upsert?: Prisma.UserUpsertWithoutContactMessagesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContactMessagesInput, Prisma.UserUpdateWithoutContactMessagesInput>, Prisma.UserUncheckedUpdateWithoutContactMessagesInput>
+}
+
 export type UserCreateWithoutCredentialInput = {
   id?: string
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -1590,6 +1636,7 @@ export type UserCreateWithoutCredentialInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCredentialInput = {
@@ -1597,6 +1644,7 @@ export type UserUncheckedCreateWithoutCredentialInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -1648,6 +1696,7 @@ export type UserUncheckedCreateWithoutCredentialInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCredentialInput = {
@@ -1671,6 +1720,7 @@ export type UserUpdateWithoutCredentialInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -1722,6 +1772,7 @@ export type UserUpdateWithoutCredentialInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCredentialInput = {
@@ -1729,6 +1780,7 @@ export type UserUncheckedUpdateWithoutCredentialInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -1780,6 +1832,7 @@ export type UserUncheckedUpdateWithoutCredentialInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1787,6 +1840,7 @@ export type UserCreateWithoutAccountsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -1838,6 +1892,7 @@ export type UserCreateWithoutAccountsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1845,6 +1900,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -1896,6 +1952,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1919,6 +1976,7 @@ export type UserUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -1970,6 +2028,7 @@ export type UserUpdateWithoutAccountsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1977,6 +2036,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2028,6 +2088,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -2035,6 +2096,7 @@ export type UserCreateWithoutSessionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2086,6 +2148,7 @@ export type UserCreateWithoutSessionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -2093,6 +2156,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2144,6 +2208,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -2167,6 +2232,7 @@ export type UserUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2218,6 +2284,7 @@ export type UserUpdateWithoutSessionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -2225,6 +2292,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2276,6 +2344,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEmailHoldsInput = {
@@ -2283,6 +2352,7 @@ export type UserCreateWithoutEmailHoldsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2334,6 +2404,7 @@ export type UserCreateWithoutEmailHoldsInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEmailHoldsInput = {
@@ -2341,6 +2412,7 @@ export type UserUncheckedCreateWithoutEmailHoldsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2392,6 +2464,7 @@ export type UserUncheckedCreateWithoutEmailHoldsInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEmailHoldsInput = {
@@ -2415,6 +2488,7 @@ export type UserUpdateWithoutEmailHoldsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2466,6 +2540,7 @@ export type UserUpdateWithoutEmailHoldsInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailHoldsInput = {
@@ -2473,6 +2548,7 @@ export type UserUncheckedUpdateWithoutEmailHoldsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2524,6 +2600,7 @@ export type UserUncheckedUpdateWithoutEmailHoldsInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -2531,6 +2608,7 @@ export type UserCreateWithoutProfileInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2582,6 +2660,7 @@ export type UserCreateWithoutProfileInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -2589,6 +2668,7 @@ export type UserUncheckedCreateWithoutProfileInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2640,6 +2720,7 @@ export type UserUncheckedCreateWithoutProfileInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -2663,6 +2744,7 @@ export type UserUpdateWithoutProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2714,6 +2796,7 @@ export type UserUpdateWithoutProfileInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -2721,6 +2804,7 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2772,6 +2856,7 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutQuizAttemptsInput = {
@@ -2779,6 +2864,7 @@ export type UserCreateWithoutQuizAttemptsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2830,6 +2916,7 @@ export type UserCreateWithoutQuizAttemptsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -2837,6 +2924,7 @@ export type UserUncheckedCreateWithoutQuizAttemptsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2888,6 +2976,7 @@ export type UserUncheckedCreateWithoutQuizAttemptsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -2911,6 +3000,7 @@ export type UserUpdateWithoutQuizAttemptsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2962,6 +3052,7 @@ export type UserUpdateWithoutQuizAttemptsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -2969,6 +3060,7 @@ export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3020,6 +3112,7 @@ export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEnrollmentsInput = {
@@ -3027,6 +3120,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3078,6 +3172,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -3085,6 +3180,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3136,6 +3232,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -3159,6 +3256,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3210,6 +3308,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -3217,6 +3316,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3268,6 +3368,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLessonProgressInput = {
@@ -3275,6 +3376,7 @@ export type UserCreateWithoutLessonProgressInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3326,6 +3428,7 @@ export type UserCreateWithoutLessonProgressInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -3333,6 +3436,7 @@ export type UserUncheckedCreateWithoutLessonProgressInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3384,6 +3488,7 @@ export type UserUncheckedCreateWithoutLessonProgressInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -3407,6 +3512,7 @@ export type UserUpdateWithoutLessonProgressInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3458,6 +3564,7 @@ export type UserUpdateWithoutLessonProgressInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -3465,6 +3572,7 @@ export type UserUncheckedUpdateWithoutLessonProgressInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3516,6 +3624,7 @@ export type UserUncheckedUpdateWithoutLessonProgressInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCertificatesInput = {
@@ -3523,6 +3632,7 @@ export type UserCreateWithoutCertificatesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3574,6 +3684,7 @@ export type UserCreateWithoutCertificatesInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCertificatesInput = {
@@ -3581,6 +3692,7 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3632,6 +3744,7 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCertificatesInput = {
@@ -3655,6 +3768,7 @@ export type UserUpdateWithoutCertificatesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3706,6 +3820,7 @@ export type UserUpdateWithoutCertificatesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCertificatesInput = {
@@ -3713,6 +3828,7 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3764,6 +3880,7 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutXpEventsInput = {
@@ -3771,6 +3888,7 @@ export type UserCreateWithoutXpEventsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3822,6 +3940,7 @@ export type UserCreateWithoutXpEventsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutXpEventsInput = {
@@ -3829,6 +3948,7 @@ export type UserUncheckedCreateWithoutXpEventsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3880,6 +4000,7 @@ export type UserUncheckedCreateWithoutXpEventsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutXpEventsInput = {
@@ -3903,6 +4024,7 @@ export type UserUpdateWithoutXpEventsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3954,6 +4076,7 @@ export type UserUpdateWithoutXpEventsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutXpEventsInput = {
@@ -3961,6 +4084,7 @@ export type UserUncheckedUpdateWithoutXpEventsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4012,6 +4136,7 @@ export type UserUncheckedUpdateWithoutXpEventsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRankInput = {
@@ -4019,6 +4144,7 @@ export type UserCreateWithoutRankInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4070,6 +4196,7 @@ export type UserCreateWithoutRankInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRankInput = {
@@ -4077,6 +4204,7 @@ export type UserUncheckedCreateWithoutRankInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4128,6 +4256,7 @@ export type UserUncheckedCreateWithoutRankInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRankInput = {
@@ -4164,6 +4293,7 @@ export type UserScalarWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   pendingEmail?: Prisma.StringNullableFilter<"User"> | string | null
+  pendingEmailAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   name?: Prisma.StringNullableFilter<"User"> | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -4180,6 +4310,7 @@ export type UserCreateWithoutAchievementsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4231,6 +4362,7 @@ export type UserCreateWithoutAchievementsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAchievementsInput = {
@@ -4238,6 +4370,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4289,6 +4422,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAchievementsInput = {
@@ -4312,6 +4446,7 @@ export type UserUpdateWithoutAchievementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4363,6 +4498,7 @@ export type UserUpdateWithoutAchievementsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAchievementsInput = {
@@ -4370,6 +4506,7 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4421,6 +4558,7 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutParticipationsInput = {
@@ -4428,6 +4566,7 @@ export type UserCreateWithoutParticipationsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4479,6 +4618,7 @@ export type UserCreateWithoutParticipationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutParticipationsInput = {
@@ -4486,6 +4626,7 @@ export type UserUncheckedCreateWithoutParticipationsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4537,6 +4678,7 @@ export type UserUncheckedCreateWithoutParticipationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutParticipationsInput = {
@@ -4560,6 +4702,7 @@ export type UserUpdateWithoutParticipationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4611,6 +4754,7 @@ export type UserUpdateWithoutParticipationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParticipationsInput = {
@@ -4618,6 +4762,7 @@ export type UserUncheckedUpdateWithoutParticipationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4669,6 +4814,7 @@ export type UserUncheckedUpdateWithoutParticipationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMissionCompletionsInput = {
@@ -4676,6 +4822,7 @@ export type UserCreateWithoutMissionCompletionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4727,6 +4874,7 @@ export type UserCreateWithoutMissionCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMissionCompletionsInput = {
@@ -4734,6 +4882,7 @@ export type UserUncheckedCreateWithoutMissionCompletionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4785,6 +4934,7 @@ export type UserUncheckedCreateWithoutMissionCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMissionCompletionsInput = {
@@ -4808,6 +4958,7 @@ export type UserUpdateWithoutMissionCompletionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4859,6 +5010,7 @@ export type UserUpdateWithoutMissionCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
@@ -4866,6 +5018,7 @@ export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4917,6 +5070,7 @@ export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStreakInput = {
@@ -4924,6 +5078,7 @@ export type UserCreateWithoutStreakInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4975,6 +5130,7 @@ export type UserCreateWithoutStreakInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStreakInput = {
@@ -4982,6 +5138,7 @@ export type UserUncheckedCreateWithoutStreakInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5033,6 +5190,7 @@ export type UserUncheckedCreateWithoutStreakInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStreakInput = {
@@ -5056,6 +5214,7 @@ export type UserUpdateWithoutStreakInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5107,6 +5266,7 @@ export type UserUpdateWithoutStreakInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStreakInput = {
@@ -5114,6 +5274,7 @@ export type UserUncheckedUpdateWithoutStreakInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5165,6 +5326,7 @@ export type UserUncheckedUpdateWithoutStreakInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -5172,6 +5334,7 @@ export type UserCreateWithoutNotificationsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5223,6 +5386,7 @@ export type UserCreateWithoutNotificationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -5230,6 +5394,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5281,6 +5446,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -5304,6 +5470,7 @@ export type UserUpdateWithoutNotificationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5355,6 +5522,7 @@ export type UserUpdateWithoutNotificationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -5362,6 +5530,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5413,6 +5582,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLedgerAccountInput = {
@@ -5420,6 +5590,7 @@ export type UserCreateWithoutLedgerAccountInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5471,6 +5642,7 @@ export type UserCreateWithoutLedgerAccountInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLedgerAccountInput = {
@@ -5478,6 +5650,7 @@ export type UserUncheckedCreateWithoutLedgerAccountInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5529,6 +5702,7 @@ export type UserUncheckedCreateWithoutLedgerAccountInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLedgerAccountInput = {
@@ -5552,6 +5726,7 @@ export type UserUpdateWithoutLedgerAccountInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5603,6 +5778,7 @@ export type UserUpdateWithoutLedgerAccountInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLedgerAccountInput = {
@@ -5610,6 +5786,7 @@ export type UserUncheckedUpdateWithoutLedgerAccountInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5661,6 +5838,7 @@ export type UserUncheckedUpdateWithoutLedgerAccountInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -5668,6 +5846,7 @@ export type UserCreateWithoutOrdersInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5719,6 +5898,7 @@ export type UserCreateWithoutOrdersInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -5726,6 +5906,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5777,6 +5958,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -5800,6 +5982,7 @@ export type UserUpdateWithoutOrdersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5851,6 +6034,7 @@ export type UserUpdateWithoutOrdersInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -5858,6 +6042,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5909,6 +6094,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDiscordLinkInput = {
@@ -5916,6 +6102,7 @@ export type UserCreateWithoutDiscordLinkInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5967,6 +6154,7 @@ export type UserCreateWithoutDiscordLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDiscordLinkInput = {
@@ -5974,6 +6162,7 @@ export type UserUncheckedCreateWithoutDiscordLinkInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6025,6 +6214,7 @@ export type UserUncheckedCreateWithoutDiscordLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDiscordLinkInput = {
@@ -6048,6 +6238,7 @@ export type UserUpdateWithoutDiscordLinkInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6099,6 +6290,7 @@ export type UserUpdateWithoutDiscordLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDiscordLinkInput = {
@@ -6106,6 +6298,7 @@ export type UserUncheckedUpdateWithoutDiscordLinkInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6157,6 +6350,7 @@ export type UserUncheckedUpdateWithoutDiscordLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTelegramLinkInput = {
@@ -6164,6 +6358,7 @@ export type UserCreateWithoutTelegramLinkInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6215,6 +6410,7 @@ export type UserCreateWithoutTelegramLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTelegramLinkInput = {
@@ -6222,6 +6418,7 @@ export type UserUncheckedCreateWithoutTelegramLinkInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6273,6 +6470,7 @@ export type UserUncheckedCreateWithoutTelegramLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTelegramLinkInput = {
@@ -6296,6 +6494,7 @@ export type UserUpdateWithoutTelegramLinkInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6347,6 +6546,7 @@ export type UserUpdateWithoutTelegramLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTelegramLinkInput = {
@@ -6354,6 +6554,7 @@ export type UserUncheckedUpdateWithoutTelegramLinkInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6405,6 +6606,7 @@ export type UserUncheckedUpdateWithoutTelegramLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMinerStateInput = {
@@ -6412,6 +6614,7 @@ export type UserCreateWithoutMinerStateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6463,6 +6666,7 @@ export type UserCreateWithoutMinerStateInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMinerStateInput = {
@@ -6470,6 +6674,7 @@ export type UserUncheckedCreateWithoutMinerStateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6521,6 +6726,7 @@ export type UserUncheckedCreateWithoutMinerStateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMinerStateInput = {
@@ -6544,6 +6750,7 @@ export type UserUpdateWithoutMinerStateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6595,6 +6802,7 @@ export type UserUpdateWithoutMinerStateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMinerStateInput = {
@@ -6602,6 +6810,7 @@ export type UserUncheckedUpdateWithoutMinerStateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6653,6 +6862,7 @@ export type UserUncheckedUpdateWithoutMinerStateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReferralsMadeInput = {
@@ -6660,6 +6870,7 @@ export type UserCreateWithoutReferralsMadeInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6711,6 +6922,7 @@ export type UserCreateWithoutReferralsMadeInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReferralsMadeInput = {
@@ -6718,6 +6930,7 @@ export type UserUncheckedCreateWithoutReferralsMadeInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6769,6 +6982,7 @@ export type UserUncheckedCreateWithoutReferralsMadeInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReferralsMadeInput = {
@@ -6781,6 +6995,7 @@ export type UserCreateWithoutReferralReceivedInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6832,6 +7047,7 @@ export type UserCreateWithoutReferralReceivedInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReferralReceivedInput = {
@@ -6839,6 +7055,7 @@ export type UserUncheckedCreateWithoutReferralReceivedInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6890,6 +7107,7 @@ export type UserUncheckedCreateWithoutReferralReceivedInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReferralReceivedInput = {
@@ -6913,6 +7131,7 @@ export type UserUpdateWithoutReferralsMadeInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6964,6 +7183,7 @@ export type UserUpdateWithoutReferralsMadeInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralsMadeInput = {
@@ -6971,6 +7191,7 @@ export type UserUncheckedUpdateWithoutReferralsMadeInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7022,6 +7243,7 @@ export type UserUncheckedUpdateWithoutReferralsMadeInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutReferralReceivedInput = {
@@ -7040,6 +7262,7 @@ export type UserUpdateWithoutReferralReceivedInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7091,6 +7314,7 @@ export type UserUpdateWithoutReferralReceivedInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralReceivedInput = {
@@ -7098,6 +7322,7 @@ export type UserUncheckedUpdateWithoutReferralReceivedInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7149,6 +7374,7 @@ export type UserUncheckedUpdateWithoutReferralReceivedInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWatchCompletionsInput = {
@@ -7156,6 +7382,7 @@ export type UserCreateWithoutWatchCompletionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7207,6 +7434,7 @@ export type UserCreateWithoutWatchCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWatchCompletionsInput = {
@@ -7214,6 +7442,7 @@ export type UserUncheckedCreateWithoutWatchCompletionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7265,6 +7494,7 @@ export type UserUncheckedCreateWithoutWatchCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWatchCompletionsInput = {
@@ -7288,6 +7518,7 @@ export type UserUpdateWithoutWatchCompletionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7339,6 +7570,7 @@ export type UserUpdateWithoutWatchCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
@@ -7346,6 +7578,7 @@ export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7397,6 +7630,7 @@ export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -7404,6 +7638,7 @@ export type UserCreateWithoutMessagesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7455,6 +7690,7 @@ export type UserCreateWithoutMessagesInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -7462,6 +7698,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7513,6 +7750,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -7536,6 +7774,7 @@ export type UserUpdateWithoutMessagesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7587,6 +7826,7 @@ export type UserUpdateWithoutMessagesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -7594,6 +7834,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7645,6 +7886,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutChannelReadsInput = {
@@ -7652,6 +7894,7 @@ export type UserCreateWithoutChannelReadsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7703,6 +7946,7 @@ export type UserCreateWithoutChannelReadsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutChannelReadsInput = {
@@ -7710,6 +7954,7 @@ export type UserUncheckedCreateWithoutChannelReadsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7761,6 +8006,7 @@ export type UserUncheckedCreateWithoutChannelReadsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutChannelReadsInput = {
@@ -7784,6 +8030,7 @@ export type UserUpdateWithoutChannelReadsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7835,6 +8082,7 @@ export type UserUpdateWithoutChannelReadsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChannelReadsInput = {
@@ -7842,6 +8090,7 @@ export type UserUncheckedUpdateWithoutChannelReadsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7893,6 +8142,7 @@ export type UserUncheckedUpdateWithoutChannelReadsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessageReportsInput = {
@@ -7900,6 +8150,7 @@ export type UserCreateWithoutMessageReportsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7951,6 +8202,7 @@ export type UserCreateWithoutMessageReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessageReportsInput = {
@@ -7958,6 +8210,7 @@ export type UserUncheckedCreateWithoutMessageReportsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8009,6 +8262,7 @@ export type UserUncheckedCreateWithoutMessageReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessageReportsInput = {
@@ -8032,6 +8286,7 @@ export type UserUpdateWithoutMessageReportsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8083,6 +8338,7 @@ export type UserUpdateWithoutMessageReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessageReportsInput = {
@@ -8090,6 +8346,7 @@ export type UserUncheckedUpdateWithoutMessageReportsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8141,6 +8398,7 @@ export type UserUncheckedUpdateWithoutMessageReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommunityMuteInput = {
@@ -8148,6 +8406,7 @@ export type UserCreateWithoutCommunityMuteInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8199,6 +8458,7 @@ export type UserCreateWithoutCommunityMuteInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommunityMuteInput = {
@@ -8206,6 +8466,7 @@ export type UserUncheckedCreateWithoutCommunityMuteInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8257,6 +8518,7 @@ export type UserUncheckedCreateWithoutCommunityMuteInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommunityMuteInput = {
@@ -8280,6 +8542,7 @@ export type UserUpdateWithoutCommunityMuteInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8331,6 +8594,7 @@ export type UserUpdateWithoutCommunityMuteInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommunityMuteInput = {
@@ -8338,6 +8602,7 @@ export type UserUncheckedUpdateWithoutCommunityMuteInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8389,6 +8654,7 @@ export type UserUncheckedUpdateWithoutCommunityMuteInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardItemsInput = {
@@ -8396,6 +8662,7 @@ export type UserCreateWithoutStandardItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8447,6 +8714,7 @@ export type UserCreateWithoutStandardItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardItemsInput = {
@@ -8454,6 +8722,7 @@ export type UserUncheckedCreateWithoutStandardItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8505,6 +8774,7 @@ export type UserUncheckedCreateWithoutStandardItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardItemsInput = {
@@ -8528,6 +8798,7 @@ export type UserUpdateWithoutStandardItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8579,6 +8850,7 @@ export type UserUpdateWithoutStandardItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardItemsInput = {
@@ -8586,6 +8858,7 @@ export type UserUncheckedUpdateWithoutStandardItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8637,6 +8910,7 @@ export type UserUncheckedUpdateWithoutStandardItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardTicksInput = {
@@ -8644,6 +8918,7 @@ export type UserCreateWithoutStandardTicksInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8695,6 +8970,7 @@ export type UserCreateWithoutStandardTicksInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardTicksInput = {
@@ -8702,6 +8978,7 @@ export type UserUncheckedCreateWithoutStandardTicksInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8753,6 +9030,7 @@ export type UserUncheckedCreateWithoutStandardTicksInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardTicksInput = {
@@ -8776,6 +9054,7 @@ export type UserUpdateWithoutStandardTicksInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8827,6 +9106,7 @@ export type UserUpdateWithoutStandardTicksInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardTicksInput = {
@@ -8834,6 +9114,7 @@ export type UserUncheckedUpdateWithoutStandardTicksInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8885,6 +9166,7 @@ export type UserUncheckedUpdateWithoutStandardTicksInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardDaysInput = {
@@ -8892,6 +9174,7 @@ export type UserCreateWithoutStandardDaysInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8943,6 +9226,7 @@ export type UserCreateWithoutStandardDaysInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardDaysInput = {
@@ -8950,6 +9234,7 @@ export type UserUncheckedCreateWithoutStandardDaysInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9001,6 +9286,7 @@ export type UserUncheckedCreateWithoutStandardDaysInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardDaysInput = {
@@ -9024,6 +9310,7 @@ export type UserUpdateWithoutStandardDaysInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9075,6 +9362,7 @@ export type UserUpdateWithoutStandardDaysInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardDaysInput = {
@@ -9082,6 +9370,7 @@ export type UserUncheckedUpdateWithoutStandardDaysInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9133,6 +9422,7 @@ export type UserUncheckedUpdateWithoutStandardDaysInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInstructorProfileInput = {
@@ -9140,6 +9430,7 @@ export type UserCreateWithoutInstructorProfileInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9191,6 +9482,7 @@ export type UserCreateWithoutInstructorProfileInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInstructorProfileInput = {
@@ -9198,6 +9490,7 @@ export type UserUncheckedCreateWithoutInstructorProfileInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9249,6 +9542,7 @@ export type UserUncheckedCreateWithoutInstructorProfileInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInstructorProfileInput = {
@@ -9272,6 +9566,7 @@ export type UserUpdateWithoutInstructorProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9323,6 +9618,7 @@ export type UserUpdateWithoutInstructorProfileInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInstructorProfileInput = {
@@ -9330,6 +9626,7 @@ export type UserUncheckedUpdateWithoutInstructorProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9381,6 +9678,7 @@ export type UserUncheckedUpdateWithoutInstructorProfileInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCourseReviewsInput = {
@@ -9388,6 +9686,7 @@ export type UserCreateWithoutCourseReviewsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9439,6 +9738,7 @@ export type UserCreateWithoutCourseReviewsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCourseReviewsInput = {
@@ -9446,6 +9746,7 @@ export type UserUncheckedCreateWithoutCourseReviewsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9497,6 +9798,7 @@ export type UserUncheckedCreateWithoutCourseReviewsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCourseReviewsInput = {
@@ -9520,6 +9822,7 @@ export type UserUpdateWithoutCourseReviewsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9571,6 +9874,7 @@ export type UserUpdateWithoutCourseReviewsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCourseReviewsInput = {
@@ -9578,6 +9882,7 @@ export type UserUncheckedUpdateWithoutCourseReviewsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9629,6 +9934,7 @@ export type UserUncheckedUpdateWithoutCourseReviewsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAffiliateInput = {
@@ -9636,6 +9942,7 @@ export type UserCreateWithoutAffiliateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9687,6 +9994,7 @@ export type UserCreateWithoutAffiliateInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAffiliateInput = {
@@ -9694,6 +10002,7 @@ export type UserUncheckedCreateWithoutAffiliateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9745,6 +10054,7 @@ export type UserUncheckedCreateWithoutAffiliateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAffiliateInput = {
@@ -9768,6 +10078,7 @@ export type UserUpdateWithoutAffiliateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9819,6 +10130,7 @@ export type UserUpdateWithoutAffiliateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAffiliateInput = {
@@ -9826,6 +10138,7 @@ export type UserUncheckedUpdateWithoutAffiliateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9877,6 +10190,7 @@ export type UserUncheckedUpdateWithoutAffiliateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCartItemsInput = {
@@ -9884,6 +10198,7 @@ export type UserCreateWithoutCartItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9935,6 +10250,7 @@ export type UserCreateWithoutCartItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCartItemsInput = {
@@ -9942,6 +10258,7 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9993,6 +10310,7 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCartItemsInput = {
@@ -10016,6 +10334,7 @@ export type UserUpdateWithoutCartItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10067,6 +10386,7 @@ export type UserUpdateWithoutCartItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCartItemsInput = {
@@ -10074,6 +10394,7 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10125,6 +10446,7 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWishlistItemsInput = {
@@ -10132,6 +10454,7 @@ export type UserCreateWithoutWishlistItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10183,6 +10506,7 @@ export type UserCreateWithoutWishlistItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWishlistItemsInput = {
@@ -10190,6 +10514,7 @@ export type UserUncheckedCreateWithoutWishlistItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10241,6 +10566,7 @@ export type UserUncheckedCreateWithoutWishlistItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWishlistItemsInput = {
@@ -10264,6 +10590,7 @@ export type UserUpdateWithoutWishlistItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10315,6 +10642,7 @@ export type UserUpdateWithoutWishlistItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWishlistItemsInput = {
@@ -10322,6 +10650,7 @@ export type UserUncheckedUpdateWithoutWishlistItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10373,6 +10702,7 @@ export type UserUncheckedUpdateWithoutWishlistItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCouponRedemptionsInput = {
@@ -10380,6 +10710,7 @@ export type UserCreateWithoutCouponRedemptionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10431,6 +10762,7 @@ export type UserCreateWithoutCouponRedemptionsInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCouponRedemptionsInput = {
@@ -10438,6 +10770,7 @@ export type UserUncheckedCreateWithoutCouponRedemptionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10489,6 +10822,7 @@ export type UserUncheckedCreateWithoutCouponRedemptionsInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCouponRedemptionsInput = {
@@ -10512,6 +10846,7 @@ export type UserUpdateWithoutCouponRedemptionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10563,6 +10898,7 @@ export type UserUpdateWithoutCouponRedemptionsInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCouponRedemptionsInput = {
@@ -10570,6 +10906,7 @@ export type UserUncheckedUpdateWithoutCouponRedemptionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10621,6 +10958,7 @@ export type UserUncheckedUpdateWithoutCouponRedemptionsInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRefundRequestsInput = {
@@ -10628,6 +10966,7 @@ export type UserCreateWithoutRefundRequestsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10679,6 +11018,7 @@ export type UserCreateWithoutRefundRequestsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRefundRequestsInput = {
@@ -10686,6 +11026,7 @@ export type UserUncheckedCreateWithoutRefundRequestsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10737,6 +11078,7 @@ export type UserUncheckedCreateWithoutRefundRequestsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRefundRequestsInput = {
@@ -10760,6 +11102,7 @@ export type UserUpdateWithoutRefundRequestsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10811,6 +11154,7 @@ export type UserUpdateWithoutRefundRequestsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefundRequestsInput = {
@@ -10818,6 +11162,7 @@ export type UserUncheckedUpdateWithoutRefundRequestsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10869,6 +11214,7 @@ export type UserUncheckedUpdateWithoutRefundRequestsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGroupMembershipsInput = {
@@ -10876,6 +11222,7 @@ export type UserCreateWithoutGroupMembershipsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10927,6 +11274,7 @@ export type UserCreateWithoutGroupMembershipsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGroupMembershipsInput = {
@@ -10934,6 +11282,7 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10985,6 +11334,7 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGroupMembershipsInput = {
@@ -11008,6 +11358,7 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11059,6 +11410,7 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
@@ -11066,6 +11418,7 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11117,6 +11470,7 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommunityPostsInput = {
@@ -11124,6 +11478,7 @@ export type UserCreateWithoutCommunityPostsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11175,6 +11530,7 @@ export type UserCreateWithoutCommunityPostsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommunityPostsInput = {
@@ -11182,6 +11538,7 @@ export type UserUncheckedCreateWithoutCommunityPostsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11233,6 +11590,7 @@ export type UserUncheckedCreateWithoutCommunityPostsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommunityPostsInput = {
@@ -11256,6 +11614,7 @@ export type UserUpdateWithoutCommunityPostsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11307,6 +11666,7 @@ export type UserUpdateWithoutCommunityPostsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommunityPostsInput = {
@@ -11314,6 +11674,7 @@ export type UserUncheckedUpdateWithoutCommunityPostsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11365,6 +11726,7 @@ export type UserUncheckedUpdateWithoutCommunityPostsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommunityCommentsInput = {
@@ -11372,6 +11734,7 @@ export type UserCreateWithoutCommunityCommentsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11423,6 +11786,7 @@ export type UserCreateWithoutCommunityCommentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommunityCommentsInput = {
@@ -11430,6 +11794,7 @@ export type UserUncheckedCreateWithoutCommunityCommentsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11481,6 +11846,7 @@ export type UserUncheckedCreateWithoutCommunityCommentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommunityCommentsInput = {
@@ -11504,6 +11870,7 @@ export type UserUpdateWithoutCommunityCommentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11555,6 +11922,7 @@ export type UserUpdateWithoutCommunityCommentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommunityCommentsInput = {
@@ -11562,6 +11930,7 @@ export type UserUncheckedUpdateWithoutCommunityCommentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11613,6 +11982,7 @@ export type UserUncheckedUpdateWithoutCommunityCommentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReactionsInput = {
@@ -11620,6 +11990,7 @@ export type UserCreateWithoutReactionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11671,6 +12042,7 @@ export type UserCreateWithoutReactionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReactionsInput = {
@@ -11678,6 +12050,7 @@ export type UserUncheckedCreateWithoutReactionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11729,6 +12102,7 @@ export type UserUncheckedCreateWithoutReactionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReactionsInput = {
@@ -11752,6 +12126,7 @@ export type UserUpdateWithoutReactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11803,6 +12178,7 @@ export type UserUpdateWithoutReactionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReactionsInput = {
@@ -11810,6 +12186,7 @@ export type UserUncheckedUpdateWithoutReactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11861,6 +12238,7 @@ export type UserUncheckedUpdateWithoutReactionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReportsInput = {
@@ -11868,6 +12246,7 @@ export type UserCreateWithoutReportsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11919,6 +12298,7 @@ export type UserCreateWithoutReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReportsInput = {
@@ -11926,6 +12306,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11977,6 +12358,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReportsInput = {
@@ -12000,6 +12382,7 @@ export type UserUpdateWithoutReportsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12051,6 +12434,7 @@ export type UserUpdateWithoutReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportsInput = {
@@ -12058,6 +12442,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12109,6 +12494,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -12116,6 +12502,7 @@ export type UserCreateWithoutAuditLogsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12167,6 +12554,7 @@ export type UserCreateWithoutAuditLogsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -12174,6 +12562,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12225,6 +12614,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -12248,6 +12638,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12299,6 +12690,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -12306,6 +12698,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12357,6 +12750,263 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutContactMessagesInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+  emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutContactMessagesInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+  emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutContactMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
+}
+
+export type UserUpsertWithoutContactMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContactMessagesInput, Prisma.UserUncheckedUpdateWithoutContactMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContactMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContactMessagesInput, Prisma.UserUncheckedUpdateWithoutContactMessagesInput>
+}
+
+export type UserUpdateWithoutContactMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+  emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContactMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+  emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyRankInput = {
@@ -12364,6 +13014,7 @@ export type UserCreateManyRankInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12379,6 +13030,7 @@ export type UserUpdateWithoutRankInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12430,6 +13082,7 @@ export type UserUpdateWithoutRankInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRankInput = {
@@ -12437,6 +13090,7 @@ export type UserUncheckedUpdateWithoutRankInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12488,6 +13142,7 @@ export type UserUncheckedUpdateWithoutRankInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutRankInput = {
@@ -12495,6 +13150,7 @@ export type UserUncheckedUpdateManyWithoutRankInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12543,6 +13199,7 @@ export type UserCountOutputType = {
   auditLogs: number
   couponRedemptions: number
   emailHolds: number
+  contactMessages: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -12578,6 +13235,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   couponRedemptions?: boolean | UserCountOutputTypeCountCouponRedemptionsArgs
   emailHolds?: boolean | UserCountOutputTypeCountEmailHoldsArgs
+  contactMessages?: boolean | UserCountOutputTypeCountContactMessagesArgs
 }
 
 /**
@@ -12814,12 +13472,20 @@ export type UserCountOutputTypeCountEmailHoldsArgs<ExtArgs extends runtime.Types
   where?: Prisma.EmailHoldWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountContactMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContactMessageWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   email?: boolean
   emailVerified?: boolean
   pendingEmail?: boolean
+  pendingEmailAt?: boolean
   name?: boolean
   image?: boolean
   role?: boolean
@@ -12873,6 +13539,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   couponRedemptions?: boolean | Prisma.User$couponRedemptionsArgs<ExtArgs>
   instructorProfile?: boolean | Prisma.User$instructorProfileArgs<ExtArgs>
   emailHolds?: boolean | Prisma.User$emailHoldsArgs<ExtArgs>
+  contactMessages?: boolean | Prisma.User$contactMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -12881,6 +13548,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   emailVerified?: boolean
   pendingEmail?: boolean
+  pendingEmailAt?: boolean
   name?: boolean
   image?: boolean
   role?: boolean
@@ -12898,6 +13566,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   emailVerified?: boolean
   pendingEmail?: boolean
+  pendingEmailAt?: boolean
   name?: boolean
   image?: boolean
   role?: boolean
@@ -12915,6 +13584,7 @@ export type UserSelectScalar = {
   email?: boolean
   emailVerified?: boolean
   pendingEmail?: boolean
+  pendingEmailAt?: boolean
   name?: boolean
   image?: boolean
   role?: boolean
@@ -12926,7 +13596,7 @@ export type UserSelectScalar = {
   suspendedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "emailVerified" | "pendingEmail" | "name" | "image" | "role" | "xp" | "level" | "rankId" | "createdAt" | "updatedAt" | "suspendedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "emailVerified" | "pendingEmail" | "pendingEmailAt" | "name" | "image" | "role" | "xp" | "level" | "rankId" | "createdAt" | "updatedAt" | "suspendedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rank?: boolean | Prisma.User$rankArgs<ExtArgs>
   credential?: boolean | Prisma.User$credentialArgs<ExtArgs>
@@ -12972,6 +13642,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   couponRedemptions?: boolean | Prisma.User$couponRedemptionsArgs<ExtArgs>
   instructorProfile?: boolean | Prisma.User$instructorProfileArgs<ExtArgs>
   emailHolds?: boolean | Prisma.User$emailHoldsArgs<ExtArgs>
+  contactMessages?: boolean | Prisma.User$contactMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -13028,6 +13699,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     couponRedemptions: Prisma.$CouponRedemptionPayload<ExtArgs>[]
     instructorProfile: Prisma.$InstructorPayload<ExtArgs> | null
     emailHolds: Prisma.$EmailHoldPayload<ExtArgs>[]
+    contactMessages: Prisma.$ContactMessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -13039,6 +13711,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
      * decides who gets an address when a change is confirmed.
      */
     pendingEmail: string | null
+    /**
+     * When that change was asked for; set and cleared with `pendingEmail`. A
+     * change away from an address never confirmed waits a day from then.
+     */
+    pendingEmailAt: Date | null
     name: string | null
     image: string | null
     role: $Enums.UserRole
@@ -13489,6 +14166,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   couponRedemptions<T extends Prisma.User$couponRedemptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$couponRedemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CouponRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   instructorProfile<T extends Prisma.User$instructorProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$instructorProfileArgs<ExtArgs>>): Prisma.Prisma__InstructorClient<runtime.Types.Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   emailHolds<T extends Prisma.User$emailHoldsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailHoldsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailHoldPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contactMessages<T extends Prisma.User$contactMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contactMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13522,6 +14200,7 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly emailVerified: Prisma.FieldRef<"User", 'DateTime'>
   readonly pendingEmail: Prisma.FieldRef<"User", 'String'>
+  readonly pendingEmailAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly image: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'UserRole'>
@@ -14920,6 +15599,30 @@ export type User$emailHoldsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.EmailHoldScalarFieldEnum | Prisma.EmailHoldScalarFieldEnum[]
+}
+
+/**
+ * User.contactMessages
+ */
+export type User$contactMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContactMessage
+   */
+  select?: Prisma.ContactMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContactMessage
+   */
+  omit?: Prisma.ContactMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContactMessageInclude<ExtArgs> | null
+  where?: Prisma.ContactMessageWhereInput
+  orderBy?: Prisma.ContactMessageOrderByWithRelationInput | Prisma.ContactMessageOrderByWithRelationInput[]
+  cursor?: Prisma.ContactMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContactMessageScalarFieldEnum | Prisma.ContactMessageScalarFieldEnum[]
 }
 
 /**

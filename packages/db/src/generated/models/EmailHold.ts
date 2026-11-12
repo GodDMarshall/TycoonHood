@@ -34,6 +34,7 @@ export type EmailHoldMinAggregateOutputType = {
   userId: string | null
   changedTo: string | null
   undoToken: string | null
+  noticeSentAt: Date | null
   expires: Date | null
   createdAt: Date | null
 }
@@ -44,6 +45,7 @@ export type EmailHoldMaxAggregateOutputType = {
   userId: string | null
   changedTo: string | null
   undoToken: string | null
+  noticeSentAt: Date | null
   expires: Date | null
   createdAt: Date | null
 }
@@ -54,6 +56,7 @@ export type EmailHoldCountAggregateOutputType = {
   userId: number
   changedTo: number
   undoToken: number
+  noticeSentAt: number
   expires: number
   createdAt: number
   _all: number
@@ -66,6 +69,7 @@ export type EmailHoldMinAggregateInputType = {
   userId?: true
   changedTo?: true
   undoToken?: true
+  noticeSentAt?: true
   expires?: true
   createdAt?: true
 }
@@ -76,6 +80,7 @@ export type EmailHoldMaxAggregateInputType = {
   userId?: true
   changedTo?: true
   undoToken?: true
+  noticeSentAt?: true
   expires?: true
   createdAt?: true
 }
@@ -86,6 +91,7 @@ export type EmailHoldCountAggregateInputType = {
   userId?: true
   changedTo?: true
   undoToken?: true
+  noticeSentAt?: true
   expires?: true
   createdAt?: true
   _all?: true
@@ -169,6 +175,7 @@ export type EmailHoldGroupByOutputType = {
   userId: string
   changedTo: string
   undoToken: string | null
+  noticeSentAt: Date | null
   expires: Date
   createdAt: Date
   _count: EmailHoldCountAggregateOutputType | null
@@ -200,6 +207,7 @@ export type EmailHoldWhereInput = {
   userId?: Prisma.StringFilter<"EmailHold"> | string
   changedTo?: Prisma.StringFilter<"EmailHold"> | string
   undoToken?: Prisma.StringNullableFilter<"EmailHold"> | string | null
+  noticeSentAt?: Prisma.DateTimeNullableFilter<"EmailHold"> | Date | string | null
   expires?: Prisma.DateTimeFilter<"EmailHold"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"EmailHold"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -211,6 +219,7 @@ export type EmailHoldOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   changedTo?: Prisma.SortOrder
   undoToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  noticeSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   expires?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -225,6 +234,7 @@ export type EmailHoldWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EmailHoldWhereInput | Prisma.EmailHoldWhereInput[]
   userId?: Prisma.StringFilter<"EmailHold"> | string
   changedTo?: Prisma.StringFilter<"EmailHold"> | string
+  noticeSentAt?: Prisma.DateTimeNullableFilter<"EmailHold"> | Date | string | null
   expires?: Prisma.DateTimeFilter<"EmailHold"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"EmailHold"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -236,6 +246,7 @@ export type EmailHoldOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   changedTo?: Prisma.SortOrder
   undoToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  noticeSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   expires?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.EmailHoldCountOrderByAggregateInput
@@ -252,6 +263,7 @@ export type EmailHoldScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"EmailHold"> | string
   changedTo?: Prisma.StringWithAggregatesFilter<"EmailHold"> | string
   undoToken?: Prisma.StringNullableWithAggregatesFilter<"EmailHold"> | string | null
+  noticeSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EmailHold"> | Date | string | null
   expires?: Prisma.DateTimeWithAggregatesFilter<"EmailHold"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EmailHold"> | Date | string
 }
@@ -261,6 +273,7 @@ export type EmailHoldCreateInput = {
   address: string
   changedTo: string
   undoToken?: string | null
+  noticeSentAt?: Date | string | null
   expires: Date | string
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutEmailHoldsInput
@@ -272,6 +285,7 @@ export type EmailHoldUncheckedCreateInput = {
   userId: string
   changedTo: string
   undoToken?: string | null
+  noticeSentAt?: Date | string | null
   expires: Date | string
   createdAt?: Date | string
 }
@@ -281,6 +295,7 @@ export type EmailHoldUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   changedTo?: Prisma.StringFieldUpdateOperationsInput | string
   undoToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutEmailHoldsNestedInput
@@ -292,6 +307,7 @@ export type EmailHoldUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   changedTo?: Prisma.StringFieldUpdateOperationsInput | string
   undoToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -302,6 +318,7 @@ export type EmailHoldCreateManyInput = {
   userId: string
   changedTo: string
   undoToken?: string | null
+  noticeSentAt?: Date | string | null
   expires: Date | string
   createdAt?: Date | string
 }
@@ -311,6 +328,7 @@ export type EmailHoldUpdateManyMutationInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   changedTo?: Prisma.StringFieldUpdateOperationsInput | string
   undoToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -321,6 +339,7 @@ export type EmailHoldUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   changedTo?: Prisma.StringFieldUpdateOperationsInput | string
   undoToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -341,6 +360,7 @@ export type EmailHoldCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   changedTo?: Prisma.SortOrder
   undoToken?: Prisma.SortOrder
+  noticeSentAt?: Prisma.SortOrder
   expires?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -351,6 +371,7 @@ export type EmailHoldMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   changedTo?: Prisma.SortOrder
   undoToken?: Prisma.SortOrder
+  noticeSentAt?: Prisma.SortOrder
   expires?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -361,6 +382,7 @@ export type EmailHoldMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   changedTo?: Prisma.SortOrder
   undoToken?: Prisma.SortOrder
+  noticeSentAt?: Prisma.SortOrder
   expires?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -412,6 +434,7 @@ export type EmailHoldCreateWithoutUserInput = {
   address: string
   changedTo: string
   undoToken?: string | null
+  noticeSentAt?: Date | string | null
   expires: Date | string
   createdAt?: Date | string
 }
@@ -421,6 +444,7 @@ export type EmailHoldUncheckedCreateWithoutUserInput = {
   address: string
   changedTo: string
   undoToken?: string | null
+  noticeSentAt?: Date | string | null
   expires: Date | string
   createdAt?: Date | string
 }
@@ -460,6 +484,7 @@ export type EmailHoldScalarWhereInput = {
   userId?: Prisma.StringFilter<"EmailHold"> | string
   changedTo?: Prisma.StringFilter<"EmailHold"> | string
   undoToken?: Prisma.StringNullableFilter<"EmailHold"> | string | null
+  noticeSentAt?: Prisma.DateTimeNullableFilter<"EmailHold"> | Date | string | null
   expires?: Prisma.DateTimeFilter<"EmailHold"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"EmailHold"> | Date | string
 }
@@ -469,6 +494,7 @@ export type EmailHoldCreateManyUserInput = {
   address: string
   changedTo: string
   undoToken?: string | null
+  noticeSentAt?: Date | string | null
   expires: Date | string
   createdAt?: Date | string
 }
@@ -478,6 +504,7 @@ export type EmailHoldUpdateWithoutUserInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   changedTo?: Prisma.StringFieldUpdateOperationsInput | string
   undoToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -487,6 +514,7 @@ export type EmailHoldUncheckedUpdateWithoutUserInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   changedTo?: Prisma.StringFieldUpdateOperationsInput | string
   undoToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -496,6 +524,7 @@ export type EmailHoldUncheckedUpdateManyWithoutUserInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   changedTo?: Prisma.StringFieldUpdateOperationsInput | string
   undoToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noticeSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expires?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -508,6 +537,7 @@ export type EmailHoldSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   userId?: boolean
   changedTo?: boolean
   undoToken?: boolean
+  noticeSentAt?: boolean
   expires?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -519,6 +549,7 @@ export type EmailHoldSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   userId?: boolean
   changedTo?: boolean
   undoToken?: boolean
+  noticeSentAt?: boolean
   expires?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -530,6 +561,7 @@ export type EmailHoldSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   userId?: boolean
   changedTo?: boolean
   undoToken?: boolean
+  noticeSentAt?: boolean
   expires?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -541,11 +573,12 @@ export type EmailHoldSelectScalar = {
   userId?: boolean
   changedTo?: boolean
   undoToken?: boolean
+  noticeSentAt?: boolean
   expires?: boolean
   createdAt?: boolean
 }
 
-export type EmailHoldOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "address" | "userId" | "changedTo" | "undoToken" | "expires" | "createdAt", ExtArgs["result"]["emailHold"]>
+export type EmailHoldOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "address" | "userId" | "changedTo" | "undoToken" | "noticeSentAt" | "expires" | "createdAt", ExtArgs["result"]["emailHold"]>
 export type EmailHoldInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -577,7 +610,16 @@ export type $EmailHoldPayload<ExtArgs extends runtime.Types.Extensions.InternalA
      * change ended it; the hold itself lasts until `expires`.
      */
     undoToken: string | null
+    /**
+     * When the mail provider accepted the notice carrying the undo link. Null
+     * while it is being sent. A change whose notice is still not recorded a
+     * few minutes after `createdAt` is put back (platform/email-notice).
+     */
+    noticeSentAt: Date | null
     expires: Date
+    /**
+     * When the change took effect (a replaced row gets the new change's time).
+     */
     createdAt: Date
   }, ExtArgs["result"]["emailHold"]>
   composites: {}
@@ -1008,6 +1050,7 @@ export interface EmailHoldFieldRefs {
   readonly userId: Prisma.FieldRef<"EmailHold", 'String'>
   readonly changedTo: Prisma.FieldRef<"EmailHold", 'String'>
   readonly undoToken: Prisma.FieldRef<"EmailHold", 'String'>
+  readonly noticeSentAt: Prisma.FieldRef<"EmailHold", 'DateTime'>
   readonly expires: Prisma.FieldRef<"EmailHold", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"EmailHold", 'DateTime'>
 }

@@ -8,16 +8,19 @@ export {
   EmailVerificationService, emailVerification,
   InvalidVerificationTokenError, AlreadyVerifiedError, VerificationRateLimitError,
   EmailChangeEndedError, EmailChangeTakenError, NoEmailChangeError,
+  EmailChangeNotYetError, emailChangeNotYetMessage, emailChangeOpensAt, UNCONFIRMED_CHANGE_WAIT_MS,
   VERIFY_TTL_MS, VERIFY_RESEND_LIMIT, VERIFY_RESEND_WINDOW_MS,
 } from "./email-verification";
 export type { IssuedVerification, IssuedEmailChange, Confirmation } from "./email-verification";
-export { EMAIL_HOLD_MS, EmailChangeTooSoonError } from "./email-hold";
+export { EMAIL_HOLD_MS, EmailChangeTooSoonError, emailChangeTooSoonMessage } from "./email-hold";
 export type { IssuedUndo } from "./email-hold";
 export { EmailUndoService, emailUndo, InvalidUndoLinkError, UndoLinkOverError } from "./email-undo";
 export type { UndoneEmailChange } from "./email-undo";
+export { NOTICE_GRACE_MS, undoLinkState } from "./email-notice";
+export type { UndoLinkState } from "./email-notice";
 export {
-  maskEmail, emailChangeLinkMail, emailChangeRequestedMail, emailChangedMail, passwordChangedMail,
-  emailChangeUndoneMail, emailChangeUndoneRemovedMail,
+  maskEmail, emailChangeLinkMail, emailChangeRequestedMail, emailChangedMail, emailChangedUnconfirmedMail,
+  passwordChangedMail, emailChangeUndoneMail, emailChangeUndoneRemovedMail,
 } from "./account-mail";
 export type { MailCopy } from "./account-mail";
 export {
@@ -40,7 +43,7 @@ export type { ContactInput, TestimonialInput, AnnouncementInput } from "./cms";
 export { platformAnalytics } from "./analytics";
 export type { PlatformAnalytics, DayCount, MoneyLine } from "./analytics";
 export { clientIpFrom, trustedProxyHops, MAX_TRUSTED_PROXY_HOPS } from "./client-ip";
-export { cronAuth } from "./cron";
+export { cronAuth, cronPreflight } from "./cron";
 export type { ForwardingHeaders } from "./client-ip";
 export {
   mailWentOut, verifyLinkState, verificationResendReply, emailChangeReply, passwordResetReply,

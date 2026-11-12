@@ -3,9 +3,12 @@
  *
  *  · change email: needs the current password, and waits for the new
  *    address to be confirmed. The address asked for is kept in
- *    User.pendingEmail and gets a link; the current address gets a notice
- *    and stays the sign-in and reset address until the link is used (see
- *    EmailVerificationService.confirm, which makes the switch).
+ *    User.pendingEmail, with when it was asked for, and gets a link; the
+ *    current address gets a notice and stays the sign-in and reset address
+ *    until the link is used (see EmailVerificationService.confirm, which
+ *    makes the switch). If the current address was never confirmed, the
+ *    link works only a day after the request (UNCONFIRMED_CHANGE_WAIT_MS):
+ *    nothing could undo the change, so its owner gets that day to stop it.
  *  · change password: needs the current password; every OTHER session is
  *    signed out, the one making the change stays. Reset links and a waiting
  *    email change die with the old password, even a change asked for at the
@@ -13,13 +16,21 @@
  *    credential row, so the two run one after the other. changePassword
  *    checks it again the same way, so it cannot land after an undone email
  *    change (platform/email-undo) replaced the password it checked.
+ *  · both take the account's lock first (lockEmailOf, platform/email-hold),
+ *    as every flow that changes the account's password, address or links
+ *    does, so they never deadlock with a confirmation, an undo or a reset.
  *  · an address held for another account (platform/email-hold) is refused
  *    like a taken one; one held for this account is the member moving back.
  *  · no new change while the last one can still be undone (7 days, or
- *    until its undo is used): see EmailChangeTooSoonError.
- *  · delete account: a request for staff, recorded as a ContactMessage.
- *    Accounts are never hard-deleted from here — ledger rows reference the
- *    user with ON DELETE RESTRICT, and the books must still balance.
+ *    until its undo is used): see EmailChangeTooSoonError. A last change
+ *    whose undo notice never went out is put back first (platform/
+ *    email-notice), so it neither blocks the request nor loses its way back.
+ *  · delete account: a request for staff, recorded as a ContactMessage
+ *    that names the account (userId), so it stays the account's whatever
+ *    its address becomes. An undo closes one filed since the change it
+ *    reverts (platform/email-undo). Accounts are never hard-deleted from
+ *    here — ledger rows reference the user with ON DELETE RESTRICT, and the
+ *    books must still balance.
  */
 import { z } from "zod";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
@@ -31,6 +42,7 @@ import { SessionService } from "../auth/session";
 import { AuditService } from "./audit";
 import { EmailVerificationService, resetTokenId, type IssuedEmailChange } from "./email-verification";
 import { addressHeldFor, EmailChangeTooSoonError, lockEmailOf, undoableUntil } from "./email-hold";
+import { putBackUnnotified } from "./email-notice";
 import { sliceWhole } from "../text/clip";
 
 export const DELETION_TOPIC = "account-deletion";
@@ -81,6 +93,9 @@ export class AccountSettingsService {
   async changeEmail(userId: string, newEmailRaw: string, currentPassword: string): Promise<IssuedEmailChange | null> {
     const newEmail = emailSchema.parse(newEmailRaw);
     const checkedHash = await this.checkPassword(userId, currentPassword);
+    // A last change whose undo notice never went out is put back before anything is read. Left in
+    // place it would refuse this request as too soon, and this change would end its undo link.
+    await putBackUnnotified(this.db, { userId });
     const user = await this.db.user.findUniqueOrThrow({ where: { id: userId } });
     if (user.email === newEmail) return null;
     // Addresses are stored lower-cased (registerSchema, emailSchema), so this is the unique email check.
@@ -102,8 +117,16 @@ export class AccountSettingsService {
       // Not while the last change can still be undone: a second change would end its link.
       const until = await undoableUntil(tx, userId);
       if (until) throw new EmailChangeTooSoonError(until);
-      await tx.user.update({ where: { id: userId }, data: { pendingEmail: newEmail } });
-      const issued = await this.verification.issueEmailChangeIn(tx, { id: userId, email: user.email, pendingEmail: newEmail });
+      // A new request starts its own wait, if it has one: its notice tells the owner of the address anew.
+      const askedAt = new Date();
+      await tx.user.update({ where: { id: userId }, data: { pendingEmail: newEmail, pendingEmailAt: askedAt } });
+      const issued = await this.verification.issueEmailChangeIn(tx, {
+        id: userId,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        pendingEmail: newEmail,
+        pendingEmailAt: askedAt,
+      });
       await this.audit.log(
         {
           actorId: userId,
@@ -136,6 +159,8 @@ export class AccountSettingsService {
     const checkedHash = await this.checkPassword(userId, currentPassword);
     const hash = await hashPassword(parsed);
     const cancelledEmailChange = await this.db.$transaction(async (tx) => {
+      // The account's lock first, as an email change, its confirmation, an undo and a reset take it.
+      await lockEmailOf(tx, userId);
       await this.passwordUnchanged(tx, userId, checkedHash);
       await tx.passwordCredential.update({ where: { userId }, data: { hash } });
       await tx.verificationToken.deleteMany({ where: { identifier: resetTokenId(userId) } });
@@ -152,11 +177,10 @@ export class AccountSettingsService {
     await this.audit.log({ actorId: userId, action: "account.sessions.revoke-others", targetType: "User", targetId: userId });
   }
 
-  /** The open deletion request, if the member already made one. */
+  /** The open deletion request, if the member already made one, from whichever address. */
   async pendingDeletion(userId: string) {
-    const user = await this.db.user.findUniqueOrThrow({ where: { id: userId }, select: { email: true } });
     return this.db.contactMessage.findFirst({
-      where: { topic: DELETION_TOPIC, email: user.email, handled: false },
+      where: { topic: DELETION_TOPIC, userId, handled: false },
       orderBy: { createdAt: "desc" },
     });
   }
@@ -170,6 +194,7 @@ export class AccountSettingsService {
       data: {
         name: user.profile?.displayName ?? user.name ?? user.email,
         email: user.email,
+        userId: user.id,
         topic: DELETION_TOPIC,
         message: [
           `Account deletion requested by user ${user.id} (@${user.profile?.username ?? "no-profile"}).`,

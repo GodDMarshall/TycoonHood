@@ -128,11 +128,12 @@ const isProd = process.env.NODE_ENV === "production";
 
   // The shop's rupee rail. Test keys in production are refused to members in
   // code, but they still mean no real money comes in, so say so.
-  const { razorpayPreflight } = await import("../src/index");
+  const { razorpayPreflight, cronPreflight } = await import("../src/index");
   for (const r of razorpayPreflight()) add(r.level, A, r.label, r.detail);
 
-  check(!!env("CRON_SECRET"), A, "the order sweep can run on a schedule", "",
-    "no CRON_SECRET: /api/cron/expire-orders refuses every call, so unpaid orders are let go only when shop pages load", "WARN");
+  // Both daily sweeps; the email-change one makes CRON_SECRET required in production (DR-32).
+  const cron = cronPreflight();
+  add(cron.level, A, cron.label, cron.detail);
 }
 
 // ─────────────────────────────────────────────── 4. DATABASE

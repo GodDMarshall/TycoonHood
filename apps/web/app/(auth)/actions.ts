@@ -20,6 +20,7 @@ import {
   emailVerification,
   emailUndo,
   EmailChangeEndedError,
+  EmailChangeNotYetError,
   getSetting,
   InvalidUndoLinkError,
   InvalidVerificationTokenError,
@@ -29,7 +30,12 @@ import {
 } from "@tycoonhood/core";
 import { sendVerificationEmail } from "../../lib/mail/verification";
 import { sendPasswordResetEmail } from "../../lib/mail/password-reset";
-import { sendEmailChangedNotice, sendEmailChangeUndoneNotices, sendPasswordChangedNotice } from "../../lib/mail/account";
+import {
+  sendEmailChangedNotice,
+  sendEmailChangedUnconfirmedNotice,
+  sendEmailChangeUndoneNotices,
+  sendPasswordChangedNotice,
+} from "../../lib/mail/account";
 import { mailMode } from "../../lib/mail";
 import { clearSessionCookie, deviceInfo, getCurrentSession, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
 import { cookies } from "next/headers";
@@ -173,7 +179,8 @@ export async function forgotPasswordAction(_prev: ForgotState, formData: FormDat
   if (issued) {
     const outcome = await sendPasswordResetEmail(issued);
     // A failed send is logged, not shown: an error only for addresses that
-    // have an account would reveal which ones do. The reply below already
+    // have an account would reveal which ones do. Its link is revoked, so it
+    // never counts toward the account's live links. The reply below already
     // says what to do if nothing arrives.
     if (!mailWentOut(outcome)) console.warn(`[reset] reset email not sent for ${issued.userId}: ${outcome}`);
   }
@@ -216,6 +223,46 @@ export interface VerifyState {
 }
 
 /**
+ * Never names the old address: whoever used the link may not be the owner.
+ * Putting the change back does not sign in again the devices the
+ * confirmation signed out, so it says so.
+ */
+const CHANGE_NOT_TOLD =
+  "We couldn't email your old address about this change, so it didn't go through. Your email has not changed. " +
+  "You may need to sign in again on your other devices. Ask for the change again in a few minutes.";
+/** When the change could not be put back here: the sweep puts it back once it is a few minutes old (platform/email-notice). */
+const CHANGE_NOT_TOLD_YET =
+  "We couldn't email your old address about this change, so it won't go through. It will be undone on its own. " +
+  "You may need to sign in again on your other devices. Ask for the change again in 15 minutes.";
+
+/** Records on the hold that the undo notice went out. False if that failed: unrecorded, the change would be put back later. */
+async function noticeRecorded(userId: string, rawUndo: string): Promise<boolean> {
+  try {
+    await emailUndo.markNoticeSent(rawUndo);
+    return true;
+  } catch (e) {
+    console.error(`[email-change] the undo notice for ${userId} went out but could not be recorded`, e);
+    return false;
+  }
+}
+
+/**
+ * Puts back a change whose old address was not told, and says so. Never
+ * throws: if putting it back fails, the hold stays unrecorded and the sweep
+ * puts the change back once it is a few minutes old.
+ */
+async function putBackUntold(userId: string, rawUndo: string): Promise<VerifyState | null> {
+  try {
+    if (await emailUndo.revertUnnotified(rawUndo)) return { error: CHANGE_NOT_TOLD, retry: false };
+    console.error(`[email-change] the old address was not told, and the account moved again since: ${userId}`);
+    return null;
+  } catch (e) {
+    console.error(`[email-change] could not put back the change for ${userId}; the sweep will`, e);
+    return { error: CHANGE_NOT_TOLD_YET, retry: false };
+  }
+}
+
+/**
  * Uses a link from an email: a confirmation link, or the link that confirms
  * an email change. A POST behind a button, so mail scanners that prefetch
  * links cannot spend it.
@@ -230,14 +277,28 @@ export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: 
     result = await emailVerification.confirm(token, { keepSessionId: session?.id });
   } catch (e) {
     if (e instanceof EmailChangeEndedError) return { error: e.message, retry: false };
+    // Too early: this same link works once the change's day is over, and a new one would wait as long.
+    if (e instanceof EmailChangeNotYetError) return { error: e.message, retry: false };
     if (e instanceof InvalidVerificationTokenError) return { error: e.message };
     throw e;
   }
   const signedIn = session?.user.id === result.user.id;
   if (result.kind === "email-change") {
     const { user, previousEmail, undo } = result;
-    // The old address gets the link that undoes the change; it is held for the account meanwhile.
-    after(() => sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken));
+    if (undo) {
+      // A confirmed old address gets the link that undoes the change; it is held for the account meanwhile.
+      // The link exists only in this request, so the change stands only once that notice has gone out and
+      // the hold records it. Otherwise (no mail provider, one that refused it, or a send that timed out)
+      // it is put back here. If this request dies first, the sweep puts it back (platform/email-notice).
+      const outcome = await sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken);
+      if (!mailWentOut(outcome) || !(await noticeRecorded(user.id, undo.rawToken))) {
+        const untold = await putBackUntold(user.id, undo.rawToken);
+        if (untold) return untold;
+      }
+    } else {
+      // One never confirmed is only told, after the response, as it may not be the member's (platform/email-hold).
+      after(() => sendEmailChangedUnconfirmedNotice(user.id, previousEmail, user.email));
+    }
     return { done: "email-changed", email: user.email, signedIn };
   }
   return { done: "verified", signedIn };

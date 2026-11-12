@@ -1,7 +1,10 @@
 # TYCOONHOOD — Current state and completion report
 
 **Last updated:** 12 November 2026, on branch `build/full-platform`, the day
-before the launch.
+before the launch. The gates ran at `e585d36`: the email-change and deploy
+review fixes merged at `dd5810e`, plus the fixes for what verifying that
+merge found (§6). The browser checks and the deploy rehearsal ran at
+`dd5810e`; nothing they exercise has changed since.
 **Scope:** the full-platform build spec (11 November 2026), its follow-up
 reviews, and the deployment set-up.
 **Evidence:** every result below comes from a command that was run on
@@ -25,14 +28,14 @@ Each item carries one of the spec's five classifications:
 
 | Gate | Result |
 |---|---|
-| `pnpm typecheck` | clean, every workspace |
+| `pnpm typecheck` | clean in all five workspaces |
 | `pnpm lint` | clean |
-| `pnpm test` | **610 / 610** (31 files, against PostgreSQL 16) |
-| `pnpm build:web` | compiles; 119 routes |
+| `pnpm test` | **737 / 737**, in each of two full runs (39 files, against PostgreSQL 16) |
+| `pnpm build:web` | compiles; 107 routes |
 | 3D bundle rule | no route chunk carries three.js |
 | `pnpm e2e:a11y` | 27 public pages at desktop and phone widths: **0** WCAG A/AA violations |
 | `pnpm e2e:journeys` | **154 passed, 0 failed, 4 skipped** on the production build. The skipped checks passed in their own runs: shop and Earn with the payment sandbox (26 of 26) and the 3D engine (74 of 74) |
-| Vercel deploy rehearsal | fresh clone, empty database: 12 migrations, 5 seeds, build, then served; a preview build leaves the database untouched |
+| Vercel deploy rehearsal | fresh clone, empty database: 15 migrations, 5 seeds, build, then served; a second run changed no row; the build stops before touching the database without the admin account, with an address sign-in refuses, or with `DATABASE_URL` and `DATABASE_URL_UNPOOLED` naming different databases; a preview build leaves the database untouched |
 
 **Deployment status:** **not deployed yet.** The Vercel project is configured
 and the database is connected (see [`LAUNCH.md`](LAUNCH.md)). The first
@@ -112,21 +115,48 @@ Known limits, accepted for launch:
 
 - **Preview deployments share the production database settings.** They never
   migrate or seed and they sit behind Vercel login, but a preview someone
-  uses reads and writes production data. Fix: a Neon branch for previews.
+  uses reads and writes production data. A preview built before the
+  12 November email-change migrations also writes account rows the live site
+  misreads, so none may be used to change an account
+  ([`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md), "Rows older code writes after
+  a migration", with the backfills to run again). Fix: a Neon branch for
+  previews.
+- **The seeded admin's address starts unconfirmed.** The deploy cannot know
+  the mailbox is the owner's, so it does not confirm it. Until the owner
+  confirms it from the banner ([`LAUNCH.md`](LAUNCH.md), step 5), a change
+  away from it waits a day but gets no hold and no undo link. The seed's log
+  says so.
 - **IP-based rate limits trust one proxy hop** (`TRUSTED_PROXY_HOPS=1`, right
   for Vercel). Behind a different setup, set it correctly.
-- **Reviews:** the final account-security review (the undo link) was done by
-  the same builder, not by an independent reviewer: independent review agents
-  were unavailable for the last stretch. An outside review before taking real
-  money at scale is worth it.
+- **Reviews:** the findings of an independent review of the email-change work
+  and the deploy set-up are fixed and merged (DR-32, DR-33), and what
+  verifying the merge found is fixed too (§6). The 12 November runs
+  exercised the result (§1), but no independent review of these fixes is
+  recorded. An outside review before taking real money at scale is worth
+  it.
 
 ## 6. Outstanding bugs and gaps
 
 - A refunded course order does not revoke the enrolment (roadmap follow-up).
 - `archivedAt`, `editedAt` and `paidAt` columns are still to add
   ([`docs/DATABASE.md`](docs/DATABASE.md)).
-- No open defect is known from the 12 November runs; the one found (the phone
-  More button's name when the cart held items) was fixed and re-run.
+- **Fixed since the merge `dd5810e`:** verifying it found four problems, each
+  now fixed with its own commit. `seed-admin.test.ts` was written before the
+  email-change rules it met, so `pnpm typecheck` and two of its tests failed;
+  the tests now confirm the address before moving it, and the seed's refusal
+  of a held address is tested again. The seeded admin starts unconfirmed and
+  nothing asked the owner to confirm it; the seed and `LAUNCH.md` now do
+  (§5). Rows that code older than a migration writes after it are now
+  documented, with the backfills to run again. The preflight now fails
+  without `CRON_SECRET` in production, and the env example, README and
+  `LAUNCH.md` match the merged code. One thing was left on purpose: the
+  comment of the applied migration `20261112100000_email_hold_notice_sent`
+  describes the code before it wrongly, and [`docs/DATABASE.md`](docs/DATABASE.md)
+  corrects it instead of the file, because changing an applied migration
+  makes the migration runner refuse every database that applied it. Details:
+  [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md), "Fixed since the merge".
+- The defect found in the pass before these merges (the phone More button's
+  name when the cart held items) was fixed and re-run.
 
 ## 7. External integrations needing credentials
 

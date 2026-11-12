@@ -12,9 +12,28 @@
  * web app hands straight to the browser that used the undo link
  * (platform/email-undo).
  *
+ * A new request never takes a live link away. Anyone who knows an address
+ * can ask for a link to it, so if asking ended the earlier links, a stranger
+ * could end the one an undo just handed its owner. A request clears the
+ * account's links that ran out instead, and issues nothing while three are
+ * alive (RESET_LIVE_LIMIT). It takes the account's lock and reads the
+ * account again under it, and issues a link only while the account still
+ * has the address asked for: a request that meets an email change or an
+ * undo issues nothing for the address that left the account.
+ *
+ * The web app revokes a link it could not send (revoke), as it does the
+ * other kinds of link. So the three live links are ones that went out: sends
+ * the provider refused, in an outage or a burst someone provoked, never use
+ * them up and leave the owner's own request issuing nothing.
+ *
+ * A request first puts back an email change to or from the address whose
+ * undo notice never went out (platform/email-notice). An owner who was told
+ * nothing finds that their address no longer signs in and asks for a reset
+ * link: the account is theirs again, and the link goes to them.
+ *
  * Anti-enumeration: requestReset() does the same work and returns the
- * same shape whether or not the email exists. The caller reveals nothing
- * either way.
+ * same shape whether or not the email exists, and whether or not it issued
+ * a link. The caller reveals nothing either way.
  */
 import { createHash, randomBytes } from "node:crypto";
 import { z } from "zod";
@@ -23,10 +42,14 @@ import type { PrismaClient } from "@tycoonhood/db";
 import { hashPassword } from "./password";
 import { SessionService } from "./session";
 import { AuditService } from "../platform/audit";
+import { lockEmailOf } from "../platform/email-hold";
+import { putBackUnnotified } from "../platform/email-notice";
 import { EmailVerificationService, RESET_TOKEN_PREFIX, resetTokenId } from "../platform/email-verification";
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 export const RESET_TTL_MS = 30 * 60 * 1000;
+/** The most reset links one account can have alive at once. */
+export const RESET_LIVE_LIMIT = 3;
 const INVALID = "That reset link is invalid or expired — request a fresh one.";
 
 /** Mirrors registerSchema's password rule — one standard, two doors. */
@@ -52,7 +75,10 @@ export class PasswordResetService {
     this.verification = new EmailVerificationService(db);
   }
 
-  /** Issue a reset token. Constant-shape work whether the email exists or not. */
+  /**
+   * Issue a reset token. Constant-shape work whether the email exists or not,
+   * and the same answer when it issues nothing for an account that has it.
+   */
   async requestReset(emailRaw: string): Promise<ResetRequest> {
     const email = emailRaw.trim().toLowerCase();
     // Generate regardless of match so the two paths cost the same.
@@ -60,19 +86,37 @@ export class PasswordResetService {
     const hashed = sha256(rawToken);
     const expires = new Date(Date.now() + RESET_TTL_MS);
 
-    const user = await this.db.user.findUnique({ where: { email } });
-    if (!user) return { issued: null };
+    await putBackUnnotified(this.db, { address: email });
+    const found = await this.db.user.findUnique({ where: { email }, select: { id: true } });
+    if (!found) return { issued: null };
+    const userId = found.id;
 
-    const identifier = resetTokenId(user.id);
-    await this.db.verificationToken.deleteMany({ where: { identifier } });
-    await this.db.verificationToken.create({ data: { identifier, token: hashed, expires } });
-    return { issued: { userId: user.id, email, rawToken, expires } };
+    const identifier = resetTokenId(userId);
+    const made = await this.db.$transaction(async (tx) => {
+      await lockEmailOf(tx, userId);
+      // Read again under the lock: an email change or an undo that committed meanwhile took the address away.
+      if ((await tx.user.count({ where: { id: userId, email } })) === 0) return false;
+      // Links that ran out make room; live ones stay, whoever asks.
+      await tx.verificationToken.deleteMany({ where: { identifier, expires: { lt: new Date() } } });
+      if ((await tx.verificationToken.count({ where: { identifier } })) >= RESET_LIVE_LIMIT) return false;
+      await tx.verificationToken.create({ data: { identifier, token: hashed, expires } });
+      return true;
+    });
+    return { issued: made ? { userId, email, rawToken, expires } : null };
+  }
+
+  /** Drop a reset link that could not be sent, so it never counts toward the account's live links. */
+  async revoke(issued: { userId: string; rawToken: string }) {
+    await this.db.verificationToken.deleteMany({
+      where: { identifier: resetTokenId(issued.userId), token: sha256(issued.rawToken) },
+    });
   }
 
   /**
    * Complete a reset. The new password is validated BEFORE the token is
    * consumed, so a typo never burns the link. Success rewrites the
-   * credential and signs the account out everywhere.
+   * credential and signs the account out everywhere. The link names the
+   * account, so its lock is taken before the link is spent.
    */
   async resetPassword(rawToken: string, newPassword: string) {
     const parsed = newPasswordSchema.safeParse(newPassword);
@@ -91,7 +135,10 @@ export class PasswordResetService {
 
     const passwordHash = await hashPassword(parsed.data);
     await this.db.$transaction(async (tx) => {
-      // Spend this link first: a second use of it, even a parallel one, finds nothing.
+      // The account's lock first, as every flow that changes its password, address or links takes it:
+      // an email change or an undo at the same moment runs before or after this one, never halfway.
+      await lockEmailOf(tx, userId);
+      // Then spend this link: a second use of it, even a parallel one, finds nothing.
       const spent = await tx.verificationToken.deleteMany({ where: { token: token.token } });
       if (spent.count === 0) throw new InvalidResetTokenError(INVALID);
       await tx.passwordCredential.upsert({

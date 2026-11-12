@@ -24,7 +24,7 @@ These are set on the Vercel project. Nothing here needs you.
 | Function region | `iad1` (Washington), the same region as the database |
 | Database | Neon store `neon-beige-kite`, region `iad1`, Free plan. The integration supplies `DATABASE_URL` (pooled, used by the site) and `DATABASE_URL_UNPOOLED` (direct, used for migrations and seeds) |
 | `AFFILIATE_HASH_SECRET` | Generated, sensitive. Salts the hashes of affiliate clicks |
-| `CRON_SECRET` | Generated, sensitive. The daily order sweep (`/api/cron/expire-orders`) refuses calls without it |
+| `CRON_SECRET` | Generated, sensitive. The daily order sweep (`/api/cron/expire-orders`) and email-change sweep (`/api/cron/email-holds`) refuse calls without it |
 | `SEED_ON_DEPLOY=1` | First launch only. Remove it after the first successful production deploy |
 | `ENABLE_EXPERIMENTAL_COREPACK=1` | Makes Vercel use the exact pnpm version in `package.json` |
 
@@ -47,6 +47,17 @@ The first production deploy creates this admin account. **Without these two
 the deploy stops before it touches the database**, with a message saying so,
 and nothing goes live. Never paste the password into a chat or a commit.
 
+Type the address in any case you like, without quote marks (Vercel keeps
+them). It is stored the way sign-in reads it, trimmed and in lower case. An
+address sign-in would refuse stops the deploy before it touches the database.
+
+`ADMIN_EMAIL` only makes the first admin. Changing it later creates no second
+admin while you can sign in: add admins in `/admin/members` instead.
+
+Use a mailbox you read. The deploy does not confirm the address, because it
+cannot know the mailbox is yours; you confirm it after launch (step 5). Until
+you do, a change away from it carries no undo link (DR-32).
+
 After launch you can delete `ADMIN_PASSWORD` from Vercel. The seed only sets
 the password when it creates the account, so a later deploy never resets it.
 
@@ -54,8 +65,10 @@ the password when it creates the account, so a later deploy never resets it.
 
 Without email, members can still sign up, learn, earn certificates, use the
 community and THC. What does not work: confirming an email address (needed to
-join the affiliate programme), password reset, and the email-change undo link.
-The site says so plainly instead of pretending an email was sent.
+join the affiliate programme), password reset, and changing an account's
+email address at all: the link to the new address could never arrive, so
+Settings refuses the change. The site says so plainly instead of pretending
+an email was sent.
 
 1. In Resend (resend.com), add your domain and create the DNS records it shows
    you at your domain registrar.
@@ -94,23 +107,48 @@ Merging `build/full-platform` into `main` starts the production deploy.
 `scripts/vercel-build.sh` runs on every Vercel build:
 
 - **Production** (`VERCEL_ENV=production`):
-  1. applies any pending migrations over the direct connection;
-  2. if `SEED_ON_DEPLOY=1`: runs the seeds, in order (base and admin,
+  1. takes the deploy lock: if another build is migrating or seeding the
+     same database, it says so and waits for it to finish;
+  2. applies any pending migrations over the direct connection;
+  3. if `SEED_ON_DEPLOY=1`: runs the seeds, in order (base and admin,
      academy, content, shop, community);
-  3. builds the site.
+  4. lets go of the lock and builds the site.
 - **Preview** (any other branch): builds the site only. **A preview never
   touches the database.**
 
 Any failure stops the deploy, and the last good deployment stays live.
 
-Every seed is safe to run twice. `SEED_ON_DEPLOY` still comes off after the
-first deploy, so a later deploy cannot rewrite content your staff have edited.
-`seed:merch` is never run by a deploy: its prices are placeholders.
+Two production builds can run at once, for example when you redeploy while
+one is still building. The second waits at step 1, then finds the migrations
+applied and nothing left for the seeds to add.
+
+Every seed is safe to run again on the live database. A re-run adds what is
+missing and never rewrites what staff can change in the admin: prices, stock,
+what is on sale, programmes and their lessons, essays, missions, community
+categories and groups, coupons, a challenge's dates and status, passwords,
+and roles (unless no admin can sign in). It only refreshes what no admin
+screen edits: levels, ranks, achievements, and a challenge's name,
+description and rewards.
+A mission, size, essay, category or group the seeds made once is never made
+again, even after staff give it a new slug or SKU, so a renamed mission cannot
+pay twice. `SEED_ON_DEPLOY` still comes off after the first deploy: seeding
+slows every deploy, and a programme staff give a new slug would come back
+under its old one as an empty draft. `docs/DEPLOYMENT.md`, "Running the seeds
+again", has the details. `seed:merch` is never run by a deploy: its
+prices are placeholders.
 
 ## 5 · After the first deploy (10 min)
 
 1. Delete `SEED_ON_DEPLOY` from the Vercel environment variables.
-2. Check it yourself, as a stranger would:
+2. Confirm the admin's address, once Resend shows your domain as verified:
+   sign in as the admin, press **Send a new link** in the "Confirm your
+   email" banner (or in Settings → Email), and open the link it emails you.
+   The deploy left it unconfirmed, the build log says so, and until it is
+   confirmed, someone who learns the admin password and moves the account to
+   another address leaves you no undo link, only a day's notice. Confirmed,
+   the address is held for 7 days after any change, with a link that puts it
+   back.
+3. Check it yourself, as a stranger would:
    - [ ] The home page, About (Harsha), the four programmes, Earn and the
          policy pages load on your domain.
    - [ ] Create an account with an email you own. Onboarding works and you
@@ -120,7 +158,7 @@ first deploy, so a later deploy cannot rewrite content your staff have edited.
    - [ ] Enrol in a programme, finish a lesson, pass its quiz. XP rises.
    - [ ] `/admin` opens for your admin account and refuses everyone else.
    - [ ] Do the sign-up again on your phone.
-3. Delete the test account you made, or suspend it in `/admin/members`.
+4. Delete the test account you made, or suspend it in `/admin/members`.
 
 ## Card payments (when Razorpay KYC clears)
 
@@ -141,7 +179,9 @@ Merch stays in draft until it has real rupee prices and landed costs
   traffic can use up the hours; upgrade to a paid Neon plan before a marketing
   push.
 - **Vercel plan:** Hobby is for non-commercial use only. A business site
-  needs Pro. Hobby also allows the order sweep to run once a day, not more.
+  needs Pro. Hobby also allows each of the two daily sweeps (unpaid orders,
+  and email changes whose undo notice never went out) to run once a day, not
+  more.
 - **Region:** the database and the functions are in Washington (`iad1`), so
   pages reach India in roughly a quarter of a second more than they would
   from Mumbai. Moving both to Mumbai (`bom1`, Neon `aws-ap-south-1`) is a
@@ -150,7 +190,10 @@ Merch stays in draft until it has real rupee prices and landed costs
   same `DATABASE_URL` as production. They never migrate or seed, and they are
   behind Vercel login, but a preview built from an unmerged branch reads and
   writes the production database when someone uses it. Use previews to look,
-  not to test sign-ups or orders. A separate Neon branch for previews removes
+  not to test sign-ups or orders. A preview built before 12 November's
+  email-change migrations writes account rows that the live site misreads, so
+  never use one to change an account (`docs/DEPLOYMENT.md`, "Rows older code
+  writes after a migration"). A separate Neon branch for previews removes
   this.
 
 ## Rolling back

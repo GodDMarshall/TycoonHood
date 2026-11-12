@@ -59,13 +59,16 @@ export function verificationResendReply(outcome: MailOutcome, email: string): { 
 /**
  * The reply after a member asks to change their email. Nothing has changed
  * yet: the account moves only when the link sent to the new address is used.
+ * `opens`, already worded in the member's zone: when that link starts to
+ * work, if the change waits (their current address was never confirmed).
  */
-export function emailChangeReply(outcome: MailOutcome, email: string): { ok?: string; error?: string } {
+export function emailChangeReply(outcome: MailOutcome, email: string, opens?: string): { ok?: string; error?: string } {
+  const wait = opens ? ` It works from ${opens}, because your current email was never confirmed.` : "";
   switch (outcome) {
     case "sent":
-      return { ok: `We sent a confirmation link to ${email}. Your email changes when you use it.` };
+      return { ok: `We sent a confirmation link to ${email}.${wait} Your email changes when you use it.` };
     case "logged":
-      return { ok: `Dev mode: nothing was emailed. The confirmation link for ${email} is in the server log. Your email changes when you use it.` };
+      return { ok: `Dev mode: nothing was emailed. The confirmation link for ${email} is in the server log.${wait} Your email changes when you use it.` };
     case "no-mailer":
       return { error: `We couldn't send a confirmation link: email isn't available right now. Your email has not changed. ${HELP}` };
     case "failed":

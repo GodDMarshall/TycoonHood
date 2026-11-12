@@ -33,16 +33,19 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
+  id             String    @id @default(cuid())
+  email          String    @unique
+  emailVerified  DateTime?
   /// An email change waiting for its link to be used. `email` stays the
   /// sign-in and reset address until then. Not unique: the unique `email`
   /// decides who gets an address when a change is confirmed.
-  pendingEmail  String?
-  name          String?
-  image         String?
-  role          UserRole  @default(MEMBER)
+  pendingEmail   String?
+  /// When that change was asked for; set and cleared with `pendingEmail`. A
+  /// change away from an address never confirmed waits a day from then.
+  pendingEmailAt DateTime?
+  name           String?
+  image          String?
+  role           UserRole  @default(MEMBER)
 
   // Gamification cache (source of truth = XpEvent ledger below)
   xp    Int @default(0)
@@ -104,6 +107,7 @@ model User {
   couponRedemptions CouponRedemption[]
   instructorProfile Instructor?
   emailHolds        EmailHold[]
+  contactMessages   ContactMessage[]
 
   @@index([rankId])
 }
@@ -165,18 +169,23 @@ model VerificationToken {
 /// change. The hold ends early when the undo is used or the member moves
 /// back to the address.
 model EmailHold {
-  id        String   @id @default(cuid())
+  id           String    @id @default(cuid())
   /// The address the change replaced.
-  address   String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address      String    @unique
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// The address the change set. The undo works only while the account still has it.
-  changedTo String
+  changedTo    String
   /// SHA-256 of the undo link's token. Null once the link is spent or a later
   /// change ended it; the hold itself lasts until `expires`.
-  undoToken String?  @unique
-  expires   DateTime
-  createdAt DateTime @default(now())
+  undoToken    String?   @unique
+  /// When the mail provider accepted the notice carrying the undo link. Null
+  /// while it is being sent. A change whose notice is still not recorded a
+  /// few minutes after `createdAt` is put back (platform/email-notice).
+  noticeSentAt DateTime?
+  expires      DateTime
+  /// When the change took effect (a replaced row gets the new change's time).
+  createdAt    DateTime  @default(now())
 
   @@index([userId])
 }
@@ -1548,9 +1557,14 @@ model ContactMessage {
   topic     String
   message   String   @db.Text
   handled   Boolean  @default(false)
+  /// The account a deletion request is for, whatever its address is now.
+  /// Null for other messages, and once the account is deleted.
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
 
   @@index([handled, createdAt])
+  @@index([userId])
 }
 
 /// Genuine member stories only — published by an admin with the member's consent.

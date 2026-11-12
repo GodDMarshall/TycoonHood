@@ -146,6 +146,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   pendingEmail: 'pendingEmail',
+  pendingEmailAt: 'pendingEmailAt',
   name: 'name',
   image: 'image',
   role: 'role',
@@ -215,6 +216,7 @@ export const EmailHoldScalarFieldEnum = {
   userId: 'userId',
   changedTo: 'changedTo',
   undoToken: 'undoToken',
+  noticeSentAt: 'noticeSentAt',
   expires: 'expires',
   createdAt: 'createdAt'
 } as const
@@ -1158,6 +1160,7 @@ export const ContactMessageScalarFieldEnum = {
   topic: 'topic',
   message: 'message',
   handled: 'handled',
+  userId: 'userId',
   createdAt: 'createdAt'
 } as const
 

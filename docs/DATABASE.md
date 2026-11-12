@@ -20,8 +20,15 @@ Migrations are hand-written SQL under `packages/db/prisma/migrations/`. They are
 | `20261111180000_payment_refunded_cents` | `Payment.refundedCents` and `Payment.refundIds`: partial and dashboard refunds are counted once per provider refund id, and an order is unwound only when fully refunded. A CHECK keeps the amount between 0 and the payment. Payments already marked REFUNDED are backfilled as fully refunded |
 | `20261111190000_pending_email` | `User.pendingEmail`: an email change waiting for its link to be used. Nullable and not unique; additive only |
 | `20261111200000_email_hold` | `EmailHold`: the address an email change replaced, held for its account for 7 days, with the hash of the single-use link that undoes the change. One new table; additive only |
+| `20261112000000_contact_message_user` | `ContactMessage.userId`: the account a deletion request is for, so it stays the account's after an email change. Nullable, indexed, SET NULL when the account is deleted. Requests already filed are backfilled from the account id their text names; additive only |
+| `20261112100000_email_hold_notice_sent` | `EmailHold.noticeSentAt`: when the mail provider accepted the notice carrying the hold's undo link. A change whose notice is still not recorded a few minutes after it took effect is put back (`platform/email-notice.ts`). Nullable; holds already made are backfilled as told; additive only |
+| `20261112110000_pending_email_at` | `User.pendingEmailAt`: when the waiting email change was asked for, set and cleared with `pendingEmail`. A change away from an address never confirmed can be confirmed only a day after it (`UNCONFIRMED_CHANGE_WAIT_MS`, `platform/email-verification.ts`). Nullable; a change already waiting counts as asked for when the migration ran; additive only |
 
 `20261111000000_full_platform` is **additive only**: no column is dropped or renamed. CHECK constraints guard the money columns (amounts ≥ 0, rate between 0 and 10 000 bps, coupon percent 1–100).
+
+A backfill covers only the rows that exist when its migration runs. The three migrations of 12 November leave the new column empty in rows that code from before them writes afterwards, and the current code reads it as meaningful: see "Rows older code writes after a migration" in [`DEPLOYMENT.md`](DEPLOYMENT.md), which has the three backfills to run again.
+
+`20261112100000_email_hold_notice_sent` justifies its backfill wrongly. Its comment says the code that made the existing holds sent the notice in the same request and put the change back when it could not. That is the code that came with the migration (`d9e91e9`), so it made none of them. The code before it (`ca788c8`) sent the notice after the reply, in `after()`, and never read whether it went out, so a hold it made may belong to a change whose old address was never told. The backfill counts those as told all the same. It changes nothing on a database the current code builds from nothing, as the first production deploy does, because that database has no holds yet. The file is left as it is: the migration has been applied, and `pnpm db:migrate:sql` refuses to run on any database where an applied migration's file has changed.
 
 ## What the full-platform migration added
 
@@ -63,6 +70,7 @@ Migrations are hand-written SQL under `packages/db/prisma/migrations/`. They are
 - `CommunityCategory` and `CommunityGroup` have no `archivedAt`. Archiving is held in the SiteSetting `community.archived` for now.
 - `CommunityPost` has no `editedAt`.
 - `Order` has no `paidAt`. Paid time is read from the captured `Payment.createdAt`.
+- System ledger accounts (TREASURY, REWARDS_POOL, …) are singletons by type, but the schema does not enforce it. `db:seed` creates them one seed at a time, under a lock (DR-33). A partial unique index on `LedgerAccount(type) WHERE "userId" IS NULL` would make it a rule.
 
 ## Seeds (run in this order on a fresh database)
 
@@ -76,4 +84,4 @@ pnpm --filter @tycoonhood/db seed:shop        # categories, INR placeholder pric
 pnpm --filter @tycoonhood/db seed:community   # forum categories, programme groups, weekly missions
 ```
 
-`seed:academy` refuses to overwrite a curriculum that members have already progressed through unless you set `SEED_ACADEMY_FORCE=1`.
+Every seed is safe to run again on a live database: a re-run adds what is missing and never rewrites what staff edit in the admin (`docs/DEPLOYMENT.md`, "Running the seeds again"). `seed:academy` builds each programme once and records it in the SiteSetting `seed.academy.built`; after that the curriculum is staff's, in Admin → Courses. `SEED_ACADEMY_FORCE=1` rebuilds it from the curriculum files, which undoes every edit and erases members' progress in it. The other seeds record the missions, sizes, essays, community categories and groups they made in the SiteSettings `seed.created.<kind>` (`{ keys: [...] }`, `packages/db/src/seed-record.ts`) and never make a recorded one again, even after staff change its slug or SKU. Deleting one of those settings makes the next run count what is in the database as made.
