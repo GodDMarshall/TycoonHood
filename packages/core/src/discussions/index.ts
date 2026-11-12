@@ -35,7 +35,8 @@ export {
 } from "./posts";
 export type { ReactionKind, PostSummary, PostDetail, CommentView } from "./posts";
 export { GroupService, groups } from "./groups";
-export { ReportService, reports, DISCUSSION_REPORT_MAX } from "./reports";
+export { ReportService, reports, DISCUSSION_REPORT_MAX, REPORT_TARGET_TYPES } from "./reports";
+export type { ReportTargetType } from "./reports";
 export { ModerationService, moderation } from "./moderation";
 export { LeaderboardService, leaderboard, onLeaderboard, LEADERBOARD_SIZE } from "./leaderboard";
 export type { Leaderboard, LeaderboardRow, LeaderboardPeriod } from "./leaderboard";

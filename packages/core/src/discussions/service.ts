@@ -11,7 +11,7 @@
  * New code may import a part directly (`posts`, `groups`, `reports`,
  * `moderation`). Mind one name: `discussions.reports(viewer, status, take)` is
  * the staff moderation queue (`moderation.queue`), while the `reports` export
- * is the ReportService members file reports through.
+ * is the ReportService members file reports through (`reports.file`).
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { ModerationState, PrismaClient } from "@tycoonhood/db";
@@ -134,9 +134,9 @@ export class DiscussionService {
 
   // ─────────────────────────────── reports
 
-  /** A member reports a post or comment. */
+  /** A member reports a post or comment, through `reports.file` like every other report. */
   async report(viewer: DiscussionViewer, target: { type: TargetType; id: string }, rawReason: string) {
-    return this.parts.reports.report(viewer, target, rawReason);
+    await this.parts.reports.file(viewer, { targetType: target.type, targetId: target.id, reason: rawReason });
   }
 
   /** The moderation queue (`moderation.queue`), with each report's target resolved
