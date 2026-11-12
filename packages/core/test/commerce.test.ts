@@ -1,6 +1,7 @@
-import { afterAll, describe, it, expect } from "vitest";
+import { afterAll, describe, it, expect, vi } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import { CommerceService, OutOfStockError } from "../src/commerce/commerce";
+import { events } from "../src/events/bus";
 import { LedgerService, InsufficientFundsError } from "../src/ledger/ledger";
 import { createTestUser, uid } from "./helpers";
 
@@ -98,12 +99,30 @@ describe("Commerce — fiat settlement path", () => {
     expect(order.status).toBe("PENDING");
 
     const settled = await commerce.settleFiatOrder(order.id, "test_ref_1");
-    expect(settled.status).toBe("PAID"); // physical stays PAID until shipped
+    expect(settled).toMatchObject({ settled: true, order: { status: "PAID" } }); // physical stays PAID until shipped
     const again = await commerce.settleFiatOrder(order.id, "test_ref_2");
-    expect(again.paymentRef).toBe("test_ref_1"); // no re-settle
+    expect(again).toMatchObject({ settled: false, order: { status: "PAID", paymentRef: "test_ref_1" } }); // no re-settle
 
     const note = await prisma.notification.count({ where: { userId: user.id, type: "ORDER" } });
     expect(note).toBe(1);
+  });
+
+  it("settles once when settlements race: one conditional write wins and fulfils, the rest change nothing", async () => {
+    const user = await createTestUser();
+    const order = await commerce.createFiatOrder(user.id, "founders-playbook", "test");
+    const emit = vi.spyOn(events, "emit");
+    let results: Awaited<ReturnType<typeof commerce.settleFiatOrder>>[];
+    try {
+      results = await Promise.all([1, 2, 3, 4, 5].map((n) => commerce.settleFiatOrder(order.id, `race_ref_${n}`)));
+      expect(emit.mock.calls.filter(([e]) => e.type === "PURCHASE_MADE" && e.orderId === order.id)).toHaveLength(1);
+    } finally {
+      emit.mockRestore();
+    }
+    expect(await prisma.notification.count({ where: { userId: user.id, type: "ORDER" } })).toBe(1);
+    const winners = results.filter((r) => r.settled);
+    expect(winners).toHaveLength(1);
+    // Every call, the four that changed nothing included, reports the order as the winner left it.
+    for (const r of results) expect(r.order).toMatchObject({ status: "FULFILLED", paymentRef: winners[0].order.paymentRef });
   });
 
   it("cancelFiatOrder restores physical inventory", async () => {

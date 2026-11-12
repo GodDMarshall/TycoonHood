@@ -71,21 +71,22 @@ export class LmsService {
    * Free enrolment (DR-6 still open: every published programme is free).
    * DRAFT and ARCHIVED programmes cannot be joined. A member's first
    * enrolment promotes MEMBER → STUDENT (never demotes a staff role).
+   * Runs inside `db` when it is a transaction (a paid order's fulfilment).
    */
-  async enroll(userId: string, courseSlug: string) {
-    const course = await this.db.course.findUnique({ where: { slug: courseSlug } });
+  async enroll(userId: string, courseSlug: string, db: Prisma.TransactionClient = this.db) {
+    const course = await db.course.findUnique({ where: { slug: courseSlug } });
     if (!course || course.status !== "PUBLISHED") {
       throw new CourseUnavailableError("This program is not open for enrolment.");
     }
-    const enrollment = await this.db.enrollment.upsert({
+    const enrollment = await db.enrollment.upsert({
       where: { userId_courseId: { userId, courseId: course.id } },
       update: {},
       create: { userId, courseId: course.id },
     });
-    const user = await this.db.user.findUnique({ where: { id: userId }, select: { role: true } });
+    const user = await db.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (user) {
       const next = promoteTo(user.role, "STUDENT");
-      if (next !== user.role) await this.db.user.update({ where: { id: userId }, data: { role: next } });
+      if (next !== user.role) await db.user.update({ where: { id: userId }, data: { role: next } });
     }
     return enrollment;
   }

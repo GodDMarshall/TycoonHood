@@ -18,6 +18,11 @@
  * seed-shop. A cost an admin entered is left alone too (placeholderMoney says
  * exactly when a cost is replaced).
  *
+ * Re-running also leaves alone what staff manage in /admin/products: whether
+ * an item is live, its stock, its image and its THC price (and the same for
+ * each size). Only the name and description are refreshed. A product or size
+ * the database does not have yet is created as a draft.
+ *
  * Idempotent — upserts by slug. Run: pnpm db:seed:merch
  */
 import { prisma } from "./client";
@@ -110,7 +115,8 @@ async function main() {
     };
     const product = await prisma.product.upsert({
       where: { slug: p.slug },
-      update: data,
+      // Staff own whether it is live, its stock, its image and its THC price once it exists.
+      update: { name: data.name, description: data.description, ...money.data },
       create: { ...data, slug: p.slug },
     });
     if (money.clearSizeFiat) {
@@ -134,7 +140,7 @@ async function main() {
         };
         await prisma.productVariant.upsert({
           where: { sku },
-          update: vdata,
+          update: { label: vdata.label, sortOrder: vdata.sortOrder },
           create: { productId: product.id, sku, ...vdata },
         });
       }
@@ -168,7 +174,9 @@ async function main() {
         active: false,
         sortOrder: videoCount,
       };
-      await prisma.watchTask.upsert({ where: { slug }, update: data, create: { ...data, slug } });
+      // A video staff have put live stays live.
+      const { active: _draft, ...refresh } = data;
+      await prisma.watchTask.upsert({ where: { slug }, update: refresh, create: { ...data, slug } });
       videoCount++;
     }
   }
