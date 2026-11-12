@@ -4593,16 +4593,33 @@ These are the results on the database with fixture data (see 0.4). The first dra
   3. the existing `SEED_ON_DEPLOY` block, unchanged, still for the first deploy only
 
   The taxonomy seed therefore runs under the same lock as the migrations, so two builds at once cannot both create the same row. Preview builds still never touch the database. `scripts/deploy-db.mjs` gets the same step straight after "apply migrations", and `DEPLOY_SEEDS` in `packages/core/test/throwaway-db.ts` starts with it (d.1).
-- **Live production.** These migrations assume that no older build writes to the database after they have run. That is true for the first production deploy, because production has never run; the parent task "watch production deploy" is still open. If a production build goes live before these migrations ship, deploy them in a short maintenance window. Otherwise split three changes into a second migration that ships with the code that writes the new columns:
-  - `MissionCompletion.occurrence` SET NOT NULL. An older build inserts completions without it.
-  - The RESTRICT on `CommunityPost.groupId`. An older build may delete groups.
-  - The `Post.status` backfill. Posts an older build publishes would stay DRAFT under the new reading rule.
+- **Live production.** These migrations assume that no older build writes to the database after they have run, and nothing in the deploy makes sure of it. `scripts/vercel-build.sh` migrates before `next build`, so the previous production deployment keeps serving and writing while the new one builds, and goes on doing so if a later step fails. Every older preview that someone uses writes too, because previews get the production `DATABASE_URL` (DEPLOYMENT.md, "Rows older code writes after a migration"). Before the first production deploy only older previews can do this, since production has never run; the parent task "watch production deploy" is still open. A short maintenance window would need a way to stop the previous deployment and older previews writing, and the deploy has none yet. An older build (the code at `a2c1497`) writing after these migrations does the following; the first four were confirmed by replaying its writes on the migrated test database:
+  - `MissionCompletion.occurrence` SET NOT NULL (000400). `rewards.ts` inserts a completion without it, and the insert is refused. The rules engine rethrows and the fail-soft `events.emit` swallows the error, so the member keeps what they did but gets no XP, THC or notice for the mission. Nothing records the miss, so no statement can restore it.
+  - `Referral.signupIp`, which 000100 empties. `referrals.attach` writes the raw signup IP again, which breaks the house rule until the column is emptied again or dropped (g.13).
+  - `Session.ipHash`, which 000100 empties. `session.ts` writes the unkeyed SHA-256 prefix again. It can be reversed by trying every IPv4 address, and it never matches a keyed click hash, so the self-dealing check in `earn/affiliates.ts` misses those sessions. It is as long as an `ipKey`, so only its time tells the two apart.
+  - `Order.paidAt`, which 000100 backfills. `commerce.ts` and `shop/checkout.ts` mark orders PAID without it, so those orders keep no paid time, which reads as never paid.
+  - The RESTRICT on `CommunityPost.groupId` (000500). An older build may delete groups.
+  - The `Post.status` backfill (000700). Posts an older build publishes would stay DRAFT under the new reading rule. When its essay editor unpublishes a live post, `Post_live_has_time` refuses the write, because that editor writes only `publishedAt`.
+
+  How to close this is the lead's decision (g.18). The options:
+  - A maintenance window, once something can stop the previous deployment and older previews writing.
+  - Move these changes into a later migration, shipped in the release after the one whose code writes the new columns.
+  - Transitional triggers, the review's lowest-friction option: in 000400, a BEFORE INSERT trigger on `MissionCompletion` that fills a missing `occurrence` from the key as the backfill does; in 000100, a BEFORE INSERT OR UPDATE trigger that sets `Referral.signupIp` to NULL. A BEFORE UPDATE trigger on `Order` could likewise set a missing `paidAt` when the status becomes PAID. A later migration drops them, with the column (g.13).
+
+  Whichever option is chosen, run a clean-up once the current code is live and no preview from before these migrations is in use. No trigger can tell an older build's `Session.ipHash` from a keyed one, so the first statement empties the hashes of sessions opened before the current deployment went live; give that time in UTC. The second empties any signup IP an older build wrote, since no current code writes the column. Then run the two `Order.paidAt` statements of 000100 (c.3) again, unless a trigger set it. Each fills only an empty `paidAt`. An order settled through Stripe or the dev provider leaves no audit row, so it stays empty, as in the migration:
+
+  ```sql
+  UPDATE "Session" SET "ipHash" = NULL
+  WHERE "ipHash" IS NOT NULL AND "createdAt" < '2026-11-20 09:30:00'; -- when the current deployment went live, in UTC
+
+  UPDATE "Referral" SET "signupIp" = NULL WHERE "signupIp" IS NOT NULL;
+  ```
 - **000900 lands later.** It is committed with DAILY-B. Every database built before then, the stream databases and the lead's, applies it when DAILY-B merges. It only copies rows and removes a JSON key, so it is safe on a database where members made challenge submissions in the meantime.
 - **Schema changes after P0.** A later change is a new migration file named after the last one. No file that has been applied anywhere is edited: `migrate-sql.ts` checksums each file, comments included, and refuses one whose checksum changed. Stream databases are recreated with `scripts/db/create-stream-db.mjs`.
 - **`btree_gist`.** Neon lists it among its supported extensions. Confirm it on the production branch before the first deploy. If it is refused, leave 000800 out: the booking code's row lock on `MentorProfile` still prevents double booking.
 - **Drift checks.** Any script that runs `prisma migrate diff --exit-code` between the migrations and the schema must ignore the five `ALTER COLUMN "searchVector" DROP DEFAULT` lines. The smallest change is to filter exactly those lines before deciding.
 - **Session hashes.** Nulling `Session.ipHash` empties the history that `earn/affiliates.ts:540-545` compares when it looks for self-dealing. New sessions refill it within the window. Before launch this has no effect.
-- **Rollback.** Every migration is additive apart from the two constraint changes in b.1. Code that predates them keeps working against the new schema. The exceptions are the three changes listed under "Live production" above.
+- **Rollback.** Every migration is additive apart from the two constraint changes in b.1. Code that predates them keeps working against the new schema. The exceptions are the changes listed under "Live production" above.
 
 ## d. Seeds
 
@@ -5964,7 +5981,7 @@ Each item says who must answer it and what happens until then.
 15. **Testimonials on account deletion.** `Testimonial.userId` is set to null when the account is deleted, so the quote survives. Proposed: deleting the account also sets `consentWithdrawnAt`, which unpublishes it. The owner should confirm.
 16. **INSTRUCTOR and `/admin`.** Instructors keep `admin.access` for `/admin/courses`. Once `/studio` covers authoring, the owner may remove it.
 17. **Deleting a contributor's account (owner decision O36).** `ContributorAccount.user` is RESTRICT, so deleting the user is refused while the account exists (c.4, rerun). The published privacy policy promises anonymisation, so the account-deletion flow anonymises a contributor: it clears the profile, payout method and contact fields and keeps the earnings, agreements and payouts for the books. Default: keep and anonymise.
-18. **Deploy timing.** Three changes are safe only if these migrations ship before production first runs (c.5): `MissionCompletion.occurrence` SET NOT NULL, RESTRICT on `CommunityPost.groupId`, and the `Post.status` backfill. If a production build goes live first, split them into a second migration or use a maintenance window.
+18. **Deploy timing.** Six changes are safe only while no build from before these migrations writes to the database after they run (c.5, "Live production"): `MissionCompletion.occurrence` SET NOT NULL, emptying `Referral.signupIp` and `Session.ipHash`, the `Order.paidAt` backfill, RESTRICT on `CommunityPost.groupId`, and the `Post.status` backfill. Nothing makes sure of that, even at the first production deploy: older previews use the production database, and once production runs, the previous deployment keeps serving while the next one builds. The lead chooses a maintenance window (once something can stop older builds writing), a second migration shipped with the code, or transitional triggers. The `Session.ipHash` clean-up in c.5 is needed whichever is chosen.
 19. **The `fix/seed-review` branch.** Settled: `build/full-platform` merged it at `dd5810e`, and the merge of full-platform before P0a brings it in.
 20. **The key switch for IP hashes.** Moving `ipKey` to HMAC changes the affiliate click dedupe once (e.10). Before launch this has no effect.
 21. **`docs/DATABASE.md`.** It says paid time comes from `Payment.createdAt`, which is wrong (defect 3). Correct it when the migrations land.

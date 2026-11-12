@@ -35,7 +35,14 @@ Migrations are hand-written SQL under `packages/db/prisma/migrations/`. They are
 
 **Pending: `20261113000900_challenge_evidence_move`.** It is kept in [`ecosystem/pending-migrations/`](ecosystem/pending-migrations/README.md), not in `packages/db/prisma/migrations/`, so no database applies it yet. It moves the challenge submissions kept as JSON in `ChallengeParticipation.progress` into `EvidenceSubmission` rows. It lands in the same merge as DAILY-B's change that makes `gamification/challenges.ts` read and write `EvidenceSubmission`. Applied earlier, it would empty the store today's challenge code reads, and submissions made after it ran would stay behind in the JSON, because a migration runs only once. The README there has the details.
 
-The ten living-ecosystem migrations, how they were checked and their deploy notes are in sections c.1 to c.5 of [`ecosystem/data-model.md`](ecosystem/data-model.md). They assume no build from before them writes to the database after they run, which holds for the first production deploy. If production is live before they ship, deploy them in a short maintenance window (c.5, "Live production").
+The ten living-ecosystem migrations, how they were checked and their deploy notes are in sections c.1 to c.5 of [`ecosystem/data-model.md`](ecosystem/data-model.md). They assume no build from before them writes to the database after they run, and nothing in the deploy makes sure of it. `scripts/vercel-build.sh` migrates before it builds, so the previous production deployment keeps writing while the new one builds, and after that if a later step fails. Older previews use the production database too. A build from before these migrations that writes after them:
+
+- inserts mission completions without `occurrence`, which the NOT NULL refuses, so the mission pays nothing and the fail-soft event bus hides the error;
+- writes the raw signup IP to `Referral.signupIp`, which 000100 emptied;
+- stores an unkeyed SHA-256 of the IP in `Session.ipHash`, which 000100 emptied because such a hash can be reversed;
+- marks orders PAID without `Order.paidAt`.
+
+Section c.5 ("Live production") lists these with the community and blog effects, the ways to close the gap, and the clean-up to run once the current code is live. A short maintenance window first needs a way to stop older builds writing, which the deploy does not have. The choice is the lead's (g.18).
 
 `20261111000000_full_platform` is **additive only**: no column is dropped or renamed. CHECK constraints guard the money columns (amounts ≥ 0, rate between 0 and 10 000 bps, coupon percent 1–100).
 
