@@ -1,12 +1,14 @@
 /**
  * The web app's email-change actions, run as written: which address gets
  * the notice with the undo link when a change is confirmed
- * (verifyEmailAction), what happens when it cannot be sent, and how a
- * refused request words its time (changeEmailAction). Also a reset request
- * whose email cannot be sent (forgotPasswordAction). Stand-ins: the mail
- * provider, which records what it is given and accepts or refuses it;
- * Next's after(), whose work the test runs when the response would have
- * gone, and its cache; and the request's session and device.
+ * (verifyEmailAction), what happens when it cannot be sent, or when the
+ * request dies while sending it, and how a refused request words its time
+ * (changeEmailAction). Also a reset request whose email cannot be sent
+ * (forgotPasswordAction), and the cron route that puts back changes whose
+ * notice never went out. Stand-ins: the mail provider, which records what it
+ * is given and accepts it, refuses it or never answers; Next's after(),
+ * whose work the test runs when the response would have gone, its cache and
+ * its JSON response; and the request's session and device.
  */
 import { createHash } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -16,12 +18,13 @@ import { SessionService } from "../src/auth/session";
 import { PasswordResetService } from "../src/auth/password-reset";
 import { AccountSettingsService } from "../src/platform/account-settings";
 import { EmailVerificationService } from "../src/platform/email-verification";
+import { emailUndo } from "../src/platform/email-undo";
 import { formatDayTime } from "../src/time/format";
 import { uid } from "./helpers";
 
 const request = vi.hoisted(() => ({ session: null as unknown }));
 const mail = vi.hoisted(() => ({
-  provider: "accepts" as "accepts" | "refuses" | "none",
+  provider: "accepts" as "accepts" | "refuses" | "none" | "hangs",
   outbox: [] as { to: string; subject: string; text: string; accepted: boolean }[],
   afterResponse: [] as (() => unknown)[],
 }));
@@ -32,6 +35,8 @@ vi.mock("../../../apps/web/lib/mail/index", () => {
     async send(m: { to: string; subject: string; text: string }) {
       const accepted = mail.provider === "accepts";
       mail.outbox.push({ to: m.to, subject: m.subject, text: m.text, accepted });
+      // A provider that never answers, and a request that never gets past it: the platform ends it there.
+      if (mail.provider === "hangs") return new Promise<never>(() => {});
       return { delivered: accepted, detail: accepted ? "accepted" : "refused" };
     },
   };
@@ -44,6 +49,7 @@ vi.mock("../../../apps/web/node_modules/next/server.js", () => ({
   after: (work: () => unknown) => {
     mail.afterResponse.push(work);
   },
+  NextResponse: { json: (body: unknown, init?: { status?: number }) => Response.json(body, { status: init?.status ?? 200 }) },
 }));
 vi.mock("../../../apps/web/node_modules/next/cache.js", () => ({ revalidatePath: () => {} }));
 vi.mock("../../../apps/web/lib/auth", () => ({
@@ -97,6 +103,8 @@ async function responseSent() {
 }
 
 afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
   request.session = null;
   mail.provider = "accepts";
   mail.outbox.length = 0;
@@ -164,6 +172,87 @@ describe("Confirming an email change in the web app", () => {
     expect(mail.outbox).toEqual([expect.objectContaining({ to: oldEmail, subject: "A Tycoonhood account changed its email" })]);
     expect(mail.outbox[0]!.text).not.toMatch(/undo-email/);
     expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(newEmail);
+  });
+
+  it("when the notice went out, the hold records it and the change stands", async () => {
+    const { verifyEmailAction } = await actions();
+    const { user, newEmail, link } = await memberAsking(true);
+    expect(await verifyEmailAction(link, {}, new FormData())).toMatchObject({ done: "email-changed", email: newEmail });
+    const hold = await prisma.emailHold.findFirstOrThrow({ where: { userId: user.id } });
+    expect(hold.noticeSentAt).toBeInstanceOf(Date);
+  });
+
+  it("when the notice went out but could not be recorded, the change is put back and the member is told", async () => {
+    const { verifyEmailAction } = await actions();
+    const { user, oldEmail, link } = await memberAsking(true);
+    vi.spyOn(emailUndo, "markNoticeSent").mockRejectedValueOnce(new Error("Timed out fetching a new connection from the connection pool."));
+    const state = await verifyEmailAction(link, {}, new FormData());
+    expect(state.error).toMatch(/didn't go through/);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+  });
+
+  it("when putting the change back fails, the member is told it will be undone, and the sweep does it", async () => {
+    const { verifyEmailAction } = await actions();
+    const { user, oldEmail, newEmail, link } = await memberAsking(true);
+    mail.provider = "refuses";
+    const failing = vi
+      .spyOn(emailUndo, "revertUnnotified")
+      .mockRejectedValueOnce(new Error("Timed out fetching a new connection from the connection pool."));
+    const state = await verifyEmailAction(link, {}, new FormData());
+    expect(failing).toHaveBeenCalled();
+    expect(state.done).toBeUndefined();
+    expect(state.error).toMatch(/won't go through/);
+    expect(state.error).not.toContain(oldEmail);
+    expect(state.retry).toBe(false);
+    // For now the change stands, recorded as never told. Once it is old enough, the sweep puts it back.
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(newEmail);
+    await prisma.emailHold.updateMany({ where: { userId: user.id }, data: { createdAt: new Date(Date.now() - 60 * 60_000) } });
+    expect(await emailUndo.putBackUnnotified({ userId: user.id })).toBe(1);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+  });
+});
+
+describe("A confirmation whose request dies while the undo notice is being sent", () => {
+  /** Use the link with a provider that never answers. Returns once the change has taken effect and its notice is stuck. */
+  async function confirmedThenStuck(link: string, oldEmail: string) {
+    const { verifyEmailAction } = await actions();
+    mail.provider = "hangs";
+    void verifyEmailAction(link, {}, new FormData());
+    for (let i = 0; i < 300 && !mail.outbox.some((m) => m.to === oldEmail); i++) await new Promise((r) => setTimeout(r, 10));
+    expect(mail.outbox.some((m) => m.to === oldEmail && m.text.includes("/undo-email/"))).toBe(true);
+    mail.provider = "accepts";
+  }
+
+  /** As if the change took effect an hour ago. */
+  const anHourOn = (userId: string) =>
+    prisma.emailHold.updateMany({ where: { userId }, data: { createdAt: new Date(Date.now() - 60 * 60_000) } });
+
+  it("is put back when the owner, told nothing, asks for a reset link for their address, and the link reaches them", async () => {
+    const { forgotPasswordAction } = await actions();
+    const { user, oldEmail, newEmail, link } = await memberAsking(true);
+    await confirmedThenStuck(link, oldEmail);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(newEmail);
+    await anHourOn(user.id);
+
+    const form = new FormData();
+    form.set("email", oldEmail);
+    expect((await forgotPasswordAction({}, form)).done).toBeTruthy();
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+    const reset = mail.outbox.filter((m) => m.accepted && m.text.includes("/reset-password/"));
+    expect(reset.map((m) => m.to)).toEqual([oldEmail]);
+  });
+
+  it("is put back by the daily sweep, which only Vercel Cron may call", async () => {
+    const { user, oldEmail, link } = await memberAsking(true);
+    await confirmedThenStuck(link, oldEmail);
+    await anHourOn(user.id);
+    vi.stubEnv("CRON_SECRET", "cron-test-secret");
+    const { GET } = await webModule<{ GET: (req: Request) => Promise<Response> }>("app/api/cron/email-holds/route.ts");
+    expect((await GET(new Request("http://localhost/api/cron/email-holds"))).status).toBe(401);
+    const res = await GET(new Request("http://localhost/api/cron/email-holds", { headers: { authorization: "Bearer cron-test-secret" } }));
+    expect(res.status).toBe(200);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+    expect(await prisma.emailHold.count({ where: { userId: user.id } })).toBe(0);
   });
 });
 

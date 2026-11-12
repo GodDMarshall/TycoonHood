@@ -122,7 +122,8 @@ export async function holdReplacedAddress(
   if (!change.verified) return null;
   const rawToken = randomBytes(32).toString("base64url");
   const expires = new Date(Date.now() + EMAIL_HOLD_MS);
-  const hold = { userId, changedTo, undoToken: sha256(rawToken), expires };
+  // Its notice is not sent yet: the web app records it when it is (platform/email-notice).
+  const hold = { userId, changedTo, undoToken: sha256(rawToken), noticeSentAt: null, expires };
   // A row another account left for this address, after its hold ran out, is replaced.
   await tx.emailHold.upsert({
     where: { address },

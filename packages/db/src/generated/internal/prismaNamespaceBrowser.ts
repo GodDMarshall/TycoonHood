@@ -215,6 +215,7 @@ export const EmailHoldScalarFieldEnum = {
   userId: 'userId',
   changedTo: 'changedTo',
   undoToken: 'undoToken',
+  noticeSentAt: 'noticeSentAt',
   expires: 'expires',
   createdAt: 'createdAt'
 } as const

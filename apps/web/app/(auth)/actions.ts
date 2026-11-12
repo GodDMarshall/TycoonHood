@@ -229,6 +229,37 @@ export interface VerifyState {
 const CHANGE_NOT_TOLD =
   "We couldn't email your old address about this change, so it didn't go through. Your email has not changed. " +
   "You may need to sign in again on your other devices. Ask for the change again in a few minutes.";
+/** When the change could not be put back here: the sweep puts it back once it is a few minutes old (platform/email-notice). */
+const CHANGE_NOT_TOLD_YET =
+  "We couldn't email your old address about this change, so it won't go through. It will be undone on its own. " +
+  "You may need to sign in again on your other devices. Ask for the change again in 15 minutes.";
+
+/** Records on the hold that the undo notice went out. False if that failed: unrecorded, the change would be put back later. */
+async function noticeRecorded(userId: string, rawUndo: string): Promise<boolean> {
+  try {
+    await emailUndo.markNoticeSent(rawUndo);
+    return true;
+  } catch (e) {
+    console.error(`[email-change] the undo notice for ${userId} went out but could not be recorded`, e);
+    return false;
+  }
+}
+
+/**
+ * Puts back a change whose old address was not told, and says so. Never
+ * throws: if putting it back fails, the hold stays unrecorded and the sweep
+ * puts the change back once it is a few minutes old.
+ */
+async function putBackUntold(userId: string, rawUndo: string): Promise<VerifyState | null> {
+  try {
+    if (await emailUndo.revertUnnotified(rawUndo)) return { error: CHANGE_NOT_TOLD, retry: false };
+    console.error(`[email-change] the old address was not told, and the account moved again since: ${userId}`);
+    return null;
+  } catch (e) {
+    console.error(`[email-change] could not put back the change for ${userId}; the sweep will`, e);
+    return { error: CHANGE_NOT_TOLD_YET, retry: false };
+  }
+}
 
 /**
  * Uses a link from an email: a confirmation link, or the link that confirms
@@ -253,12 +284,13 @@ export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: 
     const { user, previousEmail, undo } = result;
     if (undo) {
       // A confirmed old address gets the link that undoes the change; it is held for the account meanwhile.
-      // The link exists only in this request, so the change stands only if that notice went out:
-      // with no mail provider, or one that refused it, the change is put back.
+      // The link exists only in this request, so the change stands only once that notice has gone out and
+      // the hold records it. Otherwise (no mail provider, one that refused it, or a send that timed out)
+      // it is put back here. If this request dies first, the sweep puts it back (platform/email-notice).
       const outcome = await sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken);
-      if (!mailWentOut(outcome)) {
-        if (await emailUndo.revertUnnotified(undo.rawToken)) return { error: CHANGE_NOT_TOLD, retry: false };
-        console.error(`[email-change] the old address was not told, and the account moved again since: ${user.id}`);
+      if (!mailWentOut(outcome) || !(await noticeRecorded(user.id, undo.rawToken))) {
+        const untold = await putBackUntold(user.id, undo.rawToken);
+        if (untold) return untold;
       }
     } else {
       // One never confirmed is only told, after the response, as it may not be the member's (platform/email-hold).

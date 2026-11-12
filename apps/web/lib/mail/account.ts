@@ -12,8 +12,9 @@
  * happened, and a mail failure is logged, never thrown, so it can never block
  * or undo that change. One is not: the notice that carries the link undoing
  * an email change. That link exists only in the request that made the
- * change, so the caller reads the outcome and puts the change back if the
- * notice did not go out (see verifyEmailAction).
+ * change, so the caller reads the outcome, records a notice that went out on
+ * the hold, and puts the change back if it did not (see verifyEmailAction
+ * and platform/email-notice).
  */
 import { cache } from "react";
 import {

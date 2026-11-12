@@ -26,6 +26,11 @@
  * the provider refused, in an outage or a burst someone provoked, never use
  * them up and leave the owner's own request issuing nothing.
  *
+ * A request first puts back an email change to or from the address whose
+ * undo notice never went out (platform/email-notice). An owner who was told
+ * nothing finds that their address no longer signs in and asks for a reset
+ * link: the account is theirs again, and the link goes to them.
+ *
  * Anti-enumeration: requestReset() does the same work and returns the
  * same shape whether or not the email exists, and whether or not it issued
  * a link. The caller reveals nothing either way.
@@ -38,6 +43,7 @@ import { hashPassword } from "./password";
 import { SessionService } from "./session";
 import { AuditService } from "../platform/audit";
 import { lockEmailOf } from "../platform/email-hold";
+import { putBackUnnotified } from "../platform/email-notice";
 import { EmailVerificationService, RESET_TOKEN_PREFIX, resetTokenId } from "../platform/email-verification";
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
@@ -80,6 +86,7 @@ export class PasswordResetService {
     const hashed = sha256(rawToken);
     const expires = new Date(Date.now() + RESET_TTL_MS);
 
+    await putBackUnnotified(this.db, { address: email });
     const found = await this.db.user.findUnique({ where: { email }, select: { id: true } });
     if (!found) return { issued: null };
     const userId = found.id;

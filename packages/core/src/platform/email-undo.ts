@@ -24,9 +24,11 @@
  * platform/email-hold, which also explains the locks).
  *
  * The raw link exists only in the request that confirmed the change, and
- * only one notice ever carries it. When that notice cannot be sent, the web
- * app puts the change back at once (revertUnnotified), so no change stands
- * that its old address was never told of.
+ * only one notice ever carries it. The hold records when that notice went
+ * out. When it cannot be sent, the web app puts the change back at once
+ * (revertUnnotified); when the request dies before it can, the sweep puts it
+ * back a few minutes later (putBackUnnotified, platform/email-notice). So no
+ * change stands that its old address was never told of.
  */
 import { createHash, randomBytes } from "node:crypto";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
@@ -37,6 +39,7 @@ import { RESET_TTL_MS } from "../auth/password-reset";
 import { DELETION_TOPIC } from "./account-settings";
 import { AuditService } from "./audit";
 import { lockEmailOf } from "./email-hold";
+import { markNoticeSent, putBackChange, putBackUnnotified } from "./email-notice";
 import { emailChangeTokenId, resetTokenId } from "./email-verification";
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
@@ -150,44 +153,26 @@ export class EmailUndoService {
    * signed out (the web app tells the member). It ends the hold and the
    * links the change made: reset links, any link for the address taken off,
    * and a waiting change. Audited. Returns false, changing nothing, when the
-   * hold is gone or the account has moved again since.
+   * hold is gone, its notice is recorded as sent, or the account has moved
+   * again since. See platform/email-notice.
    */
   async revertUnnotified(rawToken: string): Promise<boolean> {
     if (!rawToken || rawToken.length > 200) return false;
-    const undoToken = sha256(rawToken);
-    const found = await this.db.emailHold.findUnique({ where: { undoToken }, select: { userId: true } });
-    if (!found) return false;
-    return withDeadlockRetry(() =>
-      this.db.$transaction(async (tx) => {
-        await lockEmailOf(tx, found.userId);
-        // Read again under the lock, as undo() does.
-        const hold = await tx.emailHold.findUnique({ where: { undoToken } });
-        if (!hold) return false;
-        const userId = hold.userId;
-        const user = await tx.user.findUniqueOrThrow({ where: { id: userId }, select: { email: true } });
-        if (user.email !== hold.changedTo) return false;
+    return putBackChange(this.db, { undoToken: sha256(rawToken) });
+  }
 
-        await tx.emailHold.delete({ where: { id: hold.id } });
-        await tx.user.update({
-          where: { id: userId },
-          data: { email: hold.address, emailVerified: new Date(), pendingEmail: null },
-        });
-        await tx.verificationToken.deleteMany({
-          where: { identifier: { in: [hold.changedTo, resetTokenId(userId), emailChangeTokenId(userId)] } },
-        });
-        await this.audit.log(
-          {
-            actorId: userId,
-            action: "account.email.change.revert",
-            targetType: "User",
-            targetId: userId,
-            meta: { from: hold.changedTo, to: hold.address, reason: "notice-not-sent" },
-          },
-          tx
-        );
-        return true;
-      })
-    );
+  /** Record that the notice carrying this undo link went out, so the change stands (platform/email-notice). */
+  async markNoticeSent(rawToken: string): Promise<void> {
+    await markNoticeSent(this.db, rawToken);
+  }
+
+  /**
+   * Put back the changes whose notice was never recorded as sent, once they
+   * are older than NOTICE_GRACE_MS: all of them, one account's, or those to
+   * or from one address. Returns how many (platform/email-notice).
+   */
+  async putBackUnnotified(scope: { userId?: string; address?: string } = {}): Promise<number> {
+    return putBackUnnotified(this.db, scope);
   }
 }
 

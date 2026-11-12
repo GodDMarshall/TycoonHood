@@ -15,6 +15,8 @@ export { EMAIL_HOLD_MS, EmailChangeTooSoonError, emailChangeTooSoonMessage } fro
 export type { IssuedUndo } from "./email-hold";
 export { EmailUndoService, emailUndo, InvalidUndoLinkError, UndoLinkOverError } from "./email-undo";
 export type { UndoneEmailChange } from "./email-undo";
+export { NOTICE_GRACE_MS, undoLinkState } from "./email-notice";
+export type { UndoLinkState } from "./email-notice";
 export {
   maskEmail, emailChangeLinkMail, emailChangeRequestedMail, emailChangedMail, emailChangedUnconfirmedMail,
   passwordChangedMail, emailChangeUndoneMail, emailChangeUndoneRemovedMail,

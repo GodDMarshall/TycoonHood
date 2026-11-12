@@ -24,7 +24,7 @@ These are set on the Vercel project. Nothing here needs you.
 | Function region | `iad1` (Washington), the same region as the database |
 | Database | Neon store `neon-beige-kite`, region `iad1`, Free plan. The integration supplies `DATABASE_URL` (pooled, used by the site) and `DATABASE_URL_UNPOOLED` (direct, used for migrations and seeds) |
 | `AFFILIATE_HASH_SECRET` | Generated, sensitive. Salts the hashes of affiliate clicks |
-| `CRON_SECRET` | Generated, sensitive. The daily order sweep (`/api/cron/expire-orders`) refuses calls without it |
+| `CRON_SECRET` | Generated, sensitive. The daily order sweep (`/api/cron/expire-orders`) and email-change sweep (`/api/cron/email-holds`) refuse calls without it |
 | `SEED_ON_DEPLOY=1` | First launch only. Remove it after the first successful production deploy |
 | `ENABLE_EXPERIMENTAL_COREPACK=1` | Makes Vercel use the exact pnpm version in `package.json` |
 

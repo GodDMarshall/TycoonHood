@@ -166,18 +166,23 @@ model VerificationToken {
 /// change. The hold ends early when the undo is used or the member moves
 /// back to the address.
 model EmailHold {
-  id        String   @id @default(cuid())
+  id           String    @id @default(cuid())
   /// The address the change replaced.
-  address   String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address      String    @unique
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// The address the change set. The undo works only while the account still has it.
-  changedTo String
+  changedTo    String
   /// SHA-256 of the undo link's token. Null once the link is spent or a later
   /// change ended it; the hold itself lasts until `expires`.
-  undoToken String?  @unique
-  expires   DateTime
-  createdAt DateTime @default(now())
+  undoToken    String?   @unique
+  /// When the mail provider accepted the notice carrying the undo link. Null
+  /// while it is being sent. A change whose notice is still not recorded a
+  /// few minutes after `createdAt` is put back (platform/email-notice).
+  noticeSentAt DateTime?
+  expires      DateTime
+  /// When the change took effect (a replaced row gets the new change's time).
+  createdAt    DateTime  @default(now())
 
   @@index([userId])
 }

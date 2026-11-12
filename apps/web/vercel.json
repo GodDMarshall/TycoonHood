@@ -6,7 +6,8 @@
   "framework": "nextjs",
   "regions": ["iad1"],
   "crons": [
-    { "path": "/api/cron/expire-orders", "schedule": "0 0 * * *" }
+    { "path": "/api/cron/expire-orders", "schedule": "0 0 * * *" },
+    { "path": "/api/cron/email-holds", "schedule": "30 0 * * *" }
   ],
   "headers": [
     {

@@ -21,7 +21,7 @@ owner is [`TYCOONHOOD_BLOCKED_ON_YOU.md`](../TYCOONHOOD_BLOCKED_ON_YOU.md).
 | `AFFILIATE_HASH_SECRET` | yes | A long random string; salts the click hashes |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for card payments | `rzp_test_…` gives test mode; `rzp_live_…` gives real money. In production, test keys offer card checkout to admins only |
 | `RAZORPAY_WEBHOOK_SECRET` | strongly recommended | Lets the webhook confirm payments if the browser closes |
-| `CRON_SECRET` | yes, with rupee checkout | A long random string. Vercel Cron sends it to `/api/cron/expire-orders`, which refuses calls without it. See "Scheduled jobs" |
+| `CRON_SECRET` | yes | A long random string. Vercel Cron sends it to `/api/cron/expire-orders` and `/api/cron/email-holds`, which refuse calls without it. See "Scheduled jobs" |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin. The password is set only when the account is created |
 | `SEED_ON_DEPLOY` | first Vercel deploy only | `1` makes a production build run the seeds. Remove it after the first successful deploy |
 | `ENABLE_EXPERIMENTAL_COREPACK` | on Vercel | `1` makes Vercel use the pnpm version pinned in `package.json` |
@@ -112,11 +112,15 @@ pnpm --filter @tycoonhood/core exec tsx scripts/repair-course-completions.ts
 
 ## Scheduled jobs
 
-`apps/web/vercel.json` calls `/api/cron/expire-orders` once a day. It ends unpaid rupee orders whose 30-minute hold has run out, so their stock and coupon uses go back even when nobody is browsing the shop.
+`apps/web/vercel.json` calls two routes once a day:
 
-- Set `CRON_SECRET` on the site project. Vercel sends it with each call as `Authorization: Bearer <CRON_SECRET>`, and the route refuses any call without it. Another scheduler can call the same URL with the same header.
-- Once a day works on every Vercel plan. Hobby refuses to deploy a cron that runs more often. On Pro you can run it every 10 minutes by changing the schedule to `*/10 * * * *`, or point an external scheduler at the URL.
-- The store, product, cart, wishlist, checkout and admin order pages also run the sweep when they load, at most once a minute per server, and checkout always releases the member's own expired holds first. So between the daily runs, an expired hold goes back within about a minute of someone browsing the shop.
+- `/api/cron/expire-orders` ends unpaid rupee orders whose 30-minute hold has run out, so their stock and coupon uses go back even when nobody is browsing the shop.
+- `/api/cron/email-holds` puts back email changes whose undo notice never went out. A change takes effect before the notice to the old address is sent; if the request dies before it can send it or put the change back, this puts the change back once it is 10 minutes old.
+
+- Set `CRON_SECRET` on the site project. Vercel sends it with each call as `Authorization: Bearer <CRON_SECRET>`, and both routes refuse any call without it. Another scheduler can call the same URLs with the same header.
+- Once a day works on every Vercel plan. Hobby refuses to deploy a cron that runs more often. On Pro you can run them every 10 minutes by changing a schedule to `*/10 * * * *`, or point an external scheduler at the URLs.
+- The store, product, cart, wishlist, checkout and admin order pages also run the order sweep when they load, at most once a minute per server, and checkout always releases the member's own expired holds first. So between the daily runs, an expired hold goes back within about a minute of someone browsing the shop.
+- The email sweep also runs, for what it touches, before a member's next email change request, before a reset request for either address, and on the admin member page. So an owner who was told nothing and asks for a reset link gets the account back with it.
 
 ## Before launch
 

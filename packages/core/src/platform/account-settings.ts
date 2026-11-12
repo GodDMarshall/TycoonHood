@@ -19,7 +19,9 @@
  *  · an address held for another account (platform/email-hold) is refused
  *    like a taken one; one held for this account is the member moving back.
  *  · no new change while the last one can still be undone (7 days, or
- *    until its undo is used): see EmailChangeTooSoonError.
+ *    until its undo is used): see EmailChangeTooSoonError. A last change
+ *    whose undo notice never went out is put back first (platform/
+ *    email-notice), so it neither blocks the request nor loses its way back.
  *  · delete account: a request for staff, recorded as a ContactMessage
  *    that names the account (userId), so it stays the account's whatever
  *    its address becomes. An undo closes one filed since the change it
@@ -37,6 +39,7 @@ import { SessionService } from "../auth/session";
 import { AuditService } from "./audit";
 import { EmailVerificationService, resetTokenId, type IssuedEmailChange } from "./email-verification";
 import { addressHeldFor, EmailChangeTooSoonError, lockEmailOf, undoableUntil } from "./email-hold";
+import { putBackUnnotified } from "./email-notice";
 import { sliceWhole } from "../text/clip";
 
 export const DELETION_TOPIC = "account-deletion";
@@ -87,6 +90,9 @@ export class AccountSettingsService {
   async changeEmail(userId: string, newEmailRaw: string, currentPassword: string): Promise<IssuedEmailChange | null> {
     const newEmail = emailSchema.parse(newEmailRaw);
     const checkedHash = await this.checkPassword(userId, currentPassword);
+    // A last change whose undo notice never went out is put back before anything is read. Left in
+    // place it would refuse this request as too soon, and this change would end its undo link.
+    await putBackUnnotified(this.db, { userId });
     const user = await this.db.user.findUniqueOrThrow({ where: { id: userId } });
     if (user.email === newEmail) return null;
     // Addresses are stored lower-cased (registerSchema, emailSchema), so this is the unique email check.
