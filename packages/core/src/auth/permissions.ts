@@ -7,8 +7,9 @@
  *
  * Guest = no session. Member = signed up. Student = enrolled in a programme
  * (set automatically on first enrolment). Creator = approved affiliate.
- * Instructor = authors courses. Moderator = community staff who cannot touch
- * the economy. Admin = everything.
+ * Instructor = authors the programmes they teach: those whose instructor
+ * profile is linked to their account (DR-34). Moderator = community staff who
+ * cannot touch the economy. Admin = everything.
  */
 import type { UserRole } from "@tycoonhood/db";
 
@@ -32,7 +33,8 @@ export type Permission =
   | "admin.content" // blog, homepage CMS, settings, testimonials
   | "admin.analytics"
   | "admin.audit"
-  | "courses.author" // create and edit courses, modules, lessons, quizzes
+  | "courses.author" // create and edit the programmes you teach: courses, modules, lessons, quizzes, resources
+  | "courses.manage" // every programme, its instructor, instructor profiles and their links to accounts
   | "courses.publish"
   | "community.moderate" // pin, hide, remove, mute, resolve reports
   | "community.announce";
@@ -55,6 +57,7 @@ const TABLE: Record<UserRole, readonly Permission[]> = {
     "admin.analytics",
     "admin.audit",
     "courses.author",
+    "courses.manage",
     "courses.publish",
     "community.moderate",
     "community.announce",

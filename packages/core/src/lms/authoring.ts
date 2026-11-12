@@ -480,9 +480,12 @@ export class CourseAuthoringService {
   }
 
   // ── instructors
+  //
+  // Profiles are public pages, and a profile's link to an account decides who
+  // may edit its programmes, so all of this needs courses.manage (DR-34).
 
   async createInstructor(actor: AuthoringActor, input: InstructorInput) {
-    assertCan(actor, "courses.author");
+    assertCan(actor, "courses.manage");
     const d = instructorInputSchema.parse(input);
     const i = await this.db.instructor.create({ data: d }).catch(friendly);
     await this.log(actor, "instructor.create", "Instructor", i.id, { slug: i.slug });
@@ -490,7 +493,7 @@ export class CourseAuthoringService {
   }
 
   async updateInstructor(actor: AuthoringActor, id: string, input: InstructorInput) {
-    assertCan(actor, "courses.author");
+    assertCan(actor, "courses.manage");
     const d = instructorInputSchema.parse(input);
     const i = await this.db.instructor.update({ where: { id }, data: d }).catch(friendly);
     await this.log(actor, "instructor.update", "Instructor", i.id, { slug: i.slug });
@@ -499,9 +502,75 @@ export class CourseAuthoringService {
 
   /** Programmes they taught keep running; they just lose the instructor link. */
   async deleteInstructor(actor: AuthoringActor, id: string) {
-    assertCan(actor, "courses.author");
+    assertCan(actor, "courses.manage");
     const i = await this.db.instructor.delete({ where: { id } });
-    await this.log(actor, "instructor.delete", "Instructor", i.id, { slug: i.slug });
+    await this.log(actor, "instructor.delete", "Instructor", i.id, i.userId ? { slug: i.slug, userId: i.userId } : { slug: i.slug });
+  }
+
+  /**
+   * The member an email address or a username names, exactly: no partial
+   * match, so a link can never land on a near miss. Null when nobody does.
+   */
+  async findMemberForLink(actor: AuthoringActor, emailOrUsername: string) {
+    assertCan(actor, "courses.manage");
+    const q = emailOrUsername.trim().toLowerCase();
+    if (!q) return null;
+    const where = q.includes("@") && !q.startsWith("@") ? { email: q } : { profile: { is: { username: q.replace(/^@/, "") } } };
+    return this.db.user.findFirst({
+      where,
+      select: { id: true, email: true, role: true, profile: { select: { username: true, displayName: true } } },
+    });
+  }
+
+  /**
+   * Link an instructor profile to the account of the person who teaches as
+   * it, or unlink it (`userId` null). The link is what lets an instructor edit
+   * the profile's programmes, so it is never guessed: nothing links a profile
+   * but this, called by someone with courses.manage. One profile per member
+   * (Instructor.userId is unique). Audited with who was linked before and after.
+   */
+  async linkInstructorUser(actor: AuthoringActor, instructorId: string, userId: string | null) {
+    assertCan(actor, "courses.manage");
+    if (!(await this.db.instructor.findUnique({ where: { id: instructorId }, select: { id: true } }))) throw new AuthoringError("Instructor not found.");
+    if (userId) {
+      if (!(await this.db.user.findUnique({ where: { id: userId }, select: { id: true } }))) throw new AuthoringError("No member has that account.");
+      const other = await this.db.instructor.findUnique({ where: { userId }, select: { id: true, name: true } });
+      if (other && other.id !== instructorId) {
+        throw new AuthoringError(`That member is already linked to the instructor profile “${other.name}”. Unlink them there first.`);
+      }
+    }
+    const usernameOf = async (tx: Prisma.TransactionClient, id: string | null) =>
+      id ? ((await tx.profile.findUnique({ where: { userId: id }, select: { username: true } }))?.username ?? null) : null;
+    return this.db
+      .$transaction(async (tx) => {
+        // Locked, so two links of one profile at once audit what each really replaced.
+        const [row] = await tx.$queryRaw<{ userId: string | null }[]>`SELECT "userId" FROM "Instructor" WHERE "id" = ${instructorId} FOR UPDATE`;
+        if (!row) throw new AuthoringError("Instructor not found."); // deleted since the check above
+        if (row.userId === userId) return tx.instructor.findUniqueOrThrow({ where: { id: instructorId } });
+        const i = await tx.instructor.update({ where: { id: instructorId }, data: { userId } });
+        await this.audit.log(
+          {
+            actorId: actor.id,
+            action: userId ? "instructor.link" : "instructor.unlink",
+            targetType: "Instructor",
+            targetId: i.id,
+            meta: {
+              slug: i.slug,
+              userId: { from: row.userId, to: userId },
+              username: { from: await usernameOf(tx, row.userId), to: await usernameOf(tx, userId) },
+            },
+          },
+          tx
+        );
+        return i;
+      })
+      .catch((e: unknown) => {
+        // The unique index decides a race the check above could not see.
+        if (e && typeof e === "object" && "code" in e && (e as { code?: string }).code === "P2002") {
+          throw new AuthoringError("That member is already linked to another instructor profile. Unlink them there first.");
+        }
+        throw e;
+      });
   }
 
   // ── reviews
