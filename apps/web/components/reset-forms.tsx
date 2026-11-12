@@ -68,8 +68,11 @@ export function ForgotPasswordForm({
 
 export function ResetPasswordForm({
   action,
+  undone = false,
 }: {
   action: (prev: ResetState, fd: FormData) => Promise<ResetState>;
+  /** The browser arrived from an undone email change: say what already happened. */
+  undone?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, {} as ResetState);
   if (state.done) {
@@ -95,6 +98,11 @@ export function ResetPasswordForm({
       </CardHeader>
       <CardContent>
         <form action={formAction} className="flex flex-col gap-4">
+          {undone && (
+            <Notice tone="success">
+              The email change was undone and every device was signed out. Your old password no longer works, so choose a new one to finish.
+            </Notice>
+          )}
           {state.error && (
             <p className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-[13px] text-danger">{state.error}</p>
           )}

@@ -1,14 +1,17 @@
 /**
- * MEMBER ADMINISTRATION — role changes and suspension. Both need
- * `admin.users`, both are audited, and neither can be turned on yourself:
- * an administrator cannot demote or suspend their own account, so the house
- * can never lock itself out by accident.
+ * MEMBER ADMINISTRATION — role changes, suspension, and cancelling a waiting
+ * email change. All need `admin.users` and all are audited. Role changes and
+ * suspension cannot be turned on yourself: an administrator cannot demote or
+ * suspend their own account, so the house can never lock itself out by
+ * accident. Staff cannot set a member's email: an address changes only
+ * through its own confirmation link, or back through the undo link.
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient, UserRole } from "@tycoonhood/db";
 import { assertCan, ROLES, type HasRole } from "../auth/permissions";
 import { SessionService } from "../auth/session";
 import { AuditService } from "./audit";
+import { EmailVerificationService } from "./email-verification";
 
 export type Actor = { id: string } & NonNullable<HasRole>;
 
@@ -17,9 +20,21 @@ export class MemberAdminError extends Error {}
 export class MemberAdminService {
   private audit: AuditService;
   private sessions: SessionService;
+  private verification: EmailVerificationService;
   constructor(private readonly db: PrismaClient = defaultPrisma) {
     this.audit = new AuditService(db);
     this.sessions = new SessionService(db);
+    this.verification = new EmailVerificationService(db);
+  }
+
+  /**
+   * Drop a member's waiting email change: the address and its link. Audited
+   * as done by the staff member. Returns the address that was waiting, or
+   * null when nothing was.
+   */
+  async cancelEmailChange(actor: Actor, targetId: string): Promise<string | null> {
+    assertCan(actor, "admin.users");
+    return this.verification.cancelEmailChange(targetId, "staff", undefined, actor.id);
   }
 
   async changeRole(actor: Actor, targetId: string, role: UserRole) {

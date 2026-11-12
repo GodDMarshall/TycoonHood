@@ -97,6 +97,26 @@ describe("Accounts — register, authenticate, onboard", () => {
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });
 
+  it("signIn opens a session for the right password only, and never hands back the hash", async () => {
+    const email = `signin-${uid().slice(0, 8)}@tycoonhood.test`;
+    const user = await accounts.register({ email, password: "a-strong-password", name: "Signing In" });
+    const { user: signedIn, raw } = await accounts.signIn({ email, password: "a-strong-password" }, { userAgent: "test" });
+    expect(signedIn.id).toBe(user.id);
+    expect(signedIn).not.toHaveProperty("credential");
+    expect((await sessions.resolve(raw))?.userId).toBe(user.id);
+    await expect(accounts.signIn({ email, password: "wrong" })).rejects.toBeInstanceOf(InvalidCredentialsError);
+    expect(await prisma.session.count({ where: { userId: user.id } })).toBe(1);
+  });
+
+  it("a session is not opened once the password it matched has changed", async () => {
+    const user = await accounts.register({ email: `moved-${uid().slice(0, 8)}@tycoonhood.test`, password: "a-strong-password", name: "Moved" });
+    const cred = await prisma.passwordCredential.findUniqueOrThrow({ where: { userId: user.id } });
+    expect(await sessions.createForPassword(user.id, cred.hash)).not.toBeNull();
+    await prisma.passwordCredential.update({ where: { userId: user.id }, data: { hash: await hashPassword("another-strong-one") } });
+    expect(await sessions.createForPassword(user.id, cred.hash)).toBeNull();
+    expect(await prisma.session.count({ where: { userId: user.id } })).toBe(1);
+  });
+
   it("onboarding claims a username, pays the mission once, and is retry-safe", async () => {
     const user = await createTestUser();
     const username = `member_${uid().slice(0, 6)}`;

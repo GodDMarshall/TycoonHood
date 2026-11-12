@@ -1,7 +1,8 @@
 /**
  * Account security email (ASVS V2.2.3): the link that confirms a new address,
- * and the notices that tell an account's address what changed. The words live
- * in core (platform/account-mail.ts), where they are tested.
+ * the notices that tell an account's address what changed, and the link that
+ * undoes an email change. The words live in core (platform/account-mail.ts),
+ * where they are tested.
  *
  * Same discipline as lib/mail/verification: the link only ever travels by
  * mail, and a link that could not be sent is revoked at once, so a usable
@@ -16,6 +17,8 @@ import {
   emailChangedMail,
   emailChangeLinkMail,
   emailChangeRequestedMail,
+  emailChangeUndoneMail,
+  emailChangeUndoneRemovedMail,
   emailVerification,
   mailWentOut,
   passwordChangedMail,
@@ -66,9 +69,18 @@ export function sendEmailChangeRequestedNotice(issued: IssuedEmailChange): Promi
   return notice(issued.currentEmail, emailChangeRequestedMail(issued.newEmail, siteUrl()), `email-change notice for ${issued.userId}`);
 }
 
-/** To the old address, once the change has happened. */
-export function sendEmailChangedNotice(userId: string, previousEmail: string, newEmail: string): Promise<void> {
-  return notice(previousEmail, emailChangedMail(newEmail, siteUrl()), `email-changed notice for ${userId}`);
+/** To the old address, once the change has happened, with the link that undoes it. */
+export function sendEmailChangedNotice(userId: string, previousEmail: string, newEmail: string, undoToken: string): Promise<void> {
+  const undoLink = `${siteUrl()}/undo-email/${undoToken}`;
+  return notice(previousEmail, emailChangedMail(newEmail, undoLink), `email-changed notice for ${userId}`);
+}
+
+/** After an undo: a confirmation to the address put back, and a notice to the address taken off. */
+export async function sendEmailChangeUndoneNotices(userId: string, restoredEmail: string, removedEmail: string): Promise<void> {
+  await Promise.all([
+    notice(restoredEmail, emailChangeUndoneMail(removedEmail, siteUrl()), `email-undone confirmation for ${userId}`),
+    notice(removedEmail, emailChangeUndoneRemovedMail(restoredEmail, siteUrl()), `email-undone notice for ${userId}`),
+  ]);
 }
 
 /** To the account's address, after a password change in Settings or with a reset link. */

@@ -1,8 +1,8 @@
 /**
  * ACCOUNT SECURITY EMAIL, IN WORDS (ASVS V2.2.3): the link that confirms a
- * new address, and the notices that tell an account's address what changed.
- * Pure — the web app sends them (apps/web/lib/mail/account.ts) — so the words
- * can be tested.
+ * new address, the notices that tell an account's address what changed, and
+ * the link that undoes an email change. Pure — the web app sends them
+ * (apps/web/lib/mail/account.ts) — so the words can be tested.
  *
  * A notice never shows the other address in full, because the mailbox that
  * reads it may not be the member's: it shows a masked form, "ne***@ex***.com".
@@ -62,14 +62,41 @@ export function emailChangeRequestedMail(newEmail: string, siteUrl: string): Mai
   };
 }
 
-/** To the old address, once the change has happened. */
-export function emailChangedMail(newEmail: string, siteUrl: string): MailCopy {
+/** To the old address, once the change has happened: the link that undoes it (platform/email-undo). */
+export function emailChangedMail(newEmail: string, undoLink: string): MailCopy {
   return {
     subject: "Your Tycoonhood email was changed",
     text: [
       `The email on your Tycoonhood account is now ${maskEmail(newEmail)}. This address no longer signs in to it.`,
       "",
-      "If this wasn't you, contact us right away:",
+      "If this wasn't you, undo it (link valid 7 days, single use):",
+      undoLink,
+      "Undoing it puts this address back, signs out every device and asks for a new password.",
+    ].join("\n"),
+  };
+}
+
+/** To the address an undo put back on the account. */
+export function emailChangeUndoneMail(removedEmail: string, siteUrl: string): MailCopy {
+  return {
+    subject: "Your Tycoonhood email change was undone",
+    text: [
+      `The change of your Tycoonhood email to ${maskEmail(removedEmail)} was undone. This address signs in to your account again.`,
+      "",
+      "Every device was signed out and the old password no longer works. If you haven't chosen a new one, reset it here:",
+      `${siteUrl}/forgot-password`,
+    ].join("\n"),
+  };
+}
+
+/** To the address an undo took off the account. */
+export function emailChangeUndoneRemovedMail(restoredEmail: string, siteUrl: string): MailCopy {
+  return {
+    subject: "A Tycoonhood email change was undone",
+    text: [
+      `The Tycoonhood account that used this address is back on ${maskEmail(restoredEmail)}. This address no longer signs in to it.`,
+      "",
+      "If you didn't expect this, contact us:",
       `${siteUrl}/contact`,
     ].join("\n"),
   };

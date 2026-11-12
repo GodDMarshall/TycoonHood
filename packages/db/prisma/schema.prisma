@@ -103,6 +103,7 @@ model User {
   auditLogs         AuditLog[]
   couponRedemptions CouponRedemption[]
   instructorProfile Instructor?
+  emailHolds        EmailHold[]
 
   @@index([rankId])
 }
@@ -156,6 +157,28 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+/// The address an email change replaced, held for its account until
+/// `expires` (7 days): no one can register with it and no other account can
+/// move to it. The notice to that address carries the link that undoes the
+/// change. The hold ends early when the undo is used or the member moves
+/// back to the address.
+model EmailHold {
+  id        String   @id @default(cuid())
+  /// The address the change replaced.
+  address   String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// The address the change set. The undo works only while the account still has it.
+  changedTo String
+  /// SHA-256 of the undo link's token. Null once the link is spent or a later
+  /// change ended it; the hold itself lasts until `expires`.
+  undoToken String?  @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 /// Member-facing identity, separate from auth identity. (spec §10)

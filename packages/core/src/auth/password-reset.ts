@@ -7,7 +7,10 @@
  * cancels an email change waiting for confirmation, and it is audited.
  *
  * Reset links die when the account is secured another way too: a password
- * change in Settings and a confirmed email change both delete them.
+ * change in Settings, a confirmed email change and an undone one all delete
+ * them. An undo then makes one new link for the restored address, which the
+ * web app hands straight to the browser that used the undo link
+ * (platform/email-undo).
  *
  * Anti-enumeration: requestReset() does the same work and returns the
  * same shape whether or not the email exists. The caller reveals nothing
@@ -23,7 +26,7 @@ import { AuditService } from "../platform/audit";
 import { EmailVerificationService, RESET_TOKEN_PREFIX, resetTokenId } from "../platform/email-verification";
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
-const RESET_TTL_MS = 30 * 60 * 1000;
+export const RESET_TTL_MS = 30 * 60 * 1000;
 const INVALID = "That reset link is invalid or expired — request a fresh one.";
 
 /** Mirrors registerSchema's password rule — one standard, two doors. */

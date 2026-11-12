@@ -44,6 +44,15 @@ export type Session = Prisma.SessionModel
  */
 export type VerificationToken = Prisma.VerificationTokenModel
 /**
+ * Model EmailHold
+ * The address an email change replaced, held for its account until
+ * `expires` (7 days): no one can register with it and no other account can
+ * move to it. The notice to that address carries the link that undoes the
+ * change. The hold ends early when the undo is used or the member moves
+ * back to the address.
+ */
+export type EmailHold = Prisma.EmailHoldModel
+/**
  * Model Profile
  * Member-facing identity, separate from auth identity. (spec §10)
  */

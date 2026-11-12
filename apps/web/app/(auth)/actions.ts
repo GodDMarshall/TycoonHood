@@ -18,8 +18,10 @@ import {
   ReferralError,
   AccountSuspendedError,
   emailVerification,
+  emailUndo,
   EmailChangeEndedError,
   getSetting,
+  InvalidUndoLinkError,
   InvalidVerificationTokenError,
   safeNextPath,
   mailWentOut,
@@ -27,7 +29,7 @@ import {
 } from "@tycoonhood/core";
 import { sendVerificationEmail } from "../../lib/mail/verification";
 import { sendPasswordResetEmail } from "../../lib/mail/password-reset";
-import { sendEmailChangedNotice, sendPasswordChangedNotice } from "../../lib/mail/account";
+import { sendEmailChangedNotice, sendEmailChangeUndoneNotices, sendPasswordChangedNotice } from "../../lib/mail/account";
 import { mailMode } from "../../lib/mail";
 import { clearSessionCookie, deviceInfo, getCurrentSession, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
 import { cookies } from "next/headers";
@@ -125,8 +127,7 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
   // Back to the page that sent them here, when it is a safe path on this site.
   let destination = safeNextPath(formData.get("next")) ?? "/today";
   try {
-    const user = await accounts.authenticate(parsed.data);
-    const { raw } = await sessions.create(user.id, await deviceInfo());
+    const { user, raw } = await accounts.signIn(parsed.data, await deviceInfo());
     await setSessionCookie(raw);
     const { prisma } = await import("@tycoonhood/db");
     const profile = await prisma.profile.findUnique({ where: { userId: user.id } });
@@ -234,9 +235,37 @@ export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: 
   }
   const signedIn = session?.user.id === result.user.id;
   if (result.kind === "email-change") {
-    const { user, previousEmail } = result;
-    after(() => sendEmailChangedNotice(user.id, previousEmail, user.email));
+    const { user, previousEmail, undo } = result;
+    // The old address gets the link that undoes the change; it is held for the account meanwhile.
+    after(() => sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken));
     return { done: "email-changed", email: user.email, signedIn };
   }
   return { done: "verified", signedIn };
+}
+
+export interface UndoState {
+  error?: string;
+}
+
+/**
+ * Uses the link in the "your email was changed" notice: puts the old address
+ * back, signs out every device and replaces the password. A POST behind a
+ * button, like verifyEmailAction, so mail scanners cannot spend it. Then this
+ * browser goes straight to the new-password page with a fresh reset link: it
+ * just proved control of the restored address, which is what a reset link
+ * proves.
+ */
+export async function undoEmailChangeAction(token: string, _prev: UndoState, _fd: FormData): Promise<UndoState> {
+  const blocked = await throttled("undo-email");
+  if (blocked) return { error: blocked };
+  let undone;
+  try {
+    undone = await emailUndo.undo(token);
+  } catch (e) {
+    if (e instanceof InvalidUndoLinkError) return { error: e.message };
+    throw e;
+  }
+  const { userId, restoredEmail, removedEmail } = undone;
+  after(() => sendEmailChangeUndoneNotices(userId, restoredEmail, removedEmail));
+  redirect(`/reset-password/${undone.reset.rawToken}?undone=1`);
 }
