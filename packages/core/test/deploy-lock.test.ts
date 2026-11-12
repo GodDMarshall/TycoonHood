@@ -26,7 +26,7 @@
  * connections send keepalive probes after 10 seconds.
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import type { PrismaClient } from "@tycoonhood/db";
@@ -372,44 +372,97 @@ describe.skipIf(process.platform !== "linux")("a deploy that loses its lock, or 
 
 // ───────────────────────────────────────────── idle lock connections
 
-/** The timer the kernel runs for the client socket on `port`, and its seconds left (Linux's /proc/net/tcp). */
-function socketTimer(port: number) {
-  for (const table of ["/proc/net/tcp", "/proc/net/tcp6"]) {
-    for (const line of readFileSync(table, "utf8").split("\n").slice(1)) {
-      const f = line.trim().split(/\s+/);
-      if (f.length < 6) continue;
-      const local = parseInt(f[1].split(":").pop()!, 16);
-      const remote = parseInt(f[2].split(":").pop()!, 16);
-      if (local !== port || remote !== 5432) continue;
-      const [timer, when] = f[5].split(":");
-      // 0 none, 1 retransmit, 2 keepalive. The time is in hundredths of a second.
-      return { timer: Number(timer), seconds: parseInt(when, 16) / 100 };
+/** `pid` and every process under it, as tsx runs a script in a child of its own (Linux's /proc). */
+function processTree(pid: number): number[] {
+  const children = new Map<number, number[]>();
+  for (const d of readdirSync("/proc")) {
+    if (!/^\d+$/.test(d)) continue;
+    let stat: string;
+    try {
+      stat = readFileSync(`/proc/${d}/stat`, "utf8");
+    } catch {
+      continue; // it ended meanwhile
+    }
+    // "pid (name) state ppid ...": the name may hold spaces and parentheses.
+    const ppid = Number(stat.slice(stat.lastIndexOf(")") + 2).split(" ")[1]);
+    children.set(ppid, [...(children.get(ppid) ?? []), Number(d)]);
+  }
+  const tree = [pid];
+  for (let i = 0; i < tree.length; i++) tree.push(...(children.get(tree[i]) ?? []));
+  return tree;
+}
+
+/** The inodes of the sockets the processes hold open. */
+function socketInodes(pids: number[]): Set<string> {
+  const inodes = new Set<string>();
+  for (const p of pids) {
+    let fds: string[];
+    try {
+      fds = readdirSync(`/proc/${p}/fd`);
+    } catch {
+      continue;
+    }
+    for (const fd of fds) {
+      try {
+        const m = readlinkSync(`/proc/${p}/fd/${fd}`).match(/^socket:\[(\d+)\]$/);
+        if (m) inodes.add(m[1]);
+      } catch {
+        // closed meanwhile
+      }
     }
   }
-  throw new Error(`No client socket on port ${port}`);
+  return inodes;
 }
 
 /**
- * Seconds until the idle socket's first keepalive probe; Infinity when it sends
- * none. A query just sent shows the retransmit timer until it is acknowledged,
- * so this waits for that to clear.
+ * The timer the kernel runs for the one connection that `pid`, or a process it
+ * started, holds to the database at `url`, and its seconds left (Linux's
+ * /proc/net/tcp). The socket is found from the processes' own file
+ * descriptors, not from pg_stat_activity: the client_port there is the port the
+ * server sees, and behind a relay that is the relay's socket, with the relay's
+ * keepalive. On the CI runner, Docker's docker-proxy relays localhost:5432 to
+ * the Postgres service container, and its sockets probe after Go's default 15
+ * seconds.
  */
-async function keepaliveSeconds(port: number) {
+function socketTimer(pid: number, url: string) {
+  const port = Number(new URL(url).port || 5432);
+  const inodes = socketInodes(processTree(pid));
+  const found: { timer: number; seconds: number }[] = [];
+  // A machine without IPv6 has no tcp6 table.
+  for (const table of ["/proc/net/tcp", "/proc/net/tcp6"].filter((x) => existsSync(x))) {
+    for (const line of readFileSync(table, "utf8").split("\n").slice(1)) {
+      const f = line.trim().split(/\s+/);
+      if (f.length < 10 || !inodes.has(f[9])) continue;
+      if (parseInt(f[2].split(":").pop()!, 16) !== port) continue;
+      const [timer, when] = f[5].split(":");
+      // 0 none, 1 retransmit, 2 keepalive. The time is in hundredths of a second.
+      found.push({ timer: Number(timer), seconds: parseInt(when, 16) / 100 });
+    }
+  }
+  if (found.length !== 1) throw new Error(`Expected one connection to port ${port} from process ${pid} and its children, found ${found.length}`);
+  return found[0];
+}
+
+/**
+ * Seconds until the first keepalive probe on that idle connection; Infinity
+ * when it sends none. A query just sent shows the retransmit timer until it is
+ * acknowledged, so this waits for that to clear.
+ */
+async function keepaliveSeconds(pid: number, url: string) {
   const stop = Date.now() + 5_000;
-  let t = socketTimer(port);
+  let t = socketTimer(pid, url);
   while (t.timer === 1 && Date.now() < stop) {
     await new Promise((res) => setTimeout(res, 50));
-    t = socketTimer(port);
+    t = socketTimer(pid, url);
   }
   return t.timer === 2 ? t.seconds : Infinity;
 }
 
-/** The local port of the session that `name` opened on this database. */
-async function clientPort(db: PrismaClient, name: string) {
-  const rows = await db.$queryRaw<{ port: number }[]>`
-    SELECT client_port AS port FROM pg_stat_activity WHERE application_name = ${name} AND datname = current_database()`;
+/** The one session `name` opened on this database: it holds the lock under its own name. */
+async function expectSession(db: PrismaClient, name: string) {
+  const rows = await db.$queryRaw<{ pid: number }[]>`
+    SELECT pid FROM pg_stat_activity WHERE application_name = ${name} AND datname = current_database()`;
   expect(rows, name).toHaveLength(1);
-  return rows[0].port;
 }
 
 describe.skipIf(process.platform !== "linux")("idle lock connections stay known to be alive", () => {
@@ -427,7 +480,8 @@ describe.skipIf(process.platform !== "linux")("idle lock connections stay known 
   it("the deploy lock's connection sends keepalive probes after 10 seconds, while it holds the lock", async () => {
     const run = wrapped(t, [process.execPath, "-e", "setTimeout(() => {}, 5000)"]);
     await untilAll([run], /Deploy lock taken/);
-    expect(await keepaliveSeconds(await clientPort(t.db, "tycoonhood deploy lock"))).toBeLessThanOrEqual(10);
+    await expectSession(t.db, "tycoonhood deploy lock");
+    expect(await keepaliveSeconds(run.child.pid!, t.url)).toBeLessThanOrEqual(10);
     expect((await run.done).code).toBe(0);
   }, SLOW);
 
@@ -435,7 +489,8 @@ describe.skipIf(process.platform !== "linux")("idle lock connections stay known 
     const run = await holding(t.db, MIGRATION_LOCK, async () => {
       const r = startDbScript("scripts/migrate-sql.ts", t.url);
       await untilAll([r], /Waiting/);
-      expect(await keepaliveSeconds(await clientPort(t.db, "tycoonhood migrate-sql"))).toBeLessThanOrEqual(10);
+      await expectSession(t.db, "tycoonhood migrate-sql");
+      expect(await keepaliveSeconds(r.child.pid!, t.url)).toBeLessThanOrEqual(10);
       return r;
     });
     expect((await run.done).code).toBe(0);
