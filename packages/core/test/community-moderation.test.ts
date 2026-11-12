@@ -217,11 +217,11 @@ describe("removed chat replies", () => {
   });
 });
 
-describe("programme reviews: course staff and community moderators can hide them", () => {
-  it("names who may hide a review", () => {
-    expect([...REVIEW_MODERATORS]).toEqual(["courses.author", "community.moderate"]);
-    for (const role of ["MODERATOR", "INSTRUCTOR", "ADMIN"] as const) expect(canModerateReviews({ role }), role).toBe(true);
-    for (const role of ["MEMBER", "STUDENT", "CREATOR"] as const) expect(canModerateReviews({ role }), role).toBe(false);
+describe("programme reviews: community moderators and administrators can hide them", () => {
+  it("names who may hide a review: not instructors, whose own programmes the reviews are about (DR-34)", () => {
+    expect([...REVIEW_MODERATORS]).toEqual(["community.moderate"]);
+    for (const role of ["MODERATOR", "ADMIN"] as const) expect(canModerateReviews({ role }), role).toBe(true);
+    for (const role of ["MEMBER", "STUDENT", "CREATOR", "INSTRUCTOR"] as const) expect(canModerateReviews({ role }), role).toBe(false);
     expect(canModerateReviews(null)).toBe(false);
   });
 

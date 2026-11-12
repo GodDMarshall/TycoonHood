@@ -20,7 +20,7 @@ const SECTIONS: (AdminTab & { needs: Permission; unless?: Permission })[] = [
   { href: "/admin/videos", label: "Videos", needs: "admin.economy" },
   { href: "/admin/community", label: "Community", needs: "community.moderate" },
   { href: "/admin/moderation", label: "Reports", needs: "community.moderate" },
-  // Course staff reach reviews under Courses; moderators hide reviews too.
+  // Moderators get their own tab; administrators reach reviews under Courses. Instructors do not moderate reviews (DR-34).
   { href: "/admin/courses/reviews", label: "Reviews", needs: "community.moderate", unless: "courses.author" },
   { href: "/admin/standard", label: "Daily standard", needs: "admin.content" },
   { href: "/admin/content", label: "Content", needs: "admin.content" },

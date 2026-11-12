@@ -25,8 +25,12 @@ import { LmsService } from "./lms";
 
 export type AuthoringActor = { id: string; role: UserRole };
 
-/** Who may hide a programme review: course staff, and community moderators. */
-export const REVIEW_MODERATORS = ["courses.author", "community.moderate"] as const satisfies readonly Permission[];
+/**
+ * Who may hide a programme review: community moderators, and administrators,
+ * who hold the same permission. Not instructors: a review is about their own
+ * programme (DR-34).
+ */
+export const REVIEW_MODERATORS = ["community.moderate"] as const satisfies readonly Permission[];
 
 export function canModerateReviews(user: HasRole): boolean {
   return REVIEW_MODERATORS.some((p) => can(user, p));
@@ -652,7 +656,7 @@ export class CourseAuthoringService {
 
   // ── reviews
 
-  /** Course staff and community moderators can both hide a review. */
+  /** Community moderators and administrators can hide a review; instructors cannot. */
   async setReviewHidden(actor: AuthoringActor, reviewId: string, hidden: boolean) {
     if (!canModerateReviews(actor)) throw new ForbiddenError();
     const r = await this.db.courseReview.update({ where: { id: reviewId }, data: { hidden } });

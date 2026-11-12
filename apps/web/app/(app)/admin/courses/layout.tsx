@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { can } from "@tycoonhood/core";
+import { can, canModerateReviews } from "@tycoonhood/core";
 import { getCurrentUser } from "../../../../lib/auth";
 
 /** Course management sub-sections. Every page under here re-checks its own permission.
- *  Moderators come here for reviews only, so they see only that link. */
+ *  Moderators come here for reviews only, so they see only that link; instructors do not moderate reviews (DR-34). */
 export default async function AdminCoursesLayout({ children }: { children: ReactNode }) {
-  const author = can(await getCurrentUser(), "courses.author");
+  const user = await getCurrentUser();
+  const author = can(user, "courses.author");
+  const reviews = canModerateReviews(user);
   return (
     <div>
       <nav aria-label="Course management" className="mb-6 flex flex-wrap gap-4 border-b border-line pb-3 text-[13.5px]">
@@ -20,9 +22,11 @@ export default async function AdminCoursesLayout({ children }: { children: React
             </Link>
           </>
         )}
-        <Link href="/admin/courses/reviews" className="text-ink-2 hover:text-ink-1">
-          Reviews
-        </Link>
+        {reviews && (
+          <Link href="/admin/courses/reviews" className="text-ink-2 hover:text-ink-1">
+            Reviews
+          </Link>
+        )}
       </nav>
       {children}
     </div>

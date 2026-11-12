@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@tycoonhood/db";
-import { REVIEW_MODERATORS, can } from "@tycoonhood/core";
+import { IST_TIME_ZONE, REVIEW_MODERATORS, can, formatDate } from "@tycoonhood/core";
 import { Badge } from "@tycoonhood/ui";
 import { requireAnyPermission } from "../../../../../lib/guard";
 import { Panel, SectionTitle } from "../../../../../components/app/page";
@@ -11,11 +11,11 @@ export const metadata: Metadata = { title: "Admin · Reviews" };
 export const dynamic = "force-dynamic";
 
 /** Every program review, newest first. Hidden reviews stay stored but leave the average and the page.
- *  Course staff and community moderators both moderate reviews here. */
+ *  Community moderators and administrators moderate reviews here; instructors do not (DR-34). */
 export default async function AdminReviews({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
   const user = await requireAnyPermission(...REVIEW_MODERATORS);
-  // Moderators do not see members' emails elsewhere, so not here either.
-  const showEmail = can(user, "courses.author");
+  // A member's email is for staff who administer members, here as everywhere; it is not even loaded otherwise.
+  const showEmail = can(user, "admin.users");
   const { show } = await searchParams;
   const hiddenOnly = show === "hidden";
   const reviews = await prisma.courseReview.findMany({
@@ -24,10 +24,9 @@ export default async function AdminReviews({ searchParams }: { searchParams: Pro
     take: 200,
     include: {
       course: { select: { title: true } },
-      user: { select: { email: true, profile: { select: { displayName: true, username: true } } } },
+      user: { select: { email: showEmail, profile: { select: { displayName: true, username: true } } } },
     },
   });
-  const fmt = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" });
 
   return (
     <section aria-labelledby="reviews">
@@ -54,7 +53,7 @@ export default async function AdminReviews({ searchParams }: { searchParams: Pro
                   <span className="text-ink-1">{r.course.title}</span>
                   <span className="text-ink-3">
                     · {r.user.profile?.displayName ?? (showEmail ? r.user.email : "Member")}
-                    {r.user.profile ? ` (@${r.user.profile.username})` : ""} · {fmt.format(r.updatedAt)}
+                    {r.user.profile ? ` (@${r.user.profile.username})` : ""} · {formatDate(r.updatedAt, IST_TIME_ZONE)}
                   </span>
                   <span className="ml-auto">
                     <InlineAction action={setReviewHiddenAction.bind(null, r.id, !r.hidden)} label={r.hidden ? "Unhide" : "Hide"} variant="ghost" />

@@ -8,7 +8,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import type { UserRole } from "@tycoonhood/db";
-import { CourseAuthoringService, AuthoringError, editableCoursesWhere, type AuthoringActor } from "../src/lms/authoring";
+import { CourseAuthoringService, AuthoringError, REVIEW_MODERATORS, canModerateReviews, editableCoursesWhere, type AuthoringActor } from "../src/lms/authoring";
 import { can, ForbiddenError, ROLES } from "../src/auth/permissions";
 import { createTestUser, uid } from "./helpers";
 
@@ -379,5 +379,30 @@ describe("an instructor edits only the programmes they teach", () => {
     }
     expect(await authoring.canEditCourse(null, mine.course.id)).toBe(false);
     expect(await authoring.canEditCourse(admin, "no-such-course")).toBe(false);
+  });
+});
+
+describe("instructors cannot hide reviews", () => {
+  it("only community moderators and administrators may hide a review", () => {
+    expect([...REVIEW_MODERATORS]).toEqual(["community.moderate"]);
+    for (const role of ROLES) expect(canModerateReviews({ role }), role).toBe(role === "MODERATOR" || role === "ADMIN");
+  });
+
+  it("an instructor cannot hide or restore a review, even of their own programme; staff still can", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin);
+    const mine = await programme(a.actor);
+    const reviewer = await createTestUser();
+    const review = await prisma.courseReview.create({ data: { courseId: mine.course.id, userId: reviewer.id, rating: 1, body: "Honest criticism" } });
+    const hidden = async () => (await prisma.courseReview.findUniqueOrThrow({ where: { id: review.id } })).hidden;
+
+    await expect(authoring.setReviewHidden(a.actor, review.id, true)).rejects.toBeInstanceOf(ForbiddenError);
+    expect(await hidden()).toBe(false);
+    await authoring.setReviewHidden(await staff("MODERATOR"), review.id, true);
+    expect(await hidden()).toBe(true);
+    await expect(authoring.setReviewHidden(a.actor, review.id, false)).rejects.toBeInstanceOf(ForbiddenError);
+    await authoring.setReviewHidden(admin, review.id, false);
+    expect(await hidden()).toBe(false);
+    expect(await prisma.auditLog.count({ where: { actorId: a.actor.id, targetId: review.id } })).toBe(0);
   });
 });
