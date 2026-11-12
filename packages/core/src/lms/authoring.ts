@@ -36,6 +36,16 @@ export function canModerateReviews(user: HasRole): boolean {
   return REVIEW_MODERATORS.some((p) => can(user, p));
 }
 
+/**
+ * Who may see a reviewer's email address where reviews are moderated: those
+ * who administer members (`admin.users`), as everywhere else a member's email
+ * appears. Not moderators, and not instructors (DR-34), who until then read
+ * it because they held `courses.author`.
+ */
+export function canSeeReviewerEmails(user: HasRole): boolean {
+  return can(user, "admin.users");
+}
+
 export class AuthoringError extends Error {
   constructor(message: string) {
     super(message);

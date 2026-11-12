@@ -8,7 +8,15 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import type { UserRole } from "@tycoonhood/db";
-import { CourseAuthoringService, AuthoringError, REVIEW_MODERATORS, canModerateReviews, editableCoursesWhere, type AuthoringActor } from "../src/lms/authoring";
+import {
+  CourseAuthoringService,
+  AuthoringError,
+  REVIEW_MODERATORS,
+  canModerateReviews,
+  canSeeReviewerEmails,
+  editableCoursesWhere,
+  type AuthoringActor,
+} from "../src/lms/authoring";
 import { LearnerService, ReviewNotAllowedError } from "../src/lms/learner";
 import { LmsService } from "../src/lms/lms";
 import { can, ForbiddenError, ROLES } from "../src/auth/permissions";
@@ -390,6 +398,16 @@ describe("instructors cannot hide reviews", () => {
   it("only community moderators and administrators may hide a review", () => {
     expect([...REVIEW_MODERATORS]).toEqual(["community.moderate"]);
     for (const role of ROLES) expect(canModerateReviews({ role }), role).toBe(role === "MODERATOR" || role === "ADMIN");
+  });
+
+  it("only those who administer members (admin.users) see a reviewer's email: not instructors, as they did with courses.author, nor moderators", () => {
+    for (const role of ROLES) expect(canSeeReviewerEmails({ role }), role).toBe(can({ role }, "admin.users"));
+    // INSTRUCTOR is where the rule differs from the old one, which read courses.author.
+    expect(can({ role: "INSTRUCTOR" }, "courses.author")).toBe(true);
+    expect(canSeeReviewerEmails({ role: "INSTRUCTOR" })).toBe(false);
+    expect(canSeeReviewerEmails({ role: "MODERATOR" })).toBe(false);
+    expect(canSeeReviewerEmails({ role: "ADMIN" })).toBe(true);
+    expect(canSeeReviewerEmails(null)).toBe(false);
   });
 
   it("an instructor cannot hide or restore a review, even of their own programme; staff still can", async () => {

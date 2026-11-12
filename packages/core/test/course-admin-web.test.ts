@@ -175,6 +175,29 @@ function everythingIn(node: unknown, seen = new WeakSet<object>(), out: string[]
   return out.join(" ");
 }
 
+/**
+ * What `during` loaded through prisma.courseReview.findMany, as well as what
+ * it returned: a page may load a field it never renders, and it would still
+ * hold it in memory, so a check of the rendered tree alone cannot show that a
+ * field was never fetched. The client's method is restored afterwards.
+ */
+async function reviewRowsLoadedBy<T>(during: () => Promise<T>): Promise<{ result: T; rows: { id: string; user: Record<string, unknown> }[] }> {
+  const delegate = prisma.courseReview as unknown as { findMany: (args: unknown) => Promise<unknown> };
+  const real = delegate.findMany;
+  const loaded: Promise<unknown>[] = [];
+  delegate.findMany = (args) => {
+    const rows = real(args);
+    loaded.push(rows);
+    return rows;
+  };
+  try {
+    const result = await during();
+    return { result, rows: (await Promise.all(loaded)).flat() as { id: string; user: Record<string, unknown> }[] };
+  } finally {
+    delegate.findMany = real;
+  }
+}
+
 /** The element a page keyed with this id (a list row), to read one row on its own. */
 function elementWithKey(node: unknown, key: string, seen = new WeakSet<object>()): unknown {
   if (!node || typeof node !== "object" || seen.has(node)) return undefined;
@@ -206,12 +229,18 @@ describe("the reviews page", () => {
     expect((await prisma.courseReview.findUniqueOrThrow({ where: { id: review.id } })).hidden).toBe(false);
 
     session.user = moderator;
-    const seenByModerator = everythingIn((await open()).tree);
+    const byModerator = await reviewRowsLoadedBy(open);
+    const seenByModerator = everythingIn(byModerator.result.tree);
     expect(seenByModerator).toContain(`Mixed feelings ${reviewer.id}`);
     expect(seenByModerator).not.toContain(reviewer.email);
+    // Not even loaded: no row the page fetched for a moderator carries an email.
+    expect(byModerator.rows.map((r) => r.id)).toContain(review.id);
+    for (const row of byModerator.rows) expect(row.user).not.toHaveProperty("email");
 
     session.user = admin;
-    expect(everythingIn((await open()).tree)).toContain(reviewer.email);
+    const byAdmin = await reviewRowsLoadedBy(open);
+    expect(everythingIn(byAdmin.result.tree)).toContain(reviewer.email);
+    expect(byAdmin.rows.map((r) => r.user.email)).toContain(reviewer.email);
   });
 });
 

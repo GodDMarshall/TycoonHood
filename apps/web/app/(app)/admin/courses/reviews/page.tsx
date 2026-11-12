@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@tycoonhood/db";
-import { IST_TIME_ZONE, REVIEW_MODERATORS, can, formatDate } from "@tycoonhood/core";
+import { IST_TIME_ZONE, REVIEW_MODERATORS, canSeeReviewerEmails, formatDate } from "@tycoonhood/core";
 import { Badge } from "@tycoonhood/ui";
 import { requireAnyPermission } from "../../../../../lib/guard";
 import { Panel, SectionTitle } from "../../../../../components/app/page";
@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminReviews({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
   const user = await requireAnyPermission(...REVIEW_MODERATORS);
   // A member's email is for staff who administer members, here as everywhere; it is not even loaded otherwise.
-  const showEmail = can(user, "admin.users");
+  const showEmail = canSeeReviewerEmails(user);
   const { show } = await searchParams;
   const hiddenOnly = show === "hidden";
   const reviews = await prisma.courseReview.findMany({

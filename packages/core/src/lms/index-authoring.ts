@@ -20,6 +20,7 @@ export {
   RESOURCE_KINDS,
   REVIEW_MODERATORS,
   canModerateReviews,
+  canSeeReviewerEmails,
   editableCoursesWhere,
 } from "./authoring";
 export type { AuthoringActor, CourseInput, ModuleInput, LessonInput, QuizInput, ResourceInput, InstructorInput } from "./authoring";
