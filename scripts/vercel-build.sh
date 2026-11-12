@@ -11,8 +11,9 @@
 # 2. With SEED_ON_DEPLOY=1, a production deploy also runs the seeds, in the
 #    only safe order. Every seed is idempotent, but re-running some of them
 #    would rewrite content staff have edited since, so remove SEED_ON_DEPLOY
-#    after the first deploy. The base seed needs ADMIN_EMAIL and
-#    ADMIN_PASSWORD and stops the build without them.
+#    after the first deploy. Seeding creates the admin account, so it needs
+#    ADMIN_EMAIL and ADMIN_PASSWORD; without either, the build stops before
+#    it touches the database.
 # 3. Then it builds the site. Any failure stops the deploy, and the last good
 #    deployment stays live.
 set -euo pipefail
@@ -20,6 +21,11 @@ set -euo pipefail
 if [ "${VERCEL_ENV:-}" = "production" ]; then
   if [ -z "${DATABASE_URL:-}" ]; then
     echo "DATABASE_URL is not set for Production. Connect the database to this Vercel project, then redeploy." >&2
+    exit 1
+  fi
+  if [ "${SEED_ON_DEPLOY:-}" = "1" ] && { [ -z "${ADMIN_EMAIL:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ]; }; then
+    echo "SEED_ON_DEPLOY=1 creates the admin account, so it needs ADMIN_EMAIL and ADMIN_PASSWORD for Production." >&2
+    echo "Add both in Vercel (Settings → Environment Variables, Production, Sensitive), then redeploy. The database was not touched." >&2
     exit 1
   fi
   (
