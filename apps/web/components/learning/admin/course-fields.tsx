@@ -10,22 +10,28 @@ const PILLARS = [
   ["MIND", "Mind"],
 ] as const;
 
-export function CourseFields({
-  course,
-  instructors,
-}: {
-  course?: {
-    title: string;
-    slug: string;
-    pillar: string;
-    subtitle: string | null;
-    description: string;
-    coverImage: string | null;
-    instructorId: string | null;
-    xpOnCompletion: number;
-  };
-  instructors: { id: string; name: string }[];
-}) {
+/**
+ * Who teaches the program. A course manager chooses from `instructors`; anyone
+ * else is shown `teacher` and the form sends no instructor at all, so saving
+ * keeps it and a new program is the author's own (DR-34).
+ */
+type Teaching = { instructors: { id: string; name: string }[]; teacher?: never } | { instructors?: never; teacher: string | null };
+
+export function CourseFields(
+  props: {
+    course?: {
+      title: string;
+      slug: string;
+      pillar: string;
+      subtitle: string | null;
+      description: string;
+      coverImage: string | null;
+      instructorId: string | null;
+      xpOnCompletion: number;
+    };
+  } & Teaching
+) {
+  const { course } = props;
   const k = course?.slug ?? "new";
   return (
     <>
@@ -52,14 +58,24 @@ export function CourseFields({
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={`c-instr-${k}`}>Instructor</Label>
-          <Select id={`c-instr-${k}`} name="instructorId" defaultValue={course?.instructorId ?? ""}>
-            <option value="">None</option>
-            {instructors.map((i) => (
-              <option key={i.id} value={i.id}>
-                {i.name}
-              </option>
-            ))}
-          </Select>
+          {props.instructors ? (
+            <Select id={`c-instr-${k}`} name="instructorId" defaultValue={course?.instructorId ?? ""}>
+              <option value="">None</option>
+              {props.instructors.map((i) => (
+                <option key={i.id} value={i.id}>
+                  {i.name}
+                </option>
+              ))}
+            </Select>
+          ) : (
+            <>
+              {/* Shown, not sent: the field has no name, so the form carries no instructor. */}
+              <Input id={`c-instr-${k}`} readOnly defaultValue={props.teacher ?? "None"} aria-describedby={`c-instr-hint-${k}`} />
+              <span id={`c-instr-hint-${k}`} className="text-[12px] text-ink-3">
+                Only an administrator can change it.
+              </span>
+            </>
+          )}
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={`c-xp-${k}`}>XP on completion</Label>

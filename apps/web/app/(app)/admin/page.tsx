@@ -19,6 +19,8 @@ export default async function AdminOverview() {
     economy: can(user, "admin.economy"),
     floor: can(user, "admin.users") || can(user, "admin.analytics"),
     courses: can(user, "courses.author"),
+    // House-wide counts are for whoever manages every program; an instructor sees the programs they teach (DR-34).
+    allCourses: can(user, "courses.manage"),
     moderation: can(user, "community.moderate"),
     content: can(user, "admin.content"),
   };
@@ -46,10 +48,16 @@ export default async function AdminOverview() {
       : null,
     show.courses
       ? Promise.all([
-          prisma.course.groupBy({ by: ["status"], _count: { _all: true } }),
+          show.allCourses ? prisma.course.groupBy({ by: ["status"], _count: { _all: true } }) : null,
           prisma.instructor.findUnique({
             where: { userId: user.id },
-            select: { name: true, courses: { select: { id: true, title: true, status: true, _count: { select: { enrollments: true, certificates: true } } } } },
+            select: {
+              name: true,
+              courses: {
+                orderBy: { sortOrder: "asc" },
+                select: { id: true, title: true, status: true, _count: { select: { enrollments: true, certificates: true } } },
+              },
+            },
           }),
         ])
       : null,
@@ -101,27 +109,38 @@ export default async function AdminOverview() {
       {courses && (
         <>
           <SectionRule label="Courses" className="mb-4 mt-10" />
-          <div className="grid gap-4 sm:grid-cols-3">
-            {(["PUBLISHED", "DRAFT", "ARCHIVED"] as const).map((s) => (
-              <Card key={s}>
-                <CardContent className="py-4">
-                  <Stat label={`${s.charAt(0)}${s.slice(1).toLowerCase()} courses`} value={(courses[0].find((g) => g.status === s)?._count._all ?? 0).toLocaleString()} />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {courses[0] && (
+            <div className="mb-4 grid gap-4 sm:grid-cols-3">
+              {(["PUBLISHED", "DRAFT", "ARCHIVED"] as const).map((s) => (
+                <Card key={s}>
+                  <CardContent className="py-4">
+                    <Stat label={`${s.charAt(0)}${s.slice(1).toLowerCase()} courses`} value={(courses[0]?.find((g) => g.status === s)?._count._all ?? 0).toLocaleString()} />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+          {!courses[0] && !courses[1] && (
+            <Notice tone="info" title="Your account is not linked to an instructor profile yet">
+              The programs you teach appear here once an administrator links your account to your instructor profile, under Courses,
+              Instructors. Until then there is no program for you to edit.
+            </Notice>
+          )}
           {courses[1] && (
-            <Card className="mt-4">
+            <Card>
               <CardContent className="py-4">
                 <p className="mb-3 text-[14px] font-medium">Your courses, {courses[1].name}</p>
                 {courses[1].courses.length === 0 ? (
-                  <p className="text-[13px] text-ink-3">No courses are assigned to your instructor profile yet.</p>
+                  <p className="text-[13px] text-ink-3">You do not teach a course yet. Create one in the course editor.</p>
                 ) : (
                   <ul className="flex flex-col divide-y divide-line">
                     {courses[1].courses.map((c) => (
                       <li key={c.id} className="flex flex-wrap items-baseline justify-between gap-2 py-2 text-[14px]">
                         <span>
-                          {c.title} <span className="text-[12px] text-ink-3">· {c.status.toLowerCase()}</span>
+                          <Link href={`/admin/courses/${c.id}`} className="text-ink-1 hover:text-gold-bright">
+                            {c.title}
+                          </Link>{" "}
+                          <span className="text-[12px] text-ink-3">· {c.status.toLowerCase()}</span>
                         </span>
                         <span className="text-[13px] tabular-nums text-ink-2">
                           {c._count.enrollments} enrolled · {c._count.certificates} certificates

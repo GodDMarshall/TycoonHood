@@ -64,9 +64,13 @@ function ModuleFields({ m }: { m?: { id: string; title: string; description: str
 export default async function AdminCourseEdit({ params }: { params: Promise<{ id: string }> }) {
   const user = await requirePermission("courses.author");
   const { id } = await params;
+  // A program someone else teaches does not exist here (DR-34). Every action re-checks it in core.
+  if (!(await authoring.canEditCourse(user, id))) notFound();
+  const manage = can(user, "courses.manage");
   const course = await prisma.course.findUnique({
     where: { id },
     include: {
+      instructor: { select: { name: true } },
       modules: {
         orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
         include: {
@@ -92,7 +96,7 @@ export default async function AdminCourseEdit({ params }: { params: Promise<{ id
   });
   if (!course) notFound();
   const [instructors, problems] = await Promise.all([
-    prisma.instructor.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+    manage ? prisma.instructor.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }) : null,
     authoring.publishProblems(course.id),
   ]);
   const canPublish = can(user, "courses.publish");
@@ -149,7 +153,11 @@ export default async function AdminCourseEdit({ params }: { params: Promise<{ id
         <SectionTitle id="details">Program details</SectionTitle>
         <Panel className="p-5">
           <ActionForm action={updateCourseAction.bind(null, course.id)} submit="Save details">
-            <CourseFields course={course} instructors={instructors} />
+            {instructors ? (
+              <CourseFields course={course} instructors={instructors} />
+            ) : (
+              <CourseFields course={course} teacher={course.instructor?.name ?? null} />
+            )}
           </ActionForm>
         </Panel>
       </section>

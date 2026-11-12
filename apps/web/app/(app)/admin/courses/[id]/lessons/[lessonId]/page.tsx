@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
+import { authoring } from "@tycoonhood/core";
 import { Badge, Icon, Input, Label, Select } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../../../../lib/guard";
 import { Panel, SectionTitle } from "../../../../../../../components/app/page";
@@ -17,8 +18,10 @@ export const metadata: Metadata = { title: "Admin · Edit lesson" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminLessonEdit({ params }: { params: Promise<{ id: string; lessonId: string }> }) {
-  await requirePermission("courses.author");
+  const user = await requirePermission("courses.author");
   const { id, lessonId } = await params;
+  // A program someone else teaches does not exist here (DR-34); the lesson must belong to this one.
+  if (!(await authoring.canEditCourse(user, id))) notFound();
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
     include: {
