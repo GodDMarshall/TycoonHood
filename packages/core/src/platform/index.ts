@@ -43,7 +43,7 @@ export type { ContactInput, TestimonialInput, AnnouncementInput } from "./cms";
 export { platformAnalytics } from "./analytics";
 export type { PlatformAnalytics, DayCount, MoneyLine } from "./analytics";
 export { clientIpFrom, trustedProxyHops, MAX_TRUSTED_PROXY_HOPS } from "./client-ip";
-export { cronAuth } from "./cron";
+export { cronAuth, cronPreflight } from "./cron";
 export type { ForwardingHeaders } from "./client-ip";
 export {
   mailWentOut, verifyLinkState, verificationResendReply, emailChangeReply, passwordResetReply,
