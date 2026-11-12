@@ -5,7 +5,7 @@
  */
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { affiliates, EarnError, type PayoutMethodInput } from "@tycoonhood/core";
+import { affiliates, EarnError, formatInr, type PayoutMethodInput } from "@tycoonhood/core";
 import { getCurrentUser } from "../../../lib/auth";
 import { rateLimit } from "../../../lib/rate-limit";
 import type { EarnFormState } from "../../../components/earn/format";
@@ -43,7 +43,7 @@ export async function requestPayoutAction(_prev: EarnFormState, _fd: FormData): 
   try {
     const p = await affiliates.requestPayout(user.id);
     revalidatePath("/earnings");
-    return { message: `Payout of ₹${(p.amountCents / 100).toFixed(2)} requested.` };
+    return { message: `Payout of ${formatInr(p.amountCents)} requested.` };
   } catch (e) {
     if (e instanceof EarnError) return { error: e.message };
     throw e;

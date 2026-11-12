@@ -309,16 +309,25 @@ export class CommerceService {
     }
   }
 
-  /** The single fiat settlement path. Idempotent: settling twice is a no-op. */
+  /**
+   * The single fiat settlement path. PENDING → PAID is one conditional write,
+   * and the fulfilment runs in the same transaction. When settlements race
+   * (a webhook and the browser, a double click, two admins), exactly one
+   * write finds the order PENDING; the others wait for it to commit and then
+   * change nothing. Every call returns the order as it stands afterwards and
+   * whether this call settled it. PURCHASE_MADE goes out once, after the
+   * commit, from the call that settled.
+   */
   async settleFiatOrder(orderId: string, paymentRef: string) {
-    const order = await this.db.order.findUniqueOrThrow({ where: { id: orderId } });
-    if (order.status !== "PENDING") return order;
-    await this.db.order.update({
-      where: { id: orderId },
-      data: { status: "PAID", paymentRef },
+    const settled = await this.db.$transaction(async (tx) => {
+      const won = await tx.order.updateMany({ where: { id: orderId, status: "PENDING" }, data: { status: "PAID", paymentRef } });
+      if (won.count === 0) return false;
+      await this.fulfillIn(tx, orderId);
+      return true;
     });
-    await this.fulfill(orderId);
-    return this.db.order.findUniqueOrThrow({ where: { id: orderId } });
+    const order = await this.db.order.findUniqueOrThrow({ where: { id: orderId } });
+    if (settled) await this.purchased(order.userId, orderId);
+    return { settled, order };
   }
 
   async cancelFiatOrder(orderId: string) {
@@ -338,9 +347,7 @@ export class CommerceService {
       where: { id: orderId },
       include: { items: { include: { product: true } } },
     });
-    if (order.status !== "PAID") {
-      throw new CommerceError("Only a paid order can be shipped.");
-    }
+    if (order.status !== "PAID") throw new CommerceError(notShippable(order));
     // A test payment moves no money. In production only staff with
     // admin.commerce may pay that way (shop/payments/provider.ts), so a
     // member's order paid in test mode is never shipped.
@@ -351,8 +358,12 @@ export class CommerceService {
         throw new CommerceError("This order was paid in test mode, so no real money was charged. Do not ship it.");
       }
     }
-    const updated = await this.db.order.update({
-      where: { id: orderId },
+    // Only while it is still PAID: a refund that lands after the check above
+    // has put the stock back (refunds.unwindOrder, under the order's row
+    // lock), and a second click must not ship it twice. Whichever write comes
+    // second sees the first one's result.
+    const shipped = await this.db.order.updateMany({
+      where: { id: orderId, status: "PAID" },
       data: {
         status: "FULFILLED",
         shippedAt: new Date(),
@@ -360,6 +371,8 @@ export class CommerceService {
         trackingNumber: trackingNumber.trim(),
       },
     });
+    const updated = await this.db.order.findUniqueOrThrow({ where: { id: orderId } });
+    if (shipped.count === 0) throw new CommerceError(notShippable(updated));
     await this.db.notification.create({
       data: {
         userId: order.userId,
@@ -375,7 +388,13 @@ export class CommerceService {
   /** Grants what was bought. DIGITAL/COURSE → FULFILLED now; PHYSICAL stays
    *  PAID until an admin ships it. */
   private async fulfill(orderId: string) {
-    const order = await this.db.order.findUniqueOrThrow({
+    const userId = await this.fulfillIn(this.db, orderId);
+    await this.purchased(userId, orderId);
+  }
+
+  /** The writes of a fulfilment, inside `db` (a transaction, when settling). Returns the buyer. */
+  private async fulfillIn(db: Prisma.TransactionClient, orderId: string) {
+    const order = await db.order.findUniqueOrThrow({
       where: { id: orderId },
       include: { items: { include: { product: true } } },
     });
@@ -383,15 +402,15 @@ export class CommerceService {
     for (const item of order.items) {
       const p = item.product;
       if (p.kind === "COURSE" && p.grantsCourseId) {
-        const course = await this.db.course.findUnique({ where: { id: p.grantsCourseId } });
-        if (course) await this.lms.enroll(order.userId, course.slug);
+        const course = await db.course.findUnique({ where: { id: p.grantsCourseId } });
+        if (course) await this.lms.enroll(order.userId, course.slug, db);
       }
       if (p.kind === "PHYSICAL") allInstant = false;
     }
     if (allInstant) {
-      await this.db.order.update({ where: { id: orderId }, data: { status: "FULFILLED" } });
+      await db.order.update({ where: { id: orderId }, data: { status: "FULFILLED" } });
     }
-    await this.db.notification.create({
+    await db.notification.create({
       data: {
         userId: order.userId,
         type: "ORDER",
@@ -402,10 +421,23 @@ export class CommerceService {
         data: { orderId },
       },
     });
-
-    const { events } = await import("../events/bus");
-    await events.emit({ type: "PURCHASE_MADE", userId: order.userId, orderId });
+    return order.userId;
   }
+
+  /** After the order's writes have committed: achievements, missions and other listeners. */
+  private async purchased(userId: string, orderId: string) {
+    const { events } = await import("../events/bus");
+    await events.emit({ type: "PURCHASE_MADE", userId, orderId });
+  }
+}
+
+/** Why an order cannot be marked shipped, in words for staff. */
+function notShippable(order: { status: string; trackingCarrier: string | null; trackingNumber: string | null }) {
+  if (order.status === "REFUNDED") return "This order was refunded. Do not ship it.";
+  if (order.status === "FULFILLED" && order.trackingNumber) {
+    return `This order was already marked shipped (${order.trackingCarrier ?? ""} ${order.trackingNumber}).`.replace("( ", "(");
+  }
+  return "Only a paid order can be shipped.";
 }
 
 export const commerce = new CommerceService();

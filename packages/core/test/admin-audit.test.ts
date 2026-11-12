@@ -1,4 +1,4 @@
-import { afterAll, describe, it, expect } from "vitest";
+import { afterAll, describe, it, expect, vi } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import { CommerceService } from "../src/commerce/commerce";
 import { ManualSettlementService, ManualSettlementError } from "../src/commerce/manual-settlement";
@@ -102,6 +102,31 @@ describe("Manual settlement of a legacy rupee order", () => {
     expect(err.message).toBe("This order is fulfilled, not pending.");
     expect((await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).paymentRef).toBe(`admin_${first.id}`);
     expect(await prisma.auditLog.count({ where: { action: "order.settle_manual", targetId: order.id } })).toBe(1);
+  });
+
+  // Two clicks at once (a double click, or two admins) both get past settle's check.
+  // settleFiatOrder's conditional write lets exactly one of them settle the order.
+  it("settles once when two settles race: one is audited, the other is refused as already settled and writes nothing", async () => {
+    const order = await legacyOrder();
+    const [first, second] = [await admin(), await admin()];
+    const reached = vi.spyOn(CommerceService.prototype, "settleFiatOrder");
+    let results: PromiseSettledResult<unknown>[];
+    try {
+      results = await Promise.allSettled([settlement.settle(first, order.id), settlement.settle(second, order.id)]);
+      expect(reached).toHaveBeenCalledTimes(2); // neither was stopped by the check: both reached the write
+    } finally {
+      reached.mockRestore();
+    }
+
+    expect(await prisma.notification.count({ where: { userId: order.userId, type: "ORDER" } })).toBe(1); // fulfilled once
+    const refused = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+    expect(refused).toHaveLength(1);
+    expect(refused[0].reason).toBeInstanceOf(ManualSettlementError);
+    expect(refused[0].reason.message).toBe("This order is fulfilled, not pending.");
+
+    const rows = await prisma.auditLog.findMany({ where: { action: "order.settle_manual", targetId: order.id } });
+    expect(rows).toHaveLength(1);
+    expect(await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).toMatchObject({ status: "FULFILLED", paymentRef: `admin_${rows[0].actorId}` });
   });
 
   it("refuses an order cancelled since the list was drawn, with a ManualSettlementError", async () => {

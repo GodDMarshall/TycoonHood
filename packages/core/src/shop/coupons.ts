@@ -14,7 +14,7 @@
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { Coupon, Prisma, PrismaClient } from "@tycoonhood/db";
 import { CouponError } from "./errors";
-import { MIN_INR_CHARGE_PAISE } from "./pricing";
+import { formatInr, MIN_INR_CHARGE_PAISE } from "./pricing";
 
 export type CouponCheck =
   | { ok: true; coupon: Coupon; discountCents: number }
@@ -49,7 +49,7 @@ export function checkCouponRules(
   if (coupon.startsAt && now < coupon.startsAt) return "This code is not valid yet.";
   if (coupon.endsAt && now > coupon.endsAt) return "This code has expired.";
   if (subtotalCents < coupon.minSubtotalCents) {
-    return `This code needs a subtotal of at least ₹${(coupon.minSubtotalCents / 100).toFixed(2)}.`;
+    return `This code needs a subtotal of at least ${formatInr(coupon.minSubtotalCents)}.`;
   }
   if (coupon.maxRedemptions != null && coupon.redeemedCount >= coupon.maxRedemptions) {
     return "This code has been fully used.";

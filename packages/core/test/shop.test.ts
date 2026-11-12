@@ -11,7 +11,7 @@ import {
 } from "../src/shop";
 import { platformAnalytics } from "../src/platform/analytics";
 import { cronAuth } from "../src/platform/cron";
-import { CommerceService } from "../src/commerce/commerce";
+import { CommerceError, CommerceService } from "../src/commerce/commerce";
 import { hmacSha256Hex } from "../src/shop/payments/razorpay";
 import { TEST_REFUND_NOTE } from "../src/shop/refunds";
 import { IST_TIME_ZONE, formatIst, parseIstDateTime } from "../src/time/ist";
@@ -1456,5 +1456,93 @@ describe("Shop — refunds", () => {
     for (const x of [whole, part, closedEarly, waiting]) expect(listed).not.toContain(x.pay.id);
     expect(await svc.recordProviderRefund({ providerPaymentId: whole.pay.providerPaymentId!, refundId: wholeRefunds[0].id, amountCents: 20_000 })).toEqual({ outcome: "already counted" });
     expect(refundedSpy).toHaveBeenCalledTimes(3); // whole, part (refunded by staff), waiting
+  });
+});
+
+/**
+ * A CommerceService whose first write to an order lets `meanwhile` run just
+ * before it: a refund landing between markShipped's check and its write.
+ */
+function shippingWhile(meanwhile: () => Promise<unknown>) {
+  let pending: (() => Promise<unknown>) | null = meanwhile;
+  const orders = new Proxy(prisma.order, {
+    get(target, prop) {
+      const value = Reflect.get(target, prop);
+      if ((prop !== "update" && prop !== "updateMany") || typeof value !== "function") return value;
+      return async (...args: unknown[]) => {
+        const run = pending;
+        pending = null;
+        if (run) await run();
+        return value.apply(target, args);
+      };
+    },
+  });
+  return new CommerceService(new Proxy(prisma, { get: (target, prop) => (prop === "order" ? orders : Reflect.get(target, prop)) }));
+}
+
+describe("Shop — marking a parcel shipped", () => {
+  async function paidParcel() {
+    const user = await createTestUser();
+    const p = await product({ inventory: 5, inr: 40_000 });
+    await cart.add(user.id, p.id);
+    const { order } = await checkout.startInrCheckout(user.id, { shipping: ADDRESS });
+    await checkout.sandboxCapture(user.id, order.id);
+    return { user, order, product: p };
+  }
+  const stock = async (productId: string) => (await prisma.product.findUniqueOrThrow({ where: { id: productId } })).inventory;
+  const toldShipped = (userId: string) => prisma.notification.count({ where: { userId, title: "Your order is on its way" } });
+
+  it("a refund that lands between the check and the write wins: the order stays refunded and unshipped, and its stock stays back", async () => {
+    const admin = await createTestUser();
+    const { user, order, product: p } = await paidParcel();
+    expect(await stock(p.id)).toBe(4);
+    const req = await refundSvc.requestRefund(user.id, order.id, "Changed my mind, please refund");
+
+    const err = await shippingWhile(() => refundSvc.approve(admin.id, req.id))
+      .markShipped(order.id, "Delhivery", "DLV123")
+      .catch((e) => e);
+    expect(err).toBeInstanceOf(CommerceError);
+    expect(err.message).toBe("This order was refunded. Do not ship it.");
+
+    expect(await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).toMatchObject({
+      status: "REFUNDED", shippedAt: null, trackingCarrier: null, trackingNumber: null,
+    });
+    expect(await stock(p.id)).toBe(5); // the unit went back on the shelf and stays there
+    expect(await toldShipped(user.id)).toBe(0);
+    expect(refundedSpy).toHaveBeenCalledWith(order.id);
+  });
+
+  it("the other way round, the parcel went out first: the refund leaves the stock alone", async () => {
+    const admin = await createTestUser();
+    const { user, order, product: p } = await paidParcel();
+    const req = await refundSvc.requestRefund(user.id, order.id, "Changed my mind, please refund");
+    const shipped = await new CommerceService(prisma).markShipped(order.id, "Delhivery", "DLV124");
+    expect(shipped).toMatchObject({ status: "FULFILLED", trackingCarrier: "Delhivery", trackingNumber: "DLV124" });
+    await refundSvc.approve(admin.id, req.id);
+    expect(await prisma.order.findUniqueOrThrow({ where: { id: order.id } })).toMatchObject({ status: "REFUNDED", trackingNumber: "DLV124" });
+    expect(await stock(p.id)).toBe(4); // that unit is in the post, not on the shelf
+    expect(await toldShipped(user.id)).toBe(1);
+  });
+
+  it("two Mark shipped clicks at once ship it once and tell the member once", async () => {
+    const { user, order } = await paidParcel();
+    const commerce = new CommerceService(prisma);
+    const results = await Promise.allSettled([
+      commerce.markShipped(order.id, "Delhivery", "DLV125"),
+      commerce.markShipped(order.id, "Blue Dart", "BD126"),
+    ]);
+    expect(await toldShipped(user.id)).toBe(1);
+    const refused = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+    expect(refused).toHaveLength(1);
+    const after = await prisma.order.findUniqueOrThrow({ where: { id: order.id } });
+    expect(after.status).toBe("FULFILLED");
+    expect(refused[0].reason).toBeInstanceOf(CommerceError);
+    expect(refused[0].reason.message).toBe(`This order was already marked shipped (${after.trackingCarrier} ${after.trackingNumber}).`);
+  });
+
+  it("says why it will not ship an order that is not paid", async () => {
+    const { order } = await paidParcel();
+    await new RefundService(prisma).unwindOrder(order.id, { actorId: null, source: "test" });
+    await expect(new CommerceService(prisma).markShipped(order.id, "Delhivery", "DLV127")).rejects.toThrow("This order was refunded. Do not ship it.");
   });
 });

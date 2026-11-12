@@ -42,15 +42,17 @@ export class ManualSettlementService {
     }
 
     const paymentRef = `admin_${actor.id}`;
-    const settled = await this.commerce.settleFiatOrder(orderId, paymentRef);
+    // Two settles at once both get past the check above; the conditional write lets one through.
+    const { settled, order: after } = await this.commerce.settleFiatOrder(orderId, paymentRef);
+    if (!settled) throw new ManualSettlementError(`This order is ${after.status.toLowerCase()}, not pending.`);
     await this.audit.log({
       actorId: actor.id,
       action: "order.settle_manual",
       targetType: "order",
       targetId: orderId,
-      meta: { paymentRef, provider: order.paymentProvider, from: order.status, to: settled.status },
+      meta: { paymentRef, provider: order.paymentProvider, from: order.status, to: after.status },
     });
-    return settled;
+    return after;
   }
 }
 
