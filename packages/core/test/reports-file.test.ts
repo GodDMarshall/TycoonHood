@@ -180,6 +180,26 @@ describe("reports.file", () => {
     expect(await rows(reporter.id)).toHaveLength(0);
   });
 
+  it("refuses an archived group to members, who cannot see it, and takes it from staff, who can", async () => {
+    const [reporter, mod] = [await member(), await moderator()];
+    const g = await group();
+    await d.setArchived(mod, "group", g.id, true);
+    try {
+      // groups.group() shows an archived group to staff only.
+      expect(await d.group(reporter, g.slug)).toBeNull();
+      await refused(reports.file(reporter, { targetType: "group", targetId: g.id, reason: "Spam group" }), GONE);
+      expect(await d.group(mod, g.slug)).toMatchObject({ id: g.id, archived: true });
+      await reports.file(mod, { targetType: "group", targetId: g.id, reason: "Needs a second look" });
+    } finally {
+      await d.setArchived(mod, "group", g.id, false);
+    }
+    expect(await rows(reporter.id)).toHaveLength(0);
+    expect(await rows(mod.id)).toMatchObject([{ targetType: "group", targetId: g.id }]);
+    // Restored, the group is open to members again, and so is reporting it: it was the archive that refused.
+    await reports.file(reporter, { targetType: "group", targetId: g.id, reason: "Spam group" });
+    expect(await rows(reporter.id)).toMatchObject([{ targetType: "group", targetId: g.id }]);
+  });
+
   it("takes one report per member and target, and says so the second time", async () => {
     const [author, reporter] = [await member(), await member()];
     const g = await group();

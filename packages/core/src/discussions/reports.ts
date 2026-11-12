@@ -12,7 +12,8 @@
  */
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
-import { DiscussionError, canSee, type DiscussionViewer } from "./shared";
+import { isStaff } from "../auth/permissions";
+import { DiscussionError, canSee, readArchive, type DiscussionViewer } from "./shared";
 
 export const DISCUSSION_REPORT_MAX = 500;
 
@@ -44,9 +45,10 @@ export class ReportService {
    * - `targetType` is one of REPORT_TARGET_TYPES; any other is refused.
    * - `reason` is trimmed, and must be 3 to DISCUSSION_REPORT_MAX characters.
    * - Nobody reports themselves or their own writing.
-   * - The target must exist and, for a post or comment, be one the member can
-   *   see (staff see hidden writing; nobody sees removed writing). A target
-   *   type with no table yet is taken as given (see assertReportable).
+   * - The target must exist and, for a post, comment or group, be one the
+   *   member can see (staff see hidden writing and archived groups; nobody
+   *   sees removed writing). A target type with no table yet is taken as
+   *   given (see assertReportable).
    * - One report per member and target: a second is refused, saying staff
    *   already have the first.
    *
@@ -105,9 +107,17 @@ export class ReportService {
         return;
       }
       case "group": {
-        // Groups have no owner column yet, so there is no "your own" to refuse.
+        // Only a group the member can see: an archived group is staff-only,
+        // as in groups.group(). Groups have no owner column yet, so there is
+        // no "your own" to refuse. Once P0a's columns land, GROUPS adds two
+        // checks here, through the lead (SOCIAL owns this file), with their
+        // cases in reports-file.test.ts: refuse a group the member created
+        // or owns (createdById, an OWNER membership), and one they cannot see
+        // by its status (PENDING_REVIEW, REJECTED) or visibility.
         const group = await this.db.communityGroup.findUnique({ where: { id: targetId }, select: { id: true } });
-        if (!group) throw new DiscussionError("That no longer exists.");
+        if (!group || (!isStaff(viewer) && (await readArchive(this.db)).groups.includes(group.id))) {
+          throw new DiscussionError("That no longer exists.");
+        }
         return;
       }
       case "project":
