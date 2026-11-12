@@ -27,8 +27,9 @@ import { AccountSettingsService } from "../src/platform/account-settings";
 import { EmailVerificationService } from "../src/platform/email-verification";
 import { EmailUndoService } from "../src/platform/email-undo";
 import { adminEmailFrom } from "../../db/src/admin-email";
+import { resolve } from "node:path";
 import {
-  createThrowawayDb, migrate, runDbScript, mustRun, start, scriptEnv, SEED_ADMIN, REPO_ROOT, type Throwaway,
+  createThrowawayDb, migrate, runDbScript, mustRun, start, scriptEnv, SEED_ADMIN, REPO_ROOT, TSX, type Throwaway,
 } from "./throwaway-db";
 
 const SLOW = 120_000;
@@ -58,6 +59,16 @@ describe("the admin from ADMIN_EMAIL", () => {
     expect(admin.email).toBe("owner.admin@example.com");
     expect((await signIn(t, "  Owner.Admin@Example.COM ", SEED_ADMIN.ADMIN_PASSWORD)).id).toBe(admin.id);
     expect((await signIn(t, "owner.admin@example.com", SEED_ADMIN.ADMIN_PASSWORD)).id).toBe(admin.id);
+  }, SLOW);
+
+  it("is the account scripts/smoke-admin.ts signs in as, with ADMIN_EMAIL as it was typed", async () => {
+    const r = await start(process.execPath, [TSX, "scripts/smoke-admin.ts"], {
+      cwd: resolve(REPO_ROOT, "packages/core"),
+      env: scriptEnv(t.url, { ADMIN_EMAIL: "  Owner.Admin@Example.COM " }),
+    }).done;
+    expect(r.code, r.output).toBe(0);
+    const { token } = JSON.parse(r.output.trim().split("\n").pop() ?? "{}") as { token?: string };
+    expect(token).toMatch(/^\S{20,}$/);
   }, SLOW);
 
   it("is found again by a re-run that spells the address in another case", async () => {
