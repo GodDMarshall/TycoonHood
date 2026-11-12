@@ -9,7 +9,7 @@
  * idempotency key.
  */
 
-import { prisma } from "./client.js";
+import { prisma, type Prisma } from "./client.js";
 import { hash } from "@node-rs/argon2";
 import {
   THC_TOTAL_SUPPLY,
@@ -18,6 +18,9 @@ import {
   xpRequiredForLevel,
   MAX_SEEDED_LEVEL,
 } from "@tycoonhood/config";
+
+/** Advisory lock key for the system accounts and genesis, "tylg" in ASCII (see main). */
+const LEDGER_SEED_LOCK = 0x74796c67n;
 
 /** Argon2id params — keep in sync with packages/core/src/auth/password.ts */
 const ARGON2 = { memoryCost: 19456, timeCost: 2, parallelism: 1, algorithm: 2 as const };
@@ -168,46 +171,59 @@ async function main() {
   // ------------------------------------------------------------
   // System ledger accounts + genesis (spec §25–§27)
   // ------------------------------------------------------------
-  const systemTypes = ["SYSTEM_MINT", "TREASURY", "REWARDS_POOL", "MINING_POOL", "REVENUE"] as const;
-  const accounts: Record<string, string> = {};
-  for (const type of systemTypes) {
-    const existing = await prisma.ledgerAccount.findFirst({ where: { type } });
-    const acct = existing ?? (await prisma.ledgerAccount.create({ data: { type, name: type.toLowerCase() } }));
-    accounts[type] = acct.id;
-  }
+  // One transaction, one seed at a time (review finding 19). The ledger treats
+  // each system account type as a singleton, so two seeds that both found no
+  // TREASURY must not each create one. Builds already take turns under the
+  // deploy lock (scripts/with-db-lock.mjs); this lock keeps apart seeds run by
+  // hand as well. The second seed waits here, then finds everything made.
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${LEDGER_SEED_LOCK}::bigint)`;
 
-  // Genesis mint: 1 quadrillion THC into TREASURY as auditable transaction #1.
-  // SYSTEM_MINT goes equally negative — that's the point of double entry:
-  // total supply is provable as -balance(SYSTEM_MINT) forever.
-  await postOnce("GENESIS", {
-    reason: "GENESIS_MINT",
-    memo: `Genesis mint: ${THC_TOTAL_SUPPLY} THC`,
-    entries: [
-      { accountId: accounts.SYSTEM_MINT, amount: -THC_TOTAL_SUPPLY },
-      { accountId: accounts.TREASURY, amount: THC_TOTAL_SUPPLY },
-    ],
-  });
+      const systemTypes = ["SYSTEM_MINT", "TREASURY", "REWARDS_POOL", "MINING_POOL", "REVENUE"] as const;
+      const accounts: Record<string, string> = {};
+      for (const type of systemTypes) {
+        const existing = await tx.ledgerAccount.findFirst({ where: { type } });
+        const acct = existing ?? (await tx.ledgerAccount.create({ data: { type, name: type.toLowerCase() } }));
+        accounts[type] = acct.id;
+      }
 
-  // Fund the rewards pool so day-to-day rewards never touch the treasury.
-  await postOnce("POOL_FUNDING_INITIAL", {
-    reason: "POOL_FUNDING",
-    memo: `Initial rewards pool: ${THC_INITIAL_REWARDS_POOL} THC`,
-    entries: [
-      { accountId: accounts.TREASURY, amount: -THC_INITIAL_REWARDS_POOL },
-      { accountId: accounts.REWARDS_POOL, amount: THC_INITIAL_REWARDS_POOL },
-    ],
-  });
+      // Genesis mint: 1 quadrillion THC into TREASURY as auditable transaction #1.
+      // SYSTEM_MINT goes equally negative — that's the point of double entry:
+      // total supply is provable as -balance(SYSTEM_MINT) forever.
+      await postOnce(tx, "GENESIS", {
+        reason: "GENESIS_MINT",
+        memo: `Genesis mint: ${THC_TOTAL_SUPPLY} THC`,
+        entries: [
+          { accountId: accounts.SYSTEM_MINT, amount: -THC_TOTAL_SUPPLY },
+          { accountId: accounts.TREASURY, amount: THC_TOTAL_SUPPLY },
+        ],
+      });
 
-  // Fund the Miner's first epoch — ring-fenced so the mining budget is
-  // visible on the books and finite by construction.
-  await postOnce("MINING_POOL_FUNDING_EPOCH_1", {
-    reason: "POOL_FUNDING",
-    memo: `Miner epoch 1: ${THC_MINING_EPOCH_1} THC`,
-    entries: [
-      { accountId: accounts.TREASURY, amount: -THC_MINING_EPOCH_1 },
-      { accountId: accounts.MINING_POOL, amount: THC_MINING_EPOCH_1 },
-    ],
-  });
+      // Fund the rewards pool so day-to-day rewards never touch the treasury.
+      await postOnce(tx, "POOL_FUNDING_INITIAL", {
+        reason: "POOL_FUNDING",
+        memo: `Initial rewards pool: ${THC_INITIAL_REWARDS_POOL} THC`,
+        entries: [
+          { accountId: accounts.TREASURY, amount: -THC_INITIAL_REWARDS_POOL },
+          { accountId: accounts.REWARDS_POOL, amount: THC_INITIAL_REWARDS_POOL },
+        ],
+      });
+
+      // Fund the Miner's first epoch — ring-fenced so the mining budget is
+      // visible on the books and finite by construction.
+      await postOnce(tx, "MINING_POOL_FUNDING_EPOCH_1", {
+        reason: "POOL_FUNDING",
+        memo: `Miner epoch 1: ${THC_MINING_EPOCH_1} THC`,
+        entries: [
+          { accountId: accounts.TREASURY, amount: -THC_MINING_EPOCH_1 },
+          { accountId: accounts.MINING_POOL, amount: THC_MINING_EPOCH_1 },
+        ],
+      });
+    },
+    // Waiting for another seed counts against the timeout, so allow for it.
+    { timeout: 120_000, maxWait: 10_000 }
+  );
 
   // ------------------------------------------------------------
   // The four programs (spec §3) — DATA, not components. Status DRAFT:
@@ -312,8 +328,12 @@ async function main() {
   console.log("─────────────────────────────────────────────────────");
 }
 
-/** Minimal in-seed poster with idempotency (core's LedgerService arrives after generate). */
+/**
+ * Minimal in-seed poster with idempotency (core's LedgerService arrives after
+ * generate). Runs inside the caller's transaction, under its lock.
+ */
 async function postOnce(
+  tx: Prisma.TransactionClient,
   idempotencyKey: string,
   data: {
     reason: "GENESIS_MINT" | "POOL_FUNDING";
@@ -321,25 +341,23 @@ async function postOnce(
     entries: { accountId: string; amount: bigint }[];
   }
 ) {
-  const prior = await prisma.ledgerTransaction.findUnique({ where: { idempotencyKey } });
+  const prior = await tx.ledgerTransaction.findUnique({ where: { idempotencyKey } });
   if (prior) return prior;
-  return prisma.$transaction(async (tx) => {
-    const created = await tx.ledgerTransaction.create({
-      data: {
-        reason: data.reason,
-        idempotencyKey,
-        memo: data.memo,
-        entries: { create: data.entries },
-      },
-    });
-    for (const e of data.entries) {
-      await tx.ledgerAccount.update({
-        where: { id: e.accountId },
-        data: { balance: { increment: e.amount } },
-      });
-    }
-    return created;
+  const created = await tx.ledgerTransaction.create({
+    data: {
+      reason: data.reason,
+      idempotencyKey,
+      memo: data.memo,
+      entries: { create: data.entries },
+    },
   });
+  for (const e of data.entries) {
+    await tx.ledgerAccount.update({
+      where: { id: e.accountId },
+      data: { balance: { increment: e.amount } },
+    });
+  }
+  return created;
 }
 
 main()

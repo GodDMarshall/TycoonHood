@@ -19,6 +19,11 @@
  * It stops at the first failure and tells you which step failed. It never
  * pretends a step succeeded.
  *
+ * `pnpm deploy:db` runs it under the deploy lock (scripts/with-db-lock.mjs),
+ * so it waits for a Vercel build that is migrating or seeding the same
+ * database, and a build waits for it. The lock needs the direct connection:
+ * use Neon's address without "-pooler", or set DATABASE_URL_UNPOOLED to it.
+ *
  * Vercel deployment itself stays manual on purpose: it needs your account,
  * and a script that "deploys" without credentials would be theatre.
  */
@@ -84,9 +89,9 @@ console.log(`  mode        : ${looksProd ? "PRODUCTION" : "local/dev"}\n`);
 
 if (existingUsers > 1) {
   console.log(
-    "  ⚠ This database already holds members. Seeds are upserts and will not\n" +
-      "    delete member data, but the academy seed REBUILDS course modules.\n" +
-      "    Take a snapshot first if this database is live.\n"
+    "  ⚠ This database already holds members. The seeds are safe to re-run:\n" +
+      "    they add what is missing and never rewrite what staff edit in the\n" +
+      "    admin. Take a snapshot first anyway if this database is live.\n"
   );
 }
 
