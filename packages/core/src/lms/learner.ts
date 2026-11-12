@@ -3,7 +3,9 @@
  *
  * Reviews: only an enrolled member who has completed at least one whole
  * module may review a programme; one review per member per programme, which
- * they can edit. Staff can hide a review (authoring.ts); hidden reviews do
+ * they can edit. The account linked to the programme's instructor profile
+ * never may: it teaches the programme, and its review would pad the rating
+ * (directive §17). Staff can hide a review (authoring.ts); hidden reviews do
  * not count toward the average.
  */
 import { z } from "zod";
@@ -74,13 +76,20 @@ export class LearnerService {
   }
 
   async reviewEligibility(userId: string, courseId: string): Promise<ReviewEligibility> {
-    const enrolled = !!(await this.db.enrollment.findUnique({ where: { userId_courseId: { userId, courseId } }, select: { id: true } }));
+    const [course, enrollment] = await Promise.all([
+      this.db.course.findUnique({ where: { id: courseId }, select: { instructor: { select: { userId: true } } } }),
+      this.db.enrollment.findUnique({ where: { userId_courseId: { userId, courseId } }, select: { id: true } }),
+    ]);
+    const teaches = course?.instructor?.userId != null && course.instructor.userId === userId;
+    const enrolled = !!enrollment;
     const completedModules = enrolled ? await this.completedModules(userId, courseId) : 0;
-    const reason = !enrolled
-      ? "Enroll in the program to review it."
-      : completedModules < 1
-        ? "Finish your first module to leave a review."
-        : null;
+    const reason = teaches
+      ? "You teach this program, so you cannot review it. Its reviews come from the members who take it."
+      : !enrolled
+        ? "Enroll in the program to review it."
+        : completedModules < 1
+          ? "Finish your first module to leave a review."
+          : null;
     return { enrolled, completedModules, canReview: reason === null, reason };
   }
 

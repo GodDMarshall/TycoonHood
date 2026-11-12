@@ -9,10 +9,14 @@ import { afterAll, describe, expect, it } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import type { UserRole } from "@tycoonhood/db";
 import { CourseAuthoringService, AuthoringError, REVIEW_MODERATORS, canModerateReviews, editableCoursesWhere, type AuthoringActor } from "../src/lms/authoring";
+import { LearnerService, ReviewNotAllowedError } from "../src/lms/learner";
+import { LmsService } from "../src/lms/lms";
 import { can, ForbiddenError, ROLES } from "../src/auth/permissions";
 import { createTestUser, uid } from "./helpers";
 
 const authoring = new CourseAuthoringService(prisma);
+const learner = new LearnerService(prisma);
+const lms = new LmsService(prisma);
 
 const courses: string[] = [];
 const profiles: string[] = [];
@@ -404,5 +408,39 @@ describe("instructors cannot hide reviews", () => {
     await authoring.setReviewHidden(admin, review.id, false);
     expect(await hidden()).toBe(false);
     expect(await prisma.auditLog.count({ where: { actorId: a.actor.id, targetId: review.id } })).toBe(0);
+  });
+});
+
+describe("an instructor cannot review a programme they teach", () => {
+  it("a member who finished a module may review it; its instructor, who did the same, is refused and is not offered the form", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin);
+    const mine = await programme(a.actor);
+    await authoring.publish(admin, mine.course.id);
+    const check = await prisma.quiz.findUniqueOrThrow({ where: { lessonId: mine.check.id } });
+    const student = await createTestUser();
+
+    // Before enrolling, the instructor is told why they can never review it, not invited to enrol.
+    expect((await learner.reviewEligibility(a.actor.id, mine.course.id)).reason).toMatch(/You teach this program/);
+
+    // Enrolment is free, so both enrol, and both finish the first module.
+    for (const userId of [a.actor.id, student.id]) {
+      await lms.enroll(userId, mine.course.slug);
+      await lms.completeLesson(userId, mine.reading.id);
+      await lms.submitQuiz(userId, check.id, [1]);
+    }
+
+    expect(await learner.reviewEligibility(student.id, mine.course.id)).toMatchObject({ canReview: true, reason: null });
+    await learner.saveReview(student.id, mine.course.id, { rating: 3, body: "Fair." });
+
+    const gate = await learner.reviewEligibility(a.actor.id, mine.course.id);
+    expect(gate).toMatchObject({ enrolled: true, completedModules: 1, canReview: false });
+    expect(gate.reason).toMatch(/You teach this program, so you cannot review it/);
+    const padded = learner.saveReview(a.actor.id, mine.course.id, { rating: 5, body: "The best program on the site." });
+    await expect(padded).rejects.toBeInstanceOf(ReviewNotAllowedError);
+    await expect(padded).rejects.toThrow(/You teach this program/);
+
+    expect(await prisma.courseReview.findMany({ where: { courseId: mine.course.id }, select: { userId: true } })).toEqual([{ userId: student.id }]);
+    expect(await learner.rating(mine.course.id)).toEqual({ average: 3, count: 1 });
   });
 });
