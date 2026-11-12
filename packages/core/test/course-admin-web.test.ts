@@ -41,6 +41,8 @@ const lessonEditor = () =>
     (m) => m.default
   );
 const dashboard = () => webModule<{ default: Page<Record<string, never>> }>("app/(app)/admin/page.tsx").then((m) => m.default);
+const instructorsPage = () =>
+  webModule<{ default: Page<Record<string, never>> }>("app/(app)/admin/courses/instructors/page.tsx").then((m) => m.default);
 
 type Act = (prev: State, fd: FormData) => Promise<State>;
 type Dir = "up" | "down";
@@ -60,6 +62,11 @@ const courseActions = () =>
     saveQuizAction: (courseId: string, lessonId: string, ...rest: Parameters<Act>) => Promise<State>;
     addResourceAction: (courseId: string, lessonId: string | null, ...rest: Parameters<Act>) => Promise<State>;
     deleteResourceAction: (courseId: string, resourceId: string, ...rest: Parameters<Act>) => Promise<State>;
+    createInstructorAction: Act;
+    updateInstructorAction: (id: string, ...rest: Parameters<Act>) => Promise<State>;
+    deleteInstructorAction: (id: string, ...rest: Parameters<Act>) => Promise<State>;
+    linkInstructorAction: (id: string, ...rest: Parameters<Act>) => Promise<State>;
+    unlinkInstructorAction: (id: string, ...rest: Parameters<Act>) => Promise<State>;
   }>("app/(app)/admin/courses/actions.ts");
 
 const cleanup: (() => Promise<unknown>)[] = [];
@@ -166,6 +173,19 @@ function everythingIn(node: unknown, seen = new WeakSet<object>(), out: string[]
     for (const v of values) everythingIn(v, seen, out);
   }
   return out.join(" ");
+}
+
+/** The element a page keyed with this id (a list row), to read one row on its own. */
+function elementWithKey(node: unknown, key: string, seen = new WeakSet<object>()): unknown {
+  if (!node || typeof node !== "object" || seen.has(node)) return undefined;
+  seen.add(node);
+  if ((node as { key?: unknown }).key === key && "props" in node) return node;
+  const element = typeof (node as { $$typeof?: unknown }).$$typeof === "symbol" && "props" in node;
+  for (const v of Object.values(element ? ((node as { props: Record<string, unknown> }).props ?? {}) : node)) {
+    const found = elementWithKey(v, key, seen);
+    if (found) return found;
+  }
+  return undefined;
 }
 
 describe("the reviews page", () => {
@@ -360,5 +380,91 @@ describe("the admin overview's course cards", () => {
 
     session.user = admin;
     expect(await look()).toContain("Draft courses");
+  });
+});
+
+describe("the instructors page", () => {
+  const NOT_YET_INSTRUCTOR = "until an administrator makes them an Instructor";
+
+  it("is for course managers: an instructor can neither open it nor use its actions", async () => {
+    const [Instructors, actions] = [await instructorsPage(), await courseActions()];
+    const admin = await staff("ADMIN");
+    const a = await linkedInstructor(admin);
+    const someone = await staff("INSTRUCTOR");
+    const before = await prisma.instructor.findUniqueOrThrow({ where: { id: a.profile.id } });
+    const made = { slug: `i-${tag()}`, name: "Self Made", bio: "A profile an instructor tried to make." };
+    const refused = { error: "You do not have permission to do that." };
+
+    session.user = a.actor;
+    expect(await visit(Instructors({}))).toEqual({ sent: "/today" });
+    expect(await actions.createInstructorAction({}, form(made))).toEqual(refused);
+    expect(await actions.updateInstructorAction(a.profile.id, {}, form({ ...made, slug: a.profile.slug }))).toEqual(refused);
+    expect(await actions.linkInstructorAction(a.profile.id, {}, form({ member: someone.email }))).toEqual(refused);
+    expect(await actions.unlinkInstructorAction(a.profile.id, {}, form())).toEqual(refused);
+    expect(await actions.deleteInstructorAction(a.profile.id, {}, form())).toEqual(refused);
+    expect(await prisma.instructor.findUniqueOrThrow({ where: { id: a.profile.id } })).toEqual(before);
+    expect(await prisma.instructor.count({ where: { slug: made.slug } })).toBe(0);
+
+    session.user = await staff("MODERATOR");
+    expect(await visit(Instructors({}))).toEqual({ sent: "/today" });
+
+    session.user = admin;
+    const page = await visit(Instructors({}));
+    const row = everythingIn(elementWithKey(page.tree, a.profile.id));
+    const { username } = await prisma.profile.findUniqueOrThrow({ where: { userId: a.actor.id } });
+    expect(row).toContain(`@${username}`);
+    expect(row).not.toContain(NOT_YET_INSTRUCTOR);
+  });
+
+  it("links a profile to a member by email or username, says who is linked, unlinks it, and audits each change", async () => {
+    const [Instructors, { linkInstructorAction, unlinkInstructorAction }] = [await instructorsPage(), await courseActions()];
+    const admin = await staff("ADMIN");
+    const newProfile = async () => {
+      const p = await authoring.createInstructor(admin, { slug: `i-${tag()}`, name: `Teacher ${tag()}`, bio: "Teaches tests for a living." });
+      cleanup.push(() => prisma.instructor.deleteMany({ where: { id: p.id } }));
+      return p;
+    };
+    const [profile, other] = [await newProfile(), await newProfile()];
+    const member = await createTestUser(); // a Member, with a public profile
+    const { username, displayName } = await prisma.profile.findUniqueOrThrow({ where: { userId: member.id } });
+    const row = async (id: string) => everythingIn(elementWithKey((await visit(Instructors({}))).tree, id));
+    const userIdOf = async (id: string) => (await prisma.instructor.findUniqueOrThrow({ where: { id } })).userId;
+
+    session.user = admin;
+    expect(await row(profile.id)).toContain("Not linked");
+    expect(await linkInstructorAction(profile.id, {}, form({ member: "  " }))).toEqual({ error: "Enter the member's email or username." });
+    expect(await linkInstructorAction(profile.id, {}, form({ member: `nobody_${tag()}` }))).toEqual({ error: "No member has that email or username." });
+    expect(await userIdOf(profile.id)).toBeNull();
+
+    expect(await linkInstructorAction(profile.id, {}, form({ member: `@${username}` }))).toEqual({ ok: `Linked to ${displayName} (@${username}).` });
+    expect(await userIdOf(profile.id)).toBe(member.id);
+    const linked = await row(profile.id);
+    expect(linked).toContain(`@${username}`);
+    expect(linked).toContain(member.email); // an administrator sees which account it is
+    expect(linked).toContain(NOT_YET_INSTRUCTOR); // a Member cannot edit programmes yet, and the page says so
+
+    // One profile per member.
+    expect(await linkInstructorAction(other.id, {}, form({ member: member.email }))).toEqual({
+      error: `That member is already linked to the instructor profile “${profile.name}”. Unlink them there first.`,
+    });
+    expect(await userIdOf(other.id)).toBeNull();
+
+    expect(await unlinkInstructorAction(profile.id, {}, form())).toEqual({ ok: "Unlinked." });
+    expect(await userIdOf(profile.id)).toBeNull();
+    expect(await row(profile.id)).toContain("Not linked");
+
+    // By email this time, typed in any case.
+    expect(await linkInstructorAction(other.id, {}, form({ member: member.email.toUpperCase() }))).toEqual({ ok: `Linked to ${displayName} (@${username}).` });
+    expect(await userIdOf(other.id)).toBe(member.id);
+
+    const audit = await prisma.auditLog.findMany({
+      where: { targetId: { in: [profile.id, other.id] }, action: { in: ["instructor.link", "instructor.unlink"] } },
+      orderBy: { createdAt: "asc" },
+    });
+    expect(audit.map((r) => [r.action, r.actorId, r.targetId])).toEqual([
+      ["instructor.link", admin.id, profile.id],
+      ["instructor.unlink", admin.id, profile.id],
+      ["instructor.link", admin.id, other.id],
+    ]);
   });
 });

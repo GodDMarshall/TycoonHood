@@ -196,18 +196,42 @@ const instructorInput = (fd: FormData) => ({
   avatar: str(fd, "avatar"),
 });
 
+// Profiles, and which account teaches as each one, are for course managers (DR-34).
+
 export async function createInstructorAction(_prev: CourseAdminState, fd: FormData) {
-  return run("courses.author", (a) => authoring.createInstructor(a, instructorInput(fd)), "Instructor added.");
+  return run("courses.manage", (a) => authoring.createInstructor(a, instructorInput(fd)), "Instructor added.");
 }
 
 export async function updateInstructorAction(id: string, _prev: CourseAdminState, fd: FormData) {
-  const r = await run("courses.author", (a) => authoring.updateInstructor(a, id, instructorInput(fd)), "Saved.");
+  const r = await run("courses.manage", (a) => authoring.updateInstructor(a, id, instructorInput(fd)), "Saved.");
   revalidatePath("/instructors", "layout");
   return r;
 }
 
 export async function deleteInstructorAction(id: string, _prev: CourseAdminState, _fd: FormData) {
-  return run("courses.author", (a) => authoring.deleteInstructor(a, id), "Instructor removed.");
+  return run("courses.manage", (a) => authoring.deleteInstructor(a, id), "Instructor removed.");
+}
+
+/** Link a profile to the member named exactly by email or username: the person who teaches as it, and so edits its programs. */
+export async function linkInstructorAction(id: string, _prev: CourseAdminState, fd: FormData): Promise<CourseAdminState> {
+  const named = (str(fd, "member") ?? "").trim();
+  if (!named) return { error: "Enter the member's email or username." };
+  let who = named;
+  const r = await run(
+    "courses.manage",
+    async (a) => {
+      const member = await authoring.findMemberForLink(a, named);
+      if (!member) throw new AuthoringError("No member has that email or username.");
+      await authoring.linkInstructorUser(a, id, member.id);
+      if (member.profile) who = `${member.profile.displayName} (@${member.profile.username})`;
+    },
+    "Linked."
+  );
+  return r.error ? r : { ok: `Linked to ${who}.` };
+}
+
+export async function unlinkInstructorAction(id: string, _prev: CourseAdminState, _fd: FormData) {
+  return run("courses.manage", (a) => authoring.linkInstructorUser(a, id, null), "Unlinked.");
 }
 
 // ── reviews
