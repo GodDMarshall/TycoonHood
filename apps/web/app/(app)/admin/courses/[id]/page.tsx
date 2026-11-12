@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { authoring, can } from "@tycoonhood/core";
+import { authoring, can, liveCourseBlock } from "@tycoonhood/core";
 import { Badge, Icon, Input, Label, Notice, Select, Textarea } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../../lib/guard";
 import { objectivesOf } from "../../../../../lib/learning";
@@ -100,6 +100,8 @@ export default async function AdminCourseEdit({ params }: { params: Promise<{ id
     authoring.publishProblems(course.id),
   ]);
   const canPublish = can(user, "courses.publish");
+  // Its instructor opens a published or archived program, but only an administrator changes it (DR-34).
+  const live = liveCourseBlock(user, course.status);
 
   return (
     <div className="flex flex-col gap-10">
@@ -138,6 +140,11 @@ export default async function AdminCourseEdit({ params }: { params: Promise<{ id
             </Link>
           )}
         </div>
+        {live && (
+          <Notice tone="info" title="Changes go through an administrator">
+            {live}
+          </Notice>
+        )}
         {course.status !== "PUBLISHED" && problems.length > 0 && (
           <Notice tone="warning" title="Before this can be published">
             <ul className="list-disc pl-5">

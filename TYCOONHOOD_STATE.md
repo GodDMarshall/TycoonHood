@@ -69,7 +69,7 @@ Other spec items:
 
 | Item | Classification | Notes |
 |---|---|---|
-| Seven roles (guest plus six signed-in roles) | **VERIFIED COMPLETE** | Permissions are one table, checked on the server in every page and action. Journey 7 changes a role and checks the walls. An instructor edits only the programmes taught by the instructor profile an administrator linked to their account (DR-34; core and web tests) |
+| Seven roles (guest plus six signed-in roles) | **VERIFIED COMPLETE** | Permissions are one table, checked on the server in every page and action. Journey 7 changes a role and checks the walls. An instructor edits only the programmes taught by the instructor profile an administrator linked to their account, and only while they are drafts (DR-34; core and web tests) |
 | THC is internal and non-monetary | **VERIFIED COMPLETE** | A double-entry ledger with a provable supply at `/thc`; never converted to money, never transferable between members |
 | Payments never simulated outside the labelled sandbox | **VERIFIED COMPLETE** | A production build cannot run the sandbox; test keys only serve admins there |
 | Membership tiers and subscriptions | **NOT IMPLEMENTED** | Not in the 11 November spec; on the roadmap (A3) |
@@ -81,8 +81,9 @@ Four programmes × eight modules × three taught lessons = **96 lessons**, plus
 a knowledge check per module and a 12-question final per programme. All are
 attributed to the founder instructor, Harsha, and seeded by
 `pnpm db:seed:academy`. Details: [`docs/CONTENT_INVENTORY.md`](docs/CONTENT_INVENTORY.md).
-The Harsha profile is not linked to any account, so only administrators edit
-these programmes until one links it under Admin → Courses → Instructors (DR-34).
+The Harsha profile is not linked to any account. Only administrators change
+these programmes: they are published, and a published programme changes only
+through an administrator (DR-34).
 
 ## 4. User journeys tested
 

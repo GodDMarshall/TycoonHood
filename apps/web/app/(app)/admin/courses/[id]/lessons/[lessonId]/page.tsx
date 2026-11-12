@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { authoring } from "@tycoonhood/core";
-import { Badge, Icon, Input, Label, Select } from "@tycoonhood/ui";
+import { authoring, liveCourseBlock } from "@tycoonhood/core";
+import { Badge, Icon, Input, Label, Notice, Select } from "@tycoonhood/ui";
 import { requirePermission } from "../../../../../../../lib/guard";
 import { Panel, SectionTitle } from "../../../../../../../components/app/page";
 import { ActionForm } from "../../../../../../../components/admin/action-form";
@@ -25,7 +25,7 @@ export default async function AdminLessonEdit({ params }: { params: Promise<{ id
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
     include: {
-      module: { select: { id: true, courseId: true, title: true, course: { select: { title: true } } } },
+      module: { select: { id: true, courseId: true, title: true, course: { select: { title: true, status: true } } } },
       quiz: { include: { questions: { orderBy: { sortOrder: "asc" } }, _count: { select: { attempts: true } } } },
       resources: { orderBy: { title: "asc" } },
       _count: { select: { progress: true } },
@@ -34,6 +34,8 @@ export default async function AdminLessonEdit({ params }: { params: Promise<{ id
   if (!lesson || lesson.module.courseId !== id) notFound();
   const modules = await prisma.courseModule.findMany({ where: { courseId: id }, orderBy: { sortOrder: "asc" }, select: { id: true, title: true } });
   const minutes = lesson.durationSec ? Math.round(lesson.durationSec / 60) : "";
+  // Its instructor opens a lesson of a published or archived program, but only an administrator changes it (DR-34).
+  const live = liveCourseBlock(user, lesson.module.course.status);
 
   return (
     <div className="flex flex-col gap-10">
@@ -49,6 +51,11 @@ export default async function AdminLessonEdit({ params }: { params: Promise<{ id
             {lesson.module.title} · {lesson._count.progress} member progress
           </span>
         </div>
+        {live && (
+          <Notice tone="info" title="Changes go through an administrator">
+            {live}
+          </Notice>
+        )}
       </header>
 
       <section aria-labelledby="lesson">

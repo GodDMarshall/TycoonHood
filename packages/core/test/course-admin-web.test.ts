@@ -365,6 +365,38 @@ describe("an instructor's course admin holds only the programmes they teach", ()
     });
   });
 
+  it("once a programme is published, its instructor can open it but not change it: the editors say why up front, and every action says it again", async () => {
+    const [Editor, LessonEditor, actions] = [await courseEditor(), await lessonEditor(), await courseActions()];
+    const admin = await staff("ADMIN");
+    const a = await linkedInstructor(admin);
+    const mine = await programme(a.actor);
+    await authoring.publish(admin, mine.course.id);
+    const before = await snapshot(mine.course.id);
+    const LIVE = "Only an administrator can change it now";
+    const open = () => visit(Editor({ params: Promise.resolve({ id: mine.course.id }) }));
+    const openLesson = () => visit(LessonEditor({ params: Promise.resolve({ id: mine.course.id, lessonId: mine.reading.id }) }));
+
+    session.user = a.actor;
+    expect(everythingIn((await open()).tree)).toContain(LIVE);
+    expect(everythingIn((await openLesson()).tree)).toContain(LIVE);
+    const refused = { error: expect.stringContaining(`This program is published, so a change would reach members at once. ${LIVE}`) };
+    const attempts: Record<string, () => Promise<State>> = {
+      updateCourse: () => actions.updateCourseAction(mine.course.id, {}, form({ title: "Renamed", slug: mine.course.slug, pillar: "MIND", description: "Rewritten after it was approved." })),
+      addModule: () => actions.addModuleAction(mine.course.id, {}, form({ title: "Added" })),
+      updateLesson: () => actions.updateLessonAction(mine.course.id, mine.reading.id, {}, form({ title: "Read", type: "READING", contentMd: "https://scam.example", isPreview: "on", xpReward: "1000" })),
+      saveQuiz: () => actions.saveQuizAction(mine.course.id, mine.check.id, {}, form({ quiz: JSON.stringify({ passScore: 1, questions: [{ prompt: "Ready?", options: ["yes", "no"], correctIndex: 0 }] }) })),
+      addResource: () => actions.addResourceAction(mine.course.id, mine.reading.id, {}, form({ title: "Bonus", url: "https://scam.example", kind: "link" })),
+      deleteResource: () => actions.deleteResourceAction(mine.course.id, mine.courseResource.id, {}, form()),
+    };
+    for (const [name, attempt] of Object.entries(attempts)) expect(await outcome(attempt()), name).toEqual(refused);
+    expect(await snapshot(mine.course.id)).toEqual(before);
+
+    // An administrator, who may publish, is not stopped and not told so.
+    session.user = admin;
+    expect(everythingIn((await open()).tree)).not.toContain(LIVE);
+    expect(await actions.addModuleAction(mine.course.id, {}, form({ title: "Added by an administrator" }))).toEqual({ ok: "Module added." });
+  });
+
   it("creating a programme from the course admin makes it the instructor's own, and needs a linked profile", async () => {
     const { createCourseAction } = await courseActions();
     const admin = await staff("ADMIN");

@@ -422,6 +422,64 @@ describe("an instructor edits only the programmes they teach", () => {
   });
 });
 
+describe("a published or archived programme changes only through someone who may publish", () => {
+  const LIVE = /This program is published, so a change would reach members at once\. Only an administrator can change it now/;
+
+  it("its own instructor can change nothing in it, through any authoring call; an administrator still can", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin);
+    const mine = await programme(a.actor);
+    await authoring.publish(admin, mine.course.id);
+    const before = await snapshot(mine.course.id);
+    const audited = () => prisma.auditLog.count({ where: { actorId: a.actor.id } });
+    const auditedBefore = await audited();
+
+    // What the review showed going live at once, without courses.publish or any review.
+    const lesson = { title: "Read", type: "READING" as const, contentMd: "Hello" };
+    const attacks = {
+      scamLinkInALesson: () => authoring.updateLesson(a.actor, mine.reading.id, { ...lesson, contentMd: "Claim your bonus: https://scam.example" }),
+      scamResource: () => authoring.addResource(a.actor, { lessonId: mine.reading.id }, { title: "Bonus", url: "https://scam.example" }),
+      previewForSignedOutVisitors: () => authoring.updateLesson(a.actor, mine.reading.id, { ...lesson, isPreview: true }),
+      newTitleAndSlugOnTheListings: () => authoring.updateCourse(a.actor, mine.course.id, { ...fields(), title: "Get Rich Quick" }),
+      lessonXp: () => authoring.updateLesson(a.actor, mine.reading.id, { ...lesson, xpReward: 1000 }),
+      programmeXp: () => authoring.updateCourse(a.actor, mine.course.id, { ...fields(mine.course.slug), xpOnCompletion: 10_000 }),
+      checkMadeTheFinal: () => authoring.updateLesson(a.actor, mine.check.id, { title: "Check", type: "QUIZ", isFinal: true }),
+      oneQuestionFinal: () => authoring.saveQuiz(a.actor, mine.check.id, { passScore: 1, questions: [{ prompt: "Ready?", options: ["yes", "yes"], correctIndex: 0 }] }),
+    };
+    for (const [name, edit] of Object.entries({ ...attacks, ...everyEdit(a.actor, mine) })) {
+      const refused = edit();
+      await expect(refused, name).rejects.toBeInstanceOf(ForbiddenError);
+      await expect(refused, name).rejects.toThrow(LIVE);
+    }
+    expect(await snapshot(mine.course.id)).toEqual(before);
+    expect(await audited()).toBe(auditedBefore);
+
+    // Another instructor is still told only that it is not theirs.
+    const b = await linkedInstructor(admin);
+    await expect(authoring.addModule(b.actor, mine.course.id, { title: "Nope" })).rejects.toThrow(/only the programs you teach/);
+
+    await allSucceed(everyEdit(admin, mine));
+    expect((await snapshot(mine.course.id)).title).toBe("Rewritten");
+  });
+
+  it("archived, it stays closed to its instructor; back in draft, they can change it again until it is published", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin);
+    const mine = await programme(a.actor);
+    await authoring.publish(admin, mine.course.id);
+    await authoring.archive(admin, mine.course.id);
+    const archived = authoring.updateModule(a.actor, mine.m1.id, { title: "Renamed" });
+    await expect(archived).rejects.toBeInstanceOf(ForbiddenError);
+    await expect(archived).rejects.toThrow(/This program is archived, and its certificates still name it\. Only an administrator can change it now/);
+
+    await authoring.unpublish(admin, mine.course.id);
+    await authoring.updateModule(a.actor, mine.m1.id, { title: "Renamed" });
+    await authoring.addModule(a.actor, mine.course.id, { title: "Added in draft" });
+    const titles = (await snapshot(mine.course.id)).modules.map((m) => m.title).sort();
+    expect(titles).toEqual(["Added in draft", "Renamed", "Two"]);
+  });
+});
+
 describe("instructors cannot hide reviews", () => {
   it("only community moderators and administrators may hide a review", () => {
     expect([...REVIEW_MODERATORS]).toEqual(["community.moderate"]);

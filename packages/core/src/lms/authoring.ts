@@ -8,6 +8,9 @@
  *  - DRAFT and ARCHIVED programmes are never visible to members; publishing
  *    needs `courses.publish` and at least one lesson, and every knowledge
  *    check must have questions so it can actually be passed.
+ *  - A programme that is published or archived changes only through someone
+ *    who may publish; an instructor edits their own programmes while they are
+ *    drafts (DR-34). Nothing an instructor writes goes live unpublished.
  *  - A lesson (or module) that members have progress on cannot be deleted;
  *    archive the programme instead. Their certificates stay valid.
  *  - One final assessment per programme: marking a lesson final unmarks
@@ -18,7 +21,7 @@
  */
 import { z } from "zod";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
-import type { Prisma, PrismaClient, UserRole } from "@tycoonhood/db";
+import type { ContentStatus, Prisma, PrismaClient, UserRole } from "@tycoonhood/db";
 import { assertCan, can, ForbiddenError, type HasRole, type Permission } from "../auth/permissions";
 import { AuditService } from "../platform/audit";
 import { LmsService } from "./lms";
@@ -210,6 +213,11 @@ function friendly(e: unknown): never {
 type Editor = { id: string; role: UserRole };
 
 const NOT_YOURS = "You can edit only the programs you teach.";
+const LIVE: Record<Exclude<ContentStatus, "DRAFT">, string> = {
+  PUBLISHED:
+    "This program is published, so a change would reach members at once. Only an administrator can change it now: ask one to make the change, or to move the program back to draft while you edit it.",
+  ARCHIVED: "This program is archived, and its certificates still name it. Only an administrator can change it now.",
+};
 const NOT_LINKED = "Your account is not linked to an instructor profile yet, so you cannot create a program. Ask an administrator to link it.";
 const INSTRUCTOR_IS_MANAGED = "Only an administrator can choose a program's instructor.";
 const NOT_VERIFIED = "That account has not verified its email address, so it cannot be linked yet. Ask them to verify it (Settings → Email), then link it again.";
@@ -229,6 +237,23 @@ export function editableCoursesWhere(actor: Editor | null | undefined): Prisma.C
   if (actor && can(actor, "courses.manage")) return {};
   if (actor && can(actor, "courses.author")) return { instructor: { is: { userId: actor.id } } };
   return { id: { in: [] } };
+}
+
+/**
+ * Why this actor cannot change a programme in this state although it is
+ * theirs, or null when they can. A published programme is live: a change to
+ * it reaches members at once, and through previews, titles, XP and the final
+ * assessment it reaches signed-out visitors, the listings, the leaderboard and
+ * public certificates too. An archived one is still named on its
+ * certificates. So a programme that is not a draft changes only through
+ * someone who may publish it (`courses.publish`, administrators): what an
+ * instructor writes goes live only when an administrator publishes it
+ * (directive §12, "Admin approval"). The owner may later choose reviewed
+ * revisions instead (TYCOONHOOD_BLOCKED_ON_YOU, item 12).
+ */
+export function liveCourseBlock(actor: HasRole, status: ContentStatus): string | null {
+  if (status === "DRAFT" || can(actor, "courses.publish")) return null;
+  return LIVE[status];
 }
 
 // ─────────────────────────────────────────────────────────── service
@@ -267,7 +292,12 @@ export class CourseAuthoringService {
     return { ...r, courseId };
   }
 
-  /** Whether this actor may edit this programme (the rule of editableCoursesWhere). False for one that does not exist. */
+  /**
+   * Whether this programme is one this actor edits (the rule of
+   * editableCoursesWhere), so its editor opens for them. False for one that
+   * does not exist. One that is published or archived still opens, but only
+   * someone who may publish changes it then (liveCourseBlock says why).
+   */
   async canEditCourse(actor: Editor | null | undefined, courseId: string): Promise<boolean> {
     if (!actor) return false;
     const course = await this.db.course.findUnique({ where: { id: courseId }, select: { instructor: { select: { userId: true } } } });
@@ -277,13 +307,20 @@ export class CourseAuthoringService {
   /**
    * Every write to a programme, or to its modules, lessons, knowledge checks
    * and resources, calls this first with the programme its target belongs to,
-   * resolved from the target's own id. Pages check too, but this is the wall.
+   * resolved from the target's own id. It refuses a programme that is not the
+   * actor's, then one that is live and the actor cannot publish. Pages check
+   * too, but this is the wall.
    */
   async assertCanEditCourse(actor: AuthoringActor, courseId: string) {
     if (!can(actor, "courses.author") && !can(actor, "courses.manage")) throw new ForbiddenError();
-    const course = await this.db.course.findUnique({ where: { id: courseId }, select: { id: true, instructorId: true, instructor: { select: { userId: true } } } });
+    const course = await this.db.course.findUnique({
+      where: { id: courseId },
+      select: { id: true, status: true, instructorId: true, instructor: { select: { userId: true } } },
+    });
     if (!course) throw new AuthoringError("Program not found.");
     if (!mayEdit(actor, course)) throw new ForbiddenError(NOT_YOURS);
+    const live = liveCourseBlock(actor, course.status);
+    if (live) throw new ForbiddenError(live);
     return course;
   }
 

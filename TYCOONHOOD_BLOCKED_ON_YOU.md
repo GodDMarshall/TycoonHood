@@ -76,15 +76,39 @@ watching someone else's channel.
 ### 11. Who teaches as Harsha
 The four house programmes are taught as the instructor profile "Harsha",
 which is not linked to any account. An Instructor account edits only the
-programmes of the profile linked to it (DR-34). If someone other than an
-administrator should edit these programmes, give their account the
-Instructor role, then link it under Admin → Courses → Instructors by its
-email or username. Their email must be verified first: an account that has
-not verified its email cannot be linked. Check the name, role and email the
-page shows before you rely on the link.
+programmes of the profile linked to it, and only while they are drafts
+(DR-34; see item 12). To let someone else work on Harsha's programmes, give
+their account the Instructor role, then link it under Admin → Courses →
+Instructors by its email or username. Their email must be verified first:
+an account that has not verified its email cannot be linked. Check the name,
+role and email the page shows before you rely on the link. They can then
+open the four house programmes and draft new ones as Harsha, but the four
+are published, so changes to them still go through an administrator.
 
 **If you leave it:** nothing breaks. Administrators edit the programmes, and
 an instructor sees none to edit.
+
+### 12. How an instructor changes a published programme
+Today only an administrator changes a programme once it is published or
+archived (DR-34). An instructor edits their own programmes while they are
+drafts. Once one is published, they can open it but not change it, and the
+page says why. They ask an administrator to make the change, or to move the
+programme back to draft while they edit (members cannot see it until it is
+published again). This is the strict choice: it keeps "Admin approval"
+(directive §12) for everything members, visitors, the leaderboard and
+certificates see. You can choose instead:
+- **Reviewed revisions:** an instructor's changes to a live programme wait
+  as a revision until an administrator approves it. This is the
+  "Content review" of directive §12, and it needs building.
+- **Live content edits:** an instructor changes lesson text, videos, quiz
+  questions and resources live, but XP values, previews, titles, slugs and
+  the final assessment stay with administrators, and administrators see the
+  edits. Scam or affiliate links in lessons would go live unreviewed.
+
+**If you leave it:** nothing an instructor writes reaches members, the
+public, the leaderboard or a certificate until an administrator publishes
+it. An instructor cannot fix even a typo in a published programme
+themselves.
 
 ## Decisions you can overrule at any time
 

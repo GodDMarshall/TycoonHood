@@ -22,6 +22,7 @@ export {
   canModerateReviews,
   canSeeReviewerEmails,
   editableCoursesWhere,
+  liveCourseBlock,
 } from "./authoring";
 export type { AuthoringActor, CourseInput, ModuleInput, LessonInput, QuizInput, ResourceInput, InstructorInput } from "./authoring";
 export { LearnerService, learner, ReviewNotAllowedError, reviewSchema, rankBySignals } from "./learner";
