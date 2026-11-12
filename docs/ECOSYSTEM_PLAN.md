@@ -371,7 +371,7 @@ The other 15 new events, PROJECT_PUBLISHED among them, keep the workstreams plan
 
 **What is blocked on you or on someone else.** Section 8 lists 20 items. Among them: the Razorpay live keys, email sending, the domain, legal review of the new terms, real mentors, instructors and partners, photos, and a frequent scheduler for reminders. For each one, the plan says what ships meanwhile and how the affected requirements are reported.
 
-**How long it takes.** About 145 hours of continuous running, which is six days. The work runs round the clock from 12 November 12:00 UTC, so the site is ready for the owner's check around Wednesday 18 November. The range is 105 to 185 hours, about 16 to 20 November (section 9).
+**How long it takes.** About 125 hours of continuous running, a little over five days. The work runs round the clock from 12 November 12:00 UTC, so the site is ready for the owner's check around Tuesday 17 November. The range is about 100 to 160 hours, 16 to 19 November (section 9). On 12 November the owner asked for more agents at the same quality; that brought the date in from about 145 hours (Wednesday 18 November).
 
 **What "done" means.** Every line of §21 has journeys that prove it on the final code (section 6.3). The end-of-build report in TYCOONHOOD_STATE.md classifies every feature and all 451 requirements honestly (section 10).
 
@@ -405,8 +405,8 @@ The rest of this section is the engineering plan:
 - **Requirement coverage.** Every one of the 451 map requirements has exactly one owner (Appendix A, checked by a script).
   - 3 requirements are BLOCKED because no exact red or runtime WebGL lattice exists in the repo (DR-1, DR-24).
   - 7 belong to INT: four cross-section touchpoints whose screens other streams build, plus "no 3D world required", "journeys tested" and the report format.
-- **Machine.** 4 CPUs and 15 GB of RAM, one PostgreSQL 16.15 server. Three queue-runner workflows with two lanes each (at most 6 agents), at most 4 units implementing at once, and the heavy commands (typecheck, the full vitest suite, `next dev`, `build:web`) behind a 2-permit semaphore.
-- **Timeline:** 105 to 185 wall-clock hours. Plan on about 145 hours, six days of continuous running from 12 November 12:00 UTC: ready for the owner's check around Wednesday 18 November. Section 9 gives the assumptions and the schedule.
+- **Machine.** 4 CPUs and 15 GB of RAM, one PostgreSQL 16.15 server (max_connections 300). One workflow per unit with two agents at a time, up to 8 units in flight, and the heavy commands (typecheck, lint, the full vitest suite, `next dev`, `build:web`) behind a 3-permit semaphore (section W1.3).
+- **Timeline:** about 100 to 160 wall-clock hours. Plan on about 125 hours of continuous running from 12 November 12:00 UTC: ready for the owner's check around Tuesday 17 November. Section 9 gives the assumptions, the schedule and the 12 November revision.
 
 ### W1. Phases, order and ownership rules
 
@@ -435,12 +435,12 @@ The rest of this section is the engineering plan:
 
 #### W1.3 Scheduling rules
 
-- **Workflows and slots.** Three queue-runner workflows, each with two lanes, so at most 6 agents. A lane takes the next ready unit from the shared queue. One lane of a workflow implements while the other reviews or re-checks another unit; a unit keeps its worktree from implement through review and fixes.
-- **How many units implement at once.** At most 4. Before P1 starts, the lead measures the peak memory of one unit running typecheck, a targeted vitest run and `next dev` together, and of the PostgreSQL server under four test databases. With 15 GB the expected answer is 4; if the measurement says 3, section 9.4 gives the effect.
-- **Heavy commands.** `scripts/dev/heavy.sh <command>` wraps typecheck, the full vitest suite, `next dev` and `build:web` in a `flock` semaphore with 2 permits (two lock files under /tmp/tycoonhood-heavy). During implementation an agent runs only `pnpm vitest run <files>` for the tests it touches; it runs the full suite once, before review.
-- **Database connections.** `scripts/db/create-stream-db.mjs` writes stream database URLs with `connection_limit=3`. The lead raises PostgreSQL `max_connections` from 100 to about 300 at a quiet moment before P1 (it needs a server restart), and every gate checks `pg_stat_activity` for leftover connections.
+- **Workflows and slots (revised 12 November, when the owner asked for more agents at the same quality).** Each unit runs in its own workflow, eco-stream-v2, with two agents at a time, in its own worktree and test database. Its steps: implement test-first; review by the unit's own lenses plus a spec-fidelity lens (every requirement of the brief against the code and its test) and, for anything a member or staff member sees, a design lens (the design system, 375 and 1280 pixels wide, accessibility); fix; an independent re-check of the fixes, with a second fix round if a high or medium finding remains; then integrate: the unit merges `build/living-ecosystem`, resolves conflicts, recreates its database if migrations arrived, and runs the full gates, so the lead's merge is clean. A unit keeps its worktree from implement to merge.
+- **How many units are in flight at once.** Up to 8. What bounds the machine is the heavy commands, not the agents, who mostly read and think; the semaphore keeps those to 3 at once. Before P1 starts, the lead records the peak memory with three heavy commands and eight unit databases in use (docs/ecosystem/machine.md). If a heavy command waits more than 30 minutes for a permit, or memory runs short, the lead starts fewer units until the wait clears (W3.6).
+- **Heavy commands.** `scripts/dev/heavy.sh <command>` wraps typecheck, lint, the full vitest suite, `next dev` and `build:web` in a `flock` semaphore. During the build the shared copy /home/user/bin/heavy.sh gives 3 permits over the same lock folder (/tmp/tycoonhood-heavy), so both scripts count against one limit. During implementation an agent runs only `pnpm vitest run <files>` for the tests it touches; it runs the full suite once at the end of its step.
+- **Database connections.** `scripts/db/create-stream-db.mjs` writes stream database URLs with `connection_limit=3`. PostgreSQL `max_connections` was raised from 100 to 300 (and shared_buffers to 1 GB) on 12 November, and every gate checks `pg_stat_activity` for leftover connections.
 - **When a unit starts.** All three conditions hold:
-  1. Every unit it starts after has merged into `build/living-ecosystem`, and typecheck, lint and vitest pass on the merged head. Full gates may still be running.
+  1. Every unit it starts after has merged into `build/living-ecosystem`, and typecheck, lint and vitest pass on the merged head. Full gates may still be running. One departure: P0 wave 2 (P0b, P0c, P0d, P0e part 1, P0f-S part 1) started on `eco/wave2-base`, the integration branch plus P0a's branch as of 730d829, while P0a was still in review. P0a merges before any of them, and each merges the integration branch again in its integrate step.
   2. An implementing slot is free.
   3. No unit in flight owns any file the new unit would change.
 - **Who gets a free slot.** The eligible unit with the highest §20 priority. If a higher-priority unit will become eligible within 1.5 hours, the slot waits for it. Units from sections §20 does not list (§10, §16 to §19) rank below every listed unit, except EDIT-A and EDIT-B (rule 3 in W1.2).
@@ -731,7 +731,7 @@ The review raised 36 issues (7 high, 17 medium, 12 low). All are accepted, with 
 - **Page lists:** scripts/e2e/a11y.mjs and J8 read scripts/e2e/pages/*.txt. Each line is a path and the role to sign in as.
 - **Stream databases:** `node scripts/db/create-stream-db.mjs <unit>` creates `tycoonhood_<unit>_test` and `tycoonhood_<unit>_e2e`, migrated, and prints URLs with `connection_limit=3`. `--recreate` drops and rebuilds them after a lead migration (section W3.6), and `--extra-migration <folder>` applies one more folder after the committed ones (DAILY-B uses it for 000900).
 - **Ownership:** scripts/ownership/{streams.json,check.mjs}, with `except` lists and the lead deny-list (section W1.4).
-- **Heavy commands:** scripts/dev/heavy.sh, a `flock` semaphore with 2 permits for typecheck, the full vitest suite, `next dev` and `build:web`.
+- **Heavy commands:** scripts/dev/heavy.sh, a `flock` semaphore with 2 permits for typecheck, the full vitest suite, `next dev` and `build:web` (3 permits from 12 November, with lint added; the lead changes the count when P0f-H merges, W1.3).
 - **Measurement:** the peak-memory measurement of section W1.3, recorded in docs/ecosystem/machine.md.
 
 **P0f-S. Scaffolding (helper).**
@@ -2005,7 +2005,7 @@ Section 6.3 maps each §21 line to its owner and to the journeys that prove it. 
 - **A gate fails after a merge.** The lead fixes it, or a fixer agent does, on the integration branch before the next merge. The tier tag waits.
 - **A review finds a design flaw that crosses units.** The lead decides. The fix goes to the unit that owns the file, or to a short fix unit after the tier merges.
 - **A journey is flaky.** It is fixed, not skipped. A skip is allowed only for a stated credential reason, as with J4, J5 and J24 on the production build.
-- **The machine runs short.** If a heavy command waits more than 30 minutes for a permit, or memory runs out, the lead drops to 3 implementing slots (section 9.4).
+- **The machine runs short.** If a heavy command waits more than 30 minutes for a permit, or memory runs out, the lead starts fewer units at once until the wait clears (section 9.4).
 
 ---
 
@@ -3479,7 +3479,7 @@ Each item says what it is blocked on, what ships meanwhile, and how the affected
 
 ### 9.1 Assumptions
 
-- **Wall-clock hours of continuous running,** with the lead supervising. Units run through the queue-runner workflows of section W1.3: at most 4 implementing at once on this machine (4 CPUs, 15 GB, one PostgreSQL 16.15 server), heavy commands behind the 2-permit semaphore.
+- **Wall-clock hours of continuous running,** with the lead supervising. The first simulation assumed at most 4 units implementing at once on this machine (4 CPUs, 15 GB, one PostgreSQL 16.15 server), heavy commands behind a 2-permit semaphore. From 12 November up to 8 run at once (W1.3; the revision at the end of 9.4).
 - **Per unit:** the implementation estimate in its brief, plus 2 hours (low), 3 hours (mid) or 4.5 hours (high) for review, fixes and the pre-review full run. A merge, with its full-suite check, takes 0.5 to 1 hour.
 - **P0** takes 20, 25 or 32 hours including the launch-branch merge and its gate. **INT** takes 16, 23 or 30 hours after POLISH merges.
 - The schedule was simulated (greedy list scheduling of the 25 units over 4 slots, in §20 priority order with the departures of W1.2), from `final/ws/sched.py` in the planning scratchpad.
@@ -3529,9 +3529,9 @@ The critical path runs P0 → the P1 units → BOOK and LEARN → MONEY and the 
 | Mid | 25 | 109.8 | 132.8 | about 145 |
 | High | 32 | 138.5 | 168.5 | about 185 |
 
-**Plan on about 145 hours** of continuous running: six days. The work runs round the clock from 12 November 12:00 UTC, so the site is ready for the owner's check around **Wednesday 18 November**; the range is 105 to 185 hours (about 16 to 20 November). Any time the work stops moves the date by the same amount.
+**Effect of the slot count** (midpoint, before INT and the allowance): with 3 implementing slots the last unit merges at 132.5 hours (about 23 hours later); with 5 at 95.5; with 6 at 88.8. The table above is the 4-slot simulation the plan first used, which gave about 145 hours (Wednesday 18 November).
 
-**Effect of the slot count** (midpoint, before INT and the allowance): with 3 implementing slots the last unit merges at 132.5 hours (about 23 hours later); with 5 at 95.5; with 6 at 88.8. Going above 4 needs more memory than this machine has with `next dev` running per unit, so 4 is the plan, and 3 is the fallback of section W3.6.
+**Revised 12 November, 15:20 UTC.** The owner asked for more agents at the same quality. From P0 wave 2 on, up to 8 units are in flight at once (W1.3). Memory does not stop this, because `next dev` runs only briefly, for design reviews, inside the 3-permit semaphore, rather than once per unit throughout. Dependencies, not slots, then limit the schedule, so the 6-slot result is the closest figure the simulation gives: the last unit merges at about 89 hours, INT ends at about 112, and with the allowance **plan on about 125 hours** of continuous running. The site is ready for the owner's check around **Tuesday 17 November**; the range is about 100 to 160 hours (16 to 19 November). Each unit's extra review steps (spec fidelity, design and the re-check) are expected to fit inside the per-unit review allowance of 9.1. Any time the work stops moves the date by the same amount.
 
 ---
 
