@@ -361,11 +361,17 @@ export function MobileTabBar({ data }: { data: ShellData }) {
               <Icon name="menu" size={22} />
               More
               {/* Store and the cart live in this sheet on phones, so the cart count shows here too. */}
+              {/* The number is for the eye; screen readers hear "More (Cart, 2 items)". */}
               {data.cart && (
-                <span className="absolute left-1/2 top-2 ml-2 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-semibold tabular-nums text-bg-0">
-                  {data.cart.text}
+                <>
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-1/2 top-2 ml-2 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-semibold tabular-nums text-bg-0"
+                  >
+                    {data.cart.text}
+                  </span>
                   <span className="sr-only"> ({data.cart.label})</span>
-                </span>
+                </>
               )}
             </button>
           </li>

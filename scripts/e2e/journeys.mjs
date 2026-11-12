@@ -42,6 +42,8 @@ const ONLY = new Set((process.env.JOURNEYS ?? "1,2,3,4,5,6,7,8,9").split(",").ma
 const stamp = Date.now().toString(36);
 const PASSWORD = "a-strong-password-here";
 const ADMIN_EMAIL = "e2e-admin@tycoonhood.test";
+/** The phone tab bar's More button: "More", or "More (Cart, 2 items)" while the cart holds something. */
+const MORE_BUTTON = /^more(\s*\(cart, \d+ items?\))?$/i;
 
 // ── environment ────────────────────────────────────────────────────────────
 for (const line of existsSync(`${ROOT}/.env`) ? readFileSync(`${ROOT}/.env`, "utf8").split("\n") : []) {
@@ -730,7 +732,7 @@ await journey(8, "MOBILE 390×844", async () => {
       const bar = page.locator('nav[aria-label="App"]').last();
       ok(`${path.split("/")[1] || "home"}: bottom app nav is visible`, await bar.isVisible());
       if (path === "/today") {
-        await page.getByRole("button", { name: /^more$/i }).click();
+        await page.getByRole("button", { name: MORE_BUTTON }).click();
         const sheet = page.locator('dialog[aria-label="More"]');
         ok("app nav: More opens the sheet", await sheet.isVisible().catch(() => false));
         const link = sheet.getByRole("link").first();
@@ -1026,7 +1028,7 @@ await journey(9, "3D CAMPUS — OPTIONAL, 2D FALLBACK", async () => {
     await go(page, "/today");
     await page.waitForTimeout(800);
     ok("phone: the bottom nav has no campus link", (await page.locator('nav[aria-label="App"] a[href^="/world"]').count()) === 0);
-    await page.getByRole("button", { name: /^more$/i }).click();
+    await page.getByRole("button", { name: MORE_BUTTON }).click();
     const sheet = page.locator('dialog[aria-label="More"]');
     await sheet.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
     const inSheet = await sheet.locator('a[href^="/world"]').count();
