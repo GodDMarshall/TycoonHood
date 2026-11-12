@@ -66,7 +66,7 @@ A pnpm monorepo with one product app.
 | Roles and permissions | `auth/permissions.ts` | `lib/guard.ts`, `lib/admin-nav.ts` |
 | LMS | `lms/lms.ts`, `lms/gating.ts`, `lms/authoring.ts`, `lms/learner.ts` | `courses/**`, `certificates/**`, `verify/[serial]`, `admin/courses/**` |
 | Gamification | `gamification/*`, `rules/*`, `discussions/leaderboard.ts` | `leaderboard`, `achievements`, `today` |
-| Community | `community/community.ts` (chat), `discussions/discussions.ts` (forum) | `community/**`, `admin/moderation`, `admin/community` |
+| Community | `community/community.ts` (chat), `discussions/{posts,groups,reports,moderation}.ts` (forum, behind `discussions/service.ts`) | `community/**`, `admin/moderation`, `admin/community` |
 | Shop | `shop/*`, `commerce/commerce.ts` | `store/**`, `cart`, `wishlist`, `checkout/**`, `orders/**`, `admin/products`, `admin/orders`, `admin/coupons`, `admin/refunds` |
 | Earn | `earn/affiliates.ts` | `(public)/earn`, `earnings`, `admin/earn`, `r/[code]` |
 | Platform | `platform/*` (settings, CMS, members, analytics, audit) | `admin/members/**`, `admin/site`, `admin/analytics`, `admin/audit` |

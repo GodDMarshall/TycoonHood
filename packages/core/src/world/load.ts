@@ -16,7 +16,7 @@ import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import { StandardService } from "../standard/standard";
 import { LeaderboardService } from "../discussions/leaderboard";
-import { DiscussionService } from "../discussions/discussions";
+import { DiscussionService } from "../discussions/service";
 import { CommunityService } from "../community/community";
 import { CartService } from "../shop/cart";
 import { nextLesson } from "../lms/gating";
