@@ -25,11 +25,11 @@
  *
  * One lock order. Every flow that changes an account's password, address
  * or links takes lockEmailOf(userId) first, before any row: a change
- * request, its confirmation or cancellation, an undo, a reset and a
- * password change. Two of them for one account run
- * one after the other, and the second sees what the first did. They used
- * to lock the same rows in opposite orders (spend a link, then need the
- * credential row, or delete a link the other still held) and deadlock.
+ * request, its confirmation or cancellation, an undo, a reset request, a
+ * reset and a password change. Two of them for one account run one after
+ * the other, and the second sees what the first did. They used to lock the
+ * same rows in opposite orders (spend a link, then need the credential
+ * row, or delete a link the other still held) and deadlock.
  */
 import { createHash, randomBytes } from "node:crypto";
 import type { Prisma } from "@tycoonhood/db";

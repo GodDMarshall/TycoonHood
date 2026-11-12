@@ -12,9 +12,18 @@
  * web app hands straight to the browser that used the undo link
  * (platform/email-undo).
  *
+ * A new request never takes a live link away. Anyone who knows an address
+ * can ask for a link to it, so if asking ended the earlier links, a stranger
+ * could end the one an undo just handed its owner. A request clears the
+ * account's links that ran out instead, and issues nothing while three are
+ * alive (RESET_LIVE_LIMIT). It takes the account's lock and reads the
+ * account again under it, and issues a link only while the account still
+ * has the address asked for: a request that meets an email change or an
+ * undo issues nothing for the address that left the account.
+ *
  * Anti-enumeration: requestReset() does the same work and returns the
- * same shape whether or not the email exists. The caller reveals nothing
- * either way.
+ * same shape whether or not the email exists, and whether or not it issued
+ * a link. The caller reveals nothing either way.
  */
 import { createHash, randomBytes } from "node:crypto";
 import { z } from "zod";
@@ -28,6 +37,8 @@ import { EmailVerificationService, RESET_TOKEN_PREFIX, resetTokenId } from "../p
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 export const RESET_TTL_MS = 30 * 60 * 1000;
+/** The most reset links one account can have alive at once. */
+export const RESET_LIVE_LIMIT = 3;
 const INVALID = "That reset link is invalid or expired — request a fresh one.";
 
 /** Mirrors registerSchema's password rule — one standard, two doors. */
@@ -53,7 +64,10 @@ export class PasswordResetService {
     this.verification = new EmailVerificationService(db);
   }
 
-  /** Issue a reset token. Constant-shape work whether the email exists or not. */
+  /**
+   * Issue a reset token. Constant-shape work whether the email exists or not,
+   * and the same answer when it issues nothing for an account that has it.
+   */
   async requestReset(emailRaw: string): Promise<ResetRequest> {
     const email = emailRaw.trim().toLowerCase();
     // Generate regardless of match so the two paths cost the same.
@@ -61,13 +75,22 @@ export class PasswordResetService {
     const hashed = sha256(rawToken);
     const expires = new Date(Date.now() + RESET_TTL_MS);
 
-    const user = await this.db.user.findUnique({ where: { email } });
-    if (!user) return { issued: null };
+    const found = await this.db.user.findUnique({ where: { email }, select: { id: true } });
+    if (!found) return { issued: null };
+    const userId = found.id;
 
-    const identifier = resetTokenId(user.id);
-    await this.db.verificationToken.deleteMany({ where: { identifier } });
-    await this.db.verificationToken.create({ data: { identifier, token: hashed, expires } });
-    return { issued: { userId: user.id, email, rawToken, expires } };
+    const identifier = resetTokenId(userId);
+    const made = await this.db.$transaction(async (tx) => {
+      await lockEmailOf(tx, userId);
+      // Read again under the lock: an email change or an undo that committed meanwhile took the address away.
+      if ((await tx.user.count({ where: { id: userId, email } })) === 0) return false;
+      // Links that ran out make room; live ones stay, whoever asks.
+      await tx.verificationToken.deleteMany({ where: { identifier, expires: { lt: new Date() } } });
+      if ((await tx.verificationToken.count({ where: { identifier } })) >= RESET_LIVE_LIMIT) return false;
+      await tx.verificationToken.create({ data: { identifier, token: hashed, expires } });
+      return true;
+    });
+    return { issued: made ? { userId, email, rawToken, expires } : null };
   }
 
   /**

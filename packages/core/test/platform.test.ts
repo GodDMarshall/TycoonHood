@@ -16,7 +16,7 @@ import {
   VERIFY_RESEND_LIMIT,
   type EmailChangeCancelReason,
 } from "../src/platform/email-verification";
-import { PasswordResetService, InvalidResetTokenError } from "../src/auth/password-reset";
+import { PasswordResetService, InvalidResetTokenError, type ResetRequest } from "../src/auth/password-reset";
 import { EmailTakenError } from "../src/auth/account";
 import { SettingsService, SETTING_DEFAULTS, resolveSetting, InvalidSettingError } from "../src/platform/settings";
 import { profileCompletion, ProfileService, privacyFromForm, privacyShows, showsCourses } from "../src/platform/profile";
@@ -1012,6 +1012,73 @@ describe("Undo racing another change", () => {
     await expect(accounts.authenticate({ email: oldEmail, password: "attackers new password" })).rejects.toBeInstanceOf(
       InvalidCredentialsError
     );
+  });
+});
+
+// ── A reset request is made under the account's lock, for the address the
+// account has then, and never takes a live link away.
+
+describe("Reset requests", () => {
+  it("a request that straddles an undo issues nothing for the address the undo removed", async () => {
+    const { user, newEmail, undo } = await changedMember();
+    let requesting: Started<ResetRequest> | undefined;
+    const racing = new EmailUndoService(
+      // The undo has deleted the account's links and has not committed yet.
+      atFirstCall("verificationToken", "deleteMany", "after", async () => {
+        requesting = started(resets.requestReset(newEmail));
+        await untilBlockedOnLock(() => requesting!.finished);
+      })
+    );
+    const done = await racing.undo(undo.rawToken);
+    expect((await requesting!.promise).issued).toBeNull();
+    // The only reset link is the one the undo handed to the owner's browser.
+    const links = await prisma.verificationToken.findMany({ where: { identifier: `pwreset:${user.id}` } });
+    expect(links.map((t) => t.token)).toEqual([sha256(done.reset.rawToken)]);
+  });
+
+  it("a request that straddles a confirmed change issues nothing for the address the change replaced", async () => {
+    const { user, email } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    let requesting: Started<ResetRequest> | undefined;
+    const racing = new EmailVerificationService(
+      // The change has deleted the old address's links and has not committed yet.
+      atFirstCall("session", "deleteMany", "before", async () => {
+        requesting = started(resets.requestReset(email));
+        await untilBlockedOnLock(() => requesting!.finished);
+      })
+    );
+    await racing.confirm(change!.rawToken);
+    expect((await requesting!.promise).issued).toBeNull();
+    expect(await prisma.verificationToken.count({ where: { identifier: `pwreset:${user.id}` } })).toBe(0);
+  });
+
+  it("a request after an undo leaves the reset link the undo handed over working", async () => {
+    const { oldEmail, undo } = await changedMember();
+    const done = await undos.undo(undo.rawToken);
+    // Anyone who knows the restored address can ask for a link. It goes to that address, and the owner's stays.
+    expect((await resets.requestReset(oldEmail)).issued).not.toBeNull();
+    await resets.resetPassword(done.reset.rawToken, NEW_PASSWORD);
+    await expect(accounts.authenticate({ email: oldEmail, password: NEW_PASSWORD })).resolves.toBeTruthy();
+  });
+
+  it("at most three live links per account: a fourth request issues nothing, a link that ran out makes room", async () => {
+    const { user, email } = await memberWithPassword();
+    const links = [];
+    for (let i = 0; i < 3; i++) links.push((await resets.requestReset(email)).issued);
+    expect(links.every((l) => l !== null)).toBe(true);
+    // The same answer an unknown address gets, so the reply cannot tell them apart either.
+    expect(await resets.requestReset(email)).toEqual({ issued: null });
+    expect(await prisma.verificationToken.count({ where: { identifier: `pwreset:${user.id}` } })).toBe(3);
+
+    await prisma.verificationToken.update({ where: { token: sha256(links[0]!.rawToken) }, data: { expires: new Date(Date.now() - 1000) } });
+    const fourth = (await resets.requestReset(email)).issued;
+    expect(fourth).not.toBeNull();
+    expect(await prisma.verificationToken.count({ where: { identifier: `pwreset:${user.id}` } })).toBe(3);
+
+    // Any live link works, and using one spends them all.
+    await resets.resetPassword(links[1]!.rawToken, NEW_PASSWORD);
+    expect(await prisma.verificationToken.count({ where: { identifier: `pwreset:${user.id}` } })).toBe(0);
+    await expect(resets.resetPassword(fourth!.rawToken, "another password ok")).rejects.toBeInstanceOf(InvalidResetTokenError);
   });
 });
 
