@@ -178,7 +178,8 @@ export async function forgotPasswordAction(_prev: ForgotState, formData: FormDat
   if (issued) {
     const outcome = await sendPasswordResetEmail(issued);
     // A failed send is logged, not shown: an error only for addresses that
-    // have an account would reveal which ones do. The reply below already
+    // have an account would reveal which ones do. Its link is revoked, so it
+    // never counts toward the account's live links. The reply below already
     // says what to do if nothing arrives.
     if (!mailWentOut(outcome)) console.warn(`[reset] reset email not sent for ${issued.userId}: ${outcome}`);
   }

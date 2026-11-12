@@ -21,6 +21,11 @@
  * has the address asked for: a request that meets an email change or an
  * undo issues nothing for the address that left the account.
  *
+ * The web app revokes a link it could not send (revoke), as it does the
+ * other kinds of link. So the three live links are ones that went out: sends
+ * the provider refused, in an outage or a burst someone provoked, never use
+ * them up and leave the owner's own request issuing nothing.
+ *
  * Anti-enumeration: requestReset() does the same work and returns the
  * same shape whether or not the email exists, and whether or not it issued
  * a link. The caller reveals nothing either way.
@@ -91,6 +96,13 @@ export class PasswordResetService {
       return true;
     });
     return { issued: made ? { userId, email, rawToken, expires } : null };
+  }
+
+  /** Drop a reset link that could not be sent, so it never counts toward the account's live links. */
+  async revoke(issued: { userId: string; rawToken: string }) {
+    await this.db.verificationToken.deleteMany({
+      where: { identifier: resetTokenId(issued.userId), token: sha256(issued.rawToken) },
+    });
   }
 
   /**

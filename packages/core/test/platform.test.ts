@@ -1364,6 +1364,18 @@ describe("Reset requests", () => {
     expect(await prisma.verificationToken.count({ where: { identifier: `pwreset:${user.id}` } })).toBe(0);
     await expect(resets.resetPassword(fourth!.rawToken, "another password ok")).rejects.toBeInstanceOf(InvalidResetTokenError);
   });
+
+  it("a link that could not be sent is revoked, alone, and makes room under the limit", async () => {
+    const { user, email } = await memberWithPassword();
+    const sent = (await resets.requestReset(email)).issued!;
+    for (let i = 0; i < 2; i++) await resets.revoke((await resets.requestReset(email)).issued!);
+    expect(await prisma.verificationToken.count({ where: { identifier: `pwreset:${user.id}` } })).toBe(1);
+    // Two more fit beside the one that went out, and it still works.
+    expect((await resets.requestReset(email)).issued).not.toBeNull();
+    expect((await resets.requestReset(email)).issued).not.toBeNull();
+    await resets.resetPassword(sent.rawToken, NEW_PASSWORD);
+    await expect(accounts.authenticate({ email, password: NEW_PASSWORD })).resolves.toBeTruthy();
+  });
 });
 
 // ── Every flow that changes an account's password, address or links takes the

@@ -2,7 +2,8 @@
  * The web app's email-change actions, run as written: which address gets
  * the notice with the undo link when a change is confirmed
  * (verifyEmailAction), what happens when it cannot be sent, and how a
- * refused request words its time (changeEmailAction). Stand-ins: the mail
+ * refused request words its time (changeEmailAction). Also a reset request
+ * whose email cannot be sent (forgotPasswordAction). Stand-ins: the mail
  * provider, which records what it is given and accepts or refuses it;
  * Next's after(), whose work the test runs when the response would have
  * gone, and its cache; and the request's session and device.
@@ -12,6 +13,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import { AccountService } from "../src/auth/account";
 import { SessionService } from "../src/auth/session";
+import { PasswordResetService } from "../src/auth/password-reset";
 import { AccountSettingsService } from "../src/platform/account-settings";
 import { EmailVerificationService } from "../src/platform/email-verification";
 import { formatDayTime } from "../src/time/format";
@@ -60,8 +62,12 @@ function webModule<T>(path: string): Promise<T> {
 }
 
 type VerifyState = { done?: "verified" | "email-changed"; email?: string; signedIn?: boolean; error?: string; retry?: boolean };
+type ForgotState = { done?: string; error?: string };
 const actions = () =>
-  webModule<{ verifyEmailAction: (token: string, prev: VerifyState, fd: FormData) => Promise<VerifyState> }>("app/(auth)/actions.ts");
+  webModule<{
+    verifyEmailAction: (token: string, prev: VerifyState, fd: FormData) => Promise<VerifyState>;
+    forgotPasswordAction: (prev: ForgotState, fd: FormData) => Promise<ForgotState>;
+  }>("app/(auth)/actions.ts");
 type FormState = { ok?: string; error?: string };
 const settingsActions = () =>
   webModule<{ changeEmailAction: (prev: FormState, fd: FormData) => Promise<FormState> }>("app/(app)/settings/actions.ts");
@@ -70,6 +76,7 @@ const accounts = new AccountService(prisma);
 const sessions = new SessionService(prisma);
 const accountSettings = new AccountSettingsService(prisma);
 const verification = new EmailVerificationService(prisma);
+const resets = new PasswordResetService(prisma);
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 const PASSWORD = "first password ok";
 const address = (tag: string) => `${tag}-${uid().slice(0, 8)}@tycoonhood.test`;
@@ -161,5 +168,27 @@ describe("Asking for an email change in the web app", () => {
     const opens = new Date(Math.ceil(hold.expires.getTime() / 60_000) * 60_000);
     expect(state.error).toContain(`from ${formatDayTime(opens, zone)}.`);
     expect(state.error).not.toContain("IST");
+  });
+});
+
+describe("Asking for a reset link in the web app", () => {
+  it("a link that could not be sent does not count: after three refused sends, the next request still delivers one that works", async () => {
+    const { forgotPasswordAction } = await actions();
+    const email = address("reset");
+    await accounts.register({ email, password: PASSWORD, name: "Reset Case" });
+    const form = new FormData();
+    form.set("email", email);
+    // A provider outage, or a burst of refused sends someone provoked.
+    mail.provider = "refuses";
+    for (let i = 0; i < 3; i++) expect((await forgotPasswordAction({}, form)).done).toBeTruthy();
+    expect(mail.outbox.filter((m) => m.to === email)).toHaveLength(3);
+
+    mail.provider = "accepts";
+    expect((await forgotPasswordAction({}, form)).done).toBeTruthy();
+    const sent = mail.outbox.filter((m) => m.accepted);
+    expect(sent.map((m) => m.to)).toEqual([email]);
+    const raw = /\/reset-password\/([\w-]+)/.exec(sent[0]!.text)![1]!;
+    await resets.resetPassword(raw, "owners new password");
+    await expect(accounts.authenticate({ email, password: "owners new password" })).resolves.toBeTruthy();
   });
 });
