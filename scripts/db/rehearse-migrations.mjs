@@ -1322,8 +1322,11 @@ async function behaviourChecks() {
 
 async function driftCheck(name) {
   heading("Drift: the migrated database against schema.prisma");
+  // The address, password included, goes to prisma only through DATABASE_URL, which
+  // the schema's datasource reads: any local user can read a command line (ps,
+  // /proc/<pid>/cmdline), but not another user's environment.
   const url = urlFor(name);
-  const r = await run(PRISMA, ["migrate", "diff", "--from-url", url, "--to-schema-datamodel", SCHEMA, "--script"], {
+  const r = await run(PRISMA, ["migrate", "diff", "--from-schema-datasource", SCHEMA, "--to-schema-datamodel", SCHEMA, "--script"], {
     cwd: join(ROOT, "packages/db"),
     env: childEnv({ DATABASE_URL: url, DATABASE_URL_UNPOOLED: url, CHECKPOINT_DISABLE: "1", PRISMA_HIDE_UPDATE_MESSAGE: "1" }),
   });
