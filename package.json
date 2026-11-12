@@ -23,6 +23,7 @@
     "db:seed:merch": "pnpm --filter @tycoonhood/db seed:merch",
     "e2e": "node scripts/e2e/full-loop.mjs",
     "e2e:journeys": "node scripts/e2e/journeys.mjs",
+    "e2e:a11y": "node scripts/e2e/a11y.mjs",
     "preflight": "pnpm --filter @tycoonhood/core exec tsx scripts/preflight.ts"
   },
   "engines": {
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^10.0.1",
+    "axe-core": "4.13.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "pg": "^8.23.0",
