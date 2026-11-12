@@ -15,6 +15,7 @@ import {
   NoEmailChangeError,
   VERIFY_RESEND_LIMIT,
   type EmailChangeCancelReason,
+  type IssuedEmailChange,
 } from "../src/platform/email-verification";
 import { PasswordResetService, InvalidResetTokenError, type ResetRequest } from "../src/auth/password-reset";
 import { EmailTakenError } from "../src/auth/account";
@@ -693,6 +694,58 @@ describe("Email change racing a new password", () => {
     await expect(verification.confirm(change!.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
     const log = await prisma.auditLog.findFirst({ where: { action: "account.email.change.cancel", targetId: user.id } });
     expect(log?.meta).toMatchObject({ to: change!.newEmail, reason });
+  });
+});
+
+// ── A resend of the change link reads the waiting address under the account's
+// lock, so the link it mails always belongs to the change that is waiting then.
+
+describe("Resending a change link while the change moves", () => {
+  it("a resend that meets a new request: the link mailed to the first address never moves the account to the second", async () => {
+    const { user } = await memberWithPassword();
+    const first = address("first");
+    await accountSettings.changeEmail(user.id, first, PASSWORD);
+    const second = address("second");
+    let requesting: Started<IssuedEmailChange | null> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      // The resend has read the waiting address and is about to replace the link.
+      atFirstCall("verificationToken", "deleteMany", "before", async () => {
+        requesting = started(accountSettings.changeEmail(user.id, second, PASSWORD));
+        waitedOn = await untilBlockedOnLock(() => requesting!.finished);
+      })
+    );
+    const resent = await racing.resendEmailChange(user.id);
+    const request = (await requesting!.promise)!;
+    expect(resent.newEmail).toBe(first);
+    await expect(verification.confirm(resent.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    const done = await verification.confirm(request.rawToken);
+    expect(done.user.email).toBe(second);
+    expect(waitedOn).toBe("advisory"); // the request waited for the resend to commit
+  });
+
+  const endChange: [string, (svc: EmailVerificationService, userId: string, rawToken: string) => Promise<unknown>][] = [
+    ["confirmed", (svc, _userId, rawToken) => svc.confirm(rawToken)],
+    ["cancelled", (svc, userId) => svc.cancelEmailChange(userId, "member")],
+  ];
+
+  it.each(endChange)("a resend that meets the change being %s waits for it, then refuses", async (_how, end) => {
+    const { user } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("moving"), PASSWORD);
+    let resending: Started<IssuedEmailChange> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      // The change's link is spent and the account is about to be written.
+      beforeFirstUserWrite(async () => {
+        resending = started(verification.resendEmailChange(user.id));
+        waitedOn = await untilBlockedOnLock(() => resending!.finished);
+      })
+    );
+    await end(racing, user.id, change!.rawToken);
+    // No link for a change that is over: before, one went to the address with a false "has not changed".
+    await expect(resending!.promise).rejects.toBeInstanceOf(NoEmailChangeError);
+    expect(await verification.hasLiveEmailChangeLink(user.id)).toBe(false);
+    expect(waitedOn).toBe("advisory");
   });
 });
 

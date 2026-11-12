@@ -198,6 +198,10 @@ export class EmailVerificationService {
    */
   async resendEmailChange(userId: string): Promise<IssuedEmailChange> {
     return this.db.$transaction(async (tx) => {
+      // The account's lock first, as a change request, its confirmation and its cancellation take it:
+      // the address read below is the one waiting when the link is made, and no other request's link
+      // is replaced. Without it a resend could mail one address a link that moves the account to another.
+      await lockEmailOf(tx, userId);
       await this.claimResend(tx, userId);
       const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
       if (!user.pendingEmail) throw new NoEmailChangeError();
