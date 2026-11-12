@@ -20,6 +20,11 @@
  * earlier links anyway, so only the latest change can be undone, and a
  * second change waits until this one can no longer be undone (see
  * platform/email-hold, which also explains the locks).
+ *
+ * The raw link exists only in the request that confirmed the change, and
+ * only one notice ever carries it. When that notice cannot be sent, the web
+ * app puts the change back at once (revertUnnotified), so no change stands
+ * that its old address was never told of.
  */
 import { createHash, randomBytes } from "node:crypto";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
@@ -119,6 +124,53 @@ export class EmailUndoService {
       if (e instanceof UndoLinkOverError) await this.db.emailHold.updateMany({ where: { undoToken }, data: { undoToken: null } });
       throw e;
     }
+  }
+
+  /**
+   * Put the old address back because the notice carrying this undo link
+   * could not be sent. The member made the change a moment ago and only the
+   * telling failed, so unlike undo() this keeps the password and every
+   * session. It ends the hold and the links the change made: reset links,
+   * any link for the address taken off, and a waiting change. Audited.
+   * Returns false, changing nothing, when the hold is gone or the account
+   * has moved again since.
+   */
+  async revertUnnotified(rawToken: string): Promise<boolean> {
+    if (!rawToken || rawToken.length > 200) return false;
+    const undoToken = sha256(rawToken);
+    const found = await this.db.emailHold.findUnique({ where: { undoToken }, select: { userId: true } });
+    if (!found) return false;
+    return withDeadlockRetry(() =>
+      this.db.$transaction(async (tx) => {
+        await lockEmailOf(tx, found.userId);
+        // Read again under the lock, as undo() does.
+        const hold = await tx.emailHold.findUnique({ where: { undoToken } });
+        if (!hold) return false;
+        const userId = hold.userId;
+        const user = await tx.user.findUniqueOrThrow({ where: { id: userId }, select: { email: true } });
+        if (user.email !== hold.changedTo) return false;
+
+        await tx.emailHold.delete({ where: { id: hold.id } });
+        await tx.user.update({
+          where: { id: userId },
+          data: { email: hold.address, emailVerified: new Date(), pendingEmail: null },
+        });
+        await tx.verificationToken.deleteMany({
+          where: { identifier: { in: [hold.changedTo, resetTokenId(userId), emailChangeTokenId(userId)] } },
+        });
+        await this.audit.log(
+          {
+            actorId: userId,
+            action: "account.email.change.revert",
+            targetType: "User",
+            targetId: userId,
+            meta: { from: hold.changedTo, to: hold.address, reason: "notice-not-sent" },
+          },
+          tx
+        );
+        return true;
+      })
+    );
   }
 }
 

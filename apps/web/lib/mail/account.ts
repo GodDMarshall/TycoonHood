@@ -10,7 +10,10 @@
  *
  * Notices are best effort. They are sent after the change they report has
  * happened, and a mail failure is logged, never thrown, so it can never block
- * or undo that change.
+ * or undo that change. One is not: the notice that carries the link undoing
+ * an email change. That link exists only in the request that made the
+ * change, so the caller reads the outcome and puts the change back if the
+ * notice did not go out (see verifyEmailAction).
  */
 import { cache } from "react";
 import {
@@ -70,10 +73,10 @@ export function sendEmailChangeRequestedNotice(issued: IssuedEmailChange): Promi
   return notice(issued.currentEmail, emailChangeRequestedMail(issued.newEmail, siteUrl()), `email-change notice for ${issued.userId}`);
 }
 
-/** To the old address, once the change has happened, with the link that undoes it. */
-export function sendEmailChangedNotice(userId: string, previousEmail: string, newEmail: string, undoToken: string): Promise<void> {
+/** To the old address, once the change has happened, with the link that undoes it. The caller reads the outcome. */
+export function sendEmailChangedNotice(userId: string, previousEmail: string, newEmail: string, undoToken: string): Promise<MailOutcome> {
   const undoLink = `${siteUrl()}/undo-email/${undoToken}`;
-  return notice(previousEmail, emailChangedMail(newEmail, undoLink), `email-changed notice for ${userId}`);
+  return deliver(previousEmail, emailChangedMail(newEmail, undoLink), `email-changed notice for ${userId}`);
 }
 
 /** To an old address that was never confirmed, once the change has happened: told, with no undo link. */

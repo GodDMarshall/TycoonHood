@@ -997,6 +997,53 @@ describe("Email change — the old address is held, with an undo link", () => {
   });
 });
 
+// ── The undo link exists only in the request that confirmed the change. When
+// the notice carrying it cannot be sent, the web app puts the change back:
+// no change stands that its old address was never told of.
+
+describe("Putting back a change whose notice could not be sent", () => {
+  it("restores the old address and ends what the change made, but keeps the password and every session", async () => {
+    const { user, email: oldEmail } = await confirmedMember();
+    const newEmail = address("unsent");
+    const change = await accountSettings.changeEmail(user.id, newEmail, PASSWORD);
+    const here = await sessions.create(user.id);
+    const done = await verification.confirm(change!.rawToken, { keepSessionId: here.session.id });
+    if (done.kind !== "email-change" || !done.undo) throw new Error("expected an email change with an undo link");
+    // Made in the moment before the change is put back: a reset link for the new address.
+    const { issued: reset } = await resets.requestReset(newEmail);
+
+    expect(await undos.revertUnnotified(done.undo.rawToken)).toBe(true);
+    const now = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(now).toMatchObject({ email: oldEmail, pendingEmail: null, emailVerified: expect.any(Date) });
+    expect(await prisma.emailHold.count({ where: { userId: user.id } })).toBe(0);
+    await expect(resets.resetPassword(reset!.rawToken, NEW_PASSWORD)).rejects.toBeInstanceOf(InvalidResetTokenError);
+    // Only the telling failed: the member keeps their password and this session.
+    await expect(accounts.authenticate({ email: oldEmail, password: PASSWORD })).resolves.toBeTruthy();
+    expect(await sessions.resolve(here.raw)).not.toBeNull();
+    // The link was never sent and now never works, and the new address is free again.
+    await expect(undos.undo(done.undo.rawToken)).rejects.toBeInstanceOf(InvalidUndoLinkError);
+    await expect(accounts.register({ email: newEmail, ...SQUATTER })).resolves.toMatchObject({ email: newEmail });
+    const log = await prisma.auditLog.findFirst({ where: { action: "account.email.change.revert", targetId: user.id } });
+    expect(log?.meta).toMatchObject({ from: newEmail, to: oldEmail, reason: "notice-not-sent" });
+  });
+
+  it("does nothing once the link's hold is gone or the account has moved on", async () => {
+    expect(await undos.revertUnnotified("nope")).toBe(false);
+    const used = await changedMember();
+    await undos.undo(used.undo.rawToken);
+    expect(await undos.revertUnnotified(used.undo.rawToken)).toBe(false);
+
+    const moved = await changedMember();
+    const elsewhere = address("elsewhere");
+    await prisma.user.update({ where: { id: moved.user.id }, data: { email: elsewhere } });
+    expect(await undos.revertUnnotified(moved.undo.rawToken)).toBe(false);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: moved.user.id } })).email).toBe(elsewhere);
+    expect(await prisma.emailHold.count({ where: { userId: moved.user.id } })).toBe(1);
+    const reverts = { action: "account.email.change.revert", targetId: { in: [used.user.id, moved.user.id] } };
+    expect(await prisma.auditLog.count({ where: reverts })).toBe(0);
+  });
+});
+
 // ── An address the member never confirmed may not be theirs (a typo at
 // registration). It is not held and gets no undo link, which would hand the
 // account to whoever reads it.

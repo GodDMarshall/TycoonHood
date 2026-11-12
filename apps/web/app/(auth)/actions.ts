@@ -220,6 +220,11 @@ export interface VerifyState {
   retry?: boolean;
 }
 
+/** Never names the old address: whoever used the link may not be the owner. */
+const CHANGE_NOT_TOLD =
+  "We couldn't email your old address about this change, so it didn't go through. Your email has not changed. " +
+  "Ask for the change again in a few minutes.";
+
 /**
  * Uses a link from an email: a confirmation link, or the link that confirms
  * an email change. A POST behind a button, so mail scanners that prefetch
@@ -241,13 +246,19 @@ export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: 
   const signedIn = session?.user.id === result.user.id;
   if (result.kind === "email-change") {
     const { user, previousEmail, undo } = result;
-    // A confirmed old address gets the link that undoes the change; it is held for the account meanwhile.
-    // One never confirmed is only told, as it may not be the member's (platform/email-hold).
-    after(() =>
-      undo
-        ? sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken)
-        : sendEmailChangedUnconfirmedNotice(user.id, previousEmail, user.email)
-    );
+    if (undo) {
+      // A confirmed old address gets the link that undoes the change; it is held for the account meanwhile.
+      // The link exists only in this request, so the change stands only if that notice went out:
+      // with no mail provider, or one that refused it, the change is put back.
+      const outcome = await sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken);
+      if (!mailWentOut(outcome)) {
+        if (await emailUndo.revertUnnotified(undo.rawToken)) return { error: CHANGE_NOT_TOLD, retry: false };
+        console.error(`[email-change] the old address was not told, and the account moved again since: ${user.id}`);
+      }
+    } else {
+      // One never confirmed is only told, after the response, as it may not be the member's (platform/email-hold).
+      after(() => sendEmailChangedUnconfirmedNotice(user.id, previousEmail, user.email));
+    }
     return { done: "email-changed", email: user.email, signedIn };
   }
   return { done: "verified", signedIn };
