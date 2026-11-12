@@ -12,6 +12,7 @@ import { assertCan, ROLES, type HasRole } from "../auth/permissions";
 import { SessionService } from "../auth/session";
 import { AuditService } from "./audit";
 import { EmailVerificationService } from "./email-verification";
+import { sliceWhole } from "../text/clip";
 
 export type Actor = { id: string } & NonNullable<HasRole>;
 
@@ -65,7 +66,7 @@ export class MemberAdminService {
           action: suspended ? "user.suspend" : "user.unsuspend",
           targetType: "User",
           targetId,
-          meta: reason?.trim() ? { reason: reason.trim().slice(0, 500) } : undefined,
+          meta: reason?.trim() ? { reason: sliceWhole(reason.trim(), 0, 500) } : undefined,
         },
         tx
       );

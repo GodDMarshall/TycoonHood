@@ -8,13 +8,12 @@
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { notificationLink, weeklyResetNote } from "@tycoonhood/core";
+import { formatDay, notificationLink, weeklyResetNote } from "@tycoonhood/core";
 import { Badge, Icon, Progress, ThcAmount, XpBar, buttonStyles, cn, type IconName } from "@tycoonhood/ui";
 import { Panel, SectionTitle } from "../app/page";
 import type { DashboardData } from "../../app/(app)/today/dashboard";
 
 const linkCls = "text-[13px] text-ink-3 hover:text-ink-1";
-const short = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 const money = (cents: number, currency: string) => {
   try {
     return new Intl.NumberFormat("en-IN", { style: "currency", currency, maximumFractionDigits: 2 }).format(cents / 100);
@@ -329,7 +328,7 @@ const ORDER_LABEL: Record<string, string> = {
   REFUNDED: "Refunded",
 };
 
-export function OrdersCard({ orders }: { orders: DashboardData["orders"] }) {
+export function OrdersCard({ orders, zone }: { orders: DashboardData["orders"]; zone: string }) {
   return (
     <section aria-labelledby="orders-title">
       <SectionTitle
@@ -361,7 +360,7 @@ export function OrdersCard({ orders }: { orders: DashboardData["orders"] }) {
               <Link href="/orders" className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-bg-2">
                 <span className="min-w-0">
                   <span className="block text-[14px] text-ink-1">
-                    {o._count.items} {o._count.items === 1 ? "item" : "items"} · {short(o.createdAt)}
+                    {o._count.items} {o._count.items === 1 ? "item" : "items"} · {formatDay(o.createdAt, zone)}
                   </span>
                   <span className="block text-[12.5px] text-ink-3">{ORDER_LABEL[o.status] ?? o.status}</span>
                 </span>
@@ -379,7 +378,7 @@ export function OrdersCard({ orders }: { orders: DashboardData["orders"] }) {
 
 // ─── Community activity ───────────────────────────────────────────
 
-export function CommunityActivityCard({ posts, groupCount }: { posts: DashboardData["posts"]; groupCount: number }) {
+export function CommunityActivityCard({ posts, groupCount, zone }: { posts: DashboardData["posts"]; groupCount: number; zone: string }) {
   return (
     <section aria-labelledby="discussions-title">
       <SectionTitle
@@ -410,7 +409,7 @@ export function CommunityActivityCard({ posts, groupCount }: { posts: DashboardD
                 <span className="line-clamp-2 block text-[14px] text-ink-1">{p.title}</span>
                 <span className="block text-[12.5px] text-ink-3">
                   {p.author.profile?.displayName ?? p.author.name ?? "Member"}
-                  {p.group ? ` · ${p.group.name}` : ""} · {short(p.createdAt)}
+                  {p.group ? ` · ${p.group.name}` : ""} · {formatDay(p.createdAt, zone)}
                   {p.commentCount > 0 ? ` · ${p.commentCount} ${p.commentCount === 1 ? "reply" : "replies"}` : ""}
                 </span>
               </Link>
@@ -429,7 +428,7 @@ export function CommunityActivityCard({ posts, groupCount }: { posts: DashboardD
 
 // ─── Notifications preview ────────────────────────────────────────
 
-export function NotificationsCard({ notifications, unread }: { notifications: DashboardData["notifications"]; unread: number }) {
+export function NotificationsCard({ notifications, unread, zone }: { notifications: DashboardData["notifications"]; unread: number; zone: string }) {
   return (
     <section aria-labelledby="notifications-title">
       <SectionTitle
@@ -454,7 +453,7 @@ export function NotificationsCard({ notifications, unread }: { notifications: Da
                   {!n.readAt && <span aria-label="Unread" className="size-1.5 shrink-0 rounded-full bg-gold" />}
                   <span className="line-clamp-1">{n.title}</span>
                 </span>
-                <span className="block text-[12.5px] text-ink-3">{short(n.createdAt)}</span>
+                <span className="block text-[12.5px] text-ink-3">{formatDay(n.createdAt, zone)}</span>
               </>
             );
             return (

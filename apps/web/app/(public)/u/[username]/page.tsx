@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
   return { title: `@${username}`, robots: { index: false, follow: false } };
 }
 const ledger = new LedgerService(prisma);
-const dt = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" });
+const dt = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", month: "long", year: "numeric" });
 
 /**
  * A member's identity card. A professional record, not a social feed:

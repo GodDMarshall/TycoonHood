@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Admin · Audit log" };
 export const dynamic = "force-dynamic";
 
 const PER_PAGE = 50;
-const dt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const dt = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
 /** Append-only: this page reads; nothing here can change or remove a row. */
 export default async function AdminAudit({ searchParams }: { searchParams: Promise<{ action?: string; prefix?: string; cursor?: string }> }) {

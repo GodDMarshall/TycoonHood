@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { discussions } from "@tycoonhood/core";
+import { discussions, memberZone } from "@tycoonhood/core";
 import { Badge, Button, EmptyState, PillarBadge, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../../../lib/guard";
 import { Page, PageHeader } from "../../../../../components/app/page";
@@ -69,7 +69,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
         <EmptyState icon="chat" title="No posts in this group yet." body={group.joined ? "Start the first one." : "Join the group to start the first one."} />
       ) : (
         <>
-          <PostList posts={list.posts} showWhere={false} />
+          <PostList posts={list.posts} zone={memberZone(user.profile?.timezone)} showWhere={false} />
           <Pager page={list.page} pages={list.pages} href={(p) => `/community/groups/${group.slug}${p > 1 ? `?page=${p}` : ""}`} />
         </>
       )}

@@ -31,6 +31,7 @@ import { SessionService } from "../auth/session";
 import { AuditService } from "./audit";
 import { EmailVerificationService, resetTokenId, type IssuedEmailChange } from "./email-verification";
 import { addressHeldFor, EmailChangeTooSoonError, lockEmailOf, undoableUntil } from "./email-hold";
+import { sliceWhole } from "../text/clip";
 
 export const DELETION_TOPIC = "account-deletion";
 
@@ -172,7 +173,7 @@ export class AccountSettingsService {
         topic: DELETION_TOPIC,
         message: [
           `Account deletion requested by user ${user.id} (@${user.profile?.username ?? "no-profile"}).`,
-          note?.trim() ? `Their note: ${note.trim().slice(0, 1000)}` : "No note given.",
+          note?.trim() ? `Their note: ${sliceWhole(note.trim(), 0, 1000)}` : "No note given.",
         ].join("\n"),
       },
     });

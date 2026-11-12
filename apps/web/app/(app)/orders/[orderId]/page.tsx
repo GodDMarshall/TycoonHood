@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { REFUND_REASON_MAX, isTestOrder, opensLibrary, orderTimeline, refundBlocker } from "@tycoonhood/core";
+import { REFUND_REASON_MAX, formatDate, isTestOrder, memberZone, opensLibrary, orderTimeline, refundBlocker } from "@tycoonhood/core";
 import { Badge, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../../lib/guard";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../../components/app/page";
 import { OrderTimeline } from "../../../../components/shop/order-timeline";
 import { RefundForm } from "../../../../components/shop/refund-form";
 import { TestModeBanner } from "../../../../components/shop/test-mode-banner";
-import { money, orderRef, shortDate } from "../../../../components/shop/format";
+import { money, orderRef } from "../../../../components/shop/format";
 import { requestRefundAction } from "../actions";
 
 export const metadata: Metadata = { title: "Order" };
@@ -17,6 +17,7 @@ export const dynamic = "force-dynamic";
 
 export default async function OrderPage({ params }: { params: Promise<{ orderId: string }> }) {
   const user = await requireUser();
+  const zone = memberZone(user.profile?.timezone);
   const { orderId } = await params;
   const o = await prisma.order.findFirst({
     where: { id: orderId, userId: user.id },
@@ -39,7 +40,7 @@ export default async function OrderPage({ params }: { params: Promise<{ orderId:
       <PageHeader
         kicker={<Link href="/orders" className="hover:text-ink-1">Orders</Link>}
         title={`Order ${orderRef(o.id)}`}
-        description={`Placed ${shortDate.format(o.createdAt)} · paid ${o.ledgerTxId ? "with THC" : `in ${o.fiatCurrency}${o.paymentProvider ? ` via ${o.paymentProvider}` : ""}`}`}
+        description={`Placed ${formatDate(o.createdAt, zone)} · paid ${o.ledgerTxId ? "with THC" : `in ${o.fiatCurrency}${o.paymentProvider ? ` via ${o.paymentProvider}` : ""}`}`}
         actions={o.status === "PENDING" && o.paymentProvider ? <Link href={`/checkout/${o.id}`} className={buttonStyles({ size: "sm" })}>Pay now</Link> : undefined}
       />
       {test && <TestModeBanner className="mb-6" />}
@@ -47,7 +48,7 @@ export default async function OrderPage({ params }: { params: Promise<{ orderId:
       <div className="flex flex-col gap-6">
         <Panel className="p-5">
           <SectionTitle>Status</SectionTitle>
-          <OrderTimeline steps={orderTimeline(o)} />
+          <OrderTimeline steps={orderTimeline(o)} zone={zone} />
         </Panel>
 
         <Panel className="p-5">
@@ -107,7 +108,7 @@ export default async function OrderPage({ params }: { params: Promise<{ orderId:
               {o.refundRequests.map((r) => (
                 <li key={r.id} className="text-[13.5px]">
                   <Badge tone={r.status === "REJECTED" ? "neutral" : r.status === "REFUNDED" ? "success" : "gold"}>{r.status.toLowerCase()}</Badge>
-                  <span className="ml-2 text-ink-3">{shortDate.format(r.createdAt)}</span>
+                  <span className="ml-2 text-ink-3">{formatDate(r.createdAt, zone)}</span>
                   <p className="mt-1 text-ink-2">{r.reason}</p>
                   {r.adminNote && <p className="mt-1 text-ink-3">Staff note: {r.adminNote}</p>}
                 </li>

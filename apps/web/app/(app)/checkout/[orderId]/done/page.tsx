@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { isTestOrder, opensLibrary, orderTimeline, paidAfterCancel } from "@tycoonhood/core";
+import { isTestOrder, memberZone, opensLibrary, orderTimeline, paidAfterCancel } from "@tycoonhood/core";
 import { EmptyState, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../../../lib/guard";
 import { Page, PageHeader, Panel } from "../../../../../components/app/page";
@@ -58,7 +58,7 @@ export default async function DonePage({ params }: { params: Promise<{ orderId: 
             <span className="text-[14px] text-ink-2">Paid</span>
             {order.totalThc > 0n ? <ThcAmount amount={order.totalThc} size="sm" /> : <span className="figures">{inr(order.totalFiatCents)}</span>}
           </div>
-          <OrderTimeline steps={orderTimeline(order)} />
+          <OrderTimeline steps={orderTimeline(order)} zone={memberZone(user.profile?.timezone)} />
           <div className="flex flex-wrap gap-2">
             <Link href={`/orders/${order.id}`} className={buttonStyles({ size: "sm" })}>View order</Link>
             {digital.map((i) => (

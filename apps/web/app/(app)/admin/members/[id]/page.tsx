@@ -14,7 +14,7 @@ import { cancelEmailChangeAction, changeRoleAction, setSuspendedAction } from ".
 export const metadata: Metadata = { title: "Admin · Member" };
 export const dynamic = "force-dynamic";
 
-const dt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+const dt = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 const money = (cents: number, currency: string) => {
   try {
     return new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(cents / 100);

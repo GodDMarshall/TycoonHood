@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { notificationLink } from "@tycoonhood/core";
+import { formatRelative, memberZone, notificationLink } from "@tycoonhood/core";
 import { Icon, cn, type IconName } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
 import { Page, PageHeader, Panel } from "../../../components/app/page";
@@ -24,15 +24,6 @@ const ICON: Record<string, IconName> = {
   COMMUNITY: "chat",
 };
 
-const when = (d: Date) => {
-  const mins = Math.round((Date.now() - d.getTime()) / 60_000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins} min ago`;
-  const h = Math.round(mins / 60);
-  if (h < 24) return `${h} h ago`;
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-};
-
 /** Where a notification leads, from the data it carries. Nothing invented. */
 function hrefOf(n: { type: string; data: unknown }) {
   // Discussions and announcements carry their page in data.href.
@@ -52,6 +43,7 @@ export default async function NotificationsPage() {
   const user = await requireUser();
   const items = await prisma.notification.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" }, take: 60 });
   const unread = items.filter((n) => !n.readAt).length;
+  const zone = memberZone(user.profile?.timezone);
 
   return (
     <Page width="narrow">
@@ -84,7 +76,7 @@ export default async function NotificationsPage() {
                   <span className={cn("block text-[14.5px]", n.readAt ? "text-ink-2" : "font-medium text-ink-1")}>{n.title}</span>
                   {n.body && <span className="mt-0.5 line-clamp-2 block text-[13.5px] text-ink-3">{n.body}</span>}
                 </span>
-                <span className="shrink-0 text-[12.5px] text-ink-3">{when(n.createdAt)}</span>
+                <span className="shrink-0 text-[12.5px] text-ink-3">{formatRelative(n.createdAt, zone)}</span>
               </>
             );
             return (

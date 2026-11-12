@@ -4,8 +4,8 @@ export const inr = (paise: number) =>
 
 export const orderRef = (id: string) => id.slice(-6).toUpperCase();
 
-export const shortDate = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" });
-export const dateTime = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+export const shortDate = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" });
+export const dateTime = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 export const KIND_LABEL: Record<string, string> = {
   DIGITAL: "Digital",

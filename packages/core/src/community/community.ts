@@ -23,6 +23,7 @@ import { clip } from "../text/clip";
 import type { UserRole } from "@tycoonhood/db";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
+import { formatIst } from "../time/ist";
 
 export const MESSAGE_MAX = 2000;
 export const PROOF_URL_MAX = 500;
@@ -369,7 +370,7 @@ export class CommunityService {
     if (mute) {
       throw new CommunityError(
         mute.until
-          ? `You can read but not post until ${mute.until.toUTCString().slice(0, 22)} UTC.`
+          ? `You can read but not post until ${formatIst(mute.until)}.`
           : "You can read but not post. Contact staff if you think this is a mistake."
       );
     }

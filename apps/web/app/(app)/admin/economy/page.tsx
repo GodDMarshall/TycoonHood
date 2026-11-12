@@ -7,7 +7,7 @@ import { ConfirmButton } from "../../../../components/admin-confirm";
 
 export const metadata: Metadata = { title: "Admin · Economy" };
 export const dynamic = "force-dynamic";
-const dt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+const dt = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
 export default async function AdminEconomy() {
   await requireAdmin();

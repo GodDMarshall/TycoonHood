@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge, Icon, buttonStyles, cn } from "@tycoonhood/ui";
-import { learner } from "@tycoonhood/core";
+import { formatDay, learner, memberZone } from "@tycoonhood/core";
 import { requireUser } from "../../../lib/guard";
 import { catalog, LESSON_TYPE, searchLessons } from "../../../lib/learning";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
@@ -21,7 +21,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
     learner.youMightStart(user.id, 2),
   ]);
   const current = courses.filter((c) => c.enrollment && c.next);
-  const day = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
+  const zone = memberZone(user.profile?.timezone);
 
   return (
     <Page>
@@ -180,7 +180,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
                       <span className="block truncate text-[14.5px] text-ink-1">{h.lesson.title}</span>
                       <span className="block truncate text-[12.5px] text-ink-3">{h.lesson.module.course.title}</span>
                     </span>
-                    <span className="text-[12.5px] tabular-nums text-ink-3">{h.completedAt ? day.format(h.completedAt) : ""}</span>
+                    <span className="text-[12.5px] tabular-nums text-ink-3">{h.completedAt ? formatDay(h.completedAt, zone) : ""}</span>
                   </li>
                 ))}
               </Panel>

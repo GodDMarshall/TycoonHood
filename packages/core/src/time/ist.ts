@@ -32,10 +32,14 @@ export function parseIstDateTime(value: string): Date | null {
   return new Date(wall.getTime() - IST_OFFSET_MS);
 }
 
-/** An instant as India time, for staff screens: "30 Nov 2026, 23:59 IST". */
-export function formatIst(at: Date): string {
+/**
+ * An instant as India time, for staff screens: "30 Nov 2026, 23:59 IST",
+ * or "30 Nov 2026, 23:59:30 IST" with `seconds`.
+ */
+export function formatIst(at: Date, opts: { seconds?: boolean } = {}): string {
   const t = new Date(at.getTime() + IST_OFFSET_MS);
   const hh = String(t.getUTCHours()).padStart(2, "0");
   const mm = String(t.getUTCMinutes()).padStart(2, "0");
-  return `${t.getUTCDate()} ${MONTHS[t.getUTCMonth()]} ${t.getUTCFullYear()}, ${hh}:${mm} IST`;
+  const ss = opts.seconds ? `:${String(t.getUTCSeconds()).padStart(2, "0")}` : "";
+  return `${t.getUTCDate()} ${MONTHS[t.getUTCMonth()]} ${t.getUTCFullYear()}, ${hh}:${mm}${ss} IST`;
 }

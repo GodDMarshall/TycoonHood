@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { PENDING_TTL_MINUTES, razorpayOpenTo } from "@tycoonhood/core";
+import { PENDING_TTL_MINUTES, formatTime, memberZone, razorpayOpenTo } from "@tycoonhood/core";
 import { requireUser } from "../../../../lib/guard";
 import { releaseExpiredOrder } from "../../../../lib/stale-orders";
 import { Page, PageHeader, Panel } from "../../../../components/app/page";
@@ -38,7 +38,7 @@ export default async function PayPage({ params }: { params: Promise<{ orderId: s
 
   return (
     <Page width="narrow">
-      <PageHeader kicker={`Order ${orderRef(order.id)}`} title="Payment" description={`Pay ${inr(order.totalFiatCents)} to confirm your order. Items are held for you until ${expires.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}.`} />
+      <PageHeader kicker={`Order ${orderRef(order.id)}`} title="Payment" description={`Pay ${inr(order.totalFiatCents)} to confirm your order. Items are held for you until ${formatTime(expires, memberZone(user.profile?.timezone))}.`} />
       {payment.mode === "TEST" && <TestModeBanner className="mb-6" />}
       <Panel className="flex flex-col gap-5 p-5 sm:p-6">
         <dl className="grid grid-cols-[1fr_auto] gap-y-1.5 text-[14px]">

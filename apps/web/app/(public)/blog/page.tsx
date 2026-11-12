@@ -6,7 +6,7 @@ import { SectionRule } from "@tycoonhood/ui";
 export const metadata: Metadata = { title: "Journal" };
 export const dynamic = "force-dynamic";
 
-const dateFmt = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric" });
+const dateFmt = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", year: "numeric", month: "long", day: "numeric" });
 
 export default async function BlogIndex() {
   const posts = await prisma.post.findMany({

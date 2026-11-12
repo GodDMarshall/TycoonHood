@@ -8,15 +8,9 @@ import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import { usernameSchema } from "../auth/schemas";
 import { UsernameTakenError } from "../auth/account";
+import { isValidTimeZone } from "../time/format";
 
-export function isValidTimeZone(tz: string): boolean {
-  try {
-    new Intl.DateTimeFormat("en-US", { timeZone: tz });
-    return true;
-  } catch {
-    return false;
-  }
-}
+export { isValidTimeZone };
 
 const optionalText = (max: number, message: string) =>
   z

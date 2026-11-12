@@ -354,12 +354,19 @@ export function MobileTabBar({ data }: { data: ShellData }) {
               aria-haspopup="dialog"
               aria-expanded={more}
               className={cn(
-                "flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] font-medium",
+                "relative flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] font-medium",
                 moreActive ? "text-gold" : "text-ink-3 hover:text-ink-1",
               )}
             >
               <Icon name="menu" size={22} />
               More
+              {/* Store and the cart live in this sheet on phones, so the cart count shows here too. */}
+              {data.cart && (
+                <span className="absolute left-1/2 top-2 ml-2 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-semibold tabular-nums text-bg-0">
+                  {data.cart.text}
+                  <span className="sr-only"> ({data.cart.label})</span>
+                </span>
+              )}
             </button>
           </li>
         </ul>

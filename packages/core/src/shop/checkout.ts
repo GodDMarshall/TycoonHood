@@ -40,6 +40,7 @@ import { RefundService } from "./refunds";
 import { activeShopProvider, razorpayFromEnv, sandboxProvider, sandboxAllowed, testPaymentAllowed, RazorpayProvider } from "./payments";
 import type { RazorpayWebhookEvent, ShopPaymentProvider } from "./payments";
 import { verifyWebhookSignature } from "./payments/razorpay";
+import { sliceWhole } from "../text/clip";
 
 /** How long a rupee order may wait for its payment before its stock goes back. */
 export const PENDING_TTL_MINUTES = 30;
@@ -84,7 +85,7 @@ const addressCreate = (s: ShippingInput) => ({
 });
 
 const lineMemo = (lines: CartLineView[]) =>
-  lines.map((l) => `${l.qty}× ${l.name}${l.variantLabel ? ` (${l.variantLabel})` : ""}`).join(", ").slice(0, 300);
+  sliceWhole(lines.map((l) => `${l.qty}× ${l.name}${l.variantLabel ? ` (${l.variantLabel})` : ""}`).join(", "), 0, 300);
 
 export class ShopCheckoutService {
   private commerce: CommerceService;

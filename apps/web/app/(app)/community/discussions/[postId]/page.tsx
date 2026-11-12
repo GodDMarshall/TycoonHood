@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { COMMENT_MAX, POST_BODY_MAX, POST_TITLE_MAX, POST_TITLE_MIN, discussions, isStaff, type CommentView } from "@tycoonhood/core";
+import { COMMENT_MAX, POST_BODY_MAX, POST_TITLE_MAX, POST_TITLE_MIN, discussions, formatDateTime, isStaff, memberZone, type CommentView } from "@tycoonhood/core";
 import { Avatar, Badge, Button, Notice } from "@tycoonhood/ui";
 import { requireUser } from "../../../../../lib/guard";
 import { Page, Panel, SectionTitle } from "../../../../../components/app/page";
@@ -14,8 +14,6 @@ import { PostForm } from "../_components/post-form";
 import { commentAction, deleteCommentAction, deletePostAction, editPostAction, lockAction, moderateAction, pinAction } from "../actions";
 
 export const dynamic = "force-dynamic";
-
-const when = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
 export async function generateMetadata({ params }: { params: Promise<{ postId: string }> }): Promise<Metadata> {
   const { postId } = await params;
@@ -35,6 +33,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
   const { postId } = await params;
   const sp = await searchParams;
   const viewer = { id: user.id, role: user.role };
+  const zone = memberZone(user.profile?.timezone);
   const post = await discussions.post(viewer, postId);
   if (!post) notFound();
   const staff = isStaff(user);
@@ -75,7 +74,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
               ) : (
                 <span className="text-ink-2">{post.author.name}</span>
               )}
-              {post.author.staff && <span className="text-gold-deep"> · staff</span>} · <time dateTime={post.createdAt}>{when.format(new Date(post.createdAt))}</time>
+              {post.author.staff && <span className="text-gold-deep"> · staff</span>} · <time dateTime={post.createdAt}>{formatDateTime(post.createdAt, zone)}</time>
             </span>
           </div>
         </header>
@@ -148,7 +147,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
         {post.comments.length > 0 && (
           <ol className="mb-6 flex flex-col divide-y divide-line">
             {post.comments.map((c) => (
-              <Comment key={c.id} c={c} postId={post.id} staff={staff} live={live} readOnly={readOnly} />
+              <Comment key={c.id} c={c} postId={post.id} staff={staff} live={live} readOnly={readOnly} zone={zone} />
             ))}
           </ol>
         )}
@@ -158,7 +157,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
         ) : post.locked && !staff ? (
           <Notice tone="info">This discussion is locked. Staff closed it to new comments.</Notice>
         ) : muted ? (
-          <Notice tone="warning">You can read but not post{mute?.until ? ` until ${mute.until.toUTCString().slice(0, 22)} UTC` : ""}.</Notice>
+          <Notice tone="warning">You can read but not post{mute?.until ? ` until ${formatDateTime(mute.until, zone)}` : ""}.</Notice>
         ) : (
           <CommentForm action={commentAction.bind(null, post.id)} max={COMMENT_MAX} />
         )}
@@ -167,7 +166,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
   );
 }
 
-function Comment({ c, postId, staff, live, readOnly }: { c: CommentView; postId: string; staff: boolean; live: boolean; readOnly: boolean }) {
+function Comment({ c, postId, staff, live, readOnly, zone }: { c: CommentView; postId: string; staff: boolean; live: boolean; readOnly: boolean; zone: string }) {
   return (
     <li id={`c-${c.id}`} className="flex scroll-mt-20 gap-3 py-4">
       <Avatar name={c.author.name} src={c.author.avatarUrl} size={30} className="mt-0.5" />
@@ -175,7 +174,7 @@ function Comment({ c, postId, staff, live, readOnly }: { c: CommentView; postId:
         <p className="flex flex-wrap items-center gap-2 text-[13px] text-ink-3">
           <span className="font-medium text-ink-2">{c.author.name}</span>
           {c.author.staff && <span className="text-gold-deep">staff</span>}
-          <time dateTime={c.createdAt}>{when.format(new Date(c.createdAt))}</time>
+          <time dateTime={c.createdAt}>{formatDateTime(c.createdAt, zone)}</time>
           <StateBadge state={c.state} />
         </p>
         {c.body === null ? <p className="mt-1 text-[14px] italic text-ink-3">Removed.</p> : <BodyText text={c.body} className="mt-1 text-[14.5px]" />}

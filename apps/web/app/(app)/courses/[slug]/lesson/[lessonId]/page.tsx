@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { community, questionsForMember, renderMarkdown } from "@tycoonhood/core";
+import { community, formatDay, memberZone, questionsForMember, renderMarkdown } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, Progress, buttonStyles, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../../../../lib/guard";
 import { courseDetail, LESSON_TYPE } from "../../../../../../lib/learning";
@@ -20,11 +20,6 @@ export async function generateMetadata({ params }: { params: Promise<{ lessonId:
   const l = await prisma.lesson.findUnique({ where: { id: lessonId }, select: { title: true } });
   return { title: l?.title ?? "Lesson" };
 }
-
-const since = (iso: string) => {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-};
 
 /**
  * The lesson. Reading comes first on every device. A locked lesson says
@@ -242,7 +237,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
                         <Avatar name={q.author.name} src={q.author.avatarUrl} size={28} />
                         <span className="min-w-0">
                           <span className="block text-[13px] text-ink-3">
-                            {q.author.name} · {since(q.createdAt)}
+                            {q.author.name} · {formatDay(q.createdAt, memberZone(user.profile?.timezone))}
                           </span>
                           <span className="mt-0.5 line-clamp-2 block text-[14.5px] text-ink-1">{q.body}</span>
                         </span>

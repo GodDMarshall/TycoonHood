@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { learner } from "@tycoonhood/core";
+import { formatWeekday, learner, memberZone } from "@tycoonhood/core";
 import { Icon } from "@tycoonhood/ui";
 import { requireUser } from "../../../../lib/guard";
 import { LESSON_TYPE } from "../../../../lib/learning";
@@ -13,10 +13,10 @@ export const dynamic = "force-dynamic";
 export default async function LearningHistoryPage() {
   const user = await requireUser();
   const rows = await learner.history(user.id, 200);
-  const dayFmt = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const zone = memberZone(user.profile?.timezone);
   const groups = new Map<string, typeof rows>();
   for (const r of rows) {
-    const k = r.completedAt ? dayFmt.format(r.completedAt) : "Undated";
+    const k = r.completedAt ? formatWeekday(r.completedAt, zone, { year: true }) : "Undated";
     groups.set(k, [...(groups.get(k) ?? []), r]);
   }
 

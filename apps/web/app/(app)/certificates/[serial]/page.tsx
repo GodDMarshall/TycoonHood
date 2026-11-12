@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { showsCourses } from "@tycoonhood/core";
+import { formatLongDate, memberZone, showsCourses } from "@tycoonhood/core";
 import { CoinMark, Icon, PILLAR_LABEL } from "@tycoonhood/ui";
 import { requireUser } from "../../../../lib/guard";
 import { Page } from "../../../../components/app/page";
@@ -27,7 +27,7 @@ export default async function CertificateView({ params }: { params: Promise<{ se
   });
   if (!cert || cert.userId !== user.id) notFound();
   const name = cert.user.profile?.displayName ?? cert.user.name ?? "Tycoonhood member";
-  const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const zone = memberZone(user.profile?.timezone);
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
   return (
@@ -59,7 +59,7 @@ export default async function CertificateView({ params }: { params: Promise<{ se
         <div className="mx-auto mt-10 grid max-w-lg grid-cols-2 gap-6 border-t border-line pt-6 text-left text-[13px]">
           <div>
             <p className="text-ink-3">Issued</p>
-            <p className="mt-0.5 text-ink-1">{fmt.format(cert.issuedAt)}</p>
+            <p className="mt-0.5 text-ink-1">{formatLongDate(cert.issuedAt, zone)}</p>
           </div>
           <div>
             <p className="text-ink-3">Serial</p>

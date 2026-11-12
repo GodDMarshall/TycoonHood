@@ -27,7 +27,7 @@ export default async function AdminReviews({ searchParams }: { searchParams: Pro
       user: { select: { email: true, profile: { select: { displayName: true, username: true } } } },
     },
   });
-  const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const fmt = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" });
 
   return (
     <section aria-labelledby="reviews">

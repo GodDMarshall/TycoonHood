@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Page, PageHeader } from "../../../components/app/page";
 import { requireUser } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
-import { accountSettings, activeDiscordTransport, discord, privacyShows, profileCompletion, sessions } from "@tycoonhood/core";
+import { accountSettings, activeDiscordTransport, discord, formatDayTime, memberZone, privacyShows, profileCompletion, sessions } from "@tycoonhood/core";
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Field, Input, Notice, SectionRule, Select, Textarea } from "@tycoonhood/ui";
 import { getCurrentSession } from "../../../lib/auth";
 import { mailMode } from "../../../lib/mail";
@@ -28,7 +28,6 @@ import { ActionForm } from "../../../components/admin/action-form";
 
 export const metadata: Metadata = { title: "Settings" };
 export const dynamic = "force-dynamic";
-const dt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
 function timeZones(): string[] {
   try {
@@ -55,6 +54,7 @@ export default async function SettingsPage() {
   const transport = activeDiscordTransport();
   const completion = profileCompletion({ emailVerified: user.emailVerified, profile });
   const zones = timeZones();
+  const zone = memberZone(profile.timezone);
   const otherDevices = deviceSessions.filter((s) => s.id !== session.id).length;
 
   return (
@@ -88,9 +88,9 @@ export default async function SettingsPage() {
             <Field label="Profile photo URL" htmlFor="avatarUrl" hint="A link to an image, starting with https://.">
               <Input id="avatarUrl" name="avatarUrl" type="url" inputMode="url" defaultValue={profile.avatarUrl ?? ""} placeholder="https://" />
             </Field>
-            <Field label="Time zone" htmlFor="timezone" hint="Your day — and your streak — turn over at midnight here.">
+            <Field label="Time zone" htmlFor="timezone" hint="Dates and times show in this zone, and your day — and your streak — turn over at midnight here.">
               <Select id="timezone" name="timezone" defaultValue={profile.timezone ?? ""}>
-                <option value="">Not set (UTC)</option>
+                <option value="">Not set (dates in India time, days in UTC)</option>
                 {zones.map((z) => (
                   <option key={z} value={z}>
                     {z.replace(/_/g, " ")}
@@ -215,7 +215,7 @@ export default async function SettingsPage() {
                   {s.userAgent?.slice(0, 72) ?? "Unknown device"}
                   {s.id === session.id && <span className="ml-2 text-[12px] text-success">This device</span>}
                 </span>
-                <span className="figures block text-[11px] text-ink-3">since {dt.format(s.createdAt)} · expires {dt.format(s.expires)}</span>
+                <span className="figures block text-[11px] text-ink-3">since {formatDayTime(s.createdAt, zone)} · expires {formatDayTime(s.expires, zone)}</span>
               </span>
             </div>
           ))}
@@ -292,7 +292,7 @@ export default async function SettingsPage() {
         <CardContent className="flex flex-col gap-4 py-5">
           {pendingDeletion ? (
             <Notice tone="warning" title="Deletion requested">
-              We received your request on {dt.format(pendingDeletion.createdAt)}. Staff will email {user.email} before anything is removed. To cancel, contact us.
+              We received your request on {formatDayTime(pendingDeletion.createdAt, zone)}. Staff will email {user.email} before anything is removed. To cancel, contact us.
             </Notice>
           ) : (
             <ActionForm action={requestDeletionAction} submit="Request deletion">

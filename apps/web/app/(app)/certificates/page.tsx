@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
+import { formatLongDate, memberZone } from "@tycoonhood/core";
 import { Icon, PillarBadge, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
 import { Page, PageHeader, Panel } from "../../../components/app/page";
@@ -16,7 +17,7 @@ export default async function CertificatesPage() {
     orderBy: { issuedAt: "desc" },
     include: { course: { select: { title: true, pillar: true, slug: true } } },
   });
-  const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const zone = memberZone(user.profile?.timezone);
 
   return (
     <Page>
@@ -39,7 +40,7 @@ export default async function CertificatesPage() {
               <Panel as="div" className="flex h-full flex-col p-5">
                 <div className="flex items-center gap-2">
                   <PillarBadge pillar={c.course.pillar} />
-                  <span className="ml-auto text-[12.5px] text-ink-3">{fmt.format(c.issuedAt)}</span>
+                  <span className="ml-auto text-[12.5px] text-ink-3">{formatLongDate(c.issuedAt, zone)}</span>
                 </div>
                 <h2 className="mt-3 text-[18px] font-semibold leading-snug">{c.course.title}</h2>
                 <p className="mt-1 text-[13px] tabular-nums text-ink-3">{c.serial}</p>

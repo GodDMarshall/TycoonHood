@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { community, PAGE_SIZE, isStaff } from "@tycoonhood/core";
+import { community, PAGE_SIZE, formatDateTime, isStaff, memberZone } from "@tycoonhood/core";
 import { requireUser } from "../../../../lib/guard";
 import { CommunityFrame } from "../../../../components/community/community-frame";
 import { ChatView } from "../../../../components/community/chat-view";
@@ -27,13 +27,14 @@ export default async function ChannelPage({ params }: { params: Promise<{ channe
   ]);
 
   const staff = isStaff(user);
+  const zone = memberZone(user.profile?.timezone);
   const blocked = channel.archivedAt
     ? "This channel is archived. You can read it, but not post."
     : channel.adminOnly && !staff
       ? "Only staff post here. Discussion happens in General."
       : mute
         ? mute.until
-          ? `You can read but not post until ${mute.until.toUTCString().slice(0, 22)} UTC.`
+          ? `You can read but not post until ${formatDateTime(mute.until, zone)}.`
           : "You can read but not post. Contact staff if you think this is a mistake."
         : null;
 
@@ -55,6 +56,8 @@ export default async function ChannelPage({ params }: { params: Promise<{ channe
         initial={messages}
         pinned={pinned}
         hasOlder={messages.length === PAGE_SIZE}
+        zone={zone}
+        now={new Date().toISOString()}
       />
     </CommunityFrame>
   );

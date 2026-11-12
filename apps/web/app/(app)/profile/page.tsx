@@ -6,7 +6,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { standard } from "@tycoonhood/core";
+import { formatDate, formatMonthYear, memberZone, standard } from "@tycoonhood/core";
 import { xpRequiredForLevel } from "@tycoonhood/config";
 import { Avatar, Icon, Progress, buttonStyles, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
@@ -18,11 +18,10 @@ import { Medal, RankEmblem } from "../../../components/art/emblems";
 export const metadata: Metadata = { title: "Profile" };
 export const dynamic = "force-dynamic";
 
-const since = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric" });
-const short = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
 export default async function ProfilePage() {
   const user = await requireUser();
+  const zone = memberZone(user.profile?.timezone);
   const [streak, history, metTotal, lessonsDone, certificates, achievements, ranks, programs, openAchievements] = await Promise.all([
     prisma.streak.findUnique({ where: { userId: user.id } }),
     standard.history(user.id, 84),
@@ -72,7 +71,7 @@ export default async function ProfilePage() {
           <h1 className="text-[26px] font-semibold leading-tight tracking-[-0.02em] sm:text-[30px]">{name}</h1>
           <p className="mt-1 text-[14px] text-ink-3">
             {username && <>@{username} · </>}
-            {rank ? rank.name.replace(/^Tycoon\s+/, "") : "Member"} · member since {since.format(user.createdAt)}
+            {rank ? rank.name.replace(/^Tycoon\s+/, "") : "Member"} · member since {formatMonthYear(user.createdAt, zone)}
           </p>
           {user.profile?.bio && <p className="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-ink-2">{user.profile.bio}</p>}
         </div>
@@ -152,7 +151,7 @@ export default async function ProfilePage() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[15px] font-medium">{c.course.title}</p>
                       <p className="text-[13px] tabular-nums text-ink-3">
-                        {c.serial} · issued {short.format(c.issuedAt)}
+                        {c.serial} · issued {formatDate(c.issuedAt, zone)}
                       </p>
                     </div>
                     <span className="text-[13px] text-ink-3">Verify</span>
@@ -217,7 +216,7 @@ export default async function ProfilePage() {
                     <div className="min-w-0">
                       <p className="text-[14.5px] font-medium">{a.achievement.name}</p>
                       <p className="text-[13px] text-ink-3">
-                        {a.achievement.description} · {short.format(a.unlockedAt)}
+                        {a.achievement.description} · {formatDate(a.unlockedAt, zone)}
                       </p>
                     </div>
                   </li>
