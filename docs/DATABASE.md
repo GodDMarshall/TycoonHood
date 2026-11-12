@@ -93,6 +93,14 @@ ALTER TABLE "Post" ALTER COLUMN "searchVector" DROP DEFAULT;
 
 Any script that compares the migrations with the schema (for example with `--exit-code`) removes comment lines, blank lines and exactly these five lines, matched by their full text, and then treats anything left as drift. Never filter by pattern: a real change to a `searchVector` column, or to anything else on those tables, must still fail.
 
+`pnpm db:rehearse` (`scripts/db/rehearse-migrations.mjs`) does this, together with the checks in data-model c.4, on a throwaway database it creates and drops itself (`tycoonhood_rehearse_<random>_test`, and only on a local server):
+
+- `pnpm db:rehearse` starts from an empty database: the migrations before `20261113000000`, then `scripts/db/rehearse-fixtures.sql`, then the living-ecosystem migrations, each file in one transaction. It checks the constraints, what each backfill produced for the fixture rows, the rules the constraints enforce, and the drift.
+- `--with-pending` also applies `docs/ecosystem/pending-migrations` and checks the challenge evidence move.
+- `--from <database>` copies a local database (`CREATE DATABASE ... TEMPLATE`, which needs no other session connected to it), migrates the copy with `pnpm db:migrate:sql`, and checks rules every row must meet rather than fixture rows.
+
+Every check prints what it expected and what it found; the command exits 1 when any check fails.
+
 A schema change after these migrations is a new migration file, named after the last one. Never edit a file that has been applied anywhere: `migrate-sql.ts` checksums each file, comments included, and refuses a database where an applied file has changed.
 
 ## Known schema follow-ups
