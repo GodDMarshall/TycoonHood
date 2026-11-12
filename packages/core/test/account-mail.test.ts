@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   emailChangedMail,
+  emailChangedUnconfirmedMail,
   emailChangeLinkMail,
   emailChangeRequestedMail,
   emailChangeUndoneMail,
@@ -49,6 +50,18 @@ describe("Account security email", () => {
     expect(m.text).toMatch(/If this wasn't you, undo it \(link valid 7 days, single use\)/);
     expect(m.text).toContain(`${SITE}/undo-email/xyz`);
     expect(m.text).toMatch(/signs out every device and asks for a new password/);
+  });
+
+  it("the notice to an old address never confirmed says the account moved, with no undo link, and where to ask", () => {
+    const m = emailChangedUnconfirmedMail("newperson@example.com", SITE);
+    expect(m.text).toContain("ne***@ex***.com");
+    expect(m.text).not.toContain("newperson@example.com");
+    expect(m.text).toMatch(/no longer signs in/);
+    expect(m.text).toMatch(/never confirmed/);
+    expect(m.text).not.toMatch(/undo-email/);
+    expect(m.text).toContain(`${SITE}/contact`);
+    // Whoever reads it may never have had the account, so it does not say "your email".
+    expect(m.subject).not.toMatch(/your/i);
   });
 
   it("after an undo, each address hears about it and sees the other one masked", () => {

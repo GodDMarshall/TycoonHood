@@ -15,6 +15,7 @@
 import { cache } from "react";
 import {
   emailChangedMail,
+  emailChangedUnconfirmedMail,
   emailChangeLinkMail,
   emailChangeRequestedMail,
   emailChangeUndoneMail,
@@ -73,6 +74,11 @@ export function sendEmailChangeRequestedNotice(issued: IssuedEmailChange): Promi
 export function sendEmailChangedNotice(userId: string, previousEmail: string, newEmail: string, undoToken: string): Promise<void> {
   const undoLink = `${siteUrl()}/undo-email/${undoToken}`;
   return notice(previousEmail, emailChangedMail(newEmail, undoLink), `email-changed notice for ${userId}`);
+}
+
+/** To an old address that was never confirmed, once the change has happened: told, with no undo link. */
+export function sendEmailChangedUnconfirmedNotice(userId: string, previousEmail: string, newEmail: string): Promise<void> {
+  return notice(previousEmail, emailChangedUnconfirmedMail(newEmail, siteUrl()), `email-changed notice for ${userId}`);
 }
 
 /** After an undo: a confirmation to the address put back, and a notice to the address taken off. */

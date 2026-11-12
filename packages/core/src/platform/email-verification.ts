@@ -21,9 +21,10 @@
  * or a resend replaces it). Until the link is used, the current address still
  * signs in and still gets reset links. Using it moves the account in one
  * transaction (see confirmEmailChange). Resending it shares the limit above.
- * The address the change replaced is then held for the account for 7 days,
- * and the notice to it carries a link that undoes the change (see
- * platform/email-hold and platform/email-undo).
+ * If the member had confirmed the address the change replaced, it is then
+ * held for the account for 7 days, and the notice to it carries a link that
+ * undoes the change (see platform/email-hold and platform/email-undo). An
+ * address never confirmed is only told.
  *
  * Verification never gates learning. Other modules read User.emailVerified
  * where it matters (the affiliate programme requires it).
@@ -86,10 +87,14 @@ export interface IssuedEmailChange {
   expires: Date;
 }
 
-/** What a used link did. An email change also returns the link that undoes it, for the notice to the old address. */
+/**
+ * What a used link did. An email change also returns the link that undoes
+ * it, for the notice to the old address: null when that address was never
+ * confirmed, which is told of the change without one.
+ */
 export type Confirmation =
   | { kind: "verify"; user: User }
-  | { kind: "email-change"; user: User; previousEmail: string; undo: IssuedUndo };
+  | { kind: "email-change"; user: User; previousEmail: string; undo: IssuedUndo | null };
 
 /** Why a waiting email change was dropped, as the audit row records it ("taken" is recorded by confirm). */
 export type EmailChangeCancelReason = "member" | "staff" | "password-change" | "password-reset";
@@ -319,8 +324,8 @@ export class EmailVerificationService {
    *  · Every link for the old address, every reset link and the change link
    *    die, and every other session is signed out. `keepSessionId` survives
    *    only if it is this member's.
-   *  · The old address is held for the account with a new undo link, and
-   *    every earlier undo link dies.
+   *  · If the old address was verified, it is held for the account with a
+   *    new undo link. Every earlier undo link dies either way.
    * If another account took the address meanwhile, or it is held for one,
    * the change is dropped and EmailChangeTakenError says so.
    */
@@ -354,7 +359,9 @@ export class EmailVerificationService {
         await tx.session.deleteMany({
           where: { userId: user.id, ...(keepSessionId ? { id: { not: keepSessionId } } : {}) },
         });
-        const undo = await holdReplacedAddress(tx, { userId: user.id, address: user.email, changedTo: wanted });
+        // Read before the update: only an address the member confirmed gets a hold and an undo link.
+        const verified = user.emailVerified !== null;
+        const undo = await holdReplacedAddress(tx, { userId: user.id, address: user.email, changedTo: wanted, verified });
         await this.audit.log(
           { actorId: user.id, action: "account.email.change", targetType: "User", targetId: user.id, meta: { from: user.email, to: wanted } },
           tx

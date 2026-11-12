@@ -2,6 +2,10 @@
  * EMAIL HOLDS (OQ-P, option 1). When an email change takes effect, the
  * address it replaced is held for the account for 7 days, and the notice to
  * that address carries a link that undoes the change (platform/email-undo).
+ * Only an address the member confirmed is held. One they never confirmed
+ * may not be theirs (a typo at registration), and the link would hand the
+ * account to whoever reads it: that address is told of the change, with no
+ * link, and is free at once.
  *
  *  · While an address is held, no one can register with it and no other
  *    account can ask for it or move to it. Each refusal uses the words a
@@ -89,20 +93,22 @@ export async function lockEmailOf(tx: Prisma.TransactionClient, userId: string) 
 
 /**
  * Inside the transaction that moved an account from `address` to
- * `changedTo`: hold `address` for it, with a new undo link. Also end what
- * the change makes moot: every earlier undo link of the account, its hold
- * on `changedTo` (the member moved back to it), and its holds that have run
- * out.
+ * `changedTo`. First end what the change makes moot: every earlier undo
+ * link of the account, its hold on `changedTo` (the member moved back to
+ * it), and its holds that have run out. Then, if `address` was verified,
+ * hold it for the account with a new undo link, and return the link. An
+ * address never confirmed is not held, and there is no link (null).
  */
 export async function holdReplacedAddress(
   tx: Prisma.TransactionClient,
-  change: { userId: string; address: string; changedTo: string }
-): Promise<IssuedUndo> {
+  change: { userId: string; address: string; changedTo: string; verified: boolean }
+): Promise<IssuedUndo | null> {
   const { userId, address, changedTo } = change;
-  const rawToken = randomBytes(32).toString("base64url");
-  const expires = new Date(Date.now() + EMAIL_HOLD_MS);
   await tx.emailHold.deleteMany({ where: { userId, OR: [{ address: changedTo }, { expires: { lte: new Date() } }] } });
   await tx.emailHold.updateMany({ where: { userId, undoToken: { not: null } }, data: { undoToken: null } });
+  if (!change.verified) return null;
+  const rawToken = randomBytes(32).toString("base64url");
+  const expires = new Date(Date.now() + EMAIL_HOLD_MS);
   const hold = { userId, changedTo, undoToken: sha256(rawToken), expires };
   // A row another account left for this address, after its hold ran out, is replaced.
   await tx.emailHold.upsert({

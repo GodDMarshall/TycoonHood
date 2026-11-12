@@ -751,21 +751,32 @@ describe("Resending a change link while the change moves", () => {
 
 // ── OQ-P: the old address is held for 7 days, and its notice carries a link that undoes the change.
 
+/**
+ * A member who has confirmed their address, as its owner would. Only a
+ * confirmed address is held, with an undo link, when the account moves off
+ * it; registration alone leaves it unconfirmed.
+ */
+async function confirmedMember() {
+  const member = await memberWithPassword();
+  await verification.verify((await verification.issue(member.user.id)).rawToken);
+  return member;
+}
+
 /** A member whose change to a new address has just taken effect, and the undo link the old address was sent. */
 async function changedMember() {
-  const { user, email: oldEmail } = await memberWithPassword();
+  const { user, email: oldEmail } = await confirmedMember();
   const newEmail = address("new");
   const change = await accountSettings.changeEmail(user.id, newEmail, PASSWORD);
   const done = await verification.confirm(change!.rawToken);
-  if (done.kind !== "email-change") throw new Error("expected an email change");
+  if (done.kind !== "email-change" || !done.undo) throw new Error("expected an email change with an undo link");
   return { user, oldEmail, newEmail, undo: done.undo };
 }
 
-/** Move a member's email for real: ask, then use the link. Returns the undo link for the change. */
+/** Move a confirmed member's email for real: ask, then use the link. Returns the undo link for the change. */
 async function moveTo(userId: string, to: string) {
   const change = await accountSettings.changeEmail(userId, to, PASSWORD);
   const done = await verification.confirm(change!.rawToken);
-  if (done.kind !== "email-change") throw new Error("expected an email change");
+  if (done.kind !== "email-change" || !done.undo) throw new Error("expected an email change with an undo link");
   return done.undo;
 }
 
@@ -916,6 +927,7 @@ describe("Email change — the old address is held, with an undo link", () => {
     const held = address("held");
     const waiting = await accountSettings.changeEmail(asker.user.id, held, PASSWORD);
     const owner = await accounts.register({ email: held, password: PASSWORD, name: "Owner" });
+    await verification.verify((await verification.issue(owner.id)).rawToken); // only a confirmed address is held
     await moveTo(owner.id, address("onward")); // `held` is now held for `owner`
 
     const registered = await accounts.register({ email: held, ...SQUATTER }).catch((e) => e);
@@ -985,6 +997,40 @@ describe("Email change — the old address is held, with an undo link", () => {
   });
 });
 
+// ── An address the member never confirmed may not be theirs (a typo at
+// registration). It is not held and gets no undo link, which would hand the
+// account to whoever reads it.
+
+describe("Email change away from an address never confirmed", () => {
+  it("holds nothing and makes no undo link: the address is free at once, and the next change need not wait", async () => {
+    const { user, email: oldEmail } = await memberWithPassword(); // registration leaves the address unconfirmed
+    const newEmail = address("fixed");
+    const change = await accountSettings.changeEmail(user.id, newEmail, PASSWORD);
+    const done = await verification.confirm(change!.rawToken);
+    expect(done).toMatchObject({ kind: "email-change", previousEmail: oldEmail, undo: null });
+    expect(done.user).toMatchObject({ email: newEmail, emailVerified: expect.any(Date) });
+    expect(await prisma.emailHold.count({ where: { OR: [{ userId: user.id }, { address: oldEmail }] } })).toBe(0);
+    // Whoever reads that mailbox can sign up with it straight away.
+    await expect(accounts.register({ email: oldEmail, ...SQUATTER })).resolves.toMatchObject({ email: oldEmail });
+    // Nothing can undo the change, so nothing holds up the next one.
+    const next = address("next");
+    await expect(accountSettings.changeEmail(user.id, next, PASSWORD)).resolves.toMatchObject({ newEmail: next });
+  });
+
+  it("still ends what the change makes moot: the last undo link, and the hold on the address it moves back to", async () => {
+    const { user, oldEmail, newEmail, undo } = await changedMember();
+    const back = await waitingChangeAnyway(user.id, oldEmail);
+    // The address it leaves is unconfirmed again, as the undo test above makes one.
+    await prisma.user.update({ where: { id: user.id }, data: { emailVerified: null } });
+    const done = await verification.confirm(back.rawToken);
+    expect(done).toMatchObject({ kind: "email-change", previousEmail: newEmail, undo: null });
+    expect(await prisma.emailHold.count({ where: { userId: user.id } })).toBe(0);
+    await expect(undos.undo(undo.rawToken)).rejects.toBeInstanceOf(InvalidUndoLinkError);
+    await expect(accounts.register({ email: newEmail, ...SQUATTER })).resolves.toMatchObject({ email: newEmail });
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+  });
+});
+
 describe("Undo racing another change", () => {
   it("an undo and another change confirmed at the same moment: exactly one wins", async () => {
     const { user, oldEmail, undo } = await changedMember();
@@ -1043,7 +1089,7 @@ describe("Undo racing another change", () => {
     expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(third);
     await expect(accounts.authenticate({ email: third, password: PASSWORD })).resolves.toBeTruthy();
     // The latest change's link is the one that works now.
-    if (done.kind !== "email-change") throw new Error("expected an email change");
+    if (done.kind !== "email-change" || !done.undo) throw new Error("expected an email change with an undo link");
     expect(await prisma.emailHold.findUnique({ where: { undoToken: sha256(done.undo.rawToken) } })).toMatchObject({
       address: newEmail,
       changedTo: third,

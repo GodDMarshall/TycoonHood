@@ -29,7 +29,12 @@ import {
 } from "@tycoonhood/core";
 import { sendVerificationEmail } from "../../lib/mail/verification";
 import { sendPasswordResetEmail } from "../../lib/mail/password-reset";
-import { sendEmailChangedNotice, sendEmailChangeUndoneNotices, sendPasswordChangedNotice } from "../../lib/mail/account";
+import {
+  sendEmailChangedNotice,
+  sendEmailChangedUnconfirmedNotice,
+  sendEmailChangeUndoneNotices,
+  sendPasswordChangedNotice,
+} from "../../lib/mail/account";
 import { mailMode } from "../../lib/mail";
 import { clearSessionCookie, deviceInfo, getCurrentSession, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
 import { cookies } from "next/headers";
@@ -236,8 +241,13 @@ export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: 
   const signedIn = session?.user.id === result.user.id;
   if (result.kind === "email-change") {
     const { user, previousEmail, undo } = result;
-    // The old address gets the link that undoes the change; it is held for the account meanwhile.
-    after(() => sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken));
+    // A confirmed old address gets the link that undoes the change; it is held for the account meanwhile.
+    // One never confirmed is only told, as it may not be the member's (platform/email-hold).
+    after(() =>
+      undo
+        ? sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken)
+        : sendEmailChangedUnconfirmedNotice(user.id, previousEmail, user.email)
+    );
     return { done: "email-changed", email: user.email, signedIn };
   }
   return { done: "verified", signedIn };

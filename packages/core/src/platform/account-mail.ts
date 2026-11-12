@@ -76,6 +76,23 @@ export function emailChangedMail(newEmail: string, undoLink: string): MailCopy {
   };
 }
 
+/**
+ * To the old address, once the change has happened, when it was never
+ * confirmed. No undo link: whoever reads it may never have had the account
+ * (a typo at registration), so it is told, and pointed to us.
+ */
+export function emailChangedUnconfirmedMail(newEmail: string, siteUrl: string): MailCopy {
+  return {
+    subject: "A Tycoonhood account changed its email",
+    text: [
+      `The Tycoonhood account that used this address now uses ${maskEmail(newEmail)}. This address no longer signs in to it.`,
+      "",
+      "This address was never confirmed, so there is no link to undo the change. If you didn't expect this, contact us:",
+      `${siteUrl}/contact`,
+    ].join("\n"),
+  };
+}
+
 /** To the address an undo put back on the account. */
 export function emailChangeUndoneMail(removedEmail: string, siteUrl: string): MailCopy {
   return {

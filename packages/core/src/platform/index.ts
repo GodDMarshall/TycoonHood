@@ -16,8 +16,8 @@ export type { IssuedUndo } from "./email-hold";
 export { EmailUndoService, emailUndo, InvalidUndoLinkError, UndoLinkOverError } from "./email-undo";
 export type { UndoneEmailChange } from "./email-undo";
 export {
-  maskEmail, emailChangeLinkMail, emailChangeRequestedMail, emailChangedMail, passwordChangedMail,
-  emailChangeUndoneMail, emailChangeUndoneRemovedMail,
+  maskEmail, emailChangeLinkMail, emailChangeRequestedMail, emailChangedMail, emailChangedUnconfirmedMail,
+  passwordChangedMail, emailChangeUndoneMail, emailChangeUndoneRemovedMail,
 } from "./account-mail";
 export type { MailCopy } from "./account-mail";
 export {
