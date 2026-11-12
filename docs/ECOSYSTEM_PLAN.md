@@ -371,7 +371,7 @@ The other 15 new events, PROJECT_PUBLISHED among them, keep the workstreams plan
 
 **What is blocked on you or on someone else.** Section 8 lists 20 items. Among them: the Razorpay live keys, email sending, the domain, legal review of the new terms, real mentors, instructors and partners, photos, and a frequent scheduler for reminders. For each one, the plan says what ships meanwhile and how the affected requirements are reported.
 
-**How long it takes.** About 145 hours of continuous running, which is six days. With the lead supervising about 14 hours a day, that is 10 to 12 calendar days. The range is 105 to 185 hours (section 9).
+**How long it takes.** About 145 hours of continuous running, which is six days. The work runs round the clock from 12 November 12:00 UTC, so the site is ready for the owner's check around Wednesday 18 November. The range is 105 to 185 hours, about 16 to 20 November (section 9).
 
 **What "done" means.** Every line of §21 has journeys that prove it on the final code (section 6.3). The end-of-build report in TYCOONHOOD_STATE.md classifies every feature and all 451 requirements honestly (section 10).
 
@@ -406,7 +406,7 @@ The rest of this section is the engineering plan:
   - 3 requirements are BLOCKED because no exact red or runtime WebGL lattice exists in the repo (DR-1, DR-24).
   - 7 belong to INT: four cross-section touchpoints whose screens other streams build, plus "no 3D world required", "journeys tested" and the report format.
 - **Machine.** 4 CPUs and 15 GB of RAM, one PostgreSQL 16.15 server. Three queue-runner workflows with two lanes each (at most 6 agents), at most 4 units implementing at once, and the heavy commands (typecheck, the full vitest suite, `next dev`, `build:web`) behind a 2-permit semaphore.
-- **Timeline:** 105 to 185 wall-clock hours. Plan on about 145 hours, six days of continuous running. With the lead supervising about 14 hours a day, that is 10 to 12 calendar days. Section 9 gives the assumptions and the schedule.
+- **Timeline:** 105 to 185 wall-clock hours. Plan on about 145 hours, six days of continuous running from 12 November 12:00 UTC: ready for the owner's check around Wednesday 18 November. Section 9 gives the assumptions and the schedule.
 
 ### W1. Phases, order and ownership rules
 
@@ -3520,7 +3520,7 @@ The critical path runs P0 → the P1 units → BOOK and LEARN → MONEY and the 
 | Mid | 25 | 109.8 | 132.8 | about 145 |
 | High | 32 | 138.5 | 168.5 | about 185 |
 
-**Plan on about 145 hours** of continuous running: six days. With the lead supervising about 14 hours a day, that is **10 to 12 calendar days**; the range is 105 to 185 hours.
+**Plan on about 145 hours** of continuous running: six days. The work runs round the clock from 12 November 12:00 UTC, so the site is ready for the owner's check around **Wednesday 18 November**; the range is 105 to 185 hours (about 16 to 20 November). Any time the work stops moves the date by the same amount.
 
 **Effect of the slot count** (midpoint, before INT and the allowance): with 3 implementing slots the last unit merges at 132.5 hours (about 23 hours later); with 5 at 95.5; with 6 at 88.8. Going above 4 needs more memory than this machine has with `next dev` running per unit, so 4 is the plan, and 3 is the fallback of section W3.6.
 
