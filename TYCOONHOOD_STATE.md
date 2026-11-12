@@ -1,7 +1,8 @@
 # TYCOONHOOD — Current state and completion report
 
-**Last updated:** 12 November 2026, on branch `build/full-platform`, the day
-before the launch.
+**Last updated:** 12 November 2026, on branch `build/full-platform` at
+`dd5810e` (the email-change and deploy review fixes merged), the day before
+the launch.
 **Scope:** the full-platform build spec (11 November 2026), its follow-up
 reviews, and the deployment set-up.
 **Evidence:** every result below comes from a command that was run on
@@ -25,14 +26,14 @@ Each item carries one of the spec's five classifications:
 
 | Gate | Result |
 |---|---|
-| `pnpm typecheck` | clean, every workspace |
+| `pnpm typecheck` | **fails**: one error, in a test file (`packages/core/test/seed-admin.test.ts:276`, TS18047), since the merge (§6); the other four workspaces clean |
 | `pnpm lint` | clean |
-| `pnpm test` | **610 / 610** (31 files, against PostgreSQL 16) |
-| `pnpm build:web` | compiles; 119 routes |
+| `pnpm test` | **731 / 733** (39 files, against PostgreSQL 16). The 2 failures are in the same test file (§6) |
+| `pnpm build:web` | compiles; 107 routes |
 | 3D bundle rule | no route chunk carries three.js |
 | `pnpm e2e:a11y` | 27 public pages at desktop and phone widths: **0** WCAG A/AA violations |
 | `pnpm e2e:journeys` | **154 passed, 0 failed, 4 skipped** on the production build. The skipped checks passed in their own runs: shop and Earn with the payment sandbox (26 of 26) and the 3D engine (74 of 74) |
-| Vercel deploy rehearsal | fresh clone, empty database: 12 migrations, 5 seeds, build, then served; a preview build leaves the database untouched |
+| Vercel deploy rehearsal | fresh clone, empty database: 15 migrations, 5 seeds, build, then served; a second run changed no row; the build stops before touching the database without the admin account, with an address sign-in refuses, or with `DATABASE_URL` and `DATABASE_URL_UNPOOLED` naming different databases; a preview build leaves the database untouched |
 
 **Deployment status:** **not deployed yet.** The Vercel project is configured
 and the database is connected (see [`LAUNCH.md`](LAUNCH.md)). The first
@@ -112,18 +113,27 @@ Known limits, accepted for launch:
   uses reads and writes production data. Fix: a Neon branch for previews.
 - **IP-based rate limits trust one proxy hop** (`TRUSTED_PROXY_HOPS=1`, right
   for Vercel). Behind a different setup, set it correctly.
-- **Reviews:** the final account-security review (the undo link) was done by
-  the same builder, not by an independent reviewer: independent review agents
-  were unavailable for the last stretch. An outside review before taking real
-  money at scale is worth it.
+- **Reviews:** the findings of an independent review of the email-change work
+  and the deploy set-up are fixed and merged (DR-32, DR-33), and the
+  12 November runs exercised the merged branch (§1, §6), but no second
+  independent review of the fixes is recorded. An outside review before
+  taking real money at scale is worth it.
 
 ## 6. Outstanding bugs and gaps
 
 - A refunded course order does not revoke the enrolment (roadmap follow-up).
 - `archivedAt`, `editedAt` and `paidAt` columns are still to add
   ([`docs/DATABASE.md`](docs/DATABASE.md)).
-- No open defect is known from the 12 November runs; the one found (the phone
-  More button's name when the cart held items) was fixed and re-run.
+- **Open since the merge `dd5810e`:** `packages/core/test/seed-admin.test.ts`
+  was written before the email-change rules it now meets (a change away from
+  an address never confirmed waits a day and gets no undo link).
+  `pnpm typecheck` fails on it and two of its tests fail, so the seed's
+  refusal of an address held after an email change has no passing test on
+  this head.
+  Not fixed. Every other test and every browser check passes. Details:
+  [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md), "Failures on this head".
+- The defect found in the pass before these merges (the phone More button's
+  name when the cart held items) was fixed and re-run.
 
 ## 7. External integrations needing credentials
 
