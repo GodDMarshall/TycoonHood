@@ -475,7 +475,11 @@ After P0 merges, `packages/core/src/platform/{scheduled,notification-delivery}.t
 
 A stream writes only through services it owns, or through another unit's exported service functions. It never writes another domain's tables directly.
 
-**Frozen shared files.** P0s splits `discussions/discussions.ts` into `discussions/{posts,groups,reports,moderation}.ts`. The exported API of `posts.ts` and `reports.ts` (including `createPost({kind})` and `reports.file`) is frozen at the end of P0s. SOCIAL owns both files afterwards; GROUPS and the other units ask SOCIAL, through the lead, for any addition instead of editing them. `platform/pulse.ts`, extracted from `world/load.ts` by P0s, belongs to HOME.
+**Frozen shared files.** P0s split `discussions/discussions.ts` into `discussions/{posts,groups,reports,moderation}.ts`, plus `service.ts` (the `DiscussionService` facade and `discussions`, which hand each call to its part) and `shared.ts` (what the parts share); `discussions.ts` is now a thin re-export of `index.ts`. The exported API of `posts.ts` and `reports.ts` (including `createPost({kind})` and `reports.file`) is frozen at the end of P0s. SOCIAL owns `posts.ts`, `reports.ts`, `moderation.ts`, `service.ts`, `shared.ts`, `index.ts` and `discussions.ts` afterwards, and GROUPS owns `groups.ts`. GROUPS and the other units ask SOCIAL, through the lead, for any addition to SOCIAL's files instead of editing them. `platform/pulse.ts`, extracted from `world/load.ts` by P0s, belongs to HOME. It is not exported from the barrels, which are lead-owned, so HOME asks the lead for that export when a page needs it.
+
+**Reports on targets outside discussions.** `reports.file` takes the nine target types in `REPORT_TARGET_TYPES`. Posts, comments, members and groups are looked up. Project, event, event_feedback, opportunity and partner are taken as given: nothing checks that the target exists, that the member may see it, or that it is not their own. The unit that builds each table adds its lookup to `reports.ts`, through the lead (SOCIAL owns the file), with cases in reports-file.test.ts: SKILLS for project, LIVE-A for event and event_feedback, OPPS-B for opportunity, and OPPS-A for partner. A lookup refuses a missing target, one the member cannot see, and the member's own (their project, the event they host, their feedback, their listing, their partner). No page or server action offers reporting one of these types until its lookup has landed and a staff screen lists those reports: SOCIAL's single queue over every `ContentReport`, or the owning unit's own admin page. Until SOCIAL's queue lands, /admin/moderation and the admin overview list and count only post and comment reports (`discussions.openReportCount()`).
+
+**Group and category archive state.** Migration 000500 copies the `community.archived` setting into `CommunityGroup.status`/`archivedAt` and `CommunityCategory.archivedAt`, and leaves the setting in place. Code still reads and writes the setting (`readArchive`, `assertOpen` and `canOpen` in `shared.ts`, `setArchived` in `moderation.ts`, and the group check in `reports.file`), so the setting stays the source of truth. GROUPS and SOCIAL switch every reader and writer to the columns in one change, which the lead merges as one step; until then no code reads the archive columns, and nothing writes the setting without the columns or the columns without the setting.
 
 **Machine check.** scripts/ownership/streams.json lists each unit's owned globs, with an `except` list per glob, and a deny-list of lead-owned paths that no unit may touch. `node scripts/ownership/check.mjs <unit>` fails when `git diff --name-only <base>...HEAD` touches a path outside the unit's globs (after exceptions) or inside the deny-list. Its own requests file and its own test files are allowed. Both the implementer and the reviewer run the check.
 
@@ -487,7 +491,7 @@ A stream writes only through services it owns, or through another unit's exporte
 
 | Slot | Path pattern | Filled by |
 |---|---|---|
-| Rule counters (one per evidence type; `count(userId, window) => number \| null`, where `null` means "no source of truth" and never pays) | packages/core/src/rules/counters/&lt;name&gt;.ts | ACAD (academy-joined); LIVE-A (event-registered, event-attended); BOOK (mentoring-completed); LEARN (module-completed, certificate-issued, path-completed); DAILY-A (the existing counters and practice); DAILY-B (goal and challenge counters); GROUPS (group-joined); OPPS-B (opportunity-applied); SKILLS (skill-level-reached, project-published, project-verified) |
+| Rule counters (one file per evidence type, exporting `count`, an `EvidenceCounter`: `(db, userId, criteria, window) => Promise<number \| null>`, as packages/core/src/rules/counters/types.ts defines it; `null` means "no source of truth" and never pays. The dispatcher's `switch` in rules/counters/index.ts is lead-owned and exhaustive over DOMAIN_EVENTS, so each new event needs its case there, which the lead adds with the event) | packages/core/src/rules/counters/&lt;name&gt;.ts | ACAD (academy-joined); LIVE-A (event-registered, event-attended); BOOK (mentoring-completed); LEARN (module-completed, certificate-issued, path-completed); DAILY-A (the existing counters and practice); DAILY-B (goal and challenge counters); GROUPS (group-joined); OPPS-B (opportunity-applied); SKILLS (skill-level-reached, project-published, project-verified) |
 | Dashboard data (`load(userId, ctx) => SlotResult \| null`) | packages/core/src/dashboard/slots/{events,mentors,bookings,contributor-applications,opportunity-applications,opportunities,skills,badges,group-activity,guide}.ts | LIVE-B, MENTOR-B, BOOK, MENTOR-A, OPPS-B, OPPS-B, SKILLS, RANKS, GROUPS, GUIDE |
 | Academy page sections | apps/web/app/(public)/academies/[slug]/_sections/{mentors,events,challenges,discussions,achievements,leaderboard,paths,products}.tsx | MENTOR-B, LIVE-B, DAILY-B, SOCIAL, RANKS, RANKS, LEARN, MONEY (ACAD owns courses.tsx, instructors.tsx, activity.tsx) |
 | Expert profile sections (created by MENTOR-B in P1, not by P0) | apps/web/components/expert/sections/{offerings,availability,upcoming,reviews,history,programmes,writing,showcase,pricing}.tsx | BOOK (first five), LEARN, EDIT-A, SKILLS, MONEY |
@@ -898,6 +902,7 @@ The review raised 36 issues (7 high, 17 medium, 12 low). All are accepted, with 
 - **`meeting.ts`:** `joinInfo(viewer, event)` returns the link only to confirmed registrants inside the join window; links are https and never appear in public HTML or in another member's ICS.
 - **`feedback.ts`:** one feedback per registration, from attendees only; public display goes through `publicWhere.feedback()`, and the aggregate shows only at or above `MIN_REVIEWS_FOR_RATING`.
 - **Notices:** `event.announced` (academy members with `notify` on; also writes the "workshop announced" `ActivityEvent`), `event.registration` and `event.changed`.
+- **Reports:** the `event` and `event_feedback` lookups in `reports.file`, through the lead (W1.4): refuse a missing event, one the member cannot see, the event they host, and their own feedback. No page offers reporting an event or a piece of feedback until a staff screen lists those reports (SOCIAL's queue, or /admin/events).
 - **Admin:** /admin/events, [id] with approval and cancel, [id]/registrations and a CSV export; emails only with `admin.users`.
 
 **LIVE-B builds:**
@@ -1231,12 +1236,13 @@ The review raised 36 issues (7 high, 17 medium, 12 low). All are accepted, with 
   - **feed** (data-model e.6): reads `ActivityEvent`, applying privacy facets, follows, blocks, mutes and academy scope. It covers course completions, introductions, challenge participation, achievements, mentor and workshop announcements, project showcases, discussion highlights and community milestones. Milestones come only from real counts at or above the thresholds.
   - **directory:** `profileView(viewer, member)` is the one projection used by /u, the directory and author chips, through `canView`. The directory is members-only, a member can leave it (the `directory` facet), and it never shows contact details. Interests and goals appear, and can be filtered on, only for members who turned those opt-in facets on.
 - **packages/core/src/community/community.ts (chat):** academy channels. (P0b and P0d changed this file in P0; SOCIAL owns it afterwards.)
-- **packages/core/src/discussions/{posts,reports,moderation}.ts:**
+- **packages/core/src/discussions/{posts,reports,moderation,service,shared,index,discussions}.ts:**
   - post kinds DISCUSSION, INTRODUCTION, UPDATE, QUESTION, PROJECT and ANNOUNCEMENT through the frozen `createPost({kind})`
   - replies, `editedAt`, and accepted answers
   - highlights, which need the author's consent before public featuring
   - announcement fan-out to academy members with `notify` on
-  - one report queue over `ContentReport`, with `resolvedById` and audit rows
+  - one report queue over `ContentReport`, covering every type in `REPORT_TARGET_TYPES`, with `resolvedById` and audit rows; /admin/moderation and the admin overview's count move to it (`openReportCount()` then counts every type the queue lists)
+  - the archive switch from the `community.archived` setting to the 000500 columns, together with GROUPS (W1.4)
   - group-moderator checks through `groupCan`
   - additions GROUPS or other units request, applied through the lead
 - **Pages:**
@@ -1293,6 +1299,8 @@ The review raised 36 issues (7 high, 17 medium, 12 low). All are accepted, with 
   - **Announcements:** posted with `createPost({kind: "ANNOUNCEMENT"})` after `groupCan(…, "announce")`, and sent through `community.group` by each member's group notify level (all, announcements only, or none).
   - **Group events** are `LiveEvent`s with a group, created through LIVE-A's service (`groupCan(…, "createEvent")`; a group-only meetup needs no staff review).
   - **Group challenges** are created through DAILY-B's service (`groupCan(…, "createChallenge")`; no THC reward).
+  - **Archive state** (W1.4): GROUPS moves group and category archiving from the `community.archived` setting to the 000500 columns, together with SOCIAL's readers and writers, as one change merged in one step.
+  - **Reports:** the two group checks the `group` case in `reports.file` waits for, through the lead: refuse a group the member created or owns (`createdById`, an OWNER membership), and one they cannot see by status (PENDING_REVIEW, REJECTED) or visibility.
 - **Pages and admin:**
   - apps/web/app/(app)/community/groups/**: the directory (with category and location filters) and [slug], with tabs for Posts, Announcements, Events, Challenges and Members, plus settings and invitations
   - apps/web/app/(app)/admin/community/groups/**
@@ -1404,11 +1412,11 @@ The review raised 36 issues (7 high, 17 medium, 12 low). All are accepted, with 
 | Harness | journeys/21a-partners.mjs, pages/opps-a.txt | journeys/21b-opportunities.mjs, pages/opps-b.txt |
 | Estimate | 3 to 4.5 hours | 8.5 to 11 hours |
 
-**OPPS-A builds:** `Partner` moves PENDING → VERIFIED, SUSPENDED or REJECTED, with `PartnerMember` roles OWNER and EDITOR. Verification records the method (HOUSE, DOMAIN_EMAIL, BUSINESS_REGISTRATION, GSTIN or MANUAL) and the date. The HOUSE partner (seeded by P0f-S) covers Tycoonhood's own affiliate programme and competitions. A partner member holds the `partner` grant (`opportunities.post`) only while the partner is VERIFIED; `assertPartnerMember` scopes every partner action. Notices go through `opportunity.partner`.
+**OPPS-A builds:** `Partner` moves PENDING → VERIFIED, SUSPENDED or REJECTED, with `PartnerMember` roles OWNER and EDITOR. Verification records the method (HOUSE, DOMAIN_EMAIL, BUSINESS_REGISTRATION, GSTIN or MANUAL) and the date. The HOUSE partner (seeded by P0f-S) covers Tycoonhood's own affiliate programme and competitions. A partner member holds the `partner` grant (`opportunities.post`) only while the partner is VERIFIED; `assertPartnerMember` scopes every partner action. Notices go through `opportunity.partner`. OPPS-A adds the `partner` lookup to `reports.file`, through the lead (W1.4): it refuses a missing partner, one the member cannot see, and a partner the member belongs to. No page offers reporting a partner until a staff screen lists those reports.
 
 **OPPS-B builds:**
 - **Listings:** every §7 kind (`OpportunityKind`: FREELANCE_PROJECT, REMOTE_WORK, INTERNSHIP, CREATOR_COLLABORATION, AFFILIATE_PROGRAMME, BUSINESS_PARTNERSHIP, DIGITAL_PRODUCT, MARKETPLACE_SELLER, SKILL_PROJECT, COMMUNITY_COMPETITION) and field. The lifecycle is DRAFT → SUBMITTED → OPEN, then PAUSED, CLOSED or FILLED; staff can REJECT a submission or REMOVE a listing. Public pages use `publicWhere.opportunity()`. Compensation terms are required and shown exactly as the partner states them; unpaid listings cannot be published until O22 is set; listings close at their deadline.
-- **Risk:** the banned-claims check (guaranteed income, pay to apply, upfront fees), an https link check, and automatic hiding pending review after N reports (through `reports.file`).
+- **Risk:** the banned-claims check (guaranteed income, pay to apply, upfront fees), an https link check, and automatic hiding pending review after N reports (through `reports.file`). OPPS-B first adds the `opportunity` lookup to `reports.file`, through the lead (W1.4): it refuses a missing listing, one the member cannot see, and a listing of a partner the member belongs to. /admin/opportunities lists a listing's reports, so the report button can ship with OPPS-B.
 - **Matching:** `recommendFor(userId)` uses interests, academies, certificates and verified skills, with a stated reason for each match. It never promises an outcome. Matches go out through `opportunity.match`.
 - **Applications:** the applicant ticks which contact fields to share (`sharedFields`: EMAIL, PHONE, PORTFOLIO), and the partner sees only those. Status moves SUBMITTED → VIEWED → SHORTLISTED → ACCEPTED, DECLINED, WITHDRAWN or COMPLETED; each change notifies `opportunity.application`.
 - **Search:** the `searchVector` column of `Opportunity`. Saved listings that change or are about to close notify `opportunity.match`.
@@ -1453,6 +1461,7 @@ The review raised 36 issues (7 high, 17 medium, 12 low). All are accepted, with 
   - collaborators through `ProjectCollaborator`: the owner invites (INVITED, `invitedById`), the invited member accepts or declines (`acceptedAt`), and the owner can remove one
   - a verification status
   - PROJECT_PUBLISHED and PROJECT_VERIFIED, which become "project showcase" feed items; notices through `progress.project`
+  - the `project` lookup in `reports.file`, through the lead (W1.4): it refuses a missing project, one the member cannot see (PRIVATE, or MEMBERS to a guest), and one they own or collaborate on. No page offers reporting a project until a staff screen lists those reports.
 - **packages/core/src/progression/showcase.ts:** a view over public and featured projects. Featuring needs the author's consent.
 - **packages/core/src/progression/identity.ts:** `identityFor(viewer, userId)` returns level and rank (read from RANKS' data), academies, progress, skills, the missions completed count, the community contributions count, projects and certificates. Every item is checked with `canView`.
 - **Pages:**

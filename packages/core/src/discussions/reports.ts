@@ -58,13 +58,12 @@ export class ReportService {
    * the member.
    *
    * Staff see post and comment reports in the moderation queue
-   * (moderation.queue). Reports on the other targets are kept, and wait for
-   * SOCIAL's one queue over every ContentReport. Until then no screen lists
-   * or clears them, yet the admin overview's "Open reports (discussions)"
-   * figure counts them (apps/web/app/(app)/admin/page.tsx counts every OPEN
-   * ContentReport) and links to the queue, which does not show them. So a
-   * page that offers another target type waits for that queue, or for the
-   * overview to count through openReportCount().
+   * (moderation.queue), and the admin overview counts the same
+   * (openReportCount). Reports on the other targets are kept, and wait for
+   * SOCIAL's one queue over every ContentReport or the owning unit's own admin
+   * page; until then no screen lists or clears them. So no page offers
+   * another target type before a staff screen lists its reports
+   * (docs/ECOSYSTEM_PLAN.md W1.4).
    */
   async file(
     viewer: DiscussionViewer,
