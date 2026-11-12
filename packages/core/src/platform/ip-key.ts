@@ -19,12 +19,15 @@
  */
 import { createHash, createHmac } from "node:crypto";
 
-/** The secret IP keys are made with. Read on every call, so a changed environment takes effect at once. */
-export function privacySecret(): string {
+/**
+ * The secret IP keys are made with, from `env` (the process's when not given).
+ * Read on every call, so a changed environment takes effect at once.
+ */
+export function privacySecret(env: NodeJS.ProcessEnv = process.env): string {
   return (
-    process.env.IP_HASH_KEY ||
-    process.env.AFFILIATE_HASH_SECRET ||
-    createHash("sha256").update(`affiliate-visitor|${process.env.DATABASE_URL ?? ""}`).digest("hex")
+    env.IP_HASH_KEY ||
+    env.AFFILIATE_HASH_SECRET ||
+    createHash("sha256").update(`affiliate-visitor|${env.DATABASE_URL ?? ""}`).digest("hex")
   );
 }
 

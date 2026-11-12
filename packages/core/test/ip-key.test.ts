@@ -73,6 +73,18 @@ describe("ipKey", () => {
     expect(ipKey("192.0.2.1")).toBe(keyed(derived, "192.0.2.1"));
   });
 
+  it("reads the environment it is given instead of the process's (data-model e.10)", () => {
+    process.env.IP_HASH_KEY = "process-key";
+    process.env.AFFILIATE_HASH_SECRET = "process-affiliate-secret";
+    expect(privacySecret({ IP_HASH_KEY: "given-key", AFFILIATE_HASH_SECRET: "given-affiliate-secret" })).toBe("given-key");
+    expect(privacySecret({ AFFILIATE_HASH_SECRET: "given-affiliate-secret" })).toBe("given-affiliate-secret");
+    const url = "postgresql://someone:secret@localhost:5432/given_test";
+    expect(privacySecret({ DATABASE_URL: url })).toBe(sha256(`affiliate-visitor|${url}`));
+    expect(privacySecret({})).toBe(sha256("affiliate-visitor|"));
+    // Without one, it is the process's.
+    expect(privacySecret()).toBe("process-key");
+  });
+
   it("is the same function the earn module exports", () => {
     expect(ipKeyFromEarn).toBe(ipKey);
   });
