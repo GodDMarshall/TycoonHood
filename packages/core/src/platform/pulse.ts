@@ -4,8 +4,14 @@
  * Members who met the standard, lessons completed, chat messages and posts,
  * posts in the discussions feed, achievements unlocked, mining claims, and
  * members per rank. Every figure is counted from real rows, read in one go;
- * none is estimated or padded. They are house-wide numbers that hold nobody's
- * data (DR-22), so any page may show them.
+ * none is estimated or padded.
+ *
+ * RAW COUNTS. They name nobody (counts, never people: DR-31), but they count
+ * staff too and have no minimum. The campus shows them to signed-in members.
+ * A public page must not show them as they are: it counts members through
+ * `countableMemberWhere` and shows a figure only at or above its threshold
+ * (`MIN_COUNT_FOR_AGGREGATE`), as docs/ECOSYSTEM_PLAN.md 1.2 (rule 2) and
+ * HOME's brief require.
  *
  * READ-ONLY: nothing here creates, updates or upserts.
  *
