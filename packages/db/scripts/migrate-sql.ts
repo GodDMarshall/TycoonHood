@@ -19,8 +19,10 @@
  * database at once: a redeploy while a build is still running, or two merges
  * close together. Two runs applying the same migration fail or half-apply it.
  * So for its whole run this script holds Postgres's advisory lock under
- * Prisma Migrate's own key. A second run, or a `prisma migrate deploy`, waits
- * for the first to finish, then finds nothing left to apply. It is a session
+ * Prisma Migrate's own key. A second run waits for the first to finish, then
+ * finds nothing left to apply. A `prisma migrate deploy` takes the same lock
+ * but waits only 10 seconds for it: started while this script runs, it fails
+ * with P1002 and applies nothing, rather than run alongside. It is a session
  * lock: released when the run ends, whether it succeeded or failed, and by
  * Postgres if the process dies.
  *

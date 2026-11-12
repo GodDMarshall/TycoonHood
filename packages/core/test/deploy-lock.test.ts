@@ -7,9 +7,11 @@
  * ledger accounts, find none, and create one each.
  *
  * Now packages/db/scripts/migrate-sql.ts holds Postgres's advisory lock for
- * migrations (Prisma's own key, so `prisma migrate deploy` waits for it too)
- * for its whole run, and scripts/with-db-lock.mjs holds a deploy lock while
- * the build migrates and seeds. A second run waits, then finds the work done.
+ * migrations for its whole run, and scripts/with-db-lock.mjs holds a deploy
+ * lock while the build migrates and seeds. A second run waits, then finds the
+ * work done. The migration lock is Prisma's own key, so a `prisma migrate
+ * deploy` cannot run alongside either, but it does not wait: after 10 seconds
+ * it fails with P1002.
  *
  * seed.ts also makes the system accounts and genesis in one transaction under
  * a lock of its own, so two seeds run by hand, outside the deploy lock, take

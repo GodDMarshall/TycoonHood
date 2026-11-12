@@ -79,9 +79,10 @@ seeded the same database at the same time (review finding 19). Now:
   build prints "Another build is migrating or seeding" with the database's
   host and name, then "Waiting for it to finish …", waits, then finds the
   migrations applied and nothing left for the seeds to add.
-- `migrate-sql` holds Prisma Migrate's own lock for its whole run, so it never
-  overlaps another `migrate-sql` or a `pnpm db:deploy`
-  (`prisma migrate deploy`).
+- `migrate-sql` holds Prisma Migrate's own lock for its whole run. Another
+  `migrate-sql` waits for it. A `pnpm db:deploy` (`prisma migrate deploy`)
+  waits only 10 seconds, then fails with P1002 and applies nothing, so it
+  never runs alongside either; see "A deploy waits for the database lock".
 - `db:seed` makes the system ledger accounts and the genesis mint one seed at
   a time, so two seeds run by hand cannot make two treasuries.
 - The locks go when the step ends, whether it worked or failed, and Postgres
@@ -198,6 +199,11 @@ database says "Another build is migrating or seeding", names the database, then
 build's migrate-and-seed step, usually under a minute. `pnpm db:migrate:sql`
 says "Another migration run is applying migrations to this database" when it
 waits for the migration lock in the same way.
+
+`pnpm db:deploy` (`prisma migrate deploy`) takes the same migration lock but
+waits only 10 seconds. Then it stops with P1002, "Timed out trying to acquire
+a postgres advisory lock", having applied nothing. Run it again when the other
+run has finished.
 
 If it gives up after 15 minutes, something still holds the lock: a build or a
 `pnpm deploy:db` that is still running, or one whose machine vanished without
