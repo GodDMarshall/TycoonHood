@@ -79,7 +79,9 @@ which is not linked to any account. An Instructor account edits only the
 programmes of the profile linked to it (DR-34). If someone other than an
 administrator should edit these programmes, give their account the
 Instructor role, then link it under Admin → Courses → Instructors by its
-email or username.
+email or username. Their email must be verified first: an account that has
+not verified its email cannot be linked. Check the name, role and email the
+page shows before you rely on the link.
 
 **If you leave it:** nothing breaks. Administrators edit the programmes, and
 an instructor sees none to edit.

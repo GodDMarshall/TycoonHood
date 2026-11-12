@@ -37,9 +37,10 @@ afterAll(async () => {
   await prisma.instructor.deleteMany({ where: { id: { in: instructors } } });
 });
 
+/** Staff with a verified email, as an instructor profile can be linked only to such an account. */
 async function staff(role: "ADMIN" | "INSTRUCTOR" | "MODERATOR" = "ADMIN"): Promise<AuthoringActor> {
   const u = await createTestUser();
-  await prisma.user.update({ where: { id: u.id }, data: { role } });
+  await prisma.user.update({ where: { id: u.id }, data: { role, emailVerified: new Date() } });
   return { id: u.id, role };
 }
 

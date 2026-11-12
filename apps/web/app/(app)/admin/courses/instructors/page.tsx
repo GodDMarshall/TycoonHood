@@ -13,12 +13,20 @@ import { createInstructorAction, deleteInstructorAction, linkInstructorAction, u
 export const metadata: Metadata = { title: "Admin · Instructors" };
 export const dynamic = "force-dynamic";
 
-type LinkedAccount = { id: string; email: string; role: UserRole; profile: { username: string; displayName: string } | null };
+type LinkedAccount = {
+  id: string;
+  email: string;
+  emailVerified: Date | null;
+  role: UserRole;
+  profile: { username: string; displayName: string } | null;
+};
 
 /**
  * Which member account teaches as this profile. That account, and only it,
  * edits the profile's programs (DR-34), so the link is set here by hand and
- * never guessed. An account's email is shown only to those who manage members.
+ * never guessed. The row says the account's role and whether its email is
+ * verified (a link needs it), so a wrong account stands out. An account's
+ * email is shown only to those who manage members.
  */
 function teachingAccount(i: { id: string; name: string }, account: LinkedAccount | null, members: boolean) {
   if (!account) {
@@ -40,7 +48,9 @@ function teachingAccount(i: { id: string; name: string }, account: LinkedAccount
       <div className="flex flex-wrap items-start gap-3">
         <p className="min-w-0 flex-1 text-ink-2">
           Linked to <span className="font-medium text-ink-1">{name}</span>
-          {members && <span className="text-ink-3"> · {account.email}</span>}. This account edits the programs {i.name} teaches.
+          {members && <span className="text-ink-3"> · {account.email}</span>}
+          <span className="text-ink-3">{` · ${ROLE_LABEL[account.role]} · ${account.emailVerified ? "email verified" : "email not verified"}`}</span>. This
+          account edits the programs {i.name} teaches.
         </p>
         <InlineAction
           action={unlinkInstructorAction.bind(null, i.id)}
@@ -76,7 +86,7 @@ export default async function AdminInstructors() {
     orderBy: { name: "asc" },
     include: {
       courses: { select: { title: true }, orderBy: { sortOrder: "asc" } },
-      user: { select: { id: true, email: true, role: true, profile: { select: { username: true, displayName: true } } } },
+      user: { select: { id: true, email: true, emailVerified: true, role: true, profile: { select: { username: true, displayName: true } } } },
     },
   });
 

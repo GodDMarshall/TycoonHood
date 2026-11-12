@@ -212,6 +212,7 @@ type Editor = { id: string; role: UserRole };
 const NOT_YOURS = "You can edit only the programs you teach.";
 const NOT_LINKED = "Your account is not linked to an instructor profile yet, so you cannot create a program. Ask an administrator to link it.";
 const INSTRUCTOR_IS_MANAGED = "Only an administrator can choose a program's instructor.";
+const NOT_VERIFIED = "That account has not verified its email address, so it cannot be linked yet. Ask them to verify it (Settings → Email), then link it again.";
 
 /**
  * The rule, for one programme: courses.manage edits every programme;
@@ -609,7 +610,7 @@ export class CourseAuthoringService {
     const where = q.includes("@") && !q.startsWith("@") ? { email: q } : { profile: { is: { username: q.replace(/^@/, "") } } };
     return this.db.user.findFirst({
       where,
-      select: { id: true, email: true, role: true, profile: { select: { username: true, displayName: true } } },
+      select: { id: true, email: true, emailVerified: true, role: true, profile: { select: { username: true, displayName: true } } },
     });
   }
 
@@ -617,14 +618,19 @@ export class CourseAuthoringService {
    * Link an instructor profile to the account of the person who teaches as
    * it, or unlink it (`userId` null). The link is what lets an instructor edit
    * the profile's programmes, so it is never guessed: nothing links a profile
-   * but this, called by someone with courses.manage. One profile per member
-   * (Instructor.userId is unique). Audited with who was linked before and after.
+   * but this, called by someone with courses.manage. Only an account whose
+   * email is verified can be linked: anyone can sign up with an address, or
+   * take a free username, before the person it names does. One profile per
+   * member (Instructor.userId is unique). Audited with who was linked before
+   * and after.
    */
   async linkInstructorUser(actor: AuthoringActor, instructorId: string, userId: string | null) {
     assertCan(actor, "courses.manage");
     if (!(await this.db.instructor.findUnique({ where: { id: instructorId }, select: { id: true } }))) throw new AuthoringError("Instructor not found.");
     if (userId) {
-      if (!(await this.db.user.findUnique({ where: { id: userId }, select: { id: true } }))) throw new AuthoringError("No member has that account.");
+      const account = await this.db.user.findUnique({ where: { id: userId }, select: { emailVerified: true } });
+      if (!account) throw new AuthoringError("No member has that account.");
+      if (!account.emailVerified) throw new AuthoringError(NOT_VERIFIED);
       const other = await this.db.instructor.findUnique({ where: { userId }, select: { id: true, name: true } });
       if (other && other.id !== instructorId) {
         throw new AuthoringError(`That member is already linked to the instructor profile “${other.name}”. Unlink them there first.`);

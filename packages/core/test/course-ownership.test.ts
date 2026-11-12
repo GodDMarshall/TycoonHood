@@ -20,6 +20,7 @@ import {
 import { LearnerService, ReviewNotAllowedError } from "../src/lms/learner";
 import { LmsService } from "../src/lms/lms";
 import { can, ForbiddenError, ROLES } from "../src/auth/permissions";
+import { usernameSchema } from "../src/auth/schemas";
 import { createTestUser, uid } from "./helpers";
 
 const authoring = new CourseAuthoringService(prisma);
@@ -34,9 +35,10 @@ afterAll(async () => {
   await prisma.instructor.deleteMany({ where: { id: { in: profiles } } });
 });
 
+/** An account with this role whose email is verified, as a profile can be linked only to such an account. */
 async function staff(role: UserRole = "ADMIN"): Promise<AuthoringActor> {
   const u = await createTestUser();
-  if (role !== "MEMBER") await prisma.user.update({ where: { id: u.id }, data: { role } });
+  await prisma.user.update({ where: { id: u.id }, data: { role, emailVerified: new Date() } });
   return { id: u.id, role };
 }
 
@@ -235,6 +237,32 @@ describe("linking a profile to a member account", () => {
     expect(String(lost.reason.message)).toMatch(/already linked/);
     expect(await prisma.instructor.count({ where: { userId: racer.id } })).toBe(1);
     expect(await prisma.auditLog.count({ where: { targetId: { in: [b.id, c.id] }, action: "instructor.link" } })).toBe(1);
+  });
+
+  it("refuses an account whose email is not verified, since anyone can register an address before its owner does", async () => {
+    const admin = await staff();
+    const i = await profile(admin, "Jane Doe");
+    const account = await createTestUser(); // signed up and signed in, never verified
+    await prisma.user.update({ where: { id: account.id }, data: { role: "INSTRUCTOR" } });
+
+    const refused = authoring.linkInstructorUser(admin, i.id, account.id);
+    await expect(refused).rejects.toBeInstanceOf(AuthoringError);
+    await expect(refused).rejects.toThrow(/has not verified its email address/);
+    expect((await prisma.instructor.findUniqueOrThrow({ where: { id: i.id } })).userId).toBeNull();
+    expect(await auditRows(i.id, "instructor.link")).toHaveLength(0);
+
+    // Verified by whoever holds the mailbox, the same account can be linked.
+    await prisma.user.update({ where: { id: account.id }, data: { emailVerified: new Date() } });
+    await authoring.linkInstructorUser(admin, i.id, account.id);
+    expect((await prisma.instructor.findUniqueOrThrow({ where: { id: i.id } })).userId).toBe(account.id);
+  });
+
+  it("nobody can sign up as the founder's profile, @harsha, to be mistaken for its account", () => {
+    for (const name of ["harsha", " Harsha "]) {
+      const parsed = usernameSchema.safeParse(name);
+      expect(parsed.success, name).toBe(false);
+      expect(parsed.error?.issues[0]?.message).toBe("That name is reserved.");
+    }
   });
 
   it("refuses a profile or member that does not exist", async () => {

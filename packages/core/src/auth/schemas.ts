@@ -9,6 +9,9 @@ export const RESERVED_USERNAMES = new Set([
   "admin", "administrator", "tycoonhood", "system", "support", "help",
   "mint", "treasury", "rewards", "escrow", "revenue", "thc", "api",
   "root", "moderator", "mod", "staff", "official",
+  // The founder's instructor profile (slug "harsha"). His own account is
+  // @admin, so the name was free to take and pass as his (DR-34).
+  "harsha",
 ]);
 
 export const usernameSchema = z

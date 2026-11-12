@@ -77,9 +77,10 @@ afterAll(async () => {
   for (const undo of cleanup.reverse()) await undo();
 });
 
+/** An account with this role whose email is verified, as a profile can be linked only to such an account. */
 async function staff(role: UserRole) {
   const u = await createTestUser();
-  if (role !== "MEMBER") await prisma.user.update({ where: { id: u.id }, data: { role } });
+  await prisma.user.update({ where: { id: u.id }, data: { role, emailVerified: new Date() } });
   return { id: u.id, role, email: u.email };
 }
 
@@ -442,10 +443,11 @@ describe("the instructors page", () => {
     const row = everythingIn(elementWithKey(page.tree, a.profile.id));
     const { username } = await prisma.profile.findUniqueOrThrow({ where: { userId: a.actor.id } });
     expect(row).toContain(`@${username}`);
+    expect(row).toContain("Instructor · email verified"); // the account's role, and that its owner holds the mailbox
     expect(row).not.toContain(NOT_YET_INSTRUCTOR);
   });
 
-  it("links a profile to a member by email or username, says who is linked, unlinks it, and audits each change", async () => {
+  it("links a profile to a member by email or username once their email is verified, says who is linked, unlinks it, and audits each change", async () => {
     const [Instructors, { linkInstructorAction, unlinkInstructorAction }] = [await instructorsPage(), await courseActions()];
     const admin = await staff("ADMIN");
     const newProfile = async () => {
@@ -454,8 +456,9 @@ describe("the instructors page", () => {
       return p;
     };
     const [profile, other] = [await newProfile(), await newProfile()];
-    const member = await createTestUser(); // a Member, with a public profile
+    const member = await createTestUser(); // a Member, with a public profile, who has not verified their email yet
     const { username, displayName } = await prisma.profile.findUniqueOrThrow({ where: { userId: member.id } });
+    const linkedTo = `Linked to ${displayName} (@${username}) · Member · email verified. They cannot edit these programs until an administrator makes them an Instructor.`;
     const row = async (id: string) => everythingIn(elementWithKey((await visit(Instructors({}))).tree, id));
     const userIdOf = async (id: string) => (await prisma.instructor.findUniqueOrThrow({ where: { id } })).userId;
 
@@ -465,12 +468,25 @@ describe("the instructors page", () => {
     expect(await linkInstructorAction(profile.id, {}, form({ member: `nobody_${tag()}` }))).toEqual({ error: "No member has that email or username." });
     expect(await userIdOf(profile.id)).toBeNull();
 
-    expect(await linkInstructorAction(profile.id, {}, form({ member: `@${username}` }))).toEqual({ ok: `Linked to ${displayName} (@${username}).` });
+    // Anyone can sign up with an address before its owner does, so an unverified account is never linked.
+    expect(await linkInstructorAction(profile.id, {}, form({ member: `@${username}` }))).toEqual({
+      error: "That account has not verified its email address, so it cannot be linked yet. Ask them to verify it (Settings → Email), then link it again.",
+    });
+    expect(await userIdOf(profile.id)).toBeNull();
+    await prisma.user.update({ where: { id: member.id }, data: { emailVerified: new Date() } });
+
+    // The reply names the account, its role and that its email is verified.
+    expect(await linkInstructorAction(profile.id, {}, form({ member: `@${username}` }))).toEqual({ ok: linkedTo });
     expect(await userIdOf(profile.id)).toBe(member.id);
     const linked = await row(profile.id);
     expect(linked).toContain(`@${username}`);
     expect(linked).toContain(member.email); // an administrator sees which account it is
+    expect(linked).toContain("Member · email verified");
     expect(linked).toContain(NOT_YET_INSTRUCTOR); // a Member cannot edit programmes yet, and the page says so
+    // The page reads the account as it is now, not as it was when linked.
+    await prisma.user.update({ where: { id: member.id }, data: { emailVerified: null } });
+    expect(await row(profile.id)).toContain("Member · email not verified");
+    await prisma.user.update({ where: { id: member.id }, data: { emailVerified: new Date() } });
 
     // One profile per member.
     expect(await linkInstructorAction(other.id, {}, form({ member: member.email }))).toEqual({
@@ -483,7 +499,7 @@ describe("the instructors page", () => {
     expect(await row(profile.id)).toContain("Not linked");
 
     // By email this time, typed in any case.
-    expect(await linkInstructorAction(other.id, {}, form({ member: member.email.toUpperCase() }))).toEqual({ ok: `Linked to ${displayName} (@${username}).` });
+    expect(await linkInstructorAction(other.id, {}, form({ member: member.email.toUpperCase() }))).toEqual({ ok: linkedTo });
     expect(await userIdOf(other.id)).toBe(member.id);
 
     const audit = await prisma.auditLog.findMany({

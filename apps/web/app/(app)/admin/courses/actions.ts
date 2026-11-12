@@ -5,7 +5,7 @@
  */
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { authoring, AuthoringError, ForbiddenError, REVIEW_MODERATORS, type Permission } from "@tycoonhood/core";
+import { authoring, AuthoringError, can, ForbiddenError, REVIEW_MODERATORS, ROLE_LABEL, type Permission } from "@tycoonhood/core";
 import type { UserRole } from "@tycoonhood/db";
 import { actorWith, actorWithAny } from "../../../../lib/guard";
 import { isZodError, zodMessage } from "../../../../lib/form-errors";
@@ -212,22 +212,31 @@ export async function deleteInstructorAction(id: string, _prev: CourseAdminState
   return run("courses.manage", (a) => authoring.deleteInstructor(a, id), "Instructor removed.");
 }
 
+type LinkedMember = { role: UserRole; emailVerified: Date | null; profile: { username: string; displayName: string } | null };
+
+/** Who a link landed on, so the administrator can tell at once if it is the wrong account: name, role, and whether its email is verified. */
+function linkedTo(member: LinkedMember, named: string): string {
+  const who = member.profile ? `${member.profile.displayName} (@${member.profile.username})` : named;
+  const said = `Linked to ${who} · ${ROLE_LABEL[member.role]} · ${member.emailVerified ? "email verified" : "email not verified"}.`;
+  return can(member, "courses.author") ? said : `${said} They cannot edit these programs until an administrator makes them an Instructor.`;
+}
+
 /** Link a profile to the member named exactly by email or username: the person who teaches as it, and so edits its programs. */
 export async function linkInstructorAction(id: string, _prev: CourseAdminState, fd: FormData): Promise<CourseAdminState> {
   const named = (str(fd, "member") ?? "").trim();
   if (!named) return { error: "Enter the member's email or username." };
-  let who = named;
+  let said = "Linked.";
   const r = await run(
     "courses.manage",
     async (a) => {
       const member = await authoring.findMemberForLink(a, named);
       if (!member) throw new AuthoringError("No member has that email or username.");
       await authoring.linkInstructorUser(a, id, member.id);
-      if (member.profile) who = `${member.profile.displayName} (@${member.profile.username})`;
+      said = linkedTo(member, named);
     },
     "Linked."
   );
-  return r.error ? r : { ok: `Linked to ${who}.` };
+  return r.error ? r : { ok: said };
 }
 
 export async function unlinkInstructorAction(id: string, _prev: CourseAdminState, _fd: FormData) {
