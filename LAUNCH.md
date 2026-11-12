@@ -54,6 +54,10 @@ address sign-in would refuse stops the deploy before it touches the database.
 `ADMIN_EMAIL` only makes the first admin. Changing it later creates no second
 admin while you can sign in: add admins in `/admin/members` instead.
 
+Use a mailbox you read. The deploy does not confirm the address, because it
+cannot know the mailbox is yours; you confirm it after launch (step 5). Until
+you do, a change away from it carries no undo link (DR-32).
+
 After launch you can delete `ADMIN_PASSWORD` from Vercel. The seed only sets
 the password when it creates the account, so a later deploy never resets it.
 
@@ -134,7 +138,15 @@ prices are placeholders.
 ## 5 · After the first deploy (10 min)
 
 1. Delete `SEED_ON_DEPLOY` from the Vercel environment variables.
-2. Check it yourself, as a stranger would:
+2. Confirm the admin's address, once Resend shows your domain as verified:
+   sign in as the admin, press **Send a new link** in the "Confirm your
+   email" banner (or in Settings → Email), and open the link it emails you.
+   The deploy left it unconfirmed, the build log says so, and until it is
+   confirmed, someone who learns the admin password and moves the account to
+   another address leaves you no undo link, only a day's notice. Confirmed,
+   the address is held for 7 days after any change, with a link that puts it
+   back.
+3. Check it yourself, as a stranger would:
    - [ ] The home page, About (Harsha), the four programmes, Earn and the
          policy pages load on your domain.
    - [ ] Create an account with an email you own. Onboarding works and you
@@ -144,7 +156,7 @@ prices are placeholders.
    - [ ] Enrol in a programme, finish a lesson, pass its quiz. XP rises.
    - [ ] `/admin` opens for your admin account and refuses everyone else.
    - [ ] Do the sign-up again on your phone.
-3. Delete the test account you made, or suspend it in `/admin/members`.
+4. Delete the test account you made, or suspend it in `/admin/members`.
 
 ## Card payments (when Razorpay KYC clears)
 

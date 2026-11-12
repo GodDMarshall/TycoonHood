@@ -324,6 +324,39 @@ describe("an ADMIN_EMAIL that an account changed away from in the last 7 days", 
   }, SLOW);
 });
 
+describe("an admin the seed makes at an address nobody has confirmed", () => {
+  // Only its owner can confirm ADMIN_EMAIL. Were the seed to mark it confirmed, a mistyped one would get
+  // the undo link of the owner's first email change, which hands over the admin account. Until it is
+  // confirmed, a change away from it gets no hold and no undo link (DR-32), so the seed says to confirm it.
+  let t: Throwaway;
+  beforeAll(async () => {
+    t = await createThrowawayDb("confirm");
+    await migrate(t);
+  }, SLOW);
+  afterAll(async () => {
+    await t?.drop();
+  });
+
+  it("is left unconfirmed, and the seed asks the owner to confirm it", async () => {
+    const output = await seed(t, { ADMIN_EMAIL: "owner@example.com" });
+    expect((await t.db.user.findUniqueOrThrow({ where: { email: "owner@example.com" } })).emailVerified).toBeNull();
+    expect(output).toMatch(/owner@example\.com is not confirmed yet\..*LAUNCH\.md, step 5/);
+  }, SLOW);
+
+  it("is named the same way when the seed makes an account admin, unless its owner confirmed the address", async () => {
+    const accounts = new AccountService(t.db);
+    await t.db.user.updateMany({ where: { role: "ADMIN" }, data: { role: "MEMBER" } });
+    await accounts.register({ email: "member@example.com", password: "the-member-password", name: "Member" });
+    expect(await seed(t, { ADMIN_EMAIL: "member@example.com" })).toMatch(/member@example\.com is not confirmed yet\./);
+
+    await t.db.user.updateMany({ where: { role: "ADMIN" }, data: { role: "MEMBER" } });
+    const owner = await accounts.register({ email: "confirmed@example.com", password: "the-owner-password", name: "Owner" });
+    await confirmAddress(t, owner.id);
+    expect(await seed(t, { ADMIN_EMAIL: "confirmed@example.com" })).not.toMatch(/not confirmed/);
+    expect((await t.db.user.findUniqueOrThrow({ where: { id: owner.id } })).role).toBe("ADMIN");
+  }, SLOW);
+});
+
 describe("an ADMIN_EMAIL never confirmed, that its account changed away from", () => {
   // A change away from an address never confirmed holds nothing and makes no undo link (DR-32): the
   // address may not be the account's, and it is free at once, to anyone who signs up with it.

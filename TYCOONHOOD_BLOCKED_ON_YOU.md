@@ -15,6 +15,10 @@ Add `ADMIN_EMAIL` and `ADMIN_PASSWORD` (Production, Sensitive) to the
 **If you leave it:** the first production deploy stops before it touches
 the database, says why, and the site does not go live.
 
+Once email works, sign in as the admin and confirm its address from the
+banner (`LAUNCH.md`, step 5). The deploy leaves it unconfirmed, and until it
+is confirmed, a change away from it gets no undo link.
+
 ### 2. Your domain
 Add it in Vercel → Domains (or tell Claude which one), set its DNS records at
 your registrar, and set `NEXT_PUBLIC_SITE_URL` to it.

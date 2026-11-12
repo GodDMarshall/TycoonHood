@@ -74,6 +74,7 @@ async function seedAdmin() {
       } else {
         await prisma.user.update({ where: { id: existing.id }, data: { role: "ADMIN" } });
         console.log(`── ${email} made ADMIN: no admin could sign in.`);
+        if (!existing.emailVerified) remindToConfirm(email);
       }
     }
     return existing;
@@ -119,7 +120,23 @@ async function seedAdmin() {
     },
   });
   console.log(`── Admin ready: ${email}${username === "admin" ? "" : ` (username ${username}: "admin" is taken)`}`);
+  remindToConfirm(email);
   return admin;
+}
+
+/**
+ * Said when the seed makes an admin whose address nobody has confirmed. A
+ * change away from such an address gets no hold and no undo link (DR-32),
+ * so only the one-day wait protects the admin account until its owner
+ * confirms it. The seed never confirms it itself: with a mistyped
+ * ADMIN_EMAIL, that mailbox would get the undo link of the owner's first
+ * email change, and with it the admin account.
+ */
+function remindToConfirm(email: string) {
+  console.log(
+    `── ${email} is not confirmed yet. Once email works, sign in as the admin and confirm it from the banner ` +
+      "(LAUNCH.md, step 5): until then, a change away from it gets no undo link."
+  );
 }
 
 /**

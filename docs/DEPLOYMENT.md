@@ -268,4 +268,5 @@ pnpm --filter @tycoonhood/core exec tsx scripts/repair-course-completions.ts
 - Have the Terms, Privacy, Refund policy, Earn terms and the "Financial Planning & Investment" programme name reviewed by a lawyer. The last one needs this because of the SEBI investment-adviser rules.
 - Have Harsha review the About page copy.
 - Change the seeded admin password, or create your admin and remove `ADMIN_PASSWORD` from the environment.
+- Once email works, sign in as the admin and confirm its address from the banner. The seed leaves it unconfirmed, because it cannot know the mailbox is yours, and a change away from an address never confirmed gets no hold and no undo link (DR-32).
 - Run `pnpm preflight` against the production environment. It checks for unsafe flags.
