@@ -144,11 +144,13 @@ export class EmailUndoService {
   /**
    * Put the old address back because the notice carrying this undo link
    * could not be sent. The member made the change a moment ago and only the
-   * telling failed, so unlike undo() this keeps the password and every
-   * session. It ends the hold and the links the change made: reset links,
-   * any link for the address taken off, and a waiting change. Audited.
-   * Returns false, changing nothing, when the hold is gone or the account
-   * has moved again since.
+   * telling failed, so unlike undo() this keeps the password and signs no
+   * one out. Sessions stay as the confirmation left them: the browser that
+   * used the link stays signed in, and the other devices it signed out stay
+   * signed out (the web app tells the member). It ends the hold and the
+   * links the change made: reset links, any link for the address taken off,
+   * and a waiting change. Audited. Returns false, changing nothing, when the
+   * hold is gone or the account has moved again since.
    */
   async revertUnnotified(rawToken: string): Promise<boolean> {
     if (!rawToken || rawToken.length > 200) return false;

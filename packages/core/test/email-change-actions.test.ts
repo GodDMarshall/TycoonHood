@@ -140,6 +140,21 @@ describe("Confirming an email change in the web app", () => {
     expect(mail.outbox.filter((m) => m.accepted)).toEqual([]);
   });
 
+  it("when the change is put back, the browser that used the link stays signed in, the other devices stay signed out, and the member is told", async () => {
+    const { verifyEmailAction } = await actions();
+    const { user, link } = await memberAsking(true);
+    const phone = await sessions.create(user.id);
+    const laptop = await sessions.create(user.id);
+    request.session = await sessions.resolve(laptop.raw);
+    mail.provider = "refuses";
+    const state = await verifyEmailAction(link, {}, new FormData());
+    expect(state.error).toMatch(/didn't go through/);
+    // The confirmation signed the phone out before the notice was tried, and putting the address back does not sign it in again.
+    expect(await sessions.resolve(laptop.raw)).not.toBeNull();
+    expect(await sessions.resolve(phone.raw)).toBeNull();
+    expect(state.error).toContain("You may need to sign in again on your other devices.");
+  });
+
   it("an old address never confirmed gets a notice with no undo link, after the response, and the change stands", async () => {
     const { verifyEmailAction } = await actions();
     const { user, oldEmail, newEmail, link } = await memberAsking(false);

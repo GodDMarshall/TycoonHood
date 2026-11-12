@@ -1101,11 +1101,12 @@ describe("Email change — the old address is held, with an undo link", () => {
 // no change stands that its old address was never told of.
 
 describe("Putting back a change whose notice could not be sent", () => {
-  it("restores the old address and ends what the change made, but keeps the password and every session", async () => {
+  it("restores the old address and ends what the change made, but keeps the password and the session that used the link", async () => {
     const { user, email: oldEmail } = await confirmedMember();
     const newEmail = address("unsent");
     const change = await accountSettings.changeEmail(user.id, newEmail, PASSWORD);
     const here = await sessions.create(user.id);
+    const otherDevice = await sessions.create(user.id);
     const done = await verification.confirm(change!.rawToken, { keepSessionId: here.session.id });
     if (done.kind !== "email-change" || !done.undo) throw new Error("expected an email change with an undo link");
     // Made in the moment before the change is put back: a reset link for the new address.
@@ -1119,6 +1120,8 @@ describe("Putting back a change whose notice could not be sent", () => {
     // Only the telling failed: the member keeps their password and this session.
     await expect(accounts.authenticate({ email: oldEmail, password: PASSWORD })).resolves.toBeTruthy();
     expect(await sessions.resolve(here.raw)).not.toBeNull();
+    // The confirmation signed the other devices out before the notice was tried. They stay signed out.
+    expect(await sessions.resolve(otherDevice.raw)).toBeNull();
     // The link was never sent and now never works, and the new address is free again.
     await expect(undos.undo(done.undo.rawToken)).rejects.toBeInstanceOf(InvalidUndoLinkError);
     await expect(accounts.register({ email: newEmail, ...SQUATTER })).resolves.toMatchObject({ email: newEmail });

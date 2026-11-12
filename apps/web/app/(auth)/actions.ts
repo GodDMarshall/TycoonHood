@@ -221,10 +221,14 @@ export interface VerifyState {
   retry?: boolean;
 }
 
-/** Never names the old address: whoever used the link may not be the owner. */
+/**
+ * Never names the old address: whoever used the link may not be the owner.
+ * Putting the change back does not sign in again the devices the
+ * confirmation signed out, so it says so.
+ */
 const CHANGE_NOT_TOLD =
   "We couldn't email your old address about this change, so it didn't go through. Your email has not changed. " +
-  "Ask for the change again in a few minutes.";
+  "You may need to sign in again on your other devices. Ask for the change again in a few minutes.";
 
 /**
  * Uses a link from an email: a confirmation link, or the link that confirms
