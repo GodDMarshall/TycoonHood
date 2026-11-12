@@ -93,8 +93,7 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
     const code = String(formData.get("ref") ?? "").trim();
     if (code) {
       try {
-        const { ip } = await deviceInfo();
-        await referrals.attach(user.id, code, ip);
+        await referrals.attach(user.id, code);
       } catch (e) {
         if (!(e instanceof ReferralError)) throw e;
       }

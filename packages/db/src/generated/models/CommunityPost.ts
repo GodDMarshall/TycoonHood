@@ -50,6 +50,14 @@ export type CommunityPostMinAggregateOutputType = {
   reactionCount: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  kind: $Enums.CommunityPostKind | null
+  editedAt: Date | null
+  lastActivityAt: Date | null
+  featuredAt: Date | null
+  featuredById: string | null
+  publicPreviewConsentAt: Date | null
+  acceptedCommentId: string | null
+  academyId: string | null
 }
 
 export type CommunityPostMaxAggregateOutputType = {
@@ -66,6 +74,14 @@ export type CommunityPostMaxAggregateOutputType = {
   reactionCount: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  kind: $Enums.CommunityPostKind | null
+  editedAt: Date | null
+  lastActivityAt: Date | null
+  featuredAt: Date | null
+  featuredById: string | null
+  publicPreviewConsentAt: Date | null
+  acceptedCommentId: string | null
+  academyId: string | null
 }
 
 export type CommunityPostCountAggregateOutputType = {
@@ -82,6 +98,14 @@ export type CommunityPostCountAggregateOutputType = {
   reactionCount: number
   createdAt: number
   updatedAt: number
+  kind: number
+  editedAt: number
+  lastActivityAt: number
+  featuredAt: number
+  featuredById: number
+  publicPreviewConsentAt: number
+  acceptedCommentId: number
+  academyId: number
   _all: number
 }
 
@@ -110,6 +134,14 @@ export type CommunityPostMinAggregateInputType = {
   reactionCount?: true
   createdAt?: true
   updatedAt?: true
+  kind?: true
+  editedAt?: true
+  lastActivityAt?: true
+  featuredAt?: true
+  featuredById?: true
+  publicPreviewConsentAt?: true
+  acceptedCommentId?: true
+  academyId?: true
 }
 
 export type CommunityPostMaxAggregateInputType = {
@@ -126,6 +158,14 @@ export type CommunityPostMaxAggregateInputType = {
   reactionCount?: true
   createdAt?: true
   updatedAt?: true
+  kind?: true
+  editedAt?: true
+  lastActivityAt?: true
+  featuredAt?: true
+  featuredById?: true
+  publicPreviewConsentAt?: true
+  acceptedCommentId?: true
+  academyId?: true
 }
 
 export type CommunityPostCountAggregateInputType = {
@@ -142,6 +182,14 @@ export type CommunityPostCountAggregateInputType = {
   reactionCount?: true
   createdAt?: true
   updatedAt?: true
+  kind?: true
+  editedAt?: true
+  lastActivityAt?: true
+  featuredAt?: true
+  featuredById?: true
+  publicPreviewConsentAt?: true
+  acceptedCommentId?: true
+  academyId?: true
   _all?: true
 }
 
@@ -245,6 +293,14 @@ export type CommunityPostGroupByOutputType = {
   reactionCount: number
   createdAt: Date
   updatedAt: Date
+  kind: $Enums.CommunityPostKind
+  editedAt: Date | null
+  lastActivityAt: Date
+  featuredAt: Date | null
+  featuredById: string | null
+  publicPreviewConsentAt: Date | null
+  acceptedCommentId: string | null
+  academyId: string | null
   _count: CommunityPostCountAggregateOutputType | null
   _avg: CommunityPostAvgAggregateOutputType | null
   _sum: CommunityPostSumAggregateOutputType | null
@@ -284,11 +340,24 @@ export type CommunityPostWhereInput = {
   reactionCount?: Prisma.IntFilter<"CommunityPost"> | number
   createdAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
+  kind?: Prisma.EnumCommunityPostKindFilter<"CommunityPost"> | $Enums.CommunityPostKind
+  editedAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
+  featuredAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  featuredById?: Prisma.StringNullableFilter<"CommunityPost"> | string | null
+  publicPreviewConsentAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  acceptedCommentId?: Prisma.StringNullableFilter<"CommunityPost"> | string | null
+  academyId?: Prisma.StringNullableFilter<"CommunityPost"> | string | null
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   category?: Prisma.XOR<Prisma.CommunityCategoryNullableScalarRelationFilter, Prisma.CommunityCategoryWhereInput> | null
   group?: Prisma.XOR<Prisma.CommunityGroupNullableScalarRelationFilter, Prisma.CommunityGroupWhereInput> | null
   comments?: Prisma.CommunityCommentListRelationFilter
   reactions?: Prisma.ReactionListRelationFilter
+  featuredBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  acceptedComment?: Prisma.XOR<Prisma.CommunityCommentNullableScalarRelationFilter, Prisma.CommunityCommentWhereInput> | null
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  saves?: Prisma.SavedPostListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
 }
 
 export type CommunityPostOrderByWithRelationInput = {
@@ -305,15 +374,29 @@ export type CommunityPostOrderByWithRelationInput = {
   reactionCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  editedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastActivityAt?: Prisma.SortOrder
+  featuredAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  featuredById?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicPreviewConsentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptedCommentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
   author?: Prisma.UserOrderByWithRelationInput
   category?: Prisma.CommunityCategoryOrderByWithRelationInput
   group?: Prisma.CommunityGroupOrderByWithRelationInput
   comments?: Prisma.CommunityCommentOrderByRelationAggregateInput
   reactions?: Prisma.ReactionOrderByRelationAggregateInput
+  featuredBy?: Prisma.UserOrderByWithRelationInput
+  acceptedComment?: Prisma.CommunityCommentOrderByWithRelationInput
+  academy?: Prisma.AcademyOrderByWithRelationInput
+  saves?: Prisma.SavedPostOrderByRelationAggregateInput
+  project?: Prisma.ProjectOrderByWithRelationInput
 }
 
 export type CommunityPostWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  acceptedCommentId?: string
   AND?: Prisma.CommunityPostWhereInput | Prisma.CommunityPostWhereInput[]
   OR?: Prisma.CommunityPostWhereInput[]
   NOT?: Prisma.CommunityPostWhereInput | Prisma.CommunityPostWhereInput[]
@@ -329,12 +412,24 @@ export type CommunityPostWhereUniqueInput = Prisma.AtLeast<{
   reactionCount?: Prisma.IntFilter<"CommunityPost"> | number
   createdAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
+  kind?: Prisma.EnumCommunityPostKindFilter<"CommunityPost"> | $Enums.CommunityPostKind
+  editedAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
+  featuredAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  featuredById?: Prisma.StringNullableFilter<"CommunityPost"> | string | null
+  publicPreviewConsentAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  academyId?: Prisma.StringNullableFilter<"CommunityPost"> | string | null
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   category?: Prisma.XOR<Prisma.CommunityCategoryNullableScalarRelationFilter, Prisma.CommunityCategoryWhereInput> | null
   group?: Prisma.XOR<Prisma.CommunityGroupNullableScalarRelationFilter, Prisma.CommunityGroupWhereInput> | null
   comments?: Prisma.CommunityCommentListRelationFilter
   reactions?: Prisma.ReactionListRelationFilter
-}, "id">
+  featuredBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  acceptedComment?: Prisma.XOR<Prisma.CommunityCommentNullableScalarRelationFilter, Prisma.CommunityCommentWhereInput> | null
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  saves?: Prisma.SavedPostListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+}, "id" | "acceptedCommentId">
 
 export type CommunityPostOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -350,6 +445,14 @@ export type CommunityPostOrderByWithAggregationInput = {
   reactionCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  editedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastActivityAt?: Prisma.SortOrder
+  featuredAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  featuredById?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicPreviewConsentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptedCommentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CommunityPostCountOrderByAggregateInput
   _avg?: Prisma.CommunityPostAvgOrderByAggregateInput
   _max?: Prisma.CommunityPostMaxOrderByAggregateInput
@@ -374,6 +477,14 @@ export type CommunityPostScalarWhereWithAggregatesInput = {
   reactionCount?: Prisma.IntWithAggregatesFilter<"CommunityPost"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CommunityPost"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CommunityPost"> | Date | string
+  kind?: Prisma.EnumCommunityPostKindWithAggregatesFilter<"CommunityPost"> | $Enums.CommunityPostKind
+  editedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CommunityPost"> | Date | string | null
+  lastActivityAt?: Prisma.DateTimeWithAggregatesFilter<"CommunityPost"> | Date | string
+  featuredAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CommunityPost"> | Date | string | null
+  featuredById?: Prisma.StringNullableWithAggregatesFilter<"CommunityPost"> | string | null
+  publicPreviewConsentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CommunityPost"> | Date | string | null
+  acceptedCommentId?: Prisma.StringNullableWithAggregatesFilter<"CommunityPost"> | string | null
+  academyId?: Prisma.StringNullableWithAggregatesFilter<"CommunityPost"> | string | null
 }
 
 export type CommunityPostCreateInput = {
@@ -387,11 +498,21 @@ export type CommunityPostCreateInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
   author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
   category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
   group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
   comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
   reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostUncheckedCreateInput = {
@@ -408,8 +529,18 @@ export type CommunityPostUncheckedCreateInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
   comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
   reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostUpdateInput = {
@@ -423,11 +554,21 @@ export type CommunityPostUpdateInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
   category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
   group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
   comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
   reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateInput = {
@@ -444,8 +585,18 @@ export type CommunityPostUncheckedUpdateInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
   reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostCreateManyInput = {
@@ -462,6 +613,14 @@ export type CommunityPostCreateManyInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
 }
 
 export type CommunityPostUpdateManyMutationInput = {
@@ -475,6 +634,11 @@ export type CommunityPostUpdateManyMutationInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CommunityPostUncheckedUpdateManyInput = {
@@ -491,6 +655,14 @@ export type CommunityPostUncheckedUpdateManyInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CommunityPostListRelationFilter = {
@@ -517,6 +689,14 @@ export type CommunityPostCountOrderByAggregateInput = {
   reactionCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  editedAt?: Prisma.SortOrder
+  lastActivityAt?: Prisma.SortOrder
+  featuredAt?: Prisma.SortOrder
+  featuredById?: Prisma.SortOrder
+  publicPreviewConsentAt?: Prisma.SortOrder
+  acceptedCommentId?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
 }
 
 export type CommunityPostAvgOrderByAggregateInput = {
@@ -538,6 +718,14 @@ export type CommunityPostMaxOrderByAggregateInput = {
   reactionCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  editedAt?: Prisma.SortOrder
+  lastActivityAt?: Prisma.SortOrder
+  featuredAt?: Prisma.SortOrder
+  featuredById?: Prisma.SortOrder
+  publicPreviewConsentAt?: Prisma.SortOrder
+  acceptedCommentId?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
 }
 
 export type CommunityPostMinOrderByAggregateInput = {
@@ -554,6 +742,14 @@ export type CommunityPostMinOrderByAggregateInput = {
   reactionCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  editedAt?: Prisma.SortOrder
+  lastActivityAt?: Prisma.SortOrder
+  featuredAt?: Prisma.SortOrder
+  featuredById?: Prisma.SortOrder
+  publicPreviewConsentAt?: Prisma.SortOrder
+  acceptedCommentId?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
 }
 
 export type CommunityPostSumOrderByAggregateInput = {
@@ -578,10 +774,24 @@ export type CommunityPostCreateNestedManyWithoutAuthorInput = {
   connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
 }
 
+export type CommunityPostCreateNestedManyWithoutFeaturedByInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutFeaturedByInput, Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput> | Prisma.CommunityPostCreateWithoutFeaturedByInput[] | Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput[]
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutFeaturedByInput | Prisma.CommunityPostCreateOrConnectWithoutFeaturedByInput[]
+  createMany?: Prisma.CommunityPostCreateManyFeaturedByInputEnvelope
+  connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+}
+
 export type CommunityPostUncheckedCreateNestedManyWithoutAuthorInput = {
   create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAuthorInput, Prisma.CommunityPostUncheckedCreateWithoutAuthorInput> | Prisma.CommunityPostCreateWithoutAuthorInput[] | Prisma.CommunityPostUncheckedCreateWithoutAuthorInput[]
   connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAuthorInput | Prisma.CommunityPostCreateOrConnectWithoutAuthorInput[]
   createMany?: Prisma.CommunityPostCreateManyAuthorInputEnvelope
+  connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+}
+
+export type CommunityPostUncheckedCreateNestedManyWithoutFeaturedByInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutFeaturedByInput, Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput> | Prisma.CommunityPostCreateWithoutFeaturedByInput[] | Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput[]
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutFeaturedByInput | Prisma.CommunityPostCreateOrConnectWithoutFeaturedByInput[]
+  createMany?: Prisma.CommunityPostCreateManyFeaturedByInputEnvelope
   connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
 }
 
@@ -599,6 +809,20 @@ export type CommunityPostUpdateManyWithoutAuthorNestedInput = {
   deleteMany?: Prisma.CommunityPostScalarWhereInput | Prisma.CommunityPostScalarWhereInput[]
 }
 
+export type CommunityPostUpdateManyWithoutFeaturedByNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutFeaturedByInput, Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput> | Prisma.CommunityPostCreateWithoutFeaturedByInput[] | Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput[]
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutFeaturedByInput | Prisma.CommunityPostCreateOrConnectWithoutFeaturedByInput[]
+  upsert?: Prisma.CommunityPostUpsertWithWhereUniqueWithoutFeaturedByInput | Prisma.CommunityPostUpsertWithWhereUniqueWithoutFeaturedByInput[]
+  createMany?: Prisma.CommunityPostCreateManyFeaturedByInputEnvelope
+  set?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  disconnect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  delete?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  update?: Prisma.CommunityPostUpdateWithWhereUniqueWithoutFeaturedByInput | Prisma.CommunityPostUpdateWithWhereUniqueWithoutFeaturedByInput[]
+  updateMany?: Prisma.CommunityPostUpdateManyWithWhereWithoutFeaturedByInput | Prisma.CommunityPostUpdateManyWithWhereWithoutFeaturedByInput[]
+  deleteMany?: Prisma.CommunityPostScalarWhereInput | Prisma.CommunityPostScalarWhereInput[]
+}
+
 export type CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput = {
   create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAuthorInput, Prisma.CommunityPostUncheckedCreateWithoutAuthorInput> | Prisma.CommunityPostCreateWithoutAuthorInput[] | Prisma.CommunityPostUncheckedCreateWithoutAuthorInput[]
   connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAuthorInput | Prisma.CommunityPostCreateOrConnectWithoutAuthorInput[]
@@ -610,6 +834,20 @@ export type CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput = {
   connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
   update?: Prisma.CommunityPostUpdateWithWhereUniqueWithoutAuthorInput | Prisma.CommunityPostUpdateWithWhereUniqueWithoutAuthorInput[]
   updateMany?: Prisma.CommunityPostUpdateManyWithWhereWithoutAuthorInput | Prisma.CommunityPostUpdateManyWithWhereWithoutAuthorInput[]
+  deleteMany?: Prisma.CommunityPostScalarWhereInput | Prisma.CommunityPostScalarWhereInput[]
+}
+
+export type CommunityPostUncheckedUpdateManyWithoutFeaturedByNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutFeaturedByInput, Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput> | Prisma.CommunityPostCreateWithoutFeaturedByInput[] | Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput[]
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutFeaturedByInput | Prisma.CommunityPostCreateOrConnectWithoutFeaturedByInput[]
+  upsert?: Prisma.CommunityPostUpsertWithWhereUniqueWithoutFeaturedByInput | Prisma.CommunityPostUpsertWithWhereUniqueWithoutFeaturedByInput[]
+  createMany?: Prisma.CommunityPostCreateManyFeaturedByInputEnvelope
+  set?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  disconnect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  delete?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  update?: Prisma.CommunityPostUpdateWithWhereUniqueWithoutFeaturedByInput | Prisma.CommunityPostUpdateWithWhereUniqueWithoutFeaturedByInput[]
+  updateMany?: Prisma.CommunityPostUpdateManyWithWhereWithoutFeaturedByInput | Prisma.CommunityPostUpdateManyWithWhereWithoutFeaturedByInput[]
   deleteMany?: Prisma.CommunityPostScalarWhereInput | Prisma.CommunityPostScalarWhereInput[]
 }
 
@@ -701,9 +939,25 @@ export type EnumModerationStateFieldUpdateOperationsInput = {
   set?: $Enums.ModerationState
 }
 
+export type EnumCommunityPostKindFieldUpdateOperationsInput = {
+  set?: $Enums.CommunityPostKind
+}
+
 export type CommunityPostCreateNestedOneWithoutCommentsInput = {
   create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutCommentsInput, Prisma.CommunityPostUncheckedCreateWithoutCommentsInput>
   connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutCommentsInput
+  connect?: Prisma.CommunityPostWhereUniqueInput
+}
+
+export type CommunityPostCreateNestedOneWithoutAcceptedCommentInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcceptedCommentInput, Prisma.CommunityPostUncheckedCreateWithoutAcceptedCommentInput>
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAcceptedCommentInput
+  connect?: Prisma.CommunityPostWhereUniqueInput
+}
+
+export type CommunityPostUncheckedCreateNestedOneWithoutAcceptedCommentInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcceptedCommentInput, Prisma.CommunityPostUncheckedCreateWithoutAcceptedCommentInput>
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAcceptedCommentInput
   connect?: Prisma.CommunityPostWhereUniqueInput
 }
 
@@ -713,6 +967,26 @@ export type CommunityPostUpdateOneRequiredWithoutCommentsNestedInput = {
   upsert?: Prisma.CommunityPostUpsertWithoutCommentsInput
   connect?: Prisma.CommunityPostWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityPostUpdateToOneWithWhereWithoutCommentsInput, Prisma.CommunityPostUpdateWithoutCommentsInput>, Prisma.CommunityPostUncheckedUpdateWithoutCommentsInput>
+}
+
+export type CommunityPostUpdateOneWithoutAcceptedCommentNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcceptedCommentInput, Prisma.CommunityPostUncheckedCreateWithoutAcceptedCommentInput>
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAcceptedCommentInput
+  upsert?: Prisma.CommunityPostUpsertWithoutAcceptedCommentInput
+  disconnect?: Prisma.CommunityPostWhereInput | boolean
+  delete?: Prisma.CommunityPostWhereInput | boolean
+  connect?: Prisma.CommunityPostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityPostUpdateToOneWithWhereWithoutAcceptedCommentInput, Prisma.CommunityPostUpdateWithoutAcceptedCommentInput>, Prisma.CommunityPostUncheckedUpdateWithoutAcceptedCommentInput>
+}
+
+export type CommunityPostUncheckedUpdateOneWithoutAcceptedCommentNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcceptedCommentInput, Prisma.CommunityPostUncheckedCreateWithoutAcceptedCommentInput>
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAcceptedCommentInput
+  upsert?: Prisma.CommunityPostUpsertWithoutAcceptedCommentInput
+  disconnect?: Prisma.CommunityPostWhereInput | boolean
+  delete?: Prisma.CommunityPostWhereInput | boolean
+  connect?: Prisma.CommunityPostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityPostUpdateToOneWithWhereWithoutAcceptedCommentInput, Prisma.CommunityPostUpdateWithoutAcceptedCommentInput>, Prisma.CommunityPostUncheckedUpdateWithoutAcceptedCommentInput>
 }
 
 export type CommunityPostCreateNestedOneWithoutReactionsInput = {
@@ -731,6 +1005,78 @@ export type CommunityPostUpdateOneWithoutReactionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityPostUpdateToOneWithWhereWithoutReactionsInput, Prisma.CommunityPostUpdateWithoutReactionsInput>, Prisma.CommunityPostUncheckedUpdateWithoutReactionsInput>
 }
 
+export type CommunityPostCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcademyInput, Prisma.CommunityPostUncheckedCreateWithoutAcademyInput> | Prisma.CommunityPostCreateWithoutAcademyInput[] | Prisma.CommunityPostUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAcademyInput | Prisma.CommunityPostCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.CommunityPostCreateManyAcademyInputEnvelope
+  connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+}
+
+export type CommunityPostUncheckedCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcademyInput, Prisma.CommunityPostUncheckedCreateWithoutAcademyInput> | Prisma.CommunityPostCreateWithoutAcademyInput[] | Prisma.CommunityPostUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAcademyInput | Prisma.CommunityPostCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.CommunityPostCreateManyAcademyInputEnvelope
+  connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+}
+
+export type CommunityPostUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcademyInput, Prisma.CommunityPostUncheckedCreateWithoutAcademyInput> | Prisma.CommunityPostCreateWithoutAcademyInput[] | Prisma.CommunityPostUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAcademyInput | Prisma.CommunityPostCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.CommunityPostUpsertWithWhereUniqueWithoutAcademyInput | Prisma.CommunityPostUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.CommunityPostCreateManyAcademyInputEnvelope
+  set?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  disconnect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  delete?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  update?: Prisma.CommunityPostUpdateWithWhereUniqueWithoutAcademyInput | Prisma.CommunityPostUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.CommunityPostUpdateManyWithWhereWithoutAcademyInput | Prisma.CommunityPostUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.CommunityPostScalarWhereInput | Prisma.CommunityPostScalarWhereInput[]
+}
+
+export type CommunityPostUncheckedUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcademyInput, Prisma.CommunityPostUncheckedCreateWithoutAcademyInput> | Prisma.CommunityPostCreateWithoutAcademyInput[] | Prisma.CommunityPostUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutAcademyInput | Prisma.CommunityPostCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.CommunityPostUpsertWithWhereUniqueWithoutAcademyInput | Prisma.CommunityPostUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.CommunityPostCreateManyAcademyInputEnvelope
+  set?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  disconnect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  delete?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  connect?: Prisma.CommunityPostWhereUniqueInput | Prisma.CommunityPostWhereUniqueInput[]
+  update?: Prisma.CommunityPostUpdateWithWhereUniqueWithoutAcademyInput | Prisma.CommunityPostUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.CommunityPostUpdateManyWithWhereWithoutAcademyInput | Prisma.CommunityPostUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.CommunityPostScalarWhereInput | Prisma.CommunityPostScalarWhereInput[]
+}
+
+export type CommunityPostCreateNestedOneWithoutProjectInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutProjectInput, Prisma.CommunityPostUncheckedCreateWithoutProjectInput>
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutProjectInput
+  connect?: Prisma.CommunityPostWhereUniqueInput
+}
+
+export type CommunityPostUpdateOneWithoutProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutProjectInput, Prisma.CommunityPostUncheckedCreateWithoutProjectInput>
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutProjectInput
+  upsert?: Prisma.CommunityPostUpsertWithoutProjectInput
+  disconnect?: Prisma.CommunityPostWhereInput | boolean
+  delete?: Prisma.CommunityPostWhereInput | boolean
+  connect?: Prisma.CommunityPostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityPostUpdateToOneWithWhereWithoutProjectInput, Prisma.CommunityPostUpdateWithoutProjectInput>, Prisma.CommunityPostUncheckedUpdateWithoutProjectInput>
+}
+
+export type CommunityPostCreateNestedOneWithoutSavesInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutSavesInput, Prisma.CommunityPostUncheckedCreateWithoutSavesInput>
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutSavesInput
+  connect?: Prisma.CommunityPostWhereUniqueInput
+}
+
+export type CommunityPostUpdateOneRequiredWithoutSavesNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityPostCreateWithoutSavesInput, Prisma.CommunityPostUncheckedCreateWithoutSavesInput>
+  connectOrCreate?: Prisma.CommunityPostCreateOrConnectWithoutSavesInput
+  upsert?: Prisma.CommunityPostUpsertWithoutSavesInput
+  connect?: Prisma.CommunityPostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityPostUpdateToOneWithWhereWithoutSavesInput, Prisma.CommunityPostUpdateWithoutSavesInput>, Prisma.CommunityPostUncheckedUpdateWithoutSavesInput>
+}
+
 export type CommunityPostCreateWithoutAuthorInput = {
   id?: string
   title: string
@@ -742,10 +1088,20 @@ export type CommunityPostCreateWithoutAuthorInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
   category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
   group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
   comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
   reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostUncheckedCreateWithoutAuthorInput = {
@@ -761,8 +1117,18 @@ export type CommunityPostUncheckedCreateWithoutAuthorInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
   comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
   reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostCreateOrConnectWithoutAuthorInput = {
@@ -772,6 +1138,70 @@ export type CommunityPostCreateOrConnectWithoutAuthorInput = {
 
 export type CommunityPostCreateManyAuthorInputEnvelope = {
   data: Prisma.CommunityPostCreateManyAuthorInput | Prisma.CommunityPostCreateManyAuthorInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommunityPostCreateWithoutFeaturedByInput = {
+  id?: string
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
+  author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
+  category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
+  comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
+}
+
+export type CommunityPostUncheckedCreateWithoutFeaturedByInput = {
+  id?: string
+  authorId: string
+  categoryId?: string | null
+  groupId?: string | null
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
+  comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
+}
+
+export type CommunityPostCreateOrConnectWithoutFeaturedByInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutFeaturedByInput, Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput>
+}
+
+export type CommunityPostCreateManyFeaturedByInputEnvelope = {
+  data: Prisma.CommunityPostCreateManyFeaturedByInput | Prisma.CommunityPostCreateManyFeaturedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -808,6 +1238,30 @@ export type CommunityPostScalarWhereInput = {
   reactionCount?: Prisma.IntFilter<"CommunityPost"> | number
   createdAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
+  kind?: Prisma.EnumCommunityPostKindFilter<"CommunityPost"> | $Enums.CommunityPostKind
+  editedAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFilter<"CommunityPost"> | Date | string
+  featuredAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  featuredById?: Prisma.StringNullableFilter<"CommunityPost"> | string | null
+  publicPreviewConsentAt?: Prisma.DateTimeNullableFilter<"CommunityPost"> | Date | string | null
+  acceptedCommentId?: Prisma.StringNullableFilter<"CommunityPost"> | string | null
+  academyId?: Prisma.StringNullableFilter<"CommunityPost"> | string | null
+}
+
+export type CommunityPostUpsertWithWhereUniqueWithoutFeaturedByInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommunityPostUpdateWithoutFeaturedByInput, Prisma.CommunityPostUncheckedUpdateWithoutFeaturedByInput>
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutFeaturedByInput, Prisma.CommunityPostUncheckedCreateWithoutFeaturedByInput>
+}
+
+export type CommunityPostUpdateWithWhereUniqueWithoutFeaturedByInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommunityPostUpdateWithoutFeaturedByInput, Prisma.CommunityPostUncheckedUpdateWithoutFeaturedByInput>
+}
+
+export type CommunityPostUpdateManyWithWhereWithoutFeaturedByInput = {
+  where: Prisma.CommunityPostScalarWhereInput
+  data: Prisma.XOR<Prisma.CommunityPostUpdateManyMutationInput, Prisma.CommunityPostUncheckedUpdateManyWithoutFeaturedByInput>
 }
 
 export type CommunityPostCreateWithoutCategoryInput = {
@@ -821,10 +1275,20 @@ export type CommunityPostCreateWithoutCategoryInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
   author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
   group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
   comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
   reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostUncheckedCreateWithoutCategoryInput = {
@@ -840,8 +1304,18 @@ export type CommunityPostUncheckedCreateWithoutCategoryInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
   comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
   reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostCreateOrConnectWithoutCategoryInput = {
@@ -881,10 +1355,20 @@ export type CommunityPostCreateWithoutGroupInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
   author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
   category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
   comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
   reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostUncheckedCreateWithoutGroupInput = {
@@ -900,8 +1384,18 @@ export type CommunityPostUncheckedCreateWithoutGroupInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
   comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
   reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostCreateOrConnectWithoutGroupInput = {
@@ -941,10 +1435,20 @@ export type CommunityPostCreateWithoutCommentsInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
   author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
   category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
   group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
   reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostUncheckedCreateWithoutCommentsInput = {
@@ -961,12 +1465,81 @@ export type CommunityPostUncheckedCreateWithoutCommentsInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
   reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostCreateOrConnectWithoutCommentsInput = {
   where: Prisma.CommunityPostWhereUniqueInput
   create: Prisma.XOR<Prisma.CommunityPostCreateWithoutCommentsInput, Prisma.CommunityPostUncheckedCreateWithoutCommentsInput>
+}
+
+export type CommunityPostCreateWithoutAcceptedCommentInput = {
+  id?: string
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
+  author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
+  category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
+  comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
+}
+
+export type CommunityPostUncheckedCreateWithoutAcceptedCommentInput = {
+  id?: string
+  authorId: string
+  categoryId?: string | null
+  groupId?: string | null
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  academyId?: string | null
+  comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
+}
+
+export type CommunityPostCreateOrConnectWithoutAcceptedCommentInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcceptedCommentInput, Prisma.CommunityPostUncheckedCreateWithoutAcceptedCommentInput>
 }
 
 export type CommunityPostUpsertWithoutCommentsInput = {
@@ -991,10 +1564,20 @@ export type CommunityPostUpdateWithoutCommentsInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
   category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
   group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
   reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateWithoutCommentsInput = {
@@ -1011,7 +1594,82 @@ export type CommunityPostUncheckedUpdateWithoutCommentsInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
+}
+
+export type CommunityPostUpsertWithoutAcceptedCommentInput = {
+  update: Prisma.XOR<Prisma.CommunityPostUpdateWithoutAcceptedCommentInput, Prisma.CommunityPostUncheckedUpdateWithoutAcceptedCommentInput>
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcceptedCommentInput, Prisma.CommunityPostUncheckedCreateWithoutAcceptedCommentInput>
+  where?: Prisma.CommunityPostWhereInput
+}
+
+export type CommunityPostUpdateToOneWithWhereWithoutAcceptedCommentInput = {
+  where?: Prisma.CommunityPostWhereInput
+  data: Prisma.XOR<Prisma.CommunityPostUpdateWithoutAcceptedCommentInput, Prisma.CommunityPostUncheckedUpdateWithoutAcceptedCommentInput>
+}
+
+export type CommunityPostUpdateWithoutAcceptedCommentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
+  category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
+  comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
+}
+
+export type CommunityPostUncheckedUpdateWithoutAcceptedCommentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostCreateWithoutReactionsInput = {
@@ -1025,10 +1683,20 @@ export type CommunityPostCreateWithoutReactionsInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
   author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
   category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
   group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
   comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostUncheckedCreateWithoutReactionsInput = {
@@ -1045,7 +1713,17 @@ export type CommunityPostUncheckedCreateWithoutReactionsInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
   comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
 }
 
 export type CommunityPostCreateOrConnectWithoutReactionsInput = {
@@ -1075,10 +1753,20 @@ export type CommunityPostUpdateWithoutReactionsInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
   category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
   group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
   comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateWithoutReactionsInput = {
@@ -1095,7 +1783,345 @@ export type CommunityPostUncheckedUpdateWithoutReactionsInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
+}
+
+export type CommunityPostCreateWithoutAcademyInput = {
+  id?: string
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
+  author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
+  category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
+  comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
+}
+
+export type CommunityPostUncheckedCreateWithoutAcademyInput = {
+  id?: string
+  authorId: string
+  categoryId?: string | null
+  groupId?: string | null
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
+}
+
+export type CommunityPostCreateOrConnectWithoutAcademyInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcademyInput, Prisma.CommunityPostUncheckedCreateWithoutAcademyInput>
+}
+
+export type CommunityPostCreateManyAcademyInputEnvelope = {
+  data: Prisma.CommunityPostCreateManyAcademyInput | Prisma.CommunityPostCreateManyAcademyInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommunityPostUpsertWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommunityPostUpdateWithoutAcademyInput, Prisma.CommunityPostUncheckedUpdateWithoutAcademyInput>
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutAcademyInput, Prisma.CommunityPostUncheckedCreateWithoutAcademyInput>
+}
+
+export type CommunityPostUpdateWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommunityPostUpdateWithoutAcademyInput, Prisma.CommunityPostUncheckedUpdateWithoutAcademyInput>
+}
+
+export type CommunityPostUpdateManyWithWhereWithoutAcademyInput = {
+  where: Prisma.CommunityPostScalarWhereInput
+  data: Prisma.XOR<Prisma.CommunityPostUpdateManyMutationInput, Prisma.CommunityPostUncheckedUpdateManyWithoutAcademyInput>
+}
+
+export type CommunityPostCreateWithoutProjectInput = {
+  id?: string
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
+  author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
+  category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
+  comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  saves?: Prisma.SavedPostCreateNestedManyWithoutPostInput
+}
+
+export type CommunityPostUncheckedCreateWithoutProjectInput = {
+  id?: string
+  authorId: string
+  categoryId?: string | null
+  groupId?: string | null
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
+  comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  saves?: Prisma.SavedPostUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type CommunityPostCreateOrConnectWithoutProjectInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutProjectInput, Prisma.CommunityPostUncheckedCreateWithoutProjectInput>
+}
+
+export type CommunityPostUpsertWithoutProjectInput = {
+  update: Prisma.XOR<Prisma.CommunityPostUpdateWithoutProjectInput, Prisma.CommunityPostUncheckedUpdateWithoutProjectInput>
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutProjectInput, Prisma.CommunityPostUncheckedCreateWithoutProjectInput>
+  where?: Prisma.CommunityPostWhereInput
+}
+
+export type CommunityPostUpdateToOneWithWhereWithoutProjectInput = {
+  where?: Prisma.CommunityPostWhereInput
+  data: Prisma.XOR<Prisma.CommunityPostUpdateWithoutProjectInput, Prisma.CommunityPostUncheckedUpdateWithoutProjectInput>
+}
+
+export type CommunityPostUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
+  category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
+  comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+}
+
+export type CommunityPostUncheckedUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type CommunityPostCreateWithoutSavesInput = {
+  id?: string
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
+  author: Prisma.UserCreateNestedOneWithoutCommunityPostsInput
+  category?: Prisma.CommunityCategoryCreateNestedOneWithoutPostsInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutPostsInput
+  comments?: Prisma.CommunityCommentCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutPostInput
+  featuredBy?: Prisma.UserCreateNestedOneWithoutCommunityPostsFeaturedInput
+  acceptedComment?: Prisma.CommunityCommentCreateNestedOneWithoutAcceptedForInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCommunityPostsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutPostInput
+}
+
+export type CommunityPostUncheckedCreateWithoutSavesInput = {
+  id?: string
+  authorId: string
+  categoryId?: string | null
+  groupId?: string | null
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
+  comments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutPostInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutPostInput
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutPostInput
+}
+
+export type CommunityPostCreateOrConnectWithoutSavesInput = {
+  where: Prisma.CommunityPostWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutSavesInput, Prisma.CommunityPostUncheckedCreateWithoutSavesInput>
+}
+
+export type CommunityPostUpsertWithoutSavesInput = {
+  update: Prisma.XOR<Prisma.CommunityPostUpdateWithoutSavesInput, Prisma.CommunityPostUncheckedUpdateWithoutSavesInput>
+  create: Prisma.XOR<Prisma.CommunityPostCreateWithoutSavesInput, Prisma.CommunityPostUncheckedCreateWithoutSavesInput>
+  where?: Prisma.CommunityPostWhereInput
+}
+
+export type CommunityPostUpdateToOneWithWhereWithoutSavesInput = {
+  where?: Prisma.CommunityPostWhereInput
+  data: Prisma.XOR<Prisma.CommunityPostUpdateWithoutSavesInput, Prisma.CommunityPostUncheckedUpdateWithoutSavesInput>
+}
+
+export type CommunityPostUpdateWithoutSavesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
+  category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
+  comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
+}
+
+export type CommunityPostUncheckedUpdateWithoutSavesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostCreateManyAuthorInput = {
@@ -1111,6 +2137,37 @@ export type CommunityPostCreateManyAuthorInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
+}
+
+export type CommunityPostCreateManyFeaturedByInput = {
+  id?: string
+  authorId: string
+  categoryId?: string | null
+  groupId?: string | null
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
 }
 
 export type CommunityPostUpdateWithoutAuthorInput = {
@@ -1124,10 +2181,20 @@ export type CommunityPostUpdateWithoutAuthorInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
   group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
   comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
   reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateWithoutAuthorInput = {
@@ -1143,8 +2210,18 @@ export type CommunityPostUncheckedUpdateWithoutAuthorInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
   reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateManyWithoutAuthorInput = {
@@ -1160,6 +2237,91 @@ export type CommunityPostUncheckedUpdateManyWithoutAuthorInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type CommunityPostUpdateWithoutFeaturedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
+  category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
+  comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
+}
+
+export type CommunityPostUncheckedUpdateWithoutFeaturedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
+}
+
+export type CommunityPostUncheckedUpdateManyWithoutFeaturedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CommunityPostCreateManyCategoryInput = {
@@ -1175,6 +2337,14 @@ export type CommunityPostCreateManyCategoryInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
 }
 
 export type CommunityPostUpdateWithoutCategoryInput = {
@@ -1188,10 +2358,20 @@ export type CommunityPostUpdateWithoutCategoryInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
   group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
   comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
   reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateWithoutCategoryInput = {
@@ -1207,8 +2387,18 @@ export type CommunityPostUncheckedUpdateWithoutCategoryInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
   reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateManyWithoutCategoryInput = {
@@ -1224,6 +2414,14 @@ export type CommunityPostUncheckedUpdateManyWithoutCategoryInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CommunityPostCreateManyGroupInput = {
@@ -1239,6 +2437,14 @@ export type CommunityPostCreateManyGroupInput = {
   reactionCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+  academyId?: string | null
 }
 
 export type CommunityPostUpdateWithoutGroupInput = {
@@ -1252,10 +2458,20 @@ export type CommunityPostUpdateWithoutGroupInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
   category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
   comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
   reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCommunityPostsNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateWithoutGroupInput = {
@@ -1271,8 +2487,18 @@ export type CommunityPostUncheckedUpdateWithoutGroupInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
   reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
 }
 
 export type CommunityPostUncheckedUpdateManyWithoutGroupInput = {
@@ -1288,6 +2514,114 @@ export type CommunityPostUncheckedUpdateManyWithoutGroupInput = {
   reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type CommunityPostCreateManyAcademyInput = {
+  id?: string
+  authorId: string
+  categoryId?: string | null
+  groupId?: string | null
+  title: string
+  body: string
+  state?: $Enums.ModerationState
+  pinned?: boolean
+  locked?: boolean
+  commentCount?: number
+  reactionCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.CommunityPostKind
+  editedAt?: Date | string | null
+  lastActivityAt?: Date | string
+  featuredAt?: Date | string | null
+  featuredById?: string | null
+  publicPreviewConsentAt?: Date | string | null
+  acceptedCommentId?: string | null
+}
+
+export type CommunityPostUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.UserUpdateOneRequiredWithoutCommunityPostsNestedInput
+  category?: Prisma.CommunityCategoryUpdateOneWithoutPostsNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutPostsNestedInput
+  comments?: Prisma.CommunityCommentUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutPostNestedInput
+  featuredBy?: Prisma.UserUpdateOneWithoutCommunityPostsFeaturedNestedInput
+  acceptedComment?: Prisma.CommunityCommentUpdateOneWithoutAcceptedForNestedInput
+  saves?: Prisma.SavedPostUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutPostNestedInput
+}
+
+export type CommunityPostUncheckedUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  comments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutPostNestedInput
+  saves?: Prisma.SavedPostUncheckedUpdateManyWithoutPostNestedInput
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutPostNestedInput
+}
+
+export type CommunityPostUncheckedUpdateManyWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.EnumModerationStateFieldUpdateOperationsInput | $Enums.ModerationState
+  pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  locked?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  commentCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reactionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumCommunityPostKindFieldUpdateOperationsInput | $Enums.CommunityPostKind
+  editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicPreviewConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedCommentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1298,11 +2632,13 @@ export type CommunityPostUncheckedUpdateManyWithoutGroupInput = {
 export type CommunityPostCountOutputType = {
   comments: number
   reactions: number
+  saves: number
 }
 
 export type CommunityPostCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   comments?: boolean | CommunityPostCountOutputTypeCountCommentsArgs
   reactions?: boolean | CommunityPostCountOutputTypeCountReactionsArgs
+  saves?: boolean | CommunityPostCountOutputTypeCountSavesArgs
 }
 
 /**
@@ -1329,6 +2665,13 @@ export type CommunityPostCountOutputTypeCountReactionsArgs<ExtArgs extends runti
   where?: Prisma.ReactionWhereInput
 }
 
+/**
+ * CommunityPostCountOutputType without action
+ */
+export type CommunityPostCountOutputTypeCountSavesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SavedPostWhereInput
+}
+
 
 export type CommunityPostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1344,11 +2687,24 @@ export type CommunityPostSelect<ExtArgs extends runtime.Types.Extensions.Interna
   reactionCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  kind?: boolean
+  editedAt?: boolean
+  lastActivityAt?: boolean
+  featuredAt?: boolean
+  featuredById?: boolean
+  publicPreviewConsentAt?: boolean
+  acceptedCommentId?: boolean
+  academyId?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CommunityPost$categoryArgs<ExtArgs>
   group?: boolean | Prisma.CommunityPost$groupArgs<ExtArgs>
   comments?: boolean | Prisma.CommunityPost$commentsArgs<ExtArgs>
   reactions?: boolean | Prisma.CommunityPost$reactionsArgs<ExtArgs>
+  featuredBy?: boolean | Prisma.CommunityPost$featuredByArgs<ExtArgs>
+  acceptedComment?: boolean | Prisma.CommunityPost$acceptedCommentArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityPost$academyArgs<ExtArgs>
+  saves?: boolean | Prisma.CommunityPost$savesArgs<ExtArgs>
+  project?: boolean | Prisma.CommunityPost$projectArgs<ExtArgs>
   _count?: boolean | Prisma.CommunityPostCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["communityPost"]>
 
@@ -1366,9 +2722,20 @@ export type CommunityPostSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   reactionCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  kind?: boolean
+  editedAt?: boolean
+  lastActivityAt?: boolean
+  featuredAt?: boolean
+  featuredById?: boolean
+  publicPreviewConsentAt?: boolean
+  acceptedCommentId?: boolean
+  academyId?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CommunityPost$categoryArgs<ExtArgs>
   group?: boolean | Prisma.CommunityPost$groupArgs<ExtArgs>
+  featuredBy?: boolean | Prisma.CommunityPost$featuredByArgs<ExtArgs>
+  acceptedComment?: boolean | Prisma.CommunityPost$acceptedCommentArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityPost$academyArgs<ExtArgs>
 }, ExtArgs["result"]["communityPost"]>
 
 export type CommunityPostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1385,9 +2752,20 @@ export type CommunityPostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   reactionCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  kind?: boolean
+  editedAt?: boolean
+  lastActivityAt?: boolean
+  featuredAt?: boolean
+  featuredById?: boolean
+  publicPreviewConsentAt?: boolean
+  acceptedCommentId?: boolean
+  academyId?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CommunityPost$categoryArgs<ExtArgs>
   group?: boolean | Prisma.CommunityPost$groupArgs<ExtArgs>
+  featuredBy?: boolean | Prisma.CommunityPost$featuredByArgs<ExtArgs>
+  acceptedComment?: boolean | Prisma.CommunityPost$acceptedCommentArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityPost$academyArgs<ExtArgs>
 }, ExtArgs["result"]["communityPost"]>
 
 export type CommunityPostSelectScalar = {
@@ -1404,26 +2782,45 @@ export type CommunityPostSelectScalar = {
   reactionCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  kind?: boolean
+  editedAt?: boolean
+  lastActivityAt?: boolean
+  featuredAt?: boolean
+  featuredById?: boolean
+  publicPreviewConsentAt?: boolean
+  acceptedCommentId?: boolean
+  academyId?: boolean
 }
 
-export type CommunityPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "authorId" | "categoryId" | "groupId" | "title" | "body" | "state" | "pinned" | "locked" | "commentCount" | "reactionCount" | "createdAt" | "updatedAt", ExtArgs["result"]["communityPost"]>
+export type CommunityPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "authorId" | "categoryId" | "groupId" | "title" | "body" | "state" | "pinned" | "locked" | "commentCount" | "reactionCount" | "createdAt" | "updatedAt" | "kind" | "editedAt" | "lastActivityAt" | "featuredAt" | "featuredById" | "publicPreviewConsentAt" | "acceptedCommentId" | "academyId", ExtArgs["result"]["communityPost"]>
 export type CommunityPostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CommunityPost$categoryArgs<ExtArgs>
   group?: boolean | Prisma.CommunityPost$groupArgs<ExtArgs>
   comments?: boolean | Prisma.CommunityPost$commentsArgs<ExtArgs>
   reactions?: boolean | Prisma.CommunityPost$reactionsArgs<ExtArgs>
+  featuredBy?: boolean | Prisma.CommunityPost$featuredByArgs<ExtArgs>
+  acceptedComment?: boolean | Prisma.CommunityPost$acceptedCommentArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityPost$academyArgs<ExtArgs>
+  saves?: boolean | Prisma.CommunityPost$savesArgs<ExtArgs>
+  project?: boolean | Prisma.CommunityPost$projectArgs<ExtArgs>
   _count?: boolean | Prisma.CommunityPostCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CommunityPostIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CommunityPost$categoryArgs<ExtArgs>
   group?: boolean | Prisma.CommunityPost$groupArgs<ExtArgs>
+  featuredBy?: boolean | Prisma.CommunityPost$featuredByArgs<ExtArgs>
+  acceptedComment?: boolean | Prisma.CommunityPost$acceptedCommentArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityPost$academyArgs<ExtArgs>
 }
 export type CommunityPostIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CommunityPost$categoryArgs<ExtArgs>
   group?: boolean | Prisma.CommunityPost$groupArgs<ExtArgs>
+  featuredBy?: boolean | Prisma.CommunityPost$featuredByArgs<ExtArgs>
+  acceptedComment?: boolean | Prisma.CommunityPost$acceptedCommentArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityPost$academyArgs<ExtArgs>
 }
 
 export type $CommunityPostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1431,9 +2828,20 @@ export type $CommunityPostPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     author: Prisma.$UserPayload<ExtArgs>
     category: Prisma.$CommunityCategoryPayload<ExtArgs> | null
+    /**
+     * Restrict (was SetNull): deleting a group must never move its posts into the main feed.
+     */
     group: Prisma.$CommunityGroupPayload<ExtArgs> | null
     comments: Prisma.$CommunityCommentPayload<ExtArgs>[]
     reactions: Prisma.$ReactionPayload<ExtArgs>[]
+    featuredBy: Prisma.$UserPayload<ExtArgs> | null
+    acceptedComment: Prisma.$CommunityCommentPayload<ExtArgs> | null
+    academy: Prisma.$AcademyPayload<ExtArgs> | null
+    saves: Prisma.$SavedPostPayload<ExtArgs>[]
+    /**
+     * The project this post is the discussion thread of.
+     */
+    project: Prisma.$ProjectPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1449,6 +2857,29 @@ export type $CommunityPostPayload<ExtArgs extends runtime.Types.Extensions.Inter
     reactionCount: number
     createdAt: Date
     updatedAt: Date
+    kind: $Enums.CommunityPostKind
+    /**
+     * Set when the author edits after posting (the "edited" marker).
+     */
+    editedAt: Date | null
+    /**
+     * Creation or the latest visible comment: the "active" sort. Backfilled from comments.
+     */
+    lastActivityAt: Date
+    /**
+     * Staff highlight. Cleared when the post is hidden, removed or its group archived.
+     */
+    featuredAt: Date | null
+    featuredById: string | null
+    /**
+     * The author agreed that a featured post's title and a short excerpt may show on the public homepage.
+     */
+    publicPreviewConsentAt: Date | null
+    /**
+     * QUESTION posts: the reply the author accepted.
+     */
+    acceptedCommentId: string | null
+    academyId: string | null
   }, ExtArgs["result"]["communityPost"]>
   composites: {}
 }
@@ -1848,6 +3279,11 @@ export interface Prisma__CommunityPostClient<T, Null = never, ExtArgs extends ru
   group<T extends Prisma.CommunityPost$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityPost$groupArgs<ExtArgs>>): Prisma.Prisma__CommunityGroupClient<runtime.Types.Result.GetResult<Prisma.$CommunityGroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   comments<T extends Prisma.CommunityPost$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityPost$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommunityCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reactions<T extends Prisma.CommunityPost$reactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityPost$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  featuredBy<T extends Prisma.CommunityPost$featuredByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityPost$featuredByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  acceptedComment<T extends Prisma.CommunityPost$acceptedCommentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityPost$acceptedCommentArgs<ExtArgs>>): Prisma.Prisma__CommunityCommentClient<runtime.Types.Result.GetResult<Prisma.$CommunityCommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  academy<T extends Prisma.CommunityPost$academyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityPost$academyArgs<ExtArgs>>): Prisma.Prisma__AcademyClient<runtime.Types.Result.GetResult<Prisma.$AcademyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  saves<T extends Prisma.CommunityPost$savesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityPost$savesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  project<T extends Prisma.CommunityPost$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityPost$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1890,6 +3326,14 @@ export interface CommunityPostFieldRefs {
   readonly reactionCount: Prisma.FieldRef<"CommunityPost", 'Int'>
   readonly createdAt: Prisma.FieldRef<"CommunityPost", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CommunityPost", 'DateTime'>
+  readonly kind: Prisma.FieldRef<"CommunityPost", 'CommunityPostKind'>
+  readonly editedAt: Prisma.FieldRef<"CommunityPost", 'DateTime'>
+  readonly lastActivityAt: Prisma.FieldRef<"CommunityPost", 'DateTime'>
+  readonly featuredAt: Prisma.FieldRef<"CommunityPost", 'DateTime'>
+  readonly featuredById: Prisma.FieldRef<"CommunityPost", 'String'>
+  readonly publicPreviewConsentAt: Prisma.FieldRef<"CommunityPost", 'DateTime'>
+  readonly acceptedCommentId: Prisma.FieldRef<"CommunityPost", 'String'>
+  readonly academyId: Prisma.FieldRef<"CommunityPost", 'String'>
 }
     
 
@@ -2369,6 +3813,106 @@ export type CommunityPost$reactionsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.ReactionScalarFieldEnum | Prisma.ReactionScalarFieldEnum[]
+}
+
+/**
+ * CommunityPost.featuredBy
+ */
+export type CommunityPost$featuredByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * CommunityPost.acceptedComment
+ */
+export type CommunityPost$acceptedCommentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommunityComment
+   */
+  select?: Prisma.CommunityCommentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommunityComment
+   */
+  omit?: Prisma.CommunityCommentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityCommentInclude<ExtArgs> | null
+  where?: Prisma.CommunityCommentWhereInput
+}
+
+/**
+ * CommunityPost.academy
+ */
+export type CommunityPost$academyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Academy
+   */
+  select?: Prisma.AcademySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Academy
+   */
+  omit?: Prisma.AcademyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademyInclude<ExtArgs> | null
+  where?: Prisma.AcademyWhereInput
+}
+
+/**
+ * CommunityPost.saves
+ */
+export type CommunityPost$savesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SavedPost
+   */
+  select?: Prisma.SavedPostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SavedPost
+   */
+  omit?: Prisma.SavedPostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SavedPostInclude<ExtArgs> | null
+  where?: Prisma.SavedPostWhereInput
+  orderBy?: Prisma.SavedPostOrderByWithRelationInput | Prisma.SavedPostOrderByWithRelationInput[]
+  cursor?: Prisma.SavedPostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SavedPostScalarFieldEnum | Prisma.SavedPostScalarFieldEnum[]
+}
+
+/**
+ * CommunityPost.project
+ */
+export type CommunityPost$projectArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
 }
 
 /**

@@ -48,6 +48,7 @@ export type ChannelMinAggregateOutputType = {
   sortOrder: number | null
   archivedAt: Date | null
   createdAt: Date | null
+  cohortId: string | null
 }
 
 export type ChannelMaxAggregateOutputType = {
@@ -62,6 +63,7 @@ export type ChannelMaxAggregateOutputType = {
   sortOrder: number | null
   archivedAt: Date | null
   createdAt: Date | null
+  cohortId: string | null
 }
 
 export type ChannelCountAggregateOutputType = {
@@ -76,6 +78,7 @@ export type ChannelCountAggregateOutputType = {
   sortOrder: number
   archivedAt: number
   createdAt: number
+  cohortId: number
   _all: number
 }
 
@@ -102,6 +105,7 @@ export type ChannelMinAggregateInputType = {
   sortOrder?: true
   archivedAt?: true
   createdAt?: true
+  cohortId?: true
 }
 
 export type ChannelMaxAggregateInputType = {
@@ -116,6 +120,7 @@ export type ChannelMaxAggregateInputType = {
   sortOrder?: true
   archivedAt?: true
   createdAt?: true
+  cohortId?: true
 }
 
 export type ChannelCountAggregateInputType = {
@@ -130,6 +135,7 @@ export type ChannelCountAggregateInputType = {
   sortOrder?: true
   archivedAt?: true
   createdAt?: true
+  cohortId?: true
   _all?: true
 }
 
@@ -231,6 +237,7 @@ export type ChannelGroupByOutputType = {
   sortOrder: number
   archivedAt: Date | null
   createdAt: Date
+  cohortId: string | null
   _count: ChannelCountAggregateOutputType | null
   _avg: ChannelAvgAggregateOutputType | null
   _sum: ChannelSumAggregateOutputType | null
@@ -268,9 +275,11 @@ export type ChannelWhereInput = {
   sortOrder?: Prisma.IntFilter<"Channel"> | number
   archivedAt?: Prisma.DateTimeNullableFilter<"Channel"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Channel"> | Date | string
+  cohortId?: Prisma.StringNullableFilter<"Channel"> | string | null
   course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
   messages?: Prisma.MessageListRelationFilter
   reads?: Prisma.ChannelReadListRelationFilter
+  cohort?: Prisma.XOR<Prisma.CourseCohortNullableScalarRelationFilter, Prisma.CourseCohortWhereInput> | null
 }
 
 export type ChannelOrderByWithRelationInput = {
@@ -285,14 +294,17 @@ export type ChannelOrderByWithRelationInput = {
   sortOrder?: Prisma.SortOrder
   archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  cohortId?: Prisma.SortOrderInput | Prisma.SortOrder
   course?: Prisma.CourseOrderByWithRelationInput
   messages?: Prisma.MessageOrderByRelationAggregateInput
   reads?: Prisma.ChannelReadOrderByRelationAggregateInput
+  cohort?: Prisma.CourseCohortOrderByWithRelationInput
 }
 
 export type ChannelWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  cohortId?: string
   AND?: Prisma.ChannelWhereInput | Prisma.ChannelWhereInput[]
   OR?: Prisma.ChannelWhereInput[]
   NOT?: Prisma.ChannelWhereInput | Prisma.ChannelWhereInput[]
@@ -308,7 +320,8 @@ export type ChannelWhereUniqueInput = Prisma.AtLeast<{
   course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
   messages?: Prisma.MessageListRelationFilter
   reads?: Prisma.ChannelReadListRelationFilter
-}, "id" | "slug">
+  cohort?: Prisma.XOR<Prisma.CourseCohortNullableScalarRelationFilter, Prisma.CourseCohortWhereInput> | null
+}, "id" | "slug" | "cohortId">
 
 export type ChannelOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -322,6 +335,7 @@ export type ChannelOrderByWithAggregationInput = {
   sortOrder?: Prisma.SortOrder
   archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  cohortId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ChannelCountOrderByAggregateInput
   _avg?: Prisma.ChannelAvgOrderByAggregateInput
   _max?: Prisma.ChannelMaxOrderByAggregateInput
@@ -344,6 +358,7 @@ export type ChannelScalarWhereWithAggregatesInput = {
   sortOrder?: Prisma.IntWithAggregatesFilter<"Channel"> | number
   archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Channel"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Channel"> | Date | string
+  cohortId?: Prisma.StringNullableWithAggregatesFilter<"Channel"> | string | null
 }
 
 export type ChannelCreateInput = {
@@ -360,6 +375,7 @@ export type ChannelCreateInput = {
   course?: Prisma.CourseCreateNestedOneWithoutChannelsInput
   messages?: Prisma.MessageCreateNestedManyWithoutChannelInput
   reads?: Prisma.ChannelReadCreateNestedManyWithoutChannelInput
+  cohort?: Prisma.CourseCohortCreateNestedOneWithoutChannelInput
 }
 
 export type ChannelUncheckedCreateInput = {
@@ -374,6 +390,7 @@ export type ChannelUncheckedCreateInput = {
   sortOrder?: number
   archivedAt?: Date | string | null
   createdAt?: Date | string
+  cohortId?: string | null
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutChannelInput
   reads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutChannelInput
 }
@@ -392,6 +409,7 @@ export type ChannelUpdateInput = {
   course?: Prisma.CourseUpdateOneWithoutChannelsNestedInput
   messages?: Prisma.MessageUpdateManyWithoutChannelNestedInput
   reads?: Prisma.ChannelReadUpdateManyWithoutChannelNestedInput
+  cohort?: Prisma.CourseCohortUpdateOneWithoutChannelNestedInput
 }
 
 export type ChannelUncheckedUpdateInput = {
@@ -406,6 +424,7 @@ export type ChannelUncheckedUpdateInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cohortId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messages?: Prisma.MessageUncheckedUpdateManyWithoutChannelNestedInput
   reads?: Prisma.ChannelReadUncheckedUpdateManyWithoutChannelNestedInput
 }
@@ -422,6 +441,7 @@ export type ChannelCreateManyInput = {
   sortOrder?: number
   archivedAt?: Date | string | null
   createdAt?: Date | string
+  cohortId?: string | null
 }
 
 export type ChannelUpdateManyMutationInput = {
@@ -449,6 +469,7 @@ export type ChannelUncheckedUpdateManyInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cohortId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChannelListRelationFilter = {
@@ -473,6 +494,7 @@ export type ChannelCountOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
   archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  cohortId?: Prisma.SortOrder
 }
 
 export type ChannelAvgOrderByAggregateInput = {
@@ -492,6 +514,7 @@ export type ChannelMaxOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
   archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  cohortId?: Prisma.SortOrder
 }
 
 export type ChannelMinOrderByAggregateInput = {
@@ -506,6 +529,7 @@ export type ChannelMinOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
   archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  cohortId?: Prisma.SortOrder
 }
 
 export type ChannelSumOrderByAggregateInput = {
@@ -516,6 +540,11 @@ export type ChannelSumOrderByAggregateInput = {
 export type ChannelScalarRelationFilter = {
   is?: Prisma.ChannelWhereInput
   isNot?: Prisma.ChannelWhereInput
+}
+
+export type ChannelNullableScalarRelationFilter = {
+  is?: Prisma.ChannelWhereInput | null
+  isNot?: Prisma.ChannelWhereInput | null
 }
 
 export type ChannelCreateNestedManyWithoutCourseInput = {
@@ -592,6 +621,38 @@ export type ChannelUpdateOneRequiredWithoutReadsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChannelUpdateToOneWithWhereWithoutReadsInput, Prisma.ChannelUpdateWithoutReadsInput>, Prisma.ChannelUncheckedUpdateWithoutReadsInput>
 }
 
+export type ChannelCreateNestedOneWithoutCohortInput = {
+  create?: Prisma.XOR<Prisma.ChannelCreateWithoutCohortInput, Prisma.ChannelUncheckedCreateWithoutCohortInput>
+  connectOrCreate?: Prisma.ChannelCreateOrConnectWithoutCohortInput
+  connect?: Prisma.ChannelWhereUniqueInput
+}
+
+export type ChannelUncheckedCreateNestedOneWithoutCohortInput = {
+  create?: Prisma.XOR<Prisma.ChannelCreateWithoutCohortInput, Prisma.ChannelUncheckedCreateWithoutCohortInput>
+  connectOrCreate?: Prisma.ChannelCreateOrConnectWithoutCohortInput
+  connect?: Prisma.ChannelWhereUniqueInput
+}
+
+export type ChannelUpdateOneWithoutCohortNestedInput = {
+  create?: Prisma.XOR<Prisma.ChannelCreateWithoutCohortInput, Prisma.ChannelUncheckedCreateWithoutCohortInput>
+  connectOrCreate?: Prisma.ChannelCreateOrConnectWithoutCohortInput
+  upsert?: Prisma.ChannelUpsertWithoutCohortInput
+  disconnect?: Prisma.ChannelWhereInput | boolean
+  delete?: Prisma.ChannelWhereInput | boolean
+  connect?: Prisma.ChannelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChannelUpdateToOneWithWhereWithoutCohortInput, Prisma.ChannelUpdateWithoutCohortInput>, Prisma.ChannelUncheckedUpdateWithoutCohortInput>
+}
+
+export type ChannelUncheckedUpdateOneWithoutCohortNestedInput = {
+  create?: Prisma.XOR<Prisma.ChannelCreateWithoutCohortInput, Prisma.ChannelUncheckedCreateWithoutCohortInput>
+  connectOrCreate?: Prisma.ChannelCreateOrConnectWithoutCohortInput
+  upsert?: Prisma.ChannelUpsertWithoutCohortInput
+  disconnect?: Prisma.ChannelWhereInput | boolean
+  delete?: Prisma.ChannelWhereInput | boolean
+  connect?: Prisma.ChannelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChannelUpdateToOneWithWhereWithoutCohortInput, Prisma.ChannelUpdateWithoutCohortInput>, Prisma.ChannelUncheckedUpdateWithoutCohortInput>
+}
+
 export type ChannelCreateWithoutCourseInput = {
   id?: string
   slug: string
@@ -605,6 +666,7 @@ export type ChannelCreateWithoutCourseInput = {
   createdAt?: Date | string
   messages?: Prisma.MessageCreateNestedManyWithoutChannelInput
   reads?: Prisma.ChannelReadCreateNestedManyWithoutChannelInput
+  cohort?: Prisma.CourseCohortCreateNestedOneWithoutChannelInput
 }
 
 export type ChannelUncheckedCreateWithoutCourseInput = {
@@ -618,6 +680,7 @@ export type ChannelUncheckedCreateWithoutCourseInput = {
   sortOrder?: number
   archivedAt?: Date | string | null
   createdAt?: Date | string
+  cohortId?: string | null
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutChannelInput
   reads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutChannelInput
 }
@@ -663,6 +726,7 @@ export type ChannelScalarWhereInput = {
   sortOrder?: Prisma.IntFilter<"Channel"> | number
   archivedAt?: Prisma.DateTimeNullableFilter<"Channel"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Channel"> | Date | string
+  cohortId?: Prisma.StringNullableFilter<"Channel"> | string | null
 }
 
 export type ChannelCreateWithoutMessagesInput = {
@@ -678,6 +742,7 @@ export type ChannelCreateWithoutMessagesInput = {
   createdAt?: Date | string
   course?: Prisma.CourseCreateNestedOneWithoutChannelsInput
   reads?: Prisma.ChannelReadCreateNestedManyWithoutChannelInput
+  cohort?: Prisma.CourseCohortCreateNestedOneWithoutChannelInput
 }
 
 export type ChannelUncheckedCreateWithoutMessagesInput = {
@@ -692,6 +757,7 @@ export type ChannelUncheckedCreateWithoutMessagesInput = {
   sortOrder?: number
   archivedAt?: Date | string | null
   createdAt?: Date | string
+  cohortId?: string | null
   reads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutChannelInput
 }
 
@@ -724,6 +790,7 @@ export type ChannelUpdateWithoutMessagesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   course?: Prisma.CourseUpdateOneWithoutChannelsNestedInput
   reads?: Prisma.ChannelReadUpdateManyWithoutChannelNestedInput
+  cohort?: Prisma.CourseCohortUpdateOneWithoutChannelNestedInput
 }
 
 export type ChannelUncheckedUpdateWithoutMessagesInput = {
@@ -738,6 +805,7 @@ export type ChannelUncheckedUpdateWithoutMessagesInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cohortId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reads?: Prisma.ChannelReadUncheckedUpdateManyWithoutChannelNestedInput
 }
 
@@ -754,6 +822,7 @@ export type ChannelCreateWithoutReadsInput = {
   createdAt?: Date | string
   course?: Prisma.CourseCreateNestedOneWithoutChannelsInput
   messages?: Prisma.MessageCreateNestedManyWithoutChannelInput
+  cohort?: Prisma.CourseCohortCreateNestedOneWithoutChannelInput
 }
 
 export type ChannelUncheckedCreateWithoutReadsInput = {
@@ -768,6 +837,7 @@ export type ChannelUncheckedCreateWithoutReadsInput = {
   sortOrder?: number
   archivedAt?: Date | string | null
   createdAt?: Date | string
+  cohortId?: string | null
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutChannelInput
 }
 
@@ -800,6 +870,7 @@ export type ChannelUpdateWithoutReadsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   course?: Prisma.CourseUpdateOneWithoutChannelsNestedInput
   messages?: Prisma.MessageUpdateManyWithoutChannelNestedInput
+  cohort?: Prisma.CourseCohortUpdateOneWithoutChannelNestedInput
 }
 
 export type ChannelUncheckedUpdateWithoutReadsInput = {
@@ -814,7 +885,88 @@ export type ChannelUncheckedUpdateWithoutReadsInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cohortId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messages?: Prisma.MessageUncheckedUpdateManyWithoutChannelNestedInput
+}
+
+export type ChannelCreateWithoutCohortInput = {
+  id?: string
+  slug: string
+  name: string
+  topic?: string | null
+  kind?: $Enums.ChannelKind
+  adminOnly?: boolean
+  slowModeSec?: number
+  sortOrder?: number
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  course?: Prisma.CourseCreateNestedOneWithoutChannelsInput
+  messages?: Prisma.MessageCreateNestedManyWithoutChannelInput
+  reads?: Prisma.ChannelReadCreateNestedManyWithoutChannelInput
+}
+
+export type ChannelUncheckedCreateWithoutCohortInput = {
+  id?: string
+  slug: string
+  name: string
+  topic?: string | null
+  kind?: $Enums.ChannelKind
+  courseId?: string | null
+  adminOnly?: boolean
+  slowModeSec?: number
+  sortOrder?: number
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutChannelInput
+  reads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutChannelInput
+}
+
+export type ChannelCreateOrConnectWithoutCohortInput = {
+  where: Prisma.ChannelWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChannelCreateWithoutCohortInput, Prisma.ChannelUncheckedCreateWithoutCohortInput>
+}
+
+export type ChannelUpsertWithoutCohortInput = {
+  update: Prisma.XOR<Prisma.ChannelUpdateWithoutCohortInput, Prisma.ChannelUncheckedUpdateWithoutCohortInput>
+  create: Prisma.XOR<Prisma.ChannelCreateWithoutCohortInput, Prisma.ChannelUncheckedCreateWithoutCohortInput>
+  where?: Prisma.ChannelWhereInput
+}
+
+export type ChannelUpdateToOneWithWhereWithoutCohortInput = {
+  where?: Prisma.ChannelWhereInput
+  data: Prisma.XOR<Prisma.ChannelUpdateWithoutCohortInput, Prisma.ChannelUncheckedUpdateWithoutCohortInput>
+}
+
+export type ChannelUpdateWithoutCohortInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumChannelKindFieldUpdateOperationsInput | $Enums.ChannelKind
+  adminOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  slowModeSec?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  course?: Prisma.CourseUpdateOneWithoutChannelsNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutChannelNestedInput
+  reads?: Prisma.ChannelReadUpdateManyWithoutChannelNestedInput
+}
+
+export type ChannelUncheckedUpdateWithoutCohortInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumChannelKindFieldUpdateOperationsInput | $Enums.ChannelKind
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  slowModeSec?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutChannelNestedInput
+  reads?: Prisma.ChannelReadUncheckedUpdateManyWithoutChannelNestedInput
 }
 
 export type ChannelCreateManyCourseInput = {
@@ -828,6 +980,7 @@ export type ChannelCreateManyCourseInput = {
   sortOrder?: number
   archivedAt?: Date | string | null
   createdAt?: Date | string
+  cohortId?: string | null
 }
 
 export type ChannelUpdateWithoutCourseInput = {
@@ -843,6 +996,7 @@ export type ChannelUpdateWithoutCourseInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   messages?: Prisma.MessageUpdateManyWithoutChannelNestedInput
   reads?: Prisma.ChannelReadUpdateManyWithoutChannelNestedInput
+  cohort?: Prisma.CourseCohortUpdateOneWithoutChannelNestedInput
 }
 
 export type ChannelUncheckedUpdateWithoutCourseInput = {
@@ -856,6 +1010,7 @@ export type ChannelUncheckedUpdateWithoutCourseInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cohortId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messages?: Prisma.MessageUncheckedUpdateManyWithoutChannelNestedInput
   reads?: Prisma.ChannelReadUncheckedUpdateManyWithoutChannelNestedInput
 }
@@ -871,6 +1026,7 @@ export type ChannelUncheckedUpdateManyWithoutCourseInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cohortId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -925,9 +1081,11 @@ export type ChannelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   sortOrder?: boolean
   archivedAt?: boolean
   createdAt?: boolean
+  cohortId?: boolean
   course?: boolean | Prisma.Channel$courseArgs<ExtArgs>
   messages?: boolean | Prisma.Channel$messagesArgs<ExtArgs>
   reads?: boolean | Prisma.Channel$readsArgs<ExtArgs>
+  cohort?: boolean | Prisma.Channel$cohortArgs<ExtArgs>
   _count?: boolean | Prisma.ChannelCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["channel"]>
 
@@ -943,7 +1101,9 @@ export type ChannelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sortOrder?: boolean
   archivedAt?: boolean
   createdAt?: boolean
+  cohortId?: boolean
   course?: boolean | Prisma.Channel$courseArgs<ExtArgs>
+  cohort?: boolean | Prisma.Channel$cohortArgs<ExtArgs>
 }, ExtArgs["result"]["channel"]>
 
 export type ChannelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -958,7 +1118,9 @@ export type ChannelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sortOrder?: boolean
   archivedAt?: boolean
   createdAt?: boolean
+  cohortId?: boolean
   course?: boolean | Prisma.Channel$courseArgs<ExtArgs>
+  cohort?: boolean | Prisma.Channel$cohortArgs<ExtArgs>
 }, ExtArgs["result"]["channel"]>
 
 export type ChannelSelectScalar = {
@@ -973,20 +1135,24 @@ export type ChannelSelectScalar = {
   sortOrder?: boolean
   archivedAt?: boolean
   createdAt?: boolean
+  cohortId?: boolean
 }
 
-export type ChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "topic" | "kind" | "courseId" | "adminOnly" | "slowModeSec" | "sortOrder" | "archivedAt" | "createdAt", ExtArgs["result"]["channel"]>
+export type ChannelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "topic" | "kind" | "courseId" | "adminOnly" | "slowModeSec" | "sortOrder" | "archivedAt" | "createdAt" | "cohortId", ExtArgs["result"]["channel"]>
 export type ChannelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.Channel$courseArgs<ExtArgs>
   messages?: boolean | Prisma.Channel$messagesArgs<ExtArgs>
   reads?: boolean | Prisma.Channel$readsArgs<ExtArgs>
+  cohort?: boolean | Prisma.Channel$cohortArgs<ExtArgs>
   _count?: boolean | Prisma.ChannelCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChannelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.Channel$courseArgs<ExtArgs>
+  cohort?: boolean | Prisma.Channel$cohortArgs<ExtArgs>
 }
 export type ChannelIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.Channel$courseArgs<ExtArgs>
+  cohort?: boolean | Prisma.Channel$cohortArgs<ExtArgs>
 }
 
 export type $ChannelPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -995,6 +1161,7 @@ export type $ChannelPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     course: Prisma.$CoursePayload<ExtArgs> | null
     messages: Prisma.$MessagePayload<ExtArgs>[]
     reads: Prisma.$ChannelReadPayload<ExtArgs>[]
+    cohort: Prisma.$CourseCohortPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1017,6 +1184,10 @@ export type $ChannelPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     sortOrder: number
     archivedAt: Date | null
     createdAt: Date
+    /**
+     * The members-only chat of a mentor-led cohort.
+     */
+    cohortId: string | null
   }, ExtArgs["result"]["channel"]>
   composites: {}
 }
@@ -1414,6 +1585,7 @@ export interface Prisma__ChannelClient<T, Null = never, ExtArgs extends runtime.
   course<T extends Prisma.Channel$courseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Channel$courseArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   messages<T extends Prisma.Channel$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Channel$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reads<T extends Prisma.Channel$readsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Channel$readsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChannelReadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cohort<T extends Prisma.Channel$cohortArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Channel$cohortArgs<ExtArgs>>): Prisma.Prisma__CourseCohortClient<runtime.Types.Result.GetResult<Prisma.$CourseCohortPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1454,6 +1626,7 @@ export interface ChannelFieldRefs {
   readonly sortOrder: Prisma.FieldRef<"Channel", 'Int'>
   readonly archivedAt: Prisma.FieldRef<"Channel", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Channel", 'DateTime'>
+  readonly cohortId: Prisma.FieldRef<"Channel", 'String'>
 }
     
 
@@ -1914,6 +2087,25 @@ export type Channel$readsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.ChannelReadScalarFieldEnum | Prisma.ChannelReadScalarFieldEnum[]
+}
+
+/**
+ * Channel.cohort
+ */
+export type Channel$cohortArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CourseCohort
+   */
+  select?: Prisma.CourseCohortSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CourseCohort
+   */
+  omit?: Prisma.CourseCohortOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseCohortInclude<ExtArgs> | null
+  where?: Prisma.CourseCohortWhereInput
 }
 
 /**

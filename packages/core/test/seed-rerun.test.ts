@@ -20,7 +20,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { PrismaClient } from "@tycoonhood/db";
-import { CatalogService } from "../src/catalog/catalog";
+import { CatalogService, type ProductKind } from "../src/catalog/catalog";
 import { CourseAuthoringService } from "../src/lms/authoring";
 import { DiscussionService } from "../src/discussions/discussions";
 import { CommunityService } from "../src/community/community";
@@ -83,7 +83,8 @@ async function editLikeStaff(db: PrismaClient) {
     where: { slug: "why-tycoonhood-exists" },
     data: { title: "Why we built Tycoonhood", excerpt: "Rewritten by staff.", contentMd: "Staff copy.", authorName: "The House" },
   });
-  await db.post.update({ where: { slug: "thc-utility-before-speculation" }, data: { publishedAt: null } });
+  // The action clears the time and the status together: Post_live_has_time refuses a PUBLISHED post with no time.
+  await db.post.update({ where: { slug: "thc-utility-before-speculation" }, data: { publishedAt: null, status: "DRAFT" } });
 
   // Admin → Courses: details with the instructor cleared, a lesson, a module,
   // the founder's profile, one programme unpublished and one archived.
@@ -181,6 +182,18 @@ describe("seeds are safe to re-run on a live database", () => {
     expect(run).toEqual([...DEPLOY_SEEDS]);
   });
 
+  it("seeds each essay with the status its time gives it, as migration 20261113000700 backfilled posts", async () => {
+    // On a fresh database the migrations run before the seeds, so the backfill finds no
+    // essay: the seed writes the status itself, or a live essay reads as a draft.
+    const essays = await t.db.post.findMany({ select: { slug: true, status: true, publishedAt: true }, orderBy: { slug: "asc" } });
+    expect(essays.length).toBeGreaterThan(0);
+    const now = new Date();
+    expect(essays.map((e) => [e.slug, e.status])).toEqual(
+      essays.map((e) => [e.slug, e.publishedAt === null ? "DRAFT" : e.publishedAt <= now ? "PUBLISHED" : "SCHEDULED"])
+    );
+    expect(essays.every((e) => e.status === "PUBLISHED")).toBe(true);
+  });
+
   it("a second run on an untouched database changes nothing", async () => {
     const before = await snapshot(t.db);
     await seedAll(t);
@@ -243,8 +256,11 @@ describe("seeds are safe to re-run on a live database", () => {
       "SiteSetting[seed.created.missions]",
     ]);
     expect(await recorded(t.db, "missions")).toContain("complete-onboarding");
-    // The challenge got its wording back and nothing else: staff ended it, and it stays ended.
-    expect(diff.find((l) => l.startsWith("Challenge"))).toMatch(/^Challenge\[launch-week\]: description "Old wording\." → "Seven days[^;]*$/);
+    // The challenge got its wording back and nothing else (but the time of that write, in
+    // updatedAt): staff ended it, and it stays ended.
+    expect(diff.find((l) => l.startsWith("Challenge"))).toMatch(
+      /^Challenge\[launch-week\]: description "Old wording\." → "Seven days[^;]*; updatedAt "[^"]+" → "[^"]+"$/
+    );
     expect((await t.db.challenge.findUniqueOrThrow({ where: { slug: "launch-week" } })).lifecycle).toBe("ENDED");
     expect((await t.db.rankDefinition.findUniqueOrThrow({ where: { slug: "elite" } })).name).toBe("Tycoon Elite");
   }, SLOW);
@@ -306,7 +322,7 @@ describe("seeds are safe to re-run on a live database", () => {
       include: { variants: { orderBy: { sortOrder: "asc" } } },
     });
     await new CatalogService(t.db).save({
-      slug: hoodie.slug, kind: hoodie.kind, name: hoodie.name, description: hoodie.description,
+      slug: hoodie.slug, kind: hoodie.kind as ProductKind, name: hoodie.name, description: hoodie.description,
       priceThc: hoodie.priceThc, priceFiatCents: hoodie.priceFiatCents, costCents: hoodie.costCents, active: hoodie.active,
       variants: hoodie.variants.map((v) => ({
         id: v.id, sku: v.sku === "WARRIORHOO-M" ? "HOODIE-MEDIUM" : v.sku, label: v.label, inventory: v.inventory,

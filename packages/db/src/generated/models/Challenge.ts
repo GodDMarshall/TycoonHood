@@ -29,11 +29,13 @@ export type AggregateChallenge = {
 export type ChallengeAvgAggregateOutputType = {
   xpReward: number | null
   thcReward: number | null
+  maxParticipants: number | null
 }
 
 export type ChallengeSumAggregateOutputType = {
   xpReward: number | null
   thcReward: bigint | null
+  maxParticipants: number | null
 }
 
 export type ChallengeMinAggregateOutputType = {
@@ -47,6 +49,23 @@ export type ChallengeMinAggregateOutputType = {
   endsAt: Date | null
   xpReward: number | null
   thcReward: bigint | null
+  kind: $Enums.ChallengeKind | null
+  scope: $Enums.ChallengeScope | null
+  academyId: string | null
+  groupId: string | null
+  courseId: string | null
+  cadence: $Enums.ChallengeCadence | null
+  templateId: string | null
+  instanceKey: string | null
+  instructions: string | null
+  coverImage: string | null
+  maxParticipants: number | null
+  showBoard: boolean | null
+  publishedAt: Date | null
+  createdById: string | null
+  isDemo: boolean | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type ChallengeMaxAggregateOutputType = {
@@ -60,6 +79,23 @@ export type ChallengeMaxAggregateOutputType = {
   endsAt: Date | null
   xpReward: number | null
   thcReward: bigint | null
+  kind: $Enums.ChallengeKind | null
+  scope: $Enums.ChallengeScope | null
+  academyId: string | null
+  groupId: string | null
+  courseId: string | null
+  cadence: $Enums.ChallengeCadence | null
+  templateId: string | null
+  instanceKey: string | null
+  instructions: string | null
+  coverImage: string | null
+  maxParticipants: number | null
+  showBoard: boolean | null
+  publishedAt: Date | null
+  createdById: string | null
+  isDemo: boolean | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type ChallengeCountAggregateOutputType = {
@@ -75,6 +111,23 @@ export type ChallengeCountAggregateOutputType = {
   criteria: number
   xpReward: number
   thcReward: number
+  kind: number
+  scope: number
+  academyId: number
+  groupId: number
+  courseId: number
+  cadence: number
+  templateId: number
+  instanceKey: number
+  instructions: number
+  coverImage: number
+  maxParticipants: number
+  showBoard: number
+  publishedAt: number
+  createdById: number
+  isDemo: number
+  createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -82,11 +135,13 @@ export type ChallengeCountAggregateOutputType = {
 export type ChallengeAvgAggregateInputType = {
   xpReward?: true
   thcReward?: true
+  maxParticipants?: true
 }
 
 export type ChallengeSumAggregateInputType = {
   xpReward?: true
   thcReward?: true
+  maxParticipants?: true
 }
 
 export type ChallengeMinAggregateInputType = {
@@ -100,6 +155,23 @@ export type ChallengeMinAggregateInputType = {
   endsAt?: true
   xpReward?: true
   thcReward?: true
+  kind?: true
+  scope?: true
+  academyId?: true
+  groupId?: true
+  courseId?: true
+  cadence?: true
+  templateId?: true
+  instanceKey?: true
+  instructions?: true
+  coverImage?: true
+  maxParticipants?: true
+  showBoard?: true
+  publishedAt?: true
+  createdById?: true
+  isDemo?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type ChallengeMaxAggregateInputType = {
@@ -113,6 +185,23 @@ export type ChallengeMaxAggregateInputType = {
   endsAt?: true
   xpReward?: true
   thcReward?: true
+  kind?: true
+  scope?: true
+  academyId?: true
+  groupId?: true
+  courseId?: true
+  cadence?: true
+  templateId?: true
+  instanceKey?: true
+  instructions?: true
+  coverImage?: true
+  maxParticipants?: true
+  showBoard?: true
+  publishedAt?: true
+  createdById?: true
+  isDemo?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type ChallengeCountAggregateInputType = {
@@ -128,6 +217,23 @@ export type ChallengeCountAggregateInputType = {
   criteria?: true
   xpReward?: true
   thcReward?: true
+  kind?: true
+  scope?: true
+  academyId?: true
+  groupId?: true
+  courseId?: true
+  cadence?: true
+  templateId?: true
+  instanceKey?: true
+  instructions?: true
+  coverImage?: true
+  maxParticipants?: true
+  showBoard?: true
+  publishedAt?: true
+  createdById?: true
+  isDemo?: true
+  createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -230,6 +336,23 @@ export type ChallengeGroupByOutputType = {
   criteria: runtime.JsonValue
   xpReward: number
   thcReward: bigint
+  kind: $Enums.ChallengeKind
+  scope: $Enums.ChallengeScope
+  academyId: string | null
+  groupId: string | null
+  courseId: string | null
+  cadence: $Enums.ChallengeCadence
+  templateId: string | null
+  instanceKey: string | null
+  instructions: string | null
+  coverImage: string | null
+  maxParticipants: number | null
+  showBoard: boolean
+  publishedAt: Date | null
+  createdById: string | null
+  isDemo: boolean
+  createdAt: Date
+  updatedAt: Date
   _count: ChallengeCountAggregateOutputType | null
   _avg: ChallengeAvgAggregateOutputType | null
   _sum: ChallengeSumAggregateOutputType | null
@@ -268,7 +391,37 @@ export type ChallengeWhereInput = {
   criteria?: Prisma.JsonFilter<"Challenge">
   xpReward?: Prisma.IntFilter<"Challenge"> | number
   thcReward?: Prisma.BigIntFilter<"Challenge"> | bigint | number
+  kind?: Prisma.EnumChallengeKindFilter<"Challenge"> | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFilter<"Challenge"> | $Enums.ChallengeScope
+  academyId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  groupId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  courseId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  cadence?: Prisma.EnumChallengeCadenceFilter<"Challenge"> | $Enums.ChallengeCadence
+  templateId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  instanceKey?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  instructions?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  coverImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  maxParticipants?: Prisma.IntNullableFilter<"Challenge"> | number | null
+  showBoard?: Prisma.BoolFilter<"Challenge"> | boolean
+  publishedAt?: Prisma.DateTimeNullableFilter<"Challenge"> | Date | string | null
+  createdById?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  isDemo?: Prisma.BoolFilter<"Challenge"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   participations?: Prisma.ChallengeParticipationListRelationFilter
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  group?: Prisma.XOR<Prisma.CommunityGroupNullableScalarRelationFilter, Prisma.CommunityGroupWhereInput> | null
+  course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
+  template?: Prisma.XOR<Prisma.ChallengeNullableScalarRelationFilter, Prisma.ChallengeWhereInput> | null
+  instances?: Prisma.ChallengeListRelationFilter
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  skills?: Prisma.ChallengeSkillListRelationFilter
+  submissions?: Prisma.EvidenceSubmissionListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
+  pathSteps?: Prisma.LearningPathStepListRelationFilter
+  goals?: Prisma.GoalListRelationFilter
+  liveEvents?: Prisma.LiveEventListRelationFilter
+  opportunities?: Prisma.OpportunityListRelationFilter
 }
 
 export type ChallengeOrderByWithRelationInput = {
@@ -284,12 +437,43 @@ export type ChallengeOrderByWithRelationInput = {
   criteria?: Prisma.SortOrder
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  templateId?: Prisma.SortOrderInput | Prisma.SortOrder
+  instanceKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  instructions?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  maxParticipants?: Prisma.SortOrderInput | Prisma.SortOrder
+  showBoard?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   participations?: Prisma.ChallengeParticipationOrderByRelationAggregateInput
+  academy?: Prisma.AcademyOrderByWithRelationInput
+  group?: Prisma.CommunityGroupOrderByWithRelationInput
+  course?: Prisma.CourseOrderByWithRelationInput
+  template?: Prisma.ChallengeOrderByWithRelationInput
+  instances?: Prisma.ChallengeOrderByRelationAggregateInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
+  skills?: Prisma.ChallengeSkillOrderByRelationAggregateInput
+  submissions?: Prisma.EvidenceSubmissionOrderByRelationAggregateInput
+  projects?: Prisma.ProjectOrderByRelationAggregateInput
+  pathSteps?: Prisma.LearningPathStepOrderByRelationAggregateInput
+  goals?: Prisma.GoalOrderByRelationAggregateInput
+  liveEvents?: Prisma.LiveEventOrderByRelationAggregateInput
+  opportunities?: Prisma.OpportunityOrderByRelationAggregateInput
 }
 
 export type ChallengeWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  templateId_instanceKey?: Prisma.ChallengeTemplateIdInstanceKeyCompoundUniqueInput
   AND?: Prisma.ChallengeWhereInput | Prisma.ChallengeWhereInput[]
   OR?: Prisma.ChallengeWhereInput[]
   NOT?: Prisma.ChallengeWhereInput | Prisma.ChallengeWhereInput[]
@@ -303,8 +487,38 @@ export type ChallengeWhereUniqueInput = Prisma.AtLeast<{
   criteria?: Prisma.JsonFilter<"Challenge">
   xpReward?: Prisma.IntFilter<"Challenge"> | number
   thcReward?: Prisma.BigIntFilter<"Challenge"> | bigint | number
+  kind?: Prisma.EnumChallengeKindFilter<"Challenge"> | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFilter<"Challenge"> | $Enums.ChallengeScope
+  academyId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  groupId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  courseId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  cadence?: Prisma.EnumChallengeCadenceFilter<"Challenge"> | $Enums.ChallengeCadence
+  templateId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  instanceKey?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  instructions?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  coverImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  maxParticipants?: Prisma.IntNullableFilter<"Challenge"> | number | null
+  showBoard?: Prisma.BoolFilter<"Challenge"> | boolean
+  publishedAt?: Prisma.DateTimeNullableFilter<"Challenge"> | Date | string | null
+  createdById?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  isDemo?: Prisma.BoolFilter<"Challenge"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   participations?: Prisma.ChallengeParticipationListRelationFilter
-}, "id" | "slug">
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  group?: Prisma.XOR<Prisma.CommunityGroupNullableScalarRelationFilter, Prisma.CommunityGroupWhereInput> | null
+  course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
+  template?: Prisma.XOR<Prisma.ChallengeNullableScalarRelationFilter, Prisma.ChallengeWhereInput> | null
+  instances?: Prisma.ChallengeListRelationFilter
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  skills?: Prisma.ChallengeSkillListRelationFilter
+  submissions?: Prisma.EvidenceSubmissionListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
+  pathSteps?: Prisma.LearningPathStepListRelationFilter
+  goals?: Prisma.GoalListRelationFilter
+  liveEvents?: Prisma.LiveEventListRelationFilter
+  opportunities?: Prisma.OpportunityListRelationFilter
+}, "id" | "slug" | "templateId_instanceKey">
 
 export type ChallengeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -319,6 +533,23 @@ export type ChallengeOrderByWithAggregationInput = {
   criteria?: Prisma.SortOrder
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  templateId?: Prisma.SortOrderInput | Prisma.SortOrder
+  instanceKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  instructions?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  maxParticipants?: Prisma.SortOrderInput | Prisma.SortOrder
+  showBoard?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.ChallengeCountOrderByAggregateInput
   _avg?: Prisma.ChallengeAvgOrderByAggregateInput
   _max?: Prisma.ChallengeMaxOrderByAggregateInput
@@ -342,6 +573,23 @@ export type ChallengeScalarWhereWithAggregatesInput = {
   criteria?: Prisma.JsonWithAggregatesFilter<"Challenge">
   xpReward?: Prisma.IntWithAggregatesFilter<"Challenge"> | number
   thcReward?: Prisma.BigIntWithAggregatesFilter<"Challenge"> | bigint | number
+  kind?: Prisma.EnumChallengeKindWithAggregatesFilter<"Challenge"> | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeWithAggregatesFilter<"Challenge"> | $Enums.ChallengeScope
+  academyId?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  groupId?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  courseId?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  cadence?: Prisma.EnumChallengeCadenceWithAggregatesFilter<"Challenge"> | $Enums.ChallengeCadence
+  templateId?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  instanceKey?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  instructions?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  coverImage?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  maxParticipants?: Prisma.IntNullableWithAggregatesFilter<"Challenge"> | number | null
+  showBoard?: Prisma.BoolWithAggregatesFilter<"Challenge"> | boolean
+  publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Challenge"> | Date | string | null
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  isDemo?: Prisma.BoolWithAggregatesFilter<"Challenge"> | boolean
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Challenge"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Challenge"> | Date | string
 }
 
 export type ChallengeCreateInput = {
@@ -357,7 +605,32 @@ export type ChallengeCreateInput = {
   criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: number
   thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
   participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
 }
 
 export type ChallengeUncheckedCreateInput = {
@@ -373,7 +646,32 @@ export type ChallengeUncheckedCreateInput = {
   criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: number
   thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
   participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
 }
 
 export type ChallengeUpdateInput = {
@@ -389,7 +687,32 @@ export type ChallengeUpdateInput = {
   criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: Prisma.IntFieldUpdateOperationsInput | number
   thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
 }
 
 export type ChallengeUncheckedUpdateInput = {
@@ -405,7 +728,32 @@ export type ChallengeUncheckedUpdateInput = {
   criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: Prisma.IntFieldUpdateOperationsInput | number
   thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
 }
 
 export type ChallengeCreateManyInput = {
@@ -421,6 +769,23 @@ export type ChallengeCreateManyInput = {
   criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: number
   thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type ChallengeUpdateManyMutationInput = {
@@ -436,6 +801,18 @@ export type ChallengeUpdateManyMutationInput = {
   criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: Prisma.IntFieldUpdateOperationsInput | number
   thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ChallengeUncheckedUpdateManyInput = {
@@ -451,6 +828,43 @@ export type ChallengeUncheckedUpdateManyInput = {
   criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: Prisma.IntFieldUpdateOperationsInput | number
   thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ChallengeListRelationFilter = {
+  every?: Prisma.ChallengeWhereInput
+  some?: Prisma.ChallengeWhereInput
+  none?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type ChallengeNullableScalarRelationFilter = {
+  is?: Prisma.ChallengeWhereInput | null
+  isNot?: Prisma.ChallengeWhereInput | null
+}
+
+export type ChallengeTemplateIdInstanceKeyCompoundUniqueInput = {
+  templateId: string
+  instanceKey: string
 }
 
 export type ChallengeCountOrderByAggregateInput = {
@@ -466,11 +880,29 @@ export type ChallengeCountOrderByAggregateInput = {
   criteria?: Prisma.SortOrder
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  templateId?: Prisma.SortOrder
+  instanceKey?: Prisma.SortOrder
+  instructions?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
+  maxParticipants?: Prisma.SortOrder
+  showBoard?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type ChallengeAvgOrderByAggregateInput = {
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
+  maxParticipants?: Prisma.SortOrder
 }
 
 export type ChallengeMaxOrderByAggregateInput = {
@@ -484,6 +916,23 @@ export type ChallengeMaxOrderByAggregateInput = {
   endsAt?: Prisma.SortOrder
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  templateId?: Prisma.SortOrder
+  instanceKey?: Prisma.SortOrder
+  instructions?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
+  maxParticipants?: Prisma.SortOrder
+  showBoard?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type ChallengeMinOrderByAggregateInput = {
@@ -497,16 +946,138 @@ export type ChallengeMinOrderByAggregateInput = {
   endsAt?: Prisma.SortOrder
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  templateId?: Prisma.SortOrder
+  instanceKey?: Prisma.SortOrder
+  instructions?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
+  maxParticipants?: Prisma.SortOrder
+  showBoard?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type ChallengeSumOrderByAggregateInput = {
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
+  maxParticipants?: Prisma.SortOrder
 }
 
 export type ChallengeScalarRelationFilter = {
   is?: Prisma.ChallengeWhereInput
   isNot?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutCreatedByInput, Prisma.ChallengeUncheckedCreateWithoutCreatedByInput> | Prisma.ChallengeCreateWithoutCreatedByInput[] | Prisma.ChallengeUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutCreatedByInput | Prisma.ChallengeCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.ChallengeCreateManyCreatedByInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutCreatedByInput, Prisma.ChallengeUncheckedCreateWithoutCreatedByInput> | Prisma.ChallengeCreateWithoutCreatedByInput[] | Prisma.ChallengeUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutCreatedByInput | Prisma.ChallengeCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.ChallengeCreateManyCreatedByInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutCreatedByInput, Prisma.ChallengeUncheckedCreateWithoutCreatedByInput> | Prisma.ChallengeCreateWithoutCreatedByInput[] | Prisma.ChallengeUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutCreatedByInput | Prisma.ChallengeCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.ChallengeCreateManyCreatedByInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutCreatedByInput | Prisma.ChallengeUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutCreatedByInput, Prisma.ChallengeUncheckedCreateWithoutCreatedByInput> | Prisma.ChallengeCreateWithoutCreatedByInput[] | Prisma.ChallengeUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutCreatedByInput | Prisma.ChallengeCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.ChallengeCreateManyCreatedByInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutCreatedByInput | Prisma.ChallengeUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeCreateNestedManyWithoutCourseInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutCourseInput, Prisma.ChallengeUncheckedCreateWithoutCourseInput> | Prisma.ChallengeCreateWithoutCourseInput[] | Prisma.ChallengeUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutCourseInput | Prisma.ChallengeCreateOrConnectWithoutCourseInput[]
+  createMany?: Prisma.ChallengeCreateManyCourseInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUncheckedCreateNestedManyWithoutCourseInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutCourseInput, Prisma.ChallengeUncheckedCreateWithoutCourseInput> | Prisma.ChallengeCreateWithoutCourseInput[] | Prisma.ChallengeUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutCourseInput | Prisma.ChallengeCreateOrConnectWithoutCourseInput[]
+  createMany?: Prisma.ChallengeCreateManyCourseInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUpdateManyWithoutCourseNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutCourseInput, Prisma.ChallengeUncheckedCreateWithoutCourseInput> | Prisma.ChallengeCreateWithoutCourseInput[] | Prisma.ChallengeUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutCourseInput | Prisma.ChallengeCreateOrConnectWithoutCourseInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutCourseInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutCourseInput[]
+  createMany?: Prisma.ChallengeCreateManyCourseInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutCourseInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutCourseInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutCourseInput | Prisma.ChallengeUpdateManyWithWhereWithoutCourseInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeUncheckedUpdateManyWithoutCourseNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutCourseInput, Prisma.ChallengeUncheckedCreateWithoutCourseInput> | Prisma.ChallengeCreateWithoutCourseInput[] | Prisma.ChallengeUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutCourseInput | Prisma.ChallengeCreateOrConnectWithoutCourseInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutCourseInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutCourseInput[]
+  createMany?: Prisma.ChallengeCreateManyCourseInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutCourseInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutCourseInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutCourseInput | Prisma.ChallengeUpdateManyWithWhereWithoutCourseInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeCreateNestedOneWithoutInstancesInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutInstancesInput, Prisma.ChallengeUncheckedCreateWithoutInstancesInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutInstancesInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+}
+
+export type ChallengeCreateNestedManyWithoutTemplateInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutTemplateInput, Prisma.ChallengeUncheckedCreateWithoutTemplateInput> | Prisma.ChallengeCreateWithoutTemplateInput[] | Prisma.ChallengeUncheckedCreateWithoutTemplateInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutTemplateInput | Prisma.ChallengeCreateOrConnectWithoutTemplateInput[]
+  createMany?: Prisma.ChallengeCreateManyTemplateInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUncheckedCreateNestedManyWithoutTemplateInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutTemplateInput, Prisma.ChallengeUncheckedCreateWithoutTemplateInput> | Prisma.ChallengeCreateWithoutTemplateInput[] | Prisma.ChallengeUncheckedCreateWithoutTemplateInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutTemplateInput | Prisma.ChallengeCreateOrConnectWithoutTemplateInput[]
+  createMany?: Prisma.ChallengeCreateManyTemplateInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
 }
 
 export type NullableEnumPillarFieldUpdateOperationsInput = {
@@ -515,6 +1086,56 @@ export type NullableEnumPillarFieldUpdateOperationsInput = {
 
 export type EnumChallengeLifecycleFieldUpdateOperationsInput = {
   set?: $Enums.ChallengeLifecycle
+}
+
+export type EnumChallengeKindFieldUpdateOperationsInput = {
+  set?: $Enums.ChallengeKind
+}
+
+export type EnumChallengeScopeFieldUpdateOperationsInput = {
+  set?: $Enums.ChallengeScope
+}
+
+export type EnumChallengeCadenceFieldUpdateOperationsInput = {
+  set?: $Enums.ChallengeCadence
+}
+
+export type ChallengeUpdateOneWithoutInstancesNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutInstancesInput, Prisma.ChallengeUncheckedCreateWithoutInstancesInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutInstancesInput
+  upsert?: Prisma.ChallengeUpsertWithoutInstancesInput
+  disconnect?: Prisma.ChallengeWhereInput | boolean
+  delete?: Prisma.ChallengeWhereInput | boolean
+  connect?: Prisma.ChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutInstancesInput, Prisma.ChallengeUpdateWithoutInstancesInput>, Prisma.ChallengeUncheckedUpdateWithoutInstancesInput>
+}
+
+export type ChallengeUpdateManyWithoutTemplateNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutTemplateInput, Prisma.ChallengeUncheckedCreateWithoutTemplateInput> | Prisma.ChallengeCreateWithoutTemplateInput[] | Prisma.ChallengeUncheckedCreateWithoutTemplateInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutTemplateInput | Prisma.ChallengeCreateOrConnectWithoutTemplateInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutTemplateInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutTemplateInput[]
+  createMany?: Prisma.ChallengeCreateManyTemplateInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutTemplateInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutTemplateInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutTemplateInput | Prisma.ChallengeUpdateManyWithWhereWithoutTemplateInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeUncheckedUpdateManyWithoutTemplateNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutTemplateInput, Prisma.ChallengeUncheckedCreateWithoutTemplateInput> | Prisma.ChallengeCreateWithoutTemplateInput[] | Prisma.ChallengeUncheckedCreateWithoutTemplateInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutTemplateInput | Prisma.ChallengeCreateOrConnectWithoutTemplateInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutTemplateInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutTemplateInput[]
+  createMany?: Prisma.ChallengeCreateManyTemplateInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutTemplateInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutTemplateInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutTemplateInput | Prisma.ChallengeUpdateManyWithWhereWithoutTemplateInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
 }
 
 export type ChallengeCreateNestedOneWithoutParticipationsInput = {
@@ -531,6 +1152,729 @@ export type ChallengeUpdateOneRequiredWithoutParticipationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutParticipationsInput, Prisma.ChallengeUpdateWithoutParticipationsInput>, Prisma.ChallengeUncheckedUpdateWithoutParticipationsInput>
 }
 
+export type ChallengeCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutGroupInput, Prisma.ChallengeUncheckedCreateWithoutGroupInput> | Prisma.ChallengeCreateWithoutGroupInput[] | Prisma.ChallengeUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutGroupInput | Prisma.ChallengeCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.ChallengeCreateManyGroupInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUncheckedCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutGroupInput, Prisma.ChallengeUncheckedCreateWithoutGroupInput> | Prisma.ChallengeCreateWithoutGroupInput[] | Prisma.ChallengeUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutGroupInput | Prisma.ChallengeCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.ChallengeCreateManyGroupInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutGroupInput, Prisma.ChallengeUncheckedCreateWithoutGroupInput> | Prisma.ChallengeCreateWithoutGroupInput[] | Prisma.ChallengeUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutGroupInput | Prisma.ChallengeCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutGroupInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.ChallengeCreateManyGroupInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutGroupInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutGroupInput | Prisma.ChallengeUpdateManyWithWhereWithoutGroupInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeUncheckedUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutGroupInput, Prisma.ChallengeUncheckedCreateWithoutGroupInput> | Prisma.ChallengeCreateWithoutGroupInput[] | Prisma.ChallengeUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutGroupInput | Prisma.ChallengeCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutGroupInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.ChallengeCreateManyGroupInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutGroupInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutGroupInput | Prisma.ChallengeUpdateManyWithWhereWithoutGroupInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutAcademyInput, Prisma.ChallengeUncheckedCreateWithoutAcademyInput> | Prisma.ChallengeCreateWithoutAcademyInput[] | Prisma.ChallengeUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutAcademyInput | Prisma.ChallengeCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.ChallengeCreateManyAcademyInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUncheckedCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutAcademyInput, Prisma.ChallengeUncheckedCreateWithoutAcademyInput> | Prisma.ChallengeCreateWithoutAcademyInput[] | Prisma.ChallengeUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutAcademyInput | Prisma.ChallengeCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.ChallengeCreateManyAcademyInputEnvelope
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+}
+
+export type ChallengeUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutAcademyInput, Prisma.ChallengeUncheckedCreateWithoutAcademyInput> | Prisma.ChallengeCreateWithoutAcademyInput[] | Prisma.ChallengeUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutAcademyInput | Prisma.ChallengeCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutAcademyInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.ChallengeCreateManyAcademyInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutAcademyInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutAcademyInput | Prisma.ChallengeUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeUncheckedUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutAcademyInput, Prisma.ChallengeUncheckedCreateWithoutAcademyInput> | Prisma.ChallengeCreateWithoutAcademyInput[] | Prisma.ChallengeUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutAcademyInput | Prisma.ChallengeCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.ChallengeUpsertWithWhereUniqueWithoutAcademyInput | Prisma.ChallengeUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.ChallengeCreateManyAcademyInputEnvelope
+  set?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  disconnect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  delete?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  connect?: Prisma.ChallengeWhereUniqueInput | Prisma.ChallengeWhereUniqueInput[]
+  update?: Prisma.ChallengeUpdateWithWhereUniqueWithoutAcademyInput | Prisma.ChallengeUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.ChallengeUpdateManyWithWhereWithoutAcademyInput | Prisma.ChallengeUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+}
+
+export type ChallengeCreateNestedOneWithoutSkillsInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutSkillsInput, Prisma.ChallengeUncheckedCreateWithoutSkillsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutSkillsInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+}
+
+export type ChallengeUpdateOneRequiredWithoutSkillsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutSkillsInput, Prisma.ChallengeUncheckedCreateWithoutSkillsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutSkillsInput
+  upsert?: Prisma.ChallengeUpsertWithoutSkillsInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutSkillsInput, Prisma.ChallengeUpdateWithoutSkillsInput>, Prisma.ChallengeUncheckedUpdateWithoutSkillsInput>
+}
+
+export type ChallengeCreateNestedOneWithoutProjectsInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutProjectsInput, Prisma.ChallengeUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutProjectsInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+}
+
+export type ChallengeUpdateOneWithoutProjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutProjectsInput, Prisma.ChallengeUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutProjectsInput
+  upsert?: Prisma.ChallengeUpsertWithoutProjectsInput
+  disconnect?: Prisma.ChallengeWhereInput | boolean
+  delete?: Prisma.ChallengeWhereInput | boolean
+  connect?: Prisma.ChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutProjectsInput, Prisma.ChallengeUpdateWithoutProjectsInput>, Prisma.ChallengeUncheckedUpdateWithoutProjectsInput>
+}
+
+export type ChallengeCreateNestedOneWithoutPathStepsInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutPathStepsInput, Prisma.ChallengeUncheckedCreateWithoutPathStepsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutPathStepsInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+}
+
+export type ChallengeUpdateOneWithoutPathStepsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutPathStepsInput, Prisma.ChallengeUncheckedCreateWithoutPathStepsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutPathStepsInput
+  upsert?: Prisma.ChallengeUpsertWithoutPathStepsInput
+  disconnect?: Prisma.ChallengeWhereInput | boolean
+  delete?: Prisma.ChallengeWhereInput | boolean
+  connect?: Prisma.ChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutPathStepsInput, Prisma.ChallengeUpdateWithoutPathStepsInput>, Prisma.ChallengeUncheckedUpdateWithoutPathStepsInput>
+}
+
+export type ChallengeCreateNestedOneWithoutLiveEventsInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutLiveEventsInput, Prisma.ChallengeUncheckedCreateWithoutLiveEventsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutLiveEventsInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+}
+
+export type ChallengeUpdateOneWithoutLiveEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutLiveEventsInput, Prisma.ChallengeUncheckedCreateWithoutLiveEventsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutLiveEventsInput
+  upsert?: Prisma.ChallengeUpsertWithoutLiveEventsInput
+  disconnect?: Prisma.ChallengeWhereInput | boolean
+  delete?: Prisma.ChallengeWhereInput | boolean
+  connect?: Prisma.ChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutLiveEventsInput, Prisma.ChallengeUpdateWithoutLiveEventsInput>, Prisma.ChallengeUncheckedUpdateWithoutLiveEventsInput>
+}
+
+export type ChallengeCreateNestedOneWithoutGoalsInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutGoalsInput, Prisma.ChallengeUncheckedCreateWithoutGoalsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutGoalsInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+}
+
+export type ChallengeUpdateOneWithoutGoalsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutGoalsInput, Prisma.ChallengeUncheckedCreateWithoutGoalsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutGoalsInput
+  upsert?: Prisma.ChallengeUpsertWithoutGoalsInput
+  disconnect?: Prisma.ChallengeWhereInput | boolean
+  delete?: Prisma.ChallengeWhereInput | boolean
+  connect?: Prisma.ChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutGoalsInput, Prisma.ChallengeUpdateWithoutGoalsInput>, Prisma.ChallengeUncheckedUpdateWithoutGoalsInput>
+}
+
+export type ChallengeCreateNestedOneWithoutSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutSubmissionsInput, Prisma.ChallengeUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutSubmissionsInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+}
+
+export type ChallengeUpdateOneWithoutSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutSubmissionsInput, Prisma.ChallengeUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutSubmissionsInput
+  upsert?: Prisma.ChallengeUpsertWithoutSubmissionsInput
+  disconnect?: Prisma.ChallengeWhereInput | boolean
+  delete?: Prisma.ChallengeWhereInput | boolean
+  connect?: Prisma.ChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.ChallengeUpdateWithoutSubmissionsInput>, Prisma.ChallengeUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type ChallengeCreateNestedOneWithoutOpportunitiesInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutOpportunitiesInput, Prisma.ChallengeUncheckedCreateWithoutOpportunitiesInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutOpportunitiesInput
+  connect?: Prisma.ChallengeWhereUniqueInput
+}
+
+export type ChallengeUpdateOneWithoutOpportunitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeCreateWithoutOpportunitiesInput, Prisma.ChallengeUncheckedCreateWithoutOpportunitiesInput>
+  connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutOpportunitiesInput
+  upsert?: Prisma.ChallengeUpsertWithoutOpportunitiesInput
+  disconnect?: Prisma.ChallengeWhereInput | boolean
+  delete?: Prisma.ChallengeWhereInput | boolean
+  connect?: Prisma.ChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeUpdateToOneWithWhereWithoutOpportunitiesInput, Prisma.ChallengeUpdateWithoutOpportunitiesInput>, Prisma.ChallengeUncheckedUpdateWithoutOpportunitiesInput>
+}
+
+export type ChallengeCreateWithoutCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutCreatedByInput, Prisma.ChallengeUncheckedCreateWithoutCreatedByInput>
+}
+
+export type ChallengeCreateManyCreatedByInputEnvelope = {
+  data: Prisma.ChallengeCreateManyCreatedByInput | Prisma.ChallengeCreateManyCreatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type ChallengeUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutCreatedByInput, Prisma.ChallengeUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutCreatedByInput, Prisma.ChallengeUncheckedCreateWithoutCreatedByInput>
+}
+
+export type ChallengeUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutCreatedByInput, Prisma.ChallengeUncheckedUpdateWithoutCreatedByInput>
+}
+
+export type ChallengeUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.ChallengeScalarWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateManyMutationInput, Prisma.ChallengeUncheckedUpdateManyWithoutCreatedByInput>
+}
+
+export type ChallengeScalarWhereInput = {
+  AND?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+  OR?: Prisma.ChallengeScalarWhereInput[]
+  NOT?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
+  id?: Prisma.StringFilter<"Challenge"> | string
+  slug?: Prisma.StringFilter<"Challenge"> | string
+  name?: Prisma.StringFilter<"Challenge"> | string
+  description?: Prisma.StringFilter<"Challenge"> | string
+  pillar?: Prisma.EnumPillarNullableFilter<"Challenge"> | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFilter<"Challenge"> | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.DateTimeNullableFilter<"Challenge"> | Date | string | null
+  endsAt?: Prisma.DateTimeNullableFilter<"Challenge"> | Date | string | null
+  recurrence?: Prisma.JsonNullableFilter<"Challenge">
+  criteria?: Prisma.JsonFilter<"Challenge">
+  xpReward?: Prisma.IntFilter<"Challenge"> | number
+  thcReward?: Prisma.BigIntFilter<"Challenge"> | bigint | number
+  kind?: Prisma.EnumChallengeKindFilter<"Challenge"> | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFilter<"Challenge"> | $Enums.ChallengeScope
+  academyId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  groupId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  courseId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  cadence?: Prisma.EnumChallengeCadenceFilter<"Challenge"> | $Enums.ChallengeCadence
+  templateId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  instanceKey?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  instructions?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  coverImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  maxParticipants?: Prisma.IntNullableFilter<"Challenge"> | number | null
+  showBoard?: Prisma.BoolFilter<"Challenge"> | boolean
+  publishedAt?: Prisma.DateTimeNullableFilter<"Challenge"> | Date | string | null
+  createdById?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  isDemo?: Prisma.BoolFilter<"Challenge"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
+}
+
+export type ChallengeCreateWithoutCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutCourseInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutCourseInput, Prisma.ChallengeUncheckedCreateWithoutCourseInput>
+}
+
+export type ChallengeCreateManyCourseInputEnvelope = {
+  data: Prisma.ChallengeCreateManyCourseInput | Prisma.ChallengeCreateManyCourseInput[]
+  skipDuplicates?: boolean
+}
+
+export type ChallengeUpsertWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutCourseInput, Prisma.ChallengeUncheckedUpdateWithoutCourseInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutCourseInput, Prisma.ChallengeUncheckedCreateWithoutCourseInput>
+}
+
+export type ChallengeUpdateWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutCourseInput, Prisma.ChallengeUncheckedUpdateWithoutCourseInput>
+}
+
+export type ChallengeUpdateManyWithWhereWithoutCourseInput = {
+  where: Prisma.ChallengeScalarWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateManyMutationInput, Prisma.ChallengeUncheckedUpdateManyWithoutCourseInput>
+}
+
+export type ChallengeCreateWithoutInstancesInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutInstancesInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutInstancesInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutInstancesInput, Prisma.ChallengeUncheckedCreateWithoutInstancesInput>
+}
+
+export type ChallengeCreateWithoutTemplateInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutTemplateInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutTemplateInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutTemplateInput, Prisma.ChallengeUncheckedCreateWithoutTemplateInput>
+}
+
+export type ChallengeCreateManyTemplateInputEnvelope = {
+  data: Prisma.ChallengeCreateManyTemplateInput | Prisma.ChallengeCreateManyTemplateInput[]
+  skipDuplicates?: boolean
+}
+
+export type ChallengeUpsertWithoutInstancesInput = {
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutInstancesInput, Prisma.ChallengeUncheckedUpdateWithoutInstancesInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutInstancesInput, Prisma.ChallengeUncheckedCreateWithoutInstancesInput>
+  where?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeUpdateToOneWithWhereWithoutInstancesInput = {
+  where?: Prisma.ChallengeWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutInstancesInput, Prisma.ChallengeUncheckedUpdateWithoutInstancesInput>
+}
+
+export type ChallengeUpdateWithoutInstancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutInstancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUpsertWithWhereUniqueWithoutTemplateInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutTemplateInput, Prisma.ChallengeUncheckedUpdateWithoutTemplateInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutTemplateInput, Prisma.ChallengeUncheckedCreateWithoutTemplateInput>
+}
+
+export type ChallengeUpdateWithWhereUniqueWithoutTemplateInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutTemplateInput, Prisma.ChallengeUncheckedUpdateWithoutTemplateInput>
+}
+
+export type ChallengeUpdateManyWithWhereWithoutTemplateInput = {
+  where: Prisma.ChallengeScalarWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateManyMutationInput, Prisma.ChallengeUncheckedUpdateManyWithoutTemplateInput>
+}
+
 export type ChallengeCreateWithoutParticipationsInput = {
   id?: string
   slug: string
@@ -544,6 +1888,31 @@ export type ChallengeCreateWithoutParticipationsInput = {
   criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: number
   thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
 }
 
 export type ChallengeUncheckedCreateWithoutParticipationsInput = {
@@ -559,6 +1928,31 @@ export type ChallengeUncheckedCreateWithoutParticipationsInput = {
   criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: number
   thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
 }
 
 export type ChallengeCreateOrConnectWithoutParticipationsInput = {
@@ -590,6 +1984,31 @@ export type ChallengeUpdateWithoutParticipationsInput = {
   criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: Prisma.IntFieldUpdateOperationsInput | number
   thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
 }
 
 export type ChallengeUncheckedUpdateWithoutParticipationsInput = {
@@ -605,6 +2024,2185 @@ export type ChallengeUncheckedUpdateWithoutParticipationsInput = {
   criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   xpReward?: Prisma.IntFieldUpdateOperationsInput | number
   thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeCreateWithoutGroupInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutGroupInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutGroupInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutGroupInput, Prisma.ChallengeUncheckedCreateWithoutGroupInput>
+}
+
+export type ChallengeCreateManyGroupInputEnvelope = {
+  data: Prisma.ChallengeCreateManyGroupInput | Prisma.ChallengeCreateManyGroupInput[]
+  skipDuplicates?: boolean
+}
+
+export type ChallengeUpsertWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutGroupInput, Prisma.ChallengeUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutGroupInput, Prisma.ChallengeUncheckedCreateWithoutGroupInput>
+}
+
+export type ChallengeUpdateWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutGroupInput, Prisma.ChallengeUncheckedUpdateWithoutGroupInput>
+}
+
+export type ChallengeUpdateManyWithWhereWithoutGroupInput = {
+  where: Prisma.ChallengeScalarWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateManyMutationInput, Prisma.ChallengeUncheckedUpdateManyWithoutGroupInput>
+}
+
+export type ChallengeCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutAcademyInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutAcademyInput, Prisma.ChallengeUncheckedCreateWithoutAcademyInput>
+}
+
+export type ChallengeCreateManyAcademyInputEnvelope = {
+  data: Prisma.ChallengeCreateManyAcademyInput | Prisma.ChallengeCreateManyAcademyInput[]
+  skipDuplicates?: boolean
+}
+
+export type ChallengeUpsertWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutAcademyInput, Prisma.ChallengeUncheckedUpdateWithoutAcademyInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutAcademyInput, Prisma.ChallengeUncheckedCreateWithoutAcademyInput>
+}
+
+export type ChallengeUpdateWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutAcademyInput, Prisma.ChallengeUncheckedUpdateWithoutAcademyInput>
+}
+
+export type ChallengeUpdateManyWithWhereWithoutAcademyInput = {
+  where: Prisma.ChallengeScalarWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateManyMutationInput, Prisma.ChallengeUncheckedUpdateManyWithoutAcademyInput>
+}
+
+export type ChallengeCreateWithoutSkillsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutSkillsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutSkillsInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutSkillsInput, Prisma.ChallengeUncheckedCreateWithoutSkillsInput>
+}
+
+export type ChallengeUpsertWithoutSkillsInput = {
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutSkillsInput, Prisma.ChallengeUncheckedUpdateWithoutSkillsInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutSkillsInput, Prisma.ChallengeUncheckedCreateWithoutSkillsInput>
+  where?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeUpdateToOneWithWhereWithoutSkillsInput = {
+  where?: Prisma.ChallengeWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutSkillsInput, Prisma.ChallengeUncheckedUpdateWithoutSkillsInput>
+}
+
+export type ChallengeUpdateWithoutSkillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutSkillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeCreateWithoutProjectsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutProjectsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutProjectsInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutProjectsInput, Prisma.ChallengeUncheckedCreateWithoutProjectsInput>
+}
+
+export type ChallengeUpsertWithoutProjectsInput = {
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutProjectsInput, Prisma.ChallengeUncheckedUpdateWithoutProjectsInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutProjectsInput, Prisma.ChallengeUncheckedCreateWithoutProjectsInput>
+  where?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeUpdateToOneWithWhereWithoutProjectsInput = {
+  where?: Prisma.ChallengeWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutProjectsInput, Prisma.ChallengeUncheckedUpdateWithoutProjectsInput>
+}
+
+export type ChallengeUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeCreateWithoutPathStepsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutPathStepsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutPathStepsInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutPathStepsInput, Prisma.ChallengeUncheckedCreateWithoutPathStepsInput>
+}
+
+export type ChallengeUpsertWithoutPathStepsInput = {
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutPathStepsInput, Prisma.ChallengeUncheckedUpdateWithoutPathStepsInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutPathStepsInput, Prisma.ChallengeUncheckedCreateWithoutPathStepsInput>
+  where?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeUpdateToOneWithWhereWithoutPathStepsInput = {
+  where?: Prisma.ChallengeWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutPathStepsInput, Prisma.ChallengeUncheckedUpdateWithoutPathStepsInput>
+}
+
+export type ChallengeUpdateWithoutPathStepsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutPathStepsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeCreateWithoutLiveEventsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutLiveEventsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutLiveEventsInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutLiveEventsInput, Prisma.ChallengeUncheckedCreateWithoutLiveEventsInput>
+}
+
+export type ChallengeUpsertWithoutLiveEventsInput = {
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutLiveEventsInput, Prisma.ChallengeUncheckedUpdateWithoutLiveEventsInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutLiveEventsInput, Prisma.ChallengeUncheckedCreateWithoutLiveEventsInput>
+  where?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeUpdateToOneWithWhereWithoutLiveEventsInput = {
+  where?: Prisma.ChallengeWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutLiveEventsInput, Prisma.ChallengeUncheckedUpdateWithoutLiveEventsInput>
+}
+
+export type ChallengeUpdateWithoutLiveEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutLiveEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeCreateWithoutGoalsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutGoalsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutGoalsInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutGoalsInput, Prisma.ChallengeUncheckedCreateWithoutGoalsInput>
+}
+
+export type ChallengeUpsertWithoutGoalsInput = {
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutGoalsInput, Prisma.ChallengeUncheckedUpdateWithoutGoalsInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutGoalsInput, Prisma.ChallengeUncheckedCreateWithoutGoalsInput>
+  where?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeUpdateToOneWithWhereWithoutGoalsInput = {
+  where?: Prisma.ChallengeWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutGoalsInput, Prisma.ChallengeUncheckedUpdateWithoutGoalsInput>
+}
+
+export type ChallengeUpdateWithoutGoalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutGoalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeCreateWithoutSubmissionsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutSubmissionsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+  opportunities?: Prisma.OpportunityUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutSubmissionsInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutSubmissionsInput, Prisma.ChallengeUncheckedCreateWithoutSubmissionsInput>
+}
+
+export type ChallengeUpsertWithoutSubmissionsInput = {
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutSubmissionsInput, Prisma.ChallengeUncheckedUpdateWithoutSubmissionsInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutSubmissionsInput, Prisma.ChallengeUncheckedCreateWithoutSubmissionsInput>
+  where?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeUpdateToOneWithWhereWithoutSubmissionsInput = {
+  where?: Prisma.ChallengeWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutSubmissionsInput, Prisma.ChallengeUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type ChallengeUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeCreateWithoutOpportunitiesInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutChallengeInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutChallengesInput
+  group?: Prisma.CommunityGroupCreateNestedOneWithoutChallengesInput
+  course?: Prisma.CourseCreateNestedOneWithoutChallengesInput
+  template?: Prisma.ChallengeCreateNestedOneWithoutInstancesInput
+  instances?: Prisma.ChallengeCreateNestedManyWithoutTemplateInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutChallengesAuthoredInput
+  skills?: Prisma.ChallengeSkillCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeUncheckedCreateWithoutOpportunitiesInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutChallengeInput
+  instances?: Prisma.ChallengeUncheckedCreateNestedManyWithoutTemplateInput
+  skills?: Prisma.ChallengeSkillUncheckedCreateNestedManyWithoutChallengeInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutChallengeInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutChallengeInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutChallengeInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutChallengeInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type ChallengeCreateOrConnectWithoutOpportunitiesInput = {
+  where: Prisma.ChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutOpportunitiesInput, Prisma.ChallengeUncheckedCreateWithoutOpportunitiesInput>
+}
+
+export type ChallengeUpsertWithoutOpportunitiesInput = {
+  update: Prisma.XOR<Prisma.ChallengeUpdateWithoutOpportunitiesInput, Prisma.ChallengeUncheckedUpdateWithoutOpportunitiesInput>
+  create: Prisma.XOR<Prisma.ChallengeCreateWithoutOpportunitiesInput, Prisma.ChallengeUncheckedCreateWithoutOpportunitiesInput>
+  where?: Prisma.ChallengeWhereInput
+}
+
+export type ChallengeUpdateToOneWithWhereWithoutOpportunitiesInput = {
+  where?: Prisma.ChallengeWhereInput
+  data: Prisma.XOR<Prisma.ChallengeUpdateWithoutOpportunitiesInput, Prisma.ChallengeUncheckedUpdateWithoutOpportunitiesInput>
+}
+
+export type ChallengeUpdateWithoutOpportunitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutOpportunitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeCreateManyCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ChallengeUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ChallengeCreateManyCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ChallengeUpdateWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateManyWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ChallengeCreateManyTemplateInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ChallengeUpdateWithoutTemplateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutTemplateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateManyWithoutTemplateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ChallengeCreateManyGroupInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  academyId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ChallengeUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateManyWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ChallengeCreateManyAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  lifecycle?: $Enums.ChallengeLifecycle
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  kind?: $Enums.ChallengeKind
+  scope?: $Enums.ChallengeScope
+  groupId?: string | null
+  courseId?: string | null
+  cadence?: $Enums.ChallengeCadence
+  templateId?: string | null
+  instanceKey?: string | null
+  instructions?: string | null
+  coverImage?: string | null
+  maxParticipants?: number | null
+  showBoard?: boolean
+  publishedAt?: Date | string | null
+  createdById?: string | null
+  isDemo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ChallengeUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutChallengeNestedInput
+  group?: Prisma.CommunityGroupUpdateOneWithoutChallengesNestedInput
+  course?: Prisma.CourseUpdateOneWithoutChallengesNestedInput
+  template?: Prisma.ChallengeUpdateOneWithoutInstancesNestedInput
+  instances?: Prisma.ChallengeUpdateManyWithoutTemplateNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutChallengesAuthoredNestedInput
+  skills?: Prisma.ChallengeSkillUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeNestedInput
+  instances?: Prisma.ChallengeUncheckedUpdateManyWithoutTemplateNestedInput
+  skills?: Prisma.ChallengeSkillUncheckedUpdateManyWithoutChallengeNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutChallengeNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutChallengeNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutChallengeNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutChallengeNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutChallengeNestedInput
+  opportunities?: Prisma.OpportunityUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type ChallengeUncheckedUpdateManyWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  lifecycle?: Prisma.EnumChallengeLifecycleFieldUpdateOperationsInput | $Enums.ChallengeLifecycle
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  kind?: Prisma.EnumChallengeKindFieldUpdateOperationsInput | $Enums.ChallengeKind
+  scope?: Prisma.EnumChallengeScopeFieldUpdateOperationsInput | $Enums.ChallengeScope
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cadence?: Prisma.EnumChallengeCadenceFieldUpdateOperationsInput | $Enums.ChallengeCadence
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instanceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxParticipants?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  showBoard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -614,10 +4212,26 @@ export type ChallengeUncheckedUpdateWithoutParticipationsInput = {
 
 export type ChallengeCountOutputType = {
   participations: number
+  instances: number
+  skills: number
+  submissions: number
+  projects: number
+  pathSteps: number
+  goals: number
+  liveEvents: number
+  opportunities: number
 }
 
 export type ChallengeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   participations?: boolean | ChallengeCountOutputTypeCountParticipationsArgs
+  instances?: boolean | ChallengeCountOutputTypeCountInstancesArgs
+  skills?: boolean | ChallengeCountOutputTypeCountSkillsArgs
+  submissions?: boolean | ChallengeCountOutputTypeCountSubmissionsArgs
+  projects?: boolean | ChallengeCountOutputTypeCountProjectsArgs
+  pathSteps?: boolean | ChallengeCountOutputTypeCountPathStepsArgs
+  goals?: boolean | ChallengeCountOutputTypeCountGoalsArgs
+  liveEvents?: boolean | ChallengeCountOutputTypeCountLiveEventsArgs
+  opportunities?: boolean | ChallengeCountOutputTypeCountOpportunitiesArgs
 }
 
 /**
@@ -637,6 +4251,62 @@ export type ChallengeCountOutputTypeCountParticipationsArgs<ExtArgs extends runt
   where?: Prisma.ChallengeParticipationWhereInput
 }
 
+/**
+ * ChallengeCountOutputType without action
+ */
+export type ChallengeCountOutputTypeCountInstancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChallengeWhereInput
+}
+
+/**
+ * ChallengeCountOutputType without action
+ */
+export type ChallengeCountOutputTypeCountSkillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChallengeSkillWhereInput
+}
+
+/**
+ * ChallengeCountOutputType without action
+ */
+export type ChallengeCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EvidenceSubmissionWhereInput
+}
+
+/**
+ * ChallengeCountOutputType without action
+ */
+export type ChallengeCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectWhereInput
+}
+
+/**
+ * ChallengeCountOutputType without action
+ */
+export type ChallengeCountOutputTypeCountPathStepsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LearningPathStepWhereInput
+}
+
+/**
+ * ChallengeCountOutputType without action
+ */
+export type ChallengeCountOutputTypeCountGoalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GoalWhereInput
+}
+
+/**
+ * ChallengeCountOutputType without action
+ */
+export type ChallengeCountOutputTypeCountLiveEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LiveEventWhereInput
+}
+
+/**
+ * ChallengeCountOutputType without action
+ */
+export type ChallengeCountOutputTypeCountOpportunitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OpportunityWhereInput
+}
+
 
 export type ChallengeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -651,7 +4321,37 @@ export type ChallengeSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   criteria?: boolean
   xpReward?: boolean
   thcReward?: boolean
+  kind?: boolean
+  scope?: boolean
+  academyId?: boolean
+  groupId?: boolean
+  courseId?: boolean
+  cadence?: boolean
+  templateId?: boolean
+  instanceKey?: boolean
+  instructions?: boolean
+  coverImage?: boolean
+  maxParticipants?: boolean
+  showBoard?: boolean
+  publishedAt?: boolean
+  createdById?: boolean
+  isDemo?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   participations?: boolean | Prisma.Challenge$participationsArgs<ExtArgs>
+  academy?: boolean | Prisma.Challenge$academyArgs<ExtArgs>
+  group?: boolean | Prisma.Challenge$groupArgs<ExtArgs>
+  course?: boolean | Prisma.Challenge$courseArgs<ExtArgs>
+  template?: boolean | Prisma.Challenge$templateArgs<ExtArgs>
+  instances?: boolean | Prisma.Challenge$instancesArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Challenge$createdByArgs<ExtArgs>
+  skills?: boolean | Prisma.Challenge$skillsArgs<ExtArgs>
+  submissions?: boolean | Prisma.Challenge$submissionsArgs<ExtArgs>
+  projects?: boolean | Prisma.Challenge$projectsArgs<ExtArgs>
+  pathSteps?: boolean | Prisma.Challenge$pathStepsArgs<ExtArgs>
+  goals?: boolean | Prisma.Challenge$goalsArgs<ExtArgs>
+  liveEvents?: boolean | Prisma.Challenge$liveEventsArgs<ExtArgs>
+  opportunities?: boolean | Prisma.Challenge$opportunitiesArgs<ExtArgs>
   _count?: boolean | Prisma.ChallengeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["challenge"]>
 
@@ -668,6 +4368,28 @@ export type ChallengeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   criteria?: boolean
   xpReward?: boolean
   thcReward?: boolean
+  kind?: boolean
+  scope?: boolean
+  academyId?: boolean
+  groupId?: boolean
+  courseId?: boolean
+  cadence?: boolean
+  templateId?: boolean
+  instanceKey?: boolean
+  instructions?: boolean
+  coverImage?: boolean
+  maxParticipants?: boolean
+  showBoard?: boolean
+  publishedAt?: boolean
+  createdById?: boolean
+  isDemo?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  academy?: boolean | Prisma.Challenge$academyArgs<ExtArgs>
+  group?: boolean | Prisma.Challenge$groupArgs<ExtArgs>
+  course?: boolean | Prisma.Challenge$courseArgs<ExtArgs>
+  template?: boolean | Prisma.Challenge$templateArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Challenge$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["challenge"]>
 
 export type ChallengeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -683,6 +4405,28 @@ export type ChallengeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   criteria?: boolean
   xpReward?: boolean
   thcReward?: boolean
+  kind?: boolean
+  scope?: boolean
+  academyId?: boolean
+  groupId?: boolean
+  courseId?: boolean
+  cadence?: boolean
+  templateId?: boolean
+  instanceKey?: boolean
+  instructions?: boolean
+  coverImage?: boolean
+  maxParticipants?: boolean
+  showBoard?: boolean
+  publishedAt?: boolean
+  createdById?: boolean
+  isDemo?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  academy?: boolean | Prisma.Challenge$academyArgs<ExtArgs>
+  group?: boolean | Prisma.Challenge$groupArgs<ExtArgs>
+  course?: boolean | Prisma.Challenge$courseArgs<ExtArgs>
+  template?: boolean | Prisma.Challenge$templateArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Challenge$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["challenge"]>
 
 export type ChallengeSelectScalar = {
@@ -698,20 +4442,75 @@ export type ChallengeSelectScalar = {
   criteria?: boolean
   xpReward?: boolean
   thcReward?: boolean
+  kind?: boolean
+  scope?: boolean
+  academyId?: boolean
+  groupId?: boolean
+  courseId?: boolean
+  cadence?: boolean
+  templateId?: boolean
+  instanceKey?: boolean
+  instructions?: boolean
+  coverImage?: boolean
+  maxParticipants?: boolean
+  showBoard?: boolean
+  publishedAt?: boolean
+  createdById?: boolean
+  isDemo?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type ChallengeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "pillar" | "lifecycle" | "startsAt" | "endsAt" | "recurrence" | "criteria" | "xpReward" | "thcReward", ExtArgs["result"]["challenge"]>
+export type ChallengeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "pillar" | "lifecycle" | "startsAt" | "endsAt" | "recurrence" | "criteria" | "xpReward" | "thcReward" | "kind" | "scope" | "academyId" | "groupId" | "courseId" | "cadence" | "templateId" | "instanceKey" | "instructions" | "coverImage" | "maxParticipants" | "showBoard" | "publishedAt" | "createdById" | "isDemo" | "createdAt" | "updatedAt", ExtArgs["result"]["challenge"]>
 export type ChallengeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   participations?: boolean | Prisma.Challenge$participationsArgs<ExtArgs>
+  academy?: boolean | Prisma.Challenge$academyArgs<ExtArgs>
+  group?: boolean | Prisma.Challenge$groupArgs<ExtArgs>
+  course?: boolean | Prisma.Challenge$courseArgs<ExtArgs>
+  template?: boolean | Prisma.Challenge$templateArgs<ExtArgs>
+  instances?: boolean | Prisma.Challenge$instancesArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Challenge$createdByArgs<ExtArgs>
+  skills?: boolean | Prisma.Challenge$skillsArgs<ExtArgs>
+  submissions?: boolean | Prisma.Challenge$submissionsArgs<ExtArgs>
+  projects?: boolean | Prisma.Challenge$projectsArgs<ExtArgs>
+  pathSteps?: boolean | Prisma.Challenge$pathStepsArgs<ExtArgs>
+  goals?: boolean | Prisma.Challenge$goalsArgs<ExtArgs>
+  liveEvents?: boolean | Prisma.Challenge$liveEventsArgs<ExtArgs>
+  opportunities?: boolean | Prisma.Challenge$opportunitiesArgs<ExtArgs>
   _count?: boolean | Prisma.ChallengeCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ChallengeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ChallengeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ChallengeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academy?: boolean | Prisma.Challenge$academyArgs<ExtArgs>
+  group?: boolean | Prisma.Challenge$groupArgs<ExtArgs>
+  course?: boolean | Prisma.Challenge$courseArgs<ExtArgs>
+  template?: boolean | Prisma.Challenge$templateArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Challenge$createdByArgs<ExtArgs>
+}
+export type ChallengeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academy?: boolean | Prisma.Challenge$academyArgs<ExtArgs>
+  group?: boolean | Prisma.Challenge$groupArgs<ExtArgs>
+  course?: boolean | Prisma.Challenge$courseArgs<ExtArgs>
+  template?: boolean | Prisma.Challenge$templateArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Challenge$createdByArgs<ExtArgs>
+}
 
 export type $ChallengePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Challenge"
   objects: {
     participations: Prisma.$ChallengeParticipationPayload<ExtArgs>[]
+    academy: Prisma.$AcademyPayload<ExtArgs> | null
+    group: Prisma.$CommunityGroupPayload<ExtArgs> | null
+    course: Prisma.$CoursePayload<ExtArgs> | null
+    template: Prisma.$ChallengePayload<ExtArgs> | null
+    instances: Prisma.$ChallengePayload<ExtArgs>[]
+    createdBy: Prisma.$UserPayload<ExtArgs> | null
+    skills: Prisma.$ChallengeSkillPayload<ExtArgs>[]
+    submissions: Prisma.$EvidenceSubmissionPayload<ExtArgs>[]
+    projects: Prisma.$ProjectPayload<ExtArgs>[]
+    pathSteps: Prisma.$LearningPathStepPayload<ExtArgs>[]
+    goals: Prisma.$GoalPayload<ExtArgs>[]
+    liveEvents: Prisma.$LiveEventPayload<ExtArgs>[]
+    opportunities: Prisma.$OpportunityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -732,6 +4531,50 @@ export type $ChallengePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     criteria: runtime.JsonValue
     xpReward: number
     thcReward: bigint
+    /**
+     * Backfilled from criteria.event: DAILY_CHECKIN, SUBMISSION and GATED_SUBMISSIONS keep their name; anything else is RULE.
+     */
+    kind: $Enums.ChallengeKind
+    scope: $Enums.ChallengeScope
+    /**
+     * Backfilled from pillar.
+     */
+    academyId: string | null
+    /**
+     * GROUP scope: the group that runs it. Groups are archived, never deleted.
+     */
+    groupId: string | null
+    /**
+     * A programme challenge.
+     */
+    courseId: string | null
+    cadence: $Enums.ChallengeCadence
+    /**
+     * A dated instance of a recurring challenge points at its template.
+     */
+    templateId: string | null
+    /**
+     * The period an instance covers, e.g. "2026-12" or "2026-W49". Unique per template.
+     */
+    instanceKey: string | null
+    instructions: string | null
+    coverImage: string | null
+    /**
+     * A real limit, checked in the joining transaction. Null = no limit.
+     */
+    maxParticipants: number | null
+    /**
+     * Staff opt-in for the challenge leaderboard. Off by default, and stays off for Wellness.
+     */
+    showBoard: boolean
+    /**
+     * Null = never published. Backfilled for UPCOMING, ACTIVE and ENDED rows.
+     */
+    publishedAt: Date | null
+    createdById: string | null
+    isDemo: boolean
+    createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["challenge"]>
   composites: {}
 }
@@ -1127,6 +4970,19 @@ readonly fields: ChallengeFieldRefs;
 export interface Prisma__ChallengeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   participations<T extends Prisma.Challenge$participationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$participationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeParticipationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  academy<T extends Prisma.Challenge$academyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$academyArgs<ExtArgs>>): Prisma.Prisma__AcademyClient<runtime.Types.Result.GetResult<Prisma.$AcademyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  group<T extends Prisma.Challenge$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$groupArgs<ExtArgs>>): Prisma.Prisma__CommunityGroupClient<runtime.Types.Result.GetResult<Prisma.$CommunityGroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  course<T extends Prisma.Challenge$courseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$courseArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  template<T extends Prisma.Challenge$templateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$templateArgs<ExtArgs>>): Prisma.Prisma__ChallengeClient<runtime.Types.Result.GetResult<Prisma.$ChallengePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  instances<T extends Prisma.Challenge$instancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$instancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdBy<T extends Prisma.Challenge$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  skills<T extends Prisma.Challenge$skillsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$skillsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeSkillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  submissions<T extends Prisma.Challenge$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projects<T extends Prisma.Challenge$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pathSteps<T extends Prisma.Challenge$pathStepsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$pathStepsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LearningPathStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  goals<T extends Prisma.Challenge$goalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$goalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GoalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  liveEvents<T extends Prisma.Challenge$liveEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$liveEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LiveEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  opportunities<T extends Prisma.Challenge$opportunitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$opportunitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OpportunityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1168,6 +5024,23 @@ export interface ChallengeFieldRefs {
   readonly criteria: Prisma.FieldRef<"Challenge", 'Json'>
   readonly xpReward: Prisma.FieldRef<"Challenge", 'Int'>
   readonly thcReward: Prisma.FieldRef<"Challenge", 'BigInt'>
+  readonly kind: Prisma.FieldRef<"Challenge", 'ChallengeKind'>
+  readonly scope: Prisma.FieldRef<"Challenge", 'ChallengeScope'>
+  readonly academyId: Prisma.FieldRef<"Challenge", 'String'>
+  readonly groupId: Prisma.FieldRef<"Challenge", 'String'>
+  readonly courseId: Prisma.FieldRef<"Challenge", 'String'>
+  readonly cadence: Prisma.FieldRef<"Challenge", 'ChallengeCadence'>
+  readonly templateId: Prisma.FieldRef<"Challenge", 'String'>
+  readonly instanceKey: Prisma.FieldRef<"Challenge", 'String'>
+  readonly instructions: Prisma.FieldRef<"Challenge", 'String'>
+  readonly coverImage: Prisma.FieldRef<"Challenge", 'String'>
+  readonly maxParticipants: Prisma.FieldRef<"Challenge", 'Int'>
+  readonly showBoard: Prisma.FieldRef<"Challenge", 'Boolean'>
+  readonly publishedAt: Prisma.FieldRef<"Challenge", 'DateTime'>
+  readonly createdById: Prisma.FieldRef<"Challenge", 'String'>
+  readonly isDemo: Prisma.FieldRef<"Challenge", 'Boolean'>
+  readonly createdAt: Prisma.FieldRef<"Challenge", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Challenge", 'DateTime'>
 }
     
 
@@ -1417,6 +5290,10 @@ export type ChallengeCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    */
   data: Prisma.ChallengeCreateManyInput | Prisma.ChallengeCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1487,6 +5364,10 @@ export type ChallengeUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * Limit how many Challenges to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1577,6 +5458,293 @@ export type Challenge$participationsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ChallengeParticipationScalarFieldEnum | Prisma.ChallengeParticipationScalarFieldEnum[]
+}
+
+/**
+ * Challenge.academy
+ */
+export type Challenge$academyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Academy
+   */
+  select?: Prisma.AcademySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Academy
+   */
+  omit?: Prisma.AcademyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademyInclude<ExtArgs> | null
+  where?: Prisma.AcademyWhereInput
+}
+
+/**
+ * Challenge.group
+ */
+export type Challenge$groupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommunityGroup
+   */
+  select?: Prisma.CommunityGroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommunityGroup
+   */
+  omit?: Prisma.CommunityGroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityGroupInclude<ExtArgs> | null
+  where?: Prisma.CommunityGroupWhereInput
+}
+
+/**
+ * Challenge.course
+ */
+export type Challenge$courseArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Course
+   */
+  select?: Prisma.CourseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Course
+   */
+  omit?: Prisma.CourseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseInclude<ExtArgs> | null
+  where?: Prisma.CourseWhereInput
+}
+
+/**
+ * Challenge.template
+ */
+export type Challenge$templateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Challenge
+   */
+  select?: Prisma.ChallengeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Challenge
+   */
+  omit?: Prisma.ChallengeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeInclude<ExtArgs> | null
+  where?: Prisma.ChallengeWhereInput
+}
+
+/**
+ * Challenge.instances
+ */
+export type Challenge$instancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Challenge
+   */
+  select?: Prisma.ChallengeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Challenge
+   */
+  omit?: Prisma.ChallengeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeInclude<ExtArgs> | null
+  where?: Prisma.ChallengeWhereInput
+  orderBy?: Prisma.ChallengeOrderByWithRelationInput | Prisma.ChallengeOrderByWithRelationInput[]
+  cursor?: Prisma.ChallengeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChallengeScalarFieldEnum | Prisma.ChallengeScalarFieldEnum[]
+}
+
+/**
+ * Challenge.createdBy
+ */
+export type Challenge$createdByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Challenge.skills
+ */
+export type Challenge$skillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChallengeSkill
+   */
+  select?: Prisma.ChallengeSkillSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChallengeSkill
+   */
+  omit?: Prisma.ChallengeSkillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeSkillInclude<ExtArgs> | null
+  where?: Prisma.ChallengeSkillWhereInput
+  orderBy?: Prisma.ChallengeSkillOrderByWithRelationInput | Prisma.ChallengeSkillOrderByWithRelationInput[]
+  cursor?: Prisma.ChallengeSkillWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChallengeSkillScalarFieldEnum | Prisma.ChallengeSkillScalarFieldEnum[]
+}
+
+/**
+ * Challenge.submissions
+ */
+export type Challenge$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EvidenceSubmission
+   */
+  select?: Prisma.EvidenceSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EvidenceSubmission
+   */
+  omit?: Prisma.EvidenceSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EvidenceSubmissionInclude<ExtArgs> | null
+  where?: Prisma.EvidenceSubmissionWhereInput
+  orderBy?: Prisma.EvidenceSubmissionOrderByWithRelationInput | Prisma.EvidenceSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.EvidenceSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EvidenceSubmissionScalarFieldEnum | Prisma.EvidenceSubmissionScalarFieldEnum[]
+}
+
+/**
+ * Challenge.projects
+ */
+export type Challenge$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
+  orderBy?: Prisma.ProjectOrderByWithRelationInput | Prisma.ProjectOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectScalarFieldEnum | Prisma.ProjectScalarFieldEnum[]
+}
+
+/**
+ * Challenge.pathSteps
+ */
+export type Challenge$pathStepsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LearningPathStep
+   */
+  select?: Prisma.LearningPathStepSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LearningPathStep
+   */
+  omit?: Prisma.LearningPathStepOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LearningPathStepInclude<ExtArgs> | null
+  where?: Prisma.LearningPathStepWhereInput
+  orderBy?: Prisma.LearningPathStepOrderByWithRelationInput | Prisma.LearningPathStepOrderByWithRelationInput[]
+  cursor?: Prisma.LearningPathStepWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LearningPathStepScalarFieldEnum | Prisma.LearningPathStepScalarFieldEnum[]
+}
+
+/**
+ * Challenge.goals
+ */
+export type Challenge$goalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Goal
+   */
+  select?: Prisma.GoalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Goal
+   */
+  omit?: Prisma.GoalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GoalInclude<ExtArgs> | null
+  where?: Prisma.GoalWhereInput
+  orderBy?: Prisma.GoalOrderByWithRelationInput | Prisma.GoalOrderByWithRelationInput[]
+  cursor?: Prisma.GoalWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GoalScalarFieldEnum | Prisma.GoalScalarFieldEnum[]
+}
+
+/**
+ * Challenge.liveEvents
+ */
+export type Challenge$liveEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LiveEvent
+   */
+  select?: Prisma.LiveEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LiveEvent
+   */
+  omit?: Prisma.LiveEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LiveEventInclude<ExtArgs> | null
+  where?: Prisma.LiveEventWhereInput
+  orderBy?: Prisma.LiveEventOrderByWithRelationInput | Prisma.LiveEventOrderByWithRelationInput[]
+  cursor?: Prisma.LiveEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LiveEventScalarFieldEnum | Prisma.LiveEventScalarFieldEnum[]
+}
+
+/**
+ * Challenge.opportunities
+ */
+export type Challenge$opportunitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Opportunity
+   */
+  select?: Prisma.OpportunitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Opportunity
+   */
+  omit?: Prisma.OpportunityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OpportunityInclude<ExtArgs> | null
+  where?: Prisma.OpportunityWhereInput
+  orderBy?: Prisma.OpportunityOrderByWithRelationInput | Prisma.OpportunityOrderByWithRelationInput[]
+  cursor?: Prisma.OpportunityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OpportunityScalarFieldEnum | Prisma.OpportunityScalarFieldEnum[]
 }
 
 /**

@@ -30,6 +30,10 @@ export type MissionCompletionMinAggregateOutputType = {
   missionId: string | null
   idempotencyKey: string | null
   completedAt: Date | null
+  occurrence: string | null
+  verification: $Enums.MissionVerification | null
+  note: string | null
+  submissionId: string | null
 }
 
 export type MissionCompletionMaxAggregateOutputType = {
@@ -38,6 +42,10 @@ export type MissionCompletionMaxAggregateOutputType = {
   missionId: string | null
   idempotencyKey: string | null
   completedAt: Date | null
+  occurrence: string | null
+  verification: $Enums.MissionVerification | null
+  note: string | null
+  submissionId: string | null
 }
 
 export type MissionCompletionCountAggregateOutputType = {
@@ -46,6 +54,10 @@ export type MissionCompletionCountAggregateOutputType = {
   missionId: number
   idempotencyKey: number
   completedAt: number
+  occurrence: number
+  verification: number
+  note: number
+  submissionId: number
   _all: number
 }
 
@@ -56,6 +68,10 @@ export type MissionCompletionMinAggregateInputType = {
   missionId?: true
   idempotencyKey?: true
   completedAt?: true
+  occurrence?: true
+  verification?: true
+  note?: true
+  submissionId?: true
 }
 
 export type MissionCompletionMaxAggregateInputType = {
@@ -64,6 +80,10 @@ export type MissionCompletionMaxAggregateInputType = {
   missionId?: true
   idempotencyKey?: true
   completedAt?: true
+  occurrence?: true
+  verification?: true
+  note?: true
+  submissionId?: true
 }
 
 export type MissionCompletionCountAggregateInputType = {
@@ -72,6 +92,10 @@ export type MissionCompletionCountAggregateInputType = {
   missionId?: true
   idempotencyKey?: true
   completedAt?: true
+  occurrence?: true
+  verification?: true
+  note?: true
+  submissionId?: true
   _all?: true
 }
 
@@ -153,6 +177,10 @@ export type MissionCompletionGroupByOutputType = {
   missionId: string
   idempotencyKey: string
   completedAt: Date
+  occurrence: string
+  verification: $Enums.MissionVerification
+  note: string | null
+  submissionId: string | null
   _count: MissionCompletionCountAggregateOutputType | null
   _min: MissionCompletionMinAggregateOutputType | null
   _max: MissionCompletionMaxAggregateOutputType | null
@@ -182,8 +210,13 @@ export type MissionCompletionWhereInput = {
   missionId?: Prisma.StringFilter<"MissionCompletion"> | string
   idempotencyKey?: Prisma.StringFilter<"MissionCompletion"> | string
   completedAt?: Prisma.DateTimeFilter<"MissionCompletion"> | Date | string
+  occurrence?: Prisma.StringFilter<"MissionCompletion"> | string
+  verification?: Prisma.EnumMissionVerificationFilter<"MissionCompletion"> | $Enums.MissionVerification
+  note?: Prisma.StringNullableFilter<"MissionCompletion"> | string | null
+  submissionId?: Prisma.StringNullableFilter<"MissionCompletion"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   mission?: Prisma.XOR<Prisma.MissionScalarRelationFilter, Prisma.MissionWhereInput>
+  submission?: Prisma.XOR<Prisma.EvidenceSubmissionNullableScalarRelationFilter, Prisma.EvidenceSubmissionWhereInput> | null
 }
 
 export type MissionCompletionOrderByWithRelationInput = {
@@ -192,22 +225,33 @@ export type MissionCompletionOrderByWithRelationInput = {
   missionId?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  occurrence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  note?: Prisma.SortOrderInput | Prisma.SortOrder
+  submissionId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   mission?: Prisma.MissionOrderByWithRelationInput
+  submission?: Prisma.EvidenceSubmissionOrderByWithRelationInput
 }
 
 export type MissionCompletionWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   idempotencyKey?: string
+  submissionId?: string
+  missionId_userId_occurrence?: Prisma.MissionCompletionMissionIdUserIdOccurrenceCompoundUniqueInput
   AND?: Prisma.MissionCompletionWhereInput | Prisma.MissionCompletionWhereInput[]
   OR?: Prisma.MissionCompletionWhereInput[]
   NOT?: Prisma.MissionCompletionWhereInput | Prisma.MissionCompletionWhereInput[]
   userId?: Prisma.StringFilter<"MissionCompletion"> | string
   missionId?: Prisma.StringFilter<"MissionCompletion"> | string
   completedAt?: Prisma.DateTimeFilter<"MissionCompletion"> | Date | string
+  occurrence?: Prisma.StringFilter<"MissionCompletion"> | string
+  verification?: Prisma.EnumMissionVerificationFilter<"MissionCompletion"> | $Enums.MissionVerification
+  note?: Prisma.StringNullableFilter<"MissionCompletion"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   mission?: Prisma.XOR<Prisma.MissionScalarRelationFilter, Prisma.MissionWhereInput>
-}, "id" | "idempotencyKey">
+  submission?: Prisma.XOR<Prisma.EvidenceSubmissionNullableScalarRelationFilter, Prisma.EvidenceSubmissionWhereInput> | null
+}, "id" | "idempotencyKey" | "submissionId" | "missionId_userId_occurrence">
 
 export type MissionCompletionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -215,6 +259,10 @@ export type MissionCompletionOrderByWithAggregationInput = {
   missionId?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  occurrence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  note?: Prisma.SortOrderInput | Prisma.SortOrder
+  submissionId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MissionCompletionCountOrderByAggregateInput
   _max?: Prisma.MissionCompletionMaxOrderByAggregateInput
   _min?: Prisma.MissionCompletionMinOrderByAggregateInput
@@ -229,14 +277,22 @@ export type MissionCompletionScalarWhereWithAggregatesInput = {
   missionId?: Prisma.StringWithAggregatesFilter<"MissionCompletion"> | string
   idempotencyKey?: Prisma.StringWithAggregatesFilter<"MissionCompletion"> | string
   completedAt?: Prisma.DateTimeWithAggregatesFilter<"MissionCompletion"> | Date | string
+  occurrence?: Prisma.StringWithAggregatesFilter<"MissionCompletion"> | string
+  verification?: Prisma.EnumMissionVerificationWithAggregatesFilter<"MissionCompletion"> | $Enums.MissionVerification
+  note?: Prisma.StringNullableWithAggregatesFilter<"MissionCompletion"> | string | null
+  submissionId?: Prisma.StringNullableWithAggregatesFilter<"MissionCompletion"> | string | null
 }
 
 export type MissionCompletionCreateInput = {
   id?: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
   user: Prisma.UserCreateNestedOneWithoutMissionCompletionsInput
   mission: Prisma.MissionCreateNestedOneWithoutCompletionsInput
+  submission?: Prisma.EvidenceSubmissionCreateNestedOneWithoutCompletionInput
 }
 
 export type MissionCompletionUncheckedCreateInput = {
@@ -245,14 +301,22 @@ export type MissionCompletionUncheckedCreateInput = {
   missionId: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
+  submissionId?: string | null
 }
 
 export type MissionCompletionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMissionCompletionsNestedInput
   mission?: Prisma.MissionUpdateOneRequiredWithoutCompletionsNestedInput
+  submission?: Prisma.EvidenceSubmissionUpdateOneWithoutCompletionNestedInput
 }
 
 export type MissionCompletionUncheckedUpdateInput = {
@@ -261,6 +325,10 @@ export type MissionCompletionUncheckedUpdateInput = {
   missionId?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MissionCompletionCreateManyInput = {
@@ -269,12 +337,19 @@ export type MissionCompletionCreateManyInput = {
   missionId: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
+  submissionId?: string | null
 }
 
 export type MissionCompletionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MissionCompletionUncheckedUpdateManyInput = {
@@ -283,6 +358,10 @@ export type MissionCompletionUncheckedUpdateManyInput = {
   missionId?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MissionCompletionListRelationFilter = {
@@ -295,12 +374,22 @@ export type MissionCompletionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type MissionCompletionMissionIdUserIdOccurrenceCompoundUniqueInput = {
+  missionId: string
+  userId: string
+  occurrence: string
+}
+
 export type MissionCompletionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   missionId?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  occurrence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  note?: Prisma.SortOrder
+  submissionId?: Prisma.SortOrder
 }
 
 export type MissionCompletionMaxOrderByAggregateInput = {
@@ -309,6 +398,10 @@ export type MissionCompletionMaxOrderByAggregateInput = {
   missionId?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  occurrence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  note?: Prisma.SortOrder
+  submissionId?: Prisma.SortOrder
 }
 
 export type MissionCompletionMinOrderByAggregateInput = {
@@ -317,6 +410,15 @@ export type MissionCompletionMinOrderByAggregateInput = {
   missionId?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  occurrence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  note?: Prisma.SortOrder
+  submissionId?: Prisma.SortOrder
+}
+
+export type MissionCompletionNullableScalarRelationFilter = {
+  is?: Prisma.MissionCompletionWhereInput | null
+  isNot?: Prisma.MissionCompletionWhereInput | null
 }
 
 export type MissionCompletionCreateNestedManyWithoutUserInput = {
@@ -403,11 +505,47 @@ export type MissionCompletionUncheckedUpdateManyWithoutMissionNestedInput = {
   deleteMany?: Prisma.MissionCompletionScalarWhereInput | Prisma.MissionCompletionScalarWhereInput[]
 }
 
+export type MissionCompletionCreateNestedOneWithoutSubmissionInput = {
+  create?: Prisma.XOR<Prisma.MissionCompletionCreateWithoutSubmissionInput, Prisma.MissionCompletionUncheckedCreateWithoutSubmissionInput>
+  connectOrCreate?: Prisma.MissionCompletionCreateOrConnectWithoutSubmissionInput
+  connect?: Prisma.MissionCompletionWhereUniqueInput
+}
+
+export type MissionCompletionUncheckedCreateNestedOneWithoutSubmissionInput = {
+  create?: Prisma.XOR<Prisma.MissionCompletionCreateWithoutSubmissionInput, Prisma.MissionCompletionUncheckedCreateWithoutSubmissionInput>
+  connectOrCreate?: Prisma.MissionCompletionCreateOrConnectWithoutSubmissionInput
+  connect?: Prisma.MissionCompletionWhereUniqueInput
+}
+
+export type MissionCompletionUpdateOneWithoutSubmissionNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCompletionCreateWithoutSubmissionInput, Prisma.MissionCompletionUncheckedCreateWithoutSubmissionInput>
+  connectOrCreate?: Prisma.MissionCompletionCreateOrConnectWithoutSubmissionInput
+  upsert?: Prisma.MissionCompletionUpsertWithoutSubmissionInput
+  disconnect?: Prisma.MissionCompletionWhereInput | boolean
+  delete?: Prisma.MissionCompletionWhereInput | boolean
+  connect?: Prisma.MissionCompletionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MissionCompletionUpdateToOneWithWhereWithoutSubmissionInput, Prisma.MissionCompletionUpdateWithoutSubmissionInput>, Prisma.MissionCompletionUncheckedUpdateWithoutSubmissionInput>
+}
+
+export type MissionCompletionUncheckedUpdateOneWithoutSubmissionNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCompletionCreateWithoutSubmissionInput, Prisma.MissionCompletionUncheckedCreateWithoutSubmissionInput>
+  connectOrCreate?: Prisma.MissionCompletionCreateOrConnectWithoutSubmissionInput
+  upsert?: Prisma.MissionCompletionUpsertWithoutSubmissionInput
+  disconnect?: Prisma.MissionCompletionWhereInput | boolean
+  delete?: Prisma.MissionCompletionWhereInput | boolean
+  connect?: Prisma.MissionCompletionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MissionCompletionUpdateToOneWithWhereWithoutSubmissionInput, Prisma.MissionCompletionUpdateWithoutSubmissionInput>, Prisma.MissionCompletionUncheckedUpdateWithoutSubmissionInput>
+}
+
 export type MissionCompletionCreateWithoutUserInput = {
   id?: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
   mission: Prisma.MissionCreateNestedOneWithoutCompletionsInput
+  submission?: Prisma.EvidenceSubmissionCreateNestedOneWithoutCompletionInput
 }
 
 export type MissionCompletionUncheckedCreateWithoutUserInput = {
@@ -415,6 +553,10 @@ export type MissionCompletionUncheckedCreateWithoutUserInput = {
   missionId: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
+  submissionId?: string | null
 }
 
 export type MissionCompletionCreateOrConnectWithoutUserInput = {
@@ -452,13 +594,21 @@ export type MissionCompletionScalarWhereInput = {
   missionId?: Prisma.StringFilter<"MissionCompletion"> | string
   idempotencyKey?: Prisma.StringFilter<"MissionCompletion"> | string
   completedAt?: Prisma.DateTimeFilter<"MissionCompletion"> | Date | string
+  occurrence?: Prisma.StringFilter<"MissionCompletion"> | string
+  verification?: Prisma.EnumMissionVerificationFilter<"MissionCompletion"> | $Enums.MissionVerification
+  note?: Prisma.StringNullableFilter<"MissionCompletion"> | string | null
+  submissionId?: Prisma.StringNullableFilter<"MissionCompletion"> | string | null
 }
 
 export type MissionCompletionCreateWithoutMissionInput = {
   id?: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
   user: Prisma.UserCreateNestedOneWithoutMissionCompletionsInput
+  submission?: Prisma.EvidenceSubmissionCreateNestedOneWithoutCompletionInput
 }
 
 export type MissionCompletionUncheckedCreateWithoutMissionInput = {
@@ -466,6 +616,10 @@ export type MissionCompletionUncheckedCreateWithoutMissionInput = {
   userId: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
+  submissionId?: string | null
 }
 
 export type MissionCompletionCreateOrConnectWithoutMissionInput = {
@@ -494,18 +648,86 @@ export type MissionCompletionUpdateManyWithWhereWithoutMissionInput = {
   data: Prisma.XOR<Prisma.MissionCompletionUpdateManyMutationInput, Prisma.MissionCompletionUncheckedUpdateManyWithoutMissionInput>
 }
 
+export type MissionCompletionCreateWithoutSubmissionInput = {
+  id?: string
+  idempotencyKey: string
+  completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
+  user: Prisma.UserCreateNestedOneWithoutMissionCompletionsInput
+  mission: Prisma.MissionCreateNestedOneWithoutCompletionsInput
+}
+
+export type MissionCompletionUncheckedCreateWithoutSubmissionInput = {
+  id?: string
+  userId: string
+  missionId: string
+  idempotencyKey: string
+  completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
+}
+
+export type MissionCompletionCreateOrConnectWithoutSubmissionInput = {
+  where: Prisma.MissionCompletionWhereUniqueInput
+  create: Prisma.XOR<Prisma.MissionCompletionCreateWithoutSubmissionInput, Prisma.MissionCompletionUncheckedCreateWithoutSubmissionInput>
+}
+
+export type MissionCompletionUpsertWithoutSubmissionInput = {
+  update: Prisma.XOR<Prisma.MissionCompletionUpdateWithoutSubmissionInput, Prisma.MissionCompletionUncheckedUpdateWithoutSubmissionInput>
+  create: Prisma.XOR<Prisma.MissionCompletionCreateWithoutSubmissionInput, Prisma.MissionCompletionUncheckedCreateWithoutSubmissionInput>
+  where?: Prisma.MissionCompletionWhereInput
+}
+
+export type MissionCompletionUpdateToOneWithWhereWithoutSubmissionInput = {
+  where?: Prisma.MissionCompletionWhereInput
+  data: Prisma.XOR<Prisma.MissionCompletionUpdateWithoutSubmissionInput, Prisma.MissionCompletionUncheckedUpdateWithoutSubmissionInput>
+}
+
+export type MissionCompletionUpdateWithoutSubmissionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutMissionCompletionsNestedInput
+  mission?: Prisma.MissionUpdateOneRequiredWithoutCompletionsNestedInput
+}
+
+export type MissionCompletionUncheckedUpdateWithoutSubmissionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  missionId?: Prisma.StringFieldUpdateOperationsInput | string
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
 export type MissionCompletionCreateManyUserInput = {
   id?: string
   missionId: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
+  submissionId?: string | null
 }
 
 export type MissionCompletionUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.MissionUpdateOneRequiredWithoutCompletionsNestedInput
+  submission?: Prisma.EvidenceSubmissionUpdateOneWithoutCompletionNestedInput
 }
 
 export type MissionCompletionUncheckedUpdateWithoutUserInput = {
@@ -513,6 +735,10 @@ export type MissionCompletionUncheckedUpdateWithoutUserInput = {
   missionId?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MissionCompletionUncheckedUpdateManyWithoutUserInput = {
@@ -520,6 +746,10 @@ export type MissionCompletionUncheckedUpdateManyWithoutUserInput = {
   missionId?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MissionCompletionCreateManyMissionInput = {
@@ -527,13 +757,21 @@ export type MissionCompletionCreateManyMissionInput = {
   userId: string
   idempotencyKey: string
   completedAt?: Date | string
+  occurrence: string
+  verification?: $Enums.MissionVerification
+  note?: string | null
+  submissionId?: string | null
 }
 
 export type MissionCompletionUpdateWithoutMissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMissionCompletionsNestedInput
+  submission?: Prisma.EvidenceSubmissionUpdateOneWithoutCompletionNestedInput
 }
 
 export type MissionCompletionUncheckedUpdateWithoutMissionInput = {
@@ -541,6 +779,10 @@ export type MissionCompletionUncheckedUpdateWithoutMissionInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MissionCompletionUncheckedUpdateManyWithoutMissionInput = {
@@ -548,6 +790,10 @@ export type MissionCompletionUncheckedUpdateManyWithoutMissionInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurrence?: Prisma.StringFieldUpdateOperationsInput | string
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -558,8 +804,13 @@ export type MissionCompletionSelect<ExtArgs extends runtime.Types.Extensions.Int
   missionId?: boolean
   idempotencyKey?: boolean
   completedAt?: boolean
+  occurrence?: boolean
+  verification?: boolean
+  note?: boolean
+  submissionId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   mission?: boolean | Prisma.MissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MissionCompletion$submissionArgs<ExtArgs>
 }, ExtArgs["result"]["missionCompletion"]>
 
 export type MissionCompletionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -568,8 +819,13 @@ export type MissionCompletionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   missionId?: boolean
   idempotencyKey?: boolean
   completedAt?: boolean
+  occurrence?: boolean
+  verification?: boolean
+  note?: boolean
+  submissionId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   mission?: boolean | Prisma.MissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MissionCompletion$submissionArgs<ExtArgs>
 }, ExtArgs["result"]["missionCompletion"]>
 
 export type MissionCompletionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -578,8 +834,13 @@ export type MissionCompletionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   missionId?: boolean
   idempotencyKey?: boolean
   completedAt?: boolean
+  occurrence?: boolean
+  verification?: boolean
+  note?: boolean
+  submissionId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   mission?: boolean | Prisma.MissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MissionCompletion$submissionArgs<ExtArgs>
 }, ExtArgs["result"]["missionCompletion"]>
 
 export type MissionCompletionSelectScalar = {
@@ -588,20 +849,27 @@ export type MissionCompletionSelectScalar = {
   missionId?: boolean
   idempotencyKey?: boolean
   completedAt?: boolean
+  occurrence?: boolean
+  verification?: boolean
+  note?: boolean
+  submissionId?: boolean
 }
 
-export type MissionCompletionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "missionId" | "idempotencyKey" | "completedAt", ExtArgs["result"]["missionCompletion"]>
+export type MissionCompletionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "missionId" | "idempotencyKey" | "completedAt" | "occurrence" | "verification" | "note" | "submissionId", ExtArgs["result"]["missionCompletion"]>
 export type MissionCompletionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   mission?: boolean | Prisma.MissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MissionCompletion$submissionArgs<ExtArgs>
 }
 export type MissionCompletionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   mission?: boolean | Prisma.MissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MissionCompletion$submissionArgs<ExtArgs>
 }
 export type MissionCompletionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   mission?: boolean | Prisma.MissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MissionCompletion$submissionArgs<ExtArgs>
 }
 
 export type $MissionCompletionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -609,6 +877,7 @@ export type $MissionCompletionPayload<ExtArgs extends runtime.Types.Extensions.I
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     mission: Prisma.$MissionPayload<ExtArgs>
+    submission: Prisma.$EvidenceSubmissionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -616,6 +885,20 @@ export type $MissionCompletionPayload<ExtArgs extends runtime.Types.Extensions.I
     missionId: string
     idempotencyKey: string
     completedAt: Date
+    /**
+     * The period this completion fills: "once", a memberDayKey, "week:YYYY-MM-DD" or "month:YYYY-MM".
+     * Backfilled from idempotencyKey ("mission:<missionId>:<userId>:<occurrence>").
+     */
+    occurrence: string
+    verification: $Enums.MissionVerification
+    /**
+     * SELF_REPORT: the member's short note.
+     */
+    note: string | null
+    /**
+     * REVIEW: the approved evidence.
+     */
+    submissionId: string | null
   }, ExtArgs["result"]["missionCompletion"]>
   composites: {}
 }
@@ -1012,6 +1295,7 @@ export interface Prisma__MissionCompletionClient<T, Null = never, ExtArgs extend
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   mission<T extends Prisma.MissionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MissionDefaultArgs<ExtArgs>>): Prisma.Prisma__MissionClient<runtime.Types.Result.GetResult<Prisma.$MissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  submission<T extends Prisma.MissionCompletion$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MissionCompletion$submissionArgs<ExtArgs>>): Prisma.Prisma__EvidenceSubmissionClient<runtime.Types.Result.GetResult<Prisma.$EvidenceSubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1046,6 +1330,10 @@ export interface MissionCompletionFieldRefs {
   readonly missionId: Prisma.FieldRef<"MissionCompletion", 'String'>
   readonly idempotencyKey: Prisma.FieldRef<"MissionCompletion", 'String'>
   readonly completedAt: Prisma.FieldRef<"MissionCompletion", 'DateTime'>
+  readonly occurrence: Prisma.FieldRef<"MissionCompletion", 'String'>
+  readonly verification: Prisma.FieldRef<"MissionCompletion", 'MissionVerification'>
+  readonly note: Prisma.FieldRef<"MissionCompletion", 'String'>
+  readonly submissionId: Prisma.FieldRef<"MissionCompletion", 'String'>
 }
     
 
@@ -1439,6 +1727,25 @@ export type MissionCompletionDeleteManyArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many MissionCompletions to delete.
    */
   limit?: number
+}
+
+/**
+ * MissionCompletion.submission
+ */
+export type MissionCompletion$submissionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EvidenceSubmission
+   */
+  select?: Prisma.EvidenceSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EvidenceSubmission
+   */
+  omit?: Prisma.EvidenceSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EvidenceSubmissionInclude<ExtArgs> | null
+  where?: Prisma.EvidenceSubmissionWhereInput
 }
 
 /**

@@ -51,7 +51,8 @@ export default async function AdminEarnPage({ searchParams }: { searchParams: Pr
   const [waitingApps, waitingCommissions, waitingPayouts] = await Promise.all([
     prisma.affiliateProfile.count({ where: { status: "PENDING" } }),
     prisma.commission.count({ where: { status: "PENDING", holdUntil: { lte: new Date() } } }),
-    prisma.payoutRequest.count({ where: { status: { in: ["REQUESTED", "APPROVED"] } } }),
+    // Affiliate payouts only, as listPayouts: a contributor payout shares the table, not this queue.
+    prisma.payoutRequest.count({ where: { status: { in: ["REQUESTED", "APPROVED"] }, affiliateId: { not: null } } }),
   ]);
 
   const tabs: [Tab, string, number][] = [

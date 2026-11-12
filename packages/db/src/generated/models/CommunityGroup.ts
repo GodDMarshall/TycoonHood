@@ -20,8 +20,18 @@ export type CommunityGroupModel = runtime.Types.Result.DefaultSelection<Prisma.$
 
 export type AggregateCommunityGroup = {
   _count: CommunityGroupCountAggregateOutputType | null
+  _avg: CommunityGroupAvgAggregateOutputType | null
+  _sum: CommunityGroupSumAggregateOutputType | null
   _min: CommunityGroupMinAggregateOutputType | null
   _max: CommunityGroupMaxAggregateOutputType | null
+}
+
+export type CommunityGroupAvgAggregateOutputType = {
+  memberCount: number | null
+}
+
+export type CommunityGroupSumAggregateOutputType = {
+  memberCount: number | null
 }
 
 export type CommunityGroupMinAggregateOutputType = {
@@ -31,6 +41,26 @@ export type CommunityGroupMinAggregateOutputType = {
   description: string | null
   pillar: $Enums.Pillar | null
   createdAt: Date | null
+  topic: $Enums.GroupTopic | null
+  status: $Enums.GroupStatus | null
+  joinPolicy: $Enums.GroupJoinPolicy | null
+  visibility: $Enums.GroupVisibility | null
+  academyId: string | null
+  courseId: string | null
+  hostInstructorId: string | null
+  createdById: string | null
+  reviewedById: string | null
+  reviewedAt: Date | null
+  rejectionReason: string | null
+  archivedAt: Date | null
+  city: string | null
+  region: string | null
+  country: string | null
+  coverImageUrl: string | null
+  rules: string | null
+  memberCount: number | null
+  isDemo: boolean | null
+  updatedAt: Date | null
 }
 
 export type CommunityGroupMaxAggregateOutputType = {
@@ -40,6 +70,26 @@ export type CommunityGroupMaxAggregateOutputType = {
   description: string | null
   pillar: $Enums.Pillar | null
   createdAt: Date | null
+  topic: $Enums.GroupTopic | null
+  status: $Enums.GroupStatus | null
+  joinPolicy: $Enums.GroupJoinPolicy | null
+  visibility: $Enums.GroupVisibility | null
+  academyId: string | null
+  courseId: string | null
+  hostInstructorId: string | null
+  createdById: string | null
+  reviewedById: string | null
+  reviewedAt: Date | null
+  rejectionReason: string | null
+  archivedAt: Date | null
+  city: string | null
+  region: string | null
+  country: string | null
+  coverImageUrl: string | null
+  rules: string | null
+  memberCount: number | null
+  isDemo: boolean | null
+  updatedAt: Date | null
 }
 
 export type CommunityGroupCountAggregateOutputType = {
@@ -49,9 +99,37 @@ export type CommunityGroupCountAggregateOutputType = {
   description: number
   pillar: number
   createdAt: number
+  topic: number
+  status: number
+  joinPolicy: number
+  visibility: number
+  academyId: number
+  courseId: number
+  hostInstructorId: number
+  createdById: number
+  reviewedById: number
+  reviewedAt: number
+  rejectionReason: number
+  archivedAt: number
+  city: number
+  region: number
+  country: number
+  coverImageUrl: number
+  rules: number
+  memberCount: number
+  isDemo: number
+  updatedAt: number
   _all: number
 }
 
+
+export type CommunityGroupAvgAggregateInputType = {
+  memberCount?: true
+}
+
+export type CommunityGroupSumAggregateInputType = {
+  memberCount?: true
+}
 
 export type CommunityGroupMinAggregateInputType = {
   id?: true
@@ -60,6 +138,26 @@ export type CommunityGroupMinAggregateInputType = {
   description?: true
   pillar?: true
   createdAt?: true
+  topic?: true
+  status?: true
+  joinPolicy?: true
+  visibility?: true
+  academyId?: true
+  courseId?: true
+  hostInstructorId?: true
+  createdById?: true
+  reviewedById?: true
+  reviewedAt?: true
+  rejectionReason?: true
+  archivedAt?: true
+  city?: true
+  region?: true
+  country?: true
+  coverImageUrl?: true
+  rules?: true
+  memberCount?: true
+  isDemo?: true
+  updatedAt?: true
 }
 
 export type CommunityGroupMaxAggregateInputType = {
@@ -69,6 +167,26 @@ export type CommunityGroupMaxAggregateInputType = {
   description?: true
   pillar?: true
   createdAt?: true
+  topic?: true
+  status?: true
+  joinPolicy?: true
+  visibility?: true
+  academyId?: true
+  courseId?: true
+  hostInstructorId?: true
+  createdById?: true
+  reviewedById?: true
+  reviewedAt?: true
+  rejectionReason?: true
+  archivedAt?: true
+  city?: true
+  region?: true
+  country?: true
+  coverImageUrl?: true
+  rules?: true
+  memberCount?: true
+  isDemo?: true
+  updatedAt?: true
 }
 
 export type CommunityGroupCountAggregateInputType = {
@@ -78,6 +196,26 @@ export type CommunityGroupCountAggregateInputType = {
   description?: true
   pillar?: true
   createdAt?: true
+  topic?: true
+  status?: true
+  joinPolicy?: true
+  visibility?: true
+  academyId?: true
+  courseId?: true
+  hostInstructorId?: true
+  createdById?: true
+  reviewedById?: true
+  reviewedAt?: true
+  rejectionReason?: true
+  archivedAt?: true
+  city?: true
+  region?: true
+  country?: true
+  coverImageUrl?: true
+  rules?: true
+  memberCount?: true
+  isDemo?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -119,6 +257,18 @@ export type CommunityGroupAggregateArgs<ExtArgs extends runtime.Types.Extensions
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: CommunityGroupAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: CommunityGroupSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: CommunityGroupMinAggregateInputType
@@ -149,6 +299,8 @@ export type CommunityGroupGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   _count?: CommunityGroupCountAggregateInputType | true
+  _avg?: CommunityGroupAvgAggregateInputType
+  _sum?: CommunityGroupSumAggregateInputType
   _min?: CommunityGroupMinAggregateInputType
   _max?: CommunityGroupMaxAggregateInputType
 }
@@ -160,7 +312,29 @@ export type CommunityGroupGroupByOutputType = {
   description: string
   pillar: $Enums.Pillar | null
   createdAt: Date
+  topic: $Enums.GroupTopic
+  status: $Enums.GroupStatus
+  joinPolicy: $Enums.GroupJoinPolicy
+  visibility: $Enums.GroupVisibility
+  academyId: string | null
+  courseId: string | null
+  hostInstructorId: string | null
+  createdById: string | null
+  reviewedById: string | null
+  reviewedAt: Date | null
+  rejectionReason: string | null
+  archivedAt: Date | null
+  city: string | null
+  region: string | null
+  country: string | null
+  coverImageUrl: string | null
+  rules: string | null
+  memberCount: number
+  isDemo: boolean
+  updatedAt: Date
   _count: CommunityGroupCountAggregateOutputType | null
+  _avg: CommunityGroupAvgAggregateOutputType | null
+  _sum: CommunityGroupSumAggregateOutputType | null
   _min: CommunityGroupMinAggregateOutputType | null
   _max: CommunityGroupMaxAggregateOutputType | null
 }
@@ -190,8 +364,37 @@ export type CommunityGroupWhereInput = {
   description?: Prisma.StringFilter<"CommunityGroup"> | string
   pillar?: Prisma.EnumPillarNullableFilter<"CommunityGroup"> | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFilter<"CommunityGroup"> | Date | string
+  topic?: Prisma.EnumGroupTopicFilter<"CommunityGroup"> | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFilter<"CommunityGroup"> | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFilter<"CommunityGroup"> | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFilter<"CommunityGroup"> | $Enums.GroupVisibility
+  academyId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  courseId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  hostInstructorId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  createdById?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  reviewedById?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"CommunityGroup"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"CommunityGroup"> | Date | string | null
+  city?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  region?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  country?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  coverImageUrl?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  rules?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  memberCount?: Prisma.IntFilter<"CommunityGroup"> | number
+  isDemo?: Prisma.BoolFilter<"CommunityGroup"> | boolean
+  updatedAt?: Prisma.DateTimeFilter<"CommunityGroup"> | Date | string
   members?: Prisma.GroupMembershipListRelationFilter
   posts?: Prisma.CommunityPostListRelationFilter
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
+  hostInstructor?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  reviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  challenges?: Prisma.ChallengeListRelationFilter
+  liveEvents?: Prisma.LiveEventListRelationFilter
+  activity?: Prisma.ActivityEventListRelationFilter
+  announcements?: Prisma.AnnouncementListRelationFilter
 }
 
 export type CommunityGroupOrderByWithRelationInput = {
@@ -201,8 +404,37 @@ export type CommunityGroupOrderByWithRelationInput = {
   description?: Prisma.SortOrder
   pillar?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  topic?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  joinPolicy?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  hostInstructorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  region?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  rules?: Prisma.SortOrderInput | Prisma.SortOrder
+  memberCount?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   members?: Prisma.GroupMembershipOrderByRelationAggregateInput
   posts?: Prisma.CommunityPostOrderByRelationAggregateInput
+  academy?: Prisma.AcademyOrderByWithRelationInput
+  course?: Prisma.CourseOrderByWithRelationInput
+  hostInstructor?: Prisma.InstructorOrderByWithRelationInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
+  reviewedBy?: Prisma.UserOrderByWithRelationInput
+  challenges?: Prisma.ChallengeOrderByRelationAggregateInput
+  liveEvents?: Prisma.LiveEventOrderByRelationAggregateInput
+  activity?: Prisma.ActivityEventOrderByRelationAggregateInput
+  announcements?: Prisma.AnnouncementOrderByRelationAggregateInput
 }
 
 export type CommunityGroupWhereUniqueInput = Prisma.AtLeast<{
@@ -215,8 +447,37 @@ export type CommunityGroupWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringFilter<"CommunityGroup"> | string
   pillar?: Prisma.EnumPillarNullableFilter<"CommunityGroup"> | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFilter<"CommunityGroup"> | Date | string
+  topic?: Prisma.EnumGroupTopicFilter<"CommunityGroup"> | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFilter<"CommunityGroup"> | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFilter<"CommunityGroup"> | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFilter<"CommunityGroup"> | $Enums.GroupVisibility
+  academyId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  courseId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  hostInstructorId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  createdById?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  reviewedById?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"CommunityGroup"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"CommunityGroup"> | Date | string | null
+  city?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  region?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  country?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  coverImageUrl?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  rules?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  memberCount?: Prisma.IntFilter<"CommunityGroup"> | number
+  isDemo?: Prisma.BoolFilter<"CommunityGroup"> | boolean
+  updatedAt?: Prisma.DateTimeFilter<"CommunityGroup"> | Date | string
   members?: Prisma.GroupMembershipListRelationFilter
   posts?: Prisma.CommunityPostListRelationFilter
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
+  hostInstructor?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  reviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  challenges?: Prisma.ChallengeListRelationFilter
+  liveEvents?: Prisma.LiveEventListRelationFilter
+  activity?: Prisma.ActivityEventListRelationFilter
+  announcements?: Prisma.AnnouncementListRelationFilter
 }, "id" | "slug">
 
 export type CommunityGroupOrderByWithAggregationInput = {
@@ -226,9 +487,31 @@ export type CommunityGroupOrderByWithAggregationInput = {
   description?: Prisma.SortOrder
   pillar?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  topic?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  joinPolicy?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  hostInstructorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  region?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  rules?: Prisma.SortOrderInput | Prisma.SortOrder
+  memberCount?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.CommunityGroupCountOrderByAggregateInput
+  _avg?: Prisma.CommunityGroupAvgOrderByAggregateInput
   _max?: Prisma.CommunityGroupMaxOrderByAggregateInput
   _min?: Prisma.CommunityGroupMinOrderByAggregateInput
+  _sum?: Prisma.CommunityGroupSumOrderByAggregateInput
 }
 
 export type CommunityGroupScalarWhereWithAggregatesInput = {
@@ -241,6 +524,26 @@ export type CommunityGroupScalarWhereWithAggregatesInput = {
   description?: Prisma.StringWithAggregatesFilter<"CommunityGroup"> | string
   pillar?: Prisma.EnumPillarNullableWithAggregatesFilter<"CommunityGroup"> | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CommunityGroup"> | Date | string
+  topic?: Prisma.EnumGroupTopicWithAggregatesFilter<"CommunityGroup"> | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusWithAggregatesFilter<"CommunityGroup"> | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyWithAggregatesFilter<"CommunityGroup"> | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityWithAggregatesFilter<"CommunityGroup"> | $Enums.GroupVisibility
+  academyId?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  courseId?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  hostInstructorId?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  reviewedById?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CommunityGroup"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CommunityGroup"> | Date | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  region?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  country?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  coverImageUrl?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  rules?: Prisma.StringNullableWithAggregatesFilter<"CommunityGroup"> | string | null
+  memberCount?: Prisma.IntWithAggregatesFilter<"CommunityGroup"> | number
+  isDemo?: Prisma.BoolWithAggregatesFilter<"CommunityGroup"> | boolean
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CommunityGroup"> | Date | string
 }
 
 export type CommunityGroupCreateInput = {
@@ -250,8 +553,32 @@ export type CommunityGroupCreateInput = {
   description: string
   pillar?: $Enums.Pillar | null
   createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
   members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
   posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
 }
 
 export type CommunityGroupUncheckedCreateInput = {
@@ -261,8 +588,32 @@ export type CommunityGroupUncheckedCreateInput = {
   description: string
   pillar?: $Enums.Pillar | null
   createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
   members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
   posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type CommunityGroupUpdateInput = {
@@ -272,8 +623,32 @@ export type CommunityGroupUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
   posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
 }
 
 export type CommunityGroupUncheckedUpdateInput = {
@@ -283,8 +658,32 @@ export type CommunityGroupUncheckedUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
   posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 export type CommunityGroupCreateManyInput = {
@@ -294,6 +693,26 @@ export type CommunityGroupCreateManyInput = {
   description: string
   pillar?: $Enums.Pillar | null
   createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
 }
 
 export type CommunityGroupUpdateManyMutationInput = {
@@ -303,6 +722,21 @@ export type CommunityGroupUpdateManyMutationInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CommunityGroupUncheckedUpdateManyInput = {
@@ -312,6 +746,41 @@ export type CommunityGroupUncheckedUpdateManyInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CommunityGroupListRelationFilter = {
+  every?: Prisma.CommunityGroupWhereInput
+  some?: Prisma.CommunityGroupWhereInput
+  none?: Prisma.CommunityGroupWhereInput
+}
+
+export type CommunityGroupOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type CommunityGroupNullableScalarRelationFilter = {
+  is?: Prisma.CommunityGroupWhereInput | null
+  isNot?: Prisma.CommunityGroupWhereInput | null
 }
 
 export type CommunityGroupCountOrderByAggregateInput = {
@@ -321,6 +790,30 @@ export type CommunityGroupCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   pillar?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  topic?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  joinPolicy?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  hostInstructorId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrder
+  rules?: Prisma.SortOrder
+  memberCount?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+}
+
+export type CommunityGroupAvgOrderByAggregateInput = {
+  memberCount?: Prisma.SortOrder
 }
 
 export type CommunityGroupMaxOrderByAggregateInput = {
@@ -330,6 +823,26 @@ export type CommunityGroupMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   pillar?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  topic?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  joinPolicy?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  hostInstructorId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrder
+  rules?: Prisma.SortOrder
+  memberCount?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type CommunityGroupMinOrderByAggregateInput = {
@@ -339,6 +852,30 @@ export type CommunityGroupMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   pillar?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  topic?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  joinPolicy?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  hostInstructorId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  coverImageUrl?: Prisma.SortOrder
+  rules?: Prisma.SortOrder
+  memberCount?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+}
+
+export type CommunityGroupSumOrderByAggregateInput = {
+  memberCount?: Prisma.SortOrder
 }
 
 export type CommunityGroupScalarRelationFilter = {
@@ -346,9 +883,204 @@ export type CommunityGroupScalarRelationFilter = {
   isNot?: Prisma.CommunityGroupWhereInput
 }
 
-export type CommunityGroupNullableScalarRelationFilter = {
-  is?: Prisma.CommunityGroupWhereInput | null
-  isNot?: Prisma.CommunityGroupWhereInput | null
+export type CommunityGroupCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCreatedByInput, Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput> | Prisma.CommunityGroupCreateWithoutCreatedByInput[] | Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutCreatedByInput | Prisma.CommunityGroupCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.CommunityGroupCreateManyCreatedByInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupCreateNestedManyWithoutReviewedByInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutReviewedByInput, Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput> | Prisma.CommunityGroupCreateWithoutReviewedByInput[] | Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutReviewedByInput | Prisma.CommunityGroupCreateOrConnectWithoutReviewedByInput[]
+  createMany?: Prisma.CommunityGroupCreateManyReviewedByInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCreatedByInput, Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput> | Prisma.CommunityGroupCreateWithoutCreatedByInput[] | Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutCreatedByInput | Prisma.CommunityGroupCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.CommunityGroupCreateManyCreatedByInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUncheckedCreateNestedManyWithoutReviewedByInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutReviewedByInput, Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput> | Prisma.CommunityGroupCreateWithoutReviewedByInput[] | Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutReviewedByInput | Prisma.CommunityGroupCreateOrConnectWithoutReviewedByInput[]
+  createMany?: Prisma.CommunityGroupCreateManyReviewedByInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCreatedByInput, Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput> | Prisma.CommunityGroupCreateWithoutCreatedByInput[] | Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutCreatedByInput | Prisma.CommunityGroupCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.CommunityGroupCreateManyCreatedByInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutCreatedByInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupUpdateManyWithoutReviewedByNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutReviewedByInput, Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput> | Prisma.CommunityGroupCreateWithoutReviewedByInput[] | Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutReviewedByInput | Prisma.CommunityGroupCreateOrConnectWithoutReviewedByInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutReviewedByInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutReviewedByInput[]
+  createMany?: Prisma.CommunityGroupCreateManyReviewedByInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutReviewedByInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutReviewedByInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutReviewedByInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutReviewedByInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCreatedByInput, Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput> | Prisma.CommunityGroupCreateWithoutCreatedByInput[] | Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutCreatedByInput | Prisma.CommunityGroupCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.CommunityGroupCreateManyCreatedByInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutCreatedByInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutReviewedByNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutReviewedByInput, Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput> | Prisma.CommunityGroupCreateWithoutReviewedByInput[] | Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutReviewedByInput | Prisma.CommunityGroupCreateOrConnectWithoutReviewedByInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutReviewedByInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutReviewedByInput[]
+  createMany?: Prisma.CommunityGroupCreateManyReviewedByInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutReviewedByInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutReviewedByInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutReviewedByInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutReviewedByInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupCreateNestedManyWithoutCourseInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCourseInput, Prisma.CommunityGroupUncheckedCreateWithoutCourseInput> | Prisma.CommunityGroupCreateWithoutCourseInput[] | Prisma.CommunityGroupUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutCourseInput | Prisma.CommunityGroupCreateOrConnectWithoutCourseInput[]
+  createMany?: Prisma.CommunityGroupCreateManyCourseInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUncheckedCreateNestedManyWithoutCourseInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCourseInput, Prisma.CommunityGroupUncheckedCreateWithoutCourseInput> | Prisma.CommunityGroupCreateWithoutCourseInput[] | Prisma.CommunityGroupUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutCourseInput | Prisma.CommunityGroupCreateOrConnectWithoutCourseInput[]
+  createMany?: Prisma.CommunityGroupCreateManyCourseInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUpdateManyWithoutCourseNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCourseInput, Prisma.CommunityGroupUncheckedCreateWithoutCourseInput> | Prisma.CommunityGroupCreateWithoutCourseInput[] | Prisma.CommunityGroupUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutCourseInput | Prisma.CommunityGroupCreateOrConnectWithoutCourseInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutCourseInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutCourseInput[]
+  createMany?: Prisma.CommunityGroupCreateManyCourseInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutCourseInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutCourseInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutCourseInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutCourseInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutCourseNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCourseInput, Prisma.CommunityGroupUncheckedCreateWithoutCourseInput> | Prisma.CommunityGroupCreateWithoutCourseInput[] | Prisma.CommunityGroupUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutCourseInput | Prisma.CommunityGroupCreateOrConnectWithoutCourseInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutCourseInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutCourseInput[]
+  createMany?: Prisma.CommunityGroupCreateManyCourseInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutCourseInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutCourseInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutCourseInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutCourseInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupCreateNestedOneWithoutChallengesInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutChallengesInput, Prisma.CommunityGroupUncheckedCreateWithoutChallengesInput>
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutChallengesInput
+  connect?: Prisma.CommunityGroupWhereUniqueInput
+}
+
+export type CommunityGroupUpdateOneWithoutChallengesNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutChallengesInput, Prisma.CommunityGroupUncheckedCreateWithoutChallengesInput>
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutChallengesInput
+  upsert?: Prisma.CommunityGroupUpsertWithoutChallengesInput
+  disconnect?: Prisma.CommunityGroupWhereInput | boolean
+  delete?: Prisma.CommunityGroupWhereInput | boolean
+  connect?: Prisma.CommunityGroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityGroupUpdateToOneWithWhereWithoutChallengesInput, Prisma.CommunityGroupUpdateWithoutChallengesInput>, Prisma.CommunityGroupUncheckedUpdateWithoutChallengesInput>
+}
+
+export type CommunityGroupCreateNestedManyWithoutHostInstructorInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutHostInstructorInput, Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput> | Prisma.CommunityGroupCreateWithoutHostInstructorInput[] | Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutHostInstructorInput | Prisma.CommunityGroupCreateOrConnectWithoutHostInstructorInput[]
+  createMany?: Prisma.CommunityGroupCreateManyHostInstructorInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutHostInstructorInput, Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput> | Prisma.CommunityGroupCreateWithoutHostInstructorInput[] | Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutHostInstructorInput | Prisma.CommunityGroupCreateOrConnectWithoutHostInstructorInput[]
+  createMany?: Prisma.CommunityGroupCreateManyHostInstructorInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUpdateManyWithoutHostInstructorNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutHostInstructorInput, Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput> | Prisma.CommunityGroupCreateWithoutHostInstructorInput[] | Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutHostInstructorInput | Prisma.CommunityGroupCreateOrConnectWithoutHostInstructorInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutHostInstructorInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutHostInstructorInput[]
+  createMany?: Prisma.CommunityGroupCreateManyHostInstructorInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutHostInstructorInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutHostInstructorInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutHostInstructorInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutHostInstructorInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutHostInstructorInput, Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput> | Prisma.CommunityGroupCreateWithoutHostInstructorInput[] | Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutHostInstructorInput | Prisma.CommunityGroupCreateOrConnectWithoutHostInstructorInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutHostInstructorInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutHostInstructorInput[]
+  createMany?: Prisma.CommunityGroupCreateManyHostInstructorInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutHostInstructorInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutHostInstructorInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutHostInstructorInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutHostInstructorInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type EnumGroupTopicFieldUpdateOperationsInput = {
+  set?: $Enums.GroupTopic
+}
+
+export type EnumGroupStatusFieldUpdateOperationsInput = {
+  set?: $Enums.GroupStatus
+}
+
+export type EnumGroupJoinPolicyFieldUpdateOperationsInput = {
+  set?: $Enums.GroupJoinPolicy
+}
+
+export type EnumGroupVisibilityFieldUpdateOperationsInput = {
+  set?: $Enums.GroupVisibility
 }
 
 export type CommunityGroupCreateNestedOneWithoutMembersInput = {
@@ -381,6 +1113,656 @@ export type CommunityGroupUpdateOneWithoutPostsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityGroupUpdateToOneWithWhereWithoutPostsInput, Prisma.CommunityGroupUpdateWithoutPostsInput>, Prisma.CommunityGroupUncheckedUpdateWithoutPostsInput>
 }
 
+export type CommunityGroupCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAcademyInput, Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput> | Prisma.CommunityGroupCreateWithoutAcademyInput[] | Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutAcademyInput | Prisma.CommunityGroupCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.CommunityGroupCreateManyAcademyInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUncheckedCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAcademyInput, Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput> | Prisma.CommunityGroupCreateWithoutAcademyInput[] | Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutAcademyInput | Prisma.CommunityGroupCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.CommunityGroupCreateManyAcademyInputEnvelope
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+}
+
+export type CommunityGroupUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAcademyInput, Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput> | Prisma.CommunityGroupCreateWithoutAcademyInput[] | Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutAcademyInput | Prisma.CommunityGroupCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutAcademyInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.CommunityGroupCreateManyAcademyInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutAcademyInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutAcademyInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAcademyInput, Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput> | Prisma.CommunityGroupCreateWithoutAcademyInput[] | Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutAcademyInput | Prisma.CommunityGroupCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.CommunityGroupUpsertWithWhereUniqueWithoutAcademyInput | Prisma.CommunityGroupUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.CommunityGroupCreateManyAcademyInputEnvelope
+  set?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  disconnect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  delete?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  connect?: Prisma.CommunityGroupWhereUniqueInput | Prisma.CommunityGroupWhereUniqueInput[]
+  update?: Prisma.CommunityGroupUpdateWithWhereUniqueWithoutAcademyInput | Prisma.CommunityGroupUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.CommunityGroupUpdateManyWithWhereWithoutAcademyInput | Prisma.CommunityGroupUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+}
+
+export type CommunityGroupCreateNestedOneWithoutAnnouncementsInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAnnouncementsInput, Prisma.CommunityGroupUncheckedCreateWithoutAnnouncementsInput>
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutAnnouncementsInput
+  connect?: Prisma.CommunityGroupWhereUniqueInput
+}
+
+export type CommunityGroupUpdateOneWithoutAnnouncementsNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAnnouncementsInput, Prisma.CommunityGroupUncheckedCreateWithoutAnnouncementsInput>
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutAnnouncementsInput
+  upsert?: Prisma.CommunityGroupUpsertWithoutAnnouncementsInput
+  disconnect?: Prisma.CommunityGroupWhereInput | boolean
+  delete?: Prisma.CommunityGroupWhereInput | boolean
+  connect?: Prisma.CommunityGroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityGroupUpdateToOneWithWhereWithoutAnnouncementsInput, Prisma.CommunityGroupUpdateWithoutAnnouncementsInput>, Prisma.CommunityGroupUncheckedUpdateWithoutAnnouncementsInput>
+}
+
+export type CommunityGroupCreateNestedOneWithoutActivityInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutActivityInput, Prisma.CommunityGroupUncheckedCreateWithoutActivityInput>
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutActivityInput
+  connect?: Prisma.CommunityGroupWhereUniqueInput
+}
+
+export type CommunityGroupUpdateOneWithoutActivityNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutActivityInput, Prisma.CommunityGroupUncheckedCreateWithoutActivityInput>
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutActivityInput
+  upsert?: Prisma.CommunityGroupUpsertWithoutActivityInput
+  disconnect?: Prisma.CommunityGroupWhereInput | boolean
+  delete?: Prisma.CommunityGroupWhereInput | boolean
+  connect?: Prisma.CommunityGroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityGroupUpdateToOneWithWhereWithoutActivityInput, Prisma.CommunityGroupUpdateWithoutActivityInput>, Prisma.CommunityGroupUncheckedUpdateWithoutActivityInput>
+}
+
+export type CommunityGroupCreateNestedOneWithoutLiveEventsInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutLiveEventsInput, Prisma.CommunityGroupUncheckedCreateWithoutLiveEventsInput>
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutLiveEventsInput
+  connect?: Prisma.CommunityGroupWhereUniqueInput
+}
+
+export type CommunityGroupUpdateOneWithoutLiveEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityGroupCreateWithoutLiveEventsInput, Prisma.CommunityGroupUncheckedCreateWithoutLiveEventsInput>
+  connectOrCreate?: Prisma.CommunityGroupCreateOrConnectWithoutLiveEventsInput
+  upsert?: Prisma.CommunityGroupUpsertWithoutLiveEventsInput
+  disconnect?: Prisma.CommunityGroupWhereInput | boolean
+  delete?: Prisma.CommunityGroupWhereInput | boolean
+  connect?: Prisma.CommunityGroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityGroupUpdateToOneWithWhereWithoutLiveEventsInput, Prisma.CommunityGroupUpdateWithoutLiveEventsInput>, Prisma.CommunityGroupUncheckedUpdateWithoutLiveEventsInput>
+}
+
+export type CommunityGroupCreateWithoutCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCreatedByInput, Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput>
+}
+
+export type CommunityGroupCreateManyCreatedByInputEnvelope = {
+  data: Prisma.CommunityGroupCreateManyCreatedByInput | Prisma.CommunityGroupCreateManyCreatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommunityGroupCreateWithoutReviewedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutReviewedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutReviewedByInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutReviewedByInput, Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput>
+}
+
+export type CommunityGroupCreateManyReviewedByInputEnvelope = {
+  data: Prisma.CommunityGroupCreateManyReviewedByInput | Prisma.CommunityGroupCreateManyReviewedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommunityGroupUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutCreatedByInput, Prisma.CommunityGroupUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCreatedByInput, Prisma.CommunityGroupUncheckedCreateWithoutCreatedByInput>
+}
+
+export type CommunityGroupUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutCreatedByInput, Prisma.CommunityGroupUncheckedUpdateWithoutCreatedByInput>
+}
+
+export type CommunityGroupUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.CommunityGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateManyMutationInput, Prisma.CommunityGroupUncheckedUpdateManyWithoutCreatedByInput>
+}
+
+export type CommunityGroupScalarWhereInput = {
+  AND?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+  OR?: Prisma.CommunityGroupScalarWhereInput[]
+  NOT?: Prisma.CommunityGroupScalarWhereInput | Prisma.CommunityGroupScalarWhereInput[]
+  id?: Prisma.StringFilter<"CommunityGroup"> | string
+  slug?: Prisma.StringFilter<"CommunityGroup"> | string
+  name?: Prisma.StringFilter<"CommunityGroup"> | string
+  description?: Prisma.StringFilter<"CommunityGroup"> | string
+  pillar?: Prisma.EnumPillarNullableFilter<"CommunityGroup"> | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFilter<"CommunityGroup"> | Date | string
+  topic?: Prisma.EnumGroupTopicFilter<"CommunityGroup"> | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFilter<"CommunityGroup"> | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFilter<"CommunityGroup"> | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFilter<"CommunityGroup"> | $Enums.GroupVisibility
+  academyId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  courseId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  hostInstructorId?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  createdById?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  reviewedById?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"CommunityGroup"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"CommunityGroup"> | Date | string | null
+  city?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  region?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  country?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  coverImageUrl?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  rules?: Prisma.StringNullableFilter<"CommunityGroup"> | string | null
+  memberCount?: Prisma.IntFilter<"CommunityGroup"> | number
+  isDemo?: Prisma.BoolFilter<"CommunityGroup"> | boolean
+  updatedAt?: Prisma.DateTimeFilter<"CommunityGroup"> | Date | string
+}
+
+export type CommunityGroupUpsertWithWhereUniqueWithoutReviewedByInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutReviewedByInput, Prisma.CommunityGroupUncheckedUpdateWithoutReviewedByInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutReviewedByInput, Prisma.CommunityGroupUncheckedCreateWithoutReviewedByInput>
+}
+
+export type CommunityGroupUpdateWithWhereUniqueWithoutReviewedByInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutReviewedByInput, Prisma.CommunityGroupUncheckedUpdateWithoutReviewedByInput>
+}
+
+export type CommunityGroupUpdateManyWithWhereWithoutReviewedByInput = {
+  where: Prisma.CommunityGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateManyMutationInput, Prisma.CommunityGroupUncheckedUpdateManyWithoutReviewedByInput>
+}
+
+export type CommunityGroupCreateWithoutCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutCourseInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCourseInput, Prisma.CommunityGroupUncheckedCreateWithoutCourseInput>
+}
+
+export type CommunityGroupCreateManyCourseInputEnvelope = {
+  data: Prisma.CommunityGroupCreateManyCourseInput | Prisma.CommunityGroupCreateManyCourseInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommunityGroupUpsertWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutCourseInput, Prisma.CommunityGroupUncheckedUpdateWithoutCourseInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutCourseInput, Prisma.CommunityGroupUncheckedCreateWithoutCourseInput>
+}
+
+export type CommunityGroupUpdateWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutCourseInput, Prisma.CommunityGroupUncheckedUpdateWithoutCourseInput>
+}
+
+export type CommunityGroupUpdateManyWithWhereWithoutCourseInput = {
+  where: Prisma.CommunityGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateManyMutationInput, Prisma.CommunityGroupUncheckedUpdateManyWithoutCourseInput>
+}
+
+export type CommunityGroupCreateWithoutChallengesInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutChallengesInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutChallengesInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutChallengesInput, Prisma.CommunityGroupUncheckedCreateWithoutChallengesInput>
+}
+
+export type CommunityGroupUpsertWithoutChallengesInput = {
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutChallengesInput, Prisma.CommunityGroupUncheckedUpdateWithoutChallengesInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutChallengesInput, Prisma.CommunityGroupUncheckedCreateWithoutChallengesInput>
+  where?: Prisma.CommunityGroupWhereInput
+}
+
+export type CommunityGroupUpdateToOneWithWhereWithoutChallengesInput = {
+  where?: Prisma.CommunityGroupWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutChallengesInput, Prisma.CommunityGroupUncheckedUpdateWithoutChallengesInput>
+}
+
+export type CommunityGroupUpdateWithoutChallengesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutChallengesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupCreateWithoutHostInstructorInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutHostInstructorInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutHostInstructorInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutHostInstructorInput, Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput>
+}
+
+export type CommunityGroupCreateManyHostInstructorInputEnvelope = {
+  data: Prisma.CommunityGroupCreateManyHostInstructorInput | Prisma.CommunityGroupCreateManyHostInstructorInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommunityGroupUpsertWithWhereUniqueWithoutHostInstructorInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutHostInstructorInput, Prisma.CommunityGroupUncheckedUpdateWithoutHostInstructorInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutHostInstructorInput, Prisma.CommunityGroupUncheckedCreateWithoutHostInstructorInput>
+}
+
+export type CommunityGroupUpdateWithWhereUniqueWithoutHostInstructorInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutHostInstructorInput, Prisma.CommunityGroupUncheckedUpdateWithoutHostInstructorInput>
+}
+
+export type CommunityGroupUpdateManyWithWhereWithoutHostInstructorInput = {
+  where: Prisma.CommunityGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateManyMutationInput, Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorInput>
+}
+
 export type CommunityGroupCreateWithoutMembersInput = {
   id?: string
   slug: string
@@ -388,7 +1770,31 @@ export type CommunityGroupCreateWithoutMembersInput = {
   description: string
   pillar?: $Enums.Pillar | null
   createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
   posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
 }
 
 export type CommunityGroupUncheckedCreateWithoutMembersInput = {
@@ -398,7 +1804,31 @@ export type CommunityGroupUncheckedCreateWithoutMembersInput = {
   description: string
   pillar?: $Enums.Pillar | null
   createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
   posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type CommunityGroupCreateOrConnectWithoutMembersInput = {
@@ -424,7 +1854,31 @@ export type CommunityGroupUpdateWithoutMembersInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
 }
 
 export type CommunityGroupUncheckedUpdateWithoutMembersInput = {
@@ -434,7 +1888,31 @@ export type CommunityGroupUncheckedUpdateWithoutMembersInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 export type CommunityGroupCreateWithoutPostsInput = {
@@ -444,7 +1922,31 @@ export type CommunityGroupCreateWithoutPostsInput = {
   description: string
   pillar?: $Enums.Pillar | null
   createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
   members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
 }
 
 export type CommunityGroupUncheckedCreateWithoutPostsInput = {
@@ -454,7 +1956,31 @@ export type CommunityGroupUncheckedCreateWithoutPostsInput = {
   description: string
   pillar?: $Enums.Pillar | null
   createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
   members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type CommunityGroupCreateOrConnectWithoutPostsInput = {
@@ -480,7 +2006,31 @@ export type CommunityGroupUpdateWithoutPostsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
 }
 
 export type CommunityGroupUncheckedUpdateWithoutPostsInput = {
@@ -490,7 +2040,1201 @@ export type CommunityGroupUncheckedUpdateWithoutPostsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutAcademyInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAcademyInput, Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput>
+}
+
+export type CommunityGroupCreateManyAcademyInputEnvelope = {
+  data: Prisma.CommunityGroupCreateManyAcademyInput | Prisma.CommunityGroupCreateManyAcademyInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommunityGroupUpsertWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutAcademyInput, Prisma.CommunityGroupUncheckedUpdateWithoutAcademyInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAcademyInput, Prisma.CommunityGroupUncheckedCreateWithoutAcademyInput>
+}
+
+export type CommunityGroupUpdateWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutAcademyInput, Prisma.CommunityGroupUncheckedUpdateWithoutAcademyInput>
+}
+
+export type CommunityGroupUpdateManyWithWhereWithoutAcademyInput = {
+  where: Prisma.CommunityGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateManyMutationInput, Prisma.CommunityGroupUncheckedUpdateManyWithoutAcademyInput>
+}
+
+export type CommunityGroupCreateWithoutAnnouncementsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutAnnouncementsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutAnnouncementsInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAnnouncementsInput, Prisma.CommunityGroupUncheckedCreateWithoutAnnouncementsInput>
+}
+
+export type CommunityGroupUpsertWithoutAnnouncementsInput = {
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutAnnouncementsInput, Prisma.CommunityGroupUncheckedUpdateWithoutAnnouncementsInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutAnnouncementsInput, Prisma.CommunityGroupUncheckedCreateWithoutAnnouncementsInput>
+  where?: Prisma.CommunityGroupWhereInput
+}
+
+export type CommunityGroupUpdateToOneWithWhereWithoutAnnouncementsInput = {
+  where?: Prisma.CommunityGroupWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutAnnouncementsInput, Prisma.CommunityGroupUncheckedUpdateWithoutAnnouncementsInput>
+}
+
+export type CommunityGroupUpdateWithoutAnnouncementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutAnnouncementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupCreateWithoutActivityInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutActivityInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  liveEvents?: Prisma.LiveEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutActivityInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutActivityInput, Prisma.CommunityGroupUncheckedCreateWithoutActivityInput>
+}
+
+export type CommunityGroupUpsertWithoutActivityInput = {
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutActivityInput, Prisma.CommunityGroupUncheckedUpdateWithoutActivityInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutActivityInput, Prisma.CommunityGroupUncheckedCreateWithoutActivityInput>
+  where?: Prisma.CommunityGroupWhereInput
+}
+
+export type CommunityGroupUpdateToOneWithWhereWithoutActivityInput = {
+  where?: Prisma.CommunityGroupWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutActivityInput, Prisma.CommunityGroupUncheckedUpdateWithoutActivityInput>
+}
+
+export type CommunityGroupUpdateWithoutActivityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutActivityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupCreateWithoutLiveEventsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutGroupInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutGroupsInput
+  course?: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  hostInstructor?: Prisma.InstructorCreateNestedOneWithoutHostedGroupsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutGroupsCreatedInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutGroupsReviewedInput
+  challenges?: Prisma.ChallengeCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupUncheckedCreateWithoutLiveEventsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+  members?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutGroupInput
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutGroupInput
+  challenges?: Prisma.ChallengeUncheckedCreateNestedManyWithoutGroupInput
+  activity?: Prisma.ActivityEventUncheckedCreateNestedManyWithoutGroupInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type CommunityGroupCreateOrConnectWithoutLiveEventsInput = {
+  where: Prisma.CommunityGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutLiveEventsInput, Prisma.CommunityGroupUncheckedCreateWithoutLiveEventsInput>
+}
+
+export type CommunityGroupUpsertWithoutLiveEventsInput = {
+  update: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutLiveEventsInput, Prisma.CommunityGroupUncheckedUpdateWithoutLiveEventsInput>
+  create: Prisma.XOR<Prisma.CommunityGroupCreateWithoutLiveEventsInput, Prisma.CommunityGroupUncheckedCreateWithoutLiveEventsInput>
+  where?: Prisma.CommunityGroupWhereInput
+}
+
+export type CommunityGroupUpdateToOneWithWhereWithoutLiveEventsInput = {
+  where?: Prisma.CommunityGroupWhereInput
+  data: Prisma.XOR<Prisma.CommunityGroupUpdateWithoutLiveEventsInput, Prisma.CommunityGroupUncheckedUpdateWithoutLiveEventsInput>
+}
+
+export type CommunityGroupUpdateWithoutLiveEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutLiveEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupCreateManyCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+}
+
+export type CommunityGroupCreateManyReviewedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+}
+
+export type CommunityGroupUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CommunityGroupUpdateWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CommunityGroupCreateManyCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+}
+
+export type CommunityGroupUpdateWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CommunityGroupCreateManyHostInstructorInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  academyId?: string | null
+  courseId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+}
+
+export type CommunityGroupUpdateWithoutHostInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutHostInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutHostInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CommunityGroupCreateManyAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  pillar?: $Enums.Pillar | null
+  createdAt?: Date | string
+  topic?: $Enums.GroupTopic
+  status?: $Enums.GroupStatus
+  joinPolicy?: $Enums.GroupJoinPolicy
+  visibility?: $Enums.GroupVisibility
+  courseId?: string | null
+  hostInstructorId?: string | null
+  createdById?: string | null
+  reviewedById?: string | null
+  reviewedAt?: Date | string | null
+  rejectionReason?: string | null
+  archivedAt?: Date | string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  coverImageUrl?: string | null
+  rules?: string | null
+  memberCount?: number
+  isDemo?: boolean
+  updatedAt?: Date | string
+}
+
+export type CommunityGroupUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUpdateManyWithoutGroupNestedInput
+  course?: Prisma.CourseUpdateOneWithoutGroupsNestedInput
+  hostInstructor?: Prisma.InstructorUpdateOneWithoutHostedGroupsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutGroupsCreatedNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutGroupsReviewedNestedInput
+  challenges?: Prisma.ChallengeUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutGroupNestedInput
+  challenges?: Prisma.ChallengeUncheckedUpdateManyWithoutGroupNestedInput
+  liveEvents?: Prisma.LiveEventUncheckedUpdateManyWithoutGroupNestedInput
+  activity?: Prisma.ActivityEventUncheckedUpdateManyWithoutGroupNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type CommunityGroupUncheckedUpdateManyWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  pillar?: Prisma.NullableEnumPillarFieldUpdateOperationsInput | $Enums.Pillar | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.EnumGroupTopicFieldUpdateOperationsInput | $Enums.GroupTopic
+  status?: Prisma.EnumGroupStatusFieldUpdateOperationsInput | $Enums.GroupStatus
+  joinPolicy?: Prisma.EnumGroupJoinPolicyFieldUpdateOperationsInput | $Enums.GroupJoinPolicy
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hostInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rules?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -501,11 +3245,19 @@ export type CommunityGroupUncheckedUpdateWithoutPostsInput = {
 export type CommunityGroupCountOutputType = {
   members: number
   posts: number
+  challenges: number
+  liveEvents: number
+  activity: number
+  announcements: number
 }
 
 export type CommunityGroupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | CommunityGroupCountOutputTypeCountMembersArgs
   posts?: boolean | CommunityGroupCountOutputTypeCountPostsArgs
+  challenges?: boolean | CommunityGroupCountOutputTypeCountChallengesArgs
+  liveEvents?: boolean | CommunityGroupCountOutputTypeCountLiveEventsArgs
+  activity?: boolean | CommunityGroupCountOutputTypeCountActivityArgs
+  announcements?: boolean | CommunityGroupCountOutputTypeCountAnnouncementsArgs
 }
 
 /**
@@ -532,6 +3284,34 @@ export type CommunityGroupCountOutputTypeCountPostsArgs<ExtArgs extends runtime.
   where?: Prisma.CommunityPostWhereInput
 }
 
+/**
+ * CommunityGroupCountOutputType without action
+ */
+export type CommunityGroupCountOutputTypeCountChallengesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChallengeWhereInput
+}
+
+/**
+ * CommunityGroupCountOutputType without action
+ */
+export type CommunityGroupCountOutputTypeCountLiveEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LiveEventWhereInput
+}
+
+/**
+ * CommunityGroupCountOutputType without action
+ */
+export type CommunityGroupCountOutputTypeCountActivityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ActivityEventWhereInput
+}
+
+/**
+ * CommunityGroupCountOutputType without action
+ */
+export type CommunityGroupCountOutputTypeCountAnnouncementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AnnouncementWhereInput
+}
+
 
 export type CommunityGroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -540,8 +3320,37 @@ export type CommunityGroupSelect<ExtArgs extends runtime.Types.Extensions.Intern
   description?: boolean
   pillar?: boolean
   createdAt?: boolean
+  topic?: boolean
+  status?: boolean
+  joinPolicy?: boolean
+  visibility?: boolean
+  academyId?: boolean
+  courseId?: boolean
+  hostInstructorId?: boolean
+  createdById?: boolean
+  reviewedById?: boolean
+  reviewedAt?: boolean
+  rejectionReason?: boolean
+  archivedAt?: boolean
+  city?: boolean
+  region?: boolean
+  country?: boolean
+  coverImageUrl?: boolean
+  rules?: boolean
+  memberCount?: boolean
+  isDemo?: boolean
+  updatedAt?: boolean
   members?: boolean | Prisma.CommunityGroup$membersArgs<ExtArgs>
   posts?: boolean | Prisma.CommunityGroup$postsArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityGroup$academyArgs<ExtArgs>
+  course?: boolean | Prisma.CommunityGroup$courseArgs<ExtArgs>
+  hostInstructor?: boolean | Prisma.CommunityGroup$hostInstructorArgs<ExtArgs>
+  createdBy?: boolean | Prisma.CommunityGroup$createdByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.CommunityGroup$reviewedByArgs<ExtArgs>
+  challenges?: boolean | Prisma.CommunityGroup$challengesArgs<ExtArgs>
+  liveEvents?: boolean | Prisma.CommunityGroup$liveEventsArgs<ExtArgs>
+  activity?: boolean | Prisma.CommunityGroup$activityArgs<ExtArgs>
+  announcements?: boolean | Prisma.CommunityGroup$announcementsArgs<ExtArgs>
   _count?: boolean | Prisma.CommunityGroupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["communityGroup"]>
 
@@ -552,6 +3361,31 @@ export type CommunityGroupSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   description?: boolean
   pillar?: boolean
   createdAt?: boolean
+  topic?: boolean
+  status?: boolean
+  joinPolicy?: boolean
+  visibility?: boolean
+  academyId?: boolean
+  courseId?: boolean
+  hostInstructorId?: boolean
+  createdById?: boolean
+  reviewedById?: boolean
+  reviewedAt?: boolean
+  rejectionReason?: boolean
+  archivedAt?: boolean
+  city?: boolean
+  region?: boolean
+  country?: boolean
+  coverImageUrl?: boolean
+  rules?: boolean
+  memberCount?: boolean
+  isDemo?: boolean
+  updatedAt?: boolean
+  academy?: boolean | Prisma.CommunityGroup$academyArgs<ExtArgs>
+  course?: boolean | Prisma.CommunityGroup$courseArgs<ExtArgs>
+  hostInstructor?: boolean | Prisma.CommunityGroup$hostInstructorArgs<ExtArgs>
+  createdBy?: boolean | Prisma.CommunityGroup$createdByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.CommunityGroup$reviewedByArgs<ExtArgs>
 }, ExtArgs["result"]["communityGroup"]>
 
 export type CommunityGroupSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -561,6 +3395,31 @@ export type CommunityGroupSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   description?: boolean
   pillar?: boolean
   createdAt?: boolean
+  topic?: boolean
+  status?: boolean
+  joinPolicy?: boolean
+  visibility?: boolean
+  academyId?: boolean
+  courseId?: boolean
+  hostInstructorId?: boolean
+  createdById?: boolean
+  reviewedById?: boolean
+  reviewedAt?: boolean
+  rejectionReason?: boolean
+  archivedAt?: boolean
+  city?: boolean
+  region?: boolean
+  country?: boolean
+  coverImageUrl?: boolean
+  rules?: boolean
+  memberCount?: boolean
+  isDemo?: boolean
+  updatedAt?: boolean
+  academy?: boolean | Prisma.CommunityGroup$academyArgs<ExtArgs>
+  course?: boolean | Prisma.CommunityGroup$courseArgs<ExtArgs>
+  hostInstructor?: boolean | Prisma.CommunityGroup$hostInstructorArgs<ExtArgs>
+  createdBy?: boolean | Prisma.CommunityGroup$createdByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.CommunityGroup$reviewedByArgs<ExtArgs>
 }, ExtArgs["result"]["communityGroup"]>
 
 export type CommunityGroupSelectScalar = {
@@ -570,22 +3429,72 @@ export type CommunityGroupSelectScalar = {
   description?: boolean
   pillar?: boolean
   createdAt?: boolean
+  topic?: boolean
+  status?: boolean
+  joinPolicy?: boolean
+  visibility?: boolean
+  academyId?: boolean
+  courseId?: boolean
+  hostInstructorId?: boolean
+  createdById?: boolean
+  reviewedById?: boolean
+  reviewedAt?: boolean
+  rejectionReason?: boolean
+  archivedAt?: boolean
+  city?: boolean
+  region?: boolean
+  country?: boolean
+  coverImageUrl?: boolean
+  rules?: boolean
+  memberCount?: boolean
+  isDemo?: boolean
+  updatedAt?: boolean
 }
 
-export type CommunityGroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "pillar" | "createdAt", ExtArgs["result"]["communityGroup"]>
+export type CommunityGroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "pillar" | "createdAt" | "topic" | "status" | "joinPolicy" | "visibility" | "academyId" | "courseId" | "hostInstructorId" | "createdById" | "reviewedById" | "reviewedAt" | "rejectionReason" | "archivedAt" | "city" | "region" | "country" | "coverImageUrl" | "rules" | "memberCount" | "isDemo" | "updatedAt", ExtArgs["result"]["communityGroup"]>
 export type CommunityGroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | Prisma.CommunityGroup$membersArgs<ExtArgs>
   posts?: boolean | Prisma.CommunityGroup$postsArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityGroup$academyArgs<ExtArgs>
+  course?: boolean | Prisma.CommunityGroup$courseArgs<ExtArgs>
+  hostInstructor?: boolean | Prisma.CommunityGroup$hostInstructorArgs<ExtArgs>
+  createdBy?: boolean | Prisma.CommunityGroup$createdByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.CommunityGroup$reviewedByArgs<ExtArgs>
+  challenges?: boolean | Prisma.CommunityGroup$challengesArgs<ExtArgs>
+  liveEvents?: boolean | Prisma.CommunityGroup$liveEventsArgs<ExtArgs>
+  activity?: boolean | Prisma.CommunityGroup$activityArgs<ExtArgs>
+  announcements?: boolean | Prisma.CommunityGroup$announcementsArgs<ExtArgs>
   _count?: boolean | Prisma.CommunityGroupCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type CommunityGroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type CommunityGroupIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type CommunityGroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academy?: boolean | Prisma.CommunityGroup$academyArgs<ExtArgs>
+  course?: boolean | Prisma.CommunityGroup$courseArgs<ExtArgs>
+  hostInstructor?: boolean | Prisma.CommunityGroup$hostInstructorArgs<ExtArgs>
+  createdBy?: boolean | Prisma.CommunityGroup$createdByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.CommunityGroup$reviewedByArgs<ExtArgs>
+}
+export type CommunityGroupIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academy?: boolean | Prisma.CommunityGroup$academyArgs<ExtArgs>
+  course?: boolean | Prisma.CommunityGroup$courseArgs<ExtArgs>
+  hostInstructor?: boolean | Prisma.CommunityGroup$hostInstructorArgs<ExtArgs>
+  createdBy?: boolean | Prisma.CommunityGroup$createdByArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.CommunityGroup$reviewedByArgs<ExtArgs>
+}
 
 export type $CommunityGroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CommunityGroup"
   objects: {
     members: Prisma.$GroupMembershipPayload<ExtArgs>[]
     posts: Prisma.$CommunityPostPayload<ExtArgs>[]
+    academy: Prisma.$AcademyPayload<ExtArgs> | null
+    course: Prisma.$CoursePayload<ExtArgs> | null
+    hostInstructor: Prisma.$InstructorPayload<ExtArgs> | null
+    createdBy: Prisma.$UserPayload<ExtArgs> | null
+    reviewedBy: Prisma.$UserPayload<ExtArgs> | null
+    challenges: Prisma.$ChallengePayload<ExtArgs>[]
+    liveEvents: Prisma.$LiveEventPayload<ExtArgs>[]
+    activity: Prisma.$ActivityEventPayload<ExtArgs>[]
+    announcements: Prisma.$AnnouncementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -594,6 +3503,47 @@ export type $CommunityGroupPayload<ExtArgs extends runtime.Types.Extensions.Inte
     description: string
     pillar: $Enums.Pillar | null
     createdAt: Date
+    /**
+     * Backfilled to PROGRAMME for the four "-program" groups.
+     */
+    topic: $Enums.GroupTopic
+    /**
+     * Member-created groups start PENDING_REVIEW. ARCHIVED is moved from the "community.archived" SiteSetting.
+     */
+    status: $Enums.GroupStatus
+    joinPolicy: $Enums.GroupJoinPolicy
+    visibility: $Enums.GroupVisibility
+    academyId: string | null
+    /**
+     * A programme group belongs to its course (backfilled for the four "-program" groups).
+     */
+    courseId: string | null
+    /**
+     * A mentor-hosted group.
+     */
+    hostInstructorId: string | null
+    createdById: string | null
+    reviewedById: string | null
+    reviewedAt: Date | null
+    /**
+     * Shown to the member who proposed the group.
+     */
+    rejectionReason: string | null
+    archivedAt: Date | null
+    /**
+     * LOCAL groups: city and region only, never an address.
+     */
+    city: string | null
+    region: string | null
+    country: string | null
+    coverImageUrl: string | null
+    rules: string | null
+    /**
+     * ACTIVE memberships, kept in the joining transaction. Backfilled.
+     */
+    memberCount: number
+    isDemo: boolean
+    updatedAt: Date
   }, ExtArgs["result"]["communityGroup"]>
   composites: {}
 }
@@ -990,6 +3940,15 @@ export interface Prisma__CommunityGroupClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   members<T extends Prisma.CommunityGroup$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   posts<T extends Prisma.CommunityGroup$postsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$postsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommunityPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  academy<T extends Prisma.CommunityGroup$academyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$academyArgs<ExtArgs>>): Prisma.Prisma__AcademyClient<runtime.Types.Result.GetResult<Prisma.$AcademyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  course<T extends Prisma.CommunityGroup$courseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$courseArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  hostInstructor<T extends Prisma.CommunityGroup$hostInstructorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$hostInstructorArgs<ExtArgs>>): Prisma.Prisma__InstructorClient<runtime.Types.Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  createdBy<T extends Prisma.CommunityGroup$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  reviewedBy<T extends Prisma.CommunityGroup$reviewedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$reviewedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  challenges<T extends Prisma.CommunityGroup$challengesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$challengesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  liveEvents<T extends Prisma.CommunityGroup$liveEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$liveEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LiveEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  activity<T extends Prisma.CommunityGroup$activityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$activityArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  announcements<T extends Prisma.CommunityGroup$announcementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroup$announcementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1025,6 +3984,26 @@ export interface CommunityGroupFieldRefs {
   readonly description: Prisma.FieldRef<"CommunityGroup", 'String'>
   readonly pillar: Prisma.FieldRef<"CommunityGroup", 'Pillar'>
   readonly createdAt: Prisma.FieldRef<"CommunityGroup", 'DateTime'>
+  readonly topic: Prisma.FieldRef<"CommunityGroup", 'GroupTopic'>
+  readonly status: Prisma.FieldRef<"CommunityGroup", 'GroupStatus'>
+  readonly joinPolicy: Prisma.FieldRef<"CommunityGroup", 'GroupJoinPolicy'>
+  readonly visibility: Prisma.FieldRef<"CommunityGroup", 'GroupVisibility'>
+  readonly academyId: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly courseId: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly hostInstructorId: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly createdById: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly reviewedById: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly reviewedAt: Prisma.FieldRef<"CommunityGroup", 'DateTime'>
+  readonly rejectionReason: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly archivedAt: Prisma.FieldRef<"CommunityGroup", 'DateTime'>
+  readonly city: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly region: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly country: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly coverImageUrl: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly rules: Prisma.FieldRef<"CommunityGroup", 'String'>
+  readonly memberCount: Prisma.FieldRef<"CommunityGroup", 'Int'>
+  readonly isDemo: Prisma.FieldRef<"CommunityGroup", 'Boolean'>
+  readonly updatedAt: Prisma.FieldRef<"CommunityGroup", 'DateTime'>
 }
     
 
@@ -1274,6 +4253,10 @@ export type CommunityGroupCreateManyAndReturnArgs<ExtArgs extends runtime.Types.
    */
   data: Prisma.CommunityGroupCreateManyInput | Prisma.CommunityGroupCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityGroupIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1344,6 +4327,10 @@ export type CommunityGroupUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.
    * Limit how many CommunityGroups to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityGroupIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1458,6 +4445,197 @@ export type CommunityGroup$postsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.CommunityPostScalarFieldEnum | Prisma.CommunityPostScalarFieldEnum[]
+}
+
+/**
+ * CommunityGroup.academy
+ */
+export type CommunityGroup$academyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Academy
+   */
+  select?: Prisma.AcademySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Academy
+   */
+  omit?: Prisma.AcademyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademyInclude<ExtArgs> | null
+  where?: Prisma.AcademyWhereInput
+}
+
+/**
+ * CommunityGroup.course
+ */
+export type CommunityGroup$courseArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Course
+   */
+  select?: Prisma.CourseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Course
+   */
+  omit?: Prisma.CourseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseInclude<ExtArgs> | null
+  where?: Prisma.CourseWhereInput
+}
+
+/**
+ * CommunityGroup.hostInstructor
+ */
+export type CommunityGroup$hostInstructorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Instructor
+   */
+  select?: Prisma.InstructorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Instructor
+   */
+  omit?: Prisma.InstructorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstructorInclude<ExtArgs> | null
+  where?: Prisma.InstructorWhereInput
+}
+
+/**
+ * CommunityGroup.createdBy
+ */
+export type CommunityGroup$createdByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * CommunityGroup.reviewedBy
+ */
+export type CommunityGroup$reviewedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * CommunityGroup.challenges
+ */
+export type CommunityGroup$challengesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Challenge
+   */
+  select?: Prisma.ChallengeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Challenge
+   */
+  omit?: Prisma.ChallengeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeInclude<ExtArgs> | null
+  where?: Prisma.ChallengeWhereInput
+  orderBy?: Prisma.ChallengeOrderByWithRelationInput | Prisma.ChallengeOrderByWithRelationInput[]
+  cursor?: Prisma.ChallengeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChallengeScalarFieldEnum | Prisma.ChallengeScalarFieldEnum[]
+}
+
+/**
+ * CommunityGroup.liveEvents
+ */
+export type CommunityGroup$liveEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LiveEvent
+   */
+  select?: Prisma.LiveEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LiveEvent
+   */
+  omit?: Prisma.LiveEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LiveEventInclude<ExtArgs> | null
+  where?: Prisma.LiveEventWhereInput
+  orderBy?: Prisma.LiveEventOrderByWithRelationInput | Prisma.LiveEventOrderByWithRelationInput[]
+  cursor?: Prisma.LiveEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LiveEventScalarFieldEnum | Prisma.LiveEventScalarFieldEnum[]
+}
+
+/**
+ * CommunityGroup.activity
+ */
+export type CommunityGroup$activityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ActivityEvent
+   */
+  select?: Prisma.ActivityEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ActivityEvent
+   */
+  omit?: Prisma.ActivityEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ActivityEventInclude<ExtArgs> | null
+  where?: Prisma.ActivityEventWhereInput
+  orderBy?: Prisma.ActivityEventOrderByWithRelationInput | Prisma.ActivityEventOrderByWithRelationInput[]
+  cursor?: Prisma.ActivityEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ActivityEventScalarFieldEnum | Prisma.ActivityEventScalarFieldEnum[]
+}
+
+/**
+ * CommunityGroup.announcements
+ */
+export type CommunityGroup$announcementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Announcement
+   */
+  select?: Prisma.AnnouncementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Announcement
+   */
+  omit?: Prisma.AnnouncementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AnnouncementInclude<ExtArgs> | null
+  where?: Prisma.AnnouncementWhereInput
+  orderBy?: Prisma.AnnouncementOrderByWithRelationInput | Prisma.AnnouncementOrderByWithRelationInput[]
+  cursor?: Prisma.AnnouncementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AnnouncementScalarFieldEnum | Prisma.AnnouncementScalarFieldEnum[]
 }
 
 /**

@@ -24,6 +24,7 @@ import { AFFILIATE_HOLD_DAYS, AFFILIATE_RATE_BPS, MIN_PAYOUT_CENTS } from "@tyco
 import { promoteTo } from "../auth/permissions";
 import { AuditService } from "../platform/audit";
 import { notify } from "../platform/notify";
+import { ipKey } from "../platform/ip-key";
 import type { EarnHooks } from "./hooks";
 
 // ───────────────────────────────────────────────────────── errors
@@ -133,20 +134,15 @@ function hashSecret(): string {
   return process.env.AFFILIATE_HASH_SECRET || sha256(`affiliate-visitor|${process.env.DATABASE_URL ?? ""}`);
 }
 
-/**
- * The IP is reduced to the same 32-char SHA-256 prefix that sessions store
- * (auth/session.ts), so a click and a signed-in session can be compared
- * without either table ever holding a raw IP.
- */
-export function ipKey(ip: string | null | undefined): string {
-  return ip ? sha256(ip).slice(0, 32) : "";
-}
-
 function dayOf(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-/** sha256(ip + ua + YYYY-MM-DD + secret). Never the raw IP. */
+/**
+ * sha256(ipKey + ua + YYYY-MM-DD + secret). Never the raw IP: the click's
+ * address goes in as ipKey(ip), the keyed hash sessions store too
+ * (platform/ip-key.ts), so a click and a signed-in session can be compared.
+ */
 export function visitorHash(ipHash: string, userAgent: string | null | undefined, day: Date): string {
   return sha256(`${ipHash}|${(userAgent ?? "").slice(0, 400)}|${dayOf(day)}|${hashSecret()}`);
 }
@@ -246,6 +242,14 @@ const PAYOUT_CHECK = {
     },
   },
 } satisfies Prisma.PayoutRequestInclude;
+
+/**
+ * A payout row as the affiliate programme's: null when it has no affiliate
+ * (a contributor's payout, which shares the PayoutRequest table).
+ */
+function withAffiliate<P extends { affiliate: unknown }>(p: P): (P & { affiliate: NonNullable<P["affiliate"]> }) | null {
+  return p.affiliate ? (p as P & { affiliate: NonNullable<P["affiliate"]> }) : null;
+}
 
 // ───────────────────────────────────────────────────────── service
 
@@ -786,15 +790,18 @@ export class AffiliateService implements EarnHooks {
     extra: { reference?: string; reason?: string },
     message: (p: { amountCents: number }) => [string, string]
   ) {
-    // The affiliate never changes, so it can be read before locking.
+    // The affiliate never changes, so it can be read before locking. A contributor's
+    // payout (no affiliate) is not this programme's to move.
     const found = await this.db.payoutRequest.findUnique({ where: { id: payoutId }, select: { affiliateId: true } });
-    if (!found) throw new EarnError("Payout request not found.");
+    if (!found?.affiliateId) throw new EarnError("Payout request not found.");
+    const affiliateId = found.affiliateId;
     return this.db.$transaction(async (tx) => {
       // The lock order of requestPayout and reverseFor: a refund reversing one of
       // these commissions waits for this move, or this move sees it done.
-      await tx.$queryRaw`SELECT id FROM "AffiliateProfile" WHERE id = ${found.affiliateId} FOR UPDATE`;
+      await tx.$queryRaw`SELECT id FROM "AffiliateProfile" WHERE id = ${affiliateId} FOR UPDATE`;
       await tx.$queryRaw`SELECT id FROM "PayoutRequest" WHERE id = ${payoutId} FOR UPDATE`;
-      const p = await tx.payoutRequest.findUniqueOrThrow({ where: { id: payoutId }, include: PAYOUT_CHECK });
+      const p = withAffiliate(await tx.payoutRequest.findUniqueOrThrow({ where: { id: payoutId }, include: PAYOUT_CHECK }));
+      if (!p) throw new EarnError("Payout request not found."); // never: a payout's affiliate does not change
       if (!from.includes(p.status)) throw new InvalidStateError(`This payout is ${p.status.toLowerCase()}.`);
       if (to === "APPROVED" || to === "PAID") {
         const blocked = payoutBlocker(p);
@@ -975,8 +982,9 @@ export class AffiliateService implements EarnHooks {
     });
   }
 
+  /** Affiliate payouts only: a contributor's payout (affiliateId null) shares the table but not this queue. */
   async listPayouts(opts: { status?: PayoutStatus; take?: number; skip?: number } = {}) {
-    const where = opts.status ? { status: opts.status } : {};
+    const where: Prisma.PayoutRequestWhereInput = { affiliateId: { not: null }, ...(opts.status ? { status: opts.status } : {}) };
     const [rows, total] = await Promise.all([
       this.db.payoutRequest.findMany({
         where,
@@ -991,7 +999,7 @@ export class AffiliateService implements EarnHooks {
       }),
       this.db.payoutRequest.count({ where }),
     ]);
-    return { rows, total };
+    return { rows: rows.flatMap((r) => withAffiliate(r) ?? []), total };
   }
 }
 

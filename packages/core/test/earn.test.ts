@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { createHash } from "node:crypto";
 import { prisma } from "@tycoonhood/db";
 import { AFFILIATE_HOLD_DAYS, AFFILIATE_RATE_BPS, MIN_PAYOUT_CENTS } from "@tycoonhood/config";
 import {
@@ -11,6 +10,7 @@ import {
   AFFILIATE_CODE_PATTERN,
   commissionAmount,
   payoutBlocker,
+  ipKey,
 } from "../src/earn";
 import { createTestUser, uid } from "./helpers";
 
@@ -341,7 +341,7 @@ describe("commissions", () => {
     const aff = await approvedAffiliate();
     const ip = `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
     const ua = `Mozilla/5.0 fraud-${uid()}`;
-    const ipHash = createHash("sha256").update(ip).digest("hex").slice(0, 32);
+    const ipHash = ipKey(ip); // what a session from this device stores (auth/session.ts)
     await prisma.session.create({ data: { sessionToken: uid(), userId: aff.user.id, expires: new Date(Date.now() + DAY), userAgent: ua, ipHash } });
     await earn.recordClick(aff.profile.code, { ip, userAgent: ua, landingPath: "/store" });
     const buyer = await createTestUser(); // created just now

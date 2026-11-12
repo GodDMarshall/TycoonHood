@@ -31,6 +31,12 @@ export type ResourceMinAggregateOutputType = {
   kind: string | null
   courseId: string | null
   lessonId: string | null
+  eventId: string | null
+  instructorId: string | null
+  status: $Enums.ContentStatus | null
+  submittedById: string | null
+  audience: $Enums.ResourceAudience | null
+  createdAt: Date | null
 }
 
 export type ResourceMaxAggregateOutputType = {
@@ -40,6 +46,12 @@ export type ResourceMaxAggregateOutputType = {
   kind: string | null
   courseId: string | null
   lessonId: string | null
+  eventId: string | null
+  instructorId: string | null
+  status: $Enums.ContentStatus | null
+  submittedById: string | null
+  audience: $Enums.ResourceAudience | null
+  createdAt: Date | null
 }
 
 export type ResourceCountAggregateOutputType = {
@@ -49,6 +61,12 @@ export type ResourceCountAggregateOutputType = {
   kind: number
   courseId: number
   lessonId: number
+  eventId: number
+  instructorId: number
+  status: number
+  submittedById: number
+  audience: number
+  createdAt: number
   _all: number
 }
 
@@ -60,6 +78,12 @@ export type ResourceMinAggregateInputType = {
   kind?: true
   courseId?: true
   lessonId?: true
+  eventId?: true
+  instructorId?: true
+  status?: true
+  submittedById?: true
+  audience?: true
+  createdAt?: true
 }
 
 export type ResourceMaxAggregateInputType = {
@@ -69,6 +93,12 @@ export type ResourceMaxAggregateInputType = {
   kind?: true
   courseId?: true
   lessonId?: true
+  eventId?: true
+  instructorId?: true
+  status?: true
+  submittedById?: true
+  audience?: true
+  createdAt?: true
 }
 
 export type ResourceCountAggregateInputType = {
@@ -78,6 +108,12 @@ export type ResourceCountAggregateInputType = {
   kind?: true
   courseId?: true
   lessonId?: true
+  eventId?: true
+  instructorId?: true
+  status?: true
+  submittedById?: true
+  audience?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -160,6 +196,12 @@ export type ResourceGroupByOutputType = {
   kind: string
   courseId: string | null
   lessonId: string | null
+  eventId: string | null
+  instructorId: string | null
+  status: $Enums.ContentStatus
+  submittedById: string | null
+  audience: $Enums.ResourceAudience | null
+  createdAt: Date
   _count: ResourceCountAggregateOutputType | null
   _min: ResourceMinAggregateOutputType | null
   _max: ResourceMaxAggregateOutputType | null
@@ -190,8 +232,18 @@ export type ResourceWhereInput = {
   kind?: Prisma.StringFilter<"Resource"> | string
   courseId?: Prisma.StringNullableFilter<"Resource"> | string | null
   lessonId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  eventId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  instructorId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  status?: Prisma.EnumContentStatusFilter<"Resource"> | $Enums.ContentStatus
+  submittedById?: Prisma.StringNullableFilter<"Resource"> | string | null
+  audience?: Prisma.EnumResourceAudienceNullableFilter<"Resource"> | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFilter<"Resource"> | Date | string
   course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
   lesson?: Prisma.XOR<Prisma.LessonNullableScalarRelationFilter, Prisma.LessonWhereInput> | null
+  event?: Prisma.XOR<Prisma.LiveEventNullableScalarRelationFilter, Prisma.LiveEventWhereInput> | null
+  instructor?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
+  submittedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  submissions?: Prisma.ContentSubmissionListRelationFilter
 }
 
 export type ResourceOrderByWithRelationInput = {
@@ -201,8 +253,18 @@ export type ResourceOrderByWithRelationInput = {
   kind?: Prisma.SortOrder
   courseId?: Prisma.SortOrderInput | Prisma.SortOrder
   lessonId?: Prisma.SortOrderInput | Prisma.SortOrder
+  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  instructorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  submittedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  audience?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   course?: Prisma.CourseOrderByWithRelationInput
   lesson?: Prisma.LessonOrderByWithRelationInput
+  event?: Prisma.LiveEventOrderByWithRelationInput
+  instructor?: Prisma.InstructorOrderByWithRelationInput
+  submittedBy?: Prisma.UserOrderByWithRelationInput
+  submissions?: Prisma.ContentSubmissionOrderByRelationAggregateInput
 }
 
 export type ResourceWhereUniqueInput = Prisma.AtLeast<{
@@ -215,8 +277,18 @@ export type ResourceWhereUniqueInput = Prisma.AtLeast<{
   kind?: Prisma.StringFilter<"Resource"> | string
   courseId?: Prisma.StringNullableFilter<"Resource"> | string | null
   lessonId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  eventId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  instructorId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  status?: Prisma.EnumContentStatusFilter<"Resource"> | $Enums.ContentStatus
+  submittedById?: Prisma.StringNullableFilter<"Resource"> | string | null
+  audience?: Prisma.EnumResourceAudienceNullableFilter<"Resource"> | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFilter<"Resource"> | Date | string
   course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
   lesson?: Prisma.XOR<Prisma.LessonNullableScalarRelationFilter, Prisma.LessonWhereInput> | null
+  event?: Prisma.XOR<Prisma.LiveEventNullableScalarRelationFilter, Prisma.LiveEventWhereInput> | null
+  instructor?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
+  submittedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  submissions?: Prisma.ContentSubmissionListRelationFilter
 }, "id">
 
 export type ResourceOrderByWithAggregationInput = {
@@ -226,6 +298,12 @@ export type ResourceOrderByWithAggregationInput = {
   kind?: Prisma.SortOrder
   courseId?: Prisma.SortOrderInput | Prisma.SortOrder
   lessonId?: Prisma.SortOrderInput | Prisma.SortOrder
+  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  instructorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  submittedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  audience?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.ResourceCountOrderByAggregateInput
   _max?: Prisma.ResourceMaxOrderByAggregateInput
   _min?: Prisma.ResourceMinOrderByAggregateInput
@@ -241,6 +319,12 @@ export type ResourceScalarWhereWithAggregatesInput = {
   kind?: Prisma.StringWithAggregatesFilter<"Resource"> | string
   courseId?: Prisma.StringNullableWithAggregatesFilter<"Resource"> | string | null
   lessonId?: Prisma.StringNullableWithAggregatesFilter<"Resource"> | string | null
+  eventId?: Prisma.StringNullableWithAggregatesFilter<"Resource"> | string | null
+  instructorId?: Prisma.StringNullableWithAggregatesFilter<"Resource"> | string | null
+  status?: Prisma.EnumContentStatusWithAggregatesFilter<"Resource"> | $Enums.ContentStatus
+  submittedById?: Prisma.StringNullableWithAggregatesFilter<"Resource"> | string | null
+  audience?: Prisma.EnumResourceAudienceNullableWithAggregatesFilter<"Resource"> | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Resource"> | Date | string
 }
 
 export type ResourceCreateInput = {
@@ -248,8 +332,15 @@ export type ResourceCreateInput = {
   title: string
   url: string
   kind?: string
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
   course?: Prisma.CourseCreateNestedOneWithoutResourcesInput
   lesson?: Prisma.LessonCreateNestedOneWithoutResourcesInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutResourcesInput
+  instructor?: Prisma.InstructorCreateNestedOneWithoutResourcesInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutResourcesSubmittedInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutResourceInput
 }
 
 export type ResourceUncheckedCreateInput = {
@@ -259,6 +350,13 @@ export type ResourceUncheckedCreateInput = {
   kind?: string
   courseId?: string | null
   lessonId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutResourceInput
 }
 
 export type ResourceUpdateInput = {
@@ -266,8 +364,15 @@ export type ResourceUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   course?: Prisma.CourseUpdateOneWithoutResourcesNestedInput
   lesson?: Prisma.LessonUpdateOneWithoutResourcesNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutResourcesNestedInput
+  instructor?: Prisma.InstructorUpdateOneWithoutResourcesNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutResourcesSubmittedNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutResourceNestedInput
 }
 
 export type ResourceUncheckedUpdateInput = {
@@ -277,6 +382,13 @@ export type ResourceUncheckedUpdateInput = {
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutResourceNestedInput
 }
 
 export type ResourceCreateManyInput = {
@@ -286,6 +398,12 @@ export type ResourceCreateManyInput = {
   kind?: string
   courseId?: string | null
   lessonId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
 }
 
 export type ResourceUpdateManyMutationInput = {
@@ -293,6 +411,9 @@ export type ResourceUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ResourceUncheckedUpdateManyInput = {
@@ -302,6 +423,12 @@ export type ResourceUncheckedUpdateManyInput = {
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ResourceListRelationFilter = {
@@ -321,6 +448,12 @@ export type ResourceCountOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   courseId?: Prisma.SortOrder
   lessonId?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  instructorId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  submittedById?: Prisma.SortOrder
+  audience?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type ResourceMaxOrderByAggregateInput = {
@@ -330,6 +463,12 @@ export type ResourceMaxOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   courseId?: Prisma.SortOrder
   lessonId?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  instructorId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  submittedById?: Prisma.SortOrder
+  audience?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type ResourceMinOrderByAggregateInput = {
@@ -339,6 +478,59 @@ export type ResourceMinOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   courseId?: Prisma.SortOrder
   lessonId?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  instructorId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  submittedById?: Prisma.SortOrder
+  audience?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+}
+
+export type ResourceNullableScalarRelationFilter = {
+  is?: Prisma.ResourceWhereInput | null
+  isNot?: Prisma.ResourceWhereInput | null
+}
+
+export type ResourceCreateNestedManyWithoutSubmittedByInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutSubmittedByInput, Prisma.ResourceUncheckedCreateWithoutSubmittedByInput> | Prisma.ResourceCreateWithoutSubmittedByInput[] | Prisma.ResourceUncheckedCreateWithoutSubmittedByInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutSubmittedByInput | Prisma.ResourceCreateOrConnectWithoutSubmittedByInput[]
+  createMany?: Prisma.ResourceCreateManySubmittedByInputEnvelope
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+}
+
+export type ResourceUncheckedCreateNestedManyWithoutSubmittedByInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutSubmittedByInput, Prisma.ResourceUncheckedCreateWithoutSubmittedByInput> | Prisma.ResourceCreateWithoutSubmittedByInput[] | Prisma.ResourceUncheckedCreateWithoutSubmittedByInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutSubmittedByInput | Prisma.ResourceCreateOrConnectWithoutSubmittedByInput[]
+  createMany?: Prisma.ResourceCreateManySubmittedByInputEnvelope
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+}
+
+export type ResourceUpdateManyWithoutSubmittedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutSubmittedByInput, Prisma.ResourceUncheckedCreateWithoutSubmittedByInput> | Prisma.ResourceCreateWithoutSubmittedByInput[] | Prisma.ResourceUncheckedCreateWithoutSubmittedByInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutSubmittedByInput | Prisma.ResourceCreateOrConnectWithoutSubmittedByInput[]
+  upsert?: Prisma.ResourceUpsertWithWhereUniqueWithoutSubmittedByInput | Prisma.ResourceUpsertWithWhereUniqueWithoutSubmittedByInput[]
+  createMany?: Prisma.ResourceCreateManySubmittedByInputEnvelope
+  set?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  disconnect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  delete?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  update?: Prisma.ResourceUpdateWithWhereUniqueWithoutSubmittedByInput | Prisma.ResourceUpdateWithWhereUniqueWithoutSubmittedByInput[]
+  updateMany?: Prisma.ResourceUpdateManyWithWhereWithoutSubmittedByInput | Prisma.ResourceUpdateManyWithWhereWithoutSubmittedByInput[]
+  deleteMany?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
+}
+
+export type ResourceUncheckedUpdateManyWithoutSubmittedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutSubmittedByInput, Prisma.ResourceUncheckedCreateWithoutSubmittedByInput> | Prisma.ResourceCreateWithoutSubmittedByInput[] | Prisma.ResourceUncheckedCreateWithoutSubmittedByInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutSubmittedByInput | Prisma.ResourceCreateOrConnectWithoutSubmittedByInput[]
+  upsert?: Prisma.ResourceUpsertWithWhereUniqueWithoutSubmittedByInput | Prisma.ResourceUpsertWithWhereUniqueWithoutSubmittedByInput[]
+  createMany?: Prisma.ResourceCreateManySubmittedByInputEnvelope
+  set?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  disconnect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  delete?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  update?: Prisma.ResourceUpdateWithWhereUniqueWithoutSubmittedByInput | Prisma.ResourceUpdateWithWhereUniqueWithoutSubmittedByInput[]
+  updateMany?: Prisma.ResourceUpdateManyWithWhereWithoutSubmittedByInput | Prisma.ResourceUpdateManyWithWhereWithoutSubmittedByInput[]
+  deleteMany?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
 }
 
 export type ResourceCreateNestedManyWithoutCourseInput = {
@@ -425,12 +617,197 @@ export type ResourceUncheckedUpdateManyWithoutLessonNestedInput = {
   deleteMany?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
 }
 
+export type NullableEnumResourceAudienceFieldUpdateOperationsInput = {
+  set?: $Enums.ResourceAudience | null
+}
+
+export type ResourceCreateNestedManyWithoutInstructorInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutInstructorInput, Prisma.ResourceUncheckedCreateWithoutInstructorInput> | Prisma.ResourceCreateWithoutInstructorInput[] | Prisma.ResourceUncheckedCreateWithoutInstructorInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutInstructorInput | Prisma.ResourceCreateOrConnectWithoutInstructorInput[]
+  createMany?: Prisma.ResourceCreateManyInstructorInputEnvelope
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+}
+
+export type ResourceUncheckedCreateNestedManyWithoutInstructorInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutInstructorInput, Prisma.ResourceUncheckedCreateWithoutInstructorInput> | Prisma.ResourceCreateWithoutInstructorInput[] | Prisma.ResourceUncheckedCreateWithoutInstructorInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutInstructorInput | Prisma.ResourceCreateOrConnectWithoutInstructorInput[]
+  createMany?: Prisma.ResourceCreateManyInstructorInputEnvelope
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+}
+
+export type ResourceUpdateManyWithoutInstructorNestedInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutInstructorInput, Prisma.ResourceUncheckedCreateWithoutInstructorInput> | Prisma.ResourceCreateWithoutInstructorInput[] | Prisma.ResourceUncheckedCreateWithoutInstructorInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutInstructorInput | Prisma.ResourceCreateOrConnectWithoutInstructorInput[]
+  upsert?: Prisma.ResourceUpsertWithWhereUniqueWithoutInstructorInput | Prisma.ResourceUpsertWithWhereUniqueWithoutInstructorInput[]
+  createMany?: Prisma.ResourceCreateManyInstructorInputEnvelope
+  set?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  disconnect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  delete?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  update?: Prisma.ResourceUpdateWithWhereUniqueWithoutInstructorInput | Prisma.ResourceUpdateWithWhereUniqueWithoutInstructorInput[]
+  updateMany?: Prisma.ResourceUpdateManyWithWhereWithoutInstructorInput | Prisma.ResourceUpdateManyWithWhereWithoutInstructorInput[]
+  deleteMany?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
+}
+
+export type ResourceUncheckedUpdateManyWithoutInstructorNestedInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutInstructorInput, Prisma.ResourceUncheckedCreateWithoutInstructorInput> | Prisma.ResourceCreateWithoutInstructorInput[] | Prisma.ResourceUncheckedCreateWithoutInstructorInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutInstructorInput | Prisma.ResourceCreateOrConnectWithoutInstructorInput[]
+  upsert?: Prisma.ResourceUpsertWithWhereUniqueWithoutInstructorInput | Prisma.ResourceUpsertWithWhereUniqueWithoutInstructorInput[]
+  createMany?: Prisma.ResourceCreateManyInstructorInputEnvelope
+  set?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  disconnect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  delete?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  update?: Prisma.ResourceUpdateWithWhereUniqueWithoutInstructorInput | Prisma.ResourceUpdateWithWhereUniqueWithoutInstructorInput[]
+  updateMany?: Prisma.ResourceUpdateManyWithWhereWithoutInstructorInput | Prisma.ResourceUpdateManyWithWhereWithoutInstructorInput[]
+  deleteMany?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
+}
+
+export type ResourceCreateNestedOneWithoutSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutSubmissionsInput, Prisma.ResourceUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutSubmissionsInput
+  connect?: Prisma.ResourceWhereUniqueInput
+}
+
+export type ResourceUpdateOneWithoutSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutSubmissionsInput, Prisma.ResourceUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutSubmissionsInput
+  upsert?: Prisma.ResourceUpsertWithoutSubmissionsInput
+  disconnect?: Prisma.ResourceWhereInput | boolean
+  delete?: Prisma.ResourceWhereInput | boolean
+  connect?: Prisma.ResourceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ResourceUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.ResourceUpdateWithoutSubmissionsInput>, Prisma.ResourceUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type ResourceCreateNestedManyWithoutEventInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutEventInput, Prisma.ResourceUncheckedCreateWithoutEventInput> | Prisma.ResourceCreateWithoutEventInput[] | Prisma.ResourceUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutEventInput | Prisma.ResourceCreateOrConnectWithoutEventInput[]
+  createMany?: Prisma.ResourceCreateManyEventInputEnvelope
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+}
+
+export type ResourceUncheckedCreateNestedManyWithoutEventInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutEventInput, Prisma.ResourceUncheckedCreateWithoutEventInput> | Prisma.ResourceCreateWithoutEventInput[] | Prisma.ResourceUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutEventInput | Prisma.ResourceCreateOrConnectWithoutEventInput[]
+  createMany?: Prisma.ResourceCreateManyEventInputEnvelope
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+}
+
+export type ResourceUpdateManyWithoutEventNestedInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutEventInput, Prisma.ResourceUncheckedCreateWithoutEventInput> | Prisma.ResourceCreateWithoutEventInput[] | Prisma.ResourceUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutEventInput | Prisma.ResourceCreateOrConnectWithoutEventInput[]
+  upsert?: Prisma.ResourceUpsertWithWhereUniqueWithoutEventInput | Prisma.ResourceUpsertWithWhereUniqueWithoutEventInput[]
+  createMany?: Prisma.ResourceCreateManyEventInputEnvelope
+  set?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  disconnect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  delete?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  update?: Prisma.ResourceUpdateWithWhereUniqueWithoutEventInput | Prisma.ResourceUpdateWithWhereUniqueWithoutEventInput[]
+  updateMany?: Prisma.ResourceUpdateManyWithWhereWithoutEventInput | Prisma.ResourceUpdateManyWithWhereWithoutEventInput[]
+  deleteMany?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
+}
+
+export type ResourceUncheckedUpdateManyWithoutEventNestedInput = {
+  create?: Prisma.XOR<Prisma.ResourceCreateWithoutEventInput, Prisma.ResourceUncheckedCreateWithoutEventInput> | Prisma.ResourceCreateWithoutEventInput[] | Prisma.ResourceUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.ResourceCreateOrConnectWithoutEventInput | Prisma.ResourceCreateOrConnectWithoutEventInput[]
+  upsert?: Prisma.ResourceUpsertWithWhereUniqueWithoutEventInput | Prisma.ResourceUpsertWithWhereUniqueWithoutEventInput[]
+  createMany?: Prisma.ResourceCreateManyEventInputEnvelope
+  set?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  disconnect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  delete?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  connect?: Prisma.ResourceWhereUniqueInput | Prisma.ResourceWhereUniqueInput[]
+  update?: Prisma.ResourceUpdateWithWhereUniqueWithoutEventInput | Prisma.ResourceUpdateWithWhereUniqueWithoutEventInput[]
+  updateMany?: Prisma.ResourceUpdateManyWithWhereWithoutEventInput | Prisma.ResourceUpdateManyWithWhereWithoutEventInput[]
+  deleteMany?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
+}
+
+export type ResourceCreateWithoutSubmittedByInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  course?: Prisma.CourseCreateNestedOneWithoutResourcesInput
+  lesson?: Prisma.LessonCreateNestedOneWithoutResourcesInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutResourcesInput
+  instructor?: Prisma.InstructorCreateNestedOneWithoutResourcesInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutResourceInput
+}
+
+export type ResourceUncheckedCreateWithoutSubmittedByInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  courseId?: string | null
+  lessonId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutResourceInput
+}
+
+export type ResourceCreateOrConnectWithoutSubmittedByInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ResourceCreateWithoutSubmittedByInput, Prisma.ResourceUncheckedCreateWithoutSubmittedByInput>
+}
+
+export type ResourceCreateManySubmittedByInputEnvelope = {
+  data: Prisma.ResourceCreateManySubmittedByInput | Prisma.ResourceCreateManySubmittedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type ResourceUpsertWithWhereUniqueWithoutSubmittedByInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  update: Prisma.XOR<Prisma.ResourceUpdateWithoutSubmittedByInput, Prisma.ResourceUncheckedUpdateWithoutSubmittedByInput>
+  create: Prisma.XOR<Prisma.ResourceCreateWithoutSubmittedByInput, Prisma.ResourceUncheckedCreateWithoutSubmittedByInput>
+}
+
+export type ResourceUpdateWithWhereUniqueWithoutSubmittedByInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  data: Prisma.XOR<Prisma.ResourceUpdateWithoutSubmittedByInput, Prisma.ResourceUncheckedUpdateWithoutSubmittedByInput>
+}
+
+export type ResourceUpdateManyWithWhereWithoutSubmittedByInput = {
+  where: Prisma.ResourceScalarWhereInput
+  data: Prisma.XOR<Prisma.ResourceUpdateManyMutationInput, Prisma.ResourceUncheckedUpdateManyWithoutSubmittedByInput>
+}
+
+export type ResourceScalarWhereInput = {
+  AND?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
+  OR?: Prisma.ResourceScalarWhereInput[]
+  NOT?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
+  id?: Prisma.StringFilter<"Resource"> | string
+  title?: Prisma.StringFilter<"Resource"> | string
+  url?: Prisma.StringFilter<"Resource"> | string
+  kind?: Prisma.StringFilter<"Resource"> | string
+  courseId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  lessonId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  eventId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  instructorId?: Prisma.StringNullableFilter<"Resource"> | string | null
+  status?: Prisma.EnumContentStatusFilter<"Resource"> | $Enums.ContentStatus
+  submittedById?: Prisma.StringNullableFilter<"Resource"> | string | null
+  audience?: Prisma.EnumResourceAudienceNullableFilter<"Resource"> | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFilter<"Resource"> | Date | string
+}
+
 export type ResourceCreateWithoutCourseInput = {
   id?: string
   title: string
   url: string
   kind?: string
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
   lesson?: Prisma.LessonCreateNestedOneWithoutResourcesInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutResourcesInput
+  instructor?: Prisma.InstructorCreateNestedOneWithoutResourcesInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutResourcesSubmittedInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutResourceInput
 }
 
 export type ResourceUncheckedCreateWithoutCourseInput = {
@@ -439,6 +816,13 @@ export type ResourceUncheckedCreateWithoutCourseInput = {
   url: string
   kind?: string
   lessonId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutResourceInput
 }
 
 export type ResourceCreateOrConnectWithoutCourseInput = {
@@ -467,24 +851,19 @@ export type ResourceUpdateManyWithWhereWithoutCourseInput = {
   data: Prisma.XOR<Prisma.ResourceUpdateManyMutationInput, Prisma.ResourceUncheckedUpdateManyWithoutCourseInput>
 }
 
-export type ResourceScalarWhereInput = {
-  AND?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
-  OR?: Prisma.ResourceScalarWhereInput[]
-  NOT?: Prisma.ResourceScalarWhereInput | Prisma.ResourceScalarWhereInput[]
-  id?: Prisma.StringFilter<"Resource"> | string
-  title?: Prisma.StringFilter<"Resource"> | string
-  url?: Prisma.StringFilter<"Resource"> | string
-  kind?: Prisma.StringFilter<"Resource"> | string
-  courseId?: Prisma.StringNullableFilter<"Resource"> | string | null
-  lessonId?: Prisma.StringNullableFilter<"Resource"> | string | null
-}
-
 export type ResourceCreateWithoutLessonInput = {
   id?: string
   title: string
   url: string
   kind?: string
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
   course?: Prisma.CourseCreateNestedOneWithoutResourcesInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutResourcesInput
+  instructor?: Prisma.InstructorCreateNestedOneWithoutResourcesInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutResourcesSubmittedInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutResourceInput
 }
 
 export type ResourceUncheckedCreateWithoutLessonInput = {
@@ -493,6 +872,13 @@ export type ResourceUncheckedCreateWithoutLessonInput = {
   url: string
   kind?: string
   courseId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutResourceInput
 }
 
 export type ResourceCreateOrConnectWithoutLessonInput = {
@@ -521,12 +907,264 @@ export type ResourceUpdateManyWithWhereWithoutLessonInput = {
   data: Prisma.XOR<Prisma.ResourceUpdateManyMutationInput, Prisma.ResourceUncheckedUpdateManyWithoutLessonInput>
 }
 
+export type ResourceCreateWithoutInstructorInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  course?: Prisma.CourseCreateNestedOneWithoutResourcesInput
+  lesson?: Prisma.LessonCreateNestedOneWithoutResourcesInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutResourcesInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutResourcesSubmittedInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutResourceInput
+}
+
+export type ResourceUncheckedCreateWithoutInstructorInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  courseId?: string | null
+  lessonId?: string | null
+  eventId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutResourceInput
+}
+
+export type ResourceCreateOrConnectWithoutInstructorInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ResourceCreateWithoutInstructorInput, Prisma.ResourceUncheckedCreateWithoutInstructorInput>
+}
+
+export type ResourceCreateManyInstructorInputEnvelope = {
+  data: Prisma.ResourceCreateManyInstructorInput | Prisma.ResourceCreateManyInstructorInput[]
+  skipDuplicates?: boolean
+}
+
+export type ResourceUpsertWithWhereUniqueWithoutInstructorInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  update: Prisma.XOR<Prisma.ResourceUpdateWithoutInstructorInput, Prisma.ResourceUncheckedUpdateWithoutInstructorInput>
+  create: Prisma.XOR<Prisma.ResourceCreateWithoutInstructorInput, Prisma.ResourceUncheckedCreateWithoutInstructorInput>
+}
+
+export type ResourceUpdateWithWhereUniqueWithoutInstructorInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  data: Prisma.XOR<Prisma.ResourceUpdateWithoutInstructorInput, Prisma.ResourceUncheckedUpdateWithoutInstructorInput>
+}
+
+export type ResourceUpdateManyWithWhereWithoutInstructorInput = {
+  where: Prisma.ResourceScalarWhereInput
+  data: Prisma.XOR<Prisma.ResourceUpdateManyMutationInput, Prisma.ResourceUncheckedUpdateManyWithoutInstructorInput>
+}
+
+export type ResourceCreateWithoutSubmissionsInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  course?: Prisma.CourseCreateNestedOneWithoutResourcesInput
+  lesson?: Prisma.LessonCreateNestedOneWithoutResourcesInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutResourcesInput
+  instructor?: Prisma.InstructorCreateNestedOneWithoutResourcesInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutResourcesSubmittedInput
+}
+
+export type ResourceUncheckedCreateWithoutSubmissionsInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  courseId?: string | null
+  lessonId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+}
+
+export type ResourceCreateOrConnectWithoutSubmissionsInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ResourceCreateWithoutSubmissionsInput, Prisma.ResourceUncheckedCreateWithoutSubmissionsInput>
+}
+
+export type ResourceUpsertWithoutSubmissionsInput = {
+  update: Prisma.XOR<Prisma.ResourceUpdateWithoutSubmissionsInput, Prisma.ResourceUncheckedUpdateWithoutSubmissionsInput>
+  create: Prisma.XOR<Prisma.ResourceCreateWithoutSubmissionsInput, Prisma.ResourceUncheckedCreateWithoutSubmissionsInput>
+  where?: Prisma.ResourceWhereInput
+}
+
+export type ResourceUpdateToOneWithWhereWithoutSubmissionsInput = {
+  where?: Prisma.ResourceWhereInput
+  data: Prisma.XOR<Prisma.ResourceUpdateWithoutSubmissionsInput, Prisma.ResourceUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type ResourceUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  course?: Prisma.CourseUpdateOneWithoutResourcesNestedInput
+  lesson?: Prisma.LessonUpdateOneWithoutResourcesNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutResourcesNestedInput
+  instructor?: Prisma.InstructorUpdateOneWithoutResourcesNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutResourcesSubmittedNestedInput
+}
+
+export type ResourceUncheckedUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ResourceCreateWithoutEventInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  course?: Prisma.CourseCreateNestedOneWithoutResourcesInput
+  lesson?: Prisma.LessonCreateNestedOneWithoutResourcesInput
+  instructor?: Prisma.InstructorCreateNestedOneWithoutResourcesInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutResourcesSubmittedInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutResourceInput
+}
+
+export type ResourceUncheckedCreateWithoutEventInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  courseId?: string | null
+  lessonId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutResourceInput
+}
+
+export type ResourceCreateOrConnectWithoutEventInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ResourceCreateWithoutEventInput, Prisma.ResourceUncheckedCreateWithoutEventInput>
+}
+
+export type ResourceCreateManyEventInputEnvelope = {
+  data: Prisma.ResourceCreateManyEventInput | Prisma.ResourceCreateManyEventInput[]
+  skipDuplicates?: boolean
+}
+
+export type ResourceUpsertWithWhereUniqueWithoutEventInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  update: Prisma.XOR<Prisma.ResourceUpdateWithoutEventInput, Prisma.ResourceUncheckedUpdateWithoutEventInput>
+  create: Prisma.XOR<Prisma.ResourceCreateWithoutEventInput, Prisma.ResourceUncheckedCreateWithoutEventInput>
+}
+
+export type ResourceUpdateWithWhereUniqueWithoutEventInput = {
+  where: Prisma.ResourceWhereUniqueInput
+  data: Prisma.XOR<Prisma.ResourceUpdateWithoutEventInput, Prisma.ResourceUncheckedUpdateWithoutEventInput>
+}
+
+export type ResourceUpdateManyWithWhereWithoutEventInput = {
+  where: Prisma.ResourceScalarWhereInput
+  data: Prisma.XOR<Prisma.ResourceUpdateManyMutationInput, Prisma.ResourceUncheckedUpdateManyWithoutEventInput>
+}
+
+export type ResourceCreateManySubmittedByInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  courseId?: string | null
+  lessonId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+}
+
+export type ResourceUpdateWithoutSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  course?: Prisma.CourseUpdateOneWithoutResourcesNestedInput
+  lesson?: Prisma.LessonUpdateOneWithoutResourcesNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutResourcesNestedInput
+  instructor?: Prisma.InstructorUpdateOneWithoutResourcesNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutResourceNestedInput
+}
+
+export type ResourceUncheckedUpdateWithoutSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutResourceNestedInput
+}
+
+export type ResourceUncheckedUpdateManyWithoutSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ResourceCreateManyCourseInput = {
   id?: string
   title: string
   url: string
   kind?: string
   lessonId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
 }
 
 export type ResourceUpdateWithoutCourseInput = {
@@ -534,7 +1172,14 @@ export type ResourceUpdateWithoutCourseInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lesson?: Prisma.LessonUpdateOneWithoutResourcesNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutResourcesNestedInput
+  instructor?: Prisma.InstructorUpdateOneWithoutResourcesNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutResourcesSubmittedNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutResourceNestedInput
 }
 
 export type ResourceUncheckedUpdateWithoutCourseInput = {
@@ -543,6 +1188,13 @@ export type ResourceUncheckedUpdateWithoutCourseInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutResourceNestedInput
 }
 
 export type ResourceUncheckedUpdateManyWithoutCourseInput = {
@@ -551,6 +1203,12 @@ export type ResourceUncheckedUpdateManyWithoutCourseInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ResourceCreateManyLessonInput = {
@@ -559,6 +1217,12 @@ export type ResourceCreateManyLessonInput = {
   url: string
   kind?: string
   courseId?: string | null
+  eventId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
 }
 
 export type ResourceUpdateWithoutLessonInput = {
@@ -566,7 +1230,14 @@ export type ResourceUpdateWithoutLessonInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   course?: Prisma.CourseUpdateOneWithoutResourcesNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutResourcesNestedInput
+  instructor?: Prisma.InstructorUpdateOneWithoutResourcesNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutResourcesSubmittedNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutResourceNestedInput
 }
 
 export type ResourceUncheckedUpdateWithoutLessonInput = {
@@ -575,6 +1246,13 @@ export type ResourceUncheckedUpdateWithoutLessonInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutResourceNestedInput
 }
 
 export type ResourceUncheckedUpdateManyWithoutLessonInput = {
@@ -583,8 +1261,159 @@ export type ResourceUncheckedUpdateManyWithoutLessonInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type ResourceCreateManyInstructorInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  courseId?: string | null
+  lessonId?: string | null
+  eventId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+}
+
+export type ResourceUpdateWithoutInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  course?: Prisma.CourseUpdateOneWithoutResourcesNestedInput
+  lesson?: Prisma.LessonUpdateOneWithoutResourcesNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutResourcesNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutResourcesSubmittedNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutResourceNestedInput
+}
+
+export type ResourceUncheckedUpdateWithoutInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutResourceNestedInput
+}
+
+export type ResourceUncheckedUpdateManyWithoutInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ResourceCreateManyEventInput = {
+  id?: string
+  title: string
+  url: string
+  kind?: string
+  courseId?: string | null
+  lessonId?: string | null
+  instructorId?: string | null
+  status?: $Enums.ContentStatus
+  submittedById?: string | null
+  audience?: $Enums.ResourceAudience | null
+  createdAt?: Date | string
+}
+
+export type ResourceUpdateWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  course?: Prisma.CourseUpdateOneWithoutResourcesNestedInput
+  lesson?: Prisma.LessonUpdateOneWithoutResourcesNestedInput
+  instructor?: Prisma.InstructorUpdateOneWithoutResourcesNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutResourcesSubmittedNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutResourceNestedInput
+}
+
+export type ResourceUncheckedUpdateWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutResourceNestedInput
+}
+
+export type ResourceUncheckedUpdateManyWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audience?: Prisma.NullableEnumResourceAudienceFieldUpdateOperationsInput | $Enums.ResourceAudience | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type ResourceCountOutputType
+ */
+
+export type ResourceCountOutputType = {
+  submissions: number
+}
+
+export type ResourceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  submissions?: boolean | ResourceCountOutputTypeCountSubmissionsArgs
+}
+
+/**
+ * ResourceCountOutputType without action
+ */
+export type ResourceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ResourceCountOutputType
+   */
+  select?: Prisma.ResourceCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ResourceCountOutputType without action
+ */
+export type ResourceCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentSubmissionWhereInput
+}
 
 
 export type ResourceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -594,8 +1423,19 @@ export type ResourceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   kind?: boolean
   courseId?: boolean
   lessonId?: boolean
+  eventId?: boolean
+  instructorId?: boolean
+  status?: boolean
+  submittedById?: boolean
+  audience?: boolean
+  createdAt?: boolean
   course?: boolean | Prisma.Resource$courseArgs<ExtArgs>
   lesson?: boolean | Prisma.Resource$lessonArgs<ExtArgs>
+  event?: boolean | Prisma.Resource$eventArgs<ExtArgs>
+  instructor?: boolean | Prisma.Resource$instructorArgs<ExtArgs>
+  submittedBy?: boolean | Prisma.Resource$submittedByArgs<ExtArgs>
+  submissions?: boolean | Prisma.Resource$submissionsArgs<ExtArgs>
+  _count?: boolean | Prisma.ResourceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["resource"]>
 
 export type ResourceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -605,8 +1445,17 @@ export type ResourceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   kind?: boolean
   courseId?: boolean
   lessonId?: boolean
+  eventId?: boolean
+  instructorId?: boolean
+  status?: boolean
+  submittedById?: boolean
+  audience?: boolean
+  createdAt?: boolean
   course?: boolean | Prisma.Resource$courseArgs<ExtArgs>
   lesson?: boolean | Prisma.Resource$lessonArgs<ExtArgs>
+  event?: boolean | Prisma.Resource$eventArgs<ExtArgs>
+  instructor?: boolean | Prisma.Resource$instructorArgs<ExtArgs>
+  submittedBy?: boolean | Prisma.Resource$submittedByArgs<ExtArgs>
 }, ExtArgs["result"]["resource"]>
 
 export type ResourceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -616,8 +1465,17 @@ export type ResourceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   kind?: boolean
   courseId?: boolean
   lessonId?: boolean
+  eventId?: boolean
+  instructorId?: boolean
+  status?: boolean
+  submittedById?: boolean
+  audience?: boolean
+  createdAt?: boolean
   course?: boolean | Prisma.Resource$courseArgs<ExtArgs>
   lesson?: boolean | Prisma.Resource$lessonArgs<ExtArgs>
+  event?: boolean | Prisma.Resource$eventArgs<ExtArgs>
+  instructor?: boolean | Prisma.Resource$instructorArgs<ExtArgs>
+  submittedBy?: boolean | Prisma.Resource$submittedByArgs<ExtArgs>
 }, ExtArgs["result"]["resource"]>
 
 export type ResourceSelectScalar = {
@@ -627,20 +1485,37 @@ export type ResourceSelectScalar = {
   kind?: boolean
   courseId?: boolean
   lessonId?: boolean
+  eventId?: boolean
+  instructorId?: boolean
+  status?: boolean
+  submittedById?: boolean
+  audience?: boolean
+  createdAt?: boolean
 }
 
-export type ResourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "url" | "kind" | "courseId" | "lessonId", ExtArgs["result"]["resource"]>
+export type ResourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "url" | "kind" | "courseId" | "lessonId" | "eventId" | "instructorId" | "status" | "submittedById" | "audience" | "createdAt", ExtArgs["result"]["resource"]>
 export type ResourceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.Resource$courseArgs<ExtArgs>
   lesson?: boolean | Prisma.Resource$lessonArgs<ExtArgs>
+  event?: boolean | Prisma.Resource$eventArgs<ExtArgs>
+  instructor?: boolean | Prisma.Resource$instructorArgs<ExtArgs>
+  submittedBy?: boolean | Prisma.Resource$submittedByArgs<ExtArgs>
+  submissions?: boolean | Prisma.Resource$submissionsArgs<ExtArgs>
+  _count?: boolean | Prisma.ResourceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ResourceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.Resource$courseArgs<ExtArgs>
   lesson?: boolean | Prisma.Resource$lessonArgs<ExtArgs>
+  event?: boolean | Prisma.Resource$eventArgs<ExtArgs>
+  instructor?: boolean | Prisma.Resource$instructorArgs<ExtArgs>
+  submittedBy?: boolean | Prisma.Resource$submittedByArgs<ExtArgs>
 }
 export type ResourceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.Resource$courseArgs<ExtArgs>
   lesson?: boolean | Prisma.Resource$lessonArgs<ExtArgs>
+  event?: boolean | Prisma.Resource$eventArgs<ExtArgs>
+  instructor?: boolean | Prisma.Resource$instructorArgs<ExtArgs>
+  submittedBy?: boolean | Prisma.Resource$submittedByArgs<ExtArgs>
 }
 
 export type $ResourcePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -648,17 +1523,39 @@ export type $ResourcePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     course: Prisma.$CoursePayload<ExtArgs> | null
     lesson: Prisma.$LessonPayload<ExtArgs> | null
+    event: Prisma.$LiveEventPayload<ExtArgs> | null
+    instructor: Prisma.$InstructorPayload<ExtArgs> | null
+    submittedBy: Prisma.$UserPayload<ExtArgs> | null
+    submissions: Prisma.$ContentSubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
     url: string
     /**
-     * link | file | template
+     * link | file | template | recording | slides
      */
     kind: string
     courseId: string | null
     lessonId: string | null
+    /**
+     * Event resource (recording, slides, worksheet). Exactly one of courseId, lessonId, eventId, instructorId is set (CHECK).
+     */
+    eventId: string | null
+    /**
+     * Expert-profile resource.
+     */
+    instructorId: string | null
+    /**
+     * Contributor resources stay DRAFT until their ContentSubmission is approved.
+     */
+    status: $Enums.ContentStatus
+    submittedById: string | null
+    /**
+     * Required for event and expert resources (CHECK). Course and lesson resources follow course access.
+     */
+    audience: $Enums.ResourceAudience | null
+    createdAt: Date
   }, ExtArgs["result"]["resource"]>
   composites: {}
 }
@@ -1055,6 +1952,10 @@ export interface Prisma__ResourceClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   course<T extends Prisma.Resource$courseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Resource$courseArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   lesson<T extends Prisma.Resource$lessonArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Resource$lessonArgs<ExtArgs>>): Prisma.Prisma__LessonClient<runtime.Types.Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  event<T extends Prisma.Resource$eventArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Resource$eventArgs<ExtArgs>>): Prisma.Prisma__LiveEventClient<runtime.Types.Result.GetResult<Prisma.$LiveEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  instructor<T extends Prisma.Resource$instructorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Resource$instructorArgs<ExtArgs>>): Prisma.Prisma__InstructorClient<runtime.Types.Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  submittedBy<T extends Prisma.Resource$submittedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Resource$submittedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  submissions<T extends Prisma.Resource$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Resource$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1090,6 +1991,12 @@ export interface ResourceFieldRefs {
   readonly kind: Prisma.FieldRef<"Resource", 'String'>
   readonly courseId: Prisma.FieldRef<"Resource", 'String'>
   readonly lessonId: Prisma.FieldRef<"Resource", 'String'>
+  readonly eventId: Prisma.FieldRef<"Resource", 'String'>
+  readonly instructorId: Prisma.FieldRef<"Resource", 'String'>
+  readonly status: Prisma.FieldRef<"Resource", 'ContentStatus'>
+  readonly submittedById: Prisma.FieldRef<"Resource", 'String'>
+  readonly audience: Prisma.FieldRef<"Resource", 'ResourceAudience'>
+  readonly createdAt: Prisma.FieldRef<"Resource", 'DateTime'>
 }
     
 
@@ -1521,6 +2428,87 @@ export type Resource$lessonArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.LessonInclude<ExtArgs> | null
   where?: Prisma.LessonWhereInput
+}
+
+/**
+ * Resource.event
+ */
+export type Resource$eventArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LiveEvent
+   */
+  select?: Prisma.LiveEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LiveEvent
+   */
+  omit?: Prisma.LiveEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LiveEventInclude<ExtArgs> | null
+  where?: Prisma.LiveEventWhereInput
+}
+
+/**
+ * Resource.instructor
+ */
+export type Resource$instructorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Instructor
+   */
+  select?: Prisma.InstructorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Instructor
+   */
+  omit?: Prisma.InstructorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstructorInclude<ExtArgs> | null
+  where?: Prisma.InstructorWhereInput
+}
+
+/**
+ * Resource.submittedBy
+ */
+export type Resource$submittedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Resource.submissions
+ */
+export type Resource$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentSubmission
+   */
+  select?: Prisma.ContentSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentSubmission
+   */
+  omit?: Prisma.ContentSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentSubmissionInclude<ExtArgs> | null
+  where?: Prisma.ContentSubmissionWhereInput
+  orderBy?: Prisma.ContentSubmissionOrderByWithRelationInput | Prisma.ContentSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.ContentSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentSubmissionScalarFieldEnum | Prisma.ContentSubmissionScalarFieldEnum[]
 }
 
 /**
