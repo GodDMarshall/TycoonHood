@@ -5,6 +5,9 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["iad1"],
+  "git": {
+    "deploymentEnabled": { "eco/*": false, "eco/**": false, "build/living-ecosystem": false }
+  },
   "crons": [
     { "path": "/api/cron/expire-orders", "schedule": "0 0 * * *" },
     { "path": "/api/cron/email-holds", "schedule": "30 0 * * *" }

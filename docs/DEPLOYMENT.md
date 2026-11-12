@@ -35,7 +35,10 @@ owner is [`TYCOONHOOD_BLOCKED_ON_YOU.md`](../TYCOONHOOD_BLOCKED_ON_YOU.md).
 
 The site is one Vercel project with Root Directory `apps/web` (files outside it
 included) and Node 22.x. `apps/web/vercel.json` sets the install and build
-commands, the function region and the daily cron. The build command runs
+commands, the function region and the daily cron. Pushes to the Living
+Ecosystem work branches (`eco/*` and `build/living-ecosystem`) never deploy
+(`git.deploymentEnabled`): they are backups of unfinished work, and a preview
+would run it against the production database settings. The build command runs
 `scripts/vercel-build.sh` from the repository root:
 
 1. On a **production** build (`VERCEL_ENV=production`) it takes the deploy
