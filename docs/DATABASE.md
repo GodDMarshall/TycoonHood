@@ -26,6 +26,10 @@ Migrations are hand-written SQL under `packages/db/prisma/migrations/`. They are
 
 `20261111000000_full_platform` is **additive only**: no column is dropped or renamed. CHECK constraints guard the money columns (amounts ≥ 0, rate between 0 and 10 000 bps, coupon percent 1–100).
 
+A backfill covers only the rows that exist when its migration runs. The three migrations of 12 November leave the new column empty in rows that code from before them writes afterwards, and the current code reads it as meaningful: see "Rows older code writes after a migration" in [`DEPLOYMENT.md`](DEPLOYMENT.md), which has the three backfills to run again.
+
+`20261112100000_email_hold_notice_sent` justifies its backfill wrongly. Its comment says the code that made the existing holds sent the notice in the same request and put the change back when it could not. That code was never deployed. The code deployed before it sent the notice after the reply, in `after()`, and never read whether it went out, so a hold it made may belong to a change whose old address was never told. The backfill counts those as told all the same. It changes nothing on a database the current code builds from nothing, as the first production deploy does, because that database has no holds yet. The file is left as it is: the migration has been applied, and `pnpm db:migrate:sql` refuses to run on any database where an applied migration's file has changed.
+
 ## What the full-platform migration added
 
 - **Roles:** `UserRole` gained STUDENT, CREATOR, INSTRUCTOR and MODERATOR. `User.suspendedAt` was added.

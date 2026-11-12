@@ -186,7 +186,10 @@ Merch stays in draft until it has real rupee prices and landed costs
   same `DATABASE_URL` as production. They never migrate or seed, and they are
   behind Vercel login, but a preview built from an unmerged branch reads and
   writes the production database when someone uses it. Use previews to look,
-  not to test sign-ups or orders. A separate Neon branch for previews removes
+  not to test sign-ups or orders. A preview built before 12 November's
+  email-change migrations writes account rows that the live site misreads, so
+  never use one to change an account (`docs/DEPLOYMENT.md`, "Rows older code
+  writes after a migration"). A separate Neon branch for previews removes
   this.
 
 ## Rolling back

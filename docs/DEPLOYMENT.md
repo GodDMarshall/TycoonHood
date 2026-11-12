@@ -68,6 +68,57 @@ deployment then runs against it. So write each migration to be safe for the
 code that is live before it: add tables and columns, and drop them only in a
 later release.
 
+### Rows older code writes after a migration
+
+A migration's backfill runs once, over the rows that exist then. Code from
+before the migration can still write afterwards, and leaves the new column
+empty: the previous production deployment while the new one builds, the
+previous deployment if a later step fails, and every older preview, because
+previews get the production `DATABASE_URL`. Before the first production
+deploy there is no previous production deployment, so at launch only older
+previews can do this.
+
+The three email-change migrations of 12 November add columns that older code
+never writes, and the current code reads an empty one as meaningful:
+
+| Column | Left empty by older code when it | The current code then |
+|---|---|---|
+| `EmailHold.noticeSentAt` | confirms an email change (it sent the undo notice after the reply and never read whether it went out) | counts the notice as never sent, and puts the change back once it is 10 minutes old, telling no one |
+| `User.pendingEmailAt` | takes an email change request | lets a change away from an address never confirmed go ahead at once, without its day's wait |
+| `ContactMessage.userId` | files a deletion request | does not show it in Settings as the account's open request, and an undo does not close it |
+
+Code that old also holds an address its account never confirmed, and mails
+it an undo link, which DR-32 stopped. So:
+
+- Once production is migrated, use no preview built before these migrations
+  for anything that changes an account: an email change or its confirmation,
+  a confirmation link, a deletion request. Use previews to look, as above.
+- If older code did write such rows (a build failed after migrating and the
+  previous deployment kept serving, or someone used an older preview), redeploy
+  or roll forward promptly, then run the three backfills again as soon as the
+  current code is live. From that moment the daily cron, a change or reset
+  request for the account, and its page in the admin put back a change whose
+  notice is not recorded once it is 10 minutes old. The first statement counts the holds made before then
+  as told, as the migration did; give it the time the current deployment went
+  live, in UTC, because the database stores times in UTC:
+
+```sql
+UPDATE "EmailHold" SET "noticeSentAt" = "createdAt"
+WHERE "noticeSentAt" IS NULL AND "createdAt" < '2026-11-13 09:30:00'; -- when the current deployment went live, in UTC
+
+UPDATE "User" SET "pendingEmailAt" = (now() AT TIME ZONE 'UTC')
+WHERE "pendingEmail" IS NOT NULL AND "pendingEmailAt" IS NULL;
+
+UPDATE "ContactMessage" AS m SET "userId" = u."id"
+FROM "User" AS u
+WHERE m."topic" = 'account-deletion' AND m."userId" IS NULL
+  AND u."id" = substring(m."message" from '^Account deletion requested by user ([^ ]+) ');
+```
+
+The second statement makes a change away from an address never confirmed
+wait a day from when it runs, as the migration did. The third is the
+migration's own.
+
 ### Two builds at once
 
 Vercel can run two production builds together: a redeploy while one is still
