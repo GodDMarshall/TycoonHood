@@ -10,6 +10,11 @@
  * way scripts/vercel-build.sh runs them (separate processes, in order), make
  * the edits staff make through the admin's own services, run the seeds again
  * and compare every row of every table.
+ *
+ * "Missing" means never made. A mission, size, essay, category or group the
+ * seeds made once is staff's from then on, even under another slug or SKU:
+ * the seeds record what they made (SiteSetting "seed.created.*") and never
+ * make it again (review finding 17, follow-up).
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { readFileSync } from "node:fs";
@@ -29,6 +34,18 @@ import {
 } from "./throwaway-db";
 
 const SLOW = 180_000;
+
+/** The seeds' record of what they made, for one kind of row. */
+async function recorded(db: PrismaClient, kind: string) {
+  const row = await db.siteSetting.findUniqueOrThrow({ where: { key: `seed.created.${kind}` } });
+  return (row.value as { keys: string[] }).keys;
+}
+
+/** Takes `key` off that record, as if the seed files had only now gained it. */
+async function forget(db: PrismaClient, kind: string, key: string) {
+  const keys = (await recorded(db, kind)).filter((k) => k !== key);
+  await db.siteSetting.update({ where: { key: `seed.created.${kind}` }, data: { value: { keys } } });
+}
 
 /** What staff do in the admin, through the same services and writes the admin actions use. */
 async function editLikeStaff(db: PrismaClient) {
@@ -208,7 +225,10 @@ describe("seeds are safe to re-run on a live database", () => {
 
   it("a re-run adds what is missing and puts back copy only the seeds own", async () => {
     await t.db.achievement.delete({ where: { slug: "seven-day-streak" } });
+    // A mission the seeds have not made yet, as when a release adds one to the seed files.
+    // (One they made and staff then removed stays removed: see the renaming test below.)
     await t.db.mission.delete({ where: { slug: "complete-onboarding" } });
+    await forget(t.db, "missions", "complete-onboarding");
     await t.db.rankDefinition.update({ where: { slug: "elite" }, data: { name: "Elite (typo" } });
     await t.db.challenge.update({ where: { slug: "launch-week" }, data: { description: "Old wording." } });
     const before = await snapshot(t.db);
@@ -220,7 +240,9 @@ describe("seeds are safe to re-run on a live database", () => {
       "Challenge[launch-week]",
       "Mission[complete-onboarding] added",
       "RankDefinition[elite]",
+      "SiteSetting[seed.created.missions]",
     ]);
+    expect(await recorded(t.db, "missions")).toContain("complete-onboarding");
     // The challenge got its wording back and nothing else: staff ended it, and it stays ended.
     expect(diff.find((l) => l.startsWith("Challenge"))).toMatch(/^Challenge\[launch-week\]: description "Old wording\." → "Seven days[^;]*$/);
     expect((await t.db.challenge.findUniqueOrThrow({ where: { slug: "launch-week" } })).lifecycle).toBe("ENDED");
@@ -261,5 +283,53 @@ describe("seeds are safe to re-run on a live database", () => {
     const before = await snapshot(t.db);
     await mustRun("src/seed-merch.ts", t.url, videos);
     expect(changes(before, await snapshot(t.db))).toEqual([]);
+  }, SLOW);
+
+  it("a seeded mission, size, essay, category or group staff renamed does not come back under its old name", async () => {
+    // Admin → Missions (saveMissionAction updates by id, slug included). Under its
+    // old slug, a second copy would be live and pay its reward again.
+    for (const [from, to] of [["first-lesson", "first-lesson-done"], ["weekly-five-lessons", "five-lessons-a-week"]]) {
+      const m = await t.db.mission.findUniqueOrThrow({ where: { slug: from } });
+      await t.db.mission.update({ where: { id: m.id }, data: { slug: to } });
+    }
+    // Admin → Products (catalog.save with each size's id): a size's SKU changed.
+    // Under its old SKU, a second size would be on sale with stock that is not there.
+    const hoodie = await t.db.product.findUniqueOrThrow({
+      where: { slug: "warrior-hoodie" },
+      include: { variants: { orderBy: { sortOrder: "asc" } } },
+    });
+    await new CatalogService(t.db).save({
+      slug: hoodie.slug, kind: hoodie.kind, name: hoodie.name, description: hoodie.description,
+      priceThc: hoodie.priceThc, priceFiatCents: hoodie.priceFiatCents, costCents: hoodie.costCents, active: hoodie.active,
+      variants: hoodie.variants.map((v) => ({
+        id: v.id, sku: v.sku === "WARRIORHOO-M" ? "HOODIE-MEDIUM" : v.sku, label: v.label, inventory: v.inventory,
+        priceThc: v.priceThc, sortOrder: v.sortOrder, active: v.active,
+      })),
+    });
+    // Admin → Content (savePostAction) and Admin → Community (saveCategory, saveGroup) update by id, slug included.
+    await t.db.post.update({ where: { slug: "why-tycoonhood-exists" }, data: { slug: "why-we-built-tycoonhood" } });
+    await t.db.communityCategory.update({ where: { slug: "introductions" }, data: { slug: "say-hello" } });
+    await t.db.communityGroup.update({ where: { slug: "warrior-program" }, data: { slug: "warrior-crew" } });
+
+    const before = await snapshot(t.db);
+    await seedAll(t);
+    await mustRun("src/seed-merch.ts", t.url);
+    expect(changes(before, await snapshot(t.db))).toEqual([]);
+  }, SLOW);
+
+  it("counts what an older seed made, before the record existed, as made, renamed rows included", async () => {
+    // A database seeded before the records began: the renames above happened, and no record exists.
+    await t.db.siteSetting.deleteMany({ where: { key: { startsWith: "seed.created." } } });
+    const before = await snapshot(t.db);
+    await seedAll(t);
+    await mustRun("src/seed-merch.ts", t.url);
+    expect(changes(before, await snapshot(t.db)).sort()).toEqual(
+      ["categories", "essays", "groups", "missions", "sizes", "weekly-missions"].map((k) => `SiteSetting[seed.created.${k}] added`)
+    );
+    // An older seed made each kind in one run: if some of it is here, all of it was made.
+    expect(await recorded(t.db, "missions")).toEqual(["first-lesson", "daily-check-in", "complete-onboarding"]);
+    expect(await recorded(t.db, "weekly-missions")).toContain("weekly-five-lessons");
+    expect(await recorded(t.db, "sizes")).toContain("WARRIORHOO-M");
+    expect(await recorded(t.db, "essays")).toContain("why-tycoonhood-exists");
   }, SLOW);
 });

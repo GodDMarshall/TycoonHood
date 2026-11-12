@@ -123,9 +123,12 @@ categories and groups, coupons, a challenge's dates and status, passwords,
 and roles (unless no admin can sign in). It only refreshes what no admin
 screen edits: levels, ranks, achievements, and a challenge's name,
 description and rewards.
-`SEED_ON_DEPLOY` still comes off after the first deploy, because a re-run
-brings back a seeded item staff deleted. `docs/DEPLOYMENT.md`, "Running the
-seeds again", has the details. `seed:merch` is never run by a deploy: its
+A mission, size, essay, category or group the seeds made once is never made
+again, even after staff give it a new slug or SKU, so a renamed mission cannot
+pay twice. `SEED_ON_DEPLOY` still comes off after the first deploy: seeding
+slows every deploy, and a programme staff give a new slug would come back
+under its old one as an empty draft. `docs/DEPLOYMENT.md`, "Running the seeds
+again", has the details. `seed:merch` is never run by a deploy: its
 prices are placeholders.
 
 ## 5 · After the first deploy (10 min)

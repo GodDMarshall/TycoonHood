@@ -12,6 +12,7 @@
 
 import { prisma, type Prisma } from "./client.js";
 import { adminEmailFrom, canSignInAs } from "./admin-email.js";
+import { SeedRecord } from "./seed-record.js";
 import { hash } from "@node-rs/argon2";
 import {
   THC_TOTAL_SUPPLY,
@@ -325,9 +326,14 @@ async function main() {
   ];
   // Missions are created once: staff edit them in /admin/missions, wording,
   // rewards and whether they are live included. Achievements and ranks have
-  // no admin, so the seed keeps their copy current.
+  // no admin, so the seed keeps their copy current. Their slug is staff's too:
+  // the record (seed-record.ts) keeps a renamed mission from being made again
+  // under its old slug, live, where it would pay its reward twice.
+  const madeMissions = await SeedRecord.load("missions", [missions.map((m) => m.slug)], async (slugs) =>
+    (await prisma.mission.findMany({ where: { slug: { in: slugs } }, select: { slug: true } })).map((m) => m.slug)
+  );
   for (const m of missions) {
-    await prisma.mission.upsert({ where: { slug: m.slug }, update: {}, create: m });
+    await madeMissions.once(m.slug, () => prisma.mission.upsert({ where: { slug: m.slug }, update: {}, create: m }));
   }
 
   const achievements = [

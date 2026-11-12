@@ -23,7 +23,7 @@ owner is [`TYCOONHOOD_BLOCKED_ON_YOU.md`](../TYCOONHOOD_BLOCKED_ON_YOU.md).
 | `RAZORPAY_WEBHOOK_SECRET` | strongly recommended | Lets the webhook confirm payments if the browser closes |
 | `CRON_SECRET` | yes, with rupee checkout | A long random string. Vercel Cron sends it to `/api/cron/expire-orders`, which refuses calls without it. See "Scheduled jobs" |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin. The address is stored trimmed and in lower case, the way sign-in reads it, so any capitalisation finds the same account. It must be an address sign-in accepts, entered without quote marks: otherwise the deploy stops before it touches the database. The password is set only when the account is created. Once an admin can sign in, the seed makes no other: an address no account has creates nothing (add admins in `/admin/members`), and a re-run leaves roles alone. Only when no admin can sign in at all does it create the account, or make it admin. It never takes an address held after an email change (7 days, so the undo link keeps working) |
-| `SEED_ON_DEPLOY` | first Vercel deploy only | `1` makes a production build run the seeds. Re-runs are safe, but remove it after the first successful deploy: a re-run brings back seeded items staff deleted (see "Running the seeds again") |
+| `SEED_ON_DEPLOY` | first Vercel deploy only | `1` makes a production build run the seeds. Re-runs are safe, but remove it after the first successful deploy: every seeding run slows the deploy, and a re-run puts back a programme staff renamed, as an empty draft under its old address (see "Running the seeds again") |
 | `ENABLE_EXPERIMENTAL_COREPACK` | on Vercel | `1` makes Vercel use the pnpm version pinned in `package.json` |
 | `COOKIE_DOMAIN` | optional | Only if you serve several subdomains |
 | `TRUSTED_PROXY_HOPS` | optional | How many proxies in front of the app add to `X-Forwarded-For`; per-IP limits read the address that many entries from the right. 1 to 5, default 1 (one proxy such as nginx, or Vercel). If the app is exposed directly with no proxy in front, visitors can set that header themselves, so IP-based limits can be spoofed |
@@ -129,10 +129,19 @@ what staff change in the admin.
 
 Limits worth knowing:
 
-- A seeded item staff **deleted** comes back on the next run, as the seed
-  first wrote it. A deleted programme comes back as an empty draft: the
-  academy seed does not build it again. A seeded item whose slug staff
-  **changed** comes back under its old slug, beside the renamed one.
+- Missions, sizes, essays, community categories and groups are made once,
+  whatever staff do to them later. The seeds record the slugs and SKUs they
+  made (the SiteSettings `seed.created.*`) and never make one again. So a
+  mission staff gave a new slug does not come back live under its old one to
+  pay its reward twice, and a size given a new SKU does not come back on sale
+  with stock that is not there. An item a later release adds to the seed
+  files is still made. The first run after an upgrade counts everything an
+  older seed made as made, even a row staff renamed before the upgrade.
+- Other seeded rows are found by their slug alone. A programme staff gave a
+  new slug comes back under its old one as an empty draft (the academy seed
+  does not build it again). Products, challenges, coupons, achievements and
+  ranks cannot be renamed or deleted in the admin; one removed in the
+  database comes back on the next run, as the seed first wrote it.
 - `seed:academy` builds each programme once and records it (the SiteSetting
   `seed.academy.built`). `SEED_ACADEMY_FORCE=1` rebuilds a programme from the
   curriculum files: that undoes every edit made to it since, and erases

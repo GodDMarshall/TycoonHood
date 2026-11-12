@@ -14,7 +14,8 @@
  * Admin → Products before any of this goes live, or the margin is fiction.
  *
  * Safe to re-run on a live database (DR-33). A product, size or video the
- * database does not have yet is created, as a draft. One it has is staff's
+ * database does not have yet is created, as a draft. A size is made only once,
+ * even if staff later give it another SKU (seed-record.ts). One it has is staff's
  * (/admin/products, /admin/videos): its wording, prices, stock, sizes, image,
  * whether it is live, and a video's title, rewards and order stay as they
  * left them. The one write a re-run can make is money the seed itself put in
@@ -28,6 +29,7 @@
 import { prisma } from "./client";
 import { suggestPrice, judgePrice } from "@tycoonhood/config";
 import { placeholderMoney } from "./placeholder-prices";
+import { SeedRecord } from "./seed-record";
 
 /** Rounds to something a human would actually print on a price tag. */
 const tidy = (n: bigint): bigint => {
@@ -39,6 +41,8 @@ const tidy = (n: bigint): bigint => {
 const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 /** Stock weighted the way clothing actually sells. */
 const SIZE_STOCK: Record<string, number> = { S: 8, M: 18, L: 20, XL: 12, XXL: 6 };
+/** A seeded size's SKU: WARRIORHOO-M for the hoodie's M. */
+const skuOf = (slug: string, label: string) => `${slug.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10)}-${label}`;
 
 async function main() {
   // The anchor: one item ≈ 75 days of mining for a regular member.
@@ -95,6 +99,14 @@ async function main() {
     },
   ];
 
+  // Sizes are made once and recorded (seed-record.ts), each product's as a
+  // group: a size staff gave a new SKU must not come back on sale under its old
+  // one, with stock that is not there.
+  const sizeGroups = products.filter((p) => p.sizes).map((p) => SIZES.map((label) => skuOf(p.slug, label)));
+  const madeSizes = await SeedRecord.load("sizes", sizeGroups, async (skus) =>
+    (await prisma.productVariant.findMany({ where: { sku: { in: skus } }, select: { sku: true } })).map((v) => v.sku)
+  );
+
   const moneyReport: string[] = [];
   for (const p of products) {
     const { sizes, inventory, ...rest } = p;
@@ -128,9 +140,8 @@ async function main() {
     moneyReport.push(`     ${p.slug}: ${product.priceThc!.toLocaleString("en-US")} THC (${verdict}) · ${money.notes.join(" · ")}`);
 
     if (sizes) {
-      const prefix = p.slug.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
       for (const [i, label] of SIZES.entries()) {
-        const sku = `${prefix}-${label}`;
+        const sku = skuOf(p.slug, label);
         const vdata = {
           label,
           // XXL genuinely costs more to make; the override exists for this.
@@ -140,11 +151,13 @@ async function main() {
           active: true,
         };
         // Created once: staff rename, restock, reprice and reorder sizes in /admin/products.
-        await prisma.productVariant.upsert({
-          where: { sku },
-          update: {},
-          create: { productId: product.id, sku, ...vdata },
-        });
+        await madeSizes.once(sku, () =>
+          prisma.productVariant.upsert({
+            where: { sku },
+            update: {},
+            create: { productId: product.id, sku, ...vdata },
+          })
+        );
       }
     }
   }
