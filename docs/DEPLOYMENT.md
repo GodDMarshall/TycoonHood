@@ -87,6 +87,15 @@ seeded the same database at the same time (review finding 19). Now:
 - The locks go when the step ends, whether it worked or failed, and Postgres
   drops them if the build is killed. A build gives up after 15 minutes of
   waiting rather than hang; see "A deploy waits for the database lock".
+- If the deploy lock's connection is lost, or the build is told to stop,
+  `with-db-lock.mjs` stops the whole step, not just its first process: the
+  step runs in a process group of its own, which gets the signal, and
+  whatever still runs 10 seconds later is killed. Only then does the build
+  fail, so no migration or seed carries on without the lock. (On Windows,
+  which has no process groups, only the first process is stopped.)
+- The lock connections send TCP keepalive probes after 10 seconds of
+  silence, not Linux's default two hours, so a NAT or firewall that drops
+  idle connections does not cut them while a step runs or a build waits.
 - They need a direct connection: through a pooler, a lock belongs to whichever
   server connection ran the query and can outlive the build. So both refuse
   Neon's pooled address (`-pooler` in the host name) and name

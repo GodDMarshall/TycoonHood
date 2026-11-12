@@ -17,14 +17,20 @@
  *
  * To prove the waiting really happens, each test takes the lock itself first,
  * starts two runs, sees both waiting, and only then lets them go.
+ *
+ * The later blocks cover the review's follow-ups: the lock, the migrations
+ * and the seeds use one database; a lost lock or a stop signal stops
+ * everything the step started, not just its first process; and the idle lock
+ * connections send keepalive probes after 10 seconds.
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { readdirSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import type { PrismaClient } from "@tycoonhood/db";
 import {
   createThrowawayDb, migrate, mustRun, start, startDbScript, scriptEnv,
-  TSX, DB_PACKAGE, REPO_ROOT, type Throwaway,
+  TSX, DB_PACKAGE, REPO_ROOT, type RunResult, type Throwaway,
 } from "./throwaway-db";
 
 const SLOW = 120_000;
@@ -267,5 +273,169 @@ describe("one database for everything a deploy runs", () => {
     expect(r.code, r.output).toBe(1);
     expect(r.output).toMatch(/target\s*: \S*application_name=direct \(DATABASE_URL_UNPOOLED\)/);
     expect(r.output.indexOf("target")).toBeLessThan(r.output.indexOf("Cannot reach the database"));
+  }, SLOW);
+});
+
+// ───────────────────────────────────────────── a build that must stop
+
+/** True while the process runs. A zombie, which an init that never reaps leaves behind, has stopped. */
+function running(pid: number) {
+  try {
+    const stat = readFileSync(`/proc/${pid}/stat`, "utf8");
+    return stat.slice(stat.lastIndexOf(")") + 2)[0] !== "Z";
+  } catch {
+    return false;
+  }
+}
+
+/** Resolves with the file's contents once the command has written it. */
+async function untilWritten(path: string, ms = 30_000) {
+  const stop = Date.now() + ms;
+  for (;;) {
+    const text = existsSync(path) ? readFileSync(path, "utf8") : "";
+    if (text.endsWith("\n")) return text.trim();
+    if (Date.now() > stop) throw new Error(`Timed out waiting for ${path}`);
+    await new Promise((res) => setTimeout(res, 50));
+  }
+}
+
+/** The run's result, or "still running" if it has not ended within `ms`. */
+const within = (r: Run, ms: number) =>
+  Promise.race([r.done, new Promise<"still running">((res) => setTimeout(() => res("still running"), ms))]);
+
+describe.skipIf(process.platform !== "linux")("a deploy that loses its lock, or is told to stop, stops everything it started", () => {
+  let t: Throwaway;
+  let dir: string;
+  let pids: number[] = [];
+  beforeEach(async () => {
+    t = await createThrowawayDb("stop");
+    dir = mkdtempSync(join(tmpdir(), "tycoonhood-stop-"));
+    pids = [];
+  });
+  afterEach(async () => {
+    for (const pid of pids) if (running(pid)) process.kill(pid, "SIGKILL");
+    rmSync(dir, { recursive: true, force: true });
+    await t?.drop();
+  });
+
+  /**
+   * Wraps a bash that starts a long sleep and waits for it, as the build's bash
+   * waits for pnpm, which waits for tsx. The sleep's output goes nowhere, so it
+   * cannot keep the run's pipes open. `trap` is put before the sleep starts.
+   */
+  async function startWork(trap = "") {
+    const pidFile = join(dir, "pids");
+    const script = `${trap} sleep 300 >/dev/null 2>&1 & echo "$$ $!" > "${pidFile}"; wait`;
+    const run = wrapped(t, ["bash", "-c", script]);
+    pids = (await untilWritten(pidFile)).split(" ").map(Number);
+    await untilAll([run], /Deploy lock taken/);
+    expect(pids.map(running)).toEqual([true, true]);
+    return run;
+  }
+
+  it("stops the command and what it started when the lock's connection is lost", async () => {
+    const run = await startWork();
+    // As a Neon compute restart, a network reset or a pg_terminate_backend would.
+    const ended = await t.db.$queryRaw<{ ok: boolean }[]>`
+      SELECT pg_terminate_backend(pid) AS ok FROM pg_stat_activity
+      WHERE application_name = 'tycoonhood deploy lock' AND datname = current_database()`;
+    expect(ended).toEqual([{ ok: true }]);
+
+    const r = await within(run, 30_000);
+    expect(r, run.output()).not.toBe("still running");
+    expect((r as RunResult).code, run.output()).toBe(1);
+    expect(run.output()).toMatch(/Lost the database connection/);
+    expect(pids.map(running), "bash and its sleep").toEqual([false, false]);
+  }, SLOW);
+
+  it("passes a stop signal to the command and what it started, then lets go of the lock", async () => {
+    const run = await startWork();
+    run.child.kill("SIGTERM");
+    const r = await within(run, 30_000);
+    expect(r, run.output()).not.toBe("still running");
+    expect((r as RunResult).code, run.output()).toBe(128 + 15);
+    expect(pids.map(running), "bash and its sleep").toEqual([false, false]);
+    expect(await isFree(t.db, DEPLOY_LOCK)).toBe(true);
+  }, SLOW);
+
+  it("kills what ignores the stop signal after 10 seconds", async () => {
+    const run = await startWork("trap '' TERM;");
+    run.child.kill("SIGTERM");
+    const r = await within(run, 25_000);
+    expect(r, run.output()).not.toBe("still running");
+    expect(run.output()).toMatch(/did not stop within 10 seconds/);
+    expect(pids.map(running), "bash and its sleep").toEqual([false, false]);
+  }, SLOW);
+});
+
+// ───────────────────────────────────────────── idle lock connections
+
+/** The timer the kernel runs for the client socket on `port`, and its seconds left (Linux's /proc/net/tcp). */
+function socketTimer(port: number) {
+  for (const table of ["/proc/net/tcp", "/proc/net/tcp6"]) {
+    for (const line of readFileSync(table, "utf8").split("\n").slice(1)) {
+      const f = line.trim().split(/\s+/);
+      if (f.length < 6) continue;
+      const local = parseInt(f[1].split(":").pop()!, 16);
+      const remote = parseInt(f[2].split(":").pop()!, 16);
+      if (local !== port || remote !== 5432) continue;
+      const [timer, when] = f[5].split(":");
+      // 0 none, 1 retransmit, 2 keepalive. The time is in hundredths of a second.
+      return { timer: Number(timer), seconds: parseInt(when, 16) / 100 };
+    }
+  }
+  throw new Error(`No client socket on port ${port}`);
+}
+
+/**
+ * Seconds until the idle socket's first keepalive probe; Infinity when it sends
+ * none. A query just sent shows the retransmit timer until it is acknowledged,
+ * so this waits for that to clear.
+ */
+async function keepaliveSeconds(port: number) {
+  const stop = Date.now() + 5_000;
+  let t = socketTimer(port);
+  while (t.timer === 1 && Date.now() < stop) {
+    await new Promise((res) => setTimeout(res, 50));
+    t = socketTimer(port);
+  }
+  return t.timer === 2 ? t.seconds : Infinity;
+}
+
+/** The local port of the session that `name` opened on this database. */
+async function clientPort(db: PrismaClient, name: string) {
+  const rows = await db.$queryRaw<{ port: number }[]>`
+    SELECT client_port AS port FROM pg_stat_activity WHERE application_name = ${name} AND datname = current_database()`;
+  expect(rows, name).toHaveLength(1);
+  return rows[0].port;
+}
+
+describe.skipIf(process.platform !== "linux")("idle lock connections stay known to be alive", () => {
+  let t: Throwaway;
+  beforeEach(async () => {
+    t = await createThrowawayDb("alive");
+  });
+  afterEach(async () => {
+    await t?.drop();
+  });
+
+  // Without a delay, Linux sends the first keepalive probe after two hours, and a
+  // NAT that drops flows idle for a few minutes cuts the lock's connection silently.
+
+  it("the deploy lock's connection sends keepalive probes after 10 seconds, while it holds the lock", async () => {
+    const run = wrapped(t, [process.execPath, "-e", "setTimeout(() => {}, 5000)"]);
+    await untilAll([run], /Deploy lock taken/);
+    expect(await keepaliveSeconds(await clientPort(t.db, "tycoonhood deploy lock"))).toBeLessThanOrEqual(10);
+    expect((await run.done).code).toBe(0);
+  }, SLOW);
+
+  it("migrate-sql's connection does too, while it waits for another run", async () => {
+    const run = await holding(t.db, MIGRATION_LOCK, async () => {
+      const r = startDbScript("scripts/migrate-sql.ts", t.url);
+      await untilAll([r], /Waiting/);
+      expect(await keepaliveSeconds(await clientPort(t.db, "tycoonhood migrate-sql"))).toBeLessThanOrEqual(10);
+      return r;
+    });
+    expect((await run.done).code).toBe(0);
   }, SLOW);
 });

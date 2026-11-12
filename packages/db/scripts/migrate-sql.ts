@@ -100,6 +100,11 @@ const client = new Client({
   connectionString: url,
   // Managed Postgres (Neon, Supabase, RDS) terminates TLS with its own chain.
   ssl: /localhost|127\.0\.0\.1/.test(url) ? undefined : { rejectUnauthorized: false },
+  // The connection sits idle while it waits for another run's lock. Probe it after
+  // 10 seconds of silence, not the system's two hours, so a dropped connection is
+  // noticed and the run fails instead of hanging.
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10_000,
   // Shown in pg_stat_activity, so whoever holds the lock can be found.
   application_name: "tycoonhood migrate-sql",
 });

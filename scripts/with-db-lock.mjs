@@ -21,6 +21,22 @@
  * that holds it is lost, the command is stopped and the build fails, rather
  * than going on unprotected.
  *
+ * "The command" means everything it started. The work runs in its children
+ * (bash runs pnpm, which runs tsx, which runs node), and a bash or node that
+ * is killed does not pass the signal on. Signalling only the first process
+ * left the migrations and seeds running after the lock was gone (review
+ * finding 19, follow-up). So the command gets a process group of its own,
+ * and a stop, from a signal or a lost connection, goes to the whole group.
+ * Whatever is still running 10 seconds later is killed, and only then does
+ * this exit. (Windows has no process groups: there the stop reaches the
+ * first process only.)
+ *
+ * The lock's connection sits idle while the command runs, and a waiting
+ * build's sits idle in pg_advisory_lock. Keepalive probes start after 10
+ * seconds of silence: Linux's default is two hours, long after a NAT or
+ * firewall has dropped an idle flow, which leaves the waiting build hanging
+ * and makes the holder lose its connection at the end.
+ *
  * A session lock needs a direct connection. Taken through a pooler it belongs
  * to whichever server connection ran the query, and can outlive the build and
  * stall the next one. So this uses DATABASE_URL_UNPOOLED when it is set, else
@@ -36,7 +52,9 @@
  * held another (review finding 19, follow-up).
  */
 import { spawn } from "node:child_process";
+import { readdirSync, readFileSync } from "node:fs";
 import { constants } from "node:os";
+import { setTimeout as sleep } from "node:timers/promises";
 import pg from "pg";
 import { databaseTarget, isPooled, where } from "../packages/db/scripts/db-target.mjs";
 
@@ -44,6 +62,10 @@ import { databaseTarget, isPooled, where } from "../packages/db/scripts/db-targe
 const DEPLOY_LOCK = 0x7479636f;
 /** How long a build waits for another before giving up, so a stuck one fails the deploy instead of hanging it. */
 const WAIT_MINUTES = 15;
+/** How long the command has to stop after a signal before it is killed. */
+const GRACE_SECONDS = 10;
+/** Windows has no process groups, so there only the command itself can be signalled. */
+const GROUPS = process.platform !== "win32";
 
 const fail = (message) => {
   console.error(message);
@@ -76,19 +98,23 @@ const client = new pg.Client({
   connectionString: url,
   // Managed Postgres (Neon, Supabase, RDS) terminates TLS with its own chain.
   ssl: /localhost|127\.0\.0\.1/.test(url) ? undefined : { rejectUnauthorized: false },
-  // The connection sits idle while the command runs; keep it from being dropped as dead.
+  // The connection sits idle while the command runs. Probe it after 10 seconds of
+  // silence, not the system's two hours, so it is neither dropped nor lost unnoticed.
   keepAlive: true,
+  keepAliveInitialDelayMillis: 10_000,
   // Shown in pg_stat_activity, so whoever holds the lock can be found.
   application_name: "tycoonhood deploy lock",
 });
 
 let child = null;
+/** A stop under way: it resolves once nothing the command started is running. */
+let stopping = null;
 let lost = false;
 
 // Signals go to the command once it runs. Before that, stop waiting and leave.
 for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
   process.on(signal, () => {
-    if (child) child.kill(signal);
+    if (child) stopping ??= stop(signal);
     else process.exit(128 + constants.signals[signal]);
   });
 }
@@ -104,7 +130,7 @@ client.on("error", (e) => {
     `── Lost the database connection that holds the deploy lock (${e.message}). ` +
       "Stopping, so this build does not migrate or seed unprotected."
   );
-  if (child) child.kill("SIGTERM");
+  if (child) stopping ??= stop("SIGTERM");
   else process.exit(1);
 });
 
@@ -115,6 +141,8 @@ try {
 }
 
 const code = await run(command);
+// After a stop, wait until nothing the command started runs before the lock goes.
+await stopping;
 await client.query("SELECT pg_advisory_unlock_all()").catch(() => {});
 await client.end().catch(() => {});
 process.exit(lost ? 1 : code);
@@ -151,7 +179,8 @@ async function takeLock() {
  */
 function run([cmd, ...args]) {
   return new Promise((resolve) => {
-    child = spawn(cmd, args, { stdio: "inherit", env: { ...process.env, DATABASE_URL: url } });
+    // detached: the command leads a process group of its own, which stop() signals as one.
+    child = spawn(cmd, args, { stdio: "inherit", detached: GROUPS, env: { ...process.env, DATABASE_URL: url } });
     child.on("error", (e) => {
       // Only a command that could not be started ends here. A failed kill leaves it running.
       if (child.pid === undefined) {
@@ -161,4 +190,55 @@ function run([cmd, ...args]) {
     });
     child.on("close", (exitCode, signal) => resolve(exitCode ?? 128 + (constants.signals[signal] ?? 0)));
   });
+}
+
+/**
+ * Stops the command and everything it started: `signal` to its process group,
+ * then SIGKILL to whatever still runs GRACE_SECONDS later. Resolves once
+ * nothing in the group runs.
+ */
+async function stop(signal) {
+  if (!signalCommand(signal)) return;
+  const deadline = Date.now() + GRACE_SECONDS * 1000;
+  while (commandRunning()) {
+    if (Date.now() >= deadline) {
+      console.error(`── The command did not stop within ${GRACE_SECONDS} seconds of ${signal}. Killing it.`);
+      signalCommand("SIGKILL");
+      return;
+    }
+    await sleep(100);
+  }
+}
+
+/** Sends `signal` to the command's process group. False when nothing is left to signal. */
+function signalCommand(signal) {
+  if (!GROUPS) return child.kill(signal);
+  try {
+    process.kill(-child.pid, signal);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** True while anything in the command's process group runs. */
+function commandRunning() {
+  if (!GROUPS) return child.exitCode === null && child.signalCode === null;
+  if (process.platform !== "linux") return signalCommand(0);
+  // On Linux, read the process table: a process that exited but was never
+  // reaped (a zombie, which an init that does not reap leaves behind) still
+  // answers a signal, but it has stopped.
+  for (const pid of readdirSync("/proc")) {
+    if (!/^\d+$/.test(pid)) continue;
+    let stat;
+    try {
+      stat = readFileSync(`/proc/${pid}/stat`, "utf8");
+    } catch {
+      continue; // it ended while we looked
+    }
+    // After the command name, in brackets: its state, its parent, its process group.
+    const [state, , group] = stat.slice(stat.lastIndexOf(")") + 2).split(" ");
+    if (group === String(child.pid) && state !== "Z") return true;
+  }
+  return false;
 }
