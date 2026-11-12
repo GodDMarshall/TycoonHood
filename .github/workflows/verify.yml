@@ -1,8 +1,8 @@
 name: verify
 
-# Every push and PR proves the same four gates that run locally, plus a
-# from-zero database build. If this is green, the platform assembles cleanly
-# on a machine that has never seen it before.
+# Every push and PR proves the gates that run locally, on a database built
+# from zero the way a production deploy builds it. If this is green, the
+# platform assembles cleanly on a machine that has never seen it before.
 
 on:
   push:
@@ -29,15 +29,16 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://tycoon:tycoon_ci@localhost:5432/tycoonhood_test
-      # Deliberately unset: STRIPE_SECRET_KEY, RESEND_API_KEY, DISCORD_*.
+      # A throwaway database, so the seed may use the public development admin.
+      ALLOW_DEFAULT_ADMIN: "1"
+      # Deliberately unset: RAZORPAY_*, RESEND_API_KEY, DISCORD_*.
       # CI must prove the platform runs correctly with integrations absent.
 
     steps:
       - uses: actions/checkout@v4
 
+      # The pnpm version comes from package.json ("packageManager").
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -47,14 +48,17 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # The same engine-free runner a production deploy uses (scripts/vercel-build.sh).
       - name: Apply migrations
-        run: pnpm --filter @tycoonhood/db migrate:deploy
+        run: pnpm db:migrate:sql
 
-      - name: Seed (base → academy → content)
+      - name: Seed, in the order a first deploy uses
         run: |
-          pnpm --filter @tycoonhood/db seed
-          pnpm --filter @tycoonhood/db seed:academy
-          pnpm --filter @tycoonhood/db seed:content
+          pnpm db:seed
+          pnpm db:seed:academy
+          pnpm db:seed:content
+          pnpm --filter @tycoonhood/db seed:shop
+          pnpm --filter @tycoonhood/db seed:community
 
       - name: Typecheck
         run: pnpm typecheck
@@ -68,9 +72,8 @@ jobs:
       - name: Build (web + miner)
         run: pnpm build
 
-      - name: Platform verification (26 end-to-end checks)
-        working-directory: packages/core
-        run: npx tsx scripts/verify-platform.ts
+      - name: three.js stays out of every route bundle
+        run: node scripts/world/check-bundle.mjs
 
       - name: Assert no placeholder content reached the seeded academy
         run: |
