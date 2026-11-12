@@ -85,10 +85,8 @@ export class DiscussionService {
 
   // ─────────────────────────────── reading
 
-  async listPosts(
-    viewer: DiscussionViewer,
-    opts?: { categorySlug?: string | null; groupId?: string | null; page?: number; pageSize?: number }
-  ) {
+  /** Takes PostService's own options, so one added there (`kind`) is here too. */
+  async listPosts(viewer: DiscussionViewer, opts?: Parameters<PostService["listPosts"]>[1]) {
     return this.parts.posts.listPosts(viewer, opts);
   }
 
@@ -100,11 +98,8 @@ export class DiscussionService {
 
   // ─────────────────────────────── writing
 
-  async createPost(
-    viewer: DiscussionViewer,
-    input: { title: string; body: string; categoryId?: string | null; groupId?: string | null },
-    now?: Date
-  ) {
+  /** Takes PostService's own input, so a field added there (`kind`) is here too. */
+  async createPost(viewer: DiscussionViewer, input: Parameters<PostService["createPost"]>[1], now?: Date) {
     return this.parts.posts.createPost(viewer, input, now);
   }
 
