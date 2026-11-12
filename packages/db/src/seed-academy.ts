@@ -16,12 +16,16 @@
  * A missing curriculum file is skipped with a warning, so the seed runs while
  * the remaining programmes are still being written.
  *
+ * Each programme is taught by the founder's profile only if it has no
+ * instructor yet. One an administrator assigned to someone else keeps them:
+ * the instructor decides who may edit a programme (DR-34).
+ *
  * Run: pnpm --filter @tycoonhood/db seed:academy
  *      SEED_ACADEMY_FORCE=1 pnpm --filter @tycoonhood/db seed:academy   (destroys progress)
  */
 import { prisma } from "./client";
 import type { LessonSrc, Programme } from "./curriculum/types";
-import { academyRebuildDecision } from "./seed-guard";
+import { academyInstructorDecision, academyRebuildDecision } from "./seed-guard";
 
 /** Curriculum file → its named export. Loaded dynamically so a missing file is skippable. */
 const SOURCES: { file: string; exportName: string }[] = [
@@ -91,12 +95,15 @@ async function main() {
       continue;
     }
 
+    const teacher = academyInstructorDecision({ slug, current: course.instructorId, founderId: founder.id });
+    if (teacher.note) console.log(`• ${teacher.note}`);
+
     const progressRows = await prisma.lessonProgress.count({ where: { lesson: { module: { courseId: course.id } } } });
     const decision = academyRebuildDecision({ slug, progressRows, force });
     if (!decision.rebuild) {
       console.error(`✗ ${decision.reason}`);
-      // Still attach the instructor; that touches no member data.
-      await prisma.course.update({ where: { id: course.id }, data: { instructorId: founder.id } });
+      // Still give it the founder if it has no instructor; that touches no member data.
+      await prisma.course.updateMany({ where: { id: course.id, instructorId: null }, data: { instructorId: founder.id } });
       continue;
     }
     if (progressRows > 0) console.warn(`⚠ SEED_ACADEMY_FORCE=1: erasing ${progressRows} progress row(s) in ${slug}`);
@@ -197,7 +204,7 @@ async function main() {
 
     await prisma.course.update({
       where: { id: course.id },
-      data: { status: "PUBLISHED", instructorId: founder.id, description: DESCRIPTIONS[slug] ?? course.description },
+      data: { status: "PUBLISHED", instructorId: teacher.instructorId, description: DESCRIPTIONS[slug] ?? course.description },
     });
     console.log(`✓ ${slug}: ${programme.modules.length} modules + final, ${lessonCount} lessons — PUBLISHED`);
     await programChannels(course.id, slug);

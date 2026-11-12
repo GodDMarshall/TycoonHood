@@ -21,7 +21,7 @@ import { countEvidence } from "../src/rules/counters";
 import { parseCriteria, weekKey } from "../src/rules/criteria";
 import { LearnerService, ReviewNotAllowedError, rankBySignals } from "../src/lms/learner";
 import { ForbiddenError } from "../src/auth/permissions";
-import { academyRebuildDecision } from "../../db/src/seed-guard";
+import { academyInstructorDecision, academyRebuildDecision } from "../../db/src/seed-guard";
 import { createTestUser, uid } from "./helpers";
 
 const lms = new LmsService(prisma);
@@ -360,6 +360,15 @@ describe("Academy seed safety guard", () => {
     if (!refused.rebuild) expect(refused.reason).toMatch(/SEED_ACADEMY_FORCE=1/);
     expect(academyRebuildDecision({ slug: "warrior", progressRows: 3, force: "true" }).rebuild).toBe(false);
     expect(academyRebuildDecision({ slug: "warrior", progressRows: 3, force: "1" })).toEqual({ rebuild: true });
+  });
+
+  it("gives the founder only a programme with no instructor, and never moves one an administrator assigned (DR-34)", () => {
+    // Since DR-34 the instructor decides who may edit, and only a course manager changes it, audited.
+    expect(academyInstructorDecision({ slug: "warrior", current: null, founderId: "founder" })).toEqual({ instructorId: "founder", note: null });
+    expect(academyInstructorDecision({ slug: "warrior", current: "founder", founderId: "founder" })).toEqual({ instructorId: "founder", note: null });
+    const kept = academyInstructorDecision({ slug: "warrior", current: "asha", founderId: "founder" });
+    expect(kept.instructorId).toBe("asha");
+    expect(kept.note).toMatch(/"warrior" is taught by another instructor profile/);
   });
 });
 
