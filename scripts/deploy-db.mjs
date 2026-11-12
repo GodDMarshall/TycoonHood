@@ -10,7 +10,8 @@
  *   node scripts/deploy-db.mjs
  *
  * It will:
- *   1. refuse to run without a real admin password
+ *   1. refuse to run without a real admin password, or with an ADMIN_EMAIL
+ *      sign-in would refuse
  *   2. report exactly what it is about to touch, and whether the DB is empty
  *   3. apply migrations (engine-free — no Prisma binaries required)
  *   4. seed in the only safe order: base -> academy -> content
@@ -54,6 +55,13 @@ if (looksProd && !process.env.ADMIN_PASSWORD) {
 }
 if (process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length < 12) {
   bail("ADMIN_PASSWORD is shorter than 12 characters. Use something you'd defend in court.");
+}
+// The address the seed will use, checked the way sign-in checks it
+// (packages/db/src/admin-email.ts), before anything touches the database.
+try {
+  execSync("pnpm --silent --filter @tycoonhood/db exec tsx src/check-admin-email.ts", { cwd: root, stdio: "pipe", env: process.env });
+} catch (e) {
+  bail(`${(e.stderr?.toString() ?? "").trim() || "ADMIN_EMAIL could not be checked."}\n  Nothing was touched.`);
 }
 
 // ── 1. inspect the target before touching it ────────────────────────────────

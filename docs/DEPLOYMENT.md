@@ -22,7 +22,7 @@ owner is [`TYCOONHOOD_BLOCKED_ON_YOU.md`](../TYCOONHOOD_BLOCKED_ON_YOU.md).
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for card payments | `rzp_test_…` gives test mode; `rzp_live_…` gives real money. In production, test keys offer card checkout to admins only |
 | `RAZORPAY_WEBHOOK_SECRET` | strongly recommended | Lets the webhook confirm payments if the browser closes |
 | `CRON_SECRET` | yes, with rupee checkout | A long random string. Vercel Cron sends it to `/api/cron/expire-orders`, which refuses calls without it. See "Scheduled jobs" |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin. The address is stored trimmed and in lower case, the way sign-in reads it, so any capitalisation finds the same account. The password is set only when the account is created. Once an admin can sign in, the seed makes no other: an address no account has creates nothing (add admins in `/admin/members`), and a re-run leaves roles alone. Only when no admin can sign in at all does it create the account, or make it admin. It never takes an address held after an email change (7 days, so the undo link keeps working) |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin. The address is stored trimmed and in lower case, the way sign-in reads it, so any capitalisation finds the same account. It must be an address sign-in accepts, entered without quote marks: otherwise the deploy stops before it touches the database. The password is set only when the account is created. Once an admin can sign in, the seed makes no other: an address no account has creates nothing (add admins in `/admin/members`), and a re-run leaves roles alone. Only when no admin can sign in at all does it create the account, or make it admin. It never takes an address held after an email change (7 days, so the undo link keeps working) |
 | `SEED_ON_DEPLOY` | first Vercel deploy only | `1` makes a production build run the seeds. Re-runs are safe, but remove it after the first successful deploy: a re-run brings back seeded items staff deleted (see "Running the seeds again") |
 | `ENABLE_EXPERIMENTAL_COREPACK` | on Vercel | `1` makes Vercel use the pnpm version pinned in `package.json` |
 | `COOKIE_DOMAIN` | optional | Only if you serve several subdomains |
@@ -43,7 +43,8 @@ commands, the function region and the daily cron. The build command runs
    pending migrations with `pnpm db:migrate:sql`. Both use
    `DATABASE_URL_UNPOOLED` when it is set. It stops the build if
    `DATABASE_URL` is missing, and, when `SEED_ON_DEPLOY=1`, if `ADMIN_EMAIL`
-   or `ADMIN_PASSWORD` is missing, before it touches the database.
+   or `ADMIN_PASSWORD` is missing or `ADMIN_EMAIL` is not an address sign-in
+   accepts, before it touches the database.
 2. With `SEED_ON_DEPLOY=1` it then runs `db:seed`, `db:seed:academy`,
    `db:seed:content`, `seed:shop` and `seed:community`, in that order, still
    under the lock.

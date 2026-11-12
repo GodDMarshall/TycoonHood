@@ -11,6 +11,7 @@
  */
 
 import { prisma, type Prisma } from "./client.js";
+import { adminEmailFrom, canSignInAs } from "./admin-email.js";
 import { hash } from "@node-rs/argon2";
 import {
   THC_TOTAL_SUPPLY,
@@ -26,16 +27,13 @@ const LEDGER_SEED_LOCK = 0x74796c67n;
 /** Argon2id params — keep in sync with packages/core/src/auth/password.ts */
 const ARGON2 = { memoryCost: 19456, timeCost: 2, parallelism: 1, algorithm: 2 as const };
 
-/** An address the way sign-in reads it: loginSchema trims and lower-cases what is typed. */
+/** How an older seed's address compares with ADMIN_EMAIL: sign-in trims and lower-cases what is typed. */
 const normaliseEmail = (raw: string) => raw.trim().toLowerCase();
 
 async function seedAdmin() {
-  // Stored as sign-in reads it, or a capitalised ADMIN_EMAIL makes an admin
-  // nobody can sign in as (review finding 18).
-  const email = normaliseEmail(process.env.ADMIN_EMAIL ?? "admin@tycoonhood.local");
-  if (!/^[^@\s]+@[^@\s]+$/.test(email)) {
-    throw new Error(`Refusing to seed: ADMIN_EMAIL "${process.env.ADMIN_EMAIL}" is not an email address.`);
-  }
+  // Stored as sign-in reads it, and only an address sign-in accepts, or the
+  // seed makes an admin nobody can sign in as (review finding 18).
+  const email = adminEmailFrom(process.env.ADMIN_EMAIL);
   // The built-in development password is public knowledge — anyone who has read
   // this repository would have full admin access to the economy. Guessing which
   // hosts are "production" from the connection string never worked (a Docker,
@@ -146,13 +144,17 @@ async function findAdminAccount(email: string) {
   return prisma.user.update({ where: { id: legacy.id }, data: { email } });
 }
 
-/** Whether any admin can sign in today: a password, an address sign-in can match, not suspended. */
+/**
+ * Whether any admin can sign in today: a password, not suspended, and an
+ * address sign-in can match. One stored with capitals, spaces or quote marks
+ * (an older seed's) cannot be typed back, so it does not count.
+ */
 async function someAdminCanSignIn() {
   const admins = await prisma.user.findMany({
     where: { role: "ADMIN", suspendedAt: null, credential: { isNot: null } },
     select: { email: true },
   });
-  return admins.some((a) => a.email === normaliseEmail(a.email));
+  return admins.some((a) => canSignInAs(a.email));
 }
 
 /**

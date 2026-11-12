@@ -14,7 +14,8 @@
 #    Still remove SEED_ON_DEPLOY after the first deploy: a re-run puts back
 #    seeded rows staff have deleted, and it slows every deploy. Seeding
 #    creates the admin account, so it needs ADMIN_EMAIL and ADMIN_PASSWORD;
-#    without either, the build stops before it touches the database.
+#    without either, or with an ADMIN_EMAIL sign-in would refuse, the build
+#    stops before it touches the database.
 # 3. Migrating and seeding run under one deploy lock (scripts/with-db-lock.mjs,
 #    review finding 19). Two production builds can run at once, a redeploy
 #    while one is still building or two merges close together; the second
@@ -51,6 +52,12 @@ if [ "${VERCEL_ENV:-}" = "production" ]; then
   if [ "${SEED_ON_DEPLOY:-}" = "1" ] && { [ -z "${ADMIN_EMAIL:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ]; }; then
     echo "SEED_ON_DEPLOY=1 creates the admin account, so it needs ADMIN_EMAIL and ADMIN_PASSWORD for Production." >&2
     echo "Add both in Vercel (Settings → Environment Variables, Production, Sensitive), then redeploy. The database was not touched." >&2
+    exit 1
+  fi
+  # The address the seed will use, checked the way sign-in checks it, so a
+  # value sign-in would refuse stops the build here, not after the migrations.
+  if [ "${SEED_ON_DEPLOY:-}" = "1" ] && ! pnpm --silent --filter @tycoonhood/db check:admin-email; then
+    echo "Fix ADMIN_EMAIL in Vercel (Settings → Environment Variables, Production), then redeploy. The database was not touched." >&2
     exit 1
   fi
   # The migrations, the seeds and the lock all use the direct connection.

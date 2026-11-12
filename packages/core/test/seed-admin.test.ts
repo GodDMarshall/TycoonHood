@@ -18,7 +18,7 @@
  * Each case runs the real seed (packages/db/src/seed.ts) as a separate
  * process against a database built from nothing.
  */
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from "vitest";
 import { AccountService } from "../src/auth/account";
 import { loginSchema } from "../src/auth/schemas";
 import { hashPassword } from "../src/auth/password";
@@ -26,7 +26,10 @@ import { MemberAdminService } from "../src/platform/members";
 import { AccountSettingsService } from "../src/platform/account-settings";
 import { EmailVerificationService } from "../src/platform/email-verification";
 import { EmailUndoService } from "../src/platform/email-undo";
-import { createThrowawayDb, migrate, runDbScript, mustRun, SEED_ADMIN, type Throwaway } from "./throwaway-db";
+import { adminEmailFrom } from "../../db/src/admin-email";
+import {
+  createThrowawayDb, migrate, runDbScript, mustRun, start, scriptEnv, SEED_ADMIN, REPO_ROOT, type Throwaway,
+} from "./throwaway-db";
 
 const SLOW = 120_000;
 
@@ -83,14 +86,107 @@ describe("the admin from ADMIN_EMAIL", () => {
     expect((await t.db.user.findUniqueOrThrow({ where: { id: first.id } })).role).toBe("MEMBER");
   }, SLOW);
 
-  it("must be an email address", async () => {
+  it("must be an address sign-in accepts", async () => {
     const users = await t.db.user.count();
-    for (const bad of ["   ", "not-an-address"]) {
+    // Each passes a loose "something@something" test, and sign-in refuses every one.
+    for (const bad of ["   ", "not-an-address", '"owner@example.com"', "owner@localhost", "owner@example.c", "owner@example.com."]) {
       const r = await runDbScript("src/seed.ts", t.url, { ADMIN_EMAIL: bad });
-      expect(r.code).toBe(1);
-      expect(r.output).toMatch(/ADMIN_EMAIL/);
+      expect(r.code, bad).toBe(1);
+      expect(r.output, bad).toMatch(/ADMIN_EMAIL/);
     }
+    // Quote marks typed into Vercel's value box are kept, so the message names them.
+    expect((await runDbScript("src/seed.ts", t.url, { ADMIN_EMAIL: '"owner@example.com"' })).output).toMatch(/quote marks/);
     expect(await t.db.user.count()).toBe(users);
+  }, SLOW);
+});
+
+describe("the rule ADMIN_EMAIL is checked by", () => {
+  it("is sign-in's own: the seed accepts what the login form accepts, and stores what it looks up", () => {
+    const typed = [
+      "owner@example.com", "  Owner.Admin@Example.COM ", "owner+tag@example.co.in", "o'brien@example.com",
+      "owner@example.museum", "owner@xn--80ak6aa92e.com", "admin@tycoonhood.local",
+      '"owner@example.com"', "'owner@example.com'", "“owner@example.com”", "owner@localhost", "owner@example.c",
+      "owner@example.com.", "owner@exa_mple.com", "owner@-example.com", "owner@[192.168.1.1]", "own..er@example.com",
+      ".owner@example.com", "owner.@example.com", "owner @example.com", "owner@@example.com", "", "   ",
+    ];
+    for (const raw of typed) {
+      const login = loginSchema.safeParse({ email: raw, password: "x" });
+      let seeded: string | null;
+      try {
+        seeded = adminEmailFrom(raw);
+      } catch {
+        seeded = null;
+      }
+      expect(seeded, raw).toBe(login.success ? login.data.email : null);
+    }
+  });
+});
+
+describe("an admin an earlier seed stored with quote marks around its address", () => {
+  // What the old seed wrote for ADMIN_EMAIL entered in Vercel as "owner@example.com", quotes included.
+  const quotedAdmin = async (t: Throwaway) =>
+    t.db.user.create({
+      data: {
+        email: '"owner@example.com"',
+        name: "The House",
+        role: "ADMIN",
+        credential: { create: { hash: await hashPassword(SEED_ADMIN.ADMIN_PASSWORD) } },
+        profile: { create: { username: "admin", displayName: "The House" } },
+      },
+    });
+
+  let t: Throwaway;
+  beforeEach(async () => {
+    t = await createThrowawayDb("quoted");
+    await migrate(t);
+  }, SLOW);
+  afterEach(async () => {
+    await t?.drop();
+  });
+
+  it("does not count as an admin who can sign in, so the real address is made admin", async () => {
+    const quoted = await quotedAdmin(t);
+    for (const typed of ["owner@example.com", '"owner@example.com"']) {
+      await expect(signIn(t, typed, SEED_ADMIN.ADMIN_PASSWORD)).rejects.toThrow();
+    }
+    // The owner registers the real address, fixes ADMIN_EMAIL and deploys again.
+    const owner = await new AccountService(t.db).register({ email: "owner@example.com", password: "the-owner-password", name: "Owner" });
+    await seed(t, { ADMIN_EMAIL: "owner@example.com" });
+    expect((await t.db.user.findUniqueOrThrow({ where: { id: owner.id } })).role).toBe("ADMIN");
+    expect((await signIn(t, "Owner@Example.com", "the-owner-password")).id).toBe(owner.id);
+    expect((await t.db.user.findUniqueOrThrow({ where: { id: quoted.id } })).email).toBe('"owner@example.com"');
+  }, SLOW);
+
+  it("does not count, so with no account at the real address an admin is made there, under a free username", async () => {
+    await quotedAdmin(t);
+    await seed(t, { ADMIN_EMAIL: "owner@example.com" });
+    const admin = await t.db.user.findUniqueOrThrow({ where: { email: "owner@example.com" }, include: { profile: true } });
+    expect([admin.role, admin.profile?.username]).toEqual(["ADMIN", "admin_2"]);
+    expect((await signIn(t, "owner@example.com", SEED_ADMIN.ADMIN_PASSWORD)).id).toBe(admin.id);
+  }, SLOW);
+});
+
+describe("a deploy whose ADMIN_EMAIL sign-in would refuse", () => {
+  // Nothing listens here, so a deploy that went on to the database would say "Cannot reach the database".
+  const unreachable = "postgresql://tycoon:nothing@127.0.0.1:9/tycoonhood_never_test";
+  const deployEnv = scriptEnv(unreachable, { ADMIN_EMAIL: '"owner@example.com"', ADMIN_PASSWORD: "a-long-deploy-password" });
+
+  it("stops the Vercel build before it touches the database", async () => {
+    const r = await start("bash", ["scripts/vercel-build.sh"], {
+      cwd: REPO_ROOT,
+      env: { ...deployEnv, VERCEL_ENV: "production", SEED_ON_DEPLOY: "1" },
+    }).done;
+    expect(r.code, r.output).toBe(1);
+    expect(r.output).toMatch(/quote marks/);
+    expect(r.output).toMatch(/The database was not touched/);
+    expect(r.output).not.toMatch(/Cannot reach the database|Applying database migrations/);
+  }, SLOW);
+
+  it("stops pnpm deploy:db before it touches the database", async () => {
+    const r = await start(process.execPath, ["scripts/deploy-db.mjs"], { cwd: REPO_ROOT, env: deployEnv }).done;
+    expect(r.code, r.output).toBe(1);
+    expect(r.output).toMatch(/quote marks/);
+    expect(r.output).not.toMatch(/Cannot reach the database/);
   }, SLOW);
 });
 

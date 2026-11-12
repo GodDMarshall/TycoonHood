@@ -47,8 +47,9 @@ The first production deploy creates this admin account. **Without these two
 the deploy stops before it touches the database**, with a message saying so,
 and nothing goes live. Never paste the password into a chat or a commit.
 
-Type the address in any case you like. It is stored the way sign-in reads it,
-trimmed and in lower case.
+Type the address in any case you like, without quote marks (Vercel keeps
+them). It is stored the way sign-in reads it, trimmed and in lower case. An
+address sign-in would refuse stops the deploy before it touches the database.
 
 `ADMIN_EMAIL` only makes the first admin. Changing it later creates no second
 admin while you can sign in: add admins in `/admin/members` instead.
