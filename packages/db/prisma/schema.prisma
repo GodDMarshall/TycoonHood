@@ -104,6 +104,7 @@ model User {
   couponRedemptions CouponRedemption[]
   instructorProfile Instructor?
   emailHolds        EmailHold[]
+  contactMessages   ContactMessage[]
 
   @@index([rankId])
 }
@@ -1548,9 +1549,14 @@ model ContactMessage {
   topic     String
   message   String   @db.Text
   handled   Boolean  @default(false)
+  /// The account a deletion request is for, whatever its address is now.
+  /// Null for other messages, and once the account is deleted.
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
 
   @@index([handled, createdAt])
+  @@index([userId])
 }
 
 /// Genuine member stories only — published by an admin with the member's consent.

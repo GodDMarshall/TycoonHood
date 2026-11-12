@@ -1044,6 +1044,45 @@ describe("Putting back a change whose notice could not be sent", () => {
   });
 });
 
+// ── A deletion request belongs to the account, whatever its address is now.
+
+describe("Deletion requests follow the account, not its address", () => {
+  it("a request stays the account's after an email change, and a new account at the old address does not see it", async () => {
+    const { user, email: oldEmail } = await memberWithPassword();
+    const filed = await accountSettings.requestDeletion(user.id, "moving on");
+    const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    await verification.confirm(change!.rawToken);
+    expect((await accountSettings.pendingDeletion(user.id))?.id).toBe(filed.id);
+    expect((await accountSettings.requestDeletion(user.id)).id).toBe(filed.id); // still one request
+    // The old address was never confirmed, so it is free at once; whoever takes it starts clean.
+    const next = await accounts.register({ email: oldEmail, ...SQUATTER });
+    expect(await accountSettings.pendingDeletion(next.id)).toBeNull();
+    expect(filed.userId).toBe(user.id);
+  });
+
+  it("an undo closes a request filed since the change it reverts, audited, and the owner can file their own", async () => {
+    const { user, undo } = await changedMember();
+    const theirs = await accountSettings.requestDeletion(user.id, "filed by whoever made the change");
+    await undos.undo(undo.rawToken);
+    expect((await prisma.contactMessage.findUniqueOrThrow({ where: { id: theirs.id } })).handled).toBe(true);
+    const log = await prisma.auditLog.findFirst({ where: { action: "account.delete.request.close", targetId: theirs.id } });
+    expect(log).toMatchObject({ actorId: user.id, targetType: "ContactMessage" });
+    expect(log?.meta).toMatchObject({ reason: "email-undo" });
+    expect(await accountSettings.pendingDeletion(user.id)).toBeNull();
+    expect((await accountSettings.requestDeletion(user.id)).id).not.toBe(theirs.id);
+  });
+
+  it("an undo leaves alone a request the owner filed before the change", async () => {
+    const { user, email: oldEmail } = await confirmedMember();
+    const owners = await accountSettings.requestDeletion(user.id, "filed by the owner");
+    const undo = await moveTo(user.id, address("taken-over"));
+    await undos.undo(undo.rawToken);
+    expect((await prisma.contactMessage.findUniqueOrThrow({ where: { id: owners.id } })).handled).toBe(false);
+    expect((await accountSettings.pendingDeletion(user.id))?.id).toBe(owners.id);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+  });
+});
+
 // ── An address the member never confirmed may not be theirs (a typo at
 // registration). It is not held and gets no undo link, which would hand the
 // account to whoever reads it.

@@ -35,6 +35,8 @@ export default async function AdminSite({ searchParams }: { searchParams: Promis
       where: showHandled ? {} : { handled: false },
       orderBy: { createdAt: "desc" },
       take: 50,
+      // A deletion request names its account: staff write to the address it has now.
+      include: { user: { select: { email: true } } },
     }),
     prisma.contactMessage.count({ where: { handled: false } }),
     prisma.user.groupBy({ by: ["role"], where: { suspendedAt: null }, _count: { _all: true } }),
@@ -125,7 +127,7 @@ export default async function AdminSite({ searchParams }: { searchParams: Promis
                       <span className="text-[12.5px] text-ink-3">{dt.format(m.createdAt)}</span>
                     </div>
                     <p className="text-[14px] text-ink-1">
-                      {m.name} · <a href={`mailto:${m.email}`} className="text-gold hover:text-gold-bright">{m.email}</a>
+                      {m.name} · <a href={`mailto:${m.user?.email ?? m.email}`} className="text-gold hover:text-gold-bright">{m.user?.email ?? m.email}</a>
                     </p>
                     <p className="whitespace-pre-line text-[14px] leading-relaxed text-ink-2">{m.message}</p>
                     <form action={setContactHandledAction.bind(null, m.id, !m.handled)}>

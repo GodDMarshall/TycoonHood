@@ -328,6 +328,7 @@ export type UserWhereInput = {
   couponRedemptions?: Prisma.CouponRedemptionListRelationFilter
   instructorProfile?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
   emailHolds?: Prisma.EmailHoldListRelationFilter
+  contactMessages?: Prisma.ContactMessageListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -388,6 +389,7 @@ export type UserOrderByWithRelationInput = {
   couponRedemptions?: Prisma.CouponRedemptionOrderByRelationAggregateInput
   instructorProfile?: Prisma.InstructorOrderByWithRelationInput
   emailHolds?: Prisma.EmailHoldOrderByRelationAggregateInput
+  contactMessages?: Prisma.ContactMessageOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -451,6 +453,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   couponRedemptions?: Prisma.CouponRedemptionListRelationFilter
   instructorProfile?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
   emailHolds?: Prisma.EmailHoldListRelationFilter
+  contactMessages?: Prisma.ContactMessageListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -550,6 +553,7 @@ export type UserCreateInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -609,6 +613,7 @@ export type UserUncheckedCreateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -668,6 +673,7 @@ export type UserUpdateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -727,6 +733,7 @@ export type UserUncheckedUpdateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1534,6 +1541,22 @@ export type UserUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.UserUpdateWithoutAuditLogsInput>, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
 }
 
+export type UserCreateNestedOneWithoutContactMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContactMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutContactMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContactMessagesInput
+  upsert?: Prisma.UserUpsertWithoutContactMessagesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContactMessagesInput, Prisma.UserUpdateWithoutContactMessagesInput>, Prisma.UserUncheckedUpdateWithoutContactMessagesInput>
+}
+
 export type UserCreateWithoutCredentialInput = {
   id?: string
   email: string
@@ -1590,6 +1613,7 @@ export type UserCreateWithoutCredentialInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCredentialInput = {
@@ -1648,6 +1672,7 @@ export type UserUncheckedCreateWithoutCredentialInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCredentialInput = {
@@ -1722,6 +1747,7 @@ export type UserUpdateWithoutCredentialInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCredentialInput = {
@@ -1780,6 +1806,7 @@ export type UserUncheckedUpdateWithoutCredentialInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1838,6 +1865,7 @@ export type UserCreateWithoutAccountsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1896,6 +1924,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1970,6 +1999,7 @@ export type UserUpdateWithoutAccountsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -2028,6 +2058,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -2086,6 +2117,7 @@ export type UserCreateWithoutSessionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -2144,6 +2176,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -2218,6 +2251,7 @@ export type UserUpdateWithoutSessionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -2276,6 +2310,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEmailHoldsInput = {
@@ -2334,6 +2369,7 @@ export type UserCreateWithoutEmailHoldsInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEmailHoldsInput = {
@@ -2392,6 +2428,7 @@ export type UserUncheckedCreateWithoutEmailHoldsInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEmailHoldsInput = {
@@ -2466,6 +2503,7 @@ export type UserUpdateWithoutEmailHoldsInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailHoldsInput = {
@@ -2524,6 +2562,7 @@ export type UserUncheckedUpdateWithoutEmailHoldsInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProfileInput = {
@@ -2582,6 +2621,7 @@ export type UserCreateWithoutProfileInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -2640,6 +2680,7 @@ export type UserUncheckedCreateWithoutProfileInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -2714,6 +2755,7 @@ export type UserUpdateWithoutProfileInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -2772,6 +2814,7 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutQuizAttemptsInput = {
@@ -2830,6 +2873,7 @@ export type UserCreateWithoutQuizAttemptsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -2888,6 +2932,7 @@ export type UserUncheckedCreateWithoutQuizAttemptsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -2962,6 +3007,7 @@ export type UserUpdateWithoutQuizAttemptsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -3020,6 +3066,7 @@ export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEnrollmentsInput = {
@@ -3078,6 +3125,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -3136,6 +3184,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -3210,6 +3259,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -3268,6 +3318,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLessonProgressInput = {
@@ -3326,6 +3377,7 @@ export type UserCreateWithoutLessonProgressInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -3384,6 +3436,7 @@ export type UserUncheckedCreateWithoutLessonProgressInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -3458,6 +3511,7 @@ export type UserUpdateWithoutLessonProgressInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -3516,6 +3570,7 @@ export type UserUncheckedUpdateWithoutLessonProgressInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCertificatesInput = {
@@ -3574,6 +3629,7 @@ export type UserCreateWithoutCertificatesInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCertificatesInput = {
@@ -3632,6 +3688,7 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCertificatesInput = {
@@ -3706,6 +3763,7 @@ export type UserUpdateWithoutCertificatesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCertificatesInput = {
@@ -3764,6 +3822,7 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutXpEventsInput = {
@@ -3822,6 +3881,7 @@ export type UserCreateWithoutXpEventsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutXpEventsInput = {
@@ -3880,6 +3940,7 @@ export type UserUncheckedCreateWithoutXpEventsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutXpEventsInput = {
@@ -3954,6 +4015,7 @@ export type UserUpdateWithoutXpEventsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutXpEventsInput = {
@@ -4012,6 +4074,7 @@ export type UserUncheckedUpdateWithoutXpEventsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRankInput = {
@@ -4070,6 +4133,7 @@ export type UserCreateWithoutRankInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRankInput = {
@@ -4128,6 +4192,7 @@ export type UserUncheckedCreateWithoutRankInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRankInput = {
@@ -4231,6 +4296,7 @@ export type UserCreateWithoutAchievementsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAchievementsInput = {
@@ -4289,6 +4355,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAchievementsInput = {
@@ -4363,6 +4430,7 @@ export type UserUpdateWithoutAchievementsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAchievementsInput = {
@@ -4421,6 +4489,7 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutParticipationsInput = {
@@ -4479,6 +4548,7 @@ export type UserCreateWithoutParticipationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutParticipationsInput = {
@@ -4537,6 +4607,7 @@ export type UserUncheckedCreateWithoutParticipationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutParticipationsInput = {
@@ -4611,6 +4682,7 @@ export type UserUpdateWithoutParticipationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParticipationsInput = {
@@ -4669,6 +4741,7 @@ export type UserUncheckedUpdateWithoutParticipationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMissionCompletionsInput = {
@@ -4727,6 +4800,7 @@ export type UserCreateWithoutMissionCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMissionCompletionsInput = {
@@ -4785,6 +4859,7 @@ export type UserUncheckedCreateWithoutMissionCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMissionCompletionsInput = {
@@ -4859,6 +4934,7 @@ export type UserUpdateWithoutMissionCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
@@ -4917,6 +4993,7 @@ export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStreakInput = {
@@ -4975,6 +5052,7 @@ export type UserCreateWithoutStreakInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStreakInput = {
@@ -5033,6 +5111,7 @@ export type UserUncheckedCreateWithoutStreakInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStreakInput = {
@@ -5107,6 +5186,7 @@ export type UserUpdateWithoutStreakInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStreakInput = {
@@ -5165,6 +5245,7 @@ export type UserUncheckedUpdateWithoutStreakInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -5223,6 +5304,7 @@ export type UserCreateWithoutNotificationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -5281,6 +5363,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -5355,6 +5438,7 @@ export type UserUpdateWithoutNotificationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -5413,6 +5497,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLedgerAccountInput = {
@@ -5471,6 +5556,7 @@ export type UserCreateWithoutLedgerAccountInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLedgerAccountInput = {
@@ -5529,6 +5615,7 @@ export type UserUncheckedCreateWithoutLedgerAccountInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLedgerAccountInput = {
@@ -5603,6 +5690,7 @@ export type UserUpdateWithoutLedgerAccountInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLedgerAccountInput = {
@@ -5661,6 +5749,7 @@ export type UserUncheckedUpdateWithoutLedgerAccountInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -5719,6 +5808,7 @@ export type UserCreateWithoutOrdersInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -5777,6 +5867,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -5851,6 +5942,7 @@ export type UserUpdateWithoutOrdersInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -5909,6 +6001,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDiscordLinkInput = {
@@ -5967,6 +6060,7 @@ export type UserCreateWithoutDiscordLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDiscordLinkInput = {
@@ -6025,6 +6119,7 @@ export type UserUncheckedCreateWithoutDiscordLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDiscordLinkInput = {
@@ -6099,6 +6194,7 @@ export type UserUpdateWithoutDiscordLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDiscordLinkInput = {
@@ -6157,6 +6253,7 @@ export type UserUncheckedUpdateWithoutDiscordLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTelegramLinkInput = {
@@ -6215,6 +6312,7 @@ export type UserCreateWithoutTelegramLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTelegramLinkInput = {
@@ -6273,6 +6371,7 @@ export type UserUncheckedCreateWithoutTelegramLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTelegramLinkInput = {
@@ -6347,6 +6446,7 @@ export type UserUpdateWithoutTelegramLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTelegramLinkInput = {
@@ -6405,6 +6505,7 @@ export type UserUncheckedUpdateWithoutTelegramLinkInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMinerStateInput = {
@@ -6463,6 +6564,7 @@ export type UserCreateWithoutMinerStateInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMinerStateInput = {
@@ -6521,6 +6623,7 @@ export type UserUncheckedCreateWithoutMinerStateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMinerStateInput = {
@@ -6595,6 +6698,7 @@ export type UserUpdateWithoutMinerStateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMinerStateInput = {
@@ -6653,6 +6757,7 @@ export type UserUncheckedUpdateWithoutMinerStateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReferralsMadeInput = {
@@ -6711,6 +6816,7 @@ export type UserCreateWithoutReferralsMadeInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReferralsMadeInput = {
@@ -6769,6 +6875,7 @@ export type UserUncheckedCreateWithoutReferralsMadeInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReferralsMadeInput = {
@@ -6832,6 +6939,7 @@ export type UserCreateWithoutReferralReceivedInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReferralReceivedInput = {
@@ -6890,6 +6998,7 @@ export type UserUncheckedCreateWithoutReferralReceivedInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReferralReceivedInput = {
@@ -6964,6 +7073,7 @@ export type UserUpdateWithoutReferralsMadeInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralsMadeInput = {
@@ -7022,6 +7132,7 @@ export type UserUncheckedUpdateWithoutReferralsMadeInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutReferralReceivedInput = {
@@ -7091,6 +7202,7 @@ export type UserUpdateWithoutReferralReceivedInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralReceivedInput = {
@@ -7149,6 +7261,7 @@ export type UserUncheckedUpdateWithoutReferralReceivedInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWatchCompletionsInput = {
@@ -7207,6 +7320,7 @@ export type UserCreateWithoutWatchCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWatchCompletionsInput = {
@@ -7265,6 +7379,7 @@ export type UserUncheckedCreateWithoutWatchCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWatchCompletionsInput = {
@@ -7339,6 +7454,7 @@ export type UserUpdateWithoutWatchCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
@@ -7397,6 +7513,7 @@ export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -7455,6 +7572,7 @@ export type UserCreateWithoutMessagesInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -7513,6 +7631,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -7587,6 +7706,7 @@ export type UserUpdateWithoutMessagesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -7645,6 +7765,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutChannelReadsInput = {
@@ -7703,6 +7824,7 @@ export type UserCreateWithoutChannelReadsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutChannelReadsInput = {
@@ -7761,6 +7883,7 @@ export type UserUncheckedCreateWithoutChannelReadsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutChannelReadsInput = {
@@ -7835,6 +7958,7 @@ export type UserUpdateWithoutChannelReadsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChannelReadsInput = {
@@ -7893,6 +8017,7 @@ export type UserUncheckedUpdateWithoutChannelReadsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessageReportsInput = {
@@ -7951,6 +8076,7 @@ export type UserCreateWithoutMessageReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessageReportsInput = {
@@ -8009,6 +8135,7 @@ export type UserUncheckedCreateWithoutMessageReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessageReportsInput = {
@@ -8083,6 +8210,7 @@ export type UserUpdateWithoutMessageReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessageReportsInput = {
@@ -8141,6 +8269,7 @@ export type UserUncheckedUpdateWithoutMessageReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommunityMuteInput = {
@@ -8199,6 +8328,7 @@ export type UserCreateWithoutCommunityMuteInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommunityMuteInput = {
@@ -8257,6 +8387,7 @@ export type UserUncheckedCreateWithoutCommunityMuteInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommunityMuteInput = {
@@ -8331,6 +8462,7 @@ export type UserUpdateWithoutCommunityMuteInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommunityMuteInput = {
@@ -8389,6 +8521,7 @@ export type UserUncheckedUpdateWithoutCommunityMuteInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardItemsInput = {
@@ -8447,6 +8580,7 @@ export type UserCreateWithoutStandardItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardItemsInput = {
@@ -8505,6 +8639,7 @@ export type UserUncheckedCreateWithoutStandardItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardItemsInput = {
@@ -8579,6 +8714,7 @@ export type UserUpdateWithoutStandardItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardItemsInput = {
@@ -8637,6 +8773,7 @@ export type UserUncheckedUpdateWithoutStandardItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardTicksInput = {
@@ -8695,6 +8832,7 @@ export type UserCreateWithoutStandardTicksInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardTicksInput = {
@@ -8753,6 +8891,7 @@ export type UserUncheckedCreateWithoutStandardTicksInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardTicksInput = {
@@ -8827,6 +8966,7 @@ export type UserUpdateWithoutStandardTicksInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardTicksInput = {
@@ -8885,6 +9025,7 @@ export type UserUncheckedUpdateWithoutStandardTicksInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStandardDaysInput = {
@@ -8943,6 +9084,7 @@ export type UserCreateWithoutStandardDaysInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStandardDaysInput = {
@@ -9001,6 +9143,7 @@ export type UserUncheckedCreateWithoutStandardDaysInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStandardDaysInput = {
@@ -9075,6 +9218,7 @@ export type UserUpdateWithoutStandardDaysInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStandardDaysInput = {
@@ -9133,6 +9277,7 @@ export type UserUncheckedUpdateWithoutStandardDaysInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInstructorProfileInput = {
@@ -9191,6 +9336,7 @@ export type UserCreateWithoutInstructorProfileInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInstructorProfileInput = {
@@ -9249,6 +9395,7 @@ export type UserUncheckedCreateWithoutInstructorProfileInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInstructorProfileInput = {
@@ -9323,6 +9470,7 @@ export type UserUpdateWithoutInstructorProfileInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInstructorProfileInput = {
@@ -9381,6 +9529,7 @@ export type UserUncheckedUpdateWithoutInstructorProfileInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCourseReviewsInput = {
@@ -9439,6 +9588,7 @@ export type UserCreateWithoutCourseReviewsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCourseReviewsInput = {
@@ -9497,6 +9647,7 @@ export type UserUncheckedCreateWithoutCourseReviewsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCourseReviewsInput = {
@@ -9571,6 +9722,7 @@ export type UserUpdateWithoutCourseReviewsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCourseReviewsInput = {
@@ -9629,6 +9781,7 @@ export type UserUncheckedUpdateWithoutCourseReviewsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAffiliateInput = {
@@ -9687,6 +9840,7 @@ export type UserCreateWithoutAffiliateInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAffiliateInput = {
@@ -9745,6 +9899,7 @@ export type UserUncheckedCreateWithoutAffiliateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAffiliateInput = {
@@ -9819,6 +9974,7 @@ export type UserUpdateWithoutAffiliateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAffiliateInput = {
@@ -9877,6 +10033,7 @@ export type UserUncheckedUpdateWithoutAffiliateInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCartItemsInput = {
@@ -9935,6 +10092,7 @@ export type UserCreateWithoutCartItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCartItemsInput = {
@@ -9993,6 +10151,7 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCartItemsInput = {
@@ -10067,6 +10226,7 @@ export type UserUpdateWithoutCartItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCartItemsInput = {
@@ -10125,6 +10285,7 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWishlistItemsInput = {
@@ -10183,6 +10344,7 @@ export type UserCreateWithoutWishlistItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWishlistItemsInput = {
@@ -10241,6 +10403,7 @@ export type UserUncheckedCreateWithoutWishlistItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWishlistItemsInput = {
@@ -10315,6 +10478,7 @@ export type UserUpdateWithoutWishlistItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWishlistItemsInput = {
@@ -10373,6 +10537,7 @@ export type UserUncheckedUpdateWithoutWishlistItemsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCouponRedemptionsInput = {
@@ -10431,6 +10596,7 @@ export type UserCreateWithoutCouponRedemptionsInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCouponRedemptionsInput = {
@@ -10489,6 +10655,7 @@ export type UserUncheckedCreateWithoutCouponRedemptionsInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCouponRedemptionsInput = {
@@ -10563,6 +10730,7 @@ export type UserUpdateWithoutCouponRedemptionsInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCouponRedemptionsInput = {
@@ -10621,6 +10789,7 @@ export type UserUncheckedUpdateWithoutCouponRedemptionsInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRefundRequestsInput = {
@@ -10679,6 +10848,7 @@ export type UserCreateWithoutRefundRequestsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRefundRequestsInput = {
@@ -10737,6 +10907,7 @@ export type UserUncheckedCreateWithoutRefundRequestsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRefundRequestsInput = {
@@ -10811,6 +10982,7 @@ export type UserUpdateWithoutRefundRequestsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefundRequestsInput = {
@@ -10869,6 +11041,7 @@ export type UserUncheckedUpdateWithoutRefundRequestsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGroupMembershipsInput = {
@@ -10927,6 +11100,7 @@ export type UserCreateWithoutGroupMembershipsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGroupMembershipsInput = {
@@ -10985,6 +11159,7 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGroupMembershipsInput = {
@@ -11059,6 +11234,7 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
@@ -11117,6 +11293,7 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommunityPostsInput = {
@@ -11175,6 +11352,7 @@ export type UserCreateWithoutCommunityPostsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommunityPostsInput = {
@@ -11233,6 +11411,7 @@ export type UserUncheckedCreateWithoutCommunityPostsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommunityPostsInput = {
@@ -11307,6 +11486,7 @@ export type UserUpdateWithoutCommunityPostsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommunityPostsInput = {
@@ -11365,6 +11545,7 @@ export type UserUncheckedUpdateWithoutCommunityPostsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommunityCommentsInput = {
@@ -11423,6 +11604,7 @@ export type UserCreateWithoutCommunityCommentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommunityCommentsInput = {
@@ -11481,6 +11663,7 @@ export type UserUncheckedCreateWithoutCommunityCommentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommunityCommentsInput = {
@@ -11555,6 +11738,7 @@ export type UserUpdateWithoutCommunityCommentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommunityCommentsInput = {
@@ -11613,6 +11797,7 @@ export type UserUncheckedUpdateWithoutCommunityCommentsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReactionsInput = {
@@ -11671,6 +11856,7 @@ export type UserCreateWithoutReactionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReactionsInput = {
@@ -11729,6 +11915,7 @@ export type UserUncheckedCreateWithoutReactionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReactionsInput = {
@@ -11803,6 +11990,7 @@ export type UserUpdateWithoutReactionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReactionsInput = {
@@ -11861,6 +12049,7 @@ export type UserUncheckedUpdateWithoutReactionsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReportsInput = {
@@ -11919,6 +12108,7 @@ export type UserCreateWithoutReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReportsInput = {
@@ -11977,6 +12167,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReportsInput = {
@@ -12051,6 +12242,7 @@ export type UserUpdateWithoutReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportsInput = {
@@ -12109,6 +12301,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -12167,6 +12360,7 @@ export type UserCreateWithoutAuditLogsInput = {
   couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -12225,6 +12419,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
   instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
   emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -12299,6 +12494,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -12354,6 +12550,259 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
   reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
+  emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutContactMessagesInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  pendingEmail?: string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  rank?: Prisma.RankDefinitionCreateNestedOneWithoutUsersInput
+  credential?: Prisma.PasswordCredentialCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorCreateNestedOneWithoutUserInput
+  emailHolds?: Prisma.EmailHoldCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutContactMessagesInput = {
+  id?: string
+  email: string
+  emailVerified?: Date | string | null
+  pendingEmail?: string | null
+  name?: string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  xp?: number
+  level?: number
+  rankId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  suspendedAt?: Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedCreateNestedOneWithoutUserInput
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedCreateNestedOneWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  lessonProgress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput
+  certificates?: Prisma.CertificateUncheckedCreateNestedManyWithoutUserInput
+  xpEvents?: Prisma.XpEventUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  participations?: Prisma.ChallengeParticipationUncheckedCreateNestedManyWithoutUserInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutUserInput
+  streak?: Prisma.StreakUncheckedCreateNestedOneWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  discordLink?: Prisma.DiscordLinkUncheckedCreateNestedOneWithoutUserInput
+  telegramLink?: Prisma.TelegramLinkUncheckedCreateNestedOneWithoutUserInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedCreateNestedManyWithoutUserInput
+  minerState?: Prisma.MinerStateUncheckedCreateNestedOneWithoutUserInput
+  referralsMade?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  referralReceived?: Prisma.ReferralUncheckedCreateNestedOneWithoutReferredInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  messageReports?: Prisma.MessageReportUncheckedCreateNestedManyWithoutReporterInput
+  channelReads?: Prisma.ChannelReadUncheckedCreateNestedManyWithoutUserInput
+  communityMute?: Prisma.CommunityMuteUncheckedCreateNestedOneWithoutUserInput
+  standardItems?: Prisma.StandardItemUncheckedCreateNestedManyWithoutUserInput
+  standardTicks?: Prisma.StandardTickUncheckedCreateNestedManyWithoutUserInput
+  standardDays?: Prisma.StandardDayUncheckedCreateNestedManyWithoutUserInput
+  courseReviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput
+  affiliate?: Prisma.AffiliateProfileUncheckedCreateNestedOneWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutUserInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutUserInput
+  communityPosts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutAuthorInput
+  communityComments?: Prisma.CommunityCommentUncheckedCreateNestedManyWithoutAuthorInput
+  reactions?: Prisma.ReactionUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedCreateNestedManyWithoutUserInput
+  reports?: Prisma.ContentReportUncheckedCreateNestedManyWithoutReporterInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  couponRedemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutUserInput
+  instructorProfile?: Prisma.InstructorUncheckedCreateNestedOneWithoutUserInput
+  emailHolds?: Prisma.EmailHoldUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutContactMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
+}
+
+export type UserUpsertWithoutContactMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContactMessagesInput, Prisma.UserUncheckedUpdateWithoutContactMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContactMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContactMessagesInput, Prisma.UserUncheckedUpdateWithoutContactMessagesInput>
+}
+
+export type UserUpdateWithoutContactMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.RankDefinitionUpdateOneWithoutUsersNestedInput
+  credential?: Prisma.PasswordCredentialUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
+  instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
+  emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContactMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  rankId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  credential?: Prisma.PasswordCredentialUncheckedUpdateOneWithoutUserNestedInput
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ledgerAccount?: Prisma.LedgerAccountUncheckedUpdateOneWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  lessonProgress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput
+  certificates?: Prisma.CertificateUncheckedUpdateManyWithoutUserNestedInput
+  xpEvents?: Prisma.XpEventUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  participations?: Prisma.ChallengeParticipationUncheckedUpdateManyWithoutUserNestedInput
+  missionCompletions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutUserNestedInput
+  streak?: Prisma.StreakUncheckedUpdateOneWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  discordLink?: Prisma.DiscordLinkUncheckedUpdateOneWithoutUserNestedInput
+  telegramLink?: Prisma.TelegramLinkUncheckedUpdateOneWithoutUserNestedInput
+  quizAttempts?: Prisma.QuizAttemptUncheckedUpdateManyWithoutUserNestedInput
+  minerState?: Prisma.MinerStateUncheckedUpdateOneWithoutUserNestedInput
+  referralsMade?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  referralReceived?: Prisma.ReferralUncheckedUpdateOneWithoutReferredNestedInput
+  watchCompletions?: Prisma.WatchCompletionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  messageReports?: Prisma.MessageReportUncheckedUpdateManyWithoutReporterNestedInput
+  channelReads?: Prisma.ChannelReadUncheckedUpdateManyWithoutUserNestedInput
+  communityMute?: Prisma.CommunityMuteUncheckedUpdateOneWithoutUserNestedInput
+  standardItems?: Prisma.StandardItemUncheckedUpdateManyWithoutUserNestedInput
+  standardTicks?: Prisma.StandardTickUncheckedUpdateManyWithoutUserNestedInput
+  standardDays?: Prisma.StandardDayUncheckedUpdateManyWithoutUserNestedInput
+  courseReviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput
+  affiliate?: Prisma.AffiliateProfileUncheckedUpdateOneWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutUserNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutUserNestedInput
+  communityPosts?: Prisma.CommunityPostUncheckedUpdateManyWithoutAuthorNestedInput
+  communityComments?: Prisma.CommunityCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  reactions?: Prisma.ReactionUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMembershipUncheckedUpdateManyWithoutUserNestedInput
+  reports?: Prisma.ContentReportUncheckedUpdateManyWithoutReporterNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
@@ -12430,6 +12879,7 @@ export type UserUpdateWithoutRankInput = {
   couponRedemptions?: Prisma.CouponRedemptionUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRankInput = {
@@ -12488,6 +12938,7 @@ export type UserUncheckedUpdateWithoutRankInput = {
   couponRedemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutUserNestedInput
   instructorProfile?: Prisma.InstructorUncheckedUpdateOneWithoutUserNestedInput
   emailHolds?: Prisma.EmailHoldUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutRankInput = {
@@ -12543,6 +12994,7 @@ export type UserCountOutputType = {
   auditLogs: number
   couponRedemptions: number
   emailHolds: number
+  contactMessages: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -12578,6 +13030,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   couponRedemptions?: boolean | UserCountOutputTypeCountCouponRedemptionsArgs
   emailHolds?: boolean | UserCountOutputTypeCountEmailHoldsArgs
+  contactMessages?: boolean | UserCountOutputTypeCountContactMessagesArgs
 }
 
 /**
@@ -12814,6 +13267,13 @@ export type UserCountOutputTypeCountEmailHoldsArgs<ExtArgs extends runtime.Types
   where?: Prisma.EmailHoldWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountContactMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContactMessageWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -12873,6 +13333,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   couponRedemptions?: boolean | Prisma.User$couponRedemptionsArgs<ExtArgs>
   instructorProfile?: boolean | Prisma.User$instructorProfileArgs<ExtArgs>
   emailHolds?: boolean | Prisma.User$emailHoldsArgs<ExtArgs>
+  contactMessages?: boolean | Prisma.User$contactMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -12972,6 +13433,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   couponRedemptions?: boolean | Prisma.User$couponRedemptionsArgs<ExtArgs>
   instructorProfile?: boolean | Prisma.User$instructorProfileArgs<ExtArgs>
   emailHolds?: boolean | Prisma.User$emailHoldsArgs<ExtArgs>
+  contactMessages?: boolean | Prisma.User$contactMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -13028,6 +13490,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     couponRedemptions: Prisma.$CouponRedemptionPayload<ExtArgs>[]
     instructorProfile: Prisma.$InstructorPayload<ExtArgs> | null
     emailHolds: Prisma.$EmailHoldPayload<ExtArgs>[]
+    contactMessages: Prisma.$ContactMessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -13489,6 +13952,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   couponRedemptions<T extends Prisma.User$couponRedemptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$couponRedemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CouponRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   instructorProfile<T extends Prisma.User$instructorProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$instructorProfileArgs<ExtArgs>>): Prisma.Prisma__InstructorClient<runtime.Types.Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   emailHolds<T extends Prisma.User$emailHoldsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailHoldsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailHoldPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contactMessages<T extends Prisma.User$contactMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contactMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14920,6 +15384,30 @@ export type User$emailHoldsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.EmailHoldScalarFieldEnum | Prisma.EmailHoldScalarFieldEnum[]
+}
+
+/**
+ * User.contactMessages
+ */
+export type User$contactMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContactMessage
+   */
+  select?: Prisma.ContactMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContactMessage
+   */
+  omit?: Prisma.ContactMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContactMessageInclude<ExtArgs> | null
+  where?: Prisma.ContactMessageWhereInput
+  orderBy?: Prisma.ContactMessageOrderByWithRelationInput | Prisma.ContactMessageOrderByWithRelationInput[]
+  cursor?: Prisma.ContactMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContactMessageScalarFieldEnum | Prisma.ContactMessageScalarFieldEnum[]
 }
 
 /**

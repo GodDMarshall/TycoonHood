@@ -20,6 +20,7 @@ Migrations are hand-written SQL under `packages/db/prisma/migrations/`. They are
 | `20261111180000_payment_refunded_cents` | `Payment.refundedCents` and `Payment.refundIds`: partial and dashboard refunds are counted once per provider refund id, and an order is unwound only when fully refunded. A CHECK keeps the amount between 0 and the payment. Payments already marked REFUNDED are backfilled as fully refunded |
 | `20261111190000_pending_email` | `User.pendingEmail`: an email change waiting for its link to be used. Nullable and not unique; additive only |
 | `20261111200000_email_hold` | `EmailHold`: the address an email change replaced, held for its account for 7 days, with the hash of the single-use link that undoes the change. One new table; additive only |
+| `20261112000000_contact_message_user` | `ContactMessage.userId`: the account a deletion request is for, so it stays the account's after an email change. Nullable, indexed, SET NULL when the account is deleted. Requests already filed are backfilled from the account id their text names; additive only |
 
 `20261111000000_full_platform` is **additive only**: no column is dropped or renamed. CHECK constraints guard the money columns (amounts ≥ 0, rate between 0 and 10 000 bps, coupon percent 1–100).
 

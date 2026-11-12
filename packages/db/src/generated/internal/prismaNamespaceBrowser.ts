@@ -1158,6 +1158,7 @@ export const ContactMessageScalarFieldEnum = {
   topic: 'topic',
   message: 'message',
   handled: 'handled',
+  userId: 'userId',
   createdAt: 'createdAt'
 } as const
 

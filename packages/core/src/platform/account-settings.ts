@@ -20,9 +20,12 @@
  *    like a taken one; one held for this account is the member moving back.
  *  · no new change while the last one can still be undone (7 days, or
  *    until its undo is used): see EmailChangeTooSoonError.
- *  · delete account: a request for staff, recorded as a ContactMessage.
- *    Accounts are never hard-deleted from here — ledger rows reference the
- *    user with ON DELETE RESTRICT, and the books must still balance.
+ *  · delete account: a request for staff, recorded as a ContactMessage
+ *    that names the account (userId), so it stays the account's whatever
+ *    its address becomes. An undo closes one filed since the change it
+ *    reverts (platform/email-undo). Accounts are never hard-deleted from
+ *    here — ledger rows reference the user with ON DELETE RESTRICT, and the
+ *    books must still balance.
  */
 import { z } from "zod";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
@@ -157,11 +160,10 @@ export class AccountSettingsService {
     await this.audit.log({ actorId: userId, action: "account.sessions.revoke-others", targetType: "User", targetId: userId });
   }
 
-  /** The open deletion request, if the member already made one. */
+  /** The open deletion request, if the member already made one, from whichever address. */
   async pendingDeletion(userId: string) {
-    const user = await this.db.user.findUniqueOrThrow({ where: { id: userId }, select: { email: true } });
     return this.db.contactMessage.findFirst({
-      where: { topic: DELETION_TOPIC, email: user.email, handled: false },
+      where: { topic: DELETION_TOPIC, userId, handled: false },
       orderBy: { createdAt: "desc" },
     });
   }
@@ -175,6 +177,7 @@ export class AccountSettingsService {
       data: {
         name: user.profile?.displayName ?? user.name ?? user.email,
         email: user.email,
+        userId: user.id,
         topic: DELETION_TOPIC,
         message: [
           `Account deletion requested by user ${user.id} (@${user.profile?.username ?? "no-profile"}).`,

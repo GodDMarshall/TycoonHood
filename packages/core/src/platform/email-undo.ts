@@ -11,6 +11,8 @@
  *    one;
  *  · every session is signed out, and every link the account has dies:
  *    confirmation, email change, reset, and any other undo link;
+ *  · a deletion request filed since the change is closed: whoever made the
+ *    change filed it. One the owner filed before stays open;
  *  · a new reset link is made for the restored address. The web app sends
  *    the browser that used the undo link straight to it (it is never
  *    emailed), and tells both addresses what happened.
@@ -32,6 +34,7 @@ import type { PrismaClient } from "@tycoonhood/db";
 import { hashPassword } from "../auth/password";
 import { withDeadlockRetry } from "../db/retry";
 import { RESET_TTL_MS } from "../auth/password-reset";
+import { DELETION_TOPIC } from "./account-settings";
 import { AuditService } from "./audit";
 import { lockEmailOf } from "./email-hold";
 import { emailChangeTokenId, resetTokenId } from "./email-verification";
@@ -98,6 +101,18 @@ export class EmailUndoService {
           where: { identifier: { in: [hold.address, hold.changedTo, resetTokenId(userId), emailChangeTokenId(userId)] } },
         });
         await tx.emailHold.updateMany({ where: { userId, undoToken: { not: null } }, data: { undoToken: null } });
+        // The hold was written by the change itself, so its createdAt is when the change took effect.
+        const filedSince = await tx.contactMessage.findMany({
+          where: { userId, topic: DELETION_TOPIC, handled: false, createdAt: { gte: hold.createdAt } },
+          select: { id: true },
+        });
+        for (const { id } of filedSince) {
+          await tx.contactMessage.update({ where: { id }, data: { handled: true } });
+          await this.audit.log(
+            { actorId: userId, action: "account.delete.request.close", targetType: "ContactMessage", targetId: id, meta: { reason: "email-undo" } },
+            tx
+          );
+        }
 
         const resetToken = randomBytes(32).toString("base64url");
         const resetExpires = new Date(Date.now() + RESET_TTL_MS);
