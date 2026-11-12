@@ -8,7 +8,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { prisma } from "@tycoonhood/db";
 import type { UserRole } from "@tycoonhood/db";
-import { CourseAuthoringService, AuthoringError, type AuthoringActor } from "../src/lms/authoring";
+import { CourseAuthoringService, AuthoringError, editableCoursesWhere, type AuthoringActor } from "../src/lms/authoring";
 import { can, ForbiddenError, ROLES } from "../src/auth/permissions";
 import { createTestUser, uid } from "./helpers";
 
@@ -36,6 +36,86 @@ async function profile(admin: AuthoringActor, name = "Test Teacher") {
 }
 
 const auditRows = (targetId: string, action: string) => prisma.auditLog.findMany({ where: { targetId, action }, orderBy: { createdAt: "asc" } });
+
+/** An instructor whose account an administrator linked to a profile of their own. */
+async function linkedInstructor(admin: AuthoringActor, name = "Linked Teacher") {
+  const actor = await staff("INSTRUCTOR");
+  const i = await profile(admin, name);
+  await authoring.linkInstructorUser(admin, i.id, actor.id);
+  return { actor, profile: i };
+}
+
+const fields = (slug = `o-${uid().slice(0, 8)}`) => ({
+  title: "Owned Programme",
+  slug,
+  pillar: "BUILDER" as const,
+  description: "A throwaway programme for the ownership tests.",
+});
+
+/**
+ * A programme with one of everything an author can touch, built by `author`:
+ * two modules, a reading and a knowledge check with a question, a programme
+ * resource and a lesson resource.
+ */
+async function programme(author: AuthoringActor, instructorId?: string) {
+  const course = await authoring.createCourse(author, { ...fields(), ...(instructorId ? { instructorId } : {}) });
+  courses.push(course.id);
+  const m1 = await authoring.addModule(author, course.id, { title: "One" });
+  const m2 = await authoring.addModule(author, course.id, { title: "Two" });
+  const reading = await authoring.addLesson(author, m1.id, { title: "Read", type: "READING", contentMd: "Hello" });
+  const check = await authoring.addLesson(author, m1.id, { title: "Check", type: "QUIZ" });
+  await authoring.saveQuiz(author, check.id, { passScore: 50, questions: [{ prompt: "Two plus two?", options: ["3", "4"], correctIndex: 1 }] });
+  const courseResource = await authoring.addResource(author, { courseId: course.id }, { title: "Workbook", url: "https://example.com/workbook" });
+  const lessonResource = await authoring.addResource(author, { lessonId: reading.id }, { title: "Notes", url: "/notes.pdf" });
+  return { course, m1, m2, reading, check, courseResource, lessonResource };
+}
+type Programme = Awaited<ReturnType<typeof programme>>;
+
+/** Everything about a programme an author can change, to show that an attempt changed nothing. */
+const snapshot = (courseId: string) =>
+  prisma.course.findUniqueOrThrow({
+    where: { id: courseId },
+    include: {
+      resources: { orderBy: { id: "asc" } },
+      modules: {
+        orderBy: { id: "asc" },
+        include: {
+          lessons: {
+            orderBy: { id: "asc" },
+            include: { resources: { orderBy: { id: "asc" } }, quiz: { include: { questions: { orderBy: { id: "asc" } } } } },
+          },
+        },
+      },
+    },
+  });
+
+/** Every authoring call that changes a programme, each aimed at `p`, in an order that can all succeed. */
+function everyEdit(actor: AuthoringActor, p: Programme) {
+  return {
+    updateCourse: () => authoring.updateCourse(actor, p.course.id, { ...fields(p.course.slug), title: "Rewritten" }),
+    addModule: () => authoring.addModule(actor, p.course.id, { title: "Added" }),
+    updateModule: () => authoring.updateModule(actor, p.m1.id, { title: "Renamed" }),
+    moveModule: () => authoring.moveModule(actor, p.m2.id, "up"),
+    addLesson: () => authoring.addLesson(actor, p.m1.id, { title: "Added", type: "READING" }),
+    updateLesson: () => authoring.updateLesson(actor, p.reading.id, { title: "Rewritten", type: "READING", contentMd: "Changed" }),
+    moveLesson: () => authoring.moveLesson(actor, p.check.id, "up"),
+    saveQuiz: () => authoring.saveQuiz(actor, p.check.id, { questions: [{ prompt: "Changed?", options: ["yes", "no"], correctIndex: 0 }] }),
+    addCourseResource: () => authoring.addResource(actor, { courseId: p.course.id }, { title: "Added", url: "https://example.com/added" }),
+    addLessonResource: () => authoring.addResource(actor, { lessonId: p.reading.id }, { title: "Added", url: "https://example.com/added" }),
+    deleteCourseResource: () => authoring.deleteResource(actor, p.courseResource.id),
+    deleteLessonResource: () => authoring.deleteResource(actor, p.lessonResource.id),
+    deleteLesson: () => authoring.deleteLesson(actor, p.reading.id),
+    deleteModule: () => authoring.deleteModule(actor, p.m2.id),
+  };
+}
+
+async function allSucceed(edits: Record<string, () => Promise<unknown>>) {
+  for (const [name, edit] of Object.entries(edits)) {
+    await edit().catch((e: Error) => {
+      throw new Error(`${name} was refused: ${e.message}`);
+    });
+  }
+}
 
 describe("the courses.manage permission", () => {
   it("is held by administrators only; instructors keep courses.author", () => {
@@ -162,5 +242,142 @@ describe("linking a profile to a member account", () => {
     expect(await authoring.findMemberForLink(admin, username.slice(0, -1))).toBeNull();
     expect(await authoring.findMemberForLink(admin, member.email.slice(1))).toBeNull();
     expect(await authoring.findMemberForLink(admin, "   ")).toBeNull();
+  });
+});
+
+describe("an instructor edits only the programmes they teach", () => {
+  it("instructor A cannot change instructor B's programme, module, lesson, knowledge check or resource through any authoring call", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin, "Teacher A");
+    const b = await linkedInstructor(admin, "Teacher B");
+    const theirs = await programme(b.actor);
+    expect(theirs.course.instructorId).toBe(b.profile.id);
+    const before = await snapshot(theirs.course.id);
+
+    const unlinked = await staff("INSTRUCTOR");
+    for (const actor of [a.actor, unlinked]) {
+      for (const [name, edit] of Object.entries(everyEdit(actor, theirs))) {
+        await expect(edit(), name).rejects.toBeInstanceOf(ForbiddenError);
+      }
+    }
+    expect(await prisma.auditLog.count({ where: { actorId: { in: [a.actor.id, unlinked.id] } } })).toBe(0);
+
+    // Nor can A move a lesson of their own into B's programme.
+    const mine = await programme(a.actor);
+    await expect(authoring.updateLesson(a.actor, mine.reading.id, { title: "Read", type: "READING", moduleId: theirs.m1.id })).rejects.toThrow(
+      /same program/
+    );
+    expect(await snapshot(theirs.course.id)).toEqual(before);
+  });
+
+  it("an instructor changes everything in their own programme, but still cannot publish it", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin);
+    const mine = await programme(a.actor);
+    expect(mine.course.instructorId).toBe(a.profile.id);
+    await allSucceed(everyEdit(a.actor, mine));
+    const after = await snapshot(mine.course.id);
+    expect(after.title).toBe("Rewritten");
+    expect(after.modules.map((m) => m.title).sort()).toEqual(["Added", "Renamed"]);
+    expect(after.modules.flatMap((m) => m.lessons.map((l) => l.title)).sort()).toEqual(["Added", "Check"]);
+    expect(after.modules.flatMap((m) => m.lessons.flatMap((l) => l.quiz?.questions.map((q) => q.prompt) ?? []))).toEqual(["Changed?"]);
+    expect(after.resources.map((r) => r.title)).toEqual(["Added"]);
+    await expect(authoring.publish(a.actor, mine.course.id)).rejects.toBeInstanceOf(ForbiddenError);
+  });
+
+  it("an instructor whose account is not linked to a profile cannot create a programme", async () => {
+    const loose = await staff("INSTRUCTOR");
+    const slug = `u-${uid().slice(0, 8)}`;
+    const refused = authoring.createCourse(loose, { ...fields(slug), title: "Unlinked" });
+    await expect(refused).rejects.toBeInstanceOf(ForbiddenError);
+    await expect(refused).rejects.toThrow(/not linked to an instructor profile/);
+    expect(await prisma.course.findUnique({ where: { slug } })).toBeNull();
+  });
+
+  it("the link is the scope and the role is the capability: unlinking, or a role without courses.author, ends editing", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin);
+    const mine = await programme(a.actor);
+    await authoring.linkInstructorUser(admin, a.profile.id, null);
+    await expect(authoring.addModule(a.actor, mine.course.id, { title: "After unlinking" })).rejects.toBeInstanceOf(ForbiddenError);
+    await expect(authoring.createCourse(a.actor, fields())).rejects.toBeInstanceOf(ForbiddenError);
+
+    // A member linked to the profile, but not given an author role, edits nothing.
+    const member = await staff("MEMBER");
+    await authoring.linkInstructorUser(admin, a.profile.id, member.id);
+    for (const [name, edit] of Object.entries(everyEdit(member, mine))) await expect(edit(), name).rejects.toBeInstanceOf(ForbiddenError);
+  });
+
+  it("only courses.manage chooses a programme's instructor", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin, "Teacher A");
+    const b = await linkedInstructor(admin, "Teacher B");
+
+    // A programme an instructor creates is always theirs; naming someone else is refused.
+    await expect(authoring.createCourse(a.actor, { ...fields(), instructorId: b.profile.id })).rejects.toThrow(/Only an administrator/);
+    const own = await authoring.createCourse(a.actor, { ...fields(), instructorId: a.profile.id });
+    courses.push(own.id);
+    expect(own.instructorId).toBe(a.profile.id);
+
+    // Reassigning it, or clearing its instructor, is refused; leaving the field out keeps the instructor.
+    await expect(authoring.updateCourse(a.actor, own.id, { ...fields(own.slug), instructorId: b.profile.id })).rejects.toThrow(/Only an administrator/);
+    await expect(authoring.updateCourse(a.actor, own.id, { ...fields(own.slug), instructorId: "" })).rejects.toThrow(/Only an administrator/);
+    await authoring.updateCourse(a.actor, own.id, { ...fields(own.slug), instructorId: a.profile.id });
+    await authoring.updateCourse(a.actor, own.id, fields(own.slug));
+    const instructorOf = async (id: string) => (await prisma.course.findUniqueOrThrow({ where: { id } })).instructorId;
+    expect(await instructorOf(own.id)).toBe(a.profile.id);
+
+    // An administrator reassigns it: B can edit it now, and A cannot.
+    await authoring.updateCourse(admin, own.id, { ...fields(own.slug), instructorId: b.profile.id });
+    expect(await instructorOf(own.id)).toBe(b.profile.id);
+    await expect(authoring.addModule(a.actor, own.id, { title: "Too late" })).rejects.toBeInstanceOf(ForbiddenError);
+    await authoring.addModule(b.actor, own.id, { title: "Mine now" });
+    const [reassigned] = await prisma.auditLog.findMany({ where: { targetId: own.id, action: "course.update", actorId: admin.id } });
+    expect(reassigned.meta).toMatchObject({ instructorId: { from: a.profile.id, to: b.profile.id } });
+  });
+
+  it("an administrator edits every programme and assigns it to any instructor, or none", async () => {
+    const admin = await staff();
+    const b = await linkedInstructor(admin);
+    const theirs = await programme(b.actor);
+    await allSucceed(everyEdit(admin, theirs));
+    // An edit that leaves the instructor field out leaves the instructor alone.
+    expect(await snapshot(theirs.course.id)).toMatchObject({ title: "Rewritten", instructorId: b.profile.id });
+
+    const forB = await authoring.createCourse(admin, { ...fields(), instructorId: b.profile.id });
+    const nobody = await authoring.createCourse(admin, fields());
+    courses.push(forB.id, nobody.id);
+    expect([forB.instructorId, nobody.instructorId]).toEqual([b.profile.id, null]);
+    await authoring.updateCourse(admin, forB.id, { ...fields(forB.slug), instructorId: "" });
+    expect((await prisma.course.findUniqueOrThrow({ where: { id: forB.id } })).instructorId).toBeNull();
+    await expect(authoring.createCourse(admin, { ...fields(), instructorId: "no-such-profile" })).rejects.toThrow(/Choose an instructor/);
+  });
+
+  it("canEditCourse and editableCoursesWhere give the same answer for every role", async () => {
+    const admin = await staff();
+    const a = await linkedInstructor(admin);
+    const b = await linkedInstructor(admin);
+    const mine = await programme(a.actor);
+    const theirs = await programme(b.actor);
+    const both = [mine.course.id, theirs.course.id];
+    const listed = async (actor: AuthoringActor) =>
+      (await prisma.course.findMany({ where: { AND: [editableCoursesWhere(actor), { id: { in: both } }] }, select: { id: true } })).map((c) => c.id).sort();
+
+    const moderator = await staff("MODERATOR");
+    const member = await staff("MEMBER");
+    const cases: [AuthoringActor, string[]][] = [
+      [a.actor, [mine.course.id]],
+      [b.actor, [theirs.course.id]],
+      [admin, [...both].sort()],
+      [moderator, []],
+      [member, []],
+      [await staff("INSTRUCTOR"), []],
+    ];
+    for (const [actor, expected] of cases) {
+      expect(await listed(actor), actor.role).toEqual(expected);
+      for (const id of both) expect(await authoring.canEditCourse(actor, id), `${actor.role} ${id}`).toBe(expected.includes(id));
+    }
+    expect(await authoring.canEditCourse(null, mine.course.id)).toBe(false);
+    expect(await authoring.canEditCourse(admin, "no-such-course")).toBe(false);
   });
 });

@@ -191,6 +191,31 @@ function friendly(e: unknown): never {
   throw e;
 }
 
+// ─────────────────────────────────────────────────────────── who edits what (DR-34)
+
+type Editor = { id: string; role: UserRole };
+
+const NOT_YOURS = "You can edit only the programs you teach.";
+const NOT_LINKED = "Your account is not linked to an instructor profile yet, so you cannot create a program. Ask an administrator to link it.";
+const INSTRUCTOR_IS_MANAGED = "Only an administrator can choose a program's instructor.";
+
+/**
+ * The rule, for one programme: courses.manage edits every programme;
+ * courses.author edits a programme whose instructor profile is linked to the
+ * author's own account. The role gives the capability, the link the scope.
+ */
+function mayEdit(actor: Editor, course: { instructor: { userId: string | null } | null }): boolean {
+  if (can(actor, "courses.manage")) return true;
+  return can(actor, "courses.author") && course.instructor?.userId != null && course.instructor.userId === actor.id;
+}
+
+/** The same rule as a filter: the programmes this actor may edit, and so may list in the course admin. */
+export function editableCoursesWhere(actor: Editor | null | undefined): Prisma.CourseWhereInput {
+  if (actor && can(actor, "courses.manage")) return {};
+  if (actor && can(actor, "courses.author")) return { instructor: { is: { userId: actor.id } } };
+  return { id: { in: [] } };
+}
+
 // ─────────────────────────────────────────────────────────── service
 
 export class CourseAuthoringService {
@@ -216,6 +241,37 @@ export class CourseAuthoringService {
     return l;
   }
 
+  /** A resource and the programme it belongs to, directly or through its lesson. */
+  private async resourceWithCourse(resourceId: string) {
+    const r = await this.db.resource.findUnique({
+      where: { id: resourceId },
+      select: { id: true, title: true, courseId: true, lesson: { select: { module: { select: { courseId: true } } } } },
+    });
+    const courseId = r?.courseId ?? r?.lesson?.module.courseId;
+    if (!r || !courseId) throw new AuthoringError("Resource not found.");
+    return { ...r, courseId };
+  }
+
+  /** Whether this actor may edit this programme (the rule of editableCoursesWhere). False for one that does not exist. */
+  async canEditCourse(actor: Editor | null | undefined, courseId: string): Promise<boolean> {
+    if (!actor) return false;
+    const course = await this.db.course.findUnique({ where: { id: courseId }, select: { instructor: { select: { userId: true } } } });
+    return !!course && mayEdit(actor, course);
+  }
+
+  /**
+   * Every write to a programme, or to its modules, lessons, knowledge checks
+   * and resources, calls this first with the programme its target belongs to,
+   * resolved from the target's own id. Pages check too, but this is the wall.
+   */
+  async assertCanEditCourse(actor: AuthoringActor, courseId: string) {
+    if (!can(actor, "courses.author") && !can(actor, "courses.manage")) throw new ForbiddenError();
+    const course = await this.db.course.findUnique({ where: { id: courseId }, select: { id: true, instructorId: true, instructor: { select: { userId: true } } } });
+    if (!course) throw new AuthoringError("Program not found.");
+    if (!mayEdit(actor, course)) throw new ForbiddenError(NOT_YOURS);
+    return course;
+  }
+
   /**
    * After an edit that can finish members' programmes (a final marked, a
    * lesson or module removed, publishing), complete and certify everyone who
@@ -238,25 +294,44 @@ export class CourseAuthoringService {
 
   // ── courses
 
-  /** New programmes always start as DRAFT. */
+  /**
+   * New programmes always start as DRAFT. With courses.manage, any instructor
+   * or none. Otherwise the programme is the author's own: its instructor is
+   * the profile linked to their account (refused when there is none), and
+   * naming any other is refused.
+   */
   async createCourse(actor: AuthoringActor, input: CourseInput) {
-    assertCan(actor, "courses.author");
+    const manage = can(actor, "courses.manage");
+    if (!manage) assertCan(actor, "courses.author");
+    const own = manage ? null : await this.db.instructor.findUnique({ where: { userId: actor.id }, select: { id: true } });
+    if (!manage && !own) throw new ForbiddenError(NOT_LINKED);
     const d = courseInputSchema.parse(input);
-    await this.assertInstructor(d.instructorId);
+    if (own && input.instructorId !== undefined && d.instructorId !== own.id) throw new ForbiddenError(INSTRUCTOR_IS_MANAGED);
+    const instructorId = own ? own.id : d.instructorId;
+    await this.assertInstructor(instructorId);
     const max = await this.db.course.aggregate({ _max: { sortOrder: true } });
     const course = await this.db.course
-      .create({ data: { ...d, status: "DRAFT", sortOrder: (max._max.sortOrder ?? -1) + 1 } })
+      .create({ data: { ...d, instructorId, status: "DRAFT", sortOrder: (max._max.sortOrder ?? -1) + 1 } })
       .catch(friendly);
     await this.log(actor, "course.create", "Course", course.id, { slug: course.slug });
     return course;
   }
 
+  /**
+   * Leaving `instructorId` out keeps the programme's instructor. Giving one
+   * that differs (blank means none) changes it, which needs courses.manage.
+   */
   async updateCourse(actor: AuthoringActor, courseId: string, input: CourseInput) {
-    assertCan(actor, "courses.author");
-    const d = courseInputSchema.parse(input);
-    await this.assertInstructor(d.instructorId);
-    const course = await this.db.course.update({ where: { id: courseId }, data: d }).catch(friendly);
-    await this.log(actor, "course.update", "Course", course.id, { slug: course.slug });
+    const current = await this.assertCanEditCourse(actor, courseId);
+    const { instructorId, ...fields } = courseInputSchema.parse(input);
+    const reassign = input.instructorId !== undefined && instructorId !== current.instructorId;
+    if (reassign && !can(actor, "courses.manage")) throw new ForbiddenError(INSTRUCTOR_IS_MANAGED);
+    if (reassign) await this.assertInstructor(instructorId);
+    const course = await this.db.course.update({ where: { id: courseId }, data: reassign ? { ...fields, instructorId } : fields }).catch(friendly);
+    await this.log(actor, "course.update", "Course", course.id, {
+      slug: course.slug,
+      ...(reassign ? { instructorId: { from: current.instructorId, to: instructorId } } : {}),
+    });
     return course;
   }
 
@@ -305,7 +380,7 @@ export class CourseAuthoringService {
   // ── modules
 
   async addModule(actor: AuthoringActor, courseId: string, input: ModuleInput) {
-    assertCan(actor, "courses.author");
+    await this.assertCanEditCourse(actor, courseId);
     const d = moduleInputSchema.parse(input);
     const max = await this.db.courseModule.aggregate({ where: { courseId }, _max: { sortOrder: true } });
     const m = await this.db.courseModule.create({
@@ -316,7 +391,7 @@ export class CourseAuthoringService {
   }
 
   async updateModule(actor: AuthoringActor, moduleId: string, input: ModuleInput) {
-    assertCan(actor, "courses.author");
+    await this.assertCanEditCourse(actor, (await this.courseOfModule(moduleId)).courseId);
     const d = moduleInputSchema.parse(input);
     const m = await this.db.courseModule.update({
       where: { id: moduleId },
@@ -327,8 +402,8 @@ export class CourseAuthoringService {
   }
 
   async moveModule(actor: AuthoringActor, moduleId: string, dir: "up" | "down") {
-    assertCan(actor, "courses.author");
     const { courseId } = await this.courseOfModule(moduleId);
+    await this.assertCanEditCourse(actor, courseId);
     const all = await this.db.courseModule.findMany({ where: { courseId }, orderBy: [{ sortOrder: "asc" }, { id: "asc" }], select: { id: true } });
     const order = reorder(all, moduleId, dir);
     await this.db.$transaction(order.map((o) => this.db.courseModule.update({ where: { id: o.id }, data: { sortOrder: o.sortOrder } })));
@@ -336,8 +411,8 @@ export class CourseAuthoringService {
   }
 
   async deleteModule(actor: AuthoringActor, moduleId: string) {
-    assertCan(actor, "courses.author");
     const { courseId } = await this.courseOfModule(moduleId);
+    await this.assertCanEditCourse(actor, courseId);
     const withProgress = await this.db.lessonProgress.count({ where: { lesson: { moduleId } } });
     if (withProgress > 0) {
       throw new LessonHasProgressError("Members have progress in this module, so it cannot be deleted. Archive the program instead.");
@@ -354,9 +429,9 @@ export class CourseAuthoringService {
   }
 
   async addLesson(actor: AuthoringActor, moduleId: string, input: LessonInput) {
-    assertCan(actor, "courses.author");
-    const d = lessonInputSchema.parse(input);
     const { courseId } = await this.courseOfModule(moduleId);
+    await this.assertCanEditCourse(actor, courseId);
+    const d = lessonInputSchema.parse(input);
     const max = await this.db.lesson.aggregate({ where: { moduleId }, _max: { sortOrder: true } });
     const lesson = await this.db.lesson.create({
       data: {
@@ -378,10 +453,10 @@ export class CourseAuthoringService {
   }
 
   async updateLesson(actor: AuthoringActor, lessonId: string, input: LessonInput) {
-    assertCan(actor, "courses.author");
-    const d = lessonInputSchema.parse(input);
     const current = await this.lessonWithCourse(lessonId);
     const courseId = current.module.courseId;
+    await this.assertCanEditCourse(actor, courseId);
+    const d = lessonInputSchema.parse(input);
     let moduleId = current.moduleId;
     let sortOrder = current.sortOrder;
     if (d.moduleId && d.moduleId !== current.moduleId) {
@@ -414,8 +489,8 @@ export class CourseAuthoringService {
   }
 
   async moveLesson(actor: AuthoringActor, lessonId: string, dir: "up" | "down") {
-    assertCan(actor, "courses.author");
     const l = await this.lessonWithCourse(lessonId);
+    await this.assertCanEditCourse(actor, l.module.courseId);
     const all = await this.db.lesson.findMany({ where: { moduleId: l.moduleId }, orderBy: [{ sortOrder: "asc" }, { id: "asc" }], select: { id: true } });
     const order = reorder(all, lessonId, dir);
     await this.db.$transaction(order.map((o) => this.db.lesson.update({ where: { id: o.id }, data: { sortOrder: o.sortOrder } })));
@@ -424,8 +499,8 @@ export class CourseAuthoringService {
 
   /** Blocked when any member has progress on the lesson: archive the program instead. */
   async deleteLesson(actor: AuthoringActor, lessonId: string) {
-    assertCan(actor, "courses.author");
     const l = await this.lessonWithCourse(lessonId);
+    await this.assertCanEditCourse(actor, l.module.courseId);
     const progress = await this.db.lessonProgress.count({ where: { lessonId } });
     if (progress > 0) {
       throw new LessonHasProgressError("Members have progress on this lesson, so it cannot be deleted. Archive the program instead.");
@@ -440,9 +515,9 @@ export class CourseAuthoringService {
 
   /** Creates or replaces a lesson's knowledge check. Past attempts are kept. */
   async saveQuiz(actor: AuthoringActor, lessonId: string, input: QuizInput) {
-    assertCan(actor, "courses.author");
-    const d = quizInputSchema.parse(input);
     const l = await this.lessonWithCourse(lessonId);
+    await this.assertCanEditCourse(actor, l.module.courseId);
+    const d = quizInputSchema.parse(input);
     const quiz = await this.db.$transaction(async (tx) => {
       const q = await tx.quiz.upsert({ where: { lessonId }, update: { passScore: d.passScore }, create: { lessonId, passScore: d.passScore } });
       await tx.quizQuestion.deleteMany({ where: { quizId: q.id } });
@@ -465,18 +540,20 @@ export class CourseAuthoringService {
   // ── resources
 
   async addResource(actor: AuthoringActor, target: { courseId?: string; lessonId?: string }, input: ResourceInput) {
-    assertCan(actor, "courses.author");
-    const d = resourceInputSchema.parse(input);
     if (!!target.courseId === !!target.lessonId) throw new AuthoringError("Attach the resource to a program or to a lesson.");
+    const courseId = target.courseId ?? (await this.lessonWithCourse(target.lessonId!)).module.courseId;
+    await this.assertCanEditCourse(actor, courseId);
+    const d = resourceInputSchema.parse(input);
     const r = await this.db.resource.create({ data: { ...d, courseId: target.courseId ?? null, lessonId: target.lessonId ?? null } });
     await this.log(actor, "resource.create", "Resource", r.id, { ...target, title: r.title });
     return r;
   }
 
   async deleteResource(actor: AuthoringActor, resourceId: string) {
-    assertCan(actor, "courses.author");
+    const found = await this.resourceWithCourse(resourceId);
+    await this.assertCanEditCourse(actor, found.courseId);
     const r = await this.db.resource.delete({ where: { id: resourceId } });
-    await this.log(actor, "resource.delete", "Resource", r.id, { title: r.title });
+    await this.log(actor, "resource.delete", "Resource", r.id, { courseId: found.courseId, title: r.title });
   }
 
   // ── instructors

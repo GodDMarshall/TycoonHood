@@ -146,7 +146,13 @@ describe("Authoring — create course → modules → lessons → quiz", () => {
   it("only course staff can author; an instructor cannot publish", async () => {
     const instructor = await staff("INSTRUCTOR");
     const moderator = await staff("MODERATOR");
+    // An instructor authors as the profile an administrator linked to their account (DR-34).
+    const admin = await staff();
+    const profile = await authoring.createInstructor(admin, { slug: `i-${uid().slice(0, 8)}`, name: "Test Teacher", bio: "Teaches tests for a living." });
+    instructors.push(profile.id);
+    await authoring.linkInstructorUser(admin, profile.id, instructor.id);
     const b = await buildCourse(instructor, { publish: false });
+    expect(b.course.instructorId).toBe(profile.id);
     await expect(authoring.publish(instructor, b.course.id)).rejects.toBeInstanceOf(ForbiddenError);
     await expect(
       authoring.createCourse(moderator, { title: "Nope", slug: `n-${uid().slice(0, 6)}`, pillar: "MIND", description: "Should not be created." })

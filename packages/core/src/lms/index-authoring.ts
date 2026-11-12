@@ -20,6 +20,7 @@ export {
   RESOURCE_KINDS,
   REVIEW_MODERATORS,
   canModerateReviews,
+  editableCoursesWhere,
 } from "./authoring";
 export type { AuthoringActor, CourseInput, ModuleInput, LessonInput, QuizInput, ResourceInput, InstructorInput } from "./authoring";
 export { LearnerService, learner, ReviewNotAllowedError, reviewSchema, rankBySignals } from "./learner";
