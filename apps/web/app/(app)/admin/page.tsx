@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requirePermission } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
-import { can, DELETION_TOPIC, LedgerService } from "@tycoonhood/core";
+import { can, DELETION_TOPIC, discussions, LedgerService } from "@tycoonhood/core";
 import { Card, CardContent, Notice, SectionRule, Stat, ThcAmount } from "@tycoonhood/ui";
 import { mailMode } from "../../../lib/mail";
 
@@ -62,7 +62,12 @@ export default async function AdminOverview() {
         ])
       : null,
     show.moderation
-      ? Promise.all([prisma.contentReport.count({ where: { status: "OPEN" } }), prisma.messageReport.count({ where: { resolvedAt: null } }).catch(() => 0)])
+      ? Promise.all([
+          // What /admin/moderation lists: open reports on posts and comments. Reports on events, opportunities and
+          // other targets wait for the queues their parts build (docs/ECOSYSTEM_PLAN.md, P0s).
+          discussions.openReportCount(),
+          prisma.messageReport.count({ where: { resolvedAt: null } }).catch(() => 0),
+        ])
       : null,
     show.content
       ? Promise.all([
