@@ -72,7 +72,7 @@ export class ReferralService {
    * Silently tolerant of a missing or wrong code: a bad link must never
    * block a signup.
    */
-  async attach(referredUserId: string, code: string, signupIp?: string | null) {
+  async attach(referredUserId: string, code: string) {
     const clean = code.trim().toUpperCase();
     if (!clean) return null;
 
@@ -88,7 +88,6 @@ export class ReferralService {
         referrerId: referrer.userId,
         referredId: referredUserId,
         code: clean,
-        signupIp: signupIp ?? null,
       },
     });
   }

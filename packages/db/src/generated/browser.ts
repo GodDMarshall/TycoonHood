@@ -396,3 +396,369 @@ export type ContactMessage = Prisma.ContactMessageModel
  * Genuine member stories only — published by an admin with the member's consent.
  */
 export type Testimonial = Prisma.TestimonialModel
+/**
+ * Model Academy
+ * §3 A learning academy (Warrior, Business, Wealth, Wellness).
+ */
+export type Academy = Prisma.AcademyModel
+/**
+ * Model AcademyMembership
+ * §3/§21 Members join any number of academies. Leaving is soft.
+ */
+export type AcademyMembership = Prisma.AcademyMembershipModel
+/**
+ * Model NotificationTopic
+ * §13 Staff-editable label and default channels for one topic of the code catalogue
+ * (packages/core/src/platform/notification-topics.ts). The catalogue decides which
+ * topics exist and which are locked; a missing row falls back to catalogue defaults.
+ */
+export type NotificationTopic = Prisma.NotificationTopicModel
+/**
+ * Model NotificationPreference
+ * §13 A member's override for one topic on one channel. No row = the topic default.
+ */
+export type NotificationPreference = Prisma.NotificationPreferenceModel
+/**
+ * Model NotificationSettings
+ * §13 Digest, quiet hours, pause and one-click unsubscribe. Created on first change or first email.
+ */
+export type NotificationSettings = Prisma.NotificationSettingsModel
+/**
+ * Model PushSubscription
+ * §13 A web push endpoint. Built but inert until VAPID keys exist (OQ-K).
+ */
+export type PushSubscription = Prisma.PushSubscriptionModel
+/**
+ * Model Announcement
+ * §13/§18 A stored, scheduled, audience-targeted, retractable announcement.
+ * Replaces fire-and-forget cms.announce.
+ */
+export type Announcement = Prisma.AnnouncementModel
+/**
+ * Model ScheduledNotification
+ * §13 The one outbox for timed and out-of-band delivery (LEAD #5). A row is either a
+ * scheduled notice (channel null: at runAt the gateway delivers it on every channel the
+ * member's preferences then allow) or one EMAIL/PUSH copy of a notice (channel set).
+ * Used by event and mentoring reminders, challenge deadlines, goal nudges, digests and
+ * the email/push copies of immediate notices.
+ */
+export type ScheduledNotification = Prisma.ScheduledNotificationModel
+/**
+ * Model ActivityEvent
+ * §4/§10/§11 One item of the member-facing feed. Privacy is applied on read, so
+ * turning a facet off hides past items too.
+ */
+export type ActivityEvent = Prisma.ActivityEventModel
+/**
+ * Model MemberActivityDay
+ * §19 One row per member per platform day (IST) on which they used the signed-in app.
+ * The source for DAU, WAU, MAU and retention. No IP, user agent, URL or device.
+ */
+export type MemberActivityDay = Prisma.MemberActivityDayModel
+/**
+ * Model AnalyticsDaily
+ * §19 Immutable daily rollup. Counts use countableMemberWhere (no staff, suspended,
+ * excluded or demo accounts); money counts LIVE payments only.
+ */
+export type AnalyticsDaily = Prisma.AnalyticsDailyModel
+/**
+ * Model EngagementCounterDay
+ * §19 Anonymous daily counters that give funnels a denominator. No user id.
+ */
+export type EngagementCounterDay = Prisma.EngagementCounterDayModel
+/**
+ * Model Skill
+ * §8/§7 A skill. academyId null = cross-academy.
+ */
+export type Skill = Prisma.SkillModel
+/**
+ * Model ModuleSkill
+ * §8 Curriculum modules teach skills. A course's skills are its modules' skills.
+ * seed-academy recreates these rows whenever it rebuilds modules.
+ */
+export type ModuleSkill = Prisma.ModuleSkillModel
+/**
+ * Model ChallengeSkill
+ * §8/§5
+ */
+export type ChallengeSkill = Prisma.ChallengeSkillModel
+/**
+ * Model MemberSkill
+ * §8/§7 A member's standing in one skill. DECLARED comes from the member; higher
+ * levels are recomputed from evidence; VERIFIED needs someone other than the member.
+ */
+export type MemberSkill = Prisma.MemberSkillModel
+/**
+ * Model Project
+ * §8/§4/§12 A member's project or portfolio piece (also a contributor's showcased work).
+ * The showcase is a view over published, VISIBLE, PUBLIC/MEMBERS projects.
+ */
+export type Project = Prisma.ProjectModel
+/**
+ * Model ProjectCollaborator
+ * §12/§4 A member the project owner invited. Shown only after they accept, and only where
+ * their own `projects` facet allows it. Declining or removal hides them again.
+ */
+export type ProjectCollaborator = Prisma.ProjectCollaboratorModel
+/**
+ * Model ProjectSkill
+ * §8 Skills a project claims; they count only once the project is VERIFIED.
+ */
+export type ProjectSkill = Prisma.ProjectSkillModel
+/**
+ * Model RankAward
+ * §8 Why a member holds a rank. User.rankId stays the cache; ranks never demote.
+ */
+export type RankAward = Prisma.RankAwardModel
+/**
+ * Model LearningPath
+ * §3 An ordered route through an academy's material. Duration is computed from the steps.
+ */
+export type LearningPath = Prisma.LearningPathModel
+/**
+ * Model LearningPathStep
+ * §3 One step of a path pointing at real content. A target that is deleted becomes
+ * null (SetNull) and the admin flags the step.
+ */
+export type LearningPathStep = Prisma.LearningPathStepModel
+/**
+ * Model LearningPathFollow
+ * §3 A member following a path. Progress is derived, never stored.
+ */
+export type LearningPathFollow = Prisma.LearningPathFollowModel
+/**
+ * Model MentorProfile
+ * §2 Mentor-specific settings and standing, 1:1 with the expert profile.
+ */
+export type MentorProfile = Prisma.MentorProfileModel
+/**
+ * Model MentorCategory
+ * §2 The directive's ten mentor categories, as data (seed-taxonomy.ts).
+ */
+export type MentorCategory = Prisma.MentorCategoryModel
+/**
+ * Model MentorCategoryLink
+ * §2 One primary category per mentor (partial unique index).
+ */
+export type MentorCategoryLink = Prisma.MentorCategoryLinkModel
+/**
+ * Model ExpertCredential
+ * §2 A qualification. Public only when VERIFIED ("qualifications where verified").
+ */
+export type ExpertCredential = Prisma.ExpertCredentialModel
+/**
+ * Model ContributorApplication
+ * §2/§12 One application flow for mentors, instructors and creators.
+ */
+export type ContributorApplication = Prisma.ContributorApplicationModel
+/**
+ * Model ContributorAccount
+ * §2/§12 The private payee record of an approved contributor, kept apart from the public
+ * profile so payout data never leaks through profile queries.
+ */
+export type ContributorAccount = Prisma.ContributorAccountModel
+/**
+ * Model RevenueShareAgreement
+ * §2/§12 The contributor's share for a scope. contributorId null = platform default.
+ * No row is seeded: paid offerings stay unpublishable until staff set terms (LEAD #15).
+ */
+export type RevenueShareAgreement = Prisma.RevenueShareAgreementModel
+/**
+ * Model ContributorEarning
+ * §2/§12 Money a contributor earns from one paid order line, in INR paise. Held, then
+ * approved by staff, like Commission. Lines paid in TEST mode are never payable.
+ */
+export type ContributorEarning = Prisma.ContributorEarningModel
+/**
+ * Model MentorOffering
+ * §2 What a member can book or join: format, length, seats and an honest price.
+ */
+export type MentorOffering = Prisma.MentorOfferingModel
+/**
+ * Model MentorAvailabilityRule
+ * §2 A mentor's recurring weekly availability in their own zone: the only source of
+ * bookable slots, so availability is never invented.
+ */
+export type MentorAvailabilityRule = Prisma.MentorAvailabilityRuleModel
+/**
+ * Model MentorAvailabilityException
+ * §2 Dated changes to the weekly rules: time off, or extra one-off availability (UTC instants).
+ */
+export type MentorAvailabilityException = Prisma.MentorAvailabilityExceptionModel
+/**
+ * Model CourseCohort
+ * §2 A dated, mentor-led run of a course with its own members, sessions and channel.
+ */
+export type CourseCohort = Prisma.CourseCohortModel
+/**
+ * Model ContentSubmission
+ * §12 One review queue: contributor course submissions, edits to published courses by
+ * authors without trustedAuthor, and contributor resources. Events, posts, projects,
+ * opportunities, applications and partners keep their own status and join the admin
+ * review inbox as a read model.
+ */
+export type ContentSubmission = Prisma.ContentSubmissionModel
+/**
+ * Model CalendarFeedToken
+ * §2/§6 A private ICS feed of a member's registrations and a host's events. Only the hash is stored.
+ */
+export type CalendarFeedToken = Prisma.CalendarFeedTokenModel
+/**
+ * Model EventKind
+ * §6 Event kinds as data. Exactly one row has mode ONE_TO_ONE (slug "one-to-one",
+ * inserted by migration); the others are seeded by seed-taxonomy.ts.
+ */
+export type EventKind = Prisma.EventKindModel
+/**
+ * Model LiveEvent
+ * §6/§2 Every scheduled live thing: mentor 1:1s, group mentoring, workshops, masterclasses,
+ * AMAs, live classes, meetups, founder sessions. Named LiveEvent because `events` is the
+ * EventBus. Times are UTC; `timezone` is the host's zone for display.
+ */
+export type LiveEvent = Prisma.LiveEventModel
+/**
+ * Model LiveEventHost
+ * §6 Who runs an event. Publishing needs at least one confirmed host; a guest speaker
+ * without an account is named only after staff confirm them.
+ */
+export type LiveEventHost = Prisma.LiveEventHostModel
+/**
+ * Model EventRegistration
+ * §6/§2 A seat, a waitlist place or a 1:1 booking, and its attendance.
+ */
+export type EventRegistration = Prisma.EventRegistrationModel
+/**
+ * Model EventFeedback
+ * §6/§2 Feedback from a verified attendee only (registration ATTENDED). Also the mentor review. Public only
+ * when the host or check-in marked attendance, or memberConfirmedAt is over 7 days old with no dispute.
+ */
+export type EventFeedback = Prisma.EventFeedbackModel
+/**
+ * Model LiveEventSeries
+ * §6 A recurring programme on the open schedule. It never invents dates: each dated
+ * session is its own LiveEvent, and cadenceNote is the owner's own wording.
+ */
+export type LiveEventSeries = Prisma.LiveEventSeriesModel
+/**
+ * Model EventInterest
+ * §6/§2 "Tell me when": a member asks to hear when a matching real event or mentor slot is published.
+ */
+export type EventInterest = Prisma.EventInterestModel
+/**
+ * Model DailyPlan
+ * §5/§11 The member's activities for one local day, generated once on first view.
+ */
+export type DailyPlan = Prisma.DailyPlanModel
+/**
+ * Model DailyPlanItem
+ * §5 One chosen activity with an honest reason. Done-state is derived from real rows.
+ */
+export type DailyPlanItem = Prisma.DailyPlanItemModel
+/**
+ * Model Goal
+ * §5/§9/§11 A personal goal, private by default; progress is derived from real rows.
+ */
+export type Goal = Prisma.GoalModel
+/**
+ * Model GoalCheckIn
+ * §5 A manual check-in on the member's day.
+ */
+export type GoalCheckIn = Prisma.GoalCheckInModel
+/**
+ * Model EvidenceSubmission
+ * §5 One piece of evidence for a REVIEW mission or a SUBMISSION / GATED_SUBMISSIONS
+ * challenge. Replaces ChallengeParticipation.progress.submissions (moved by migration).
+ */
+export type EvidenceSubmission = Prisma.EvidenceSubmissionModel
+/**
+ * Model Follow
+ * §4 Following a member (mentors are members too). CHECK: no self-follow.
+ */
+export type Follow = Prisma.FollowModel
+/**
+ * Model MemberBlock
+ * §4/§17 A block removes follows both ways, prevents re-following, and hides the
+ * blocked member's activity and notices from the blocker. CHECK: no self-block.
+ */
+export type MemberBlock = Prisma.MemberBlockModel
+/**
+ * Model SavedPost
+ * §4 Saved posts (a project is saved through its discussion post).
+ */
+export type SavedPost = Prisma.SavedPostModel
+/**
+ * Model Partner
+ * §7 An organisation or person that posts opportunities, with its own PENDING -> VERIFIED review.
+ */
+export type Partner = Prisma.PartnerModel
+/**
+ * Model PartnerMember
+ * §7 Rights scoped to one partner (the partner dashboard). Partners are not a UserRole.
+ */
+export type PartnerMember = Prisma.PartnerMemberModel
+/**
+ * Model Opportunity
+ * §7 One listing in the opportunity marketplace.
+ */
+export type Opportunity = Prisma.OpportunityModel
+/**
+ * Model OpportunitySkill
+ * §7 Required and nice-to-have skills of a listing.
+ */
+export type OpportunitySkill = Prisma.OpportunitySkillModel
+/**
+ * Model OpportunityApplication
+ * §7 A member's application, and its status.
+ */
+export type OpportunityApplication = Prisma.OpportunityApplicationModel
+/**
+ * Model OpportunityApplicationEvent
+ * §7 The status timeline an applicant sees, and the trail of partner decisions.
+ */
+export type OpportunityApplicationEvent = Prisma.OpportunityApplicationEventModel
+/**
+ * Model SavedOpportunity
+ * §7 Saved opportunities (like WishlistItem).
+ */
+export type SavedOpportunity = Prisma.SavedOpportunityModel
+/**
+ * Model PostRevision
+ * §14 Edit history, written on every save of a draft and before publishing.
+ */
+export type PostRevision = Prisma.PostRevisionModel
+/**
+ * Model PostCategory
+ * §14 Editorial categories (seed-taxonomy.ts).
+ */
+export type PostCategory = Prisma.PostCategoryModel
+/**
+ * Model Tag
+ * §14 Free-form tags.
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model PostTag
+ * §14
+ */
+export type PostTag = Prisma.PostTagModel
+/**
+ * Model HelpArticle
+ * §9/§14 FAQ and feature explanations as data: one source for /faq, the Guide and search.
+ */
+export type HelpArticle = Prisma.HelpArticleModel
+/**
+ * Model GuideConversation
+ * §9 A member's own Guide thread. Only the member sees it; deletable.
+ */
+export type GuideConversation = Prisma.GuideConversationModel
+/**
+ * Model GuideMessage
+ * §9 Questions and answers with sources, labelling, usage and feedback.
+ */
+export type GuideMessage = Prisma.GuideMessageModel
+/**
+ * Model GuideUsage
+ * §9 The daily question quota per member day (memberDayKey), in the database because the
+ * in-memory limiter counts per instance.
+ */
+export type GuideUsage = Prisma.GuideUsageModel

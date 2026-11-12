@@ -40,6 +40,8 @@ export type CommunityCategoryMinAggregateOutputType = {
   name: string | null
   description: string | null
   sortOrder: number | null
+  academyId: string | null
+  archivedAt: Date | null
 }
 
 export type CommunityCategoryMaxAggregateOutputType = {
@@ -48,6 +50,8 @@ export type CommunityCategoryMaxAggregateOutputType = {
   name: string | null
   description: string | null
   sortOrder: number | null
+  academyId: string | null
+  archivedAt: Date | null
 }
 
 export type CommunityCategoryCountAggregateOutputType = {
@@ -56,6 +60,8 @@ export type CommunityCategoryCountAggregateOutputType = {
   name: number
   description: number
   sortOrder: number
+  academyId: number
+  archivedAt: number
   _all: number
 }
 
@@ -74,6 +80,8 @@ export type CommunityCategoryMinAggregateInputType = {
   name?: true
   description?: true
   sortOrder?: true
+  academyId?: true
+  archivedAt?: true
 }
 
 export type CommunityCategoryMaxAggregateInputType = {
@@ -82,6 +90,8 @@ export type CommunityCategoryMaxAggregateInputType = {
   name?: true
   description?: true
   sortOrder?: true
+  academyId?: true
+  archivedAt?: true
 }
 
 export type CommunityCategoryCountAggregateInputType = {
@@ -90,6 +100,8 @@ export type CommunityCategoryCountAggregateInputType = {
   name?: true
   description?: true
   sortOrder?: true
+  academyId?: true
+  archivedAt?: true
   _all?: true
 }
 
@@ -185,6 +197,8 @@ export type CommunityCategoryGroupByOutputType = {
   name: string
   description: string | null
   sortOrder: number
+  academyId: string | null
+  archivedAt: Date | null
   _count: CommunityCategoryCountAggregateOutputType | null
   _avg: CommunityCategoryAvgAggregateOutputType | null
   _sum: CommunityCategorySumAggregateOutputType | null
@@ -216,7 +230,10 @@ export type CommunityCategoryWhereInput = {
   name?: Prisma.StringFilter<"CommunityCategory"> | string
   description?: Prisma.StringNullableFilter<"CommunityCategory"> | string | null
   sortOrder?: Prisma.IntFilter<"CommunityCategory"> | number
+  academyId?: Prisma.StringNullableFilter<"CommunityCategory"> | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"CommunityCategory"> | Date | string | null
   posts?: Prisma.CommunityPostListRelationFilter
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
 }
 
 export type CommunityCategoryOrderByWithRelationInput = {
@@ -225,7 +242,10 @@ export type CommunityCategoryOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   posts?: Prisma.CommunityPostOrderByRelationAggregateInput
+  academy?: Prisma.AcademyOrderByWithRelationInput
 }
 
 export type CommunityCategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -237,7 +257,10 @@ export type CommunityCategoryWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"CommunityCategory"> | string
   description?: Prisma.StringNullableFilter<"CommunityCategory"> | string | null
   sortOrder?: Prisma.IntFilter<"CommunityCategory"> | number
+  academyId?: Prisma.StringNullableFilter<"CommunityCategory"> | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"CommunityCategory"> | Date | string | null
   posts?: Prisma.CommunityPostListRelationFilter
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
 }, "id" | "slug">
 
 export type CommunityCategoryOrderByWithAggregationInput = {
@@ -246,6 +269,8 @@ export type CommunityCategoryOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CommunityCategoryCountOrderByAggregateInput
   _avg?: Prisma.CommunityCategoryAvgOrderByAggregateInput
   _max?: Prisma.CommunityCategoryMaxOrderByAggregateInput
@@ -262,6 +287,8 @@ export type CommunityCategoryScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"CommunityCategory"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"CommunityCategory"> | string | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"CommunityCategory"> | number
+  academyId?: Prisma.StringNullableWithAggregatesFilter<"CommunityCategory"> | string | null
+  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CommunityCategory"> | Date | string | null
 }
 
 export type CommunityCategoryCreateInput = {
@@ -270,7 +297,9 @@ export type CommunityCategoryCreateInput = {
   name: string
   description?: string | null
   sortOrder?: number
+  archivedAt?: Date | string | null
   posts?: Prisma.CommunityPostCreateNestedManyWithoutCategoryInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutCategoriesInput
 }
 
 export type CommunityCategoryUncheckedCreateInput = {
@@ -279,6 +308,8 @@ export type CommunityCategoryUncheckedCreateInput = {
   name: string
   description?: string | null
   sortOrder?: number
+  academyId?: string | null
+  archivedAt?: Date | string | null
   posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutCategoryInput
 }
 
@@ -288,7 +319,9 @@ export type CommunityCategoryUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   posts?: Prisma.CommunityPostUpdateManyWithoutCategoryNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutCategoriesNestedInput
 }
 
 export type CommunityCategoryUncheckedUpdateInput = {
@@ -297,6 +330,8 @@ export type CommunityCategoryUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutCategoryNestedInput
 }
 
@@ -306,6 +341,8 @@ export type CommunityCategoryCreateManyInput = {
   name: string
   description?: string | null
   sortOrder?: number
+  academyId?: string | null
+  archivedAt?: Date | string | null
 }
 
 export type CommunityCategoryUpdateManyMutationInput = {
@@ -314,6 +351,7 @@ export type CommunityCategoryUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CommunityCategoryUncheckedUpdateManyInput = {
@@ -322,6 +360,8 @@ export type CommunityCategoryUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CommunityCategoryCountOrderByAggregateInput = {
@@ -330,6 +370,8 @@ export type CommunityCategoryCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
 }
 
 export type CommunityCategoryAvgOrderByAggregateInput = {
@@ -342,6 +384,8 @@ export type CommunityCategoryMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
 }
 
 export type CommunityCategoryMinOrderByAggregateInput = {
@@ -350,6 +394,8 @@ export type CommunityCategoryMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
 }
 
 export type CommunityCategorySumOrderByAggregateInput = {
@@ -359,6 +405,16 @@ export type CommunityCategorySumOrderByAggregateInput = {
 export type CommunityCategoryNullableScalarRelationFilter = {
   is?: Prisma.CommunityCategoryWhereInput | null
   isNot?: Prisma.CommunityCategoryWhereInput | null
+}
+
+export type CommunityCategoryListRelationFilter = {
+  every?: Prisma.CommunityCategoryWhereInput
+  some?: Prisma.CommunityCategoryWhereInput
+  none?: Prisma.CommunityCategoryWhereInput
+}
+
+export type CommunityCategoryOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type CommunityCategoryCreateNestedOneWithoutPostsInput = {
@@ -377,12 +433,56 @@ export type CommunityCategoryUpdateOneWithoutPostsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CommunityCategoryUpdateToOneWithWhereWithoutPostsInput, Prisma.CommunityCategoryUpdateWithoutPostsInput>, Prisma.CommunityCategoryUncheckedUpdateWithoutPostsInput>
 }
 
+export type CommunityCategoryCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.CommunityCategoryCreateWithoutAcademyInput, Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput> | Prisma.CommunityCategoryCreateWithoutAcademyInput[] | Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityCategoryCreateOrConnectWithoutAcademyInput | Prisma.CommunityCategoryCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.CommunityCategoryCreateManyAcademyInputEnvelope
+  connect?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+}
+
+export type CommunityCategoryUncheckedCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.CommunityCategoryCreateWithoutAcademyInput, Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput> | Prisma.CommunityCategoryCreateWithoutAcademyInput[] | Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityCategoryCreateOrConnectWithoutAcademyInput | Prisma.CommunityCategoryCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.CommunityCategoryCreateManyAcademyInputEnvelope
+  connect?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+}
+
+export type CommunityCategoryUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityCategoryCreateWithoutAcademyInput, Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput> | Prisma.CommunityCategoryCreateWithoutAcademyInput[] | Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityCategoryCreateOrConnectWithoutAcademyInput | Prisma.CommunityCategoryCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.CommunityCategoryUpsertWithWhereUniqueWithoutAcademyInput | Prisma.CommunityCategoryUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.CommunityCategoryCreateManyAcademyInputEnvelope
+  set?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+  disconnect?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+  delete?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+  connect?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+  update?: Prisma.CommunityCategoryUpdateWithWhereUniqueWithoutAcademyInput | Prisma.CommunityCategoryUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.CommunityCategoryUpdateManyWithWhereWithoutAcademyInput | Prisma.CommunityCategoryUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.CommunityCategoryScalarWhereInput | Prisma.CommunityCategoryScalarWhereInput[]
+}
+
+export type CommunityCategoryUncheckedUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.CommunityCategoryCreateWithoutAcademyInput, Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput> | Prisma.CommunityCategoryCreateWithoutAcademyInput[] | Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.CommunityCategoryCreateOrConnectWithoutAcademyInput | Prisma.CommunityCategoryCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.CommunityCategoryUpsertWithWhereUniqueWithoutAcademyInput | Prisma.CommunityCategoryUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.CommunityCategoryCreateManyAcademyInputEnvelope
+  set?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+  disconnect?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+  delete?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+  connect?: Prisma.CommunityCategoryWhereUniqueInput | Prisma.CommunityCategoryWhereUniqueInput[]
+  update?: Prisma.CommunityCategoryUpdateWithWhereUniqueWithoutAcademyInput | Prisma.CommunityCategoryUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.CommunityCategoryUpdateManyWithWhereWithoutAcademyInput | Prisma.CommunityCategoryUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.CommunityCategoryScalarWhereInput | Prisma.CommunityCategoryScalarWhereInput[]
+}
+
 export type CommunityCategoryCreateWithoutPostsInput = {
   id?: string
   slug: string
   name: string
   description?: string | null
   sortOrder?: number
+  archivedAt?: Date | string | null
+  academy?: Prisma.AcademyCreateNestedOneWithoutCategoriesInput
 }
 
 export type CommunityCategoryUncheckedCreateWithoutPostsInput = {
@@ -391,6 +491,8 @@ export type CommunityCategoryUncheckedCreateWithoutPostsInput = {
   name: string
   description?: string | null
   sortOrder?: number
+  academyId?: string | null
+  archivedAt?: Date | string | null
 }
 
 export type CommunityCategoryCreateOrConnectWithoutPostsInput = {
@@ -415,6 +517,8 @@ export type CommunityCategoryUpdateWithoutPostsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  academy?: Prisma.AcademyUpdateOneWithoutCategoriesNestedInput
 }
 
 export type CommunityCategoryUncheckedUpdateWithoutPostsInput = {
@@ -423,6 +527,105 @@ export type CommunityCategoryUncheckedUpdateWithoutPostsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type CommunityCategoryCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description?: string | null
+  sortOrder?: number
+  archivedAt?: Date | string | null
+  posts?: Prisma.CommunityPostCreateNestedManyWithoutCategoryInput
+}
+
+export type CommunityCategoryUncheckedCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description?: string | null
+  sortOrder?: number
+  archivedAt?: Date | string | null
+  posts?: Prisma.CommunityPostUncheckedCreateNestedManyWithoutCategoryInput
+}
+
+export type CommunityCategoryCreateOrConnectWithoutAcademyInput = {
+  where: Prisma.CommunityCategoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CommunityCategoryCreateWithoutAcademyInput, Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput>
+}
+
+export type CommunityCategoryCreateManyAcademyInputEnvelope = {
+  data: Prisma.CommunityCategoryCreateManyAcademyInput | Prisma.CommunityCategoryCreateManyAcademyInput[]
+  skipDuplicates?: boolean
+}
+
+export type CommunityCategoryUpsertWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.CommunityCategoryWhereUniqueInput
+  update: Prisma.XOR<Prisma.CommunityCategoryUpdateWithoutAcademyInput, Prisma.CommunityCategoryUncheckedUpdateWithoutAcademyInput>
+  create: Prisma.XOR<Prisma.CommunityCategoryCreateWithoutAcademyInput, Prisma.CommunityCategoryUncheckedCreateWithoutAcademyInput>
+}
+
+export type CommunityCategoryUpdateWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.CommunityCategoryWhereUniqueInput
+  data: Prisma.XOR<Prisma.CommunityCategoryUpdateWithoutAcademyInput, Prisma.CommunityCategoryUncheckedUpdateWithoutAcademyInput>
+}
+
+export type CommunityCategoryUpdateManyWithWhereWithoutAcademyInput = {
+  where: Prisma.CommunityCategoryScalarWhereInput
+  data: Prisma.XOR<Prisma.CommunityCategoryUpdateManyMutationInput, Prisma.CommunityCategoryUncheckedUpdateManyWithoutAcademyInput>
+}
+
+export type CommunityCategoryScalarWhereInput = {
+  AND?: Prisma.CommunityCategoryScalarWhereInput | Prisma.CommunityCategoryScalarWhereInput[]
+  OR?: Prisma.CommunityCategoryScalarWhereInput[]
+  NOT?: Prisma.CommunityCategoryScalarWhereInput | Prisma.CommunityCategoryScalarWhereInput[]
+  id?: Prisma.StringFilter<"CommunityCategory"> | string
+  slug?: Prisma.StringFilter<"CommunityCategory"> | string
+  name?: Prisma.StringFilter<"CommunityCategory"> | string
+  description?: Prisma.StringNullableFilter<"CommunityCategory"> | string | null
+  sortOrder?: Prisma.IntFilter<"CommunityCategory"> | number
+  academyId?: Prisma.StringNullableFilter<"CommunityCategory"> | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"CommunityCategory"> | Date | string | null
+}
+
+export type CommunityCategoryCreateManyAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description?: string | null
+  sortOrder?: number
+  archivedAt?: Date | string | null
+}
+
+export type CommunityCategoryUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  posts?: Prisma.CommunityPostUpdateManyWithoutCategoryNestedInput
+}
+
+export type CommunityCategoryUncheckedUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  posts?: Prisma.CommunityPostUncheckedUpdateManyWithoutCategoryNestedInput
+}
+
+export type CommunityCategoryUncheckedUpdateManyWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -462,7 +665,10 @@ export type CommunityCategorySelect<ExtArgs extends runtime.Types.Extensions.Int
   name?: boolean
   description?: boolean
   sortOrder?: boolean
+  academyId?: boolean
+  archivedAt?: boolean
   posts?: boolean | Prisma.CommunityCategory$postsArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityCategory$academyArgs<ExtArgs>
   _count?: boolean | Prisma.CommunityCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["communityCategory"]>
 
@@ -472,6 +678,9 @@ export type CommunityCategorySelectCreateManyAndReturn<ExtArgs extends runtime.T
   name?: boolean
   description?: boolean
   sortOrder?: boolean
+  academyId?: boolean
+  archivedAt?: boolean
+  academy?: boolean | Prisma.CommunityCategory$academyArgs<ExtArgs>
 }, ExtArgs["result"]["communityCategory"]>
 
 export type CommunityCategorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -480,6 +689,9 @@ export type CommunityCategorySelectUpdateManyAndReturn<ExtArgs extends runtime.T
   name?: boolean
   description?: boolean
   sortOrder?: boolean
+  academyId?: boolean
+  archivedAt?: boolean
+  academy?: boolean | Prisma.CommunityCategory$academyArgs<ExtArgs>
 }, ExtArgs["result"]["communityCategory"]>
 
 export type CommunityCategorySelectScalar = {
@@ -488,20 +700,28 @@ export type CommunityCategorySelectScalar = {
   name?: boolean
   description?: boolean
   sortOrder?: boolean
+  academyId?: boolean
+  archivedAt?: boolean
 }
 
-export type CommunityCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "sortOrder", ExtArgs["result"]["communityCategory"]>
+export type CommunityCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "sortOrder" | "academyId" | "archivedAt", ExtArgs["result"]["communityCategory"]>
 export type CommunityCategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   posts?: boolean | Prisma.CommunityCategory$postsArgs<ExtArgs>
+  academy?: boolean | Prisma.CommunityCategory$academyArgs<ExtArgs>
   _count?: boolean | Prisma.CommunityCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type CommunityCategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type CommunityCategoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type CommunityCategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academy?: boolean | Prisma.CommunityCategory$academyArgs<ExtArgs>
+}
+export type CommunityCategoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academy?: boolean | Prisma.CommunityCategory$academyArgs<ExtArgs>
+}
 
 export type $CommunityCategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CommunityCategory"
   objects: {
     posts: Prisma.$CommunityPostPayload<ExtArgs>[]
+    academy: Prisma.$AcademyPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -509,6 +729,14 @@ export type $CommunityCategoryPayload<ExtArgs extends runtime.Types.Extensions.I
     name: string
     description: string | null
     sortOrder: number
+    /**
+     * Backfilled: warrior -> warrior, business -> business, money -> wealth, mind -> wellness.
+     */
+    academyId: string | null
+    /**
+     * Moved from the "community.archived" SiteSetting.
+     */
+    archivedAt: Date | null
   }, ExtArgs["result"]["communityCategory"]>
   composites: {}
 }
@@ -904,6 +1132,7 @@ readonly fields: CommunityCategoryFieldRefs;
 export interface Prisma__CommunityCategoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   posts<T extends Prisma.CommunityCategory$postsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityCategory$postsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommunityPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  academy<T extends Prisma.CommunityCategory$academyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityCategory$academyArgs<ExtArgs>>): Prisma.Prisma__AcademyClient<runtime.Types.Result.GetResult<Prisma.$AcademyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -938,6 +1167,8 @@ export interface CommunityCategoryFieldRefs {
   readonly name: Prisma.FieldRef<"CommunityCategory", 'String'>
   readonly description: Prisma.FieldRef<"CommunityCategory", 'String'>
   readonly sortOrder: Prisma.FieldRef<"CommunityCategory", 'Int'>
+  readonly academyId: Prisma.FieldRef<"CommunityCategory", 'String'>
+  readonly archivedAt: Prisma.FieldRef<"CommunityCategory", 'DateTime'>
 }
     
 
@@ -1187,6 +1418,10 @@ export type CommunityCategoryCreateManyAndReturnArgs<ExtArgs extends runtime.Typ
    */
   data: Prisma.CommunityCategoryCreateManyInput | Prisma.CommunityCategoryCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityCategoryIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1257,6 +1492,10 @@ export type CommunityCategoryUpdateManyAndReturnArgs<ExtArgs extends runtime.Typ
    * Limit how many CommunityCategories to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityCategoryIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1347,6 +1586,25 @@ export type CommunityCategory$postsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.CommunityPostScalarFieldEnum | Prisma.CommunityPostScalarFieldEnum[]
+}
+
+/**
+ * CommunityCategory.academy
+ */
+export type CommunityCategory$academyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Academy
+   */
+  select?: Prisma.AcademySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Academy
+   */
+  omit?: Prisma.AcademyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademyInclude<ExtArgs> | null
+  where?: Prisma.AcademyWhereInput
 }
 
 /**

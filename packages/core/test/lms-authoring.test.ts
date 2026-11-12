@@ -427,10 +427,14 @@ const courseMission = (courseId: string) => tempMission({ event: "COURSE_COMPLET
 const completions = (missionId: string, userId: string) => prisma.missionCompletion.count({ where: { missionId, userId } });
 
 /** Files a member's completions of a mission under an earlier day, so the
- *  next payment would fall in a new day's bucket: as if it were tomorrow. */
+ *  next payment would fall in a new day's bucket: as if it were tomorrow.
+ *  The day is in the completion's occurrence as well as in its key. */
 async function moveToAnEarlierDay(missionId: string, userId: string) {
   for (const c of await prisma.missionCompletion.findMany({ where: { missionId, userId } })) {
-    await prisma.missionCompletion.update({ where: { id: c.id }, data: { idempotencyKey: `${c.idempotencyKey}:earlier` } });
+    await prisma.missionCompletion.update({
+      where: { id: c.id },
+      data: { idempotencyKey: `${c.idempotencyKey}:earlier`, occurrence: `${c.occurrence}:earlier` },
+    });
   }
 }
 

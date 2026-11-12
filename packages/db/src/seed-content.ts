@@ -19,6 +19,7 @@ const PLAYBOOK_MD = '# The Founder\'s Playbook\n### The first ten customers, don
 
 import { prisma } from "./client";
 import { SeedRecord } from "./seed-record";
+import { holdsCopy } from "./seed-copy";
 
 const days = (n: number) => new Date(Date.now() + n * 24 * 60 * 60 * 1000);
 
@@ -159,6 +160,9 @@ Start where you are weakest. That is where the XP is.`,
     // a live challenge's dates or put an ended one back to UPCOMING (review
     // finding 17), so lifecycle, startsAt and endsAt are written on create only.
     const copy = { name: c.name, description: c.description, pillar: c.pillar, criteria: c.criteria, xpReward: c.xpReward, thcReward: c.thcReward };
+    // Written only when the copy changed: any update moves updatedAt (seed-copy.ts).
+    const row = await prisma.challenge.findUnique({ where: { slug: c.slug } });
+    if (row && holdsCopy(row, copy)) continue;
     await prisma.challenge.upsert({ where: { slug: c.slug }, update: copy, create: c });
   }
 

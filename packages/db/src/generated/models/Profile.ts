@@ -36,6 +36,13 @@ export type ProfileMinAggregateOutputType = {
   referralCode: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  headline: string | null
+  city: string | null
+  region: string | null
+  country: string | null
+  aiGuideConsentAt: Date | null
+  previousTimezone: string | null
+  timezoneEffectiveAt: Date | null
 }
 
 export type ProfileMaxAggregateOutputType = {
@@ -50,6 +57,13 @@ export type ProfileMaxAggregateOutputType = {
   referralCode: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  headline: string | null
+  city: string | null
+  region: string | null
+  country: string | null
+  aiGuideConsentAt: Date | null
+  previousTimezone: string | null
+  timezoneEffectiveAt: Date | null
 }
 
 export type ProfileCountAggregateOutputType = {
@@ -67,6 +81,16 @@ export type ProfileCountAggregateOutputType = {
   referralCode: number
   createdAt: number
   updatedAt: number
+  headline: number
+  city: number
+  region: number
+  country: number
+  links: number
+  dashboard: number
+  pinnedItems: number
+  aiGuideConsentAt: number
+  previousTimezone: number
+  timezoneEffectiveAt: number
   _all: number
 }
 
@@ -83,6 +107,13 @@ export type ProfileMinAggregateInputType = {
   referralCode?: true
   createdAt?: true
   updatedAt?: true
+  headline?: true
+  city?: true
+  region?: true
+  country?: true
+  aiGuideConsentAt?: true
+  previousTimezone?: true
+  timezoneEffectiveAt?: true
 }
 
 export type ProfileMaxAggregateInputType = {
@@ -97,6 +128,13 @@ export type ProfileMaxAggregateInputType = {
   referralCode?: true
   createdAt?: true
   updatedAt?: true
+  headline?: true
+  city?: true
+  region?: true
+  country?: true
+  aiGuideConsentAt?: true
+  previousTimezone?: true
+  timezoneEffectiveAt?: true
 }
 
 export type ProfileCountAggregateInputType = {
@@ -114,6 +152,16 @@ export type ProfileCountAggregateInputType = {
   referralCode?: true
   createdAt?: true
   updatedAt?: true
+  headline?: true
+  city?: true
+  region?: true
+  country?: true
+  links?: true
+  dashboard?: true
+  pinnedItems?: true
+  aiGuideConsentAt?: true
+  previousTimezone?: true
+  timezoneEffectiveAt?: true
   _all?: true
 }
 
@@ -204,6 +252,16 @@ export type ProfileGroupByOutputType = {
   referralCode: string | null
   createdAt: Date
   updatedAt: Date
+  headline: string | null
+  city: string | null
+  region: string | null
+  country: string | null
+  links: runtime.JsonValue | null
+  dashboard: runtime.JsonValue
+  pinnedItems: runtime.JsonValue
+  aiGuideConsentAt: Date | null
+  previousTimezone: string | null
+  timezoneEffectiveAt: Date | null
   _count: ProfileCountAggregateOutputType | null
   _min: ProfileMinAggregateOutputType | null
   _max: ProfileMaxAggregateOutputType | null
@@ -242,6 +300,16 @@ export type ProfileWhereInput = {
   referralCode?: Prisma.StringNullableFilter<"Profile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
+  headline?: Prisma.StringNullableFilter<"Profile"> | string | null
+  city?: Prisma.StringNullableFilter<"Profile"> | string | null
+  region?: Prisma.StringNullableFilter<"Profile"> | string | null
+  country?: Prisma.StringNullableFilter<"Profile"> | string | null
+  links?: Prisma.JsonNullableFilter<"Profile">
+  dashboard?: Prisma.JsonFilter<"Profile">
+  pinnedItems?: Prisma.JsonFilter<"Profile">
+  aiGuideConsentAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
+  previousTimezone?: Prisma.StringNullableFilter<"Profile"> | string | null
+  timezoneEffectiveAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -260,6 +328,16 @@ export type ProfileOrderByWithRelationInput = {
   referralCode?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  headline?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  region?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  links?: Prisma.SortOrderInput | Prisma.SortOrder
+  dashboard?: Prisma.SortOrder
+  pinnedItems?: Prisma.SortOrder
+  aiGuideConsentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  previousTimezone?: Prisma.SortOrderInput | Prisma.SortOrder
+  timezoneEffectiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -281,6 +359,16 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   privacy?: Prisma.JsonFilter<"Profile">
   createdAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
+  headline?: Prisma.StringNullableFilter<"Profile"> | string | null
+  city?: Prisma.StringNullableFilter<"Profile"> | string | null
+  region?: Prisma.StringNullableFilter<"Profile"> | string | null
+  country?: Prisma.StringNullableFilter<"Profile"> | string | null
+  links?: Prisma.JsonNullableFilter<"Profile">
+  dashboard?: Prisma.JsonFilter<"Profile">
+  pinnedItems?: Prisma.JsonFilter<"Profile">
+  aiGuideConsentAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
+  previousTimezone?: Prisma.StringNullableFilter<"Profile"> | string | null
+  timezoneEffectiveAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "userId" | "username" | "referralCode">
 
@@ -299,6 +387,16 @@ export type ProfileOrderByWithAggregationInput = {
   referralCode?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  headline?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  region?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  links?: Prisma.SortOrderInput | Prisma.SortOrder
+  dashboard?: Prisma.SortOrder
+  pinnedItems?: Prisma.SortOrder
+  aiGuideConsentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  previousTimezone?: Prisma.SortOrderInput | Prisma.SortOrder
+  timezoneEffectiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProfileCountOrderByAggregateInput
   _max?: Prisma.ProfileMaxOrderByAggregateInput
   _min?: Prisma.ProfileMinOrderByAggregateInput
@@ -322,6 +420,16 @@ export type ProfileScalarWhereWithAggregatesInput = {
   referralCode?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Profile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Profile"> | Date | string
+  headline?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
+  region?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
+  country?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
+  links?: Prisma.JsonNullableWithAggregatesFilter<"Profile">
+  dashboard?: Prisma.JsonWithAggregatesFilter<"Profile">
+  pinnedItems?: Prisma.JsonWithAggregatesFilter<"Profile">
+  aiGuideConsentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
+  previousTimezone?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
+  timezoneEffectiveAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
 }
 
 export type ProfileCreateInput = {
@@ -338,6 +446,16 @@ export type ProfileCreateInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  headline?: string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Date | string | null
+  previousTimezone?: string | null
+  timezoneEffectiveAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutProfileInput
 }
 
@@ -356,6 +474,16 @@ export type ProfileUncheckedCreateInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  headline?: string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Date | string | null
+  previousTimezone?: string | null
+  timezoneEffectiveAt?: Date | string | null
 }
 
 export type ProfileUpdateInput = {
@@ -372,6 +500,16 @@ export type ProfileUpdateInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  previousTimezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezoneEffectiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
 }
 
@@ -390,6 +528,16 @@ export type ProfileUncheckedUpdateInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  previousTimezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezoneEffectiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ProfileCreateManyInput = {
@@ -407,6 +555,16 @@ export type ProfileCreateManyInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  headline?: string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Date | string | null
+  previousTimezone?: string | null
+  timezoneEffectiveAt?: Date | string | null
 }
 
 export type ProfileUpdateManyMutationInput = {
@@ -423,6 +581,16 @@ export type ProfileUpdateManyMutationInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  previousTimezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezoneEffectiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ProfileUncheckedUpdateManyInput = {
@@ -440,6 +608,16 @@ export type ProfileUncheckedUpdateManyInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  previousTimezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezoneEffectiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ProfileNullableScalarRelationFilter = {
@@ -470,6 +648,16 @@ export type ProfileCountOrderByAggregateInput = {
   referralCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  headline?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  links?: Prisma.SortOrder
+  dashboard?: Prisma.SortOrder
+  pinnedItems?: Prisma.SortOrder
+  aiGuideConsentAt?: Prisma.SortOrder
+  previousTimezone?: Prisma.SortOrder
+  timezoneEffectiveAt?: Prisma.SortOrder
 }
 
 export type ProfileMaxOrderByAggregateInput = {
@@ -484,6 +672,13 @@ export type ProfileMaxOrderByAggregateInput = {
   referralCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  headline?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  aiGuideConsentAt?: Prisma.SortOrder
+  previousTimezone?: Prisma.SortOrder
+  timezoneEffectiveAt?: Prisma.SortOrder
 }
 
 export type ProfileMinOrderByAggregateInput = {
@@ -498,6 +693,13 @@ export type ProfileMinOrderByAggregateInput = {
   referralCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  headline?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  aiGuideConsentAt?: Prisma.SortOrder
+  previousTimezone?: Prisma.SortOrder
+  timezoneEffectiveAt?: Prisma.SortOrder
 }
 
 export type ProfileCreateNestedOneWithoutUserInput = {
@@ -564,6 +766,16 @@ export type ProfileCreateWithoutUserInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  headline?: string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Date | string | null
+  previousTimezone?: string | null
+  timezoneEffectiveAt?: Date | string | null
 }
 
 export type ProfileUncheckedCreateWithoutUserInput = {
@@ -580,6 +792,16 @@ export type ProfileUncheckedCreateWithoutUserInput = {
   referralCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  headline?: string | null
+  city?: string | null
+  region?: string | null
+  country?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Date | string | null
+  previousTimezone?: string | null
+  timezoneEffectiveAt?: Date | string | null
 }
 
 export type ProfileCreateOrConnectWithoutUserInput = {
@@ -612,6 +834,16 @@ export type ProfileUpdateWithoutUserInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  previousTimezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezoneEffectiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ProfileUncheckedUpdateWithoutUserInput = {
@@ -628,6 +860,16 @@ export type ProfileUncheckedUpdateWithoutUserInput = {
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dashboard?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  pinnedItems?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  aiGuideConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  previousTimezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezoneEffectiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -647,6 +889,16 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   referralCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  headline?: boolean
+  city?: boolean
+  region?: boolean
+  country?: boolean
+  links?: boolean
+  dashboard?: boolean
+  pinnedItems?: boolean
+  aiGuideConsentAt?: boolean
+  previousTimezone?: boolean
+  timezoneEffectiveAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["profile"]>
 
@@ -665,6 +917,16 @@ export type ProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   referralCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  headline?: boolean
+  city?: boolean
+  region?: boolean
+  country?: boolean
+  links?: boolean
+  dashboard?: boolean
+  pinnedItems?: boolean
+  aiGuideConsentAt?: boolean
+  previousTimezone?: boolean
+  timezoneEffectiveAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["profile"]>
 
@@ -683,6 +945,16 @@ export type ProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   referralCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  headline?: boolean
+  city?: boolean
+  region?: boolean
+  country?: boolean
+  links?: boolean
+  dashboard?: boolean
+  pinnedItems?: boolean
+  aiGuideConsentAt?: boolean
+  previousTimezone?: boolean
+  timezoneEffectiveAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["profile"]>
 
@@ -701,9 +973,19 @@ export type ProfileSelectScalar = {
   referralCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  headline?: boolean
+  city?: boolean
+  region?: boolean
+  country?: boolean
+  links?: boolean
+  dashboard?: boolean
+  pinnedItems?: boolean
+  aiGuideConsentAt?: boolean
+  previousTimezone?: boolean
+  timezoneEffectiveAt?: boolean
 }
 
-export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "username" | "displayName" | "bio" | "avatarUrl" | "timezone" | "goals" | "interests" | "experienceLevel" | "onboardedAt" | "privacy" | "referralCode" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "username" | "displayName" | "bio" | "avatarUrl" | "timezone" | "goals" | "interests" | "experienceLevel" | "onboardedAt" | "privacy" | "referralCode" | "createdAt" | "updatedAt" | "headline" | "city" | "region" | "country" | "links" | "dashboard" | "pinnedItems" | "aiGuideConsentAt" | "previousTimezone" | "timezoneEffectiveAt", ExtArgs["result"]["profile"]>
 export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -741,6 +1023,41 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     referralCode: string | null
     createdAt: Date
     updatedAt: Date
+    /**
+     * One line under the name on the profile.
+     */
+    headline: string | null
+    /**
+     * Location is opt-in: shown only when privacy.location is true. City and region only.
+     */
+    city: string | null
+    region: string | null
+    /**
+     * ISO 3166-1 alpha-2.
+     */
+    country: string | null
+    /**
+     * At most 5 {label, url}, https only (cleanUrl).
+     */
+    links: runtime.JsonValue | null
+    /**
+     * Dashboard layout: hidden and ordered cards. Shape checked in core (dashboard.ts).
+     */
+    dashboard: runtime.JsonValue
+    /**
+     * At most 6 {kind: ACHIEVEMENT|CERTIFICATE|PROJECT|SKILL, refId}, each checked against the member's own rows.
+     */
+    pinnedItems: runtime.JsonValue
+    /**
+     * The member agreed that the Guide's optional AI mode may send their questions to the model provider.
+     */
+    aiGuideConsentAt: Date | null
+    /**
+     * The zone in force before the last time-zone change. It stays in force until timezoneEffectiveAt
+     * (the start of the next member day in the new zone), so no member day is counted twice or skipped.
+     */
+    previousTimezone: string | null
+    timezoneEffectiveAt: Date | null
   }, ExtArgs["result"]["profile"]>
   composites: {}
 }
@@ -1179,6 +1496,16 @@ export interface ProfileFieldRefs {
   readonly referralCode: Prisma.FieldRef<"Profile", 'String'>
   readonly createdAt: Prisma.FieldRef<"Profile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Profile", 'DateTime'>
+  readonly headline: Prisma.FieldRef<"Profile", 'String'>
+  readonly city: Prisma.FieldRef<"Profile", 'String'>
+  readonly region: Prisma.FieldRef<"Profile", 'String'>
+  readonly country: Prisma.FieldRef<"Profile", 'String'>
+  readonly links: Prisma.FieldRef<"Profile", 'Json'>
+  readonly dashboard: Prisma.FieldRef<"Profile", 'Json'>
+  readonly pinnedItems: Prisma.FieldRef<"Profile", 'Json'>
+  readonly aiGuideConsentAt: Prisma.FieldRef<"Profile", 'DateTime'>
+  readonly previousTimezone: Prisma.FieldRef<"Profile", 'String'>
+  readonly timezoneEffectiveAt: Prisma.FieldRef<"Profile", 'DateTime'>
 }
     
 

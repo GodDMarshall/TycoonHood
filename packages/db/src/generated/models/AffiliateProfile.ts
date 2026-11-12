@@ -534,10 +534,12 @@ export type AffiliateProfileCreateNestedOneWithoutPayoutsInput = {
   connect?: Prisma.AffiliateProfileWhereUniqueInput
 }
 
-export type AffiliateProfileUpdateOneRequiredWithoutPayoutsNestedInput = {
+export type AffiliateProfileUpdateOneWithoutPayoutsNestedInput = {
   create?: Prisma.XOR<Prisma.AffiliateProfileCreateWithoutPayoutsInput, Prisma.AffiliateProfileUncheckedCreateWithoutPayoutsInput>
   connectOrCreate?: Prisma.AffiliateProfileCreateOrConnectWithoutPayoutsInput
   upsert?: Prisma.AffiliateProfileUpsertWithoutPayoutsInput
+  disconnect?: Prisma.AffiliateProfileWhereInput | boolean
+  delete?: Prisma.AffiliateProfileWhereInput | boolean
   connect?: Prisma.AffiliateProfileWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AffiliateProfileUpdateToOneWithWhereWithoutPayoutsInput, Prisma.AffiliateProfileUpdateWithoutPayoutsInput>, Prisma.AffiliateProfileUncheckedUpdateWithoutPayoutsInput>
 }

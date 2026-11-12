@@ -20,7 +20,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { PrismaClient } from "@tycoonhood/db";
-import { CatalogService } from "../src/catalog/catalog";
+import { CatalogService, type ProductKind } from "../src/catalog/catalog";
 import { CourseAuthoringService } from "../src/lms/authoring";
 import { DiscussionService } from "../src/discussions/discussions";
 import { CommunityService } from "../src/community/community";
@@ -243,8 +243,11 @@ describe("seeds are safe to re-run on a live database", () => {
       "SiteSetting[seed.created.missions]",
     ]);
     expect(await recorded(t.db, "missions")).toContain("complete-onboarding");
-    // The challenge got its wording back and nothing else: staff ended it, and it stays ended.
-    expect(diff.find((l) => l.startsWith("Challenge"))).toMatch(/^Challenge\[launch-week\]: description "Old wording\." → "Seven days[^;]*$/);
+    // The challenge got its wording back and nothing else (but the time of that write, in
+    // updatedAt): staff ended it, and it stays ended.
+    expect(diff.find((l) => l.startsWith("Challenge"))).toMatch(
+      /^Challenge\[launch-week\]: description "Old wording\." → "Seven days[^;]*; updatedAt "[^"]+" → "[^"]+"$/
+    );
     expect((await t.db.challenge.findUniqueOrThrow({ where: { slug: "launch-week" } })).lifecycle).toBe("ENDED");
     expect((await t.db.rankDefinition.findUniqueOrThrow({ where: { slug: "elite" } })).name).toBe("Tycoon Elite");
   }, SLOW);
@@ -306,7 +309,7 @@ describe("seeds are safe to re-run on a live database", () => {
       include: { variants: { orderBy: { sortOrder: "asc" } } },
     });
     await new CatalogService(t.db).save({
-      slug: hoodie.slug, kind: hoodie.kind, name: hoodie.name, description: hoodie.description,
+      slug: hoodie.slug, kind: hoodie.kind as ProductKind, name: hoodie.name, description: hoodie.description,
       priceThc: hoodie.priceThc, priceFiatCents: hoodie.priceFiatCents, costCents: hoodie.costCents, active: hoodie.active,
       variants: hoodie.variants.map((v) => ({
         id: v.id, sku: v.sku === "WARRIORHOO-M" ? "HOODIE-MEDIUM" : v.sku, label: v.label, inventory: v.inventory,

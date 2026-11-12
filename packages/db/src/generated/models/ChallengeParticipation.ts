@@ -196,6 +196,7 @@ export type ChallengeParticipationWhereInput = {
   completedAt?: Prisma.DateTimeNullableFilter<"ChallengeParticipation"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   challenge?: Prisma.XOR<Prisma.ChallengeScalarRelationFilter, Prisma.ChallengeWhereInput>
+  submissions?: Prisma.EvidenceSubmissionListRelationFilter
 }
 
 export type ChallengeParticipationOrderByWithRelationInput = {
@@ -208,6 +209,7 @@ export type ChallengeParticipationOrderByWithRelationInput = {
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   challenge?: Prisma.ChallengeOrderByWithRelationInput
+  submissions?: Prisma.EvidenceSubmissionOrderByRelationAggregateInput
 }
 
 export type ChallengeParticipationWhereUniqueInput = Prisma.AtLeast<{
@@ -224,6 +226,7 @@ export type ChallengeParticipationWhereUniqueInput = Prisma.AtLeast<{
   completedAt?: Prisma.DateTimeNullableFilter<"ChallengeParticipation"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   challenge?: Prisma.XOR<Prisma.ChallengeScalarRelationFilter, Prisma.ChallengeWhereInput>
+  submissions?: Prisma.EvidenceSubmissionListRelationFilter
 }, "id" | "userId_challengeId">
 
 export type ChallengeParticipationOrderByWithAggregationInput = {
@@ -260,6 +263,7 @@ export type ChallengeParticipationCreateInput = {
   completedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutParticipationsInput
   challenge: Prisma.ChallengeCreateNestedOneWithoutParticipationsInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutParticipationInput
 }
 
 export type ChallengeParticipationUncheckedCreateInput = {
@@ -270,6 +274,7 @@ export type ChallengeParticipationUncheckedCreateInput = {
   progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   joinedAt?: Date | string
   completedAt?: Date | string | null
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutParticipationInput
 }
 
 export type ChallengeParticipationUpdateInput = {
@@ -280,6 +285,7 @@ export type ChallengeParticipationUpdateInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutParticipationsNestedInput
   challenge?: Prisma.ChallengeUpdateOneRequiredWithoutParticipationsNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutParticipationNestedInput
 }
 
 export type ChallengeParticipationUncheckedUpdateInput = {
@@ -290,6 +296,7 @@ export type ChallengeParticipationUncheckedUpdateInput = {
   progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutParticipationNestedInput
 }
 
 export type ChallengeParticipationCreateManyInput = {
@@ -361,6 +368,11 @@ export type ChallengeParticipationMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+}
+
+export type ChallengeParticipationNullableScalarRelationFilter = {
+  is?: Prisma.ChallengeParticipationWhereInput | null
+  isNot?: Prisma.ChallengeParticipationWhereInput | null
 }
 
 export type ChallengeParticipationCreateNestedManyWithoutUserInput = {
@@ -451,6 +463,22 @@ export type EnumParticipationStatusFieldUpdateOperationsInput = {
   set?: $Enums.ParticipationStatus
 }
 
+export type ChallengeParticipationCreateNestedOneWithoutSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.ChallengeParticipationCreateWithoutSubmissionsInput, Prisma.ChallengeParticipationUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ChallengeParticipationCreateOrConnectWithoutSubmissionsInput
+  connect?: Prisma.ChallengeParticipationWhereUniqueInput
+}
+
+export type ChallengeParticipationUpdateOneWithoutSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeParticipationCreateWithoutSubmissionsInput, Prisma.ChallengeParticipationUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ChallengeParticipationCreateOrConnectWithoutSubmissionsInput
+  upsert?: Prisma.ChallengeParticipationUpsertWithoutSubmissionsInput
+  disconnect?: Prisma.ChallengeParticipationWhereInput | boolean
+  delete?: Prisma.ChallengeParticipationWhereInput | boolean
+  connect?: Prisma.ChallengeParticipationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeParticipationUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.ChallengeParticipationUpdateWithoutSubmissionsInput>, Prisma.ChallengeParticipationUncheckedUpdateWithoutSubmissionsInput>
+}
+
 export type ChallengeParticipationCreateWithoutUserInput = {
   id?: string
   status?: $Enums.ParticipationStatus
@@ -458,6 +486,7 @@ export type ChallengeParticipationCreateWithoutUserInput = {
   joinedAt?: Date | string
   completedAt?: Date | string | null
   challenge: Prisma.ChallengeCreateNestedOneWithoutParticipationsInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutParticipationInput
 }
 
 export type ChallengeParticipationUncheckedCreateWithoutUserInput = {
@@ -467,6 +496,7 @@ export type ChallengeParticipationUncheckedCreateWithoutUserInput = {
   progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   joinedAt?: Date | string
   completedAt?: Date | string | null
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutParticipationInput
 }
 
 export type ChallengeParticipationCreateOrConnectWithoutUserInput = {
@@ -515,6 +545,7 @@ export type ChallengeParticipationCreateWithoutChallengeInput = {
   joinedAt?: Date | string
   completedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutParticipationsInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutParticipationInput
 }
 
 export type ChallengeParticipationUncheckedCreateWithoutChallengeInput = {
@@ -524,6 +555,7 @@ export type ChallengeParticipationUncheckedCreateWithoutChallengeInput = {
   progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   joinedAt?: Date | string
   completedAt?: Date | string | null
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutParticipationInput
 }
 
 export type ChallengeParticipationCreateOrConnectWithoutChallengeInput = {
@@ -552,6 +584,62 @@ export type ChallengeParticipationUpdateManyWithWhereWithoutChallengeInput = {
   data: Prisma.XOR<Prisma.ChallengeParticipationUpdateManyMutationInput, Prisma.ChallengeParticipationUncheckedUpdateManyWithoutChallengeInput>
 }
 
+export type ChallengeParticipationCreateWithoutSubmissionsInput = {
+  id?: string
+  status?: $Enums.ParticipationStatus
+  progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  joinedAt?: Date | string
+  completedAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutParticipationsInput
+  challenge: Prisma.ChallengeCreateNestedOneWithoutParticipationsInput
+}
+
+export type ChallengeParticipationUncheckedCreateWithoutSubmissionsInput = {
+  id?: string
+  userId: string
+  challengeId: string
+  status?: $Enums.ParticipationStatus
+  progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  joinedAt?: Date | string
+  completedAt?: Date | string | null
+}
+
+export type ChallengeParticipationCreateOrConnectWithoutSubmissionsInput = {
+  where: Prisma.ChallengeParticipationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeParticipationCreateWithoutSubmissionsInput, Prisma.ChallengeParticipationUncheckedCreateWithoutSubmissionsInput>
+}
+
+export type ChallengeParticipationUpsertWithoutSubmissionsInput = {
+  update: Prisma.XOR<Prisma.ChallengeParticipationUpdateWithoutSubmissionsInput, Prisma.ChallengeParticipationUncheckedUpdateWithoutSubmissionsInput>
+  create: Prisma.XOR<Prisma.ChallengeParticipationCreateWithoutSubmissionsInput, Prisma.ChallengeParticipationUncheckedCreateWithoutSubmissionsInput>
+  where?: Prisma.ChallengeParticipationWhereInput
+}
+
+export type ChallengeParticipationUpdateToOneWithWhereWithoutSubmissionsInput = {
+  where?: Prisma.ChallengeParticipationWhereInput
+  data: Prisma.XOR<Prisma.ChallengeParticipationUpdateWithoutSubmissionsInput, Prisma.ChallengeParticipationUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type ChallengeParticipationUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumParticipationStatusFieldUpdateOperationsInput | $Enums.ParticipationStatus
+  progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutParticipationsNestedInput
+  challenge?: Prisma.ChallengeUpdateOneRequiredWithoutParticipationsNestedInput
+}
+
+export type ChallengeParticipationUncheckedUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  challengeId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumParticipationStatusFieldUpdateOperationsInput | $Enums.ParticipationStatus
+  progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
 export type ChallengeParticipationCreateManyUserInput = {
   id?: string
   challengeId: string
@@ -568,6 +656,7 @@ export type ChallengeParticipationUpdateWithoutUserInput = {
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   challenge?: Prisma.ChallengeUpdateOneRequiredWithoutParticipationsNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutParticipationNestedInput
 }
 
 export type ChallengeParticipationUncheckedUpdateWithoutUserInput = {
@@ -577,6 +666,7 @@ export type ChallengeParticipationUncheckedUpdateWithoutUserInput = {
   progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutParticipationNestedInput
 }
 
 export type ChallengeParticipationUncheckedUpdateManyWithoutUserInput = {
@@ -604,6 +694,7 @@ export type ChallengeParticipationUpdateWithoutChallengeInput = {
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutParticipationsNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutParticipationNestedInput
 }
 
 export type ChallengeParticipationUncheckedUpdateWithoutChallengeInput = {
@@ -613,6 +704,7 @@ export type ChallengeParticipationUncheckedUpdateWithoutChallengeInput = {
   progress?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutParticipationNestedInput
 }
 
 export type ChallengeParticipationUncheckedUpdateManyWithoutChallengeInput = {
@@ -625,6 +717,35 @@ export type ChallengeParticipationUncheckedUpdateManyWithoutChallengeInput = {
 }
 
 
+/**
+ * Count Type ChallengeParticipationCountOutputType
+ */
+
+export type ChallengeParticipationCountOutputType = {
+  submissions: number
+}
+
+export type ChallengeParticipationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  submissions?: boolean | ChallengeParticipationCountOutputTypeCountSubmissionsArgs
+}
+
+/**
+ * ChallengeParticipationCountOutputType without action
+ */
+export type ChallengeParticipationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChallengeParticipationCountOutputType
+   */
+  select?: Prisma.ChallengeParticipationCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ChallengeParticipationCountOutputType without action
+ */
+export type ChallengeParticipationCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EvidenceSubmissionWhereInput
+}
+
 
 export type ChallengeParticipationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -636,6 +757,8 @@ export type ChallengeParticipationSelect<ExtArgs extends runtime.Types.Extension
   completedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   challenge?: boolean | Prisma.ChallengeDefaultArgs<ExtArgs>
+  submissions?: boolean | Prisma.ChallengeParticipation$submissionsArgs<ExtArgs>
+  _count?: boolean | Prisma.ChallengeParticipationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["challengeParticipation"]>
 
 export type ChallengeParticipationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -676,6 +799,8 @@ export type ChallengeParticipationOmit<ExtArgs extends runtime.Types.Extensions.
 export type ChallengeParticipationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   challenge?: boolean | Prisma.ChallengeDefaultArgs<ExtArgs>
+  submissions?: boolean | Prisma.ChallengeParticipation$submissionsArgs<ExtArgs>
+  _count?: boolean | Prisma.ChallengeParticipationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChallengeParticipationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -691,12 +816,16 @@ export type $ChallengeParticipationPayload<ExtArgs extends runtime.Types.Extensi
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     challenge: Prisma.$ChallengePayload<ExtArgs>
+    submissions: Prisma.$EvidenceSubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
     challengeId: string
     status: $Enums.ParticipationStatus
+    /**
+     * Rule progress and the "checkins" day list. Submissions move to EvidenceSubmission (20261113000900, with DAILY-B).
+     */
     progress: runtime.JsonValue | null
     joinedAt: Date
     completedAt: Date | null
@@ -1096,6 +1225,7 @@ export interface Prisma__ChallengeParticipationClient<T, Null = never, ExtArgs e
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   challenge<T extends Prisma.ChallengeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChallengeDefaultArgs<ExtArgs>>): Prisma.Prisma__ChallengeClient<runtime.Types.Result.GetResult<Prisma.$ChallengePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  submissions<T extends Prisma.ChallengeParticipation$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChallengeParticipation$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1525,6 +1655,30 @@ export type ChallengeParticipationDeleteManyArgs<ExtArgs extends runtime.Types.E
    * Limit how many ChallengeParticipations to delete.
    */
   limit?: number
+}
+
+/**
+ * ChallengeParticipation.submissions
+ */
+export type ChallengeParticipation$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EvidenceSubmission
+   */
+  select?: Prisma.EvidenceSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EvidenceSubmission
+   */
+  omit?: Prisma.EvidenceSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EvidenceSubmissionInclude<ExtArgs> | null
+  where?: Prisma.EvidenceSubmissionWhereInput
+  orderBy?: Prisma.EvidenceSubmissionOrderByWithRelationInput | Prisma.EvidenceSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.EvidenceSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EvidenceSubmissionScalarFieldEnum | Prisma.EvidenceSubmissionScalarFieldEnum[]
 }
 
 /**

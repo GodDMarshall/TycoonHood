@@ -30,12 +30,22 @@ export type MissionAvgAggregateOutputType = {
   xpReward: number | null
   thcReward: number | null
   cooldownHours: number | null
+  estimatedMinutes: number | null
+  minLevel: number | null
+  maxLevel: number | null
+  weight: number | null
+  sortOrder: number | null
 }
 
 export type MissionSumAggregateOutputType = {
   xpReward: number | null
   thcReward: bigint | null
   cooldownHours: number | null
+  estimatedMinutes: number | null
+  minLevel: number | null
+  maxLevel: number | null
+  weight: number | null
+  sortOrder: number | null
 }
 
 export type MissionMinAggregateOutputType = {
@@ -48,6 +58,26 @@ export type MissionMinAggregateOutputType = {
   repeatable: boolean | null
   cooldownHours: number | null
   active: boolean | null
+  cadence: $Enums.MissionCadence | null
+  verification: $Enums.MissionVerification | null
+  kind: $Enums.MissionKind | null
+  instructions: string | null
+  ctaLabel: string | null
+  ctaHref: string | null
+  estimatedMinutes: number | null
+  academyId: string | null
+  minLevel: number | null
+  maxLevel: number | null
+  courseId: string | null
+  publishedAt: Date | null
+  startsAt: Date | null
+  endsAt: Date | null
+  archivedAt: Date | null
+  weight: number | null
+  sortOrder: number | null
+  createdById: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type MissionMaxAggregateOutputType = {
@@ -60,6 +90,26 @@ export type MissionMaxAggregateOutputType = {
   repeatable: boolean | null
   cooldownHours: number | null
   active: boolean | null
+  cadence: $Enums.MissionCadence | null
+  verification: $Enums.MissionVerification | null
+  kind: $Enums.MissionKind | null
+  instructions: string | null
+  ctaLabel: string | null
+  ctaHref: string | null
+  estimatedMinutes: number | null
+  academyId: string | null
+  minLevel: number | null
+  maxLevel: number | null
+  courseId: string | null
+  publishedAt: Date | null
+  startsAt: Date | null
+  endsAt: Date | null
+  archivedAt: Date | null
+  weight: number | null
+  sortOrder: number | null
+  createdById: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type MissionCountAggregateOutputType = {
@@ -73,6 +123,27 @@ export type MissionCountAggregateOutputType = {
   repeatable: number
   cooldownHours: number
   active: number
+  cadence: number
+  verification: number
+  kind: number
+  instructions: number
+  ctaLabel: number
+  ctaHref: number
+  estimatedMinutes: number
+  academyId: number
+  interestTags: number
+  minLevel: number
+  maxLevel: number
+  courseId: number
+  publishedAt: number
+  startsAt: number
+  endsAt: number
+  archivedAt: number
+  weight: number
+  sortOrder: number
+  createdById: number
+  createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -81,12 +152,22 @@ export type MissionAvgAggregateInputType = {
   xpReward?: true
   thcReward?: true
   cooldownHours?: true
+  estimatedMinutes?: true
+  minLevel?: true
+  maxLevel?: true
+  weight?: true
+  sortOrder?: true
 }
 
 export type MissionSumAggregateInputType = {
   xpReward?: true
   thcReward?: true
   cooldownHours?: true
+  estimatedMinutes?: true
+  minLevel?: true
+  maxLevel?: true
+  weight?: true
+  sortOrder?: true
 }
 
 export type MissionMinAggregateInputType = {
@@ -99,6 +180,26 @@ export type MissionMinAggregateInputType = {
   repeatable?: true
   cooldownHours?: true
   active?: true
+  cadence?: true
+  verification?: true
+  kind?: true
+  instructions?: true
+  ctaLabel?: true
+  ctaHref?: true
+  estimatedMinutes?: true
+  academyId?: true
+  minLevel?: true
+  maxLevel?: true
+  courseId?: true
+  publishedAt?: true
+  startsAt?: true
+  endsAt?: true
+  archivedAt?: true
+  weight?: true
+  sortOrder?: true
+  createdById?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type MissionMaxAggregateInputType = {
@@ -111,6 +212,26 @@ export type MissionMaxAggregateInputType = {
   repeatable?: true
   cooldownHours?: true
   active?: true
+  cadence?: true
+  verification?: true
+  kind?: true
+  instructions?: true
+  ctaLabel?: true
+  ctaHref?: true
+  estimatedMinutes?: true
+  academyId?: true
+  minLevel?: true
+  maxLevel?: true
+  courseId?: true
+  publishedAt?: true
+  startsAt?: true
+  endsAt?: true
+  archivedAt?: true
+  weight?: true
+  sortOrder?: true
+  createdById?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type MissionCountAggregateInputType = {
@@ -124,6 +245,27 @@ export type MissionCountAggregateInputType = {
   repeatable?: true
   cooldownHours?: true
   active?: true
+  cadence?: true
+  verification?: true
+  kind?: true
+  instructions?: true
+  ctaLabel?: true
+  ctaHref?: true
+  estimatedMinutes?: true
+  academyId?: true
+  interestTags?: true
+  minLevel?: true
+  maxLevel?: true
+  courseId?: true
+  publishedAt?: true
+  startsAt?: true
+  endsAt?: true
+  archivedAt?: true
+  weight?: true
+  sortOrder?: true
+  createdById?: true
+  createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -224,6 +366,27 @@ export type MissionGroupByOutputType = {
   repeatable: boolean
   cooldownHours: number | null
   active: boolean
+  cadence: $Enums.MissionCadence
+  verification: $Enums.MissionVerification
+  kind: $Enums.MissionKind | null
+  instructions: string | null
+  ctaLabel: string | null
+  ctaHref: string | null
+  estimatedMinutes: number | null
+  academyId: string | null
+  interestTags: string[]
+  minLevel: number | null
+  maxLevel: number | null
+  courseId: string | null
+  publishedAt: Date | null
+  startsAt: Date | null
+  endsAt: Date | null
+  archivedAt: Date | null
+  weight: number
+  sortOrder: number
+  createdById: string | null
+  createdAt: Date
+  updatedAt: Date
   _count: MissionCountAggregateOutputType | null
   _avg: MissionAvgAggregateOutputType | null
   _sum: MissionSumAggregateOutputType | null
@@ -260,7 +423,33 @@ export type MissionWhereInput = {
   repeatable?: Prisma.BoolFilter<"Mission"> | boolean
   cooldownHours?: Prisma.IntNullableFilter<"Mission"> | number | null
   active?: Prisma.BoolFilter<"Mission"> | boolean
+  cadence?: Prisma.EnumMissionCadenceFilter<"Mission"> | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFilter<"Mission"> | $Enums.MissionVerification
+  kind?: Prisma.EnumMissionKindNullableFilter<"Mission"> | $Enums.MissionKind | null
+  instructions?: Prisma.StringNullableFilter<"Mission"> | string | null
+  ctaLabel?: Prisma.StringNullableFilter<"Mission"> | string | null
+  ctaHref?: Prisma.StringNullableFilter<"Mission"> | string | null
+  estimatedMinutes?: Prisma.IntNullableFilter<"Mission"> | number | null
+  academyId?: Prisma.StringNullableFilter<"Mission"> | string | null
+  interestTags?: Prisma.StringNullableListFilter<"Mission">
+  minLevel?: Prisma.IntNullableFilter<"Mission"> | number | null
+  maxLevel?: Prisma.IntNullableFilter<"Mission"> | number | null
+  courseId?: Prisma.StringNullableFilter<"Mission"> | string | null
+  publishedAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  startsAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  endsAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  weight?: Prisma.IntFilter<"Mission"> | number
+  sortOrder?: Prisma.IntFilter<"Mission"> | number
+  createdById?: Prisma.StringNullableFilter<"Mission"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Mission"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Mission"> | Date | string
   completions?: Prisma.MissionCompletionListRelationFilter
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  planItems?: Prisma.DailyPlanItemListRelationFilter
+  submissions?: Prisma.EvidenceSubmissionListRelationFilter
 }
 
 export type MissionOrderByWithRelationInput = {
@@ -274,7 +463,33 @@ export type MissionOrderByWithRelationInput = {
   repeatable?: Prisma.SortOrder
   cooldownHours?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  kind?: Prisma.SortOrderInput | Prisma.SortOrder
+  instructions?: Prisma.SortOrderInput | Prisma.SortOrder
+  ctaLabel?: Prisma.SortOrderInput | Prisma.SortOrder
+  ctaHref?: Prisma.SortOrderInput | Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  interestTags?: Prisma.SortOrder
+  minLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  maxLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  startsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  endsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  weight?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   completions?: Prisma.MissionCompletionOrderByRelationAggregateInput
+  academy?: Prisma.AcademyOrderByWithRelationInput
+  course?: Prisma.CourseOrderByWithRelationInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
+  planItems?: Prisma.DailyPlanItemOrderByRelationAggregateInput
+  submissions?: Prisma.EvidenceSubmissionOrderByRelationAggregateInput
 }
 
 export type MissionWhereUniqueInput = Prisma.AtLeast<{
@@ -291,7 +506,33 @@ export type MissionWhereUniqueInput = Prisma.AtLeast<{
   repeatable?: Prisma.BoolFilter<"Mission"> | boolean
   cooldownHours?: Prisma.IntNullableFilter<"Mission"> | number | null
   active?: Prisma.BoolFilter<"Mission"> | boolean
+  cadence?: Prisma.EnumMissionCadenceFilter<"Mission"> | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFilter<"Mission"> | $Enums.MissionVerification
+  kind?: Prisma.EnumMissionKindNullableFilter<"Mission"> | $Enums.MissionKind | null
+  instructions?: Prisma.StringNullableFilter<"Mission"> | string | null
+  ctaLabel?: Prisma.StringNullableFilter<"Mission"> | string | null
+  ctaHref?: Prisma.StringNullableFilter<"Mission"> | string | null
+  estimatedMinutes?: Prisma.IntNullableFilter<"Mission"> | number | null
+  academyId?: Prisma.StringNullableFilter<"Mission"> | string | null
+  interestTags?: Prisma.StringNullableListFilter<"Mission">
+  minLevel?: Prisma.IntNullableFilter<"Mission"> | number | null
+  maxLevel?: Prisma.IntNullableFilter<"Mission"> | number | null
+  courseId?: Prisma.StringNullableFilter<"Mission"> | string | null
+  publishedAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  startsAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  endsAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  weight?: Prisma.IntFilter<"Mission"> | number
+  sortOrder?: Prisma.IntFilter<"Mission"> | number
+  createdById?: Prisma.StringNullableFilter<"Mission"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Mission"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Mission"> | Date | string
   completions?: Prisma.MissionCompletionListRelationFilter
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  planItems?: Prisma.DailyPlanItemListRelationFilter
+  submissions?: Prisma.EvidenceSubmissionListRelationFilter
 }, "id" | "slug">
 
 export type MissionOrderByWithAggregationInput = {
@@ -305,6 +546,27 @@ export type MissionOrderByWithAggregationInput = {
   repeatable?: Prisma.SortOrder
   cooldownHours?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  kind?: Prisma.SortOrderInput | Prisma.SortOrder
+  instructions?: Prisma.SortOrderInput | Prisma.SortOrder
+  ctaLabel?: Prisma.SortOrderInput | Prisma.SortOrder
+  ctaHref?: Prisma.SortOrderInput | Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  interestTags?: Prisma.SortOrder
+  minLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  maxLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  startsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  endsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  weight?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.MissionCountOrderByAggregateInput
   _avg?: Prisma.MissionAvgOrderByAggregateInput
   _max?: Prisma.MissionMaxOrderByAggregateInput
@@ -326,6 +588,27 @@ export type MissionScalarWhereWithAggregatesInput = {
   repeatable?: Prisma.BoolWithAggregatesFilter<"Mission"> | boolean
   cooldownHours?: Prisma.IntNullableWithAggregatesFilter<"Mission"> | number | null
   active?: Prisma.BoolWithAggregatesFilter<"Mission"> | boolean
+  cadence?: Prisma.EnumMissionCadenceWithAggregatesFilter<"Mission"> | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationWithAggregatesFilter<"Mission"> | $Enums.MissionVerification
+  kind?: Prisma.EnumMissionKindNullableWithAggregatesFilter<"Mission"> | $Enums.MissionKind | null
+  instructions?: Prisma.StringNullableWithAggregatesFilter<"Mission"> | string | null
+  ctaLabel?: Prisma.StringNullableWithAggregatesFilter<"Mission"> | string | null
+  ctaHref?: Prisma.StringNullableWithAggregatesFilter<"Mission"> | string | null
+  estimatedMinutes?: Prisma.IntNullableWithAggregatesFilter<"Mission"> | number | null
+  academyId?: Prisma.StringNullableWithAggregatesFilter<"Mission"> | string | null
+  interestTags?: Prisma.StringNullableListFilter<"Mission">
+  minLevel?: Prisma.IntNullableWithAggregatesFilter<"Mission"> | number | null
+  maxLevel?: Prisma.IntNullableWithAggregatesFilter<"Mission"> | number | null
+  courseId?: Prisma.StringNullableWithAggregatesFilter<"Mission"> | string | null
+  publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Mission"> | Date | string | null
+  startsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Mission"> | Date | string | null
+  endsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Mission"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Mission"> | Date | string | null
+  weight?: Prisma.IntWithAggregatesFilter<"Mission"> | number
+  sortOrder?: Prisma.IntWithAggregatesFilter<"Mission"> | number
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"Mission"> | string | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Mission"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Mission"> | Date | string
 }
 
 export type MissionCreateInput = {
@@ -339,7 +622,30 @@ export type MissionCreateInput = {
   repeatable?: boolean
   cooldownHours?: number | null
   active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
   completions?: Prisma.MissionCompletionCreateNestedManyWithoutMissionInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutMissionsInput
+  course?: Prisma.CourseCreateNestedOneWithoutMissionsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutMissionsAuthoredInput
+  planItems?: Prisma.DailyPlanItemCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMissionInput
 }
 
 export type MissionUncheckedCreateInput = {
@@ -353,7 +659,30 @@ export type MissionUncheckedCreateInput = {
   repeatable?: boolean
   cooldownHours?: number | null
   active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
   completions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutMissionInput
+  planItems?: Prisma.DailyPlanItemUncheckedCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutMissionInput
 }
 
 export type MissionUpdateInput = {
@@ -367,7 +696,30 @@ export type MissionUpdateInput = {
   repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completions?: Prisma.MissionCompletionUpdateManyWithoutMissionNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutMissionsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutMissionsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutMissionsAuthoredNestedInput
+  planItems?: Prisma.DailyPlanItemUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutMissionNestedInput
 }
 
 export type MissionUncheckedUpdateInput = {
@@ -381,7 +733,30 @@ export type MissionUncheckedUpdateInput = {
   repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutMissionNestedInput
+  planItems?: Prisma.DailyPlanItemUncheckedUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutMissionNestedInput
 }
 
 export type MissionCreateManyInput = {
@@ -395,6 +770,27 @@ export type MissionCreateManyInput = {
   repeatable?: boolean
   cooldownHours?: number | null
   active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type MissionUpdateManyMutationInput = {
@@ -408,6 +804,24 @@ export type MissionUpdateManyMutationInput = {
   repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MissionUncheckedUpdateManyInput = {
@@ -421,6 +835,37 @@ export type MissionUncheckedUpdateManyInput = {
   repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MissionListRelationFilter = {
+  every?: Prisma.MissionWhereInput
+  some?: Prisma.MissionWhereInput
+  none?: Prisma.MissionWhereInput
+}
+
+export type MissionOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type MissionCountOrderByAggregateInput = {
@@ -434,12 +879,38 @@ export type MissionCountOrderByAggregateInput = {
   repeatable?: Prisma.SortOrder
   cooldownHours?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  instructions?: Prisma.SortOrder
+  ctaLabel?: Prisma.SortOrder
+  ctaHref?: Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  interestTags?: Prisma.SortOrder
+  minLevel?: Prisma.SortOrder
+  maxLevel?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  startsAt?: Prisma.SortOrder
+  endsAt?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  weight?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type MissionAvgOrderByAggregateInput = {
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
   cooldownHours?: Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrder
+  minLevel?: Prisma.SortOrder
+  maxLevel?: Prisma.SortOrder
+  weight?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
 }
 
 export type MissionMaxOrderByAggregateInput = {
@@ -452,6 +923,26 @@ export type MissionMaxOrderByAggregateInput = {
   repeatable?: Prisma.SortOrder
   cooldownHours?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  instructions?: Prisma.SortOrder
+  ctaLabel?: Prisma.SortOrder
+  ctaHref?: Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  minLevel?: Prisma.SortOrder
+  maxLevel?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  startsAt?: Prisma.SortOrder
+  endsAt?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  weight?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type MissionMinOrderByAggregateInput = {
@@ -464,17 +955,152 @@ export type MissionMinOrderByAggregateInput = {
   repeatable?: Prisma.SortOrder
   cooldownHours?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  cadence?: Prisma.SortOrder
+  verification?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  instructions?: Prisma.SortOrder
+  ctaLabel?: Prisma.SortOrder
+  ctaHref?: Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  minLevel?: Prisma.SortOrder
+  maxLevel?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  startsAt?: Prisma.SortOrder
+  endsAt?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
+  weight?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type MissionSumOrderByAggregateInput = {
   xpReward?: Prisma.SortOrder
   thcReward?: Prisma.SortOrder
   cooldownHours?: Prisma.SortOrder
+  estimatedMinutes?: Prisma.SortOrder
+  minLevel?: Prisma.SortOrder
+  maxLevel?: Prisma.SortOrder
+  weight?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
 }
 
 export type MissionScalarRelationFilter = {
   is?: Prisma.MissionWhereInput
   isNot?: Prisma.MissionWhereInput
+}
+
+export type MissionNullableScalarRelationFilter = {
+  is?: Prisma.MissionWhereInput | null
+  isNot?: Prisma.MissionWhereInput | null
+}
+
+export type MissionCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutCreatedByInput, Prisma.MissionUncheckedCreateWithoutCreatedByInput> | Prisma.MissionCreateWithoutCreatedByInput[] | Prisma.MissionUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutCreatedByInput | Prisma.MissionCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.MissionCreateManyCreatedByInputEnvelope
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+}
+
+export type MissionUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutCreatedByInput, Prisma.MissionUncheckedCreateWithoutCreatedByInput> | Prisma.MissionCreateWithoutCreatedByInput[] | Prisma.MissionUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutCreatedByInput | Prisma.MissionCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.MissionCreateManyCreatedByInputEnvelope
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+}
+
+export type MissionUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutCreatedByInput, Prisma.MissionUncheckedCreateWithoutCreatedByInput> | Prisma.MissionCreateWithoutCreatedByInput[] | Prisma.MissionUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutCreatedByInput | Prisma.MissionCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.MissionUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.MissionUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.MissionCreateManyCreatedByInputEnvelope
+  set?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  disconnect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  delete?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  update?: Prisma.MissionUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.MissionUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.MissionUpdateManyWithWhereWithoutCreatedByInput | Prisma.MissionUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.MissionScalarWhereInput | Prisma.MissionScalarWhereInput[]
+}
+
+export type MissionUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutCreatedByInput, Prisma.MissionUncheckedCreateWithoutCreatedByInput> | Prisma.MissionCreateWithoutCreatedByInput[] | Prisma.MissionUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutCreatedByInput | Prisma.MissionCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.MissionUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.MissionUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.MissionCreateManyCreatedByInputEnvelope
+  set?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  disconnect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  delete?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  update?: Prisma.MissionUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.MissionUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.MissionUpdateManyWithWhereWithoutCreatedByInput | Prisma.MissionUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.MissionScalarWhereInput | Prisma.MissionScalarWhereInput[]
+}
+
+export type MissionCreateNestedManyWithoutCourseInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutCourseInput, Prisma.MissionUncheckedCreateWithoutCourseInput> | Prisma.MissionCreateWithoutCourseInput[] | Prisma.MissionUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutCourseInput | Prisma.MissionCreateOrConnectWithoutCourseInput[]
+  createMany?: Prisma.MissionCreateManyCourseInputEnvelope
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+}
+
+export type MissionUncheckedCreateNestedManyWithoutCourseInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutCourseInput, Prisma.MissionUncheckedCreateWithoutCourseInput> | Prisma.MissionCreateWithoutCourseInput[] | Prisma.MissionUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutCourseInput | Prisma.MissionCreateOrConnectWithoutCourseInput[]
+  createMany?: Prisma.MissionCreateManyCourseInputEnvelope
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+}
+
+export type MissionUpdateManyWithoutCourseNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutCourseInput, Prisma.MissionUncheckedCreateWithoutCourseInput> | Prisma.MissionCreateWithoutCourseInput[] | Prisma.MissionUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutCourseInput | Prisma.MissionCreateOrConnectWithoutCourseInput[]
+  upsert?: Prisma.MissionUpsertWithWhereUniqueWithoutCourseInput | Prisma.MissionUpsertWithWhereUniqueWithoutCourseInput[]
+  createMany?: Prisma.MissionCreateManyCourseInputEnvelope
+  set?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  disconnect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  delete?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  update?: Prisma.MissionUpdateWithWhereUniqueWithoutCourseInput | Prisma.MissionUpdateWithWhereUniqueWithoutCourseInput[]
+  updateMany?: Prisma.MissionUpdateManyWithWhereWithoutCourseInput | Prisma.MissionUpdateManyWithWhereWithoutCourseInput[]
+  deleteMany?: Prisma.MissionScalarWhereInput | Prisma.MissionScalarWhereInput[]
+}
+
+export type MissionUncheckedUpdateManyWithoutCourseNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutCourseInput, Prisma.MissionUncheckedCreateWithoutCourseInput> | Prisma.MissionCreateWithoutCourseInput[] | Prisma.MissionUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutCourseInput | Prisma.MissionCreateOrConnectWithoutCourseInput[]
+  upsert?: Prisma.MissionUpsertWithWhereUniqueWithoutCourseInput | Prisma.MissionUpsertWithWhereUniqueWithoutCourseInput[]
+  createMany?: Prisma.MissionCreateManyCourseInputEnvelope
+  set?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  disconnect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  delete?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  update?: Prisma.MissionUpdateWithWhereUniqueWithoutCourseInput | Prisma.MissionUpdateWithWhereUniqueWithoutCourseInput[]
+  updateMany?: Prisma.MissionUpdateManyWithWhereWithoutCourseInput | Prisma.MissionUpdateManyWithWhereWithoutCourseInput[]
+  deleteMany?: Prisma.MissionScalarWhereInput | Prisma.MissionScalarWhereInput[]
+}
+
+export type MissionCreateinterestTagsInput = {
+  set: string[]
+}
+
+export type EnumMissionCadenceFieldUpdateOperationsInput = {
+  set?: $Enums.MissionCadence
+}
+
+export type EnumMissionVerificationFieldUpdateOperationsInput = {
+  set?: $Enums.MissionVerification
+}
+
+export type NullableEnumMissionKindFieldUpdateOperationsInput = {
+  set?: $Enums.MissionKind | null
+}
+
+export type MissionUpdateinterestTagsInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type MissionCreateNestedOneWithoutCompletionsInput = {
@@ -491,6 +1117,313 @@ export type MissionUpdateOneRequiredWithoutCompletionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MissionUpdateToOneWithWhereWithoutCompletionsInput, Prisma.MissionUpdateWithoutCompletionsInput>, Prisma.MissionUncheckedUpdateWithoutCompletionsInput>
 }
 
+export type MissionCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutAcademyInput, Prisma.MissionUncheckedCreateWithoutAcademyInput> | Prisma.MissionCreateWithoutAcademyInput[] | Prisma.MissionUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutAcademyInput | Prisma.MissionCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.MissionCreateManyAcademyInputEnvelope
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+}
+
+export type MissionUncheckedCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutAcademyInput, Prisma.MissionUncheckedCreateWithoutAcademyInput> | Prisma.MissionCreateWithoutAcademyInput[] | Prisma.MissionUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutAcademyInput | Prisma.MissionCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.MissionCreateManyAcademyInputEnvelope
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+}
+
+export type MissionUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutAcademyInput, Prisma.MissionUncheckedCreateWithoutAcademyInput> | Prisma.MissionCreateWithoutAcademyInput[] | Prisma.MissionUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutAcademyInput | Prisma.MissionCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.MissionUpsertWithWhereUniqueWithoutAcademyInput | Prisma.MissionUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.MissionCreateManyAcademyInputEnvelope
+  set?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  disconnect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  delete?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  update?: Prisma.MissionUpdateWithWhereUniqueWithoutAcademyInput | Prisma.MissionUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.MissionUpdateManyWithWhereWithoutAcademyInput | Prisma.MissionUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.MissionScalarWhereInput | Prisma.MissionScalarWhereInput[]
+}
+
+export type MissionUncheckedUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutAcademyInput, Prisma.MissionUncheckedCreateWithoutAcademyInput> | Prisma.MissionCreateWithoutAcademyInput[] | Prisma.MissionUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutAcademyInput | Prisma.MissionCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.MissionUpsertWithWhereUniqueWithoutAcademyInput | Prisma.MissionUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.MissionCreateManyAcademyInputEnvelope
+  set?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  disconnect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  delete?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  connect?: Prisma.MissionWhereUniqueInput | Prisma.MissionWhereUniqueInput[]
+  update?: Prisma.MissionUpdateWithWhereUniqueWithoutAcademyInput | Prisma.MissionUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.MissionUpdateManyWithWhereWithoutAcademyInput | Prisma.MissionUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.MissionScalarWhereInput | Prisma.MissionScalarWhereInput[]
+}
+
+export type MissionCreateNestedOneWithoutPlanItemsInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutPlanItemsInput, Prisma.MissionUncheckedCreateWithoutPlanItemsInput>
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutPlanItemsInput
+  connect?: Prisma.MissionWhereUniqueInput
+}
+
+export type MissionUpdateOneWithoutPlanItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutPlanItemsInput, Prisma.MissionUncheckedCreateWithoutPlanItemsInput>
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutPlanItemsInput
+  upsert?: Prisma.MissionUpsertWithoutPlanItemsInput
+  disconnect?: Prisma.MissionWhereInput | boolean
+  delete?: Prisma.MissionWhereInput | boolean
+  connect?: Prisma.MissionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MissionUpdateToOneWithWhereWithoutPlanItemsInput, Prisma.MissionUpdateWithoutPlanItemsInput>, Prisma.MissionUncheckedUpdateWithoutPlanItemsInput>
+}
+
+export type MissionCreateNestedOneWithoutSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutSubmissionsInput, Prisma.MissionUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutSubmissionsInput
+  connect?: Prisma.MissionWhereUniqueInput
+}
+
+export type MissionUpdateOneWithoutSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.MissionCreateWithoutSubmissionsInput, Prisma.MissionUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.MissionCreateOrConnectWithoutSubmissionsInput
+  upsert?: Prisma.MissionUpsertWithoutSubmissionsInput
+  disconnect?: Prisma.MissionWhereInput | boolean
+  delete?: Prisma.MissionWhereInput | boolean
+  connect?: Prisma.MissionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MissionUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.MissionUpdateWithoutSubmissionsInput>, Prisma.MissionUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type MissionCreateWithoutCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionCreateNestedManyWithoutMissionInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutMissionsInput
+  course?: Prisma.CourseCreateNestedOneWithoutMissionsInput
+  planItems?: Prisma.DailyPlanItemCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMissionInput
+}
+
+export type MissionUncheckedCreateWithoutCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutMissionInput
+  planItems?: Prisma.DailyPlanItemUncheckedCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutMissionInput
+}
+
+export type MissionCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.MissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.MissionCreateWithoutCreatedByInput, Prisma.MissionUncheckedCreateWithoutCreatedByInput>
+}
+
+export type MissionCreateManyCreatedByInputEnvelope = {
+  data: Prisma.MissionCreateManyCreatedByInput | Prisma.MissionCreateManyCreatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type MissionUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.MissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.MissionUpdateWithoutCreatedByInput, Prisma.MissionUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.MissionCreateWithoutCreatedByInput, Prisma.MissionUncheckedCreateWithoutCreatedByInput>
+}
+
+export type MissionUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.MissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.MissionUpdateWithoutCreatedByInput, Prisma.MissionUncheckedUpdateWithoutCreatedByInput>
+}
+
+export type MissionUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.MissionScalarWhereInput
+  data: Prisma.XOR<Prisma.MissionUpdateManyMutationInput, Prisma.MissionUncheckedUpdateManyWithoutCreatedByInput>
+}
+
+export type MissionScalarWhereInput = {
+  AND?: Prisma.MissionScalarWhereInput | Prisma.MissionScalarWhereInput[]
+  OR?: Prisma.MissionScalarWhereInput[]
+  NOT?: Prisma.MissionScalarWhereInput | Prisma.MissionScalarWhereInput[]
+  id?: Prisma.StringFilter<"Mission"> | string
+  slug?: Prisma.StringFilter<"Mission"> | string
+  name?: Prisma.StringFilter<"Mission"> | string
+  description?: Prisma.StringFilter<"Mission"> | string
+  criteria?: Prisma.JsonFilter<"Mission">
+  xpReward?: Prisma.IntFilter<"Mission"> | number
+  thcReward?: Prisma.BigIntFilter<"Mission"> | bigint | number
+  repeatable?: Prisma.BoolFilter<"Mission"> | boolean
+  cooldownHours?: Prisma.IntNullableFilter<"Mission"> | number | null
+  active?: Prisma.BoolFilter<"Mission"> | boolean
+  cadence?: Prisma.EnumMissionCadenceFilter<"Mission"> | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFilter<"Mission"> | $Enums.MissionVerification
+  kind?: Prisma.EnumMissionKindNullableFilter<"Mission"> | $Enums.MissionKind | null
+  instructions?: Prisma.StringNullableFilter<"Mission"> | string | null
+  ctaLabel?: Prisma.StringNullableFilter<"Mission"> | string | null
+  ctaHref?: Prisma.StringNullableFilter<"Mission"> | string | null
+  estimatedMinutes?: Prisma.IntNullableFilter<"Mission"> | number | null
+  academyId?: Prisma.StringNullableFilter<"Mission"> | string | null
+  interestTags?: Prisma.StringNullableListFilter<"Mission">
+  minLevel?: Prisma.IntNullableFilter<"Mission"> | number | null
+  maxLevel?: Prisma.IntNullableFilter<"Mission"> | number | null
+  courseId?: Prisma.StringNullableFilter<"Mission"> | string | null
+  publishedAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  startsAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  endsAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"Mission"> | Date | string | null
+  weight?: Prisma.IntFilter<"Mission"> | number
+  sortOrder?: Prisma.IntFilter<"Mission"> | number
+  createdById?: Prisma.StringNullableFilter<"Mission"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Mission"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Mission"> | Date | string
+}
+
+export type MissionCreateWithoutCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionCreateNestedManyWithoutMissionInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutMissionsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutMissionsAuthoredInput
+  planItems?: Prisma.DailyPlanItemCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMissionInput
+}
+
+export type MissionUncheckedCreateWithoutCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutMissionInput
+  planItems?: Prisma.DailyPlanItemUncheckedCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutMissionInput
+}
+
+export type MissionCreateOrConnectWithoutCourseInput = {
+  where: Prisma.MissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.MissionCreateWithoutCourseInput, Prisma.MissionUncheckedCreateWithoutCourseInput>
+}
+
+export type MissionCreateManyCourseInputEnvelope = {
+  data: Prisma.MissionCreateManyCourseInput | Prisma.MissionCreateManyCourseInput[]
+  skipDuplicates?: boolean
+}
+
+export type MissionUpsertWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.MissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.MissionUpdateWithoutCourseInput, Prisma.MissionUncheckedUpdateWithoutCourseInput>
+  create: Prisma.XOR<Prisma.MissionCreateWithoutCourseInput, Prisma.MissionUncheckedCreateWithoutCourseInput>
+}
+
+export type MissionUpdateWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.MissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.MissionUpdateWithoutCourseInput, Prisma.MissionUncheckedUpdateWithoutCourseInput>
+}
+
+export type MissionUpdateManyWithWhereWithoutCourseInput = {
+  where: Prisma.MissionScalarWhereInput
+  data: Prisma.XOR<Prisma.MissionUpdateManyMutationInput, Prisma.MissionUncheckedUpdateManyWithoutCourseInput>
+}
+
 export type MissionCreateWithoutCompletionsInput = {
   id?: string
   slug: string
@@ -502,6 +1435,29 @@ export type MissionCreateWithoutCompletionsInput = {
   repeatable?: boolean
   cooldownHours?: number | null
   active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  academy?: Prisma.AcademyCreateNestedOneWithoutMissionsInput
+  course?: Prisma.CourseCreateNestedOneWithoutMissionsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutMissionsAuthoredInput
+  planItems?: Prisma.DailyPlanItemCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMissionInput
 }
 
 export type MissionUncheckedCreateWithoutCompletionsInput = {
@@ -515,6 +1471,29 @@ export type MissionUncheckedCreateWithoutCompletionsInput = {
   repeatable?: boolean
   cooldownHours?: number | null
   active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  planItems?: Prisma.DailyPlanItemUncheckedCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutMissionInput
 }
 
 export type MissionCreateOrConnectWithoutCompletionsInput = {
@@ -544,6 +1523,29 @@ export type MissionUpdateWithoutCompletionsInput = {
   repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academy?: Prisma.AcademyUpdateOneWithoutMissionsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutMissionsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutMissionsAuthoredNestedInput
+  planItems?: Prisma.DailyPlanItemUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutMissionNestedInput
 }
 
 export type MissionUncheckedUpdateWithoutCompletionsInput = {
@@ -557,6 +1559,861 @@ export type MissionUncheckedUpdateWithoutCompletionsInput = {
   repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  planItems?: Prisma.DailyPlanItemUncheckedUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionCreateNestedManyWithoutMissionInput
+  course?: Prisma.CourseCreateNestedOneWithoutMissionsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutMissionsAuthoredInput
+  planItems?: Prisma.DailyPlanItemCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMissionInput
+}
+
+export type MissionUncheckedCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutMissionInput
+  planItems?: Prisma.DailyPlanItemUncheckedCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutMissionInput
+}
+
+export type MissionCreateOrConnectWithoutAcademyInput = {
+  where: Prisma.MissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.MissionCreateWithoutAcademyInput, Prisma.MissionUncheckedCreateWithoutAcademyInput>
+}
+
+export type MissionCreateManyAcademyInputEnvelope = {
+  data: Prisma.MissionCreateManyAcademyInput | Prisma.MissionCreateManyAcademyInput[]
+  skipDuplicates?: boolean
+}
+
+export type MissionUpsertWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.MissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.MissionUpdateWithoutAcademyInput, Prisma.MissionUncheckedUpdateWithoutAcademyInput>
+  create: Prisma.XOR<Prisma.MissionCreateWithoutAcademyInput, Prisma.MissionUncheckedCreateWithoutAcademyInput>
+}
+
+export type MissionUpdateWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.MissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.MissionUpdateWithoutAcademyInput, Prisma.MissionUncheckedUpdateWithoutAcademyInput>
+}
+
+export type MissionUpdateManyWithWhereWithoutAcademyInput = {
+  where: Prisma.MissionScalarWhereInput
+  data: Prisma.XOR<Prisma.MissionUpdateManyMutationInput, Prisma.MissionUncheckedUpdateManyWithoutAcademyInput>
+}
+
+export type MissionCreateWithoutPlanItemsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionCreateNestedManyWithoutMissionInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutMissionsInput
+  course?: Prisma.CourseCreateNestedOneWithoutMissionsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutMissionsAuthoredInput
+  submissions?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMissionInput
+}
+
+export type MissionUncheckedCreateWithoutPlanItemsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutMissionInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutMissionInput
+}
+
+export type MissionCreateOrConnectWithoutPlanItemsInput = {
+  where: Prisma.MissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.MissionCreateWithoutPlanItemsInput, Prisma.MissionUncheckedCreateWithoutPlanItemsInput>
+}
+
+export type MissionUpsertWithoutPlanItemsInput = {
+  update: Prisma.XOR<Prisma.MissionUpdateWithoutPlanItemsInput, Prisma.MissionUncheckedUpdateWithoutPlanItemsInput>
+  create: Prisma.XOR<Prisma.MissionCreateWithoutPlanItemsInput, Prisma.MissionUncheckedCreateWithoutPlanItemsInput>
+  where?: Prisma.MissionWhereInput
+}
+
+export type MissionUpdateToOneWithWhereWithoutPlanItemsInput = {
+  where?: Prisma.MissionWhereInput
+  data: Prisma.XOR<Prisma.MissionUpdateWithoutPlanItemsInput, Prisma.MissionUncheckedUpdateWithoutPlanItemsInput>
+}
+
+export type MissionUpdateWithoutPlanItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUpdateManyWithoutMissionNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutMissionsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutMissionsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutMissionsAuthoredNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionUncheckedUpdateWithoutPlanItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionCreateWithoutSubmissionsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionCreateNestedManyWithoutMissionInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutMissionsInput
+  course?: Prisma.CourseCreateNestedOneWithoutMissionsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutMissionsAuthoredInput
+  planItems?: Prisma.DailyPlanItemCreateNestedManyWithoutMissionInput
+}
+
+export type MissionUncheckedCreateWithoutSubmissionsInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completions?: Prisma.MissionCompletionUncheckedCreateNestedManyWithoutMissionInput
+  planItems?: Prisma.DailyPlanItemUncheckedCreateNestedManyWithoutMissionInput
+}
+
+export type MissionCreateOrConnectWithoutSubmissionsInput = {
+  where: Prisma.MissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.MissionCreateWithoutSubmissionsInput, Prisma.MissionUncheckedCreateWithoutSubmissionsInput>
+}
+
+export type MissionUpsertWithoutSubmissionsInput = {
+  update: Prisma.XOR<Prisma.MissionUpdateWithoutSubmissionsInput, Prisma.MissionUncheckedUpdateWithoutSubmissionsInput>
+  create: Prisma.XOR<Prisma.MissionCreateWithoutSubmissionsInput, Prisma.MissionUncheckedCreateWithoutSubmissionsInput>
+  where?: Prisma.MissionWhereInput
+}
+
+export type MissionUpdateToOneWithWhereWithoutSubmissionsInput = {
+  where?: Prisma.MissionWhereInput
+  data: Prisma.XOR<Prisma.MissionUpdateWithoutSubmissionsInput, Prisma.MissionUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type MissionUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUpdateManyWithoutMissionNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutMissionsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutMissionsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutMissionsAuthoredNestedInput
+  planItems?: Prisma.DailyPlanItemUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionUncheckedUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutMissionNestedInput
+  planItems?: Prisma.DailyPlanItemUncheckedUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionCreateManyCreatedByInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MissionUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUpdateManyWithoutMissionNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutMissionsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutMissionsNestedInput
+  planItems?: Prisma.DailyPlanItemUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutMissionNestedInput
+  planItems?: Prisma.DailyPlanItemUncheckedUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MissionCreateManyCourseInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  academyId?: string | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MissionUpdateWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUpdateManyWithoutMissionNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutMissionsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutMissionsAuthoredNestedInput
+  planItems?: Prisma.DailyPlanItemUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionUncheckedUpdateWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutMissionNestedInput
+  planItems?: Prisma.DailyPlanItemUncheckedUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionUncheckedUpdateManyWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MissionCreateManyAcademyInput = {
+  id?: string
+  slug: string
+  name: string
+  description: string
+  criteria: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: number
+  thcReward?: bigint | number
+  repeatable?: boolean
+  cooldownHours?: number | null
+  active?: boolean
+  cadence?: $Enums.MissionCadence
+  verification?: $Enums.MissionVerification
+  kind?: $Enums.MissionKind | null
+  instructions?: string | null
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  estimatedMinutes?: number | null
+  interestTags?: Prisma.MissionCreateinterestTagsInput | string[]
+  minLevel?: number | null
+  maxLevel?: number | null
+  courseId?: string | null
+  publishedAt?: Date | string | null
+  startsAt?: Date | string | null
+  endsAt?: Date | string | null
+  archivedAt?: Date | string | null
+  weight?: number
+  sortOrder?: number
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MissionUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUpdateManyWithoutMissionNestedInput
+  course?: Prisma.CourseUpdateOneWithoutMissionsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutMissionsAuthoredNestedInput
+  planItems?: Prisma.DailyPlanItemUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionUncheckedUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completions?: Prisma.MissionCompletionUncheckedUpdateManyWithoutMissionNestedInput
+  planItems?: Prisma.DailyPlanItemUncheckedUpdateManyWithoutMissionNestedInput
+  submissions?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutMissionNestedInput
+}
+
+export type MissionUncheckedUpdateManyWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  criteria?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  xpReward?: Prisma.IntFieldUpdateOperationsInput | number
+  thcReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  repeatable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cooldownHours?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cadence?: Prisma.EnumMissionCadenceFieldUpdateOperationsInput | $Enums.MissionCadence
+  verification?: Prisma.EnumMissionVerificationFieldUpdateOperationsInput | $Enums.MissionVerification
+  kind?: Prisma.NullableEnumMissionKindFieldUpdateOperationsInput | $Enums.MissionKind | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ctaHref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  interestTags?: Prisma.MissionUpdateinterestTagsInput | string[]
+  minLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  maxLevel?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  weight?: Prisma.IntFieldUpdateOperationsInput | number
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -566,10 +2423,14 @@ export type MissionUncheckedUpdateWithoutCompletionsInput = {
 
 export type MissionCountOutputType = {
   completions: number
+  planItems: number
+  submissions: number
 }
 
 export type MissionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   completions?: boolean | MissionCountOutputTypeCountCompletionsArgs
+  planItems?: boolean | MissionCountOutputTypeCountPlanItemsArgs
+  submissions?: boolean | MissionCountOutputTypeCountSubmissionsArgs
 }
 
 /**
@@ -589,6 +2450,20 @@ export type MissionCountOutputTypeCountCompletionsArgs<ExtArgs extends runtime.T
   where?: Prisma.MissionCompletionWhereInput
 }
 
+/**
+ * MissionCountOutputType without action
+ */
+export type MissionCountOutputTypeCountPlanItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DailyPlanItemWhereInput
+}
+
+/**
+ * MissionCountOutputType without action
+ */
+export type MissionCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EvidenceSubmissionWhereInput
+}
+
 
 export type MissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -601,7 +2476,33 @@ export type MissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   repeatable?: boolean
   cooldownHours?: boolean
   active?: boolean
+  cadence?: boolean
+  verification?: boolean
+  kind?: boolean
+  instructions?: boolean
+  ctaLabel?: boolean
+  ctaHref?: boolean
+  estimatedMinutes?: boolean
+  academyId?: boolean
+  interestTags?: boolean
+  minLevel?: boolean
+  maxLevel?: boolean
+  courseId?: boolean
+  publishedAt?: boolean
+  startsAt?: boolean
+  endsAt?: boolean
+  archivedAt?: boolean
+  weight?: boolean
+  sortOrder?: boolean
+  createdById?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   completions?: boolean | Prisma.Mission$completionsArgs<ExtArgs>
+  academy?: boolean | Prisma.Mission$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Mission$courseArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Mission$createdByArgs<ExtArgs>
+  planItems?: boolean | Prisma.Mission$planItemsArgs<ExtArgs>
+  submissions?: boolean | Prisma.Mission$submissionsArgs<ExtArgs>
   _count?: boolean | Prisma.MissionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mission"]>
 
@@ -616,6 +2517,30 @@ export type MissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   repeatable?: boolean
   cooldownHours?: boolean
   active?: boolean
+  cadence?: boolean
+  verification?: boolean
+  kind?: boolean
+  instructions?: boolean
+  ctaLabel?: boolean
+  ctaHref?: boolean
+  estimatedMinutes?: boolean
+  academyId?: boolean
+  interestTags?: boolean
+  minLevel?: boolean
+  maxLevel?: boolean
+  courseId?: boolean
+  publishedAt?: boolean
+  startsAt?: boolean
+  endsAt?: boolean
+  archivedAt?: boolean
+  weight?: boolean
+  sortOrder?: boolean
+  createdById?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  academy?: boolean | Prisma.Mission$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Mission$courseArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Mission$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["mission"]>
 
 export type MissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -629,6 +2554,30 @@ export type MissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   repeatable?: boolean
   cooldownHours?: boolean
   active?: boolean
+  cadence?: boolean
+  verification?: boolean
+  kind?: boolean
+  instructions?: boolean
+  ctaLabel?: boolean
+  ctaHref?: boolean
+  estimatedMinutes?: boolean
+  academyId?: boolean
+  interestTags?: boolean
+  minLevel?: boolean
+  maxLevel?: boolean
+  courseId?: boolean
+  publishedAt?: boolean
+  startsAt?: boolean
+  endsAt?: boolean
+  archivedAt?: boolean
+  weight?: boolean
+  sortOrder?: boolean
+  createdById?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  academy?: boolean | Prisma.Mission$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Mission$courseArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Mission$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["mission"]>
 
 export type MissionSelectScalar = {
@@ -642,20 +2591,59 @@ export type MissionSelectScalar = {
   repeatable?: boolean
   cooldownHours?: boolean
   active?: boolean
+  cadence?: boolean
+  verification?: boolean
+  kind?: boolean
+  instructions?: boolean
+  ctaLabel?: boolean
+  ctaHref?: boolean
+  estimatedMinutes?: boolean
+  academyId?: boolean
+  interestTags?: boolean
+  minLevel?: boolean
+  maxLevel?: boolean
+  courseId?: boolean
+  publishedAt?: boolean
+  startsAt?: boolean
+  endsAt?: boolean
+  archivedAt?: boolean
+  weight?: boolean
+  sortOrder?: boolean
+  createdById?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type MissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "criteria" | "xpReward" | "thcReward" | "repeatable" | "cooldownHours" | "active", ExtArgs["result"]["mission"]>
+export type MissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "criteria" | "xpReward" | "thcReward" | "repeatable" | "cooldownHours" | "active" | "cadence" | "verification" | "kind" | "instructions" | "ctaLabel" | "ctaHref" | "estimatedMinutes" | "academyId" | "interestTags" | "minLevel" | "maxLevel" | "courseId" | "publishedAt" | "startsAt" | "endsAt" | "archivedAt" | "weight" | "sortOrder" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["mission"]>
 export type MissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   completions?: boolean | Prisma.Mission$completionsArgs<ExtArgs>
+  academy?: boolean | Prisma.Mission$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Mission$courseArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Mission$createdByArgs<ExtArgs>
+  planItems?: boolean | Prisma.Mission$planItemsArgs<ExtArgs>
+  submissions?: boolean | Prisma.Mission$submissionsArgs<ExtArgs>
   _count?: boolean | Prisma.MissionCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type MissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type MissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type MissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academy?: boolean | Prisma.Mission$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Mission$courseArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Mission$createdByArgs<ExtArgs>
+}
+export type MissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academy?: boolean | Prisma.Mission$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Mission$courseArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Mission$createdByArgs<ExtArgs>
+}
 
 export type $MissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Mission"
   objects: {
     completions: Prisma.$MissionCompletionPayload<ExtArgs>[]
+    academy: Prisma.$AcademyPayload<ExtArgs> | null
+    course: Prisma.$CoursePayload<ExtArgs> | null
+    createdBy: Prisma.$UserPayload<ExtArgs> | null
+    planItems: Prisma.$DailyPlanItemPayload<ExtArgs>[]
+    submissions: Prisma.$EvidenceSubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -671,6 +2659,45 @@ export type $MissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
      */
     cooldownHours: number | null
     active: boolean
+    /**
+     * Backfilled: repeatable with criteria.within = "week" -> WEEKLY; other repeatable -> DAILY; else ONCE.
+     */
+    cadence: $Enums.MissionCadence
+    verification: $Enums.MissionVerification
+    kind: $Enums.MissionKind | null
+    /**
+     * Markdown. Required before publishing.
+     */
+    instructions: string | null
+    ctaLabel: string | null
+    /**
+     * An internal path only (safeSitePath).
+     */
+    ctaHref: string | null
+    estimatedMinutes: number | null
+    academyId: string | null
+    /**
+     * Onboarding interest and goal values the mission suits. Empty = everyone.
+     */
+    interestTags: string[]
+    minLevel: number | null
+    maxLevel: number | null
+    courseId: string | null
+    /**
+     * Null = draft. Backfilled to the migration time for existing rows.
+     */
+    publishedAt: Date | null
+    startsAt: Date | null
+    endsAt: Date | null
+    archivedAt: Date | null
+    /**
+     * Relative weight when the daily plan chooses between eligible missions.
+     */
+    weight: number
+    sortOrder: number
+    createdById: string | null
+    createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["mission"]>
   composites: {}
 }
@@ -1066,6 +3093,11 @@ readonly fields: MissionFieldRefs;
 export interface Prisma__MissionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   completions<T extends Prisma.Mission$completionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Mission$completionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MissionCompletionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  academy<T extends Prisma.Mission$academyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Mission$academyArgs<ExtArgs>>): Prisma.Prisma__AcademyClient<runtime.Types.Result.GetResult<Prisma.$AcademyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  course<T extends Prisma.Mission$courseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Mission$courseArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  createdBy<T extends Prisma.Mission$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Mission$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  planItems<T extends Prisma.Mission$planItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Mission$planItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DailyPlanItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  submissions<T extends Prisma.Mission$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Mission$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1105,6 +3137,27 @@ export interface MissionFieldRefs {
   readonly repeatable: Prisma.FieldRef<"Mission", 'Boolean'>
   readonly cooldownHours: Prisma.FieldRef<"Mission", 'Int'>
   readonly active: Prisma.FieldRef<"Mission", 'Boolean'>
+  readonly cadence: Prisma.FieldRef<"Mission", 'MissionCadence'>
+  readonly verification: Prisma.FieldRef<"Mission", 'MissionVerification'>
+  readonly kind: Prisma.FieldRef<"Mission", 'MissionKind'>
+  readonly instructions: Prisma.FieldRef<"Mission", 'String'>
+  readonly ctaLabel: Prisma.FieldRef<"Mission", 'String'>
+  readonly ctaHref: Prisma.FieldRef<"Mission", 'String'>
+  readonly estimatedMinutes: Prisma.FieldRef<"Mission", 'Int'>
+  readonly academyId: Prisma.FieldRef<"Mission", 'String'>
+  readonly interestTags: Prisma.FieldRef<"Mission", 'String[]'>
+  readonly minLevel: Prisma.FieldRef<"Mission", 'Int'>
+  readonly maxLevel: Prisma.FieldRef<"Mission", 'Int'>
+  readonly courseId: Prisma.FieldRef<"Mission", 'String'>
+  readonly publishedAt: Prisma.FieldRef<"Mission", 'DateTime'>
+  readonly startsAt: Prisma.FieldRef<"Mission", 'DateTime'>
+  readonly endsAt: Prisma.FieldRef<"Mission", 'DateTime'>
+  readonly archivedAt: Prisma.FieldRef<"Mission", 'DateTime'>
+  readonly weight: Prisma.FieldRef<"Mission", 'Int'>
+  readonly sortOrder: Prisma.FieldRef<"Mission", 'Int'>
+  readonly createdById: Prisma.FieldRef<"Mission", 'String'>
+  readonly createdAt: Prisma.FieldRef<"Mission", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Mission", 'DateTime'>
 }
     
 
@@ -1354,6 +3407,10 @@ export type MissionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    */
   data: Prisma.MissionCreateManyInput | Prisma.MissionCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MissionIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1424,6 +3481,10 @@ export type MissionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many Missions to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MissionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1514,6 +3575,111 @@ export type Mission$completionsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.MissionCompletionScalarFieldEnum | Prisma.MissionCompletionScalarFieldEnum[]
+}
+
+/**
+ * Mission.academy
+ */
+export type Mission$academyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Academy
+   */
+  select?: Prisma.AcademySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Academy
+   */
+  omit?: Prisma.AcademyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademyInclude<ExtArgs> | null
+  where?: Prisma.AcademyWhereInput
+}
+
+/**
+ * Mission.course
+ */
+export type Mission$courseArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Course
+   */
+  select?: Prisma.CourseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Course
+   */
+  omit?: Prisma.CourseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseInclude<ExtArgs> | null
+  where?: Prisma.CourseWhereInput
+}
+
+/**
+ * Mission.createdBy
+ */
+export type Mission$createdByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Mission.planItems
+ */
+export type Mission$planItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DailyPlanItem
+   */
+  select?: Prisma.DailyPlanItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DailyPlanItem
+   */
+  omit?: Prisma.DailyPlanItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DailyPlanItemInclude<ExtArgs> | null
+  where?: Prisma.DailyPlanItemWhereInput
+  orderBy?: Prisma.DailyPlanItemOrderByWithRelationInput | Prisma.DailyPlanItemOrderByWithRelationInput[]
+  cursor?: Prisma.DailyPlanItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DailyPlanItemScalarFieldEnum | Prisma.DailyPlanItemScalarFieldEnum[]
+}
+
+/**
+ * Mission.submissions
+ */
+export type Mission$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EvidenceSubmission
+   */
+  select?: Prisma.EvidenceSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EvidenceSubmission
+   */
+  omit?: Prisma.EvidenceSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EvidenceSubmissionInclude<ExtArgs> | null
+  where?: Prisma.EvidenceSubmissionWhereInput
+  orderBy?: Prisma.EvidenceSubmissionOrderByWithRelationInput | Prisma.EvidenceSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.EvidenceSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EvidenceSubmissionScalarFieldEnum | Prisma.EvidenceSubmissionScalarFieldEnum[]
 }
 
 /**

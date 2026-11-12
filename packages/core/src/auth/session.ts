@@ -6,12 +6,14 @@
  *    its SHA-256. A leaked database cannot impersonate anyone.
  *  · Sliding expiry: 30-day sessions, silently extended when under 15 days
  *    remain, so active members never hit a wall.
- *  · Every session records user agent + a privacy-hashed IP, which is what
- *    makes "manage my devices" (Phase 10 UI) real data instead of theater.
+ *  · Every session records user agent + a keyed hash of the IP (ipKey,
+ *    platform/ip-key.ts), which is what makes "manage my devices" (Phase 10
+ *    UI) real data instead of theater. The address itself is never stored.
  */
 import { createHash, randomBytes } from "node:crypto";
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
+import { ipKey } from "../platform/ip-key";
 
 export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 export const SESSION_RENEW_BELOW_MS = 15 * 24 * 60 * 60 * 1000;
@@ -32,7 +34,7 @@ export class SessionService {
       userId,
       expires: new Date(Date.now() + SESSION_TTL_MS),
       userAgent: device.userAgent?.slice(0, 400) ?? null,
-      ipHash: device.ip ? sha256(device.ip).slice(0, 32) : null,
+      ipHash: ipKey(device.ip) || null,
     };
   }
 

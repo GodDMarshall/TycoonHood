@@ -29,6 +29,15 @@ export type GroupMembershipMinAggregateOutputType = {
   groupId: string | null
   userId: string | null
   createdAt: Date | null
+  role: $Enums.GroupRole | null
+  status: $Enums.GroupMemberStatus | null
+  notifyLevel: $Enums.GroupNotifyLevel | null
+  approvedById: string | null
+  approvedAt: Date | null
+  bannedById: string | null
+  bannedAt: Date | null
+  banReason: string | null
+  invitedById: string | null
 }
 
 export type GroupMembershipMaxAggregateOutputType = {
@@ -36,6 +45,15 @@ export type GroupMembershipMaxAggregateOutputType = {
   groupId: string | null
   userId: string | null
   createdAt: Date | null
+  role: $Enums.GroupRole | null
+  status: $Enums.GroupMemberStatus | null
+  notifyLevel: $Enums.GroupNotifyLevel | null
+  approvedById: string | null
+  approvedAt: Date | null
+  bannedById: string | null
+  bannedAt: Date | null
+  banReason: string | null
+  invitedById: string | null
 }
 
 export type GroupMembershipCountAggregateOutputType = {
@@ -43,6 +61,15 @@ export type GroupMembershipCountAggregateOutputType = {
   groupId: number
   userId: number
   createdAt: number
+  role: number
+  status: number
+  notifyLevel: number
+  approvedById: number
+  approvedAt: number
+  bannedById: number
+  bannedAt: number
+  banReason: number
+  invitedById: number
   _all: number
 }
 
@@ -52,6 +79,15 @@ export type GroupMembershipMinAggregateInputType = {
   groupId?: true
   userId?: true
   createdAt?: true
+  role?: true
+  status?: true
+  notifyLevel?: true
+  approvedById?: true
+  approvedAt?: true
+  bannedById?: true
+  bannedAt?: true
+  banReason?: true
+  invitedById?: true
 }
 
 export type GroupMembershipMaxAggregateInputType = {
@@ -59,6 +95,15 @@ export type GroupMembershipMaxAggregateInputType = {
   groupId?: true
   userId?: true
   createdAt?: true
+  role?: true
+  status?: true
+  notifyLevel?: true
+  approvedById?: true
+  approvedAt?: true
+  bannedById?: true
+  bannedAt?: true
+  banReason?: true
+  invitedById?: true
 }
 
 export type GroupMembershipCountAggregateInputType = {
@@ -66,6 +111,15 @@ export type GroupMembershipCountAggregateInputType = {
   groupId?: true
   userId?: true
   createdAt?: true
+  role?: true
+  status?: true
+  notifyLevel?: true
+  approvedById?: true
+  approvedAt?: true
+  bannedById?: true
+  bannedAt?: true
+  banReason?: true
+  invitedById?: true
   _all?: true
 }
 
@@ -146,6 +200,15 @@ export type GroupMembershipGroupByOutputType = {
   groupId: string
   userId: string
   createdAt: Date
+  role: $Enums.GroupRole
+  status: $Enums.GroupMemberStatus
+  notifyLevel: $Enums.GroupNotifyLevel
+  approvedById: string | null
+  approvedAt: Date | null
+  bannedById: string | null
+  bannedAt: Date | null
+  banReason: string | null
+  invitedById: string | null
   _count: GroupMembershipCountAggregateOutputType | null
   _min: GroupMembershipMinAggregateOutputType | null
   _max: GroupMembershipMaxAggregateOutputType | null
@@ -174,8 +237,20 @@ export type GroupMembershipWhereInput = {
   groupId?: Prisma.StringFilter<"GroupMembership"> | string
   userId?: Prisma.StringFilter<"GroupMembership"> | string
   createdAt?: Prisma.DateTimeFilter<"GroupMembership"> | Date | string
+  role?: Prisma.EnumGroupRoleFilter<"GroupMembership"> | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFilter<"GroupMembership"> | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFilter<"GroupMembership"> | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"GroupMembership"> | Date | string | null
+  bannedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  bannedAt?: Prisma.DateTimeNullableFilter<"GroupMembership"> | Date | string | null
+  banReason?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  invitedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
   group?: Prisma.XOR<Prisma.CommunityGroupScalarRelationFilter, Prisma.CommunityGroupWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  bannedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  invitedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type GroupMembershipOrderByWithRelationInput = {
@@ -183,8 +258,20 @@ export type GroupMembershipOrderByWithRelationInput = {
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  notifyLevel?: Prisma.SortOrder
+  approvedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  banReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  invitedById?: Prisma.SortOrderInput | Prisma.SortOrder
   group?: Prisma.CommunityGroupOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  approvedBy?: Prisma.UserOrderByWithRelationInput
+  bannedBy?: Prisma.UserOrderByWithRelationInput
+  invitedBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type GroupMembershipWhereUniqueInput = Prisma.AtLeast<{
@@ -196,8 +283,20 @@ export type GroupMembershipWhereUniqueInput = Prisma.AtLeast<{
   groupId?: Prisma.StringFilter<"GroupMembership"> | string
   userId?: Prisma.StringFilter<"GroupMembership"> | string
   createdAt?: Prisma.DateTimeFilter<"GroupMembership"> | Date | string
+  role?: Prisma.EnumGroupRoleFilter<"GroupMembership"> | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFilter<"GroupMembership"> | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFilter<"GroupMembership"> | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"GroupMembership"> | Date | string | null
+  bannedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  bannedAt?: Prisma.DateTimeNullableFilter<"GroupMembership"> | Date | string | null
+  banReason?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  invitedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
   group?: Prisma.XOR<Prisma.CommunityGroupScalarRelationFilter, Prisma.CommunityGroupWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  bannedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  invitedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id" | "groupId_userId">
 
 export type GroupMembershipOrderByWithAggregationInput = {
@@ -205,6 +304,15 @@ export type GroupMembershipOrderByWithAggregationInput = {
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  notifyLevel?: Prisma.SortOrder
+  approvedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  banReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  invitedById?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.GroupMembershipCountOrderByAggregateInput
   _max?: Prisma.GroupMembershipMaxOrderByAggregateInput
   _min?: Prisma.GroupMembershipMinOrderByAggregateInput
@@ -218,13 +326,31 @@ export type GroupMembershipScalarWhereWithAggregatesInput = {
   groupId?: Prisma.StringWithAggregatesFilter<"GroupMembership"> | string
   userId?: Prisma.StringWithAggregatesFilter<"GroupMembership"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GroupMembership"> | Date | string
+  role?: Prisma.EnumGroupRoleWithAggregatesFilter<"GroupMembership"> | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusWithAggregatesFilter<"GroupMembership"> | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelWithAggregatesFilter<"GroupMembership"> | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.StringNullableWithAggregatesFilter<"GroupMembership"> | string | null
+  approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"GroupMembership"> | Date | string | null
+  bannedById?: Prisma.StringNullableWithAggregatesFilter<"GroupMembership"> | string | null
+  bannedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"GroupMembership"> | Date | string | null
+  banReason?: Prisma.StringNullableWithAggregatesFilter<"GroupMembership"> | string | null
+  invitedById?: Prisma.StringNullableWithAggregatesFilter<"GroupMembership"> | string | null
 }
 
 export type GroupMembershipCreateInput = {
   id?: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedAt?: Date | string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
   group: Prisma.CommunityGroupCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutGroupMembershipsInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsApprovedInput
+  bannedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsBannedInput
+  invitedBy?: Prisma.UserCreateNestedOneWithoutGroupInvitesSentInput
 }
 
 export type GroupMembershipUncheckedCreateInput = {
@@ -232,13 +358,31 @@ export type GroupMembershipUncheckedCreateInput = {
   groupId: string
   userId: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
 }
 
 export type GroupMembershipUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.CommunityGroupUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutGroupMembershipsNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsApprovedNestedInput
+  bannedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsBannedNestedInput
+  invitedBy?: Prisma.UserUpdateOneWithoutGroupInvitesSentNestedInput
 }
 
 export type GroupMembershipUncheckedUpdateInput = {
@@ -246,6 +390,15 @@ export type GroupMembershipUncheckedUpdateInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type GroupMembershipCreateManyInput = {
@@ -253,11 +406,26 @@ export type GroupMembershipCreateManyInput = {
   groupId: string
   userId: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
 }
 
 export type GroupMembershipUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type GroupMembershipUncheckedUpdateManyInput = {
@@ -265,6 +433,15 @@ export type GroupMembershipUncheckedUpdateManyInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type GroupMembershipListRelationFilter = {
@@ -287,6 +464,15 @@ export type GroupMembershipCountOrderByAggregateInput = {
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  notifyLevel?: Prisma.SortOrder
+  approvedById?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  bannedById?: Prisma.SortOrder
+  bannedAt?: Prisma.SortOrder
+  banReason?: Prisma.SortOrder
+  invitedById?: Prisma.SortOrder
 }
 
 export type GroupMembershipMaxOrderByAggregateInput = {
@@ -294,6 +480,15 @@ export type GroupMembershipMaxOrderByAggregateInput = {
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  notifyLevel?: Prisma.SortOrder
+  approvedById?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  bannedById?: Prisma.SortOrder
+  bannedAt?: Prisma.SortOrder
+  banReason?: Prisma.SortOrder
+  invitedById?: Prisma.SortOrder
 }
 
 export type GroupMembershipMinOrderByAggregateInput = {
@@ -301,6 +496,15 @@ export type GroupMembershipMinOrderByAggregateInput = {
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  notifyLevel?: Prisma.SortOrder
+  approvedById?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  bannedById?: Prisma.SortOrder
+  bannedAt?: Prisma.SortOrder
+  banReason?: Prisma.SortOrder
+  invitedById?: Prisma.SortOrder
 }
 
 export type GroupMembershipCreateNestedManyWithoutUserInput = {
@@ -310,10 +514,52 @@ export type GroupMembershipCreateNestedManyWithoutUserInput = {
   connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
 }
 
+export type GroupMembershipCreateNestedManyWithoutInvitedByInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutInvitedByInput, Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput> | Prisma.GroupMembershipCreateWithoutInvitedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutInvitedByInput | Prisma.GroupMembershipCreateOrConnectWithoutInvitedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyInvitedByInputEnvelope
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+}
+
+export type GroupMembershipCreateNestedManyWithoutApprovedByInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutApprovedByInput, Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput> | Prisma.GroupMembershipCreateWithoutApprovedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutApprovedByInput | Prisma.GroupMembershipCreateOrConnectWithoutApprovedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyApprovedByInputEnvelope
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+}
+
+export type GroupMembershipCreateNestedManyWithoutBannedByInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutBannedByInput, Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput> | Prisma.GroupMembershipCreateWithoutBannedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutBannedByInput | Prisma.GroupMembershipCreateOrConnectWithoutBannedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyBannedByInputEnvelope
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+}
+
 export type GroupMembershipUncheckedCreateNestedManyWithoutUserInput = {
   create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutUserInput, Prisma.GroupMembershipUncheckedCreateWithoutUserInput> | Prisma.GroupMembershipCreateWithoutUserInput[] | Prisma.GroupMembershipUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutUserInput | Prisma.GroupMembershipCreateOrConnectWithoutUserInput[]
   createMany?: Prisma.GroupMembershipCreateManyUserInputEnvelope
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+}
+
+export type GroupMembershipUncheckedCreateNestedManyWithoutInvitedByInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutInvitedByInput, Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput> | Prisma.GroupMembershipCreateWithoutInvitedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutInvitedByInput | Prisma.GroupMembershipCreateOrConnectWithoutInvitedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyInvitedByInputEnvelope
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+}
+
+export type GroupMembershipUncheckedCreateNestedManyWithoutApprovedByInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutApprovedByInput, Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput> | Prisma.GroupMembershipCreateWithoutApprovedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutApprovedByInput | Prisma.GroupMembershipCreateOrConnectWithoutApprovedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyApprovedByInputEnvelope
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+}
+
+export type GroupMembershipUncheckedCreateNestedManyWithoutBannedByInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutBannedByInput, Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput> | Prisma.GroupMembershipCreateWithoutBannedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutBannedByInput | Prisma.GroupMembershipCreateOrConnectWithoutBannedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyBannedByInputEnvelope
   connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
 }
 
@@ -331,6 +577,48 @@ export type GroupMembershipUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
 }
 
+export type GroupMembershipUpdateManyWithoutInvitedByNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutInvitedByInput, Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput> | Prisma.GroupMembershipCreateWithoutInvitedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutInvitedByInput | Prisma.GroupMembershipCreateOrConnectWithoutInvitedByInput[]
+  upsert?: Prisma.GroupMembershipUpsertWithWhereUniqueWithoutInvitedByInput | Prisma.GroupMembershipUpsertWithWhereUniqueWithoutInvitedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyInvitedByInputEnvelope
+  set?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  disconnect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  delete?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  update?: Prisma.GroupMembershipUpdateWithWhereUniqueWithoutInvitedByInput | Prisma.GroupMembershipUpdateWithWhereUniqueWithoutInvitedByInput[]
+  updateMany?: Prisma.GroupMembershipUpdateManyWithWhereWithoutInvitedByInput | Prisma.GroupMembershipUpdateManyWithWhereWithoutInvitedByInput[]
+  deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
+}
+
+export type GroupMembershipUpdateManyWithoutApprovedByNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutApprovedByInput, Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput> | Prisma.GroupMembershipCreateWithoutApprovedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutApprovedByInput | Prisma.GroupMembershipCreateOrConnectWithoutApprovedByInput[]
+  upsert?: Prisma.GroupMembershipUpsertWithWhereUniqueWithoutApprovedByInput | Prisma.GroupMembershipUpsertWithWhereUniqueWithoutApprovedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyApprovedByInputEnvelope
+  set?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  disconnect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  delete?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  update?: Prisma.GroupMembershipUpdateWithWhereUniqueWithoutApprovedByInput | Prisma.GroupMembershipUpdateWithWhereUniqueWithoutApprovedByInput[]
+  updateMany?: Prisma.GroupMembershipUpdateManyWithWhereWithoutApprovedByInput | Prisma.GroupMembershipUpdateManyWithWhereWithoutApprovedByInput[]
+  deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
+}
+
+export type GroupMembershipUpdateManyWithoutBannedByNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutBannedByInput, Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput> | Prisma.GroupMembershipCreateWithoutBannedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutBannedByInput | Prisma.GroupMembershipCreateOrConnectWithoutBannedByInput[]
+  upsert?: Prisma.GroupMembershipUpsertWithWhereUniqueWithoutBannedByInput | Prisma.GroupMembershipUpsertWithWhereUniqueWithoutBannedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyBannedByInputEnvelope
+  set?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  disconnect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  delete?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  update?: Prisma.GroupMembershipUpdateWithWhereUniqueWithoutBannedByInput | Prisma.GroupMembershipUpdateWithWhereUniqueWithoutBannedByInput[]
+  updateMany?: Prisma.GroupMembershipUpdateManyWithWhereWithoutBannedByInput | Prisma.GroupMembershipUpdateManyWithWhereWithoutBannedByInput[]
+  deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
+}
+
 export type GroupMembershipUncheckedUpdateManyWithoutUserNestedInput = {
   create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutUserInput, Prisma.GroupMembershipUncheckedCreateWithoutUserInput> | Prisma.GroupMembershipCreateWithoutUserInput[] | Prisma.GroupMembershipUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutUserInput | Prisma.GroupMembershipCreateOrConnectWithoutUserInput[]
@@ -342,6 +630,48 @@ export type GroupMembershipUncheckedUpdateManyWithoutUserNestedInput = {
   connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
   update?: Prisma.GroupMembershipUpdateWithWhereUniqueWithoutUserInput | Prisma.GroupMembershipUpdateWithWhereUniqueWithoutUserInput[]
   updateMany?: Prisma.GroupMembershipUpdateManyWithWhereWithoutUserInput | Prisma.GroupMembershipUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
+}
+
+export type GroupMembershipUncheckedUpdateManyWithoutInvitedByNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutInvitedByInput, Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput> | Prisma.GroupMembershipCreateWithoutInvitedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutInvitedByInput | Prisma.GroupMembershipCreateOrConnectWithoutInvitedByInput[]
+  upsert?: Prisma.GroupMembershipUpsertWithWhereUniqueWithoutInvitedByInput | Prisma.GroupMembershipUpsertWithWhereUniqueWithoutInvitedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyInvitedByInputEnvelope
+  set?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  disconnect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  delete?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  update?: Prisma.GroupMembershipUpdateWithWhereUniqueWithoutInvitedByInput | Prisma.GroupMembershipUpdateWithWhereUniqueWithoutInvitedByInput[]
+  updateMany?: Prisma.GroupMembershipUpdateManyWithWhereWithoutInvitedByInput | Prisma.GroupMembershipUpdateManyWithWhereWithoutInvitedByInput[]
+  deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
+}
+
+export type GroupMembershipUncheckedUpdateManyWithoutApprovedByNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutApprovedByInput, Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput> | Prisma.GroupMembershipCreateWithoutApprovedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutApprovedByInput | Prisma.GroupMembershipCreateOrConnectWithoutApprovedByInput[]
+  upsert?: Prisma.GroupMembershipUpsertWithWhereUniqueWithoutApprovedByInput | Prisma.GroupMembershipUpsertWithWhereUniqueWithoutApprovedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyApprovedByInputEnvelope
+  set?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  disconnect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  delete?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  update?: Prisma.GroupMembershipUpdateWithWhereUniqueWithoutApprovedByInput | Prisma.GroupMembershipUpdateWithWhereUniqueWithoutApprovedByInput[]
+  updateMany?: Prisma.GroupMembershipUpdateManyWithWhereWithoutApprovedByInput | Prisma.GroupMembershipUpdateManyWithWhereWithoutApprovedByInput[]
+  deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
+}
+
+export type GroupMembershipUncheckedUpdateManyWithoutBannedByNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupMembershipCreateWithoutBannedByInput, Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput> | Prisma.GroupMembershipCreateWithoutBannedByInput[] | Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput[]
+  connectOrCreate?: Prisma.GroupMembershipCreateOrConnectWithoutBannedByInput | Prisma.GroupMembershipCreateOrConnectWithoutBannedByInput[]
+  upsert?: Prisma.GroupMembershipUpsertWithWhereUniqueWithoutBannedByInput | Prisma.GroupMembershipUpsertWithWhereUniqueWithoutBannedByInput[]
+  createMany?: Prisma.GroupMembershipCreateManyBannedByInputEnvelope
+  set?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  disconnect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  delete?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  connect?: Prisma.GroupMembershipWhereUniqueInput | Prisma.GroupMembershipWhereUniqueInput[]
+  update?: Prisma.GroupMembershipUpdateWithWhereUniqueWithoutBannedByInput | Prisma.GroupMembershipUpdateWithWhereUniqueWithoutBannedByInput[]
+  updateMany?: Prisma.GroupMembershipUpdateManyWithWhereWithoutBannedByInput | Prisma.GroupMembershipUpdateManyWithWhereWithoutBannedByInput[]
   deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
 }
 
@@ -387,16 +717,46 @@ export type GroupMembershipUncheckedUpdateManyWithoutGroupNestedInput = {
   deleteMany?: Prisma.GroupMembershipScalarWhereInput | Prisma.GroupMembershipScalarWhereInput[]
 }
 
+export type EnumGroupRoleFieldUpdateOperationsInput = {
+  set?: $Enums.GroupRole
+}
+
+export type EnumGroupMemberStatusFieldUpdateOperationsInput = {
+  set?: $Enums.GroupMemberStatus
+}
+
+export type EnumGroupNotifyLevelFieldUpdateOperationsInput = {
+  set?: $Enums.GroupNotifyLevel
+}
+
 export type GroupMembershipCreateWithoutUserInput = {
   id?: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedAt?: Date | string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
   group: Prisma.CommunityGroupCreateNestedOneWithoutMembersInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsApprovedInput
+  bannedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsBannedInput
+  invitedBy?: Prisma.UserCreateNestedOneWithoutGroupInvitesSentInput
 }
 
 export type GroupMembershipUncheckedCreateWithoutUserInput = {
   id?: string
   groupId: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
 }
 
 export type GroupMembershipCreateOrConnectWithoutUserInput = {
@@ -406,6 +766,126 @@ export type GroupMembershipCreateOrConnectWithoutUserInput = {
 
 export type GroupMembershipCreateManyUserInputEnvelope = {
   data: Prisma.GroupMembershipCreateManyUserInput | Prisma.GroupMembershipCreateManyUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type GroupMembershipCreateWithoutInvitedByInput = {
+  id?: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedAt?: Date | string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  group: Prisma.CommunityGroupCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutGroupMembershipsInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsApprovedInput
+  bannedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsBannedInput
+}
+
+export type GroupMembershipUncheckedCreateWithoutInvitedByInput = {
+  id?: string
+  groupId: string
+  userId: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+}
+
+export type GroupMembershipCreateOrConnectWithoutInvitedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupMembershipCreateWithoutInvitedByInput, Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput>
+}
+
+export type GroupMembershipCreateManyInvitedByInputEnvelope = {
+  data: Prisma.GroupMembershipCreateManyInvitedByInput | Prisma.GroupMembershipCreateManyInvitedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type GroupMembershipCreateWithoutApprovedByInput = {
+  id?: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedAt?: Date | string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  group: Prisma.CommunityGroupCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutGroupMembershipsInput
+  bannedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsBannedInput
+  invitedBy?: Prisma.UserCreateNestedOneWithoutGroupInvitesSentInput
+}
+
+export type GroupMembershipUncheckedCreateWithoutApprovedByInput = {
+  id?: string
+  groupId: string
+  userId: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
+}
+
+export type GroupMembershipCreateOrConnectWithoutApprovedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupMembershipCreateWithoutApprovedByInput, Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput>
+}
+
+export type GroupMembershipCreateManyApprovedByInputEnvelope = {
+  data: Prisma.GroupMembershipCreateManyApprovedByInput | Prisma.GroupMembershipCreateManyApprovedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type GroupMembershipCreateWithoutBannedByInput = {
+  id?: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedAt?: Date | string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  group: Prisma.CommunityGroupCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutGroupMembershipsInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsApprovedInput
+  invitedBy?: Prisma.UserCreateNestedOneWithoutGroupInvitesSentInput
+}
+
+export type GroupMembershipUncheckedCreateWithoutBannedByInput = {
+  id?: string
+  groupId: string
+  userId: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
+}
+
+export type GroupMembershipCreateOrConnectWithoutBannedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupMembershipCreateWithoutBannedByInput, Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput>
+}
+
+export type GroupMembershipCreateManyBannedByInputEnvelope = {
+  data: Prisma.GroupMembershipCreateManyBannedByInput | Prisma.GroupMembershipCreateManyBannedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -433,18 +913,93 @@ export type GroupMembershipScalarWhereInput = {
   groupId?: Prisma.StringFilter<"GroupMembership"> | string
   userId?: Prisma.StringFilter<"GroupMembership"> | string
   createdAt?: Prisma.DateTimeFilter<"GroupMembership"> | Date | string
+  role?: Prisma.EnumGroupRoleFilter<"GroupMembership"> | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFilter<"GroupMembership"> | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFilter<"GroupMembership"> | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"GroupMembership"> | Date | string | null
+  bannedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  bannedAt?: Prisma.DateTimeNullableFilter<"GroupMembership"> | Date | string | null
+  banReason?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+  invitedById?: Prisma.StringNullableFilter<"GroupMembership"> | string | null
+}
+
+export type GroupMembershipUpsertWithWhereUniqueWithoutInvitedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  update: Prisma.XOR<Prisma.GroupMembershipUpdateWithoutInvitedByInput, Prisma.GroupMembershipUncheckedUpdateWithoutInvitedByInput>
+  create: Prisma.XOR<Prisma.GroupMembershipCreateWithoutInvitedByInput, Prisma.GroupMembershipUncheckedCreateWithoutInvitedByInput>
+}
+
+export type GroupMembershipUpdateWithWhereUniqueWithoutInvitedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  data: Prisma.XOR<Prisma.GroupMembershipUpdateWithoutInvitedByInput, Prisma.GroupMembershipUncheckedUpdateWithoutInvitedByInput>
+}
+
+export type GroupMembershipUpdateManyWithWhereWithoutInvitedByInput = {
+  where: Prisma.GroupMembershipScalarWhereInput
+  data: Prisma.XOR<Prisma.GroupMembershipUpdateManyMutationInput, Prisma.GroupMembershipUncheckedUpdateManyWithoutInvitedByInput>
+}
+
+export type GroupMembershipUpsertWithWhereUniqueWithoutApprovedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  update: Prisma.XOR<Prisma.GroupMembershipUpdateWithoutApprovedByInput, Prisma.GroupMembershipUncheckedUpdateWithoutApprovedByInput>
+  create: Prisma.XOR<Prisma.GroupMembershipCreateWithoutApprovedByInput, Prisma.GroupMembershipUncheckedCreateWithoutApprovedByInput>
+}
+
+export type GroupMembershipUpdateWithWhereUniqueWithoutApprovedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  data: Prisma.XOR<Prisma.GroupMembershipUpdateWithoutApprovedByInput, Prisma.GroupMembershipUncheckedUpdateWithoutApprovedByInput>
+}
+
+export type GroupMembershipUpdateManyWithWhereWithoutApprovedByInput = {
+  where: Prisma.GroupMembershipScalarWhereInput
+  data: Prisma.XOR<Prisma.GroupMembershipUpdateManyMutationInput, Prisma.GroupMembershipUncheckedUpdateManyWithoutApprovedByInput>
+}
+
+export type GroupMembershipUpsertWithWhereUniqueWithoutBannedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  update: Prisma.XOR<Prisma.GroupMembershipUpdateWithoutBannedByInput, Prisma.GroupMembershipUncheckedUpdateWithoutBannedByInput>
+  create: Prisma.XOR<Prisma.GroupMembershipCreateWithoutBannedByInput, Prisma.GroupMembershipUncheckedCreateWithoutBannedByInput>
+}
+
+export type GroupMembershipUpdateWithWhereUniqueWithoutBannedByInput = {
+  where: Prisma.GroupMembershipWhereUniqueInput
+  data: Prisma.XOR<Prisma.GroupMembershipUpdateWithoutBannedByInput, Prisma.GroupMembershipUncheckedUpdateWithoutBannedByInput>
+}
+
+export type GroupMembershipUpdateManyWithWhereWithoutBannedByInput = {
+  where: Prisma.GroupMembershipScalarWhereInput
+  data: Prisma.XOR<Prisma.GroupMembershipUpdateManyMutationInput, Prisma.GroupMembershipUncheckedUpdateManyWithoutBannedByInput>
 }
 
 export type GroupMembershipCreateWithoutGroupInput = {
   id?: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedAt?: Date | string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
   user: Prisma.UserCreateNestedOneWithoutGroupMembershipsInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsApprovedInput
+  bannedBy?: Prisma.UserCreateNestedOneWithoutGroupMembershipsBannedInput
+  invitedBy?: Prisma.UserCreateNestedOneWithoutGroupInvitesSentInput
 }
 
 export type GroupMembershipUncheckedCreateWithoutGroupInput = {
   id?: string
   userId: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
 }
 
 export type GroupMembershipCreateOrConnectWithoutGroupInput = {
@@ -477,48 +1032,300 @@ export type GroupMembershipCreateManyUserInput = {
   id?: string
   groupId: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
+}
+
+export type GroupMembershipCreateManyInvitedByInput = {
+  id?: string
+  groupId: string
+  userId: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+}
+
+export type GroupMembershipCreateManyApprovedByInput = {
+  id?: string
+  groupId: string
+  userId: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
+}
+
+export type GroupMembershipCreateManyBannedByInput = {
+  id?: string
+  groupId: string
+  userId: string
+  createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
 }
 
 export type GroupMembershipUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.CommunityGroupUpdateOneRequiredWithoutMembersNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsApprovedNestedInput
+  bannedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsBannedNestedInput
+  invitedBy?: Prisma.UserUpdateOneWithoutGroupInvitesSentNestedInput
 }
 
 export type GroupMembershipUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type GroupMembershipUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type GroupMembershipUpdateWithoutInvitedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  group?: Prisma.CommunityGroupUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutGroupMembershipsNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsApprovedNestedInput
+  bannedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsBannedNestedInput
+}
+
+export type GroupMembershipUncheckedUpdateWithoutInvitedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type GroupMembershipUncheckedUpdateManyWithoutInvitedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type GroupMembershipUpdateWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  group?: Prisma.CommunityGroupUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutGroupMembershipsNestedInput
+  bannedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsBannedNestedInput
+  invitedBy?: Prisma.UserUpdateOneWithoutGroupInvitesSentNestedInput
+}
+
+export type GroupMembershipUncheckedUpdateWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type GroupMembershipUncheckedUpdateManyWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type GroupMembershipUpdateWithoutBannedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  group?: Prisma.CommunityGroupUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutGroupMembershipsNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsApprovedNestedInput
+  invitedBy?: Prisma.UserUpdateOneWithoutGroupInvitesSentNestedInput
+}
+
+export type GroupMembershipUncheckedUpdateWithoutBannedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type GroupMembershipUncheckedUpdateManyWithoutBannedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type GroupMembershipCreateManyGroupInput = {
   id?: string
   userId: string
   createdAt?: Date | string
+  role?: $Enums.GroupRole
+  status?: $Enums.GroupMemberStatus
+  notifyLevel?: $Enums.GroupNotifyLevel
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  bannedById?: string | null
+  bannedAt?: Date | string | null
+  banReason?: string | null
+  invitedById?: string | null
 }
 
 export type GroupMembershipUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutGroupMembershipsNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsApprovedNestedInput
+  bannedBy?: Prisma.UserUpdateOneWithoutGroupMembershipsBannedNestedInput
+  invitedBy?: Prisma.UserUpdateOneWithoutGroupInvitesSentNestedInput
 }
 
 export type GroupMembershipUncheckedUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type GroupMembershipUncheckedUpdateManyWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
+  status?: Prisma.EnumGroupMemberStatusFieldUpdateOperationsInput | $Enums.GroupMemberStatus
+  notifyLevel?: Prisma.EnumGroupNotifyLevelFieldUpdateOperationsInput | $Enums.GroupNotifyLevel
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bannedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -528,8 +1335,20 @@ export type GroupMembershipSelect<ExtArgs extends runtime.Types.Extensions.Inter
   groupId?: boolean
   userId?: boolean
   createdAt?: boolean
+  role?: boolean
+  status?: boolean
+  notifyLevel?: boolean
+  approvedById?: boolean
+  approvedAt?: boolean
+  bannedById?: boolean
+  bannedAt?: boolean
+  banReason?: boolean
+  invitedById?: boolean
   group?: boolean | Prisma.CommunityGroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.GroupMembership$approvedByArgs<ExtArgs>
+  bannedBy?: boolean | Prisma.GroupMembership$bannedByArgs<ExtArgs>
+  invitedBy?: boolean | Prisma.GroupMembership$invitedByArgs<ExtArgs>
 }, ExtArgs["result"]["groupMembership"]>
 
 export type GroupMembershipSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -537,8 +1356,20 @@ export type GroupMembershipSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   groupId?: boolean
   userId?: boolean
   createdAt?: boolean
+  role?: boolean
+  status?: boolean
+  notifyLevel?: boolean
+  approvedById?: boolean
+  approvedAt?: boolean
+  bannedById?: boolean
+  bannedAt?: boolean
+  banReason?: boolean
+  invitedById?: boolean
   group?: boolean | Prisma.CommunityGroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.GroupMembership$approvedByArgs<ExtArgs>
+  bannedBy?: boolean | Prisma.GroupMembership$bannedByArgs<ExtArgs>
+  invitedBy?: boolean | Prisma.GroupMembership$invitedByArgs<ExtArgs>
 }, ExtArgs["result"]["groupMembership"]>
 
 export type GroupMembershipSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -546,8 +1377,20 @@ export type GroupMembershipSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   groupId?: boolean
   userId?: boolean
   createdAt?: boolean
+  role?: boolean
+  status?: boolean
+  notifyLevel?: boolean
+  approvedById?: boolean
+  approvedAt?: boolean
+  bannedById?: boolean
+  bannedAt?: boolean
+  banReason?: boolean
+  invitedById?: boolean
   group?: boolean | Prisma.CommunityGroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.GroupMembership$approvedByArgs<ExtArgs>
+  bannedBy?: boolean | Prisma.GroupMembership$bannedByArgs<ExtArgs>
+  invitedBy?: boolean | Prisma.GroupMembership$invitedByArgs<ExtArgs>
 }, ExtArgs["result"]["groupMembership"]>
 
 export type GroupMembershipSelectScalar = {
@@ -555,20 +1398,38 @@ export type GroupMembershipSelectScalar = {
   groupId?: boolean
   userId?: boolean
   createdAt?: boolean
+  role?: boolean
+  status?: boolean
+  notifyLevel?: boolean
+  approvedById?: boolean
+  approvedAt?: boolean
+  bannedById?: boolean
+  bannedAt?: boolean
+  banReason?: boolean
+  invitedById?: boolean
 }
 
-export type GroupMembershipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "userId" | "createdAt", ExtArgs["result"]["groupMembership"]>
+export type GroupMembershipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "userId" | "createdAt" | "role" | "status" | "notifyLevel" | "approvedById" | "approvedAt" | "bannedById" | "bannedAt" | "banReason" | "invitedById", ExtArgs["result"]["groupMembership"]>
 export type GroupMembershipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.CommunityGroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.GroupMembership$approvedByArgs<ExtArgs>
+  bannedBy?: boolean | Prisma.GroupMembership$bannedByArgs<ExtArgs>
+  invitedBy?: boolean | Prisma.GroupMembership$invitedByArgs<ExtArgs>
 }
 export type GroupMembershipIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.CommunityGroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.GroupMembership$approvedByArgs<ExtArgs>
+  bannedBy?: boolean | Prisma.GroupMembership$bannedByArgs<ExtArgs>
+  invitedBy?: boolean | Prisma.GroupMembership$invitedByArgs<ExtArgs>
 }
 export type GroupMembershipIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.CommunityGroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.GroupMembership$approvedByArgs<ExtArgs>
+  bannedBy?: boolean | Prisma.GroupMembership$bannedByArgs<ExtArgs>
+  invitedBy?: boolean | Prisma.GroupMembership$invitedByArgs<ExtArgs>
 }
 
 export type $GroupMembershipPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -576,12 +1437,30 @@ export type $GroupMembershipPayload<ExtArgs extends runtime.Types.Extensions.Int
   objects: {
     group: Prisma.$CommunityGroupPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
+    approvedBy: Prisma.$UserPayload<ExtArgs> | null
+    bannedBy: Prisma.$UserPayload<ExtArgs> | null
+    invitedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     groupId: string
     userId: string
     createdAt: Date
+    role: $Enums.GroupRole
+    /**
+     * APPROVAL groups: PENDING until an owner or moderator approves.
+     */
+    status: $Enums.GroupMemberStatus
+    notifyLevel: $Enums.GroupNotifyLevel
+    approvedById: string | null
+    approvedAt: Date | null
+    bannedById: string | null
+    bannedAt: Date | null
+    banReason: string | null
+    /**
+     * Set for an INVITED membership: who invited the member.
+     */
+    invitedById: string | null
   }, ExtArgs["result"]["groupMembership"]>
   composites: {}
 }
@@ -978,6 +1857,9 @@ export interface Prisma__GroupMembershipClient<T, Null = never, ExtArgs extends 
   readonly [Symbol.toStringTag]: "PrismaPromise"
   group<T extends Prisma.CommunityGroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CommunityGroupDefaultArgs<ExtArgs>>): Prisma.Prisma__CommunityGroupClient<runtime.Types.Result.GetResult<Prisma.$CommunityGroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  approvedBy<T extends Prisma.GroupMembership$approvedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMembership$approvedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  bannedBy<T extends Prisma.GroupMembership$bannedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMembership$bannedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  invitedBy<T extends Prisma.GroupMembership$invitedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMembership$invitedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1011,6 +1893,15 @@ export interface GroupMembershipFieldRefs {
   readonly groupId: Prisma.FieldRef<"GroupMembership", 'String'>
   readonly userId: Prisma.FieldRef<"GroupMembership", 'String'>
   readonly createdAt: Prisma.FieldRef<"GroupMembership", 'DateTime'>
+  readonly role: Prisma.FieldRef<"GroupMembership", 'GroupRole'>
+  readonly status: Prisma.FieldRef<"GroupMembership", 'GroupMemberStatus'>
+  readonly notifyLevel: Prisma.FieldRef<"GroupMembership", 'GroupNotifyLevel'>
+  readonly approvedById: Prisma.FieldRef<"GroupMembership", 'String'>
+  readonly approvedAt: Prisma.FieldRef<"GroupMembership", 'DateTime'>
+  readonly bannedById: Prisma.FieldRef<"GroupMembership", 'String'>
+  readonly bannedAt: Prisma.FieldRef<"GroupMembership", 'DateTime'>
+  readonly banReason: Prisma.FieldRef<"GroupMembership", 'String'>
+  readonly invitedById: Prisma.FieldRef<"GroupMembership", 'String'>
 }
     
 
@@ -1404,6 +2295,63 @@ export type GroupMembershipDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
    * Limit how many GroupMemberships to delete.
    */
   limit?: number
+}
+
+/**
+ * GroupMembership.approvedBy
+ */
+export type GroupMembership$approvedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * GroupMembership.bannedBy
+ */
+export type GroupMembership$bannedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * GroupMembership.invitedBy
+ */
+export type GroupMembership$invitedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

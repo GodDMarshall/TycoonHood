@@ -44,6 +44,7 @@ export type RankDefinitionMinAggregateOutputType = {
   minLevel: number | null
   description: string | null
   discordRoleId: string | null
+  summary: string | null
 }
 
 export type RankDefinitionMaxAggregateOutputType = {
@@ -54,6 +55,7 @@ export type RankDefinitionMaxAggregateOutputType = {
   minLevel: number | null
   description: string | null
   discordRoleId: string | null
+  summary: string | null
 }
 
 export type RankDefinitionCountAggregateOutputType = {
@@ -64,6 +66,8 @@ export type RankDefinitionCountAggregateOutputType = {
   minLevel: number
   description: number
   discordRoleId: number
+  criteria: number
+  summary: number
   _all: number
 }
 
@@ -86,6 +90,7 @@ export type RankDefinitionMinAggregateInputType = {
   minLevel?: true
   description?: true
   discordRoleId?: true
+  summary?: true
 }
 
 export type RankDefinitionMaxAggregateInputType = {
@@ -96,6 +101,7 @@ export type RankDefinitionMaxAggregateInputType = {
   minLevel?: true
   description?: true
   discordRoleId?: true
+  summary?: true
 }
 
 export type RankDefinitionCountAggregateInputType = {
@@ -106,6 +112,8 @@ export type RankDefinitionCountAggregateInputType = {
   minLevel?: true
   description?: true
   discordRoleId?: true
+  criteria?: true
+  summary?: true
   _all?: true
 }
 
@@ -203,6 +211,8 @@ export type RankDefinitionGroupByOutputType = {
   minLevel: number
   description: string | null
   discordRoleId: string | null
+  criteria: runtime.JsonValue | null
+  summary: string | null
   _count: RankDefinitionCountAggregateOutputType | null
   _avg: RankDefinitionAvgAggregateOutputType | null
   _sum: RankDefinitionSumAggregateOutputType | null
@@ -236,7 +246,10 @@ export type RankDefinitionWhereInput = {
   minLevel?: Prisma.IntFilter<"RankDefinition"> | number
   description?: Prisma.StringNullableFilter<"RankDefinition"> | string | null
   discordRoleId?: Prisma.StringNullableFilter<"RankDefinition"> | string | null
+  criteria?: Prisma.JsonNullableFilter<"RankDefinition">
+  summary?: Prisma.StringNullableFilter<"RankDefinition"> | string | null
   users?: Prisma.UserListRelationFilter
+  awards?: Prisma.RankAwardListRelationFilter
 }
 
 export type RankDefinitionOrderByWithRelationInput = {
@@ -247,7 +260,10 @@ export type RankDefinitionOrderByWithRelationInput = {
   minLevel?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   discordRoleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  criteria?: Prisma.SortOrderInput | Prisma.SortOrder
+  summary?: Prisma.SortOrderInput | Prisma.SortOrder
   users?: Prisma.UserOrderByRelationAggregateInput
+  awards?: Prisma.RankAwardOrderByRelationAggregateInput
 }
 
 export type RankDefinitionWhereUniqueInput = Prisma.AtLeast<{
@@ -261,7 +277,10 @@ export type RankDefinitionWhereUniqueInput = Prisma.AtLeast<{
   minLevel?: Prisma.IntFilter<"RankDefinition"> | number
   description?: Prisma.StringNullableFilter<"RankDefinition"> | string | null
   discordRoleId?: Prisma.StringNullableFilter<"RankDefinition"> | string | null
+  criteria?: Prisma.JsonNullableFilter<"RankDefinition">
+  summary?: Prisma.StringNullableFilter<"RankDefinition"> | string | null
   users?: Prisma.UserListRelationFilter
+  awards?: Prisma.RankAwardListRelationFilter
 }, "id" | "slug" | "sortOrder">
 
 export type RankDefinitionOrderByWithAggregationInput = {
@@ -272,6 +291,8 @@ export type RankDefinitionOrderByWithAggregationInput = {
   minLevel?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   discordRoleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  criteria?: Prisma.SortOrderInput | Prisma.SortOrder
+  summary?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.RankDefinitionCountOrderByAggregateInput
   _avg?: Prisma.RankDefinitionAvgOrderByAggregateInput
   _max?: Prisma.RankDefinitionMaxOrderByAggregateInput
@@ -290,6 +311,8 @@ export type RankDefinitionScalarWhereWithAggregatesInput = {
   minLevel?: Prisma.IntWithAggregatesFilter<"RankDefinition"> | number
   description?: Prisma.StringNullableWithAggregatesFilter<"RankDefinition"> | string | null
   discordRoleId?: Prisma.StringNullableWithAggregatesFilter<"RankDefinition"> | string | null
+  criteria?: Prisma.JsonNullableWithAggregatesFilter<"RankDefinition">
+  summary?: Prisma.StringNullableWithAggregatesFilter<"RankDefinition"> | string | null
 }
 
 export type RankDefinitionCreateInput = {
@@ -300,7 +323,10 @@ export type RankDefinitionCreateInput = {
   minLevel: number
   description?: string | null
   discordRoleId?: string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: string | null
   users?: Prisma.UserCreateNestedManyWithoutRankInput
+  awards?: Prisma.RankAwardCreateNestedManyWithoutRankInput
 }
 
 export type RankDefinitionUncheckedCreateInput = {
@@ -311,7 +337,10 @@ export type RankDefinitionUncheckedCreateInput = {
   minLevel: number
   description?: string | null
   discordRoleId?: string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: string | null
   users?: Prisma.UserUncheckedCreateNestedManyWithoutRankInput
+  awards?: Prisma.RankAwardUncheckedCreateNestedManyWithoutRankInput
 }
 
 export type RankDefinitionUpdateInput = {
@@ -322,7 +351,10 @@ export type RankDefinitionUpdateInput = {
   minLevel?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discordRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   users?: Prisma.UserUpdateManyWithoutRankNestedInput
+  awards?: Prisma.RankAwardUpdateManyWithoutRankNestedInput
 }
 
 export type RankDefinitionUncheckedUpdateInput = {
@@ -333,7 +365,10 @@ export type RankDefinitionUncheckedUpdateInput = {
   minLevel?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discordRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   users?: Prisma.UserUncheckedUpdateManyWithoutRankNestedInput
+  awards?: Prisma.RankAwardUncheckedUpdateManyWithoutRankNestedInput
 }
 
 export type RankDefinitionCreateManyInput = {
@@ -344,6 +379,8 @@ export type RankDefinitionCreateManyInput = {
   minLevel: number
   description?: string | null
   discordRoleId?: string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: string | null
 }
 
 export type RankDefinitionUpdateManyMutationInput = {
@@ -354,6 +391,8 @@ export type RankDefinitionUpdateManyMutationInput = {
   minLevel?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discordRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type RankDefinitionUncheckedUpdateManyInput = {
@@ -364,6 +403,8 @@ export type RankDefinitionUncheckedUpdateManyInput = {
   minLevel?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discordRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type RankDefinitionNullableScalarRelationFilter = {
@@ -379,6 +420,8 @@ export type RankDefinitionCountOrderByAggregateInput = {
   minLevel?: Prisma.SortOrder
   description?: Prisma.SortOrder
   discordRoleId?: Prisma.SortOrder
+  criteria?: Prisma.SortOrder
+  summary?: Prisma.SortOrder
 }
 
 export type RankDefinitionAvgOrderByAggregateInput = {
@@ -394,6 +437,7 @@ export type RankDefinitionMaxOrderByAggregateInput = {
   minLevel?: Prisma.SortOrder
   description?: Prisma.SortOrder
   discordRoleId?: Prisma.SortOrder
+  summary?: Prisma.SortOrder
 }
 
 export type RankDefinitionMinOrderByAggregateInput = {
@@ -404,11 +448,17 @@ export type RankDefinitionMinOrderByAggregateInput = {
   minLevel?: Prisma.SortOrder
   description?: Prisma.SortOrder
   discordRoleId?: Prisma.SortOrder
+  summary?: Prisma.SortOrder
 }
 
 export type RankDefinitionSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
   minLevel?: Prisma.SortOrder
+}
+
+export type RankDefinitionScalarRelationFilter = {
+  is?: Prisma.RankDefinitionWhereInput
+  isNot?: Prisma.RankDefinitionWhereInput
 }
 
 export type RankDefinitionCreateNestedOneWithoutUsersInput = {
@@ -427,6 +477,20 @@ export type RankDefinitionUpdateOneWithoutUsersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RankDefinitionUpdateToOneWithWhereWithoutUsersInput, Prisma.RankDefinitionUpdateWithoutUsersInput>, Prisma.RankDefinitionUncheckedUpdateWithoutUsersInput>
 }
 
+export type RankDefinitionCreateNestedOneWithoutAwardsInput = {
+  create?: Prisma.XOR<Prisma.RankDefinitionCreateWithoutAwardsInput, Prisma.RankDefinitionUncheckedCreateWithoutAwardsInput>
+  connectOrCreate?: Prisma.RankDefinitionCreateOrConnectWithoutAwardsInput
+  connect?: Prisma.RankDefinitionWhereUniqueInput
+}
+
+export type RankDefinitionUpdateOneRequiredWithoutAwardsNestedInput = {
+  create?: Prisma.XOR<Prisma.RankDefinitionCreateWithoutAwardsInput, Prisma.RankDefinitionUncheckedCreateWithoutAwardsInput>
+  connectOrCreate?: Prisma.RankDefinitionCreateOrConnectWithoutAwardsInput
+  upsert?: Prisma.RankDefinitionUpsertWithoutAwardsInput
+  connect?: Prisma.RankDefinitionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RankDefinitionUpdateToOneWithWhereWithoutAwardsInput, Prisma.RankDefinitionUpdateWithoutAwardsInput>, Prisma.RankDefinitionUncheckedUpdateWithoutAwardsInput>
+}
+
 export type RankDefinitionCreateWithoutUsersInput = {
   id?: string
   slug: string
@@ -435,6 +499,9 @@ export type RankDefinitionCreateWithoutUsersInput = {
   minLevel: number
   description?: string | null
   discordRoleId?: string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: string | null
+  awards?: Prisma.RankAwardCreateNestedManyWithoutRankInput
 }
 
 export type RankDefinitionUncheckedCreateWithoutUsersInput = {
@@ -445,6 +512,9 @@ export type RankDefinitionUncheckedCreateWithoutUsersInput = {
   minLevel: number
   description?: string | null
   discordRoleId?: string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: string | null
+  awards?: Prisma.RankAwardUncheckedCreateNestedManyWithoutRankInput
 }
 
 export type RankDefinitionCreateOrConnectWithoutUsersInput = {
@@ -471,6 +541,9 @@ export type RankDefinitionUpdateWithoutUsersInput = {
   minLevel?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discordRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  awards?: Prisma.RankAwardUpdateManyWithoutRankNestedInput
 }
 
 export type RankDefinitionUncheckedUpdateWithoutUsersInput = {
@@ -481,6 +554,77 @@ export type RankDefinitionUncheckedUpdateWithoutUsersInput = {
   minLevel?: Prisma.IntFieldUpdateOperationsInput | number
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discordRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  awards?: Prisma.RankAwardUncheckedUpdateManyWithoutRankNestedInput
+}
+
+export type RankDefinitionCreateWithoutAwardsInput = {
+  id?: string
+  slug: string
+  name: string
+  sortOrder: number
+  minLevel: number
+  description?: string | null
+  discordRoleId?: string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: string | null
+  users?: Prisma.UserCreateNestedManyWithoutRankInput
+}
+
+export type RankDefinitionUncheckedCreateWithoutAwardsInput = {
+  id?: string
+  slug: string
+  name: string
+  sortOrder: number
+  minLevel: number
+  description?: string | null
+  discordRoleId?: string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: string | null
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutRankInput
+}
+
+export type RankDefinitionCreateOrConnectWithoutAwardsInput = {
+  where: Prisma.RankDefinitionWhereUniqueInput
+  create: Prisma.XOR<Prisma.RankDefinitionCreateWithoutAwardsInput, Prisma.RankDefinitionUncheckedCreateWithoutAwardsInput>
+}
+
+export type RankDefinitionUpsertWithoutAwardsInput = {
+  update: Prisma.XOR<Prisma.RankDefinitionUpdateWithoutAwardsInput, Prisma.RankDefinitionUncheckedUpdateWithoutAwardsInput>
+  create: Prisma.XOR<Prisma.RankDefinitionCreateWithoutAwardsInput, Prisma.RankDefinitionUncheckedCreateWithoutAwardsInput>
+  where?: Prisma.RankDefinitionWhereInput
+}
+
+export type RankDefinitionUpdateToOneWithWhereWithoutAwardsInput = {
+  where?: Prisma.RankDefinitionWhereInput
+  data: Prisma.XOR<Prisma.RankDefinitionUpdateWithoutAwardsInput, Prisma.RankDefinitionUncheckedUpdateWithoutAwardsInput>
+}
+
+export type RankDefinitionUpdateWithoutAwardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  minLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discordRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  users?: Prisma.UserUpdateManyWithoutRankNestedInput
+}
+
+export type RankDefinitionUncheckedUpdateWithoutAwardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  minLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discordRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  criteria?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  users?: Prisma.UserUncheckedUpdateManyWithoutRankNestedInput
 }
 
 
@@ -490,10 +634,12 @@ export type RankDefinitionUncheckedUpdateWithoutUsersInput = {
 
 export type RankDefinitionCountOutputType = {
   users: number
+  awards: number
 }
 
 export type RankDefinitionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | RankDefinitionCountOutputTypeCountUsersArgs
+  awards?: boolean | RankDefinitionCountOutputTypeCountAwardsArgs
 }
 
 /**
@@ -513,6 +659,13 @@ export type RankDefinitionCountOutputTypeCountUsersArgs<ExtArgs extends runtime.
   where?: Prisma.UserWhereInput
 }
 
+/**
+ * RankDefinitionCountOutputType without action
+ */
+export type RankDefinitionCountOutputTypeCountAwardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RankAwardWhereInput
+}
+
 
 export type RankDefinitionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -522,7 +675,10 @@ export type RankDefinitionSelect<ExtArgs extends runtime.Types.Extensions.Intern
   minLevel?: boolean
   description?: boolean
   discordRoleId?: boolean
+  criteria?: boolean
+  summary?: boolean
   users?: boolean | Prisma.RankDefinition$usersArgs<ExtArgs>
+  awards?: boolean | Prisma.RankDefinition$awardsArgs<ExtArgs>
   _count?: boolean | Prisma.RankDefinitionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rankDefinition"]>
 
@@ -534,6 +690,8 @@ export type RankDefinitionSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   minLevel?: boolean
   description?: boolean
   discordRoleId?: boolean
+  criteria?: boolean
+  summary?: boolean
 }, ExtArgs["result"]["rankDefinition"]>
 
 export type RankDefinitionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -544,6 +702,8 @@ export type RankDefinitionSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   minLevel?: boolean
   description?: boolean
   discordRoleId?: boolean
+  criteria?: boolean
+  summary?: boolean
 }, ExtArgs["result"]["rankDefinition"]>
 
 export type RankDefinitionSelectScalar = {
@@ -554,11 +714,14 @@ export type RankDefinitionSelectScalar = {
   minLevel?: boolean
   description?: boolean
   discordRoleId?: boolean
+  criteria?: boolean
+  summary?: boolean
 }
 
-export type RankDefinitionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "sortOrder" | "minLevel" | "description" | "discordRoleId", ExtArgs["result"]["rankDefinition"]>
+export type RankDefinitionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "sortOrder" | "minLevel" | "description" | "discordRoleId" | "criteria" | "summary", ExtArgs["result"]["rankDefinition"]>
 export type RankDefinitionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.RankDefinition$usersArgs<ExtArgs>
+  awards?: boolean | Prisma.RankDefinition$awardsArgs<ExtArgs>
   _count?: boolean | Prisma.RankDefinitionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RankDefinitionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -568,6 +731,7 @@ export type $RankDefinitionPayload<ExtArgs extends runtime.Types.Extensions.Inte
   name: "RankDefinition"
   objects: {
     users: Prisma.$UserPayload<ExtArgs>[]
+    awards: Prisma.$RankAwardPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -580,6 +744,14 @@ export type $RankDefinitionPayload<ExtArgs extends runtime.Types.Extensions.Inte
      * wired in Phase 9
      */
     discordRoleId: string | null
+    /**
+     * Conditions beyond minLevel, e.g. {"verifiedSkills": 2, "verifiedProjects": 1}. Null = level only.
+     */
+    criteria: runtime.JsonValue | null
+    /**
+     * One plain sentence on what the rank means, shown on the rank ladder.
+     */
+    summary: string | null
   }, ExtArgs["result"]["rankDefinition"]>
   composites: {}
 }
@@ -975,6 +1147,7 @@ readonly fields: RankDefinitionFieldRefs;
 export interface Prisma__RankDefinitionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   users<T extends Prisma.RankDefinition$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RankDefinition$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  awards<T extends Prisma.RankDefinition$awardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RankDefinition$awardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RankAwardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1011,6 +1184,8 @@ export interface RankDefinitionFieldRefs {
   readonly minLevel: Prisma.FieldRef<"RankDefinition", 'Int'>
   readonly description: Prisma.FieldRef<"RankDefinition", 'String'>
   readonly discordRoleId: Prisma.FieldRef<"RankDefinition", 'String'>
+  readonly criteria: Prisma.FieldRef<"RankDefinition", 'Json'>
+  readonly summary: Prisma.FieldRef<"RankDefinition", 'String'>
 }
     
 
@@ -1420,6 +1595,30 @@ export type RankDefinition$usersArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+}
+
+/**
+ * RankDefinition.awards
+ */
+export type RankDefinition$awardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RankAward
+   */
+  select?: Prisma.RankAwardSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RankAward
+   */
+  omit?: Prisma.RankAwardOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RankAwardInclude<ExtArgs> | null
+  where?: Prisma.RankAwardWhereInput
+  orderBy?: Prisma.RankAwardOrderByWithRelationInput | Prisma.RankAwardOrderByWithRelationInput[]
+  cursor?: Prisma.RankAwardWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RankAwardScalarFieldEnum | Prisma.RankAwardScalarFieldEnum[]
 }
 
 /**
