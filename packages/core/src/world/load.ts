@@ -9,17 +9,18 @@
  * (DR-22). Other members are numbers, never people: the week's place comes
  * from standing(), which reads no one else's row.
  *
- * House-wide counts (presence and members per rank) hold nobody's data, so
- * they are kept for 60 seconds per process; `fresh: true` reads them anew.
+ * House-wide counts (presence and members per rank, read by platform/pulse.ts)
+ * hold nobody's data, so they are kept for 60 seconds per process;
+ * `fresh: true` reads them anew.
  */
 import { prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient } from "@tycoonhood/db";
 import { StandardService } from "../standard/standard";
 import { LeaderboardService } from "../discussions/leaderboard";
-import { DiscussionService } from "../discussions/service";
 import { CommunityService } from "../community/community";
 import { CartService } from "../shop/cart";
 import { nextLesson } from "../lms/gating";
+import { readPulse, type Pulse } from "../platform/pulse";
 import {
   WORLD_MAX_PROGRAMS,
   WORLD_STATE_VERSION,
@@ -31,66 +32,15 @@ import {
   type WorldState,
 } from "./state";
 
-const DAY_MS = 86_400_000;
 export const WORLD_HOUSE_TTL_MS = 60_000;
 
-interface HouseCounts {
-  presence: WorldState["presence"];
-  ranks: Array<{ rankId: string | null; members: number }>;
-}
+const houseMemo = new WeakMap<PrismaClient, { at: number; value: Promise<Pulse> }>();
 
-const houseMemo = new WeakMap<PrismaClient, { at: number; value: Promise<HouseCounts> }>();
-
-/** Counts across the whole house for the 24 hours before `now`. */
-async function readHouse(db: PrismaClient, now: Date): Promise<HouseCounts> {
-  const since = new Date(now.getTime() - DAY_MS);
-  const [standards, lessons, messages, posts, discussions, unlocks, claims, ranks] = await Promise.all([
-    // Members, not days: one member can meet two local days inside 24 hours.
-    db.$queryRaw<{ n: number }[]>`
-      SELECT count(DISTINCT "userId")::int AS n FROM "StandardDay" WHERE "metAt" >= ${since}`,
-    db.lessonProgress.count({ where: { completedAt: { gte: since } } }),
-    db.message.count({
-      where: { createdAt: { gte: since }, deletedAt: null, channel: { courseId: null, archivedAt: null } },
-    }),
-    db.communityPost.count({ where: { state: "VISIBLE", createdAt: { gte: since } } }),
-    // The posts a member sees in the discussions feed: no group posts, no archived categories.
-    new DiscussionService(db).archived().then(({ categories }) =>
-      db.communityPost.count({
-        where: {
-          state: "VISIBLE",
-          groupId: null,
-          createdAt: { gte: since },
-          ...(categories.length ? { OR: [{ categoryId: null }, { categoryId: { notIn: categories } }] } : {}),
-        },
-      })
-    ),
-    db.userAchievement.count({ where: { unlockedAt: { gte: since } } }),
-    db.ledgerTransaction.count({ where: { reason: "REWARD_MINING", status: "POSTED", createdAt: { gte: since } } }),
-    db.user.groupBy({
-      by: ["rankId"],
-      where: { suspendedAt: null, profile: { onboardedAt: { not: null } } },
-      _count: { _all: true },
-    }),
-  ]);
-  return {
-    presence: {
-      today: Number(standards[0]?.n ?? 0),
-      courses: lessons,
-      community: messages + posts,
-      leaderboard: unlocks,
-      mining: claims,
-      store: null,
-      discussions,
-    },
-    ranks: ranks.map((r) => ({ rankId: r.rankId, members: r._count._all })),
-  };
-}
-
-function houseCounts(db: PrismaClient, now: Date, fresh: boolean): Promise<HouseCounts> {
+function houseCounts(db: PrismaClient, now: Date, fresh: boolean): Promise<Pulse> {
   const at = now.getTime();
   const hit = fresh ? undefined : houseMemo.get(db);
   if (hit && at >= hit.at && at - hit.at < WORLD_HOUSE_TTL_MS) return hit.value;
-  const value = readHouse(db, now);
+  const value = readPulse(db, now);
   houseMemo.set(db, { at, value });
   // A failed read is not remembered.
   value.catch(() => {
