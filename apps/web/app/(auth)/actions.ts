@@ -4,6 +4,7 @@
  * generic message is the credentials one, on purpose.
  */
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import {
   accounts,
   sessions,
@@ -15,17 +16,53 @@ import {
   InvalidResetTokenError,
   referrals,
   ReferralError,
+  AccountSuspendedError,
+  emailVerification,
+  emailUndo,
+  EmailChangeEndedError,
+  EmailChangeNotYetError,
+  getSetting,
+  InvalidUndoLinkError,
+  InvalidVerificationTokenError,
+  safeNextPath,
+  mailWentOut,
+  passwordResetReply,
 } from "@tycoonhood/core";
-import { activeMailer } from "../../lib/mail";
-import { clearSessionCookie, deviceInfo, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
+import { sendVerificationEmail } from "../../lib/mail/verification";
+import { sendPasswordResetEmail } from "../../lib/mail/password-reset";
+import {
+  sendEmailChangedNotice,
+  sendEmailChangedUnconfirmedNotice,
+  sendEmailChangeUndoneNotices,
+  sendPasswordChangedNotice,
+} from "../../lib/mail/account";
+import { mailMode } from "../../lib/mail";
+import { clearSessionCookie, deviceInfo, getCurrentSession, setSessionCookie, SESSION_COOKIE } from "../../lib/auth";
 import { cookies } from "next/headers";
 import { rateLimit } from "../../lib/rate-limit";
+
+const THROTTLE_WINDOW_MS = 10 * 60_000;
+
+function tooManyAttempts(retryAfterSec: number): string {
+  return `Too many attempts. Try again in ~${Math.max(1, Math.ceil(retryAfterSec / 60))} min.`;
+}
 
 /** Throttle credential endpoints by client IP: 10 attempts / 10 minutes. */
 async function throttled(bucket: string): Promise<string | null> {
   const { ip } = await deviceInfo();
-  const r = rateLimit(`${bucket}:${ip ?? "unknown"}`, 10, 10 * 60_000);
-  return r.ok ? null : `Too many attempts. Try again in ~${Math.max(1, Math.ceil(r.retryAfterSec / 60))} min.`;
+  const r = rateLimit(`${bucket}:${ip ?? "unknown"}`, 10, THROTTLE_WINDOW_MS);
+  return r.ok ? null : tooManyAttempts(r.retryAfterSec);
+}
+
+/**
+ * Throttle sign-in per account as well, so guesses spread over many addresses
+ * still stop: 20 attempts / 10 minutes per email. It counts every address
+ * typed, whether or not an account has it, and says exactly what the per-IP
+ * limit says, so it never reveals whether an account exists.
+ */
+function throttledAccount(email: string): string | null {
+  const r = rateLimit(`login-email:${email.trim().toLowerCase()}`, 20, THROTTLE_WINDOW_MS);
+  return r.ok ? null : tooManyAttempts(r.retryAfterSec);
 }
 
 export interface AuthFormState {
@@ -42,6 +79,9 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
   const blocked = await throttled("register");
   if (blocked) return { error: blocked };
+  if (!(await getSetting("platform")).signupsOpen) {
+    return { error: "New sign-ups are paused for the moment. Please check back soon." };
+  }
 
   try {
     const user = await accounts.register(parsed.data);
@@ -60,6 +100,17 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
       }
     }
 
+    // Verification never blocks the journey: the member goes on to onboarding
+    // and the app shows a banner until the link is clicked. A link that could
+    // not be sent is revoked, so the banner says it was not sent (rather than
+    // "we sent a link") and offers to try again or contact us.
+    try {
+      const outcome = await sendVerificationEmail(await emailVerification.issue(user.id, { reason: "register" }));
+      if (!mailWentOut(outcome)) console.warn(`[verify] verification email not sent for ${user.id}: ${outcome}`);
+    } catch (e) {
+      console.error("[verify] could not issue verification email", e);
+    }
+
     const { raw } = await sessions.create(user.id, await deviceInfo());
     await setSessionCookie(raw);
   } catch (e) {
@@ -75,19 +126,21 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
     password: formData.get("password"),
   });
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
-  const blocked = await throttled("login");
+  // The IP check runs first, so one address cannot fill someone's account bucket on its own.
+  const blocked = (await throttled("login")) ?? throttledAccount(parsed.data.email);
   if (blocked) return { error: blocked };
 
-  let destination = "/dashboard";
+  // Back to the page that sent them here, when it is a safe path on this site.
+  let destination = safeNextPath(formData.get("next")) ?? "/today";
   try {
-    const user = await accounts.authenticate(parsed.data);
-    const { raw } = await sessions.create(user.id, await deviceInfo());
+    const { user, raw } = await accounts.signIn(parsed.data, await deviceInfo());
     await setSessionCookie(raw);
     const { prisma } = await import("@tycoonhood/db");
     const profile = await prisma.profile.findUnique({ where: { userId: user.id } });
     if (!profile?.onboardedAt) destination = "/onboarding";
   } catch (e) {
     if (e instanceof InvalidCredentialsError) return { error: e.message };
+    if (e instanceof AccountSuspendedError) return { error: e.message };
     throw e;
   }
   redirect(destination);
@@ -100,45 +153,39 @@ export async function logoutAction() {
   redirect("/login");
 }
 
+/**
+ * The forgot-password form's state. It never carries the reset link: that
+ * only ever travels by email (TYCOONHOOD_DECISIONS.md DR-2 / P0-2).
+ */
 export interface ForgotState {
-  sent?: boolean;
+  /** The reply after a request — the same words whether or not an account uses the address. */
+  done?: string;
   error?: string;
-  /** DEV MODE ONLY — surfaced with an explicit label so the flow is
-   *  exercisable without an inbox. Never populated when a real mailer runs. */
-  devLink?: string;
 }
 
 export async function forgotPasswordAction(_prev: ForgotState, formData: FormData): Promise<ForgotState> {
   const blocked = await throttled("pwreset");
   if (blocked) return { error: blocked };
 
+  // No mail provider at all: say so before anything is looked up, so every
+  // address gets the same answer and it reveals nothing about accounts.
+  const mode = mailMode();
+  if (mode === "off") return passwordResetReply("off");
+
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   if (!email || !email.includes("@")) return { error: "Enter the email you signed up with." };
 
-  const mailer = activeMailer();
-  if (!mailer) {
-    return { error: "Password reset email isn't configured on this deployment yet. Contact the house." };
-  }
-
   const { issued } = await passwordReset.requestReset(email);
-  // Identical response either way — no account enumeration.
-  if (!issued) return { sent: true };
-
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const link = `${base}/reset-password/${issued.rawToken}`;
-  const result = await mailer.send({
-    to: issued.email,
-    subject: "Reset your Tycoonhood password",
-    text: `Someone (hopefully you) asked to reset this account's password.\n\nReset link (valid 30 minutes, single use):\n${link}\n\nIf this wasn't you, ignore this email — your password is unchanged and your sessions are untouched.`,
-  });
-
-  // Never return the reset link to the browser. The dev mailer logs it
-  // server-side for local development; in production the link only travels by
-  // real email. (TYCOONHOOD_DECISIONS.md DR-2 / P0-2.)
-  if (!result.delivered && mailer.name !== "dev") {
-    return { error: "Couldn't send the email just now — try again in a minute." };
+  if (issued) {
+    const outcome = await sendPasswordResetEmail(issued);
+    // A failed send is logged, not shown: an error only for addresses that
+    // have an account would reveal which ones do. Its link is revoked, so it
+    // never counts toward the account's live links. The reply below already
+    // says what to do if nothing arrives.
+    if (!mailWentOut(outcome)) console.warn(`[reset] reset email not sent for ${issued.userId}: ${outcome}`);
   }
-  return { sent: true };
+  // Identical response either way — no account enumeration.
+  return passwordResetReply(mode);
 }
 
 export interface ResetState {
@@ -150,11 +197,136 @@ export async function resetPasswordAction(token: string, _prev: ResetState, form
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
   if (password !== confirm) return { error: "Passwords don't match." };
+  let user;
   try {
-    await passwordReset.resetPassword(token, password);
+    user = await passwordReset.resetPassword(token, password);
   } catch (e) {
     if (e instanceof InvalidResetTokenError) return { error: e.message };
     throw e;
   }
+  // After the response: a notice never holds up or undoes the reset.
+  const { id, email } = user;
+  after(() => sendPasswordChangedNotice(id, email, "reset"));
   return { done: true };
+}
+
+export interface VerifyState {
+  /** What the link did: confirmed the member's address, or moved the account to a new one. */
+  done?: "verified" | "email-changed";
+  /** The account's address now, after an email change. */
+  email?: string;
+  /** Whether this browser is signed in as the member the link was for. */
+  signedIn?: boolean;
+  error?: string;
+  /** False when a new link cannot help: the email change it was for is over. */
+  retry?: boolean;
+}
+
+/**
+ * Never names the old address: whoever used the link may not be the owner.
+ * Putting the change back does not sign in again the devices the
+ * confirmation signed out, so it says so.
+ */
+const CHANGE_NOT_TOLD =
+  "We couldn't email your old address about this change, so it didn't go through. Your email has not changed. " +
+  "You may need to sign in again on your other devices. Ask for the change again in a few minutes.";
+/** When the change could not be put back here: the sweep puts it back once it is a few minutes old (platform/email-notice). */
+const CHANGE_NOT_TOLD_YET =
+  "We couldn't email your old address about this change, so it won't go through. It will be undone on its own. " +
+  "You may need to sign in again on your other devices. Ask for the change again in 15 minutes.";
+
+/** Records on the hold that the undo notice went out. False if that failed: unrecorded, the change would be put back later. */
+async function noticeRecorded(userId: string, rawUndo: string): Promise<boolean> {
+  try {
+    await emailUndo.markNoticeSent(rawUndo);
+    return true;
+  } catch (e) {
+    console.error(`[email-change] the undo notice for ${userId} went out but could not be recorded`, e);
+    return false;
+  }
+}
+
+/**
+ * Puts back a change whose old address was not told, and says so. Never
+ * throws: if putting it back fails, the hold stays unrecorded and the sweep
+ * puts the change back once it is a few minutes old.
+ */
+async function putBackUntold(userId: string, rawUndo: string): Promise<VerifyState | null> {
+  try {
+    if (await emailUndo.revertUnnotified(rawUndo)) return { error: CHANGE_NOT_TOLD, retry: false };
+    console.error(`[email-change] the old address was not told, and the account moved again since: ${userId}`);
+    return null;
+  } catch (e) {
+    console.error(`[email-change] could not put back the change for ${userId}; the sweep will`, e);
+    return { error: CHANGE_NOT_TOLD_YET, retry: false };
+  }
+}
+
+/**
+ * Uses a link from an email: a confirmation link, or the link that confirms
+ * an email change. A POST behind a button, so mail scanners that prefetch
+ * links cannot spend it.
+ */
+export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: FormData): Promise<VerifyState> {
+  const blocked = await throttled("verify");
+  if (blocked) return { error: blocked };
+  // An email change signs out every other session; this browser's stays if it is the member's.
+  const session = await getCurrentSession();
+  let result;
+  try {
+    result = await emailVerification.confirm(token, { keepSessionId: session?.id });
+  } catch (e) {
+    if (e instanceof EmailChangeEndedError) return { error: e.message, retry: false };
+    // Too early: this same link works once the change's day is over, and a new one would wait as long.
+    if (e instanceof EmailChangeNotYetError) return { error: e.message, retry: false };
+    if (e instanceof InvalidVerificationTokenError) return { error: e.message };
+    throw e;
+  }
+  const signedIn = session?.user.id === result.user.id;
+  if (result.kind === "email-change") {
+    const { user, previousEmail, undo } = result;
+    if (undo) {
+      // A confirmed old address gets the link that undoes the change; it is held for the account meanwhile.
+      // The link exists only in this request, so the change stands only once that notice has gone out and
+      // the hold records it. Otherwise (no mail provider, one that refused it, or a send that timed out)
+      // it is put back here. If this request dies first, the sweep puts it back (platform/email-notice).
+      const outcome = await sendEmailChangedNotice(user.id, previousEmail, user.email, undo.rawToken);
+      if (!mailWentOut(outcome) || !(await noticeRecorded(user.id, undo.rawToken))) {
+        const untold = await putBackUntold(user.id, undo.rawToken);
+        if (untold) return untold;
+      }
+    } else {
+      // One never confirmed is only told, after the response, as it may not be the member's (platform/email-hold).
+      after(() => sendEmailChangedUnconfirmedNotice(user.id, previousEmail, user.email));
+    }
+    return { done: "email-changed", email: user.email, signedIn };
+  }
+  return { done: "verified", signedIn };
+}
+
+export interface UndoState {
+  error?: string;
+}
+
+/**
+ * Uses the link in the "your email was changed" notice: puts the old address
+ * back, signs out every device and replaces the password. A POST behind a
+ * button, like verifyEmailAction, so mail scanners cannot spend it. Then this
+ * browser goes straight to the new-password page with a fresh reset link: it
+ * just proved control of the restored address, which is what a reset link
+ * proves.
+ */
+export async function undoEmailChangeAction(token: string, _prev: UndoState, _fd: FormData): Promise<UndoState> {
+  const blocked = await throttled("undo-email");
+  if (blocked) return { error: blocked };
+  let undone;
+  try {
+    undone = await emailUndo.undo(token);
+  } catch (e) {
+    if (e instanceof InvalidUndoLinkError) return { error: e.message };
+    throw e;
+  }
+  const { userId, restoredEmail, removedEmail } = undone;
+  after(() => sendEmailChangeUndoneNotices(userId, restoredEmail, removedEmail));
+  redirect(`/reset-password/${undone.reset.rawToken}?undone=1`);
 }

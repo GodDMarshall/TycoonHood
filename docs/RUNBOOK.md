@@ -28,15 +28,28 @@ pnpm db:migrate; pnpm db:seed
 
 Two Vercel projects out of one repo; one Neon Postgres between them.
 
-1. **Database** — create a Neon project, copy the pooled connection string.
-   Apply migrations + seeds from your machine:
+1. **Database** — create a Neon project. It gives two connection strings for
+   the same database: the pooled one, with `-pooler` in its host, for the
+   site, and the direct one, without it, for migrations. Migrations and the
+   deploy lock refuse the pooled one, because a lock held through a pooler
+   can outlive the run. Migrate, seed and verify from your machine with both
+   set:
    ```powershell
    $env:DATABASE_URL="<neon-pooled-url>"
-   pnpm db:migrate ; pnpm db:seed ; pnpm db:seed:content ; pnpm db:seed:academy
+   $env:DATABASE_URL_UNPOOLED="<neon-direct-url>"
+   $env:ADMIN_EMAIL="you@yourdomain.com"
+   $env:ADMIN_PASSWORD="<a real password>"
+   pnpm deploy:db
    ```
-   (`db:migrate` applies `packages/db/prisma/migrations/*.sql` in order — no
-   Prisma engine download needed; the client in `packages/db/src/generated`
-   is committed and engine-free.)
+   `deploy:db` names the database before it connects and uses
+   `DATABASE_URL_UNPOOLED` for every step. It stops if the two addresses name
+   different databases, and waits its turn while a Vercel build is migrating
+   or seeding the same database. It applies `packages/db/prisma/migrations`
+   as plain SQL (`pnpm db:migrate:sql`), so no Prisma engine download is
+   needed; the client in `packages/db/src/generated` is committed and
+   engine-free. Do not use `pnpm db:migrate` here: it is `prisma migrate dev`,
+   for development databases only. A production build migrates too, and
+   seeds once with `SEED_ON_DEPLOY=1`; see `docs/DEPLOYMENT.md`.
 
 2. **Web project** — import the repo, root directory `apps/web`,
    install command `pnpm install`, build `pnpm --filter @tycoonhood/web build`.
@@ -49,6 +62,7 @@ Two Vercel projects out of one repo; one Neon Postgres between them.
    | Key | Value | Notes |
    |---|---|---|
    | `DATABASE_URL` | Neon pooled URL | both |
+   | `DATABASE_URL_UNPOOLED` | Neon direct URL (no `-pooler`), same database | web; the build migrates, seeds and holds the deploy lock over it. Neon's Vercel integration sets it |
    | `DEV_MODE` | `false` | disables the dev fiat provider |
    | `COOKIE_DOMAIN` | `.yourdomain.com` | shared sign-in across www + miner |
    | `NEXT_PUBLIC_SITE_URL` | `https://www.yourdomain.com` | web |
@@ -108,6 +122,14 @@ It reads the same `prisma/migrations` directory, applies each migration in a
 transaction, records it in `_prisma_migrations` with Prisma's checksum scheme,
 and refuses to run if an already-applied migration has been edited. Prisma
 treats the database as up to date afterwards.
+
+Like the build, both commands use `DATABASE_URL_UNPOOLED` when it is set,
+else `DATABASE_URL`, and refuse Neon's pooled address. `pnpm db:deploy`
+(`prisma migrate deploy`) reads only `DATABASE_URL`, so point that at the
+direct address when you use it. It takes the same migration lock as
+`db:migrate:sql` but waits only 10 seconds: while a build or another run is
+migrating, it fails with P1002 and applies nothing. Run it again when that
+run has finished.
 
 ## Production checklist
 

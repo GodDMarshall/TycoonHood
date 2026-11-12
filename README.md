@@ -1,115 +1,104 @@
 # TYCOONHOOD
 
-Gamified personal development with an honest economy. Four programs, one
-ledger, everything on the books.
+A learning platform with an honest economy: four programmes, certificates,
+an affiliate programme paid in rupees, a shop, a community, and THC, the
+platform's internal credits.
 
 **Stack:** TypeScript · Next.js 15 (App Router) · React 19 · PostgreSQL 16 ·
 Prisma (engine-free client, committed) · Tailwind v4 · pnpm monorepo.
 
-**Status:** not deployed. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for what
-works and what does not, and [`LAUNCH.md`](LAUNCH.md) to put it online.
+**Status:** ready to launch on Vercel. [`LAUNCH.md`](LAUNCH.md) is the runbook,
+[`TYCOONHOOD_BLOCKED_ON_YOU.md`](TYCOONHOOD_BLOCKED_ON_YOU.md) lists what only
+the owner can do, and [`TYCOONHOOD_STATE.md`](TYCOONHOOD_STATE.md) says what
+works and how it was checked.
 
 ---
 
-## Run it (Windows / PowerShell)
+## Run it locally
 
-```powershell
-# prerequisites: Node 22+, pnpm 9+, PostgreSQL 16 running locally
-powershell -NoProfile -ExecutionPolicy Bypass -File .\setup-windows.ps1
+Prerequisites: Node 22.12 or later, pnpm 9, PostgreSQL 16.
+
 ```
-
-That script checks prerequisites, gets you a database, writes `.env`, installs,
-migrates, seeds and verifies. To do it by hand instead:
-
-```powershell
-Copy-Item .env.example .env        # then edit DATABASE_URL
+cp .env.example .env               # then set DATABASE_URL
 pnpm install
 pnpm db:migrate:sql                # engine-free migration runner
-pnpm db:seed                       # genesis, ranks, missions, admin
-pnpm db:seed:academy               # the four programs' curriculum
-pnpm db:seed:content               # essays, challenges, storefront
-pnpm db:seed:merch                 # gear, priced from the live mining rate
-pnpm dev                           # site   -> http://localhost:3000
-pnpm dev:miner                     # Miner  -> http://localhost:3001
+pnpm db:seed                       # genesis, levels, ranks, missions, the admin
+pnpm db:seed:academy               # the four programmes
+pnpm db:seed:content               # essays, challenges, storefront items
+pnpm --filter @tycoonhood/db seed:shop
+pnpm --filter @tycoonhood/db seed:community
+pnpm dev                           # http://localhost:3000
 ```
 
-**The admin account.** The seed refuses to run without `ADMIN_PASSWORD`, because
-the built-in development password is public. Set `ADMIN_EMAIL` and
+On Windows, `setup-windows.ps1` does the same.
+
+**The admin account.** The seed refuses to run without `ADMIN_PASSWORD`,
+because the built-in development password is public. Set `ADMIN_EMAIL` and
 `ADMIN_PASSWORD` before seeding. For a throwaway local database only,
-`ALLOW_DEFAULT_ADMIN=1` opts into the public one — never set it against a real
+`ALLOW_DEFAULT_ADMIN=1` opts into the public one. Never set it against a real
 database.
 
-## Verify it
+`DEV_MODE=true` (local only) turns on the labelled payment sandbox and writes
+emails to the server log instead of sending them. A production build ignores
+it.
 
-```powershell
-pnpm verify      # typecheck + lint + 101 tests + both builds
-pnpm e2e         # a real browser: author a product, buy it, ship it, get paid
-pnpm preflight   # the gate between "it builds" and "it is safe to launch"
+## Check it
+
+```
+pnpm typecheck && pnpm lint        # all workspaces
+pnpm test                          # 737 tests against a real Postgres
+pnpm build:web
+pnpm e2e:journeys                  # nine browser journeys against a running build on :3000
+pnpm preflight                     # reads the production environment before launch
 ```
 
-`pnpm e2e` drives Chromium against both production builds and, as an admin and
-then as a member, authors a hoodie with five sizes, signs a new member up
-through an invite link, buys size M with a delivery address, ships it with
-tracking, and confirms the referral pays on a real lesson. Then it deletes
-what it made and checks it left nothing behind.
+Results of the last full run: [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md).
 
 ## The map
 
 | Area | Routes |
 |---|---|
-| Public | `/` `/about` `/programs[/slug]` `/challenges` `/thc` `/marketplace` `/roadmap` `/blog[/slug]` `/faq` `/status` `/styleguide` `/terms` `/privacy` |
-| Auth | `/register` `/login` `/onboarding` `/forgot-password` `/reset-password/[token]` |
-| Member | `/dashboard` `/academy[/slug[/lesson/id]]` `/leaderboard` `/wallet` `/orders` `/settings` `/library/[slug]` |
-| Admin | `/admin` `/admin/{members,economy,content,missions,products,videos,challenges,orders}` |
-| API | `/api/webhooks/stripe` `/api/webhooks/discord` |
-| Miner | `apps/miner` — five tabs on `:3001`, shared sign-in |
+| Public | `/` `/about` `/learning` `/programs[/slug]` `/instructors/[slug]` `/earn` `/earn/terms` `/marketplace[/slug]` `/connect` `/blog[/slug]` `/success-stories` `/challenges` `/thc` `/roadmap` `/status` `/contact` `/faq` `/terms` `/privacy` `/refund-policy` `/verify/[serial]` `/u/[username]` |
+| Sign-in | `/register` `/login` `/onboarding` `/forgot-password` `/reset-password/[token]` `/verify-email/[token]` `/undo-email/[token]` |
+| Member | `/today` `/courses[/slug[/lesson/id]]` `/courses/history` `/certificates[/serial]` `/library/[slug]` `/community[/channel]` `/community/discussions/**` `/community/groups[/slug]` `/leaderboard` `/achievements` `/mining` `/mining/{tasks,squad,ranks}` `/wallet` `/store[/slug]` `/cart` `/wishlist` `/checkout/**` `/orders[/id]` `/earnings` `/profile` `/notifications` `/settings` `/world` |
+| Admin | `/admin` and `/admin/{members,courses,content,community,moderation,challenges,missions,standard,economy,earn,products,orders,coupons,refunds,videos,site,analytics,audit}` |
+| API | `/api/webhooks/razorpay` `/api/webhooks/stripe` `/api/cron/expire-orders` `/api/cron/email-holds` `/api/community/[channel]` `/api/integrations/discord/interactions` `/r/[code]` (affiliate links) |
 
-## The Miner
-
-A separate app, its own deployment, phone-first. Five tabs: **Rig** (idle
-mining), **Watch** (THC for genuinely watching our videos, timed server-side),
-**Squad** (invites that pay on real work, never on signup), **Ranks** (the open
-books), **Wallet** (what your balance actually reaches, in months of mining).
-
-See [`START-HERE-MINER.md`](START-HERE-MINER.md).
+`/world` is the optional 3D campus. Phones, tablets, reduced motion and
+software GPUs get its 2D page. `apps/miner` only redirects old Miner links to
+`/mining`.
 
 ## The economy, in one paragraph
 
-1 quadrillion THC minted once at genesis into Treasury — provable at `/thc`
-because the mint counter-account can only go negative. Everything since is
-double-entry: rewards flow from finite pools, purchases flow to REVENUE, the
-Miner distributes without minting, upgrades burn THC back. Every balance is a
-cached sum the wallet page re-audits live. Merch is priced in **months of
-mining**, derived from the live mining rate rather than typed in, so changing
-the rate moves every price with it. THC are internal utility credits — not
-money, not redeemable, no transfers between members.
+THC is minted once at genesis into a treasury, and every movement since is a
+balanced double-entry transaction with an idempotency key, so the supply is
+provable at `/thc`. THC are internal credits: not money, not redeemable, not
+transferable between members. Rupees are a separate rail: Razorpay payments
+and affiliate commissions, stored in integer paise.
 
 ## Where things live
 
 | | |
 |---|---|
-| `apps/web` | the platform: public site, academy, game, admin |
-| `apps/miner` | the Miner PWA |
-| `packages/core` | ledger, auth, LMS, gamification, mining, commerce, catalog, growth, rules engine |
-| `packages/db` | Prisma schema, SQL migrations, seeds, committed engine-free client |
-| `packages/ui` | the design system — tokens plus 20 components |
-| `packages/config` | every economy constant, in one place |
-| `docs/` | BLUEPRINT · DECISIONS · RUNBOOK |
+| `apps/web` | the platform: public site, member app, admin centre |
+| `apps/miner` | redirects only |
+| `packages/core` | every domain rule: auth, permissions, LMS, gamification, ledger, shop, earn, community, platform |
+| `packages/db` | Prisma schema, SQL migrations, seeds, the curriculum, the committed engine-free client |
+| `packages/ui` | design tokens and shared components |
+| `packages/config` | economy and programme constants |
+| `scripts/` | the Vercel build, browser journeys, the 3D bundle check |
 
 ## The documents that matter
 
 | File | What it is for |
 |---|---|
-| [`LAUNCH.md`](LAUNCH.md) | Deploying it. 45 minutes, step by step. |
-| [`PROJECT_STATUS.md`](PROJECT_STATUS.md) | What works, what does not. Verified, not claimed. |
-| [`TYCOONHOOD_BLOCKED_ON_YOU.md`](TYCOONHOOD_BLOCKED_ON_YOU.md) | Decisions only the owner can make. |
-| [`TYCOONHOOD_STATE.md`](TYCOONHOOD_STATE.md) | Full current-state audit. |
-| [`TYCOONHOOD_DECISIONS.md`](TYCOONHOOD_DECISIONS.md) | Every architectural decision, with the alternatives rejected. |
-| [`TYCOONHOOD_ROADMAP.md`](TYCOONHOOD_ROADMAP.md) | What is next, in order. |
-
-## Honestly, what is missing
-
-Course and challenge authoring in the admin — content is still seeded by
-script. Membership tiers and subscriptions, which is the business model.
-Analytics beyond the economy overview. Mobile navigation on the main site.
-Telegram, which was cut. The roadmap has all of it, in priority order.
+| [`LAUNCH.md`](LAUNCH.md) | Going live on Vercel, step by step |
+| [`TYCOONHOOD_BLOCKED_ON_YOU.md`](TYCOONHOOD_BLOCKED_ON_YOU.md) | What only the owner can do |
+| [`TYCOONHOOD_STATE.md`](TYCOONHOOD_STATE.md) | What works, what does not, and how it was checked |
+| [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) | The latest test and journey results |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Environment variables, Razorpay, scheduled jobs |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/DATABASE.md`](docs/DATABASE.md) | How it is built |
+| [`docs/CONTENT_INVENTORY.md`](docs/CONTENT_INVENTORY.md) | Programmes, lessons and pages |
+| [`docs/AGENT_OWNERSHIP.md`](docs/AGENT_OWNERSHIP.md) | Who built which part |
+| [`TYCOONHOOD_DECISIONS.md`](TYCOONHOOD_DECISIONS.md) · [`docs/DECISIONS.md`](docs/DECISIONS.md) | Decisions, with the alternatives rejected |
+| [`TYCOONHOOD_ROADMAP.md`](TYCOONHOOD_ROADMAP.md) | What is next, in order |

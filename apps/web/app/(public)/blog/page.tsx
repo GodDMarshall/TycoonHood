@@ -6,7 +6,7 @@ import { SectionRule } from "@tycoonhood/ui";
 export const metadata: Metadata = { title: "Journal" };
 export const dynamic = "force-dynamic";
 
-const dateFmt = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric" });
+const dateFmt = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", year: "numeric", month: "long", day: "numeric" });
 
 export default async function BlogIndex() {
   const posts = await prisma.post.findMany({
@@ -15,9 +15,9 @@ export default async function BlogIndex() {
   });
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-3xl px-[var(--gutter)] py-16 md:py-24">
       <p className="eyebrow mb-3">Journal</p>
-      <h1 className="display text-[40px] leading-tight">Written like we build.</h1>
+      <h1 className="display text-h1">Written like we build.</h1>
       <p className="mt-3 max-w-xl text-ink-2">
         Essays on the pillars, the economy, and the standard — published when
         there is something worth saying.

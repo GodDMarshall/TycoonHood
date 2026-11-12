@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import { requireAdmin } from "../../../../lib/guard";
+import { requirePermission } from "../../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
-import { catalog, judgePrice, suggestPrice, dailyYield, thcPerDollar, MERCH_TARGET_DAYS } from "@tycoonhood/core";
+import { catalog, judgePrice, suggestPrice, dailyYield, thcPerRupee, MERCH_TARGET_DAYS, SHOP_CATEGORIES, LOW_STOCK_AT, categoryLabel } from "@tycoonhood/core";
 import { Badge, Card, CardContent, SectionRule } from "@tycoonhood/ui";
 import { ProductForm } from "../../../../components/admin-product-form";
-import { toggleProductAction } from "./actions";
+import { setShopFieldsAction, toggleProductAction } from "./actions";
+import { ShopFieldsForm } from "../../../../components/shop/shop-fields-form";
+import { money as fmtMoney } from "../../../../components/shop/format";
 
 export const metadata: Metadata = { title: "Admin · Products" };
 export const dynamic = "force-dynamic";
 
-const money = (c: number | null) => (c == null ? "—" : `$${(c / 100).toFixed(2)}`);
+const money = (c: number | null, cur = "INR") => (c == null ? "—" : fmtMoney(c, cur));
 
 export default async function AdminProducts() {
-  await requireAdmin();
+  await requirePermission("admin.commerce");
 
   const [products, courses] = await Promise.all([
     catalog.list(),
@@ -24,19 +26,29 @@ export default async function AdminProducts() {
     targetMinDays: MERCH_TARGET_DAYS.min,
     targetMaxDays: MERCH_TARGET_DAYS.max,
     suggested: suggestPrice().toString(),
-    // The house exchange rate, so the form can check a THC price against the
-    // shelf price rather than against a one-size window.
-    thcPerDollar: Math.round(thcPerDollar()),
+    // THC per rupee at the house anchor, so the form can check a THC price
+    // against the rupee shelf price rather than against a one-size window.
+    // Not rounded: at about 7 THC per rupee, rounding would skew the reading.
+    thcPerRupee: thcPerRupee(),
   };
 
   return (
     <main>
-      <h1 className="display text-[30px]">Products</h1>
+      <h1 className="display text-h2">Products</h1>
       <p className="mt-2 max-w-2xl text-[14px] text-ink-2">
         Everything a member can spend on. A THC price here is not a number — it
         is an amount of someone&rsquo;s time, so the form tells you how many
         months of mining you just asked for.
       </p>
+
+      <SectionRule label="Inventory" className="mb-4 mt-8" />
+      <InventoryOverview
+        rows={products.flatMap((p) =>
+          p.variants.length
+            ? p.variants.filter((v) => v.active).map((v) => ({ key: v.id, name: `${p.name} · ${v.label}`, stock: v.inventory as number | null, live: p.active }))
+            : [{ key: p.id, name: p.name, stock: p.inventory, live: p.active }]
+        )}
+      />
 
       <SectionRule label={`${products.length} in the catalogue`} className="mb-4 mt-8" />
 
@@ -46,7 +58,7 @@ export default async function AdminProducts() {
         <div className="flex flex-col gap-2">
           {products.map((p) => {
             const stock = catalog.stockOf(p);
-            const time = p.priceThc != null && p.kind === "PHYSICAL" ? judgePrice(p.priceThc, p.priceFiatCents) : null;
+            const time = p.priceThc != null && p.kind === "PHYSICAL" ? judgePrice(p.priceThc, p.priceFiatCents, p.fiatCurrency) : null;
             const margin =
               p.costCents != null && p.priceFiatCents != null
                 ? Math.round(((p.priceFiatCents - p.costCents) / p.priceFiatCents) * 100)
@@ -63,12 +75,14 @@ export default async function AdminProducts() {
                       {p.priceThc != null && (
                         <span className="figures">{p.priceThc.toLocaleString("en-US")} THC</span>
                       )}
-                      {p.priceFiatCents != null && <span className="figures">{money(p.priceFiatCents)}</span>}
+                      {p.priceFiatCents != null && <span className="figures">{money(p.priceFiatCents, p.fiatCurrency)}</span>}
+                      {p.category ? <span className="text-ink-3">{categoryLabel(p.category)}</span> : <span className="text-gold-bright">no category</span>}
+                      {p.sellerName && <span className="text-ink-3">sold by {p.sellerName}</span>}
                       {p.costCents != null && (
-                        <span className="text-ink-3">cost {money(p.costCents)}{margin != null && ` · ${margin}% margin`}</span>
+                        <span className="text-ink-3">cost {money(p.costCents, p.fiatCurrency)}{margin != null && ` · ${margin}% margin`}</span>
                       )}
                       <span className="text-ink-3">
-                        {stock == null ? "unlimited" : `${stock} in stock`}
+                        {stock == null ? "unlimited" : `${stock} in stock`}{stock != null && stock <= LOW_STOCK_AT && " · low"}
                       </span>
                       {p._count.orderItems > 0 && (
                         <span className="text-ink-3">{p._count.orderItems} sold</span>
@@ -89,6 +103,13 @@ export default async function AdminProducts() {
                         ))}
                       </p>
                     )}
+
+                    <ShopFieldsForm
+                      action={setShopFieldsAction.bind(null, p.id)}
+                      categories={SHOP_CATEGORIES.map((c) => ({ slug: c.slug, label: c.label }))}
+                      category={p.category}
+                      sellerName={p.sellerName}
+                    />
 
                     {time && (
                       <p className={`mt-1 text-[12px] ${
@@ -122,5 +143,29 @@ export default async function AdminProducts() {
       </p>
       <ProductForm courses={courses} economics={economics} />
     </main>
+  );
+}
+
+/** Every stocked line at a glance; anything at or below LOW_STOCK_AT is flagged. */
+function InventoryOverview({ rows }: { rows: { key: string; name: string; stock: number | null; live: boolean }[] }) {
+  const tracked = rows.filter((r) => r.stock != null);
+  const low = tracked.filter((r) => (r.stock ?? 0) <= LOW_STOCK_AT);
+  return (
+    <div className="mb-2">
+      <p className="text-[13px] text-ink-2">
+        {tracked.length} stocked {tracked.length === 1 ? "line" : "lines"} ·{" "}
+        <span className={low.length ? "text-gold-bright" : ""}>{low.length} at or below {LOW_STOCK_AT}</span> ·{" "}
+        {rows.length - tracked.length} unlimited (digital)
+      </p>
+      {low.length > 0 && (
+        <ul className="mt-2 flex flex-wrap gap-1.5">
+          {low.map((r) => (
+            <li key={r.key} className={`figures rounded border px-2 py-0.5 text-[12px] ${r.stock === 0 ? "border-danger/40 text-danger" : "border-gold-deep/50 text-gold-bright"}`}>
+              {r.name}: {r.stock === 0 ? "sold out" : `${r.stock} left`}{!r.live && " (draft)"}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

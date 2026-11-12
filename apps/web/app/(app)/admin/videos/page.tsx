@@ -23,7 +23,7 @@ export default async function AdminVideos() {
 
   return (
     <main>
-      <h1 className="display text-[30px]">Watch to earn</h1>
+      <h1 className="display text-h2">Watch to earn</h1>
       <p className="mt-2 max-w-2xl text-[14px] text-ink-2">
         Tycoonhood videos that pay THC for being genuinely watched. The server
         stamps the start, times it independently of the browser, and refuses to

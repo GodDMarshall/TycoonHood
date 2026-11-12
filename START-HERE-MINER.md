@@ -1,5 +1,11 @@
 # THE MINER — how to run it, what it does
 
+> **Update (DR-27, 2026-10-01):** the Miner now lives inside the member app at
+> `/mining` (Rig, Tasks, Squad, Ranks) and runs with plain `pnpm dev` on :3000.
+> `apps/miner` only forwards every page there (308). The rules below — rates,
+> storage, upgrades, the finite pool, watch-to-earn, referrals — are unchanged;
+> the paths and "separate app" notes are historical.
+
 The Miner is a separate application. It shares the Tycoonhood login and the
 same database, but it is its own Next.js app, its own build, and its own
 deployment — `apps/miner`, served on port 3001 in development.

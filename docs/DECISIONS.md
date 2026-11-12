@@ -53,6 +53,9 @@ to keep building — flag any you want changed and the change is cheap now.
   content is first-party (written in our own admin later), so no sanitizer
   layer sits between the database and the page — that stays true only as
   long as authorship stays internal, noted for Phase 10's editor.
+  **Superseded by DR-30 (2026-11-11):** instructors now author lessons, so
+  all Markdown renders through one sanitising renderer (see
+  TYCOONHOOD_DECISIONS.md).
 
 - **D17** The Miner is a separate deployable (`apps/miner`, mobile-first
   PWA) sharing accounts, sessions (COOKIE_DOMAIN in prod), the ledger, and
@@ -101,6 +104,11 @@ to keep building — flag any you want changed and the change is cheap now.
   identical to payments: coded Resend adapter activates with a key; until
   then the dev mailer logs, and the UI shows the link under an explicit
   "dev mode — no email was sent" label.
+  **Updated 2026-11-11:** the UI never shows the link now. In dev mode the
+  reply says the link is in the server log; in production without
+  `RESEND_API_KEY` nothing can be sent, and the reply says so and points to
+  Contact (`packages/core/src/platform/mail-outcome.ts`). A reset also spends
+  every other reset link and cancels a waiting email change (DR-32).
 
 - **D26** The Discord bot is serverless: an Ed25519-verified Interactions
   Endpoint inside the web app (`/api/integrations/discord/interactions`),

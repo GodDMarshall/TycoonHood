@@ -5,7 +5,8 @@ import { CatalogService, validateProduct, reviewProduct } from "../src/catalog/c
 import { ReferralService, SelfReferralError, AlreadyReferredError, UnknownCodeError } from "../src/growth/referrals";
 import { WatchService, TooSoonError, NoProgressError, DailyCapReachedError, AlreadyPaidError } from "../src/growth/watch";
 import { LedgerService } from "../src/ledger/ledger";
-import { priceInTime, judgePrice, thcFor, suggestPrice, dailyYield } from "../src/economy/mining-time";
+import { priceInTime, judgePrice, thcFor, thcPerRupee, suggestPrice, dailyYield, MERCH_ANCHOR } from "../src/economy/mining-time";
+import { PLACEHOLDER_INR, PLACEHOLDER_COST_INR, needsPlaceholderInr, placeholderMoney } from "../../db/src/placeholder-prices";
 import { createTestUser, uid } from "./helpers";
 import { REFERRAL, WATCH } from "@tycoonhood/config";
 
@@ -236,32 +237,86 @@ describe("a THC price is stated in months of mining", () => {
   });
 
   it("judges a small item against its shelf price, not against the hoodie", () => {
-    // 3,200 THC for a $16 bottle of chalk is correct at the house rate. The
+    // 3,200 THC for a ₹499 bottle of chalk is in step at the house rate. The
     // old rule called it "too cheap" purely because it is a small item.
-    const chalk = judgePrice(3_200n, 1_600);
+    const chalk = judgePrice(3_200n, 499_00, "INR");
     expect(chalk.verdict).toBe("on target");
+    expect(chalk.anchored).toBe(true);
     expect(priceInTime(3_200n).verdict).toBe("too cheap"); // the naive reading
 
     // Genuinely underpriced against its own shelf price.
-    expect(judgePrice(500n, 1_600).verdict).toBe("too cheap");
+    expect(judgePrice(500n, 499_00, "INR").verdict).toBe("too cheap");
     // Genuinely overpriced against its own shelf price.
-    expect(judgePrice(20_000n, 1_600).verdict).toBe("too expensive");
+    expect(judgePrice(20_000n, 499_00, "INR").verdict).toBe("too expensive");
   });
 
   it("falls back to the mining window when there is no shelf price to anchor to", () => {
-    expect(judgePrice(500n, null).verdict).toBe("too cheap");
-    expect(judgePrice(suggestPrice(), null).verdict).toBe("on target");
+    expect(judgePrice(500n, null, null).verdict).toBe("too cheap");
+    expect(judgePrice(suggestPrice(), null, null).verdict).toBe("on target");
+    expect(judgePrice(suggestPrice(), null, "INR").anchored).toBe(false);
   });
 
-  it("the whole catalogue stays in proportion at one exchange rate", () => {
-    // Hoodie $89 and chalk $16 should sit at the same THC-per-dollar.
-    const hoodie = thcFor(8_900);
-    const chalk = thcFor(1_600);
+  it("the whole catalogue stays in proportion to the rupee anchor", () => {
+    // Hoodie ₹2,499 and chalk ₹499 should sit at the same THC per rupee.
+    const hoodie = thcFor(2_499_00);
+    const chalk = thcFor(499_00);
     const ratio = Number(hoodie) / Number(chalk);
     expect(ratio).toBeGreaterThan(4.5);
-    expect(ratio).toBeLessThan(6.5);   // 89/16 = 5.6
-    expect(judgePrice(hoodie, 8_900).verdict).toBe("on target");
-    expect(judgePrice(chalk, 1_600).verdict).toBe("on target");
+    expect(ratio).toBeLessThan(5.5);   // 2,499/499 = 5.0
+    expect(judgePrice(hoodie, 2_499_00, "INR").verdict).toBe("on target");
+    expect(judgePrice(chalk, 499_00, "INR").verdict).toBe("on target");
+  });
+
+  it("rounds a suggested THC price to steps of 100, 500 or 1,000", () => {
+    expect(thcFor(499_00)).toBe(3_600n);    // about 3,594 → nearest 100
+    expect(thcFor(1_199_00)).toBe(8_500n);  // about 8,636 → nearest 500
+    expect(thcFor(3_999_00)).toBe(29_000n); // about 28,804 → nearest 1,000
+    expect(thcFor(1_00)).toBe(100n);        // never below one step
+  });
+
+  it("anchors on the hoodie: ₹2,499 is 75 days of mining for a regular member", () => {
+    expect(MERCH_ANCHOR.currency).toBe("INR");
+    expect(MERCH_ANCHOR.pricePaise).toBe(PLACEHOLDER_INR["warrior-hoodie"]);
+    expect(thcFor(MERCH_ANCHOR.pricePaise)).toBe(suggestPrice(1, MERCH_ANCHOR.days));
+    expect(thcPerRupee()).toBeCloseTo(Number(suggestPrice(1, 75)) / 2_499, 6);
+  });
+
+  it("reads ₹2,499 as rupees, not dollars, and groups digits the Indian way", () => {
+    // The bug this replaces: ₹2,499 read as $2,499 made an 18,000 THC hoodie
+    // "cheaper in THC than in money".
+    const hoodie = judgePrice(18_000n, 2_499_00, "INR");
+    expect(hoodie.verdict).toBe("on target");
+    expect(hoodie.summary).toContain("in step with the ₹2,499.00 shelf price");
+    expect(hoodie.summary).not.toMatch(/\$|cheaper in THC/);
+
+    const dear = judgePrice(18_000n, 1_50_000_00, "INR");
+    expect(dear.verdict).toBe("too cheap");
+    expect(dear.summary).toContain("₹1,50,000.00");
+  });
+
+  it("compares only rupee prices; any other currency gets the time-only verdict", () => {
+    const usd = judgePrice(3_200n, 499_00, "USD");
+    expect(usd.anchored).toBe(false);
+    expect(usd.verdict).toBe(priceInTime(3_200n).verdict);
+    expect(usd.summary).toMatch(/No money comparison is made, because the card price is in USD, not rupees\.$/);
+    expect(usd.summary).not.toMatch(/₹|\$/);
+
+    const unknown = judgePrice(3_200n, 499_00, null);
+    expect(unknown.anchored).toBe(false);
+    expect(unknown.summary).toMatch(/card price is not in rupees\.$/);
+  });
+
+  it("product advice states rupees, and skips the money check for other currencies", () => {
+    const base = { slug: "x-chalk", kind: "PHYSICAL" as const, name: "C", description: "d", inventory: 5 };
+    // No currency given: the card rail is INR only, so the price is paise.
+    const inr = reviewProduct({ ...base, priceThc: 500n, priceFiatCents: 499_00 }).join(" ");
+    expect(inr).toContain("₹499.00 on the shelf works out at about 3,600 THC");
+    expect(inr).toContain("Around 3,600 THC would put the two rails in step.");
+
+    const usd = reviewProduct({ ...base, priceThc: 500n, priceFiatCents: 1_600, fiatCurrency: "USD" }).join(" ");
+    expect(usd).toMatch(/No money comparison is made/);
+    expect(usd).toMatch(/no rupee shelf price/);
+    expect(usd).not.toMatch(/two rails in step|\$/);
   });
 
   it("warns when a THC-only physical item has real cost behind it", () => {
@@ -270,12 +325,70 @@ describe("a THC price is stated in months of mining", () => {
       priceThc: suggestPrice(), costCents: 1800, active: true, inventory: 5,
     });
     expect(notes.join(" ")).toMatch(/real money out/);
+    expect(notes.join(" ")).toContain("costing ₹18.00 to fulfil");
   });
 
   it("refuses a product nobody could buy", () => {
     const errors = validateProduct({ slug: "x", kind: "PHYSICAL", name: "", description: "" });
     expect(errors.length).toBeGreaterThan(2);
     expect(errors.join(" ")).toMatch(/Slug/);
+  });
+});
+
+// ════════════════════════════════════════════ SEED PLACEHOLDERS
+
+describe("seeded rupee prices are placeholders that never overwrite a real one", () => {
+  it("every placeholder is whole rupees, and every placeholder cost sits below its price", () => {
+    for (const [slug, paise] of Object.entries(PLACEHOLDER_INR)) expect(paise % 100, slug).toBe(0);
+    for (const [slug, cost] of Object.entries(PLACEHOLDER_COST_INR)) {
+      expect(cost % 100, slug).toBe(0);
+      expect(cost, slug).toBeLessThan(PLACEHOLDER_INR[slug]);
+    }
+  });
+
+  it("sets a price only while the row is not in rupees", () => {
+    expect(needsPlaceholderInr({ fiatCurrency: "INR" })).toBe(false);
+    expect(needsPlaceholderInr({ fiatCurrency: "USD" })).toBe(true);
+  });
+
+  it("a new merch item gets the rupee placeholders, marked as such", () => {
+    const m = placeholderMoney("warrior-hoodie", null);
+    expect(m.data).toEqual({ priceFiatCents: 2_499_00, fiatCurrency: "INR", costCents: 870_00 });
+    expect(m.clearSizeFiat).toBe(false);
+    expect(m.notes.join(" · ")).toBe("₹2,499 (PLACEHOLDER) · cost ₹870 (PLACEHOLDER)");
+  });
+
+  it("leaves a rupee price and cost an admin set alone", () => {
+    const m = placeholderMoney("warrior-hoodie", { priceFiatCents: 2_799_00, fiatCurrency: "INR", costCents: 950_00 });
+    expect(m.data).toEqual({});
+    expect(m.clearSizeFiat).toBe(false);
+    expect(m.notes.join(" · ")).toBe("₹2,799 already set in INR, kept · cost ₹950 kept");
+  });
+
+  it("moves a dollar row to rupees, its cost and size prices included", () => {
+    const m = placeholderMoney("operator-tee", { priceFiatCents: 3_900, fiatCurrency: "USD", costCents: 1_200 });
+    expect(m.data).toEqual({ priceFiatCents: 1_199_00, fiatCurrency: "INR", costCents: 370_00 });
+    expect(m.clearSizeFiat).toBe(true);
+    expect(m.notes.join(" · ")).toBe("₹1,199 (PLACEHOLDER), was USD 39.00 · cost ₹370 (PLACEHOLDER), was USD 12.00");
+  });
+
+  it("replaces a stale dollar cost under a rupee price, and never puts back a price or cost staff removed", () => {
+    // seed-shop moved the price to rupees but left the old 3100 US cents behind.
+    const stale = placeholderMoney("warrior-hoodie", { priceFiatCents: 2_499_00, fiatCurrency: "INR", costCents: 3_100 });
+    expect(stale.data).toEqual({ costCents: 870_00 });
+    // A rupee row with no card price is sold for THC only: no price goes back
+    // in, and the admin's cost stays.
+    const unpriced = placeholderMoney("nano-chalk", { priceFiatCents: null, fiatCurrency: "INR", costCents: 160_00 });
+    expect(unpriced.data).toEqual({});
+    expect(unpriced.notes.join(" · ")).toBe("no card price (THC only), kept · cost ₹160 kept");
+    // A cost cleared in the admin stays cleared.
+    const noCost = placeholderMoney("nano-chalk", { priceFiatCents: 549_00, fiatCurrency: "INR", costCents: null });
+    expect(noCost.data).toEqual({});
+    expect(noCost.notes.join(" · ")).toBe("₹549 already set in INR, kept · no landed cost, kept");
+  });
+
+  it("writes nothing for an item with no placeholder", () => {
+    expect(placeholderMoney("not-a-merch-item", null).data).toEqual({});
   });
 });
 

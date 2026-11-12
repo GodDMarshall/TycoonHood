@@ -27,16 +27,16 @@ export function LegalPage({
   reviewed?: boolean;
 }) {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <main className="mx-auto max-w-3xl px-[var(--gutter)] py-16 md:py-24">
       <p className="eyebrow mb-3">{eyebrow}</p>
-      <h1 className="display text-[40px] leading-tight">{title}</h1>
+      <h1 className="display text-h1">{title}</h1>
       <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-2">{intro}</p>
       <p className="figures mt-4 text-[12px] text-ink-3">Last updated {updated}</p>
 
       {!reviewed && (
         <div className="mt-8 rounded-md border border-gold-deep/40 bg-gold/5 px-4 py-3">
           <p className="text-[13px] leading-relaxed text-ink-2">
-            <span className="text-gold-bright">Not yet reviewed by a lawyer.</span>{" "}
+            <span className="text-gold-bright">Pending legal review.</span>{" "}
             This document was written against the actual behaviour of the platform, so it is
             accurate about what we do. It has not been checked by a qualified professional
             in any jurisdiction. If something here matters to you, say so and we will get
@@ -51,8 +51,9 @@ export function LegalPage({
       <SectionRule className="my-10" />
       <p className="text-[13px] text-ink-3">
         Questions about this page:{" "}
-        <Link href="/faq" className="text-gold underline-offset-4 hover:underline">the FAQ</Link>{" "}
-        answers most of them, and anything it does not, ask in the community.
+        <Link href="/faq" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">the FAQ</Link>{" "}
+        answers most of them. For anything else,{" "}
+        <Link href="/contact" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">contact us</Link>.
       </p>
     </main>
   );

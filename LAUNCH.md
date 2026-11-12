@@ -1,200 +1,206 @@
 # LAUNCH
 
-Everything in this file is a step you take. I cannot do any of it: it needs
-accounts that are yours — a database host, a hosting account, a domain, a
-mail provider. What I have done is make each step short and make the platform
-refuse to launch unsafely.
+How Tycoonhood goes live on Vercel. Last updated 12 November 2026.
 
-**Time: about 45 minutes**, most of it waiting for DNS.
+The site runs as **one Vercel project**, `tycoonhood` in the `pharmacartel`
+team, built from `apps/web`. The database is **Neon**, connected through the
+Vercel Marketplace. A production deploy migrates the database by itself, and
+the first one also fills it with the programmes and content.
 
-Run `pnpm preflight` at the end. It reads the real production environment and
-the real production database and tells you plainly whether to go. It exits
-non-zero on anything that would hurt a member or the business.
-
----
-
-## Before you start
-
-You need four accounts. All have a free tier that is enough to open with.
-
-| What | Why | Free tier |
-|---|---|---|
-| **Neon** (neon.tech) | Postgres. Serverless, scales to zero. | Yes |
-| **Vercel** (vercel.com) | Hosting for both apps. | Yes |
-| **Resend** (resend.com) | Password-reset email. Without it, a member who forgets their password is locked out for good. | 3,000/month |
-| A domain | `tycoonhood.com` or whatever you own. | No — ~$12/yr |
-
-Stripe is **optional**. Without it the card rail is hidden and everything is
-bought with THC. That is a legitimate way to open.
+Run-through, once the four steps marked **You** are done: about 15 minutes,
+most of it the first build.
 
 ---
 
-## 1 · The database (5 min)
+## Already done
 
-1. Create a Neon project. Region: **Singapore** or **Mumbai** — closest to you and to most early members.
-2. Copy **two** connection strings from the dashboard:
-   - the **pooled** one → this is `DATABASE_URL` for the apps
-   - the **direct** one → used once, for migrations
-3. Locally, put the **direct** string in `.env` and run:
+These are set on the Vercel project. Nothing here needs you.
 
-```powershell
-pnpm db:migrate:sql
-```
+| What | Setting |
+|---|---|
+| Root Directory | `apps/web`, with files outside it included (the monorepo packages) |
+| Framework, Node | Next.js, Node 22.x |
+| Build | `apps/web/vercel.json` → `scripts/vercel-build.sh` (see "What a deploy does") |
+| Function region | `iad1` (Washington), the same region as the database |
+| Database | Neon store `neon-beige-kite`, region `iad1`, Free plan. The integration supplies `DATABASE_URL` (pooled, used by the site) and `DATABASE_URL_UNPOOLED` (direct, used for migrations and seeds) |
+| `AFFILIATE_HASH_SECRET` | Generated, sensitive. Salts the hashes of affiliate clicks |
+| `CRON_SECRET` | Generated, sensitive. The daily order sweep (`/api/cron/expire-orders`) and email-change sweep (`/api/cron/email-holds`) refuse calls without it |
+| `SEED_ON_DEPLOY=1` | First launch only. Remove it after the first successful production deploy |
+| `ENABLE_EXPERIMENTAL_COREPACK=1` | Makes Vercel use the exact pnpm version in `package.json` |
 
-That applies all seven migrations with the engine-free runner. Do **not** use
-`prisma migrate deploy` — it downloads a binary that is blocked in several
-environments, and the build has no database anyway.
-
-## 2 · Seed the content (2 min)
-
-Still pointed at the production database:
-
-```powershell
-$env:ADMIN_EMAIL    = "you@yourdomain.com"
-$env:ADMIN_PASSWORD = "<a long password you generate, not one you invent>"
-pnpm db:seed
-pnpm db:seed:academy
-pnpm db:seed:content
-pnpm db:seed:merch
-```
-
-The seed **refuses** to run without `ADMIN_PASSWORD`. That is deliberate: the
-built-in development password is printed in this repository and on GitHub.
-Never set `ALLOW_DEFAULT_ADMIN` against a real database.
-
-Merch seeds as **drafts**. Publish it in `/admin/products` once the real
-landed costs are in — see `TYCOONHOOD_BLOCKED_ON_YOU.md` item 1.
-
-## 3 · Email (5 min)
-
-1. Add your domain in Resend and set the DNS records it gives you.
-2. Create an API key.
-3. Keep both for step 5: `RESEND_API_KEY` and `MAIL_FROM` (e.g. `Tycoonhood <no-reply@tycoonhood.com>`).
-
-Skip this and password reset is dead. The platform says so honestly on the
-page rather than pretending — but a member who forgets their password has no
-way back in.
-
-## 4 · Two Vercel projects, not one (10 min)
-
-This monorepo ships **two apps**. They are two Vercel projects from the same
-repository. Deploying only the root gives you the site and silently leaves the
-Miner behind — the root `vercel.json` now fails loudly rather than let that
-happen.
-
-**Project A — the site**
-- Import the repository
-- **Root Directory:** `apps/web`
-- Framework: Next.js (detected)
-- Domain: `tycoonhood.com` and `www.tycoonhood.com`
-
-**Project B — the Miner**
-- Import the same repository again
-- **Root Directory:** `apps/miner`
-- Domain: `miner.tycoonhood.com`
-
-Build and install commands come from each app's `vercel.json`. Leave the
-Vercel UI fields empty.
-
-## 5 · Environment variables (10 min)
-
-Set these on **both** projects unless noted. Vercel → Settings → Environment
-Variables → Production.
-
-```
-DATABASE_URL              = <the POOLED Neon string>
-NEXT_PUBLIC_SITE_URL      = https://tycoonhood.com
-NEXT_PUBLIC_MINER_URL     = https://miner.tycoonhood.com
-NEXT_PUBLIC_MAIN_SITE_URL = https://tycoonhood.com
-COOKIE_DOMAIN             = .tycoonhood.com
-```
-
-Site project only:
-
-```
-RESEND_API_KEY            = <from step 3>
-MAIL_FROM                 = Tycoonhood <no-reply@tycoonhood.com>
-```
-
-**Do not set** `DEV_MODE`. **Do not set** `ALLOW_DEFAULT_ADMIN`. The code
-refuses to honour them in production, but they should not be there at all.
-
-`COOKIE_DOMAIN` is the one people get wrong. The leading dot matters: without
-it, signing in on the site does not sign you in on the Miner, and the two apps
-feel like two products.
-
-## 6 · Preflight (2 min)
-
-Point your local `.env` at the **production** database and run:
-
-```powershell
-$env:NODE_ENV = "production"
-pnpm preflight
-```
-
-It checks the environment, the migrations, the admin password, whether the
-books balance, whether there is anything to actually do on day one, and
-whether the legal pages exist. Read every warning. Do not launch on a failure.
-
-## 7 · Deploy, then check it yourself (10 min)
-
-Push to `main`. Both projects build. Then, as a stranger would:
-
-- [ ] `https://tycoonhood.com` loads, and the open-books figures are real
-- [ ] Create an account with an email you own. You get onboarded and paid.
-- [ ] Sign out, click **forgot password**, and the email actually arrives
-- [ ] `https://miner.tycoonhood.com` — **you are already signed in.** If not, `COOKIE_DOMAIN` is wrong.
-- [ ] Claim from the rig. The wallet moves.
-- [ ] `/admin` works for you and **redirects everyone else**
-- [ ] Open the site on your phone and go through signup again
-
-Then change your own admin password from the one in step 2, and delete the
-test account you just made.
+`NEXT_PUBLIC_SITE_URL` was already set on the project. It must be your real
+address (step 3).
 
 ---
+
+## 1 · You: the admin account (2 min)
+
+Vercel → `tycoonhood` → Settings → Environment Variables → add, for
+**Production**, as **Sensitive**:
+
+```
+ADMIN_EMAIL     = the email you will sign in with
+ADMIN_PASSWORD  = a long password from a password manager (12+ characters)
+```
+
+The first production deploy creates this admin account. **Without these two
+the deploy stops before it touches the database**, with a message saying so,
+and nothing goes live. Never paste the password into a chat or a commit.
+
+Type the address in any case you like, without quote marks (Vercel keeps
+them). It is stored the way sign-in reads it, trimmed and in lower case. An
+address sign-in would refuse stops the deploy before it touches the database.
+
+`ADMIN_EMAIL` only makes the first admin. Changing it later creates no second
+admin while you can sign in: add admins in `/admin/members` instead.
+
+Use a mailbox you read. The deploy does not confirm the address, because it
+cannot know the mailbox is yours; you confirm it after launch (step 5). Until
+you do, a change away from it carries no undo link (DR-32).
+
+After launch you can delete `ADMIN_PASSWORD` from Vercel. The seed only sets
+the password when it creates the account, so a later deploy never resets it.
+
+## 2 · You: email (10 min, plus DNS time)
+
+Without email, members can still sign up, learn, earn certificates, use the
+community and THC. What does not work: confirming an email address (needed to
+join the affiliate programme), password reset, and changing an account's
+email address at all: the link to the new address could never arrive, so
+Settings refuses the change. The site says so plainly instead of pretending
+an email was sent.
+
+1. In Resend (resend.com), add your domain and create the DNS records it shows
+   you at your domain registrar.
+2. Wait for Resend to show the domain as verified.
+3. Create an API key.
+4. Add, for **Production**, as **Sensitive**:
+
+```
+RESEND_API_KEY  = the key from Resend
+MAIL_FROM       = Tycoonhood <no-reply@yourdomain.com>
+```
+
+`MAIL_FROM` must use the domain you verified.
+
+## 3 · You: the domain (5 min, plus DNS time)
+
+1. Vercel → `tycoonhood` → Settings → Domains → add `yourdomain.com` and
+   `www.yourdomain.com`, and set the DNS records Vercel shows at your
+   registrar. (Or tell Claude the domain, and it adds it to the project; the
+   DNS records are still yours to set.)
+2. Set `NEXT_PUBLIC_SITE_URL = https://yourdomain.com` for **Production**.
+   Emails, certificates, affiliate links and the sitemap use it, and it is
+   built into the site, so it needs a redeploy after any change.
+
+**Until a custom domain is added, the site is not public.** The project's
+Deployment Protection is "Standard Protection": every `*.vercel.app` address,
+production included, asks for a Vercel login. That is on purpose, so nobody
+stumbles on the site early. A custom domain is public as soon as it resolves.
+
+## 4 · You: merge the pull request
+
+Merging `build/full-platform` into `main` starts the production deploy.
+
+## What a deploy does
+
+`scripts/vercel-build.sh` runs on every Vercel build:
+
+- **Production** (`VERCEL_ENV=production`):
+  1. takes the deploy lock: if another build is migrating or seeding the
+     same database, it says so and waits for it to finish;
+  2. applies any pending migrations over the direct connection;
+  3. if `SEED_ON_DEPLOY=1`: runs the seeds, in order (base and admin,
+     academy, content, shop, community);
+  4. lets go of the lock and builds the site.
+- **Preview** (any other branch): builds the site only. **A preview never
+  touches the database.**
+
+Any failure stops the deploy, and the last good deployment stays live.
+
+Two production builds can run at once, for example when you redeploy while
+one is still building. The second waits at step 1, then finds the migrations
+applied and nothing left for the seeds to add.
+
+Every seed is safe to run again on the live database. A re-run adds what is
+missing and never rewrites what staff can change in the admin: prices, stock,
+what is on sale, programmes and their lessons, essays, missions, community
+categories and groups, coupons, a challenge's dates and status, passwords,
+and roles (unless no admin can sign in). It only refreshes what no admin
+screen edits: levels, ranks, achievements, and a challenge's name,
+description and rewards.
+A mission, size, essay, category or group the seeds made once is never made
+again, even after staff give it a new slug or SKU, so a renamed mission cannot
+pay twice. `SEED_ON_DEPLOY` still comes off after the first deploy: seeding
+slows every deploy, and a programme staff give a new slug would come back
+under its old one as an empty draft. `docs/DEPLOYMENT.md`, "Running the seeds
+again", has the details. `seed:merch` is never run by a deploy: its
+prices are placeholders.
+
+## 5 · After the first deploy (10 min)
+
+1. Delete `SEED_ON_DEPLOY` from the Vercel environment variables.
+2. Confirm the admin's address, once Resend shows your domain as verified:
+   sign in as the admin, press **Send a new link** in the "Confirm your
+   email" banner (or in Settings → Email), and open the link it emails you.
+   The deploy left it unconfirmed, the build log says so, and until it is
+   confirmed, someone who learns the admin password and moves the account to
+   another address leaves you no undo link, only a day's notice. Confirmed,
+   the address is held for 7 days after any change, with a link that puts it
+   back.
+3. Check it yourself, as a stranger would:
+   - [ ] The home page, About (Harsha), the four programmes, Earn and the
+         policy pages load on your domain.
+   - [ ] Create an account with an email you own. Onboarding works and you
+         land on Today.
+   - [ ] With Resend set: the confirmation email arrives and its link works;
+         sign out, use "Forgot password", and that email arrives too.
+   - [ ] Enrol in a programme, finish a lesson, pass its quiz. XP rises.
+   - [ ] `/admin` opens for your admin account and refuses everyone else.
+   - [ ] Do the sign-up again on your phone.
+4. Delete the test account you made, or suspend it in `/admin/members`.
+
+## Card payments (when Razorpay KYC clears)
+
+Until then the site takes no rupee payments: card checkout is hidden from
+members, and everything else works. When KYC is approved, follow
+"Turning on Razorpay" in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md): test keys
+first (admins only on a production build), then live keys and the webhook.
+
+Merch stays in draft until it has real rupee prices and landed costs
+(`/admin/products`).
+
+---
+
+## Limits to know about
+
+- **Neon Free plan:** 100 compute-hours a month per project, and the database
+  sleeps when idle, so the first request after a quiet spell is slower. Steady
+  traffic can use up the hours; upgrade to a paid Neon plan before a marketing
+  push.
+- **Vercel plan:** Hobby is for non-commercial use only. A business site
+  needs Pro. Hobby also allows each of the two daily sweeps (unpaid orders,
+  and email changes whose undo notice never went out) to run once a day, not
+  more.
+- **Region:** the database and the functions are in Washington (`iad1`), so
+  pages reach India in roughly a quarter of a second more than they would
+  from Mumbai. Moving both to Mumbai (`bom1`, Neon `aws-ap-south-1`) is a
+  follow-up, not a launch blocker.
+- **Previews share the database settings.** Preview deployments receive the
+  same `DATABASE_URL` as production. They never migrate or seed, and they are
+  behind Vercel login, but a preview built from an unmerged branch reads and
+  writes the production database when someone uses it. Use previews to look,
+  not to test sign-ups or orders. A preview built before 12 November's
+  email-change migrations writes account rows that the live site misreads, so
+  never use one to change an account (`docs/DEPLOYMENT.md`, "Rows older code
+  writes after a migration"). A separate Neon branch for previews removes
+  this.
 
 ## Rolling back
 
-Vercel keeps every deployment. **Instant Rollback** on the previous one takes
-about ten seconds.
+Vercel keeps every deployment: Deployments → the previous one → **Instant
+Rollback** takes seconds.
 
-Migrations are the part that does not roll back. Never run a migration that
-drops a column against a database with real members in it without a backup
-taken first — Neon's point-in-time restore is the backup, and it is on by
-default.
-
----
-
-## What you are launching with, stated plainly
-
-| Works | Does not exist yet |
-|---|---|
-| Accounts, sessions, password reset | Membership tiers and subscriptions — **the business model** |
-| The Academy: 4 courses, 24 lessons, quizzes, certificates | Course authoring in the admin (content is seeded by script) |
-| Challenges with evidence review | Challenge authoring in the admin |
-| XP, levels, ranks, streaks, achievements, missions | Analytics beyond the economy overview |
-| The full THC ledger, provable supply | The AI layer |
-| The Miner: rig, watch-to-earn, referrals, ranks, wallet | Telegram |
-| Merch with sizes, stock, addresses, tracking | Mobile navigation on the main site |
-| Admin: members, economy, content, missions, products, videos, orders | |
-
-The honest summary: **you can open, and people can join, learn, earn and buy.
-You cannot yet charge a subscription, and you cannot write a lesson without a
-developer.** Those two are the top of `TYCOONHOOD_ROADMAP.md`.
-
----
-
-## Before you take money from a stranger
-
-`TYCOONHOOD_BLOCKED_ON_YOU.md` has the full list. The two that matter most:
-
-1. **Real landed costs** on the five merch products. Until then they stay
-   drafts and the margin reporting is fiction.
-2. **Legal review.** `/terms` and `/privacy` exist and are accurate about what
-   the platform actually does — I wrote them against the schema, not from a
-   template — but they carry a visible banner saying no lawyer has read them.
-   Get that banner removed before you are taking real money at scale.
-
-And the one that is pure risk, unrelated to launch: **this project is still
-not under version control.** `.gitignore` and `.gitattributes` are written and
-waiting. One bad save currently loses work with no way back.
+Migrations do not roll back. Neon keeps point-in-time history (the window
+depends on the plan), so restore from there before any risky change to a
+database with real members in it.

@@ -12,14 +12,15 @@ export default function TermsPage() {
     <LegalPage
       eyebrow="Legal"
       title="Terms of Service"
-      updated="24 September 2026"
+      updated="11 November 2026"
       intro="What you agree to by using Tycoonhood. Written to be read, not to be skipped."
     >
       <Clause n="1" heading="Who we are, and what this is">
         <p>
-          Tycoonhood is a membership platform for structured self-development: programs,
-          challenges, a progress record, and an internal credit called THC. Using the site
-          or the Miner app means you accept these terms.
+          Tycoonhood is a membership platform for structured self-development: learning
+          programmes and certificates, challenges, a progress record, an affiliate programme,
+          a shop, a community, and an internal credit called THC. Using the site or the Miner
+          app means you accept these terms.
         </p>
         <p>
           You must be 18 or older to hold an account. If you are not, do not create one.
@@ -33,11 +34,16 @@ export default function TermsPage() {
           and tell us.
         </p>
         <p>
-          You can delete your account at any time by asking. Deletion removes your profile
+          We ask you to confirm your email address. Learning works before you do; some
+          features, such as the affiliate programme, require it.
+        </p>
+        <p>
+          You can ask for your account to be deleted at any time, from Settings or through the{" "}
+          <Link href="/contact" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">contact page</Link>. Deletion removes your profile
           and your personal details. It does not remove ledger entries, because the ledger is
           append-only by design — those rows are anonymised rather than deleted, so the books
           still balance. This is explained again in the{" "}
-          <Link href="/privacy" className="text-gold underline-offset-4 hover:underline">Privacy Policy</Link>.
+          <Link href="/privacy" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Privacy Policy</Link>.
         </p>
       </Clause>
 
@@ -46,7 +52,7 @@ export default function TermsPage() {
           THC are internal utility credits. They exist only inside Tycoonhood, on our own
           ledger. The total supply is fixed at one quadrillion and is publicly auditable on
           the{" "}
-          <Link href="/status" className="text-gold underline-offset-4 hover:underline">open books</Link>.
+          <Link href="/status" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">open books</Link>.
         </p>
         <p>
           THC is <strong className="text-ink-1">not</strong> currency, a security, an
@@ -81,7 +87,13 @@ export default function TermsPage() {
         </p>
         <p>
           <strong className="text-ink-1">Refunds in THC</strong> are returned as THC. A refund
-          of money is returned by the way you paid.
+          of money is returned by the way you paid. The full rules are in the{" "}
+          <Link href="/refund-policy" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Refund Policy</Link>.
+        </p>
+        <p>
+          <strong className="text-ink-1">Test-mode payments.</strong> Until card payments are
+          switched to live mode, checkout may run in a clearly labelled test mode. No real money
+          moves in test mode, and nothing bought that way is a real purchase.
         </p>
       </Clause>
 
@@ -147,7 +159,24 @@ export default function TermsPage() {
         </p>
       </Clause>
 
-      <Clause n="10" heading="Ending it">
+      <Clause n="10" heading="The affiliate programme">
+        <p>
+          Members may apply to promote Tycoonhood and earn a commission on purchases they refer.
+          It has its own{" "}
+          <Link href="/earn/terms" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Affiliate Terms</Link>, which apply on top of these.
+          Income is never guaranteed, and commissions on refunded orders are reversed.
+        </p>
+      </Clause>
+
+      <Clause n="11" heading="The community">
+        <p>
+          Discussions, groups and chat are moderated. Staff may hide or remove content, mute
+          members, or suspend accounts that break clause 5. A suspended account cannot sign in
+          until the suspension is lifted. If you think a decision was wrong, contact us.
+        </p>
+      </Clause>
+
+      <Clause n="12" heading="Ending it">
         <p>
           You can stop using Tycoonhood whenever you want. We can close an account that
           breaks clause 5. If we close yours without cause, you keep access to anything you

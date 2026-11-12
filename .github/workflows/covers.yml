@@ -1,0 +1,37 @@
+name: covers
+
+# Photos for the site. The build sandbox cannot reach image hosts, so this
+# runs scripts/covers/run.mjs on a GitHub runner and commits the result back.
+# Triggered only by changes to scripts/covers/. A push made with GITHUB_TOKEN
+# does not start another run, so it cannot loop.
+
+on:
+  push:
+    branches: ["claude/**"]
+    paths: ["scripts/covers/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  covers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install sharp (isolated, not the workspace)
+        run: mkdir -p /tmp/s && cd /tmp/s && npm init -y >/dev/null && npm i sharp@0.34 >/dev/null && ln -s /tmp/s/node_modules "$GITHUB_WORKSPACE/scripts/covers/node_modules"
+      - name: Build photos
+        run: node scripts/covers/run.mjs
+      - name: Commit results
+        run: |
+          rm -f scripts/covers/node_modules
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -m "covers: $( [ -f scripts/covers/selection.json ] && echo 'graded photos' || echo 'contact sheets for review' )"
+          git push

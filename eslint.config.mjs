@@ -7,6 +7,25 @@ import { FlatCompat } from "@eslint/eslintrc";
 
 const compat = new FlatCompat({ baseDirectory: import.meta.dirname });
 
+// The optional 3D campus (DR-31). three.js and the campus engine reach the
+// browser only through components/world/world-host.tsx, which loads them with
+// import() once the device and GPU gates pass, so no other page's bundle ever
+// carries them. Everywhere else may import their types, never their code.
+// ESLint's core rule (typescript-eslint's copy is deprecated) never checks
+// import() expressions, which is what lets the host's dynamic import through.
+const WORLD_ENGINE = [
+  {
+    regex: "^(three|postprocessing|n8ao)(/|$)",
+    allowTypeImports: true,
+    message: "3D code loads only through components/world/world-host.tsx via import() (DR-31).",
+  },
+  {
+    regex: "(^|/)world/(engine|architecture|interiors)(/|$)",
+    allowTypeImports: true,
+    message: "Engine modules are loaded only by world-host.tsx via import() (DR-31).",
+  },
+];
+
 export default [
   {
     ignores: [
@@ -42,6 +61,57 @@ export default [
       // Typographic apostrophes in copy are correct as written and render fine;
       // this rule is pure style noise on a content-heavy site.
       "react/no-unescaped-entities": "off",
+    },
+  },
+
+  // One Markdown renderer: packages/core/src/content/markdown.ts sanitises what
+  // marked produces, and nothing else renders Markdown or calls the sanitiser.
+  // The typescript-eslint rule, so a later no-restricted-imports block cannot
+  // silently replace this one.
+  {
+    ignores: ["packages/core/src/content/markdown.ts"],
+    rules: {
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            { name: "marked", message: "Render Markdown with renderMarkdown() from @tycoonhood/core. It sanitises the HTML." },
+            { name: "sanitize-html", message: "Use renderMarkdown() or sanitizeContentHtml() from @tycoonhood/core." },
+          ],
+        },
+      ],
+    },
+  },
+
+  // The campus engine stays out of every bundle but its own (DR-31).
+  {
+    files: ["apps/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
+    ignores: [
+      "apps/web/components/world/engine/**",
+      "apps/web/components/world/architecture/**",
+      "apps/web/components/world/interiors/**",
+      "apps/web/types/**", // n8ao.d.ts names postprocessing's Pass inside `declare module`
+    ],
+    rules: { "no-restricted-imports": ["error", { patterns: WORLD_ENGINE }] },
+  },
+  // Beside the engine, relative paths into it count too. Flat config replaces a
+  // rule's options per file rather than merging them, so WORLD_ENGINE repeats.
+  {
+    files: ["apps/web/components/world/*.{ts,tsx}", "apps/web/components/world/hud/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            ...WORLD_ENGINE,
+            {
+              regex: "^[.][.]?/([.][.]/)*(engine|architecture|interiors)/",
+              allowTypeImports: true,
+              message: "Use import type; the host loads the engine with import().",
+            },
+          ],
+        },
+      ],
     },
   },
 

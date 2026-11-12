@@ -1,33 +1,26 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { can } from "@tycoonhood/core";
 import { getCurrentUser } from "../../../lib/auth";
+import { AdminTabs } from "../../../components/admin-tabs";
+import { adminTabsFor } from "../../../lib/admin-nav";
+import { Page } from "../../../components/app/page";
 
+/**
+ * The House — the operator's console. Utilitarian by design: same type,
+ * colour and components as the member product, none of the theatre.
+ */
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
-  if (user?.role !== "ADMIN") redirect("/dashboard");
-  const tabs = [
-    ["/admin", "Overview"],
-    ["/admin/members", "Members"],
-    ["/admin/economy", "Economy"],
-    ["/admin/content", "Content"],
-    ["/admin/missions", "Missions"],
-    ["/admin/products", "Products"],
-    ["/admin/videos", "Videos"],
-    ["/admin/challenges", "Challenges"],
-    ["/admin/orders", "Orders"],
-  ];
+  if (!can(user, "admin.access")) redirect("/today");
   return (
-    <div>
-      <div className="mb-8 flex flex-wrap items-center gap-1 rounded-lg border border-gold-deep/40 bg-gold/5 p-1">
-        <span className="eyebrow px-3 text-gold">The house</span>
-        {tabs.map(([href, label]) => (
-          <Link key={href} href={href} className="rounded-md px-3 py-1.5 text-[13px] text-ink-2 hover:bg-gold/10 hover:text-ink-1">
-            {label}
-          </Link>
-        ))}
+    <Page width="wide">
+      <div className="mb-6">
+        <h1 className="text-[26px] font-semibold tracking-[-0.02em]">Admin</h1>
+        <p className="mt-1 text-[14px] text-ink-3">Every write here is re-authorized on the server and lands on the ledger.</p>
       </div>
+      <AdminTabs tabs={adminTabsFor(user!)} />
       {children}
-    </div>
+    </Page>
   );
 }

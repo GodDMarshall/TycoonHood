@@ -10,18 +10,21 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { parseCriteria, InvalidCriteriaError, DOMAIN_EVENTS } from "@tycoonhood/core";
+import { audit, auditChanges, parseCriteria, InvalidCriteriaError, DOMAIN_EVENTS } from "@tycoonhood/core";
 import { getCurrentUser } from "../../../../lib/auth";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
-  if (user?.role !== "ADMIN") redirect("/dashboard");
+  if (user?.role !== "ADMIN") redirect("/today");
   return user;
 }
 
 export interface MissionFormState { message?: string; error?: string }
 
 const SLUG = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/;
+
+/** What an edit's audit row compares. */
+const MISSION_FIELDS = ["slug", "name", "description", "criteria", "xpReward", "thcReward", "repeatable", "cooldownHours", "active"] as const;
 
 /** Build the criteria object from the form's discrete fields. */
 function criteriaFromForm(fd: FormData) {
@@ -44,7 +47,7 @@ export async function saveMissionAction(
   _prev: MissionFormState,
   fd: FormData
 ): Promise<MissionFormState> {
-  await requireAdmin();
+  const admin = await requireAdmin();
 
   const slug = String(fd.get("slug") ?? "").trim().toLowerCase();
   const name = String(fd.get("name") ?? "").trim();
@@ -97,27 +100,48 @@ export async function saveMissionAction(
     active,
   };
 
+  let saved;
+  let changes;
   try {
     if (missionId) {
-      await prisma.mission.update({ where: { id: missionId }, data });
+      const before = await prisma.mission.findUniqueOrThrow({ where: { id: missionId } });
+      saved = await prisma.mission.update({ where: { id: missionId }, data });
+      changes = auditChanges(before, data, MISSION_FIELDS);
     } else {
-      await prisma.mission.create({ data });
+      saved = await prisma.mission.create({ data });
+      changes = auditChanges(null, data, MISSION_FIELDS);
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     if (msg.includes("Unique constraint")) return { error: `A mission with slug "${slug}" already exists.` };
     throw e;
   }
+  if (!missionId || Object.keys(changes).length > 0) {
+    await audit.log({
+      actorId: admin.id,
+      action: missionId ? "mission.update" : "mission.create",
+      targetType: "Mission",
+      targetId: saved.id,
+      meta: { slug: saved.slug, changes },
+    });
+  }
 
   revalidatePath("/admin/missions");
-  revalidatePath("/dashboard");
+  revalidatePath("/today");
   return { message: missionId ? `Saved "${name}".` : `Created "${name}". It is live for every member now.` };
 }
 
 export async function toggleMissionAction(missionId: string) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const m = await prisma.mission.findUniqueOrThrow({ where: { id: missionId } });
   await prisma.mission.update({ where: { id: missionId }, data: { active: !m.active } });
+  await audit.log({
+    actorId: admin.id,
+    action: m.active ? "mission.pause" : "mission.activate",
+    targetType: "Mission",
+    targetId: m.id,
+    meta: { slug: m.slug, active: { from: m.active, to: !m.active } },
+  });
   revalidatePath("/admin/missions");
 }
 

@@ -1,0 +1,64 @@
+{
+  "_note": "Unsplash photos (Unsplash License: free for commercial use). Pass 1 renders numbered contact sheets into .covers-review/; pass 2 (selection.json present) builds the graded files.",
+  "slots": {
+    "warrior": { "shape": "landscape", "photos": [
+      ["Lx_GDv7VA9M", "photo-1554284126-aa88f22d8b74", "Sven Mieke", "sxoxm"],
+      ["Po4VrJmK9h8", "photo-1604335788369-94f349ae5243", "Corey Young", "corey_untitled"],
+      ["eFx1KZhaSvo", "photo-1546817372-628669db4655", "Sushil Ghimire", "hipcravo"],
+      ["WH15dpm1F1E", "photo-1582550559636-e0d22d20de1b", "Kirill Bogomolov", "bogomolovka"],
+      ["YQIcpTe-fUo", "photo-1590238869164-034a6f03ac2e", "Brett Jordan", "brett_jordan"],
+      ["nswK1wTttqk", "photo-1681474188070-09dae89b0b0a", "Kirill Bogomolov", "bogomolovka"],
+      ["nEEMxC_1tDU", "photo-1671316149443-d722ef4f960d", "Ömer Haktan Bulut", "omerhaktan"],
+      ["-XP_arqv6Cw", "photo-1671316149446-4da1e921c007", "Ömer Haktan Bulut", "omerhaktan"]
+    ]},
+    "builder": { "shape": "landscape", "photos": [
+      ["3IvnMoF4BlU", "photo-1764018998441-db1b474da2fb", "Andrei Andreew", "andrei11948"],
+      ["Ysy1pIsGAjU", "photo-1783256857103-6ba6f3c8df2a", "Heng Chiu", "chiuchuuu"],
+      ["fCbVKHCvQW4", "photo-1769247178314-39230e302d74", "Alexander Van Steenberge", "lexerium"],
+      ["Pk8huyV9FW0", "photo-1778042768125-d4f6b84e40e7", "Lloyd Williams", "lloyd_williams"],
+      ["8i3K0gHseUA", "photo-1769247178312-664ae1262cb6", "Alexander Van Steenberge", "lexerium"],
+      ["Qt5TVMzou4I", "photo-1786926274103-114bfeb20c26", "Jenna Burghart", "jennaburghart"]
+    ]},
+    "tycoon": { "shape": "landscape", "photos": [
+      ["eIJC3zH9G3o", "photo-1645690364326-1f80098eca66", "Traxer", "traxer"],
+      ["bodXa3yTF0w", "photo-1517448988499-4cdc5bbde64c", "Kim Leary", "kimleary"],
+      ["Bu_p48b3ZAA", "photo-1634108941345-3a6a66685563", "rc.xyz NFT gallery", "moneyphotos"],
+      ["3r8rcSy0Ffg", "photo-1649003515353-c58a239cf662", "Tötös Ádám", "toti1996"],
+      ["lmV3gJSAgbo", "photo-1648275913341-7973ae7bc9b3", "Tyler Prahm", "tprahm"],
+      ["x07ELaNFt34", "photo-1651341050677-24dba59ce0fd", "Anne Nygård", "polarmermaid"]
+    ]},
+    "mind": { "shape": "landscape", "photos": [
+      ["dD7wg5G28hY", "photo-1571564756948-51c10b7f058e", "Eugene Lagunov", "skyjlen"],
+      ["5i8JoOz91-Y", "photo-1634023233766-0c16b151bfb0", "Amandine Bataille", "amandine_bataille_photo"],
+      ["dDKjrFzijbM", "photo-1671485927315-f56c7a65a051", "Simona D'Auria", "sidphoto"],
+      ["VXvk_q7BQko", "photo-1651509652504-ab7b1f64cd5c", "Jason Hudson", "hudsonj142"],
+      ["k3ti0_2YL-I", "photo-1693967308919-dfe3fe89aa2a", "Peter Robbins", "prphotography262"],
+      ["-hHxIb36kK4", "photo-1775684815195-69104bbcadde", "Uday Manohar", "udayman"],
+      ["fi8kBBOSaPs", "photo-1592815371489-7f6a53707656", "engin akyurt", "enginakyurt"]
+    ]},
+    "desk": { "shape": "landscape", "photos": [
+      ["m6uAFm148hA", "photo-1623599008581-79de6f90594e", "Anis Rahman", "ar_graphics_"],
+      ["dyFnG8xZi3s", "photo-1642262860616-86636cf0ee76", "Sunrise King", "sunriseking"],
+      ["OEt8lStU-wA", "photo-1764096534686-68091ce5ab45", "Yen Vu", "yenvu2410"],
+      ["CCu-16eRBOs", "photo-1779599859971-670a45aedf96", "X F", "aizerd"],
+      ["6hVS5dXige8", "photo-1771366629879-8b3128ee62ca", "Calvin Wise", "wiseboysca"]
+    ]},
+    "iron": { "shape": "landscape", "photos": [
+      ["JWK2H-2qz1Y", "photo-1672344048213-76b6e77304bd", "Paweł Bulwan", "pbulwan"],
+      ["m4Jqyv5VwqY", "photo-1734630341082-0fec0e10126c", "Jason Grant", "jgrant1"]
+    ]},
+    "launch": { "shape": "landscape", "photos": [
+      ["Im7lZjxeLhg", "photo-1531297484001-80022131f5a1", "Ales Nesetril", "alesnesetril"],
+      ["6WPcf5D1XdA", "photo-1493946947703-a0e68b050bee", "Jared Brashier", "jaredbrashier"],
+      ["mpU2mzGR0Dg", "photo-1665211097514-93f9b5c2bf8c", "Aashish Yadav", "aashish_27"],
+      ["5-KmbSe5ivg", "photo-1559163479-98365644374a", "Unsplash", "unsplash"],
+      ["CQFT1j8Ig30", "photo-1612461313144-fc1676a1bf17", "Dimitris Chapsoulas", "synesthe2ia"]
+    ]},
+    "dawn": { "shape": "portrait", "photos": [
+      ["Vtl6cOhO87Y", "photo-1512531123205-560f5974e686", "Shea Rouda", "shrouda"],
+      ["A0XAtwkmvDg", "photo-1630461830075-e2f455f3c561", "Ryutaro Uozumi", "ryutarouozumi"],
+      ["thh43K70r2U", "photo-1683219261880-814f901e648b", "Kevin Snow", "snowbot"],
+      ["f3uezdb4yuA", "photo-1773234068103-70ee5d2aa359", "Zhang qc", "hypocriteeeee"]
+    ]}
+  }
+}

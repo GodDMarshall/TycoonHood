@@ -1,10 +1,18 @@
 /**
- * TYCOONHOOD SEED — idempotent by design. Run it as many times as you like:
- * everything upserts by slug/key, and the genesis mint posts exactly once
- * via its ledger idempotency key.
+ * TYCOONHOOD SEED — the admin, levels, ranks, the ledger's system accounts
+ * and genesis, the four course shells, starter missions and achievements.
+ *
+ * Safe to re-run on a live database (DR-33): it adds what is missing and
+ * refreshes what only the seed owns (levels, ranks, achievements). It never
+ * rewrites what staff change in the admin: course details, missions, roles
+ * and passwords. ADMIN_EMAIL makes the first admin: once an admin can sign
+ * in, the seed makes no other. The genesis mint posts exactly once via its
+ * ledger idempotency key.
  */
 
-import { prisma } from "./client.js";
+import { prisma, type Prisma } from "./client.js";
+import { adminEmailFrom, canSignInAs } from "./admin-email.js";
+import { SeedRecord } from "./seed-record.js";
 import { hash } from "@node-rs/argon2";
 import {
   THC_TOTAL_SUPPLY,
@@ -14,11 +22,19 @@ import {
   MAX_SEEDED_LEVEL,
 } from "@tycoonhood/config";
 
+/** Advisory lock key for the system accounts and genesis, "tylg" in ASCII (see main). */
+const LEDGER_SEED_LOCK = 0x74796c67n;
+
 /** Argon2id params — keep in sync with packages/core/src/auth/password.ts */
 const ARGON2 = { memoryCost: 19456, timeCost: 2, parallelism: 1, algorithm: 2 as const };
 
+/** How an older seed's address compares with ADMIN_EMAIL: sign-in trims and lower-cases what is typed. */
+const normaliseEmail = (raw: string) => raw.trim().toLowerCase();
+
 async function seedAdmin() {
-  const email = process.env.ADMIN_EMAIL ?? "admin@tycoonhood.local";
+  // Stored as sign-in reads it, and only an address sign-in accepts, or the
+  // seed makes an admin nobody can sign in as (review finding 18).
+  const email = adminEmailFrom(process.env.ADMIN_EMAIL);
   // The built-in development password is public knowledge — anyone who has read
   // this repository would have full admin access to the economy. Guessing which
   // hosts are "production" from the connection string never worked (a Docker,
@@ -39,26 +55,62 @@ async function seedAdmin() {
   if (!process.env.ADMIN_PASSWORD) {
     console.warn("⚠ ALLOW_DEFAULT_ADMIN=1 — seeding admin with the PUBLIC development default. Throwaway local use only.");
   }
-  const existing = await prisma.user.findUnique({ where: { email } });
-  const passwordHash = await hash(password, ARGON2);
+
+  const existing = await findAdminAccount(email);
   if (existing) {
-    await prisma.passwordCredential.upsert({
-      where: { userId: existing.id },
-      update: {},
-      create: { userId: existing.id, hash: passwordHash },
-    });
-    await prisma.user.update({ where: { id: existing.id }, data: { role: "ADMIN" } });
+    // Once the account exists its password is its own: a re-run never resets it.
+    const credential = await prisma.passwordCredential.findUnique({ where: { userId: existing.id }, select: { userId: true } });
+    if (!credential) {
+      await prisma.passwordCredential.create({ data: { userId: existing.id, hash: await hash(password, ARGON2) } });
+    }
+    // Roles belong to staff (/admin/members). The seed makes this account an
+    // admin only when nobody could otherwise run the platform: on a first
+    // deploy where it signed up before the seed ran, or with every admin locked out.
+    if (existing.role === "ADMIN") {
+      console.log(`── Admin found: ${email}. Its password and role are left as they are.`);
+    } else {
+      if (await someAdminCanSignIn()) {
+        console.log(`── ${email} is ${existing.role}: left as it is. Staff change roles in /admin/members.`);
+      } else {
+        await prisma.user.update({ where: { id: existing.id }, data: { role: "ADMIN" } });
+        console.log(`── ${email} made ADMIN: no admin could sign in.`);
+        if (!existing.emailVerified) remindToConfirm(email);
+      }
+    }
     return existing;
   }
+
+  // No account has the address. ADMIN_EMAIL makes the first admin, and only
+  // that: while an admin can sign in, a new or mistyped address makes no
+  // other, or every seeding run would mint a full admin, with ADMIN_PASSWORD,
+  // for whoever holds that mailbox. Staff add admins in /admin/members.
+  if (await someAdminCanSignIn()) {
+    console.log(
+      `── No account has ${email}, and an admin can already sign in, so no admin was made. ` +
+        "ADMIN_EMAIL only makes the first admin. Add others in /admin/members."
+    );
+    return null;
+  }
+  // Nor at an address held for an account that changed away from it: that
+  // account's undo link puts the address back, and would then find it taken.
+  if (await isHeld(email)) {
+    throw new Error(
+      `Refusing to seed: ${email} is held for the account that changed away from it in the last 7 days, ` +
+        "so its owner can undo that change. No admin can sign in. Set ADMIN_EMAIL to the address of the " +
+        "account to make admin, or to a new address."
+    );
+  }
+
+  const username = await freeUsername("admin");
   const admin = await prisma.user.create({
     data: {
       email,
       name: "The House",
       role: "ADMIN",
-      credential: { create: { hash: passwordHash } },
+      credential: { create: { hash: await hash(password, ARGON2) } },
       profile: {
         create: {
-          username: "admin",
+          username,
           displayName: "The House",
           goals: [],
           interests: [],
@@ -67,8 +119,78 @@ async function seedAdmin() {
       },
     },
   });
-  console.log(`── Admin ready: ${email}`);
+  console.log(`── Admin ready: ${email}${username === "admin" ? "" : ` (username ${username}: "admin" is taken)`}`);
+  remindToConfirm(email);
   return admin;
+}
+
+/**
+ * Said when the seed makes an admin whose address nobody has confirmed. A
+ * change away from such an address gets no hold and no undo link (DR-32),
+ * so only the one-day wait protects the admin account until its owner
+ * confirms it. The seed never confirms it itself: with a mistyped
+ * ADMIN_EMAIL, that mailbox would get the undo link of the owner's first
+ * email change, and with it the admin account.
+ */
+function remindToConfirm(email: string) {
+  console.log(
+    `── ${email} is not confirmed yet. Once email works, sign in as the admin and confirm it from the banner ` +
+      "(LAUNCH.md, step 5): until then, a change away from it gets no undo link."
+  );
+}
+
+/**
+ * The account for ADMIN_EMAIL. Earlier seeds stored the address exactly as
+ * given, so " Owner@Example.com" made an admin no sign-in could match. Such a
+ * row is found by its normalised address and repaired in place. Sign-up and
+ * email changes always store addresses normalised, so a row like that can
+ * only be one a seed made. It is not repaired onto an address held for
+ * another account: that would take the address the hold keeps for it.
+ */
+async function findAdminAccount(email: string) {
+  const exact = await prisma.user.findUnique({ where: { email } });
+  if (exact) return exact;
+  const near = await prisma.user.findMany({
+    where: { email: { contains: email, mode: "insensitive" } },
+    orderBy: { createdAt: "asc" },
+  });
+  const legacy = near
+    .filter((u) => normaliseEmail(u.email) === email)
+    .sort((a, b) => Number(b.role === "ADMIN") - Number(a.role === "ADMIN"))[0];
+  if (!legacy || (await isHeld(email))) return null;
+  console.log(`── Admin address "${legacy.email}" stored as "${email}", so it can sign in.`);
+  return prisma.user.update({ where: { id: legacy.id }, data: { email } });
+}
+
+/**
+ * Whether any admin can sign in today: a password, not suspended, and an
+ * address sign-in can match. One stored with capitals, spaces or quote marks
+ * (an older seed's) cannot be typed back, so it does not count.
+ */
+async function someAdminCanSignIn() {
+  const admins = await prisma.user.findMany({
+    where: { role: "ADMIN", suspendedAt: null, credential: { isNot: null } },
+    select: { email: true },
+  });
+  return admins.some((a) => canSignInAs(a.email));
+}
+
+/**
+ * Whether the address is held for an account that changed away from it in the
+ * last 7 days (packages/core/src/platform/email-hold.ts). Sign-up and email
+ * changes refuse a held address; so does the seed.
+ */
+async function isHeld(email: string) {
+  return (await prisma.emailHold.count({ where: { address: email, expires: { gt: new Date() } } })) > 0;
+}
+
+/** "admin", or "admin_2", "admin_3"… when another account has it: usernames are unique. */
+async function freeUsername(base: string) {
+  for (let n = 1; n <= 1000; n++) {
+    const username = n === 1 ? base : `${base}_${n}`;
+    if (!(await prisma.profile.findUnique({ where: { username }, select: { userId: true } }))) return username;
+  }
+  throw new Error(`No free username left for the admin (tried ${base} to ${base}_1000).`);
 }
 
 async function main() {
@@ -101,46 +223,59 @@ async function main() {
   // ------------------------------------------------------------
   // System ledger accounts + genesis (spec §25–§27)
   // ------------------------------------------------------------
-  const systemTypes = ["SYSTEM_MINT", "TREASURY", "REWARDS_POOL", "MINING_POOL", "REVENUE"] as const;
-  const accounts: Record<string, string> = {};
-  for (const type of systemTypes) {
-    const existing = await prisma.ledgerAccount.findFirst({ where: { type } });
-    const acct = existing ?? (await prisma.ledgerAccount.create({ data: { type, name: type.toLowerCase() } }));
-    accounts[type] = acct.id;
-  }
+  // One transaction, one seed at a time (review finding 19). The ledger treats
+  // each system account type as a singleton, so two seeds that both found no
+  // TREASURY must not each create one. Builds already take turns under the
+  // deploy lock (scripts/with-db-lock.mjs); this lock keeps apart seeds run by
+  // hand as well. The second seed waits here, then finds everything made.
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${LEDGER_SEED_LOCK}::bigint)`;
 
-  // Genesis mint: 1 quadrillion THC into TREASURY as auditable transaction #1.
-  // SYSTEM_MINT goes equally negative — that's the point of double entry:
-  // total supply is provable as -balance(SYSTEM_MINT) forever.
-  await postOnce("GENESIS", {
-    reason: "GENESIS_MINT",
-    memo: `Genesis mint: ${THC_TOTAL_SUPPLY} THC`,
-    entries: [
-      { accountId: accounts.SYSTEM_MINT, amount: -THC_TOTAL_SUPPLY },
-      { accountId: accounts.TREASURY, amount: THC_TOTAL_SUPPLY },
-    ],
-  });
+      const systemTypes = ["SYSTEM_MINT", "TREASURY", "REWARDS_POOL", "MINING_POOL", "REVENUE"] as const;
+      const accounts: Record<string, string> = {};
+      for (const type of systemTypes) {
+        const existing = await tx.ledgerAccount.findFirst({ where: { type } });
+        const acct = existing ?? (await tx.ledgerAccount.create({ data: { type, name: type.toLowerCase() } }));
+        accounts[type] = acct.id;
+      }
 
-  // Fund the rewards pool so day-to-day rewards never touch the treasury.
-  await postOnce("POOL_FUNDING_INITIAL", {
-    reason: "POOL_FUNDING",
-    memo: `Initial rewards pool: ${THC_INITIAL_REWARDS_POOL} THC`,
-    entries: [
-      { accountId: accounts.TREASURY, amount: -THC_INITIAL_REWARDS_POOL },
-      { accountId: accounts.REWARDS_POOL, amount: THC_INITIAL_REWARDS_POOL },
-    ],
-  });
+      // Genesis mint: 1 quadrillion THC into TREASURY as auditable transaction #1.
+      // SYSTEM_MINT goes equally negative — that's the point of double entry:
+      // total supply is provable as -balance(SYSTEM_MINT) forever.
+      await postOnce(tx, "GENESIS", {
+        reason: "GENESIS_MINT",
+        memo: `Genesis mint: ${THC_TOTAL_SUPPLY} THC`,
+        entries: [
+          { accountId: accounts.SYSTEM_MINT, amount: -THC_TOTAL_SUPPLY },
+          { accountId: accounts.TREASURY, amount: THC_TOTAL_SUPPLY },
+        ],
+      });
 
-  // Fund the Miner's first epoch — ring-fenced so the mining budget is
-  // visible on the books and finite by construction.
-  await postOnce("MINING_POOL_FUNDING_EPOCH_1", {
-    reason: "POOL_FUNDING",
-    memo: `Miner epoch 1: ${THC_MINING_EPOCH_1} THC`,
-    entries: [
-      { accountId: accounts.TREASURY, amount: -THC_MINING_EPOCH_1 },
-      { accountId: accounts.MINING_POOL, amount: THC_MINING_EPOCH_1 },
-    ],
-  });
+      // Fund the rewards pool so day-to-day rewards never touch the treasury.
+      await postOnce(tx, "POOL_FUNDING_INITIAL", {
+        reason: "POOL_FUNDING",
+        memo: `Initial rewards pool: ${THC_INITIAL_REWARDS_POOL} THC`,
+        entries: [
+          { accountId: accounts.TREASURY, amount: -THC_INITIAL_REWARDS_POOL },
+          { accountId: accounts.REWARDS_POOL, amount: THC_INITIAL_REWARDS_POOL },
+        ],
+      });
+
+      // Fund the Miner's first epoch — ring-fenced so the mining budget is
+      // visible on the books and finite by construction.
+      await postOnce(tx, "MINING_POOL_FUNDING_EPOCH_1", {
+        reason: "POOL_FUNDING",
+        memo: `Miner epoch 1: ${THC_MINING_EPOCH_1} THC`,
+        entries: [
+          { accountId: accounts.TREASURY, amount: -THC_MINING_EPOCH_1 },
+          { accountId: accounts.MINING_POOL, amount: THC_MINING_EPOCH_1 },
+        ],
+      });
+    },
+    // Waiting for another seed counts against the timeout, so allow for it.
+    { timeout: 120_000, maxWait: 10_000 }
+  );
 
   // ------------------------------------------------------------
   // The four programs (spec §3) — DATA, not components. Status DRAFT:
@@ -182,19 +317,20 @@ async function main() {
   ];
 
   for (const [i, c] of courses.entries()) {
-    const course = await prisma.course.upsert({
+    // Created once. Title, subtitle, description and status are staff's from
+    // then on (/admin/courses), so a re-run writes nothing here.
+    await prisma.course.upsert({
       where: { slug: c.slug },
-      update: { title: c.title, subtitle: c.subtitle, description: c.description, sortOrder: i },
+      update: {},
       create: { ...c, sortOrder: i, status: "DRAFT" },
     });
 
-    // NO placeholder curriculum. The real curriculum is owned entirely by
-    // seed-academy.ts, which rebuilds each course's modules from scratch.
-    // Creating stub "Content pending" lessons here was a production hazard:
-    // running `db:seed` after `db:seed:academy` re-introduced empty lessons
-    // into a live academy. Course shells are created DRAFT and stay empty
-    // until real material is seeded.
-    void course;
+    // NO placeholder curriculum. The real curriculum comes from
+    // seed-academy.ts, which builds each course's modules once. Creating stub
+    // "Content pending" lessons here was a production hazard: running
+    // `db:seed` after `db:seed:academy` re-introduced empty lessons into a
+    // live academy. Course shells are created DRAFT and stay empty until
+    // real material is seeded.
   }
 
   // ------------------------------------------------------------
@@ -205,8 +341,16 @@ async function main() {
     { slug: "daily-check-in", name: "Show Up", description: "Check in and take one action today.", criteria: { event: "DAILY_ACTIVE" }, xpReward: 25, thcReward: 50n, repeatable: true, cooldownHours: 20 },
     { slug: "complete-onboarding", name: "Know Thyself", description: "Complete your onboarding profile.", criteria: { event: "ONBOARDED" }, xpReward: 75, thcReward: 250n, repeatable: false },
   ];
+  // Missions are created once: staff edit them in /admin/missions, wording,
+  // rewards and whether they are live included. Achievements and ranks have
+  // no admin, so the seed keeps their copy current. Their slug is staff's too:
+  // the record (seed-record.ts) keeps a renamed mission from being made again
+  // under its old slug, live, where it would pay its reward twice.
+  const madeMissions = await SeedRecord.load("missions", [missions.map((m) => m.slug)], async (slugs) =>
+    (await prisma.mission.findMany({ where: { slug: { in: slugs } }, select: { slug: true } })).map((m) => m.slug)
+  );
   for (const m of missions) {
-    await prisma.mission.upsert({ where: { slug: m.slug }, update: m, create: m });
+    await madeMissions.once(m.slug, () => prisma.mission.upsert({ where: { slug: m.slug }, update: {}, create: m }));
   }
 
   const achievements = [
@@ -226,10 +370,13 @@ async function main() {
     prisma.ledgerAccount.findFirst({ where: { type: "REWARDS_POOL" } }),
     prisma.ledgerAccount.findFirst({ where: { type: "SYSTEM_MINT" } }),
   ]);
-  const courseCount = await prisma.course.count();
+  const [courseCount, published] = await Promise.all([
+    prisma.course.count(),
+    prisma.course.count({ where: { status: "PUBLISHED" } }),
+  ]);
 
   console.log("── Tycoonhood seed complete ─────────────────────────");
-  console.log(` Courses:        ${courseCount} (all DRAFT — content pending)`);
+  console.log(` Courses:        ${courseCount} (${published} published; seed:academy builds and publishes them)`);
   console.log(` Levels seeded:  1–${MAX_SEEDED_LEVEL}`);
   console.log(` Ranks:          ${ranks.map((r) => r.name.replace("Tycoon ", "")).join(" → ")}`);
   console.log(` Total supply:   ${(-(mint?.balance ?? 0n)).toLocaleString()} THC (provable: -SYSTEM_MINT)`);
@@ -238,8 +385,12 @@ async function main() {
   console.log("─────────────────────────────────────────────────────");
 }
 
-/** Minimal in-seed poster with idempotency (core's LedgerService arrives after generate). */
+/**
+ * Minimal in-seed poster with idempotency (core's LedgerService arrives after
+ * generate). Runs inside the caller's transaction, under its lock.
+ */
 async function postOnce(
+  tx: Prisma.TransactionClient,
   idempotencyKey: string,
   data: {
     reason: "GENESIS_MINT" | "POOL_FUNDING";
@@ -247,25 +398,23 @@ async function postOnce(
     entries: { accountId: string; amount: bigint }[];
   }
 ) {
-  const prior = await prisma.ledgerTransaction.findUnique({ where: { idempotencyKey } });
+  const prior = await tx.ledgerTransaction.findUnique({ where: { idempotencyKey } });
   if (prior) return prior;
-  return prisma.$transaction(async (tx) => {
-    const created = await tx.ledgerTransaction.create({
-      data: {
-        reason: data.reason,
-        idempotencyKey,
-        memo: data.memo,
-        entries: { create: data.entries },
-      },
-    });
-    for (const e of data.entries) {
-      await tx.ledgerAccount.update({
-        where: { id: e.accountId },
-        data: { balance: { increment: e.amount } },
-      });
-    }
-    return created;
+  const created = await tx.ledgerTransaction.create({
+    data: {
+      reason: data.reason,
+      idempotencyKey,
+      memo: data.memo,
+      entries: { create: data.entries },
+    },
   });
+  for (const e of data.entries) {
+    await tx.ledgerAccount.update({
+      where: { id: e.accountId },
+      data: { balance: { increment: e.amount } },
+    });
+  }
+  return created;
 }
 
 main()

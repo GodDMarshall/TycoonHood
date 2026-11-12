@@ -1,0 +1,180 @@
+/**
+ * UNDOING AN EMAIL CHANGE (OQ-P, option 1). The notice that tells an old
+ * address its account moved carries a link that puts the address back. Using
+ * it proves control of that mailbox, which is what the account trusted until
+ * the change. Whoever made the change knew the password, so the undo takes
+ * that away too. In one transaction:
+ *
+ *  · the address goes back on the account, verified, and a waiting change is
+ *    dropped;
+ *  · the password is replaced by one nobody knows, so signing in needs a new
+ *    one;
+ *  · every session is signed out, and every link the account has dies:
+ *    confirmation, email change, reset, and any other undo link;
+ *  · a deletion request filed since the change is closed: whoever made the
+ *    change filed it. One the owner filed before stays open;
+ *  · a new reset link is made for the restored address. The web app sends
+ *    the browser that used the undo link straight to it (it is never
+ *    emailed), and tells both addresses what happened.
+ *
+ * Refused when the link is unknown or spent, has run out (7 days), or the
+ * account no longer has the address the change set. A later change ends the
+ * earlier links anyway, so only the latest change can be undone, and a
+ * second change waits until this one can no longer be undone (see
+ * platform/email-hold, which also explains the locks).
+ *
+ * The raw link exists only in the request that confirmed the change, and
+ * only one notice ever carries it. The hold records when that notice went
+ * out. When it cannot be sent, the web app puts the change back at once
+ * (revertUnnotified); when the request dies before it can, the sweep puts it
+ * back a few minutes later (putBackUnnotified, platform/email-notice). So no
+ * change stands that its old address was never told of.
+ */
+import { createHash, randomBytes } from "node:crypto";
+import { prisma as defaultPrisma } from "@tycoonhood/db";
+import type { PrismaClient } from "@tycoonhood/db";
+import { hashPassword } from "../auth/password";
+import { withDeadlockRetry } from "../db/retry";
+import { RESET_TTL_MS } from "../auth/password-reset";
+import { DELETION_TOPIC } from "./account-settings";
+import { AuditService } from "./audit";
+import { lockEmailOf } from "./email-hold";
+import { markNoticeSent, putBackChange, putBackUnnotified } from "./email-notice";
+import { emailChangeTokenId, resetTokenId } from "./email-verification";
+
+const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
+
+export class InvalidUndoLinkError extends Error {}
+/** An undo link that can never work again: it ran out, or the account's email changed since. */
+export class UndoLinkOverError extends InvalidUndoLinkError {}
+
+const NOT_VALID = "That link is not valid, or it has already been used.";
+
+/** What an undo did, for the web app to finish with. */
+export interface UndoneEmailChange {
+  userId: string;
+  /** The address back on the account. It signs in again, and the reset link is for it. */
+  restoredEmail: string;
+  /** The address the change had set. It no longer signs in. */
+  removedEmail: string;
+  /** A new reset link for the restored address, for the browser that used the undo link. */
+  reset: { rawToken: string; expires: Date };
+}
+
+export class EmailUndoService {
+  private audit: AuditService;
+  constructor(private readonly db: PrismaClient = defaultPrisma) {
+    this.audit = new AuditService(db);
+  }
+
+  /** Use an undo link from the "your email was changed" notice. Single use. */
+  async undo(rawToken: string): Promise<UndoneEmailChange> {
+    if (!rawToken || rawToken.length > 200) throw new InvalidUndoLinkError(NOT_VALID);
+    const undoToken = sha256(rawToken);
+    const found = await this.db.emailHold.findUnique({ where: { undoToken }, select: { userId: true } });
+    if (!found) throw new InvalidUndoLinkError(NOT_VALID);
+    // The password nobody knows. Hashing is slow, so it happens before the transaction.
+    const unknownPasswordHash = await hashPassword(randomBytes(32).toString("base64url"));
+    try {
+      // Should Postgres still end it to break a deadlock, it starts over and reads everything again under its locks.
+      return await withDeadlockRetry(() => this.db.$transaction(async (tx) => {
+        await lockEmailOf(tx, found.userId);
+        // Read again under the lock: a change that took effect meanwhile ended this link.
+        const hold = await tx.emailHold.findUnique({ where: { undoToken } });
+        if (!hold) throw new InvalidUndoLinkError(NOT_VALID);
+        if (hold.expires.getTime() <= Date.now()) throw new UndoLinkOverError("That link has expired.");
+        const userId = hold.userId;
+        // The credential row next, as a password change and an email-change request lock it
+        // and then check the hash: one of them that checked the old password cannot land after this.
+        await tx.$executeRaw`SELECT 1 FROM "PasswordCredential" WHERE "userId" = ${userId} FOR UPDATE`;
+        const user = await tx.user.findUniqueOrThrow({ where: { id: userId }, select: { email: true } });
+        if (user.email !== hold.changedTo) {
+          throw new UndoLinkOverError("The account's email has changed again since, so this link no longer works.");
+        }
+
+        // The address is back on the account, so its hold ends with the link.
+        await tx.emailHold.delete({ where: { id: hold.id } });
+        await tx.user.update({
+          where: { id: userId },
+          data: { email: hold.address, emailVerified: new Date(), pendingEmail: null, pendingEmailAt: null },
+        });
+        await tx.passwordCredential.updateMany({ where: { userId }, data: { hash: unknownPasswordHash } });
+        await tx.session.deleteMany({ where: { userId } });
+        await tx.verificationToken.deleteMany({
+          where: { identifier: { in: [hold.address, hold.changedTo, resetTokenId(userId), emailChangeTokenId(userId)] } },
+        });
+        await tx.emailHold.updateMany({ where: { userId, undoToken: { not: null } }, data: { undoToken: null } });
+        // The hold was written by the change itself, so its createdAt is when the change took effect.
+        const filedSince = await tx.contactMessage.findMany({
+          where: { userId, topic: DELETION_TOPIC, handled: false, createdAt: { gte: hold.createdAt } },
+          select: { id: true },
+        });
+        for (const { id } of filedSince) {
+          await tx.contactMessage.update({ where: { id }, data: { handled: true } });
+          await this.audit.log(
+            { actorId: userId, action: "account.delete.request.close", targetType: "ContactMessage", targetId: id, meta: { reason: "email-undo" } },
+            tx
+          );
+        }
+
+        const resetToken = randomBytes(32).toString("base64url");
+        const resetExpires = new Date(Date.now() + RESET_TTL_MS);
+        await tx.verificationToken.create({
+          data: { identifier: resetTokenId(userId), token: sha256(resetToken), expires: resetExpires },
+        });
+        await this.audit.log(
+          { actorId: userId, action: "auth.email.undo", targetType: "User", targetId: userId, meta: { from: hold.changedTo, to: hold.address } },
+          tx
+        );
+        await this.audit.log(
+          { actorId: userId, action: "account.password.revoke", targetType: "User", targetId: userId, meta: { reason: "email-undo" } },
+          tx
+        );
+        return {
+          userId,
+          restoredEmail: hold.address,
+          removedEmail: hold.changedTo,
+          reset: { rawToken: resetToken, expires: resetExpires },
+        };
+      }));
+    } catch (e) {
+      // The transaction rolled back, so spend a link that can never work again here.
+      if (e instanceof UndoLinkOverError) await this.db.emailHold.updateMany({ where: { undoToken }, data: { undoToken: null } });
+      throw e;
+    }
+  }
+
+  /**
+   * Put the old address back because the notice carrying this undo link
+   * could not be sent. The member made the change a moment ago and only the
+   * telling failed, so unlike undo() this keeps the password and signs no
+   * one out. Sessions stay as the confirmation left them: the browser that
+   * used the link stays signed in, and the other devices it signed out stay
+   * signed out (the web app tells the member). It ends the hold and the
+   * links the change made: reset links, any link for the address taken off,
+   * and a waiting change. Audited. Returns false, changing nothing, when the
+   * hold is gone, its notice is recorded as sent, or the account has moved
+   * again since. See platform/email-notice.
+   */
+  async revertUnnotified(rawToken: string): Promise<boolean> {
+    if (!rawToken || rawToken.length > 200) return false;
+    return putBackChange(this.db, { undoToken: sha256(rawToken) });
+  }
+
+  /** Record that the notice carrying this undo link went out, so the change stands (platform/email-notice). */
+  async markNoticeSent(rawToken: string): Promise<void> {
+    await markNoticeSent(this.db, rawToken);
+  }
+
+  /**
+   * Put back the changes whose notice was never recorded as sent, once they
+   * are older than NOTICE_GRACE_MS: all of them, one account's, or those to
+   * or from one address. Returns how many (platform/email-notice).
+   */
+  async putBackUnnotified(scope: { userId?: string; address?: string } = {}): Promise<number> {
+    return putBackUnnotified(this.db, scope);
+  }
+}
+
+export const emailUndo = new EmailUndoService();
+

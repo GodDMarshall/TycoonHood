@@ -68,6 +68,15 @@ export type Session = Prisma.SessionModel
  */
 export type VerificationToken = Prisma.VerificationTokenModel
 /**
+ * Model EmailHold
+ * The address an email change replaced, held for its account until
+ * `expires` (7 days): no one can register with it and no other account can
+ * move to it. The notice to that address carries the link that undoes the
+ * change. The hold ends early when the undo is used or the member moves
+ * back to the address.
+ */
+export type EmailHold = Prisma.EmailHoldModel
+/**
  * Model Profile
  * Member-facing identity, separate from auth identity. (spec §10)
  */
@@ -256,3 +265,158 @@ export type WatchTask = Prisma.WatchTaskModel
  * 
  */
 export type WatchCompletion = Prisma.WatchCompletionModel
+/**
+ * Model Channel
+ * 
+ */
+export type Channel = Prisma.ChannelModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
+/**
+ * Model ChannelRead
+ * Where a member stopped reading a channel — the source of unread counts.
+ */
+export type ChannelRead = Prisma.ChannelReadModel
+/**
+ * Model MessageReport
+ * 
+ */
+export type MessageReport = Prisma.MessageReportModel
+/**
+ * Model CommunityMute
+ * A member who may read but not post. until = null means until lifted.
+ */
+export type CommunityMute = Prisma.CommunityMuteModel
+/**
+ * Model StandardItem
+ * 
+ */
+export type StandardItem = Prisma.StandardItemModel
+/**
+ * Model StandardTick
+ * 
+ */
+export type StandardTick = Prisma.StandardTickModel
+/**
+ * Model StandardDay
+ * The record: one row per day the member met the whole standard.
+ */
+export type StandardDay = Prisma.StandardDayModel
+/**
+ * Model Instructor
+ * 
+ */
+export type Instructor = Prisma.InstructorModel
+/**
+ * Model CourseReview
+ * 
+ */
+export type CourseReview = Prisma.CourseReviewModel
+/**
+ * Model AffiliateProfile
+ * 
+ */
+export type AffiliateProfile = Prisma.AffiliateProfileModel
+/**
+ * Model AffiliateClick
+ * 
+ */
+export type AffiliateClick = Prisma.AffiliateClickModel
+/**
+ * Model Commission
+ * 
+ */
+export type Commission = Prisma.CommissionModel
+/**
+ * Model PayoutRequest
+ * 
+ */
+export type PayoutRequest = Prisma.PayoutRequestModel
+/**
+ * Model CartItem
+ * 
+ */
+export type CartItem = Prisma.CartItemModel
+/**
+ * Model WishlistItem
+ * 
+ */
+export type WishlistItem = Prisma.WishlistItemModel
+/**
+ * Model Coupon
+ * 
+ */
+export type Coupon = Prisma.CouponModel
+/**
+ * Model CouponRedemption
+ * 
+ */
+export type CouponRedemption = Prisma.CouponRedemptionModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model RefundRequest
+ * 
+ */
+export type RefundRequest = Prisma.RefundRequestModel
+/**
+ * Model CommunityCategory
+ * 
+ */
+export type CommunityCategory = Prisma.CommunityCategoryModel
+/**
+ * Model CommunityGroup
+ * 
+ */
+export type CommunityGroup = Prisma.CommunityGroupModel
+/**
+ * Model GroupMembership
+ * 
+ */
+export type GroupMembership = Prisma.GroupMembershipModel
+/**
+ * Model CommunityPost
+ * 
+ */
+export type CommunityPost = Prisma.CommunityPostModel
+/**
+ * Model CommunityComment
+ * 
+ */
+export type CommunityComment = Prisma.CommunityCommentModel
+/**
+ * Model Reaction
+ * 
+ */
+export type Reaction = Prisma.ReactionModel
+/**
+ * Model ContentReport
+ * 
+ */
+export type ContentReport = Prisma.ContentReportModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model SiteSetting
+ * Key/value store for admin-editable settings and homepage content blocks.
+ */
+export type SiteSetting = Prisma.SiteSettingModel
+/**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel
+/**
+ * Model Testimonial
+ * Genuine member stories only — published by an admin with the member's consent.
+ */
+export type Testimonial = Prisma.TestimonialModel

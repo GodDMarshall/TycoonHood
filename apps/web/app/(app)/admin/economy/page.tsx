@@ -7,7 +7,7 @@ import { ConfirmButton } from "../../../../components/admin-confirm";
 
 export const metadata: Metadata = { title: "Admin · Economy" };
 export const dynamic = "force-dynamic";
-const dt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+const dt = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
 export default async function AdminEconomy() {
   await requireAdmin();
@@ -22,7 +22,7 @@ export default async function AdminEconomy() {
 
   return (
     <main>
-      <h1 className="display text-[30px]">The books.</h1>
+      <h1 className="display text-h2">The books.</h1>
       <SectionRule label="System accounts" className="mb-4 mt-8" />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {accounts.map((a) => (

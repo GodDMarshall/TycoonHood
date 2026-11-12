@@ -44,7 +44,7 @@ export async function dailyCheckInAction(): Promise<ChallengeActionState> {
     if (e instanceof MissionCooldownError) return null;
     throw e;
   });
-  revalidatePath("/dashboard");
+  revalidatePath("/today");
   revalidatePath("/challenges");
   if (!r) return { error: "Already counted for this window." };
   const earned = [...r.missions, ...r.achievements];

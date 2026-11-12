@@ -20,7 +20,9 @@ try {
  * styles, so 'unsafe-inline' is required for style-src and script-src under
  * the stable (non-nonce) setup. Everything else is locked to self. Stripe
  * frames/scripts are allowed because checkout redirects through them; drop
- * those entries if the card rail is ever removed.
+ * those entries if the card rail is ever removed. Razorpay: Checkout.js from
+ * checkout.razorpay.com, its modal frames api.razorpay.com, and it reports to
+ * api/lumberjack.razorpay.com.
  */
 const csp = [
   "default-src 'self'",
@@ -28,12 +30,14 @@ const csp = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
-  "frame-src https://js.stripe.com https://hooks.stripe.com",
-  "connect-src 'self' https://api.stripe.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.razorpay.com https://www.youtube.com https://s.ytimg.com",
+  // Video lessons play in YouTube's privacy-enhanced player or Vimeo's player
+  // (lib/video.ts embeds both; Vimeo with dnt=1).
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://api.razorpay.com https://checkout.razorpay.com https://www.youtube-nocookie.com https://player.vimeo.com",
+  "connect-src 'self' https://api.stripe.com https://api.razorpay.com https://lumberjack.razorpay.com",
   "upgrade-insecure-requests",
 ].join("; ");
 
@@ -54,7 +58,23 @@ const nextConfig = {
   transpilePackages: ["@tycoonhood/db", "@tycoonhood/core", "@tycoonhood/config", "@tycoonhood/ui"],
   serverExternalPackages: ["@prisma/client", "prisma", "pg", "@node-rs/argon2"],
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      // The 3D campus's textures (DR-31), fetched only once a device draws it.
+      // Not content-hashed, so cached for a day, never as immutable.
+      { source: "/world/tex/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }] },
+    ];
+  },
+  // The academy rebuild (DR-24) renamed member rooms. Old links — in
+  // notifications, bookmarks, emails — keep working. Temporary on purpose:
+  // nothing here should be cached by a browser forever.
+  async redirects() {
+    return [
+      { source: "/dashboard", destination: "/today", permanent: false },
+      { source: "/academy", destination: "/courses", permanent: false },
+      { source: "/academy/:slug", destination: "/courses/:slug", permanent: false },
+      { source: "/academy/:slug/lesson/:lessonId", destination: "/courses/:slug/lesson/:lessonId", permanent: false },
+    ];
   },
   webpack: (config, { isServer }) => {
     // Native modules imported through transpiled workspace packages must be

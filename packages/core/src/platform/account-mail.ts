@@ -1,0 +1,157 @@
+/**
+ * ACCOUNT SECURITY EMAIL, IN WORDS (ASVS V2.2.3): the link that confirms a
+ * new address, the notices that tell an account's address what changed, and
+ * the link that undoes an email change. Pure — the web app sends them
+ * (apps/web/lib/mail/account.ts) — so the words can be tested.
+ *
+ * A notice never shows the other address in full, because the mailbox that
+ * reads it may not be the member's: it shows a masked form, "ne***@ex***.com".
+ * Times are India time, labelled, as in every email (time/format).
+ */
+import { formatIst } from "../time/ist";
+
+export interface MailCopy {
+  subject: string;
+  text: string;
+}
+
+/** At most two characters of a part, and only one when the part is that short. */
+function keep(part: string): string {
+  const chars = Array.from(part);
+  return chars.slice(0, chars.length > 2 ? 2 : 1).join("");
+}
+
+/** "newname@example.com" → "ne***@ex***.com". The top-level domain stays readable. */
+export function maskEmail(email: string): string {
+  const at = email.lastIndexOf("@");
+  if (at < 1) return "***";
+  const local = email.slice(0, at);
+  const domain = email.slice(at + 1);
+  const dot = domain.lastIndexOf(".");
+  const name = dot > 0 ? domain.slice(0, dot) : domain;
+  const tld = dot > 0 ? domain.slice(dot) : "";
+  return `${keep(local)}***@${keep(name)}***${tld}`;
+}
+
+/**
+ * To the address asked for: the link that confirms it. `opensAt`: when the
+ * link starts to work, if not at once (a change away from an address never
+ * confirmed waits a day; see platform/email-verification).
+ */
+export function emailChangeLinkMail(link: string, opensAt: Date | null = null): MailCopy {
+  return {
+    subject: "Confirm your new email for Tycoonhood",
+    text: [
+      "Someone (hopefully you) asked to use this address for a Tycoonhood account.",
+      "",
+      ...(opensAt
+        ? [
+            "The account's current email was never confirmed, so the change waits a day.",
+            `Confirm it with this link from ${formatIst(opensAt)} (valid 24 hours from then, single use):`,
+          ]
+        : ["Confirm it with this link (valid 24 hours, single use):"]),
+      link,
+      "",
+      "The account's email changes only when the link is used. If this wasn't you, ignore this email.",
+    ].join("\n"),
+  };
+}
+
+/**
+ * To the account's current address, when a change is asked for. `opensAt`:
+ * when the change can happen, if it waits (this address was never
+ * confirmed, so nothing undoes the change once it happens).
+ */
+export function emailChangeRequestedMail(newEmail: string, siteUrl: string, opensAt: Date | null = null): MailCopy {
+  const when = opensAt ? formatIst(opensAt) : null;
+  return {
+    subject: "Someone asked to change your Tycoonhood email",
+    text: [
+      `Someone asked to change the email on your Tycoonhood account to ${maskEmail(newEmail)}.`,
+      "",
+      "Nothing changes until that address is confirmed. Until then you still sign in with this one.",
+      ...(when ? [`This address was never confirmed, so the change can't happen before ${when}. Once it happens, it can't be undone.`] : []),
+      "",
+      when
+        ? `If this wasn't you, someone knows your password. Before ${when}, change it in Settings, or reset it here:`
+        : "If this wasn't you, someone knows your password. Change it now in Settings, or reset it here:",
+      `${siteUrl}/forgot-password`,
+      "A new password cancels the change and signs out your other devices.",
+    ].join("\n"),
+  };
+}
+
+/** To the old address, once the change has happened: the link that undoes it (platform/email-undo). */
+export function emailChangedMail(newEmail: string, undoLink: string): MailCopy {
+  return {
+    subject: "Your Tycoonhood email was changed",
+    text: [
+      `The email on your Tycoonhood account is now ${maskEmail(newEmail)}. This address no longer signs in to it.`,
+      "",
+      "If this wasn't you, undo it (link valid 7 days, single use):",
+      undoLink,
+      "Undoing it puts this address back, signs out every device and asks for a new password.",
+    ].join("\n"),
+  };
+}
+
+/**
+ * To the old address, once the change has happened, when it was never
+ * confirmed. No undo link: whoever reads it may never have had the account
+ * (a typo at registration), so it is told, and pointed to us.
+ */
+export function emailChangedUnconfirmedMail(newEmail: string, siteUrl: string): MailCopy {
+  return {
+    subject: "A Tycoonhood account changed its email",
+    text: [
+      `The Tycoonhood account that used this address now uses ${maskEmail(newEmail)}. This address no longer signs in to it.`,
+      "",
+      "This address was never confirmed, so there is no link to undo the change. If you didn't expect this, contact us:",
+      `${siteUrl}/contact`,
+    ].join("\n"),
+  };
+}
+
+/** To the address an undo put back on the account. */
+export function emailChangeUndoneMail(removedEmail: string, siteUrl: string): MailCopy {
+  return {
+    subject: "Your Tycoonhood email change was undone",
+    text: [
+      `The change of your Tycoonhood email to ${maskEmail(removedEmail)} was undone. This address signs in to your account again.`,
+      "",
+      "Every device was signed out and the old password no longer works. If you haven't chosen a new one, reset it here:",
+      `${siteUrl}/forgot-password`,
+    ].join("\n"),
+  };
+}
+
+/** To the address an undo took off the account. */
+export function emailChangeUndoneRemovedMail(restoredEmail: string, siteUrl: string): MailCopy {
+  return {
+    subject: "A Tycoonhood email change was undone",
+    text: [
+      `The Tycoonhood account that used this address is back on ${maskEmail(restoredEmail)}. This address no longer signs in to it.`,
+      "",
+      "If you didn't expect this, contact us:",
+      `${siteUrl}/contact`,
+    ].join("\n"),
+  };
+}
+
+/** To the account's address after a password change: from Settings, or with a reset link. */
+export function passwordChangedMail(via: "settings" | "reset", siteUrl: string): MailCopy {
+  return {
+    subject: "Your Tycoonhood password was changed",
+    text: [
+      via === "reset"
+        ? "The password for your Tycoonhood account was changed with a reset link. Every device was signed out."
+        : "The password for your Tycoonhood account was changed in Settings. Every other device was signed out.",
+      "If an email change was waiting for confirmation, it was cancelled.",
+      "",
+      "If this wasn't you, reset your password now:",
+      `${siteUrl}/forgot-password`,
+      "Then contact us:",
+      `${siteUrl}/contact`,
+    ].join("\n"),
+  };
+}

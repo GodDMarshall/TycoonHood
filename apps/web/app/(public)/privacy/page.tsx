@@ -12,7 +12,7 @@ export default function PrivacyPage() {
     <LegalPage
       eyebrow="Legal"
       title="Privacy Policy"
-      updated="24 September 2026"
+      updated="11 November 2026"
       intro="Exactly what we store, why we store it, and how to get rid of it. This list was written from the database schema, not from a template."
     >
       <Clause n="1" heading="What we store, item by item">
@@ -27,8 +27,8 @@ export default function PrivacyPage() {
             </thead>
             <tbody className="text-ink-2">
               {[
-                ["Email address", "Signing in, and password reset. Never sold, never shared."],
-                ["Name and display name", "So the platform can address you and the leaderboard can name you."],
+                ["Email address, and when you confirmed it", "Signing in, email confirmation and password reset. Never sold, never shared."],
+                ["Name and display name", "So the platform can address you, and so other members see who wrote a message."],
                 ["Password", "Stored only as an Argon2id hash. We cannot read it, and neither can anyone who steals the database."],
                 ["Username, bio, avatar URL", "Your public profile — and you control which parts are public."],
                 ["Goals, interests, experience level", "The answers you gave at onboarding, used to recommend where to start."],
@@ -43,6 +43,16 @@ export default function PrivacyPage() {
                 ["Discord user ID, if you link it", "Only to sync your rank role. Unlinking removes it."],
                 ["Which videos you watched, and for how long", "So watch-to-earn pays once, and cannot be farmed."],
                 ["Who invited you, and who you invited", "So a referral pays exactly once, to the right person."],
+                ["Community messages, replies and the lesson a question is about", "The conversation itself. Other members in that channel can read it; removing a message hides it from everyone."],
+                ["Which channel messages you have read up to", "So unread counts are right on every device."],
+                ["Reports you file, and any mute placed on you", "So staff can moderate fairly and see what happened."],
+                ["Your daily-standard ticks and the days you met it", "Your record and your streak. Your own items are visible only to you."],
+                ["Discussion posts, replies, reactions and group memberships", "The community itself. Visible to other members; staff can hide content that breaks the rules."],
+                ["Affiliate application, payout details you give us, link clicks and commissions", "Only if you join the affiliate programme: to review you, attribute referred purchases and pay you. Clicks are stored as a one-way hash, never your IP."],
+                ["Payments and refund requests", "Which provider handled a payment, its status and amount, and whether it was test or live mode. We never see card numbers."],
+                ["Cart and wishlist", "So what you saved is still there next time."],
+                ["Messages you send through the contact form", "So we can reply. Includes the name, email and message you typed."],
+                ["Audit records of account changes", "Email and password changes, role changes and staff actions are logged so they can be checked later."],
               ].map(([what, why]) => (
                 <tr key={what} className="border-b border-line last:border-0">
                   <td className="py-2 pr-4 align-top text-ink-1">{what}</td>
@@ -91,7 +101,7 @@ export default function PrivacyPage() {
         <ul className="ml-4 list-disc space-y-1">
           <li><strong className="text-ink-1">Our database host</strong> — holds everything in clause 1, encrypted at rest.</li>
           <li><strong className="text-ink-1">Our hosting provider</strong> — runs the app and sees ordinary request logs.</li>
-          <li><strong className="text-ink-1">Our email provider</strong> — receives your address to deliver a password-reset link. Nothing else.</li>
+          <li><strong className="text-ink-1">Our email provider</strong> — receives your address to deliver email-confirmation and password-reset links. Nothing else.</li>
           <li><strong className="text-ink-1">Stripe</strong>, if you pay by card — handles the payment; we never see the card.</li>
           <li><strong className="text-ink-1">Discord</strong>, if you link it — receives only your rank, to set a role.</li>
         </ul>
@@ -104,7 +114,7 @@ export default function PrivacyPage() {
       <Clause n="5" heading="What is public, and what is not">
         <p>
           Your profile is yours to control. In{" "}
-          <Link href="/settings" className="text-gold underline-offset-4 hover:underline">Settings</Link>{" "}
+          <Link href="/settings" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Settings</Link>{" "}
           you decide, item by item, whether your level, rank, achievements, streak, courses
           and THC balance are visible to anyone else.
         </p>
@@ -117,8 +127,8 @@ export default function PrivacyPage() {
       <Clause n="6" heading="How long we keep it">
         <p>
           Your account data stays while your account exists. Session records expire after 30
-          days of disuse. Password-reset tokens die after 30 minutes or first use, whichever
-          comes first.
+          days of disuse. Password-reset tokens die after 30 minutes or first use, and
+          email-confirmation links after 24 hours or first use, whichever comes first.
         </p>
         <p>
           Ledger entries are permanent. That is the point of a ledger — if rows could be
@@ -127,12 +137,17 @@ export default function PrivacyPage() {
       </Clause>
 
       <Clause n="7" heading="Deleting your account">
-        <p>Ask us and we will, within 30 days:</p>
+        <p>
+          Request deletion from{" "}
+          <Link href="/settings" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">Settings</Link>{" "}
+          or through the{" "}
+          <Link href="/contact" className="text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">contact page</Link>, and we will, within 30 days:
+        </p>
         <ul className="ml-4 list-disc space-y-1">
           <li>delete your email, name, username, bio, avatar and onboarding answers;</li>
           <li>delete your sessions, your Discord link, and your delivery addresses;</li>
-          <li>remove your name from the leaderboard and your public profile;</li>
-          <li>anonymise your ledger entries rather than delete them, so the books still balance.</li>
+          <li>delete your community messages, the reports you filed, and your daily-standard record;</li>
+          <li>anonymise your ledger entries, orders and commission records rather than delete them, so the books still balance.</li>
         </ul>
         <p>
           You can also ask for a copy of everything we hold about you, and we will send it in

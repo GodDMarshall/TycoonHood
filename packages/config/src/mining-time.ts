@@ -86,47 +86,79 @@ export interface PriceInTime {
 /**
  * THE HOUSE RULE, stated once.
  *
- * The anchor is the flagship item: roughly 75 days of mining for a regular
- * member, at a shelf price of $89. Everything else in the catalogue is priced
- * against that same exchange rate, so a $16 bottle of chalk costs about a
- * sixth of a hoodie in THC as well as in money.
+ * The anchor is the flagship item, the Warrior Hoodie: 75 days of mining for a
+ * regular member, at a shelf price of ₹2,499. Everything else in the catalogue
+ * is priced in proportion to it, so a ₹499 bottle of chalk costs about a fifth
+ * of a hoodie in THC as well as in money.
  *
- * The 60–90 day window applies only to an item with NO shelf price, where
- * there is nothing to anchor against.
+ * The anchor is in rupees because the shop sells in rupees (amounts in paise).
+ * No exchange rate is involved: THC is never converted to money, and a card
+ * price in any other currency is not compared at all.
+ *
+ * ₹2,499 is the hoodie's house PLACEHOLDER price (PLACEHOLDER_INR in
+ * packages/db/src/placeholder-prices.ts). Once the owner sets the hoodie's real
+ * price, change pricePaise here to that price. The anchor must follow the real
+ * price, or every THC price is judged against a number nobody pays.
+ *
+ * The 60–90 day window applies only to an item with NO rupee shelf price,
+ * where there is nothing to anchor against.
  */
 export const MERCH_TARGET_DAYS = { min: 60, max: 90 } as const;
-export const MERCH_ANCHOR = { days: 75, fiatCents: 8_900, tolerance: 0.25 } as const;
+export const MERCH_ANCHOR = { days: 75, currency: "INR", pricePaise: 2_499_00, tolerance: 0.25 } as const;
 
-/** THC per dollar of shelf price, derived — never typed in. */
-export function thcPerDollar(rigLevel = 1): number {
+/**
+ * THC per rupee of shelf price, derived from the anchor — never typed in. It
+ * only keeps the two price tags in proportion; it is not an exchange rate.
+ */
+export function thcPerRupee(rigLevel = 1): number {
   const anchorThc = Number(dailyYield(rigLevel, "regular")) * MERCH_ANCHOR.days;
-  return anchorThc / (MERCH_ANCHOR.fiatCents / 100);
+  return anchorThc / (MERCH_ANCHOR.pricePaise / 100);
 }
 
-/** What this item should cost in THC, given what it costs in money. */
-export function thcFor(priceFiatCents: number, rigLevel = 1): bigint {
-  const raw = thcPerDollar(rigLevel) * (priceFiatCents / 100);
+/** What this item should cost in THC, given its rupee shelf price in paise. */
+export function thcFor(pricePaise: number, rigLevel = 1): bigint {
+  const raw = thcPerRupee(rigLevel) * (pricePaise / 100);
   const step = raw >= 20_000 ? 1_000 : raw >= 5_000 ? 500 : 100;
   return BigInt(Math.max(step, Math.round(raw / step) * step));
 }
 
+/** ₹2,499.00 — paise in, rupees out, with Indian digit grouping (en-IN). */
+const rupees = (paise: number) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(paise / 100);
+
 /**
  * Judges a THC price.
  *
- * With a shelf price to anchor against, the question is whether the two agree
- * at the house exchange rate — a small item being "only twelve days of mining"
- * is not a fault, it is a small item. Without one, the 60–90 day window is all
- * there is to go on.
+ * With a rupee shelf price to anchor against, the question is whether the two
+ * agree at the house rate — a small item being "only twelve days of mining" is
+ * not a fault, it is a small item. Without one, the 60–90 day window is all
+ * there is to go on. A card price in any other currency is not compared: the
+ * anchor is in rupees and there is no exchange rate to use, so the time-only
+ * verdict stands and the summary says no money comparison was made.
+ *
+ * `priceFiatCents` is the card price in minor units of `fiatCurrency` (paise
+ * for INR). `anchored` is true only when the rupee comparison was made.
  */
 export function judgePrice(
   priceThc: bigint,
   priceFiatCents: number | null | undefined,
+  fiatCurrency: string | null | undefined,
   rigLevel = 1
-): { verdict: PriceInTime["verdict"]; expected: bigint | null; summary: string } {
+): { verdict: PriceInTime["verdict"]; expected: bigint | null; summary: string; anchored: boolean } {
   const time = priceInTime(priceThc, rigLevel);
 
   if (priceFiatCents == null || priceFiatCents <= 0) {
-    return { verdict: time.verdict, expected: suggestPrice(rigLevel), summary: time.summary };
+    return { verdict: time.verdict, expected: suggestPrice(rigLevel), summary: time.summary, anchored: false };
+  }
+
+  if (fiatCurrency !== MERCH_ANCHOR.currency) {
+    const where = fiatCurrency ? `in ${fiatCurrency}, not rupees` : "not in rupees";
+    return {
+      verdict: time.verdict,
+      expected: suggestPrice(rigLevel),
+      summary: `${time.summary} No money comparison is made, because the card price is ${where}.`,
+      anchored: false,
+    };
   }
 
   const expected = thcFor(priceFiatCents, rigLevel);
@@ -136,7 +168,7 @@ export function judgePrice(
     : ratio > 1 + MERCH_ANCHOR.tolerance ? "too expensive"
     : "on target";
 
-  const money = `$${(priceFiatCents / 100).toFixed(2)}`;
+  const money = rupees(priceFiatCents);
   const summary =
     verdict === "on target"
       ? `${time.summary.replace(/\.$/, "")} — in step with the ${money} shelf price.`
@@ -144,7 +176,7 @@ export function judgePrice(
         ? `${time.summary.replace(/\.$/, "")}, but ${money} on the shelf works out at about ${expected.toLocaleString("en-US")} THC. This is cheaper in THC than in money.`
         : `${time.summary.replace(/\.$/, "")}, while ${money} on the shelf works out at about ${expected.toLocaleString("en-US")} THC. This is dearer in THC than in money.`;
 
-  return { verdict, expected, summary };
+  return { verdict, expected, summary, anchored: true };
 }
 
 export function priceInTime(priceThc: bigint, rigLevel = 1): PriceInTime {

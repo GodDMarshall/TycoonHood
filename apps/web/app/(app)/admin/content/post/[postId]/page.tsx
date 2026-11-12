@@ -16,7 +16,7 @@ export default async function PostEditPage({ params }: { params: Promise<{ postI
   if (!isNew && !post) notFound();
   return (
     <main className="max-w-2xl">
-      <h1 className="display text-[30px]">{isNew ? "New essay" : "Edit essay"}</h1>
+      <h1 className="display text-h2">{isNew ? "New essay" : "Edit essay"}</h1>
       <PostEditor
         action={savePostAction.bind(null, isNew ? null : postId)}
         initial={post ? { title: post.title, slug: post.slug, excerpt: post.excerpt ?? "", contentMd: post.contentMd, published: !!post.publishedAt } : null}

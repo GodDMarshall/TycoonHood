@@ -19,22 +19,27 @@
     "db:deploy": "pnpm --filter @tycoonhood/db migrate:deploy",
     "db:migrate:sql": "pnpm --filter @tycoonhood/db migrate:sql",
     "db:migrate:status": "pnpm --filter @tycoonhood/db migrate:status",
-    "deploy:db": "node scripts/deploy-db.mjs",
+    "deploy:db": "node scripts/with-db-lock.mjs node scripts/deploy-db.mjs",
     "db:seed:merch": "pnpm --filter @tycoonhood/db seed:merch",
     "e2e": "node scripts/e2e/full-loop.mjs",
+    "e2e:journeys": "node scripts/e2e/journeys.mjs",
+    "e2e:a11y": "node scripts/e2e/a11y.mjs",
     "preflight": "pnpm --filter @tycoonhood/core exec tsx scripts/preflight.ts"
   },
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=22.12.0",
     "pnpm": ">=9.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^10.0.1",
+    "axe-core": "4.13.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "pg": "^8.23.0",
     "playwright": "^1.63.0",
+    "sharp": "^0.35.5",
+    "simplex-noise": "4.0.3",
     "typescript-eslint": "^8"
   },
   "packageManager": "pnpm@9.15.9"

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { requireUser } from "../../../../lib/guard";
 import { notFound, redirect } from "next/navigation";
-import { marked } from "marked";
 import { prisma } from "@tycoonhood/db";
-import { Badge, SectionRule } from "@tycoonhood/ui";
+import { libraryOrderFor, renderMarkdown } from "@tycoonhood/core";
+import { Badge } from "@tycoonhood/ui";
+import { Page } from "../../../../components/app/page";
 import { getCurrentUser } from "../../../../lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -16,22 +17,19 @@ export default async function LibraryItem({ params }: { params: Promise<{ slug: 
   const product = await prisma.product.findUnique({ where: { slug } });
   if (!product || product.kind !== "DIGITAL") notFound();
 
-  const owned = await prisma.order.findFirst({
-    where: { userId: user.id, status: "FULFILLED", items: { some: { productId: product.id } } },
-    select: { id: true },
-  });
-  if (!owned) redirect("/marketplace");
+  // Paid is enough: gear in the same order may still be waiting to ship.
+  const owned = await libraryOrderFor(user.id, product.id);
+  if (!owned) redirect("/store");
 
   const html = product.contentMd
-    ? await marked.parse(product.contentMd)
+    ? renderMarkdown(product.contentMd)
     : "<p>This item's content is being prepared — you own it, and it will appear here.</p>";
 
   return (
-    <main className="max-w-2xl">
+    <Page width="narrow">
       <Badge tone="gold">In your library</Badge>
-      <h1 className="display mt-3 text-[34px]">{product.name}</h1>
-      <SectionRule className="my-6" />
-      <article className="md-content" dangerouslySetInnerHTML={{ __html: html }} />
-    </main>
+      <h1 className="mt-3 text-[28px] font-semibold leading-tight tracking-[-0.02em] sm:text-[34px]">{product.name}</h1>
+      <article className="md-content mt-8 border-t border-line pt-8" dangerouslySetInnerHTML={{ __html: html }} />
+    </Page>
   );
 }

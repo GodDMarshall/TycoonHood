@@ -1,109 +1,103 @@
 /**
- * PHASE 1→2 FOUNDATION STATUS PAGE, now set in the house style.
- * Still deliberately not the homepage (Phase 4). Every number remains a
- * live database query.
+ * THE OPEN BOOKS. Every figure on this page is a live database query made
+ * on this request — no cached marketing numbers, no hand-typed claims.
  */
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Logo,
-  SectionRule,
-  Stat,
-  ThcAmount,
-} from "@tycoonhood/ui";
+import { LedgerService } from "@tycoonhood/core";
+import { Icon } from "@tycoonhood/ui";
+import { RoomHeader } from "../../../components/room-header";
 
+export const metadata: Metadata = {
+  title: "The open books",
+  description: "Tycoonhood's live figures: supply, every system account, members, missions paid, lessons completed and certificates issued — straight from the ledger.",
+  alternates: { canonical: "/status" },
+};
 export const dynamic = "force-dynamic";
 
-export default async function FoundationStatus() {
-  const [courses, levels, ranks, missions, achievements, mint, treasury, pool] =
-    await Promise.all([
-      prisma.course.count(),
-      prisma.levelDefinition.count(),
-      prisma.rankDefinition.count(),
-      prisma.mission.count(),
-      prisma.achievement.count(),
-      prisma.ledgerAccount.findFirst({ where: { type: "SYSTEM_MINT" } }),
-      prisma.ledgerAccount.findFirst({ where: { type: "TREASURY" } }),
-      prisma.ledgerAccount.findFirst({ where: { type: "REWARDS_POOL" } }),
-    ]);
+const ledger = new LedgerService(prisma);
+const fmt = (n: bigint | number) => n.toLocaleString("en-US");
+
+export default async function OpenBooks() {
+  const [accounts, circulating, members, missionsPaid, lessonsDone, certificates, programs, ordersShipped, txCount] = await Promise.all([
+    prisma.ledgerAccount.findMany({ where: { type: { not: "USER" } }, orderBy: { type: "asc" } }),
+    ledger.circulatingSupply(),
+    prisma.user.count(),
+    prisma.missionCompletion.count(),
+    prisma.lessonProgress.count({ where: { completedAt: { not: null } } }),
+    prisma.certificate.count(),
+    prisma.course.count({ where: { status: "PUBLISHED" } }),
+    prisma.order.count({ where: { status: "FULFILLED" } }),
+    prisma.ledgerTransaction.count(),
+  ]);
+  const describe: Record<string, string> = {
+    SYSTEM_MINT: "Genesis counter-account. Its negative balance is the proof of total supply.",
+    TREASURY: "Held by the house.",
+    REWARDS_POOL: "Finite pool that pays missions, challenges and achievements.",
+    MINING_POOL: "Ring-fenced budget the Miner distributes from. Distribution, not minting.",
+    REVENUE: "Receives THC spent on Tycoonhood products.",
+    ESCROW: "Holds THC in flight between two sides of a transaction.",
+  };
+  const activity: [string, number][] = [
+    ["Members", members],
+    ["Programs published", programs],
+    ["Missions paid", missionsPaid],
+    ["Lessons completed", lessonsDone],
+    ["Certificates issued", certificates],
+    ["Orders shipped", ordersShipped],
+    ["Ledger transactions", txCount],
+  ];
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <header className="mb-10 flex items-center justify-between">
-        <Logo />
-        <Badge tone="gold">Phase 2</Badge>
-      </header>
-
-      <p className="eyebrow mb-3">Foundation status</p>
-      <h1 className="display text-[40px] leading-[1.08]">The books are open.</h1>
-      <p className="mt-3 max-w-lg text-ink-2">
-        Live from PostgreSQL. The public site replaces this page in Phase 4 —
-        the design system it will be built from is on the{" "}
-        <Link href="/styleguide" className="text-gold underline-offset-4 hover:underline">
-          styleguide
-        </Link>
-        .
-      </p>
-
-      <SectionRule label="Economy" className="mb-6 mt-12" />
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card variant="gold">
-          <CardContent className="py-5">
-            <Stat
-              label="Total supply"
-              value={<ThcAmount amount={-(mint?.balance ?? 0n)} size="lg" />}
-            />
-            <p className="mt-2 text-[11px] text-ink-3">Provable: −SYSTEM_MINT</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-5">
-            <Stat label="Treasury" value={<ThcAmount amount={treasury?.balance ?? 0n} />} />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-5">
-            <Stat label="Rewards pool" value={<ThcAmount amount={pool?.balance ?? 0n} />} />
-          </CardContent>
-        </Card>
-      </div>
-
-      <SectionRule label="Catalog & engine" className="mb-6 mt-12" />
-      <Card>
-        <CardHeader>
-          <CardTitle>Seeded and tested</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3">
-          <Stat label="Programs" value={courses} />
-          <Stat label="Levels" value={levels} />
-          <Stat label="Ranks" value={ranks} />
-          <Stat label="Missions" value={missions} />
-          <Stat label="Achievements" value={achievements} />
-          <Stat label="Ledger tests" value="16 ✓" />
-        </CardContent>
-      </Card>
-
-      <div className="mt-10 flex items-center gap-4">
-        <Link
-          href="/register"
-          className="inline-flex h-10 items-center rounded-md bg-gold px-4 text-[14px] font-semibold text-bg-0 hover:bg-gold-bright"
-        >
-          Create account
-        </Link>
-        <Link
-          href="/login"
-          className="inline-flex h-10 items-center rounded-md border border-line-strong px-4 text-[14px] text-ink-1 hover:border-gold-deep"
-        >
-          Sign in
-        </Link>
-        <span className="text-[12px] text-ink-3">
-          Run <span className="figures">pnpm test</span> for the ledger proofs.
-        </span>
+    <main>
+      <RoomHeader
+        icon="treasury"
+        room="Open books"
+        title="Every figure,"
+        accent="a database fact."
+        lead="Queried live on this request. If a number here is wrong, the ledger is wrong — and the ledger is double-entry, enforced by the database itself."
+      />
+      <div className="mx-auto grid max-w-[88rem] gap-8 px-[var(--gutter)] py-16 lg:grid-cols-[1.4fr_1fr]">
+        <section aria-labelledby="accounts">
+          <h2 id="accounts" className="eyebrow mb-5">
+            System accounts
+          </h2>
+          <ul className="overflow-hidden rounded-lg border border-line bg-bg-1">
+            {accounts.map((a) => (
+              <li key={a.id} className="grid gap-2 border-b border-line px-5 py-4 last:border-0 sm:grid-cols-[1fr_auto] sm:items-center">
+                <div>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-gold">{a.type.replace("_", " ")}</p>
+                  <p className="mt-1 text-[13px] text-ink-3">{describe[a.type] ?? ""}</p>
+                </div>
+                <p className="figures break-all text-[15px] sm:text-right">{fmt(a.balance)}</p>
+              </li>
+            ))}
+            <li className="grid gap-2 bg-bg-2 px-5 py-4 sm:grid-cols-[1fr_auto] sm:items-center">
+              <div>
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-gold-bright">Member hands</p>
+                <p className="mt-1 text-[13px] text-ink-3">The sum of every member wallet.</p>
+              </div>
+              <p className="figures text-[15px] sm:text-right">{fmt(circulating)}</p>
+            </li>
+          </ul>
+        </section>
+        <section aria-labelledby="activity">
+          <h2 id="activity" className="eyebrow mb-5">
+            Activity
+          </h2>
+          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line">
+            {activity.map(([k, v]) => (
+              <div key={k} className="bg-bg-1 p-5">
+                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-3">{k}</dt>
+                <dd className="figures mt-2 text-[22px]">{fmt(v)}</dd>
+              </div>
+            ))}
+          </dl>
+          <Link href="/thc" className="mt-6 flex items-center justify-between rounded-md border border-line-strong p-4 text-[14px] transition-colors hover:border-gold-deep">
+            How the economy works <Icon name="arrow-right" size={16} className="text-ink-3" />
+          </Link>
+        </section>
       </div>
     </main>
   );

@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Card, CardContent, Progress } from "@tycoonhood/ui";
+import { Button, Card, CardContent, Icon, Progress } from "@tycoonhood/ui";
 import { startWatchAction, heartbeatWatchAction, settleWatchAction } from "../app/actions";
 
 export interface WatchTaskView {
@@ -120,7 +120,7 @@ export function WatchPlayer({ task, onPaid }: { task: WatchTaskView; onPaid: (th
             <p className="truncate text-[14px] text-ink-2 line-through">{task.title}</p>
             <p className="text-[11px] text-success">Paid · {Number(task.rewardThc).toLocaleString("en-US")} THC</p>
           </div>
-          <span aria-hidden className="text-success">✓</span>
+          <Icon name="check" size={18} className="text-success" />
         </CardContent>
       </Card>
     );

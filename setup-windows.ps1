@@ -28,11 +28,13 @@ Write-Host ""
 
 # ---------------------------------------------------------------- 1. Node
 if (-not (Have node)) {
-  Die "Node.js is not installed.`n      Install Node 20 or newer from https://nodejs.org (LTS), reopen VS Code, and re-run."
+  Die "Node.js is not installed.`n      Install Node 22.12 or newer from https://nodejs.org (LTS), reopen VS Code, and re-run."
 }
-$nodeMajor = [int](((node -v) -replace 'v','').Split('.')[0])
-if ($nodeMajor -lt 20) {
-  Die "Node $(node -v) is too old. This project needs Node 20+. Install the LTS from https://nodejs.org and re-run."
+$nodeParts = ((node -v) -replace 'v','').Split('.')
+$nodeMajor = [int]$nodeParts[0]
+$nodeMinor = [int]$nodeParts[1]
+if ($nodeMajor -lt 22 -or ($nodeMajor -eq 22 -and $nodeMinor -lt 12)) {
+  Die "Node $(node -v) is too old. This project needs Node 22.12 or newer. Install the LTS from https://nodejs.org and re-run."
 }
 Good "Node $(node -v)"
 

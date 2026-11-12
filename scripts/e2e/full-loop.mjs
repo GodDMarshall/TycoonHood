@@ -25,6 +25,8 @@ const ok = (label, cond, detail = "") => {
   console.log(`${cond ? "  PASS" : "  FAIL"}  ${label}${detail ? ` — ${detail}` : ""}`);
   if (!cond) fails++;
 };
+/** The path of an absolute URL, without query or hash. */
+const pathOf = (u) => u.replace(/^[a-z]+:\/\/[^/]+/i, "").split(/[?#]/)[0] || "/";
 const section = (t) => console.log(`\n══ ${t} ══`);
 
 const ADMIN_EMAIL = "e2e-admin@tycoonhood.test";
@@ -46,6 +48,15 @@ async function signIn(ctx, email, password) {
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await page.getByRole("button", { name: /sign in/i }).click();
+  // Wait for the OUTCOME, not for idle: waitForLoadState resolves at once when
+  // the page was already idle, which raced the server action's redirect. The
+  // sign-in either leaves /login or puts an error on screen — wait for either.
+  await Promise.race([
+    page.waitForURL((u) => !u.pathname.startsWith("/login"), { timeout: 20000 }),
+    // Next's route announcer is an always-present, empty role=alert — only an
+    // alert with text in it is an answer.
+    page.getByRole("alert").filter({ hasText: /\S/ }).first().waitFor({ timeout: 20000 }),
+  ]).catch(() => {});
   await page.waitForLoadState("networkidle");
 
   if (page.url().includes("/login")) {
@@ -129,12 +140,23 @@ try {
   section("A MEMBER JOINS THROUGH AN INVITE LINK");
   // The code is minted by visiting the Miner's Squad tab, which is exactly how
   // a member gets theirs. That verifies the page and produces the code at once.
+  // The Miner lives in the member app at /mining; the old app only forwards.
   const adminMiner = await adminCtx.newPage();
-  await adminMiner.goto(`${MINER}/squad`);
+  await adminMiner.goto(`${WEB}/mining/squad`);
   await adminMiner.waitForLoadState("networkidle");
   const squadText = await adminMiner.locator("body").innerText();
   ok("squad page explains that signups pay nothing", /finish their first lesson|first lesson/i.test(squadText));
-  ok("miner shows the tab bar when signed in", await adminMiner.locator('nav[aria-label="Miner sections"]').isVisible());
+  ok("miner shows its section nav when signed in", await adminMiner.locator('nav[aria-label="Miner sections"]').isVisible());
+  await adminMiner.goto(`${WEB}/mining`);
+  await adminMiner.waitForLoadState("networkidle");
+  ok("the rig renders inside the member app", pathOf(adminMiner.url()) === "/mining", adminMiner.url());
+  ok("the rig shows its picture and a claim control",
+    (await adminMiner.locator('svg[role="img"][aria-label^="Mining rig"]').count()) > 0 &&
+      (await adminMiner.getByRole("button", { name: /claim/i }).count()) > 0);
+  // The standalone Miner app forwards every old link to its new home.
+  await adminMiner.goto(`${MINER}/`);
+  await adminMiner.waitForLoadState("networkidle");
+  ok("the old miner app forwards to /mining", pathOf(adminMiner.url()) === "/mining", adminMiner.url());
   const code = sql(`select "referralCode" from "Profile" where "userId"=(select id from "User" where email='e2e-admin@tycoonhood.test')`);
   ok("an invite code was minted", !!code && code.length === 7, code || "none");
 
@@ -274,6 +296,100 @@ try {
   ok("the referral moved to QUALIFIED after a real lesson", refStatus === "QUALIFIED", refStatus);
   ok("the inviter was paid", BigInt(inviterAfter) > BigInt(inviterBefore), `${inviterBefore} → ${inviterAfter}`);
 
+  // ───────────────────────────────── THE ACADEMY APP
+  section("THE ACADEMY: TODAY, LESSONS IN ORDER, COMMUNITY");
+  const fixture = (args) =>
+    execSync(`cd ${ROOT} && pnpm --filter @tycoonhood/core exec tsx scripts/e2e-fixture.ts ${args}`, { encoding: "utf8" }).trim().split("\n").pop();
+  const aEmail = `e2e-a-${stamp}@tycoonhood.test`;
+  const bEmail = `e2e-b-${stamp}@tycoonhood.test`;
+  fixture(`member ${aEmail} ${ADMIN_PASSWORD} "E2E Ana"`);
+  fixture(`member ${bEmail} ${ADMIN_PASSWORD} "E2E Ben"`);
+  const lessonIds = sql(`SELECT string_agg(l.id, ',' ORDER BY m."sortOrder", l."sortOrder") FROM "Lesson" l JOIN "CourseModule" m ON m.id=l."moduleId" JOIN "Course" c ON c.id=m."courseId" WHERE c.slug='warrior'`).split(",");
+
+  const ana = await signIn(await browser.newContext(), aEmail, ADMIN_PASSWORD);
+  ok("sign-in lands on Today", /\/today$/.test(ana.url()), ana.url());
+  ok("Today opens with the guided start", /Start here/.test(await ana.locator("main").innerText()));
+
+  await ana.getByRole("checkbox", { name: "Train" }).click();
+  await ana.waitForTimeout(1500);
+  await ana.reload();
+  ok("a ticked standard item survives a reload", (await ana.getByRole("checkbox", { name: "Train" }).getAttribute("aria-checked")) === "true");
+  ok("an automatic item cannot be ticked by hand", (await ana.getByRole("checkbox", { name: /Study/ }).getAttribute("aria-disabled")) === "true");
+
+  await ana.goto(`${WEB}/courses/warrior`);
+  await ana.getByRole("button", { name: /Enroll — free/ }).first().click();
+  await ana.getByRole("link", { name: /Start the first lesson/ }).waitFor({ timeout: 20000 });
+  ok("enrolling opens the program with its first lesson", true);
+  ok("the sidebar lists the program", (await ana.locator('aside a[href="/courses/warrior"]').count()) > 0);
+
+  await ana.goto(`${WEB}/courses/warrior/lesson/${lessonIds[2]}`);
+  ok("a locked lesson says what opens it", /opens when you finish/.test(await ana.locator("main").innerText()));
+  await ana.goto(`${WEB}/courses/warrior/lesson/${lessonIds[0]}`);
+  await ana.getByRole("button", { name: /Complete and continue/ }).click();
+  await ana.waitForURL(new RegExp(lessonIds[1]), { timeout: 20000 }).catch(() => {});
+  ok("Complete and continue opens the next lesson", ana.url().includes(lessonIds[1]), ana.url());
+  const studyTicked = sql(`SELECT count(*) FROM "StandardTick" t JOIN "User" u ON u.id=t."userId" WHERE u.email='${aEmail}' AND t."itemId"='std_study'`);
+  ok("finishing a lesson ticked Study on the standard", studyTicked === "1", studyTicked);
+
+  await ana.fill("#lesson-question", `Does adding reps count as overload? (${stamp})`);
+  await ana.getByRole("button", { name: /Post question/ }).click();
+  await ana.getByText("See it in Questions").waitFor({ timeout: 15000 });
+  const qLesson = sql(`SELECT count(*) FROM "Message" m JOIN "Channel" c ON c.id=m."channelId" WHERE c.slug='warrior-questions' AND m."lessonId"='${lessonIds[1]}' AND m.body LIKE '%${stamp}%'`);
+  ok("a question from the lesson lands in Questions with the lesson attached", qLesson === "1", qLesson);
+
+  await ana.goto(`${WEB}/community/general`);
+  await ana.fill("#composer", `Hello from Ana (${stamp})`);
+  await ana.keyboard.press("Enter");
+  await ana.getByText(`Hello from Ana (${stamp})`).first().waitFor({ timeout: 15000 });
+  ok("a message posts and shows at once", true);
+
+  await ana.goto(`${WEB}/community/wins`);
+  await ana.fill("#composer", `First client signed (${stamp})`);
+  await ana.fill("#proof", "https://example.com/proof");
+  await ana.getByRole("button", { name: "Send" }).click();
+  await ana.getByText(`First client signed (${stamp})`).first().waitFor({ timeout: 15000 });
+  const proofShown = await ana.locator('a[href="https://example.com/proof"]').first().waitFor({ timeout: 15000 }).then(() => true, () => false);
+  ok("a win carries its proof link", proofShown, sql(`SELECT coalesce("proofUrl",'none') FROM "Message" WHERE body = 'First client signed (${stamp})'`));
+
+  const ben = await signIn(await browser.newContext(), bEmail, ADMIN_PASSWORD);
+  ok("the second member signs in", !ben.url().includes("/login"), ben.url());
+  await ben.goto(`${WEB}/community/general`);
+  ok("the second member sees the first member's message", (await ben.locator("article", { hasText: `Hello from Ana (${stamp})` }).count()) > 0,
+    `stored=${sql(`SELECT count(*) FROM "Message" WHERE body = 'Hello from Ana (${stamp})'`)} url=${ben.url()}`);
+  const anaMsg = ben.locator("article", { hasText: `Hello from Ana (${stamp})` }).first();
+  await anaMsg.hover();
+  await anaMsg.getByRole("button", { name: /Reply to E2E Ana/ }).click();
+  await ben.fill("#composer", `Welcome, Ana (${stamp})`);
+  await ben.keyboard.press("Enter");
+  await ben.getByText(`Welcome, Ana (${stamp})`).first().waitFor({ timeout: 15000 });
+  await ben.fill("#composer", `Second message too fast (${stamp})`);
+  await ben.keyboard.press("Enter");
+  await ben.waitForTimeout(1200);
+  ok("slow mode holds a second message", /Slow mode/i.test(await ben.locator("main").innerText()));
+
+  await ana.goto(`${WEB}/community/general`);
+  await ana.waitForTimeout(5000);
+  ok("the reply reaches Ana's open channel", (await ana.getByText(`Welcome, Ana (${stamp})`).count()) > 0);
+  await ana.goto(`${WEB}/notifications`);
+  ok("Ana is notified of the reply", /E2E Ben replied to you/.test(await ana.locator("main").innerText()));
+
+  // Ben reports; staff removes from the queue.
+  await ben.goto(`${WEB}/community/general`);
+  const target = ben.locator("article", { hasText: `Hello from Ana (${stamp})` }).first();
+  await target.hover();
+  await target.getByRole("button", { name: "Report to staff" }).click();
+  await ben.fill(`input[id^="reason-"]`, "e2e report");
+  await ben.getByRole("button", { name: "Report", exact: true }).click();
+  await ben.getByText("Reported. Staff will review it.").waitFor({ timeout: 15000 });
+  await admin.goto(`${WEB}/admin/community`);
+  const row = admin.locator("li", { hasText: `Hello from Ana (${stamp})` }).first();
+  await row.getByRole("button", { name: "Remove message" }).click();
+  await admin.waitForTimeout(1500);
+  const removed = sql(`SELECT count(*) FROM "Message" WHERE body = 'Hello from Ana (${stamp})' AND "deletedAt" IS NOT NULL`);
+  ok("staff remove a reported message from the queue", removed === "1", removed);
+  await ana.goto(`${WEB}/community/general`);
+  ok("a removed message's text is gone for everyone", (await ana.getByText(`Hello from Ana (${stamp})`).count()) === 0);
+
   // ───────────────────────────────── CLEAN UP AFTER ITSELF
   // The ledger is append-only and stays. Everything this run created that
   // would otherwise clutter the catalogue is removed.
@@ -281,6 +397,7 @@ try {
   sql(`DELETE FROM "Order" WHERE id IN (SELECT DISTINCT "orderId" FROM "OrderItem" WHERE "productId" IN (SELECT id FROM "Product" WHERE slug = '${slug}'))`);
   sql(`DELETE FROM "Product" WHERE slug = '${slug}'`);
   sql(`DELETE FROM "WatchTask" WHERE slug = '${vslug}'`);
+  sql(`DELETE FROM "Message" WHERE body LIKE '%(${stamp})%'`);
   const stale = sql(`SELECT count(*) FROM "Product" WHERE slug LIKE 'e2e-hoodie-%'`);
   ok("no earlier run left parcels behind either", stale === "0", `${stale} stale products`);
   const leftovers = sql(`SELECT count(*) FROM "Product" WHERE slug = '${slug}'`)
@@ -297,6 +414,7 @@ try {
     sql(`DELETE FROM "Order" WHERE id IN (SELECT DISTINCT "orderId" FROM "OrderItem" WHERE "productId" IN (SELECT id FROM "Product" WHERE slug LIKE 'e2e-hoodie-%'))`);
     sql(`DELETE FROM "Product" WHERE slug LIKE 'e2e-hoodie-%'`);
     sql(`DELETE FROM "WatchTask" WHERE slug LIKE 'e2e-video-%'`);
+    sql(`DELETE FROM "Message" WHERE "authorId" IN (SELECT id FROM "User" WHERE email LIKE 'e2e-%@tycoonhood.test')`);
   } catch (e) {
     console.error("  cleanup failed:", e.message);
   }

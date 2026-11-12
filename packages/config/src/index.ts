@@ -72,3 +72,17 @@ export const WATCH = {
  *  economic policy over MINING — no database, so seeds and the admin UI can
  *  both use it without pulling in the data layer. */
 export * from "./mining-time";
+
+/**
+ * AFFILIATE PROGRAMME (EARN). Money, not THC: every figure is INR minor units
+ * (paise). Separate from REFERRAL above, which pays THC for a referred
+ * member's first lesson. A commission is only ever created from a PAID order
+ * with a fiat value; it waits out the refund window, then an admin approves
+ * it. Nothing is paid for a signup, a click or for recruiting affiliates.
+ */
+/** Commission rate on the order total after discount, in basis points (1000 = 10%). */
+export const AFFILIATE_RATE_BPS = 1000;
+/** Days a commission is held before an admin may approve it (the refund window). */
+export const AFFILIATE_HOLD_DAYS = 14;
+/** Smallest payout a member can request: ₹500, in paise. */
+export const MIN_PAYOUT_CENTS = 50_000;

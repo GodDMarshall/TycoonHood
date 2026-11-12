@@ -1,0 +1,11 @@
+[
+  { "name": "warrior", "slot": "warrior", "id": "WH15dpm1F1E", "use": "Warrior program cover", "brightness": 0.95 },
+  { "name": "builder", "slot": "builder", "id": "Ysy1pIsGAjU", "use": "Business Mastery program cover", "brightness": 0.95 },
+  { "name": "tycoon", "slot": "tycoon", "id": "bodXa3yTF0w", "use": "Financial Planning program cover", "brightness": 0.88 },
+  { "name": "mind", "slot": "mind", "id": "-hHxIb36kK4", "use": "Mindfulness program cover", "brightness": 1.0 },
+  { "name": "iron", "slot": "iron", "id": "JWK2H-2qz1Y", "use": "30 Days of Iron challenge", "brightness": 0.95 },
+  { "name": "launch", "slot": "launch", "id": "Im7lZjxeLhg", "use": "Launch Week challenge", "brightness": 1.0, "saturation": 0.6 },
+  { "name": "ledger", "slot": "desk", "id": "dyFnG8xZi3s", "use": "The 1% Ledger challenge", "brightness": 0.9 },
+  { "name": "standard", "slot": "desk", "id": "6hVS5dXige8", "use": "Homepage: the daily standard", "brightness": 0.95 },
+  { "name": "dawn", "slot": "dawn", "id": "A0XAtwkmvDg", "use": "Sign in / register", "brightness": 0.9 }
+]

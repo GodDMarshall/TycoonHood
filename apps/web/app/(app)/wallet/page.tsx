@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { Page, PageHeader } from "../../../components/app/page";
 import { requireUser } from "../../../lib/guard";
-import { LedgerService } from "@tycoonhood/core";
+import { LedgerService, formatDayTime, memberZone } from "@tycoonhood/core";
 import { prisma } from "@tycoonhood/db";
-import { Card, CardContent, SectionRule, Stat, ThcAmount } from "@tycoonhood/ui";
+import { Card, CardContent, Icon, SectionRule, Stat, ThcAmount } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../../lib/auth";
 
 export const metadata: Metadata = { title: "Wallet" };
 export const dynamic = "force-dynamic";
 const ledger = new LedgerService(prisma);
-const dt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
 const reasonLabel: Record<string, string> = {
   REWARD_MISSION: "Mission reward",
@@ -25,22 +25,33 @@ const reasonLabel: Record<string, string> = {
 export default async function WalletPage() {
   await requireUser();
   const user = (await getCurrentUser())!;
+  const zone = memberZone(user.profile?.timezone);
   const { account, entries } = await ledger.history(user.id, 100);
   const audit = await ledger.auditAccount(account.id);
 
   return (
-    <main>
-      <p className="eyebrow mb-2">Wallet</p>
-      <h1 className="display text-[34px]">Your ledger.</h1>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <Card variant="gold">
+    <Page>
+      <PageHeader
+        title="Wallet"
+        description="Every THC you hold is the sum of real ledger entries. The balance below is recomputed from all of them on every visit."
+      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card variant="raised">
           <CardContent className="py-5">
             <Stat label="Balance" value={<ThcAmount amount={account.balance} size="lg" />} />
           </CardContent>
         </Card>
         <Card>
           <CardContent className="py-5">
-            <Stat label="Audit" value={<span className="figures text-[15px] text-success">{audit.consistent ? "cache = Σ entries ✓" : "INCONSISTENT"}</span>} />
+            <Stat
+              label="Audit"
+              value={
+                <span className={`figures flex items-center gap-2 text-[15px] ${audit.consistent ? "text-success" : "text-danger"}`}>
+                  <Icon name={audit.consistent ? "check" : "alert"} size={16} />
+                  {audit.consistent ? "cache = Σ entries" : "INCONSISTENT"}
+                </span>
+              }
+            />
             <p className="mt-1 text-[11px] text-ink-3">Your cached balance, recomputed from every entry, live.</p>
           </CardContent>
         </Card>
@@ -59,7 +70,7 @@ export default async function WalletPage() {
                     {reasonLabel[e.transaction.reason] ?? e.transaction.reason}
                     {e.transaction.memo ? ` — ${e.transaction.memo}` : ""}
                   </span>
-                  <span className="figures block text-[11px] text-ink-3">{dt.format(e.transaction.createdAt)}</span>
+                  <span className="figures block text-[11px] text-ink-3">{formatDayTime(e.transaction.createdAt, zone)}</span>
                 </span>
                 <ThcAmount amount={e.amount} signed={e.amount > 0n} size="sm" />
               </div>
@@ -67,6 +78,6 @@ export default async function WalletPage() {
           )}
         </CardContent>
       </Card>
-    </main>
+    </Page>
   );
 }

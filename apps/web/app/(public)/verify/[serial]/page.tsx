@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
+import { showsCourses } from "@tycoonhood/core";
 import { Card, CardContent, CoinMark, PillarBadge, SectionRule } from "@tycoonhood/ui";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Verify certificate" };
-const dt = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
+const dt = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", month: "long", day: "numeric", year: "numeric" });
 
 export default async function VerifyCertificate({ params }: { params: Promise<{ serial: string }> }) {
   const { serial } = await params;
@@ -15,6 +16,9 @@ export default async function VerifyCertificate({ params }: { params: Promise<{ 
     include: { course: true, user: { include: { profile: true } } },
   });
   if (!cert) notFound();
+  // Name per privacy: shown only when the member opts in (Settings → "Show my
+  // certificates, and my name when someone verifies one"). Off by default.
+  const showName = !!cert.user.profile && showsCourses(cert.user.profile.privacy);
 
   return (
     <main className="mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
@@ -26,12 +30,12 @@ export default async function VerifyCertificate({ params }: { params: Promise<{ 
           <h1 className="display text-[28px]">{cert.course.title}</h1>
           <p className="text-[15px] text-ink-1">
             Completed by{" "}
-            {cert.user.profile ? (
-              <Link href={`/u/${cert.user.profile.username}`} className="font-semibold text-gold hover:underline underline-offset-4">
+            {showName && cert.user.profile ? (
+              <Link href={`/u/${cert.user.profile.username}`} className="font-semibold text-gold underline decoration-gold-shadow underline-offset-4 hover:decoration-gold">
                 {cert.user.profile.displayName}
               </Link>
             ) : (
-              "a Tycoonhood member"
+              "a Tycoonhood member (name private)"
             )}
           </p>
           <SectionRule className="my-2 w-40" />

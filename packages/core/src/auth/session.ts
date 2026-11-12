@@ -26,19 +26,42 @@ export interface DeviceInfo {
 export class SessionService {
   constructor(private readonly db: PrismaClient = defaultPrisma) {}
 
+  private sessionData(raw: string, userId: string, device: DeviceInfo) {
+    return {
+      sessionToken: sha256(raw),
+      userId,
+      expires: new Date(Date.now() + SESSION_TTL_MS),
+      userAgent: device.userAgent?.slice(0, 400) ?? null,
+      ipHash: device.ip ? sha256(device.ip).slice(0, 32) : null,
+    };
+  }
+
   /** Create a session; returns the RAW token for the cookie (never stored). */
   async create(userId: string, device: DeviceInfo = {}) {
     const raw = randomBytes(32).toString("base64url");
-    const session = await this.db.session.create({
-      data: {
-        sessionToken: sha256(raw),
-        userId,
-        expires: new Date(Date.now() + SESSION_TTL_MS),
-        userAgent: device.userAgent?.slice(0, 400) ?? null,
-        ipHash: device.ip ? sha256(device.ip).slice(0, 32) : null,
-      },
-    });
+    const session = await this.db.session.create({ data: this.sessionData(raw, userId, device) });
     return { raw, session };
+  }
+
+  /**
+   * Create a session for a sign-in, but only while the member's password is
+   * still `checkedHash`, the one the sign-in just matched. Checking a
+   * password is slow, and a password change, a reset or an undone email
+   * change signs every device out when it lands. Without this, a sign-in
+   * that matched the old password just before could still add its session
+   * just after, and keep it. The credential row is read FOR SHARE, so a
+   * write to it waits until this session exists (and then signs it out),
+   * or has already landed and the hash no longer matches. Null when it moved.
+   */
+  async createForPassword(userId: string, checkedHash: string, device: DeviceInfo = {}) {
+    const raw = randomBytes(32).toString("base64url");
+    const session = await this.db.$transaction(async (tx) => {
+      const [cred] = await tx.$queryRaw<{ hash: string }[]>`
+        SELECT "hash" FROM "PasswordCredential" WHERE "userId" = ${userId} FOR SHARE`;
+      if (cred?.hash !== checkedHash) return null;
+      return tx.session.create({ data: this.sessionData(raw, userId, device) });
+    });
+    return session ? { raw, session } : null;
   }
 
   /**
@@ -53,6 +76,10 @@ export class SessionService {
       },
     });
     if (!session) return null;
+
+    // A suspended member's sessions stop resolving at once (suspension also
+    // deletes them; this covers any created in between).
+    if (session.user.suspendedAt) return null;
 
     if (session.expires.getTime() <= Date.now()) {
       await this.db.session.delete({ where: { id: session.id } }).catch(() => {});

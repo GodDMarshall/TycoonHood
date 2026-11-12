@@ -17,11 +17,48 @@ a real application. Decisions DR-10 to DR-16. Verified by 95 unit tests, a
 buys it with a size and an address, ships it with tracking, and watches the
 referral pay on a real lesson.
 
+**11 November (full-platform build, DR-29):**
+- Seven roles with server-side permissions.
+- Email verification and account suspension.
+- **A1, course authoring in the admin, is done.** That includes modules, lessons, quizzes, final assessments, publishing, reviews and instructors.
+- The four programmes are written in full: 96 taught lessons.
+- Certificates with public verification.
+- Earn: affiliate links, click tracking, INR commissions with a 14-day hold, payouts and fraud flags.
+- Shop: cart, wishlist, coupons, checkout with the Razorpay seam and a labelled sandbox, refunds and order tracking.
+- Community forum: categories, groups, reactions, reports and moderation.
+- A weekly and all-time leaderboard, weekly missions, and the achievements page.
+- Admin: members, site CMS, analytics and audit log.
+- Every public page from the spec.
+
+The roadmap items below were written in September. Where the 11 November build closed one, it is marked.
+
+**12 November (launch preparation):**
+- Account security: an email change waits for the new address, the old address can undo it for 7 days, no second change while the last can be undone, and a sign-in cannot outlive a password change (DR-32).
+- Money: an order settles once and ships once even under races; a refunded order cannot be shipped; rupee messages use one formatter.
+- Display: dates in the member's time zone (India time by default); text cuts on whole characters; the cart count shows on phones.
+- Deployment: one Vercel project whose production builds migrate the database and, the first time, seed it (DR-33).
+
+## NEXT — after the launch on 13 November 2026
+
+1. **Owner actions for launch:** the admin account, the domain and Resend. See `TYCOONHOOD_BLOCKED_ON_YOU.md` items 1 to 3.
+2. **Razorpay keys** once KYC clears: test keys first, one test purchase and refund, then live keys. The steps are in `docs/DEPLOYMENT.md`.
+3. **Real prices and costs in INR** for the merch, then publish it.
+4. **Legal review** of the Terms, Privacy, Refund and Earn terms, and of the investment programme's name.
+5. **Hosting fit:** a Vercel Pro plan for a business site; a paid Neon plan before traffic is steady; a Neon branch for preview deployments so previews stop sharing the production database.
+6. **Speed for India:** move the database to Neon `aws-ap-south-1` (Mumbai) and the functions to `bom1`. Pages are about a quarter of a second slower from Washington.
+7. **Small follow-ups:**
+   - A refunded course order should also revoke the enrolment.
+   - Add `archivedAt`, `editedAt` and `paidAt` columns (see `docs/DATABASE.md`).
+   - Add a cart count badge in the navigation · **DONE 12 Nov 2026** (on phones too).
+   - Change `judgePrice` from dollars to rupees · **DONE 11 Nov 2026**: it compares rupee prices only, anchored on the ₹2,499 placeholder hoodie.
+8. **The optional 3D world** · **DONE 11 Nov 2026** (DR-31). Still to do: a check on real graphics hardware.
+9. **Membership tiers (A3)**, and challenge authoring (A2). Both are still open.
+
 ---
 
 ## NOW — what stands between here and a launch
 
-### A1 — Course, module and lesson authoring in the admin
+### A1 — Course, module and lesson authoring in the admin · **DONE 11 Nov 2026**
 - **Objective:** create, edit, order and publish a full course from `/admin` with no SQL.
 - **Reason:** the Academy is the product. Today every course is a seed script, which means content is a developer task and you cannot write a lesson without me. This is now the single largest gap in the console.
 - **Dependencies:** none. The `catalog` service is the pattern to copy — one door, validation in the service, an idempotent save.

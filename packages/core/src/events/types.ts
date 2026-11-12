@@ -19,6 +19,9 @@ export const DOMAIN_EVENTS = [
   "PURCHASE_MADE",
   "VIDEO_WATCHED",
   "COMMUNITY_CONTRIBUTION",
+  // A member started a discussion post. Worth nothing unless staff configure a
+  // mission for it (repeatable missions cap it at once per local day).
+  "DISCUSSION_POSTED",
 ] as const;
 
 export type DomainEventType = (typeof DOMAIN_EVENTS)[number];
@@ -37,11 +40,19 @@ export type DomainEvent =
   | ({ type: "ONBOARDED" } & Base)
   | ({ type: "LESSON_COMPLETED"; lessonId: string; courseId: string } & Base)
   | ({ type: "COURSE_COMPLETED"; courseId: string } & Base)
-  | ({ type: "QUIZ_PASSED"; quizId: string; scorePct: number } & Base)
+  | ({
+      type: "QUIZ_PASSED";
+      quizId: string;
+      scorePct: number;
+      /** The member's best passing score on this quiz before this attempt;
+       *  null or absent on their first pass. */
+      previousBest?: number | null;
+    } & Base)
   | ({ type: "CHALLENGE_COMPLETED"; challengeId: string } & Base)
   | ({ type: "DAILY_ACTIVE" } & Base)
   | ({ type: "STREAK"; days: number } & Base)
   | ({ type: "MINING_CLAIMED"; amount: bigint } & Base)
   | ({ type: "PURCHASE_MADE"; orderId: string } & Base)
   | ({ type: "VIDEO_WATCHED"; videoTaskId: string } & Base)
-  | ({ type: "COMMUNITY_CONTRIBUTION" } & Base);
+  | ({ type: "COMMUNITY_CONTRIBUTION" } & Base)
+  | ({ type: "DISCUSSION_POSTED"; postId: string } & Base);

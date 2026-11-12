@@ -23,13 +23,26 @@ export {
   type LoginInput,
   type OnboardingInput,
 } from "./auth/schemas";
-export { LmsService, lms, NotEnrolledError } from "./lms/lms";
+export { LmsService, lms, NotEnrolledError, LessonLockedError, QuizRequiredError } from "./lms/lms";
+export { gateLessons, nextLesson, orderLessons } from "./lms/gating";
+export type { Gate, GateLesson, LessonState } from "./lms/gating";
+export {
+  CommunityService, community, CommunityError, cleanUrl, liftRefusal,
+  MESSAGE_MAX, PROOF_URL_MAX, REPORT_REASON_MAX, PAGE_SIZE,
+} from "./community/community";
+export type { Viewer, ChannelSummary, MessageView } from "./community/community";
+export {
+  StandardService, standard, StandardError, AUTO_EVENTS,
+  MAX_OWN_STANDARD_ITEMS, STANDARD_TITLE_MAX, STANDARD_DETAIL_MAX,
+} from "./standard/standard";
+export type { StandardToday, StandardItemView, StandardHistoryDay, AutoEvent } from "./standard/standard";
 export { StreakService, streaks } from "./gamification/streaks";
 export { AchievementService, achievements } from "./gamification/achievements";
 export { ChallengeService, challenges, ChallengeError } from "./gamification/challenges";
 export { MissionCooldownError } from "./rewards/rewards";
 export { MiningService, mining, MinerError, RigMaxedError, EpochExhaustedError } from "./mining/mining";
 export { CommerceService, commerce, CommerceError, OutOfStockError, ProductUnavailableError } from "./commerce/commerce";
+export { ManualSettlementService, manualSettlement, ManualSettlementError } from "./commerce/manual-settlement";
 export { DiscordService, discord, InvalidLinkCodeError, activeDiscordTransport } from "./integrations/discord";
 export type { DiscordTransport, RoleSyncResult } from "./integrations/discord";
 export { DiscordAlreadyLinkedError } from "./integrations/discord";
@@ -37,18 +50,45 @@ export { NullChainAdapter, activeChainAdapter } from "./chain/adapter";
 export type { ChainAdapter, ChainAnchor } from "./chain/adapter";
 export type { Submission } from "./gamification/challenges";
 export { PasswordResetService, passwordReset, InvalidResetTokenError, newPasswordSchema } from "./auth/password-reset";
+export { safeNextPath, NEXT_PATH_MAX } from "./auth/next-path";
 export { DiscordInteractionHandler, discordInteractions, verifyDiscordSignature } from "./integrations/discord-interactions";
 export type { DiscordInteraction, DiscordResponse } from "./integrations/discord-interactions";
 
 // --- Phase 1: the spine (spec §14, §17, §19) ---
-export { localDayKey, localDayKeyOffset, isSameLocalDay, dayKeyToDate } from "./time/day";
+export { localDayKey, localDayKeyOffset, isSameLocalDay, dayKeyToDate, localWeekStartKey } from "./time/day";
+export { IST_TIME_ZONE, parseIstDateTime, formatIst } from "./time/ist";
+export {
+  memberZone,
+  formatDay,
+  formatDate,
+  formatLongDate,
+  formatWeekday,
+  formatMonthYear,
+  formatTime,
+  formatDayTime,
+  formatDateTime,
+  formatRelative,
+  hourIn,
+} from "./time/format";
+export type { DateInput } from "./time/format";
+export { clip, sliceWhole } from "./text/clip";
 export { DOMAIN_EVENTS, isDomainEventType } from "./events/types";
 export type { DomainEvent, DomainEventType } from "./events/types";
 export { EventBus, events } from "./events/bus";
 export type { EmitResult } from "./events/bus";
 export { RulesEngine, rulesEngine } from "./rules/engine";
 export type { RuleOutcome } from "./rules/engine";
-export { parseCriteria, tryParseCriteria, describeCriteria, windowStart, InvalidCriteriaError } from "./rules/criteria";
+export {
+  parseCriteria,
+  tryParseCriteria,
+  describeCriteria,
+  windowStart,
+  InvalidCriteriaError,
+  repeatBucket,
+  missionCadence,
+  weeklyResetNote,
+  countsStandardDays,
+} from "./rules/criteria";
 export type { Criteria } from "./rules/criteria";
 export { countEvidence, requiredFor } from "./rules/counters";
 
@@ -59,7 +99,7 @@ export {
 } from "./catalog/catalog";
 export type { ProductInput, VariantInput, ProductKind } from "./catalog/catalog";
 export {
-  priceInTime, judgePrice, thcFor, thcPerDollar, MERCH_ANCHOR,
+  priceInTime, judgePrice, thcFor, thcPerRupee, MERCH_ANCHOR,
   suggestPrice, dailyYield, yieldTable, ratePerHour, capacity, MERCH_TARGET_DAYS,
 } from "./economy/mining-time";
 export type { PlayStyle, PriceInTime, DailyYield } from "./economy/mining-time";
@@ -75,3 +115,19 @@ export {
   VariantRequiredError, ShippingAddressRequiredError,
 } from "./commerce/commerce";
 export type { CheckoutInput, ShippingInput } from "./commerce/commerce";
+
+// --- Full platform (Nov 2026) ---
+export { can, assertCan, isStaff, isAdmin, promoteTo, ForbiddenError, ROLES, ROLE_LABEL } from "./auth/permissions";
+export type { Permission } from "./auth/permissions";
+export * from "./platform";
+export * from "./earn";
+export * from "./shop";
+export * from "./discussions";
+export * from "./lms/index-authoring";
+
+// --- Author content as HTML: the one Markdown renderer and JSON-LD ---
+export { renderMarkdown, sanitizeContentHtml, EXTERNAL_LINK_REL } from "./content/markdown";
+export { jsonLdHtml } from "./content/json-ld";
+
+// --- The optional 3D campus (DR-31) ---
+export * from "./world";

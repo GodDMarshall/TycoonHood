@@ -50,6 +50,7 @@ export async function buyWithThcAction(slug: string, _prev: BuyState, fd: FormDa
       shipping: readShipping(fd),
     });
     revalidatePath("/marketplace");
+    revalidatePath("/store");
     revalidatePath("/wallet");
     revalidatePath("/orders");
     const ref = order.id.slice(-6).toUpperCase();
@@ -84,6 +85,7 @@ export async function buyWithCardAction(slug: string, _prev: BuyState, fd: FormD
     );
     if (result.kind === "redirect" && result.url) redirect(result.url);
     revalidatePath("/marketplace");
+    revalidatePath("/store");
     revalidatePath("/orders");
     return {
       message: `Order ${order.id.slice(-6).toUpperCase()} settled.`,

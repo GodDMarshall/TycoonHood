@@ -3,8 +3,8 @@
 @import "@tycoonhood/ui/tokens.css";
 
 @keyframes rig-pulse {
-  0%, 100% { filter: drop-shadow(0 0 6px rgb(201 162 39 / 0.25)); transform: scale(1); }
-  50% { filter: drop-shadow(0 0 18px rgb(201 162 39 / 0.45)); transform: scale(1.015); }
+  0%, 100% { filter: drop-shadow(0 0 6px rgb(207 169 94 / 0.25)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 18px rgb(207 169 94 / 0.45)); transform: scale(1.015); }
 }
 .rig-active { animation: rig-pulse 2.4s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .rig-active { animation: none; } }
