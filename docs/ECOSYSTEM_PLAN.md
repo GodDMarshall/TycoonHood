@@ -688,7 +688,7 @@ The review raised 36 issues (7 high, 17 medium, 12 low). All are accepted, with 
 
 **P0s. Pure-move splits (helper).**
 - `discussions/discussions.ts` becomes `discussions/{posts,groups,reports,moderation}.ts` with `discussions/index.ts` re-exporting the same names. The existing discussion and moderation tests pass unchanged.
-- Two additions ride on the split, because GROUPS, OPPS, SKILLS and BOOK build on them before SOCIAL merges: `listPosts({kind})` and `createPost({kind})` accept `CommunityPostKind` (default DISCUSSION), and `reports.file({targetType, targetId, reason})` files a `ContentReport` for any target type the schema lists. The exported API of `posts.ts` and `reports.ts`, with these two, is frozen at the end of P0s (section W1.4).
+- Two additions ride on the split, because GROUPS, OPPS, SKILLS and BOOK build on them before SOCIAL merges: `listPosts({kind})` and `createPost({kind})` accept `CommunityPostKind` (`createPost` defaults to DISCUSSION; `listPosts` without a kind lists every kind; landed by the lead with P0a, because the enum comes with P0a's schema), and `reports.file({targetType, targetId, reason})` files a `ContentReport` for any target type the schema lists. The exported API of `posts.ts` and `reports.ts`, with these two, is frozen at the end of P0s (section W1.4).
 - `rules/counters.ts` becomes `rules/counters/index.ts`, a dispatcher, plus one file per existing counter. `countsStandardDays`, `eventAdvances` and `repeatBucket` in rules/criteria.ts are untouched.
 - The pulse query in `world/load.ts` moves to `platform/pulse.ts`; world-load.test.ts passes unchanged. HOME owns pulse.ts afterwards.
 
@@ -1990,7 +1990,13 @@ Section 6.3 maps each §21 line to its owner and to the journeys that prove it. 
 - Previews never migrate, and the production database has not been migrated yet, so a preview of eco code fails on the missing tables.
 - Default: push only at phase boundaries, and say in the PR that previews are not usable until the first production deploy. `eco/*` and `build/living-ecosystem` pushes are kept off Vercel by the P0 `deploymentEnabled` rule.
 
-**Deploy timing (data-model g.18, in section 7.2).** Three changes are safe only if these migrations ship before production first runs: `MissionCompletion.occurrence` SET NOT NULL, RESTRICT on `CommunityPost.groupId`, and the `Post.status` backfill. If a production build goes live first, the lead splits them into a later migration or uses a maintenance window.
+**Deploy timing (data-model c.5 and g.18).** Six changes are safe only while no build from before these migrations writes to the database after they run: `MissionCompletion.occurrence` SET NOT NULL, emptying `Referral.signupIp` and `Session.ipHash`, the `Order.paidAt` backfill, RESTRICT on `CommunityPost.groupId`, and the `Post.status` backfill. c.5 says what an older build does to each, and gives the clean-up SQL.
+
+**Decision (lead, 12 November): no triggers and no split migration.** Production has never run, and it will not until the whole directive lands in the launch PR (the owner's "Hold launch for everything", 12 November). So the first production deploy runs these migrations together with the code that writes the new columns. The only older writers are previews built before the migrations. They sit behind Vercel's login (Deployment Protection), and until the first production deploy they cannot write at all, because the production database has not been migrated. After that deploy:
+- nobody opens a preview built before the ecosystem merge (LAUNCH.md says so);
+- the clean-up of data-model c.5 runs once, with the go-live time in UTC (part of "watch production deploy").
+
+If a build from before these migrations is ever to go live in production first, the lead adds the transitional triggers of c.5 as a new migration, never by editing an applied one, before the ecosystem deploy.
 
 **Before the final push:**
 1. Run the full gate on the `build/full-platform` head.
@@ -2353,16 +2359,13 @@ No foreign key or enum column in any migration points at a table or type created
   3. the existing `SEED_ON_DEPLOY` block, unchanged, still for the first deploy only
 
   The taxonomy seed therefore runs under the same lock as the migrations, so two builds at once cannot both create the same row. Preview builds still never touch the database. `scripts/deploy-db.mjs` gets the same step straight after "apply migrations", and `DEPLOY_SEEDS` in `packages/core/test/throwaway-db.ts` starts with it (d.1).
-- **Live production.** These migrations assume that no older build writes to the database after they have run. That is true for the first production deploy, because production has never run; the parent task "watch production deploy" is still open. If a production build goes live before these migrations ship, deploy them in a short maintenance window. Otherwise split three changes into a second migration that ships with the code that writes the new columns:
-  - `MissionCompletion.occurrence` SET NOT NULL. An older build inserts completions without it.
-  - The RESTRICT on `CommunityPost.groupId`. An older build may delete groups.
-  - The `Post.status` backfill. Posts an older build publishes would stay DRAFT under the new reading rule.
+- **Live production.** Six changes are safe only while no build from before these migrations writes to the database after they run. P0a's review found that nothing in the deploy makes sure of it, and docs/ecosystem/data-model.md c.5 now lists what an older build does to each change, the options and the clean-up SQL; it replaces the earlier text here. The lead's decision is in section W3.5 ("Deploy timing").
 - **000900 lands later.** It is committed with DAILY-B. Every database built before then, the stream databases and the lead's, applies it when DAILY-B merges. It only copies rows and removes a JSON key, so it is safe on a database where members made challenge submissions in the meantime.
 - **Schema changes after P0.** A later change is a new migration file named after the last one. No file that has been applied anywhere is edited: `migrate-sql.ts` checksums each file, comments included, and refuses one whose checksum changed. Stream databases are recreated with `scripts/db/create-stream-db.mjs`.
 - **`btree_gist`.** Neon lists it among its supported extensions. Confirm it on the production branch before the first deploy. If it is refused, leave 000800 out: the booking code's row lock on `MentorProfile` still prevents double booking.
 - **Drift checks.** Any script that runs `prisma migrate diff --exit-code` between the migrations and the schema must ignore the five `ALTER COLUMN "searchVector" DROP DEFAULT` lines. The smallest change is to filter exactly those lines before deciding.
 - **Session hashes.** Nulling `Session.ipHash` empties the history that `earn/affiliates.ts:540-545` compares when it looks for self-dealing. New sessions refill it within the window. Before launch this has no effect.
-- **Rollback.** Every migration is additive apart from the two constraint changes in b.1. Code that predates them keeps working against the new schema. The exceptions are the three changes listed under "Live production" above.
+- **Rollback.** Every migration is additive apart from the two constraint changes in b.1. Code that predates them keeps working against the new schema. The exceptions are the changes listed under "Live production" in data-model c.5.
 
 ---
 
@@ -3434,7 +3437,7 @@ Each item says who must answer it and what happens until then.
 15. **Testimonials on account deletion.** `Testimonial.userId` is set to null when the account is deleted, so the quote survives. Proposed: deleting the account also sets `consentWithdrawnAt`, which unpublishes it. The owner should confirm.
 16. **INSTRUCTOR and `/admin`.** Instructors keep `admin.access` for `/admin/courses`. Once `/studio` covers authoring, the owner may remove it.
 17. **Deleting a contributor's account (owner decision O36).** `ContributorAccount.user` is RESTRICT, so deleting the user is refused while the account exists (c.4, rerun). The published privacy policy promises anonymisation, so the account-deletion flow anonymises a contributor: it clears the profile, payout method and contact fields and keeps the earnings, agreements and payouts for the books. Default: keep and anonymise.
-18. **Deploy timing.** Three changes are safe only if these migrations ship before production first runs (c.5): `MissionCompletion.occurrence` SET NOT NULL, RESTRICT on `CommunityPost.groupId`, and the `Post.status` backfill. If a production build goes live first, split them into a second migration or use a maintenance window.
+18. **Deploy timing.** Settled by the lead on 12 November (section W3.5, "Deploy timing"): production first runs with these migrations and the code that writes the new columns, so no trigger or split migration is added; the c.5 clean-up runs once after the first production deploy. If a build from before these migrations is ever to go live first, the transitional triggers of c.5 go in a new migration.
 19. **The `fix/seed-review` branch.** Settled: `build/full-platform` merged it at `dd5810e`, and the merge of full-platform before P0a brings it in.
 20. **The key switch for IP hashes.** Moving `ipKey` to HMAC changes the affiliate click dedupe once (e.10). Before launch this has no effect.
 21. **`docs/DATABASE.md`.** It says paid time comes from `Payment.createdAt`, which is wrong (defect 3). Correct it when the migrations land.
