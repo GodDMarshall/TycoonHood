@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createHash } from "node:crypto";
 import { prisma } from "@tycoonhood/db";
-import type { Prisma } from "@tycoonhood/db";
+import type { Prisma, User } from "@tycoonhood/db";
 import { AccountService, AccountSuspendedError, InvalidCredentialsError } from "../src/auth/account";
 import { SessionService } from "../src/auth/session";
 import { ForbiddenError } from "../src/auth/permissions";
@@ -14,6 +14,7 @@ import {
   EmailChangeTakenError,
   NoEmailChangeError,
   VERIFY_RESEND_LIMIT,
+  type Confirmation,
   type EmailChangeCancelReason,
   type IssuedEmailChange,
 } from "../src/platform/email-verification";
@@ -1359,6 +1360,137 @@ describe("Account flows wait for each other instead of deadlocking", () => {
     expect(waitedOn).toBe("advisory");
     expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(change!.newEmail);
     await expect(accounts.authenticate({ email: change!.newEmail, password: PASSWORD })).resolves.toBeTruthy();
+  });
+});
+
+// ── The races the account's locks and the order of their checks decide, run
+// for real: each pauses one flow at the step that matters, and starts the
+// other there.
+
+describe("Races the locks decide", () => {
+  it("a change asked for while the last one is being confirmed waits for it, is refused, and the undo link still works", async () => {
+    const { user, email: oldEmail } = await confirmedMember();
+    const first = await accountSettings.changeEmail(user.id, address("first"), PASSWORD);
+    let asking: Started<IssuedEmailChange | null> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      // The confirmation holds the account's lock and is about to move the account.
+      beforeFirstUserWrite(async () => {
+        asking = started(accountSettings.changeEmail(user.id, address("second"), PASSWORD));
+        waitedOn = await untilBlockedOnLock(() => asking!.finished);
+      })
+    );
+    const done = await racing.confirm(first!.rawToken);
+    if (done.kind !== "email-change" || !done.undo) throw new Error("expected an email change with an undo link");
+    await expect(asking!.promise).rejects.toBeInstanceOf(EmailChangeTooSoonError);
+    expect(waitedOn).toBe("advisory");
+    expect(await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).toMatchObject({ email: first!.newEmail, pendingEmail: null });
+    expect(await prisma.verificationToken.count({ where: { identifier: `emailchange:${user.id}` } })).toBe(0);
+    await undos.undo(done.undo.rawToken);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+  });
+
+  it("registering the old address while a change frees it waits for the change, then is refused: the address is held", async () => {
+    const { user, email: oldEmail } = await confirmedMember();
+    const change = await accountSettings.changeEmail(user.id, address("away"), PASSWORD);
+    let registering: Started<User> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      // The account is off the old address, and the hold on it is not written yet.
+      atFirstCall("session", "deleteMany", "before", async () => {
+        registering = started(accounts.register({ email: oldEmail, ...SQUATTER }));
+        waitedOn = await untilBlockedOnLock(() => registering!.finished);
+      })
+    );
+    const done = await racing.confirm(change!.rawToken);
+    if (done.kind !== "email-change" || !done.undo) throw new Error("expected an email change with an undo link");
+    const refused = await registering!.promise.catch((e) => e);
+    expect(refused).toBeInstanceOf(EmailTakenError);
+    expect(refused.message).toBe(TAKEN);
+    expect(waitedOn).not.toBeNull(); // its insert waited for the change of that address
+    expect(await prisma.user.count({ where: { email: oldEmail } })).toBe(0);
+    await undos.undo(done.undo.rawToken);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+  });
+
+  it("another account confirming its move to the old address while a change frees it is refused", async () => {
+    // A member who asked for the address while it was free, before the owner took it.
+    const asker = await memberWithPassword();
+    const contested = address("contested");
+    const waiting = await accountSettings.changeEmail(asker.user.id, contested, PASSWORD);
+    const owner = await accounts.register({ email: contested, password: PASSWORD, name: "Owner" });
+    await verification.verify((await verification.issue(owner.id)).rawToken);
+    const ownerChange = await accountSettings.changeEmail(owner.id, address("away"), PASSWORD);
+
+    // Should the asker's confirmation get past its look for a hold, it stops there until the owner's change is in.
+    let askerPaused!: () => void;
+    const paused = new Promise<void>((r) => (askerPaused = r));
+    let ownerCommitted!: () => void;
+    const committed = new Promise<void>((r) => (ownerCommitted = r));
+    const askerSide = new EmailVerificationService(
+      atFirstCall("emailHold", "findFirst", "after", async () => {
+        askerPaused();
+        await committed;
+      })
+    );
+    let asking: Started<Confirmation> | undefined;
+    const ownerSide = new EmailVerificationService(
+      // The owner's account is off the address, and the hold on it is not written yet.
+      atFirstCall("session", "deleteMany", "before", async () => {
+        asking = started(askerSide.confirm(waiting!.rawToken));
+        await Promise.race([paused, asking.promise.catch(() => {})]);
+      })
+    );
+    const done = await ownerSide.confirm(ownerChange!.rawToken);
+    ownerCommitted();
+    await expect(asking!.promise).rejects.toBeInstanceOf(EmailChangeTakenError);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: asker.user.id } })).email).toBe(asker.email);
+    if (done.kind !== "email-change" || !done.undo) throw new Error("expected an email change with an undo link");
+    await undos.undo(done.undo.rawToken);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: owner.id } })).email).toBe(contested);
+  });
+
+  const securedBy: [string, () => Promise<{ userId: string; email: string; secure: () => Promise<unknown> }>][] = [
+    [
+      "an undo",
+      async () => {
+        const { user, newEmail, undo } = await changedMember();
+        return { userId: user.id, email: newEmail, secure: () => undos.undo(undo.rawToken) };
+      },
+    ],
+    [
+      "a reset",
+      async () => {
+        const { user, email } = await memberWithPassword();
+        const link = (await resets.requestReset(email)).issued!.rawToken;
+        return { userId: user.id, email, secure: () => resets.resetPassword(link, NEW_PASSWORD) };
+      },
+    ],
+    [
+      "a password change",
+      async () => {
+        const { user, email } = await memberWithPassword();
+        return { userId: user.id, email, secure: () => accountSettings.changePassword(user.id, PASSWORD, NEW_PASSWORD) };
+      },
+    ],
+  ];
+
+  it.each(securedBy)("a sign-in that matched the old password as %s lands keeps no session after it", async (_how, setup) => {
+    const { userId, email, secure } = await setup();
+    let securing: Started<unknown> | undefined;
+    let waitedOn: string | null = null;
+    const signingIn = new AccountService(
+      // The sign-in has read the password (FOR SHARE) and is about to open its session.
+      atFirstCall("session", "create", "before", async () => {
+        securing = started(secure());
+        waitedOn = await untilBlockedOnLock(() => securing!.finished);
+      })
+    );
+    const { raw } = await signingIn.signIn({ email, password: PASSWORD });
+    await securing!.promise;
+    expect(await sessions.resolve(raw)).toBeNull();
+    expect(await prisma.session.count({ where: { userId } })).toBe(0);
+    expect(waitedOn).not.toBeNull(); // the new password waited for the sign-in's read
   });
 });
 
