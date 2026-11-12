@@ -46,7 +46,7 @@ it.
 
 ```
 pnpm typecheck && pnpm lint        # all workspaces
-pnpm test                          # 610 tests against a real Postgres
+pnpm test                          # 737 tests against a real Postgres
 pnpm build:web
 pnpm e2e:journeys                  # nine browser journeys against a running build on :3000
 pnpm preflight                     # reads the production environment before launch

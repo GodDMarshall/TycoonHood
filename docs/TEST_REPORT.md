@@ -1,28 +1,37 @@
 # Test report
 
-**Run:** 12 November 2026, on `build/full-platform` at `dd5810e`, after the
-fixes from the independent review of the email-change work
-(`fix/account-review`) and of the deploy set-up (`fix/seed-review`) were
-merged, in a Linux container: Node 22.23, pnpm 9.15.9, PostgreSQL 16,
-Chromium through Playwright 1.63.
+**Run:** 12 November 2026, on `build/full-platform`, in a Linux container:
+Node 22.23, pnpm 9.15.9, PostgreSQL 16, Chromium through Playwright 1.63.
+
+- The gates (types, lint, the unit and integration tests, the production
+  build and the bundle rule) ran at `e585d36`. That is the merge `dd5810e`
+  of the fixes from the independent review of the email-change work
+  (`fix/account-review`) and of the deploy set-up (`fix/seed-review`), plus
+  the fixes for what verifying that merge found ("Fixed since the merge",
+  below).
+- The browser checks and the Vercel deploy rehearsal ran at `dd5810e` and
+  were not repeated. None of them failed, and nothing under `apps/web` has
+  changed since. The fixes touch tests, the base seed's output, one new
+  function in `packages/core` that the site does not call, the preflight
+  script and documents.
 
 Only what was executed is reported. Anything not run is listed under "Not
 run" with the reason.
 
 ## Summary
 
-| Check | Command | Result |
-|---|---|---|
-| Types | `pnpm typecheck` | **fails** in `packages/core`: `test/seed-admin.test.ts(276,58): error TS18047: 'moved.undo' is possibly 'null'` (see "Failures on this head"); `apps/web`, `apps/miner`, `packages/db` and `packages/ui` clean |
-| Lint | `pnpm lint` | clean |
-| Unit and integration tests | `pnpm test` | **731 passed, 2 failed** (733 tests in 39 files, 129 s, against a real PostgreSQL 16); both failures are in `seed-admin.test.ts`, see "Failures on this head" |
-| Production build | `pnpm build:web` | compiles; 107 routes in Next's route table, the new `/api/cron/email-holds` among them |
-| three.js bundle rule | `node scripts/world/check-bundle.mjs` | OK: 120 routes and 131 route chunks checked, none carries three.js; the engine is in 2 async chunks. The script's count adds layouts and Next's own entries to the 107 routes; the 119 reported before was this count without `/api/cron/email-holds` |
-| Accessibility | `pnpm e2e:a11y` | 27 public pages × 2 widths (1280×800, 390×844): **0 violations** of WCAG 2.0/2.1 A and AA (axe-core 4.13) |
-| Browser journeys, production build | `pnpm e2e:journeys` | **154 passed, 0 failed, 4 skipped** (the skips need the sandbox or a GPU; both covered below) |
-| Journeys 4 and 5 with the labelled sandbox | `JOURNEYS=4,5` against `next dev` with `DEV_MODE=true` | **26 passed, 0 failed, 0 skipped** |
-| Journey 9 with the 3D engine | `JOURNEYS=9 TH_WORLD_ENGINE=1`, production build | **74 passed, 0 failed, 0 skipped** (Chromium's software GPU posing as a hardware one) |
-| Vercel deploy rehearsal | `scripts/vercel-build.sh` with `VERCEL_ENV=production` | passed: see below |
+| Check | Command | Commit | Result |
+|---|---|---|---|
+| Types | `pnpm typecheck` | `e585d36` | clean in all five workspaces (at `dd5810e` it failed in `packages/core`; see "Fixed since the merge") |
+| Lint | `pnpm lint` | `e585d36` | clean |
+| Unit and integration tests | `pnpm test` | `e585d36` | **737 passed, 0 failed**, in each of two full runs (737 tests in 39 files; 135 s and 139 s, against a real PostgreSQL 16) |
+| Production build | `pnpm build:web` | `e585d36` | compiles; 107 routes in Next's route table, the new `/api/cron/email-holds` among them |
+| three.js bundle rule | `node scripts/world/check-bundle.mjs` | `e585d36` | OK: 120 routes and 131 route chunks checked, none carries three.js; the engine is in 2 async chunks. The script's count adds layouts and Next's own entries to the 107 routes; the 119 reported before `dd5810e` was this count without `/api/cron/email-holds` |
+| Accessibility | `pnpm e2e:a11y` | `dd5810e` | 27 public pages × 2 widths (1280×800, 390×844): **0 violations** of WCAG 2.0/2.1 A and AA (axe-core 4.13) |
+| Browser journeys, production build | `pnpm e2e:journeys` | `dd5810e` | **154 passed, 0 failed, 4 skipped** (the skips need the sandbox or a GPU; both covered below) |
+| Journeys 4 and 5 with the labelled sandbox | `JOURNEYS=4,5` against `next dev` with `DEV_MODE=true` | `dd5810e` | **26 passed, 0 failed, 0 skipped** |
+| Journey 9 with the 3D engine | `JOURNEYS=9 TH_WORLD_ENGINE=1`, production build | `dd5810e` | **74 passed, 0 failed, 0 skipped** (Chromium's software GPU posing as a hardware one) |
+| Vercel deploy rehearsal | `scripts/vercel-build.sh` with `VERCEL_ENV=production` | `dd5810e` | passed: see below |
 
 ## Unit and integration tests, by area
 
@@ -35,15 +44,15 @@ the SQL, the locks and the constraints as well as the code.
 | Permissions and roles, admin audit | `launch-foundation`, `admin-audit` | 49 |
 | Courses, quizzes, certificates | `academy`, `lms-authoring`, `lms-gamification` | 71 |
 | XP, levels, missions, ledger, mining | `gamification`, `rules-engine`, `ledger`, `mining` | 41 |
-| Cart, checkout, payment webhook, refunds, shipping | `shop`, `commerce` | 62 |
+| Cart, checkout, payment webhook, refunds, shipping, the scheduled sweeps' secret | `shop`, `commerce` | 63 |
 | Commissions, payouts, affiliate fraud flags | `earn` | 35 |
 | Community and moderation | `discussions`, `community-moderation`, `notification-links` | 47 |
 | Security: Markdown sanitiser, CSP, redirects, structured data | `markdown`, `web-csp`, `next-path`, `json-ld` | 117 |
 | Display: time zones, text cuts, email wording | `time-format`, `text-clip`, `mail-outcome` | 33 |
 | 3D campus: device gates, loader, state contract | `world-gate`, `world-load`, `world-state` | 50 |
 | Integrations (Discord) | `discord-interactions`, `integrations` | 8 |
-| Deploys: one database target, the deploy lock, the seeded admin, seed re-runs | `db-target`, `deploy-lock`, `seed-admin`, `seed-rerun` | 54, of which 2 fail (`seed-admin`) |
-| **Total** | 39 files | **733**: 731 passed, 2 failed |
+| Deploys: one database target, the deploy lock, the seeded admin, seed re-runs | `db-target`, `deploy-lock`, `seed-admin`, `seed-rerun` | 57 |
+| **Total** | 39 files | **737**, all passed |
 
 `deploy-lock` and `seed-rerun` are the deploy rehearsal inside the suite. They
 run the real migration runner, the five seeds and `scripts/with-db-lock.mjs`
@@ -59,8 +68,8 @@ a second member, a referred visitor, an admin and an instructor. Every check is
 something a person could see on screen; the database is read only to learn
 ids and quiz answers.
 
-The server was the build above, started with `next start -p 3347` in
-`apps/web` (the root `.env`, so the test database). The audit and the journeys
+The server was the production build of `dd5810e`, started with
+`next start -p 3347` in `apps/web` (the root `.env`, so the test database). The audit and the journeys
 were pointed at it with `TH_WEB=http://localhost:3347`, and the journeys also
 got `NEXT_PUBLIC_SITE_URL=http://localhost:3347`, so the verification link the
 fixture prints goes to that server.
@@ -145,41 +154,65 @@ to no banner, and those pages are rendered on request anyway.
 The first real Vercel build runs on the pull request's preview, which never
 touches the database, and then on the production deploy after the merge.
 
-## Failures on this head (not fixed)
+## Fixed since the merge
 
-**`seed-admin.test.ts` meets email-change rules it was written before.** The
-deploy branch added `packages/core/test/seed-admin.test.ts`. Two of its tests,
-in the block "an ADMIN_EMAIL that an account changed away from in the last 7
-days", change the address of an account that never confirmed it (the seeded
-admin, and a member who just registered) and confirm the change at once. The
-account branch, merged beside it, makes such a change wait a day and gives it
-no hold and no undo link (DR-32, second and third reviews), so the result's
-`undo` is now `IssuedUndo | null`. Each branch passed on its own; merged:
+Verifying `dd5810e` found four problems. Each was reproduced first, then
+fixed with its own commit.
 
-- `pnpm typecheck` fails in `packages/core`:
-  `test/seed-admin.test.ts(276,58): error TS18047: 'moved.undo' is possibly 'null'.`
-- `pnpm test` fails these two, both with `EmailChangeNotYetError` from
-  `EmailVerificationService.confirm` (thrown at
-  `src/platform/email-verification.ts:436`), "This link works from 13 Nov
-  2026, 16:35 IST. The account's current email was never confirmed, so a
-  change away from it waits a day. Your email has not changed.":
-  - "an ADMIN_EMAIL that an account changed away from in the last 7 days >
-    makes no admin there, so the undo link still puts the address back"
-    (failing at line 268 of the test file);
-  - "an ADMIN_EMAIL that an account changed away from in the last 7 days > is
-    refused even while no admin can sign in, and an earlier seed's row for it
-    is left alone" (failing at line 297).
-
-Not flaky: run again on its own, the file failed the same two tests (13
-passed, 2 failed). Caused by the merge: at the deploy branch's tip `44d8b22`
-the same file passes 15 of 15, both branch tips (`44d8b22` and `249ac23`)
-pass `pnpm typecheck`, and the merge changed neither the file nor the seed.
-In a scratch copy of this head, marking the account's address confirmed
-before the change, and checking that an undo link came back, made
-`packages/core` typecheck and the file pass 15 of 15; that change is not on
-the branch. Until the test is updated, the seed's refusal of an address held
-after an email change has no passing test on this head. Nothing was changed
-to make a gate pass.
+1. **`seed-admin.test.ts` met email-change rules it was written before**
+   (`84793d2`). At `dd5810e`, `pnpm typecheck` failed in `packages/core`
+   (`test/seed-admin.test.ts(276,58): error TS18047: 'moved.undo' is possibly
+   'null'`), and two tests in "an ADMIN_EMAIL that an account changed away
+   from in the last 7 days" failed with `EmailChangeNotYetError` ("This link
+   works from 13 Nov 2026, … The account's current email was never
+   confirmed, so a change away from it waits a day"), thrown at
+   `src/platform/email-verification.ts:436`. Reproduced as reported: 13 of
+   15 passed, the same two failed. Both tests moved an address nobody had
+   confirmed (the seeded admin's, and a member's who had just registered).
+   Under DR-32 such a change waits a day and gets no hold and no undo link,
+   so the second test's premise, that the address is held, was false as
+   well. The tests now confirm the address with its real confirmation link
+   before the change, narrow the undo link before using it, and check that
+   the hold exists before running the seed, so the seed's refusal of a held
+   address is tested again. A new case covers an `ADMIN_EMAIL` never
+   confirmed: a change away from it holds nothing, and the seed makes an
+   admin there only once no admin can sign in.
+2. **The seeded admin's address starts unconfirmed, and nothing asked the
+   owner to confirm it** (`e8b139a`). Until it is confirmed, a change away
+   from the only admin's address gets no hold and no undo link, only the
+   day's wait. The seed now says so when it makes an admin, or makes an
+   account admin, whose address is not confirmed. LAUNCH.md step 5 asks the
+   owner to confirm it from the banner once Resend works, and step 1, the
+   owner's list and DEPLOYMENT.md say the same. Two new tests: the seed
+   prints the reminder for an unconfirmed admin, made or promoted, and not
+   for an account whose owner confirmed it. The seed still does not mark
+   the address confirmed: with a mistyped `ADMIN_EMAIL`, that mailbox would
+   get the undo link of the owner's first email change.
+3. **Rows that code older than the 12 November migrations writes after
+   them** (`42334c4`). Reproduced against the test database with rows
+   written the way `ca788c8` writes them (a temporary test, not kept): a
+   hold without `noticeSentAt` is put back 10 minutes later, though its
+   notice went out; a change without `pendingEmailAt` skips the day's wait;
+   a deletion request without `userId` is not seen as the account's.
+   DEPLOYMENT.md, "Rows older code writes after a migration", now explains
+   when that can happen (at launch, only through a preview built before the
+   migrations) and gives the three backfills to run again; they were
+   checked inside a rolled-back transaction. The comment in
+   `20261112100000_email_hold_notice_sent` describes the code before it
+   wrongly (`ca788c8` sent the notice in `after()` and never read whether it
+   went out); DATABASE.md says so. The migration file itself
+   is left as it is: on a scratch copy, changing one comment line made
+   `migrate-sql --status` against the test database stop with "CHECKSUM
+   MISMATCH" (exit 1), as it would on every database that applied it.
+4. **Documents and preflight behind the merged code** (`2c6ad6f`,
+   `e585d36`). The preflight now fails without `CRON_SECRET` in production
+   (DR-32 made it required) and names both daily sweeps. It is
+   `cronPreflight`, beside `cronAuth`, with one new test. Run against the
+   test database, the preflight warns in development, fails with
+   `NODE_ENV=production`, and passes with a secret set. `.env.example`
+   lists `DATABASE_URL_UNPOOLED`, README lists `/api/cron/email-holds`, and
+   LAUNCH.md names both sweeps under the plan limits and says that without
+   email no email change can happen at all.
 
 ## Defects found and fixed in the pass before these merges
 
@@ -222,8 +255,12 @@ and the commit history.
 - **Load and performance tests.** None.
 - **Screen readers in human hands.** The axe audit checks the markup, not the
   experience.
-- **A second full run of the suite.** After the two failures, only
-  `seed-admin.test.ts` was run again.
+- **The browser checks and the deploy rehearsal at `e585d36`.** They ran at
+  `dd5810e`, where none failed, and were not repeated: nothing under
+  `apps/web`, `scripts/` or the migrations has changed since. The one change
+  a deploy runs, the base seed's reminder to confirm the admin's address,
+  runs in `seed-admin.test.ts`, which starts the real seed script against
+  throwaway databases.
 - **Two production builds at once, by hand.** The rehearsal in
   `docs/DEPLOYMENT.md` ("Rehearsals") was not repeated; `deploy-lock.test.ts`
   (14 tests, passed) starts overlapping runs of the real lock, migrations and
@@ -232,6 +269,7 @@ and the commit history.
   ran the build script locally.
 - **Independent review of the latest fixes.** The findings of an independent
   review of the email-change work and the deploy set-up were fixed on
-  `fix/account-review` and `fix/seed-review` and merged here (DR-32, DR-33).
-  This report checks the merged branch; it is not a review of those fixes,
-  and no second independent review of them is recorded.
+  `fix/account-review` and `fix/seed-review` and merged here (DR-32, DR-33),
+  and what verifying that merge found was fixed after it ("Fixed since the
+  merge"). This report checks the branch; it is not a review of those
+  fixes, and no independent review of them is recorded.
