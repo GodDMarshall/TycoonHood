@@ -1,0 +1,265 @@
+/**
+ * SEEDS ARE SAFE TO RE-RUN ON A LIVE DATABASE (review finding 17).
+ *
+ * A re-run may add what is missing and put back copy only the seed owns. It
+ * must never rewrite what staff can change in the admin: prices, stock, what
+ * is live, a challenge's lifecycle and dates, a course's curriculum, status
+ * and instructor, wording staff edited, or a member's role.
+ *
+ * These tests build a database from nothing, run the five deploy seeds the
+ * way scripts/vercel-build.sh runs them (separate processes, in order), make
+ * the edits staff make through the admin's own services, run the seeds again
+ * and compare every row of every table.
+ */
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import type { PrismaClient } from "@tycoonhood/db";
+import { CatalogService } from "../src/catalog/catalog";
+import { CourseAuthoringService } from "../src/lms/authoring";
+import { DiscussionService } from "../src/discussions/discussions";
+import { CommunityService } from "../src/community/community";
+import { CouponService } from "../src/shop/coupons";
+import { LedgerService } from "../src/ledger/ledger";
+import { MemberAdminService } from "../src/platform/members";
+import { AccountService } from "../src/auth/account";
+import {
+  createThrowawayDb, migrate, seedAll, mustRun, snapshot, changes,
+  DEPLOY_SEEDS, DB_PACKAGE, REPO_ROOT, SEED_ADMIN, type Throwaway,
+} from "./throwaway-db";
+
+const SLOW = 180_000;
+
+/** What staff do in the admin, through the same services and writes the admin actions use. */
+async function editLikeStaff(db: PrismaClient) {
+  const admin = await db.user.findUniqueOrThrow({ where: { email: SEED_ADMIN.ADMIN_EMAIL } });
+  const staff = { id: admin.id, role: admin.role };
+  const warrior = await db.course.findUniqueOrThrow({ where: { slug: "warrior" } });
+
+  // Admin → Products (saveProductAction → catalog.save): new prices, new
+  // stock, taken off sale, and one card price removed (THC only now).
+  const catalog = new CatalogService(db);
+  await catalog.save({
+    slug: "warrior-program-access", kind: "COURSE", name: "Warrior Programme, full access",
+    description: "Every module of the Warrior programme.", priceThc: 15_000n, priceFiatCents: 2_999_00,
+    grantsCourseId: warrior.id, active: false,
+  });
+  await catalog.save({
+    slug: "tycoonhood-training-tee", kind: "PHYSICAL", name: "Training Tee", description: "Heavy cotton tee.",
+    priceFiatCents: 1_299_00, costCents: 410_00, inventory: 37, active: false,
+  });
+  await catalog.save({
+    slug: "founders-playbook", kind: "DIGITAL", name: "The Founder's Playbook", description: "The working document.",
+    priceThc: 6_000n, priceFiatCents: null, contentMd: "# Rewritten by staff", active: true,
+  });
+  // Admin → Products, storefront fields (setShopFieldsAction): a category cleared, another changed.
+  await db.product.update({ where: { slug: "tycoonhood-training-tee" }, data: { category: null, sellerName: "Tycoonhood Studio" } });
+  await db.product.update({ where: { slug: "founders-playbook" }, data: { category: "books" } });
+
+  // Admin → Challenges (setChallengeLifecycleAction).
+  await db.challenge.update({ where: { slug: "30-days-of-iron" }, data: { lifecycle: "ACTIVE" } });
+  await db.challenge.update({ where: { slug: "launch-week" }, data: { lifecycle: "ENDED" } });
+  await db.challenge.update({ where: { slug: "the-one-percent-ledger" }, data: { lifecycle: "ACTIVE" } });
+
+  // Admin → Content (savePostAction): an essay rewritten, another unpublished.
+  await db.post.update({
+    where: { slug: "why-tycoonhood-exists" },
+    data: { title: "Why we built Tycoonhood", excerpt: "Rewritten by staff.", contentMd: "Staff copy.", authorName: "The House" },
+  });
+  await db.post.update({ where: { slug: "thc-utility-before-speculation" }, data: { publishedAt: null } });
+
+  // Admin → Courses: details with the instructor cleared, a lesson, a module,
+  // the founder's profile, one programme unpublished and one archived.
+  const authoring = new CourseAuthoringService(db);
+  await authoring.updateCourse(staff, warrior.id, {
+    title: "Warrior Programme", slug: "warrior", pillar: "WARRIOR", subtitle: "Staff subtitle.",
+    description: "Staff rewrote this description.", coverImage: "/covers/warrior-staff.jpg", instructorId: "", xpOnCompletion: 650,
+  });
+  const lesson = await db.lesson.findFirstOrThrow({
+    where: { module: { courseId: warrior.id }, type: "READING" },
+    orderBy: [{ module: { sortOrder: "asc" } }, { sortOrder: "asc" }],
+  });
+  await authoring.updateLesson(staff, lesson.id, {
+    title: "Staff lesson title", type: "READING", contentMd: "Staff lesson copy.", xpReward: lesson.xpReward,
+    minutes: lesson.durationSec ? lesson.durationSec / 60 : null, isPreview: lesson.isPreview, isFinal: lesson.isFinal,
+  });
+  const money = await db.course.findUniqueOrThrow({
+    where: { slug: "financial-planning-investment-advisory" },
+    include: { modules: { orderBy: { sortOrder: "asc" }, take: 1 } },
+  });
+  await authoring.updateModule(staff, money.modules[0].id, {
+    title: "Staff module title", description: "Staff module description.", objectives: "One\nTwo", completion: "Finish it.",
+  });
+  const founder = await db.instructor.findUniqueOrThrow({ where: { slug: "harsha" } });
+  await authoring.updateInstructor(staff, founder.id, {
+    slug: "harsha", name: "Harsha R", headline: "Founder", bio: "Staff rewrote the founder's bio.", avatar: "/founder/harsha-2026.jpg",
+  });
+  await authoring.archive(staff, (await db.course.findUniqueOrThrow({ where: { slug: "mindfulness-wellness" } })).id);
+  // One programme taken down and emptied, to be rewritten by hand: it must stay empty.
+  const business = await db.course.findUniqueOrThrow({ where: { slug: "business-mastery" }, include: { modules: true } });
+  await authoring.unpublish(staff, business.id);
+  for (const m of business.modules) await authoring.deleteModule(staff, m.id);
+
+  // Admin → Missions (saveMissionAction, toggleMissionAction): seed.ts's and seed-community's.
+  await db.mission.update({
+    where: { slug: "first-lesson" },
+    data: { name: "First Lesson Done", description: "Staff wording.", xpReward: 150, thcReward: 750n, active: false },
+  });
+  await db.mission.update({ where: { slug: "weekly-quiz-pass" }, data: { name: "Prove It Twice", xpReward: 80 } });
+  await db.mission.update({ where: { slug: "daily-check-in" }, data: { active: false } });
+
+  // Admin → Community: a category, a group and a programme channel.
+  const discussions = new DiscussionService(db);
+  const intro = await db.communityCategory.findUniqueOrThrow({ where: { slug: "introductions" } });
+  await discussions.saveCategory(staff, { id: intro.id, slug: "introductions", name: "Say hello", description: "Staff wording.", sortOrder: 5 });
+  const group = await db.communityGroup.findUniqueOrThrow({ where: { slug: "warrior-program" } });
+  await discussions.saveGroup(staff, {
+    id: group.id, slug: "warrior-program", name: "Warrior Crew", description: "Staff wrote this group description.", pillar: "WARRIOR",
+  });
+  const channel = await db.channel.findUniqueOrThrow({ where: { slug: "warrior-discussion" } });
+  await new CommunityService(db).saveChannel(staff, {
+    id: channel.id, slug: "warrior-discussion", name: "Warrior talk", topic: "Staff topic.", kind: "CHAT",
+    courseId: warrior.id, adminOnly: false, slowModeSec: 30, sortOrder: 0,
+  });
+
+  // Admin → Coupons: the welcome offer switched on.
+  const welcome = await db.coupon.findUniqueOrThrow({ where: { code: "WELCOME10" } });
+  await new CouponService(db).setActive(welcome.id, true);
+
+  // A member, and THC staff granted them.
+  const accounts = new AccountService(db);
+  const member = await accounts.register({ email: "member@tycoonhood.test", password: "a-long-member-password", name: "Member" });
+  await new LedgerService(db).reward({
+    userId: member.id, amount: 1_234n, reason: "REWARD_ADMIN", idempotencyKey: "staff-grant-1", memo: "Thanks", createdById: admin.id,
+  });
+
+  // Admin → Members: the owner takes over and demotes the seeded admin.
+  const owner = await accounts.register({ email: "owner@tycoonhood.test", password: "a-long-owner-password", name: "Owner" });
+  const members = new MemberAdminService(db);
+  await members.changeRole(staff, owner.id, "ADMIN");
+  await members.changeRole({ id: owner.id, role: "ADMIN" }, admin.id, "MEMBER");
+}
+
+describe("seeds are safe to re-run on a live database", () => {
+  let t: Throwaway;
+
+  beforeAll(async () => {
+    t = await createThrowawayDb("rerun");
+    await migrate(t);
+    await seedAll(t);
+  }, SLOW);
+  afterAll(async () => {
+    await t?.drop();
+  });
+
+  it("runs the same seeds as a production deploy, in the same order", () => {
+    const build = readFileSync(resolve(REPO_ROOT, "scripts/vercel-build.sh"), "utf8");
+    const rootScripts = JSON.parse(readFileSync(resolve(REPO_ROOT, "package.json"), "utf8")).scripts as Record<string, string>;
+    const dbScripts = JSON.parse(readFileSync(resolve(DB_PACKAGE, "package.json"), "utf8")).scripts as Record<string, string>;
+    const fileOf = (name: string) => {
+      const viaRoot = rootScripts[name]?.match(/^pnpm --filter @tycoonhood\/db (\S+)$/)?.[1];
+      return dbScripts[viaRoot ?? name]?.match(/tsx (\S+)$/)?.[1];
+    };
+    const run = [...build.matchAll(/^\s*pnpm (?:--filter @tycoonhood\/db )?((?:db:)?seed[\w:]*)\s*$/gm)].map((m) => fileOf(m[1]));
+    expect(run).toEqual([...DEPLOY_SEEDS]);
+  });
+
+  it("a second run on an untouched database changes nothing", async () => {
+    const before = await snapshot(t.db);
+    await seedAll(t);
+    expect(changes(before, await snapshot(t.db))).toEqual([]);
+  }, SLOW);
+
+  it("counts a programme an older seed built, before the record of builds existed, as built", async () => {
+    await t.db.siteSetting.delete({ where: { key: "seed.academy.built" } });
+    const before = await snapshot(t.db);
+    await mustRun("src/seed-academy.ts", t.url);
+    expect(changes(before, await snapshot(t.db))).toEqual(["SiteSetting[seed.academy.built] added"]);
+    expect((await t.db.siteSetting.findUniqueOrThrow({ where: { key: "seed.academy.built" } })).value).toEqual({
+      slugs: ["business-mastery", "financial-planning-investment-advisory", "mindfulness-wellness", "warrior"],
+    });
+  }, SLOW);
+
+  it("a re-run keeps every edit staff made in the admin", async () => {
+    await editLikeStaff(t.db);
+    const before = await snapshot(t.db);
+    await seedAll(t);
+    const after = await snapshot(t.db);
+
+    // The finding, in its own words: prices, stock, live state and challenge dates stay put.
+    const product = (slug: string) => t.db.product.findUniqueOrThrow({ where: { slug } });
+    const warrior = await product("warrior-program-access");
+    expect([warrior.priceFiatCents, warrior.fiatCurrency, warrior.priceThc, warrior.active]).toEqual([2_999_00, "INR", 15_000n, false]);
+    const tee = await product("tycoonhood-training-tee");
+    expect([tee.priceFiatCents, tee.inventory, tee.active, tee.category]).toEqual([1_299_00, 37, false, null]);
+    const playbook = await product("founders-playbook");
+    expect([playbook.priceFiatCents, playbook.priceThc, playbook.contentMd]).toEqual([null, 6_000n, "# Rewritten by staff"]);
+    const iron = await t.db.challenge.findUniqueOrThrow({ where: { slug: "30-days-of-iron" } });
+    const ironBefore = before.Challenge.rows.find((r) => r.slug === "30-days-of-iron")!;
+    expect(iron.lifecycle).toBe("ACTIVE");
+    expect(iron.startsAt?.toISOString()).toBe(new Date(ironBefore.startsAt as string).toISOString());
+    expect((await t.db.user.findUniqueOrThrow({ where: { email: SEED_ADMIN.ADMIN_EMAIL } })).role).toBe("MEMBER");
+    const business = await t.db.course.findUniqueOrThrow({ where: { slug: "business-mastery" }, include: { _count: { select: { modules: true } } } });
+    expect([business.status, business._count.modules]).toEqual(["DRAFT", 0]);
+
+    // And everything else: every row of every table is as staff left it.
+    expect(changes(before, after)).toEqual([]);
+  }, SLOW);
+
+  it("a re-run adds what is missing and puts back copy only the seeds own", async () => {
+    await t.db.achievement.delete({ where: { slug: "seven-day-streak" } });
+    await t.db.mission.delete({ where: { slug: "complete-onboarding" } });
+    await t.db.rankDefinition.update({ where: { slug: "elite" }, data: { name: "Elite (typo" } });
+    await t.db.challenge.update({ where: { slug: "launch-week" }, data: { description: "Old wording." } });
+    const before = await snapshot(t.db);
+    await seedAll(t);
+    const diff = changes(before, await snapshot(t.db));
+
+    expect(diff.map((l) => l.replace(/:.*$/, "")).sort()).toEqual([
+      "Achievement[seven-day-streak] added",
+      "Challenge[launch-week]",
+      "Mission[complete-onboarding] added",
+      "RankDefinition[elite]",
+    ]);
+    // The challenge got its wording back and nothing else: staff ended it, and it stays ended.
+    expect(diff.find((l) => l.startsWith("Challenge"))).toMatch(/^Challenge\[launch-week\]: description "Old wording\." → "Seven days[^;]*$/);
+    expect((await t.db.challenge.findUniqueOrThrow({ where: { slug: "launch-week" } })).lifecycle).toBe("ENDED");
+    expect((await t.db.rankDefinition.findUniqueOrThrow({ where: { slug: "elite" } })).name).toBe("Tycoon Elite");
+  }, SLOW);
+
+  it("SEED_ACADEMY_FORCE=1 still rebuilds the programmes from the curriculum files", async () => {
+    expect(await t.db.lesson.count({ where: { title: "Staff lesson title" } })).toBe(1);
+    await mustRun("src/seed-academy.ts", t.url, { SEED_ACADEMY_FORCE: "1" });
+    expect(await t.db.lesson.count({ where: { title: "Staff lesson title" } })).toBe(0);
+    const warrior = await t.db.course.findUniqueOrThrow({ where: { slug: "warrior" }, include: { instructor: true } });
+    expect([warrior.status, warrior.instructor?.slug]).toEqual(["PUBLISHED", "harsha"]);
+    expect(await t.db.courseModule.count({ where: { courseId: warrior.id } })).toBe(9);
+  }, SLOW);
+
+  it("re-running seed:merch keeps staff's prices, costs, sizes and videos", async () => {
+    const videos = { TH_SEED_VIDEOS: "intro-video|dQw4w9WgXcQ|300|Intro" };
+    await mustRun("src/seed-merch.ts", t.url, videos);
+
+    const hoodie = await t.db.product.findUniqueOrThrow({
+      where: { slug: "warrior-hoodie" },
+      include: { variants: { orderBy: { sortOrder: "asc" } } },
+    });
+    await new CatalogService(t.db).save({
+      slug: "warrior-hoodie", kind: "PHYSICAL", name: "Warrior Hoodie II", description: "Staff copy.",
+      priceThc: hoodie.priceThc, priceFiatCents: 2_799_00, costCents: null, active: true,
+      variants: hoodie.variants.map((v, i) => ({
+        id: v.id, sku: v.sku, label: v.label === "XXL" ? "2XL" : v.label, inventory: v.inventory + 5,
+        priceThc: v.priceThc, sortOrder: hoodie.variants.length - i, active: true,
+      })),
+    });
+    // Admin → Videos (saveVideoAction).
+    await t.db.watchTask.update({
+      where: { slug: "intro-video" },
+      data: { title: "Staff title", rewardThc: 99n, rewardXp: 5, active: true, publishedAt: new Date(), sortOrder: 4 },
+    });
+
+    const before = await snapshot(t.db);
+    await mustRun("src/seed-merch.ts", t.url, videos);
+    expect(changes(before, await snapshot(t.db))).toEqual([]);
+  }, SLOW);
+});

@@ -13,17 +13,17 @@
  * PLACEHOLDERS, not decisions: set real prices and real landed costs in
  * Admin → Products before any of this goes live, or the margin is fiction.
  *
- * Re-running never overwrites a rupee price an admin has set: the placeholder
- * goes in only when the price is missing or not in INR, the same rule as
- * seed-shop. A cost an admin entered is left alone too (placeholderMoney says
- * exactly when a cost is replaced).
+ * Safe to re-run on a live database (DR-33). A product, size or video the
+ * database does not have yet is created, as a draft. One it has is staff's
+ * (/admin/products, /admin/videos): its wording, prices, stock, sizes, image,
+ * whether it is live, and a video's title, rewards and order stay as they
+ * left them. The one write a re-run can make is money the seed itself put in
+ * the wrong currency (placeholderMoney says exactly when): a product still
+ * priced in dollars moves to its rupee placeholder, the same rule as
+ * seed-shop, and a landed cost still equal to the old dollar placeholder is
+ * replaced. A rupee price, or a cost an admin entered or cleared, is left alone.
  *
- * Re-running also leaves alone what staff manage in /admin/products: whether
- * an item is live, its stock, its image and its THC price (and the same for
- * each size). Only the name and description are refreshed. A product or size
- * the database does not have yet is created as a draft.
- *
- * Idempotent — upserts by slug. Run: pnpm db:seed:merch
+ * Run: pnpm db:seed:merch
  */
 import { prisma } from "./client";
 import { suggestPrice, judgePrice } from "@tycoonhood/config";
@@ -108,6 +108,7 @@ async function main() {
       ...rest,
       ...money.data,
       image: null,
+      category: "merchandise",
       // Seeded as DRAFTS on purpose. Nothing ships until the real costs and
       // the real stock are in, so publishing is a deliberate act in /admin.
       active: false,
@@ -115,8 +116,8 @@ async function main() {
     };
     const product = await prisma.product.upsert({
       where: { slug: p.slug },
-      // Staff own whether it is live, its stock, its image and its THC price once it exists.
-      update: { name: data.name, description: data.description, ...money.data },
+      // Staff own everything about it once it exists, but money still in the wrong currency.
+      update: { ...money.data },
       create: { ...data, slug: p.slug },
     });
     if (money.clearSizeFiat) {
@@ -138,9 +139,10 @@ async function main() {
           sortOrder: i,
           active: true,
         };
+        // Created once: staff rename, restock, reprice and reorder sizes in /admin/products.
         await prisma.productVariant.upsert({
           where: { sku },
-          update: { label: vdata.label, sortOrder: vdata.sortOrder },
+          update: {},
           create: { productId: product.id, sku, ...vdata },
         });
       }
@@ -174,9 +176,8 @@ async function main() {
         active: false,
         sortOrder: videoCount,
       };
-      // A video staff have put live stays live.
-      const { active: _draft, ...refresh } = data;
-      await prisma.watchTask.upsert({ where: { slug }, update: refresh, create: { ...data, slug } });
+      // Created once, as a draft: staff edit and publish it in /admin/videos.
+      await prisma.watchTask.upsert({ where: { slug }, update: {}, create: { ...data, slug } });
       videoCount++;
     }
   }

@@ -2,9 +2,10 @@
  * COMMUNITY SEED — discussion categories, the four programme groups, and the
  * weekly missions. Structure only: no posts, no members, nothing invented.
  *
- * Idempotent — upserts by slug. Re-running restores the seeded wording; edits
- * made in Admin → Community to seeded rows are overwritten, new rows are not
- * touched. Run: pnpm --filter @tycoonhood/db seed:community
+ * Safe to re-run on a live database (DR-33): a category, group or mission the
+ * database does not have is created, and one it has is left as staff keep it
+ * in Admin → Community and Admin → Missions, wording, order and whether it is
+ * live included. Run: pnpm --filter @tycoonhood/db seed:community
  *
  * Missions follow the house conventions (seed.ts): criteria as data, modest
  * rewards. Weekly missions use the calendar "week" window (Monday 00:00 UTC)
@@ -62,15 +63,14 @@ const WEEKLY_MISSIONS = [
 
 async function main() {
   for (const c of CATEGORIES) {
-    await prisma.communityCategory.upsert({ where: { slug: c.slug }, update: c, create: c });
+    await prisma.communityCategory.upsert({ where: { slug: c.slug }, update: {}, create: c });
   }
   for (const g of GROUPS) {
-    await prisma.communityGroup.upsert({ where: { slug: g.slug }, update: g, create: g });
+    await prisma.communityGroup.upsert({ where: { slug: g.slug }, update: {}, create: g });
   }
   for (const m of WEEKLY_MISSIONS) {
-    // cooldownHours stays null: the weekly bucket is the cap. `active` is set on
-    // create only, so a mission staff switched off stays off on a re-run.
-    await prisma.mission.upsert({ where: { slug: m.slug }, update: m, create: { ...m, active: true } });
+    // cooldownHours stays null: the weekly bucket is the cap.
+    await prisma.mission.upsert({ where: { slug: m.slug }, update: {}, create: { ...m, active: true } });
   }
 
   console.log("── Community seed complete ──────────────────────────");

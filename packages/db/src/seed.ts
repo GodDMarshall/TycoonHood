@@ -1,8 +1,12 @@
 /**
- * TYCOONHOOD SEED — idempotent by design. Run it as many times as you like:
- * everything upserts by slug/key, and the genesis mint posts exactly once
- * via its ledger idempotency key. The admin from ADMIN_EMAIL is created once;
- * a re-run finds it again and never resets its password or its role.
+ * TYCOONHOOD SEED — the admin, levels, ranks, the ledger's system accounts
+ * and genesis, the four course shells, starter missions and achievements.
+ *
+ * Safe to re-run on a live database (DR-33): it adds what is missing and
+ * refreshes what only the seed owns (levels, ranks, achievements). It never
+ * rewrites what staff change in the admin: course details, missions, roles
+ * and passwords. The genesis mint posts exactly once via its ledger
+ * idempotency key.
  */
 
 import { prisma } from "./client.js";
@@ -59,7 +63,9 @@ async function seedAdmin() {
     // Roles belong to staff (/admin/members). The seed makes this account an
     // admin only when nobody could otherwise run the platform: on a first
     // deploy where it signed up before the seed ran, or with every admin locked out.
-    if (existing.role !== "ADMIN") {
+    if (existing.role === "ADMIN") {
+      console.log(`── Admin found: ${email}. Its password and role are left as they are.`);
+    } else {
       if (await someAdminCanSignIn()) {
         console.log(`── ${email} is ${existing.role}: left as it is. Staff change roles in /admin/members.`);
       } else {
@@ -243,19 +249,20 @@ async function main() {
   ];
 
   for (const [i, c] of courses.entries()) {
-    const course = await prisma.course.upsert({
+    // Created once. Title, subtitle, description and status are staff's from
+    // then on (/admin/courses), so a re-run writes nothing here.
+    await prisma.course.upsert({
       where: { slug: c.slug },
-      update: { title: c.title, subtitle: c.subtitle, description: c.description, sortOrder: i },
+      update: {},
       create: { ...c, sortOrder: i, status: "DRAFT" },
     });
 
-    // NO placeholder curriculum. The real curriculum is owned entirely by
-    // seed-academy.ts, which rebuilds each course's modules from scratch.
-    // Creating stub "Content pending" lessons here was a production hazard:
-    // running `db:seed` after `db:seed:academy` re-introduced empty lessons
-    // into a live academy. Course shells are created DRAFT and stay empty
-    // until real material is seeded.
-    void course;
+    // NO placeholder curriculum. The real curriculum comes from
+    // seed-academy.ts, which builds each course's modules once. Creating stub
+    // "Content pending" lessons here was a production hazard: running
+    // `db:seed` after `db:seed:academy` re-introduced empty lessons into a
+    // live academy. Course shells are created DRAFT and stay empty until
+    // real material is seeded.
   }
 
   // ------------------------------------------------------------
@@ -266,8 +273,11 @@ async function main() {
     { slug: "daily-check-in", name: "Show Up", description: "Check in and take one action today.", criteria: { event: "DAILY_ACTIVE" }, xpReward: 25, thcReward: 50n, repeatable: true, cooldownHours: 20 },
     { slug: "complete-onboarding", name: "Know Thyself", description: "Complete your onboarding profile.", criteria: { event: "ONBOARDED" }, xpReward: 75, thcReward: 250n, repeatable: false },
   ];
+  // Missions are created once: staff edit them in /admin/missions, wording,
+  // rewards and whether they are live included. Achievements and ranks have
+  // no admin, so the seed keeps their copy current.
   for (const m of missions) {
-    await prisma.mission.upsert({ where: { slug: m.slug }, update: m, create: m });
+    await prisma.mission.upsert({ where: { slug: m.slug }, update: {}, create: m });
   }
 
   const achievements = [
@@ -287,10 +297,13 @@ async function main() {
     prisma.ledgerAccount.findFirst({ where: { type: "REWARDS_POOL" } }),
     prisma.ledgerAccount.findFirst({ where: { type: "SYSTEM_MINT" } }),
   ]);
-  const courseCount = await prisma.course.count();
+  const [courseCount, published] = await Promise.all([
+    prisma.course.count(),
+    prisma.course.count({ where: { status: "PUBLISHED" } }),
+  ]);
 
   console.log("── Tycoonhood seed complete ─────────────────────────");
-  console.log(` Courses:        ${courseCount} (all DRAFT — content pending)`);
+  console.log(` Courses:        ${courseCount} (${published} published; seed:academy builds and publishes them)`);
   console.log(` Levels seeded:  1–${MAX_SEEDED_LEVEL}`);
   console.log(` Ranks:          ${ranks.map((r) => r.name.replace("Tycoon ", "")).join(" → ")}`);
   console.log(` Total supply:   ${(-(mint?.balance ?? 0n)).toLocaleString()} THC (provable: -SYSTEM_MINT)`);
