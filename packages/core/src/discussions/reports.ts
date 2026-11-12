@@ -47,7 +47,7 @@ export class ReportService {
    * - Nobody reports themselves or their own writing.
    * - The target must exist and, for a post, comment or group, be one the
    *   member can see (staff see hidden writing and archived groups; nobody
-   *   sees removed writing). A target type with no table yet is taken as
+   *   sees removed writing). A target type with no lookup yet is taken as
    *   given (see assertReportable).
    * - One report per member and target: a second is refused, saying staff
    *   already have the first.
@@ -59,7 +59,12 @@ export class ReportService {
    *
    * Staff see post and comment reports in the moderation queue
    * (moderation.queue). Reports on the other targets are kept, and wait for
-   * SOCIAL's one queue over every ContentReport.
+   * SOCIAL's one queue over every ContentReport. Until then no screen lists
+   * or clears them, yet the admin overview's "Open reports (discussions)"
+   * figure counts them (apps/web/app/(app)/admin/page.tsx counts every OPEN
+   * ContentReport) and links to the queue, which does not show them. So a
+   * page that offers another target type waits for that queue, or for the
+   * overview to count through openReportCount().
    */
   async file(
     viewer: DiscussionViewer,
@@ -125,12 +130,14 @@ export class ReportService {
       case "event_feedback":
       case "opportunity":
       case "partner":
-        // No table to look in yet, so the report is taken as given: no check
-        // that the target exists, that the member may see it, or that it is
-        // not their own. The unit that builds on each table adds that lookup
-        // here, through the lead (SOCIAL owns this file): SKILLS for project,
-        // LIVE-A for event and event_feedback, OPPS-B for opportunity and
-        // OPPS-A for partner.
+        // No lookup yet, so the report is taken as given: no check that the
+        // target exists, that the member may see it, or that it is not their
+        // own, and every new id makes a new row. The unit that builds on each
+        // table adds that lookup here, through the lead (SOCIAL owns this
+        // file): SKILLS for project, LIVE-A for event and event_feedback,
+        // OPPS-B for opportunity and OPPS-A for partner. No page or server
+        // action offers reports.file for one of these types before its
+        // lookup has landed.
         return;
     }
   }

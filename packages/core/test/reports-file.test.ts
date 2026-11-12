@@ -105,7 +105,7 @@ describe("reports.file", () => {
       comment: cm.id,
       user: author.id,
       group: g.id,
-      // No table to look in yet: the id is taken as given.
+      // No lookup yet: the id is taken as given.
       project: uid(),
       event: uid(),
       event_feedback: uid(),
@@ -173,7 +173,7 @@ describe("reports.file", () => {
     for (const targetType of ["user", "group", "post", "comment"] as const) {
       await refused(reports.file(reporter, { targetType, targetId: uid(), reason: "Spam link" }), GONE);
     }
-    // A target with no table yet still needs an id, no longer than an id.
+    // A target with no lookup yet still needs an id, no longer than an id.
     for (const targetId of ["", "x".repeat(65)]) {
       await refused(reports.file(reporter, { targetType: "opportunity", targetId, reason: "Spam link" }), GONE);
     }
