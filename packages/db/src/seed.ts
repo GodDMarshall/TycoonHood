@@ -1,7 +1,8 @@
 /**
  * TYCOONHOOD SEED — idempotent by design. Run it as many times as you like:
  * everything upserts by slug/key, and the genesis mint posts exactly once
- * via its ledger idempotency key.
+ * via its ledger idempotency key. The admin from ADMIN_EMAIL is created once;
+ * a re-run finds it again and never resets its password or its role.
  */
 
 import { prisma } from "./client.js";
@@ -17,8 +18,16 @@ import {
 /** Argon2id params — keep in sync with packages/core/src/auth/password.ts */
 const ARGON2 = { memoryCost: 19456, timeCost: 2, parallelism: 1, algorithm: 2 as const };
 
+/** An address the way sign-in reads it: loginSchema trims and lower-cases what is typed. */
+const normaliseEmail = (raw: string) => raw.trim().toLowerCase();
+
 async function seedAdmin() {
-  const email = process.env.ADMIN_EMAIL ?? "admin@tycoonhood.local";
+  // Stored as sign-in reads it, or a capitalised ADMIN_EMAIL makes an admin
+  // nobody can sign in as (review finding 18).
+  const email = normaliseEmail(process.env.ADMIN_EMAIL ?? "admin@tycoonhood.local");
+  if (!/^[^@\s]+@[^@\s]+$/.test(email)) {
+    throw new Error(`Refusing to seed: ADMIN_EMAIL "${process.env.ADMIN_EMAIL}" is not an email address.`);
+  }
   // The built-in development password is public knowledge — anyone who has read
   // this repository would have full admin access to the economy. Guessing which
   // hosts are "production" from the connection string never worked (a Docker,
@@ -39,26 +48,38 @@ async function seedAdmin() {
   if (!process.env.ADMIN_PASSWORD) {
     console.warn("⚠ ALLOW_DEFAULT_ADMIN=1 — seeding admin with the PUBLIC development default. Throwaway local use only.");
   }
-  const existing = await prisma.user.findUnique({ where: { email } });
-  const passwordHash = await hash(password, ARGON2);
+
+  const existing = await findAdminAccount(email);
   if (existing) {
-    await prisma.passwordCredential.upsert({
-      where: { userId: existing.id },
-      update: {},
-      create: { userId: existing.id, hash: passwordHash },
-    });
-    await prisma.user.update({ where: { id: existing.id }, data: { role: "ADMIN" } });
+    // Once the account exists its password is its own: a re-run never resets it.
+    const credential = await prisma.passwordCredential.findUnique({ where: { userId: existing.id }, select: { userId: true } });
+    if (!credential) {
+      await prisma.passwordCredential.create({ data: { userId: existing.id, hash: await hash(password, ARGON2) } });
+    }
+    // Roles belong to staff (/admin/members). The seed makes this account an
+    // admin only when nobody could otherwise run the platform: on a first
+    // deploy where it signed up before the seed ran, or with every admin locked out.
+    if (existing.role !== "ADMIN") {
+      if (await someAdminCanSignIn()) {
+        console.log(`── ${email} is ${existing.role}: left as it is. Staff change roles in /admin/members.`);
+      } else {
+        await prisma.user.update({ where: { id: existing.id }, data: { role: "ADMIN" } });
+        console.log(`── ${email} made ADMIN: no admin could sign in.`);
+      }
+    }
     return existing;
   }
+
+  const username = await freeUsername("admin");
   const admin = await prisma.user.create({
     data: {
       email,
       name: "The House",
       role: "ADMIN",
-      credential: { create: { hash: passwordHash } },
+      credential: { create: { hash: await hash(password, ARGON2) } },
       profile: {
         create: {
-          username: "admin",
+          username,
           displayName: "The House",
           goals: [],
           interests: [],
@@ -67,8 +88,48 @@ async function seedAdmin() {
       },
     },
   });
-  console.log(`── Admin ready: ${email}`);
+  console.log(`── Admin ready: ${email}${username === "admin" ? "" : ` (username ${username}: "admin" is taken)`}`);
   return admin;
+}
+
+/**
+ * The account for ADMIN_EMAIL. Earlier seeds stored the address exactly as
+ * given, so " Owner@Example.com" made an admin no sign-in could match. Such a
+ * row is found by its normalised address and repaired in place. Sign-up and
+ * email changes always store addresses normalised, so a row like that can
+ * only be one a seed made.
+ */
+async function findAdminAccount(email: string) {
+  const exact = await prisma.user.findUnique({ where: { email } });
+  if (exact) return exact;
+  const near = await prisma.user.findMany({
+    where: { email: { contains: email, mode: "insensitive" } },
+    orderBy: { createdAt: "asc" },
+  });
+  const legacy = near
+    .filter((u) => normaliseEmail(u.email) === email)
+    .sort((a, b) => Number(b.role === "ADMIN") - Number(a.role === "ADMIN"))[0];
+  if (!legacy) return null;
+  console.log(`── Admin address "${legacy.email}" stored as "${email}", so it can sign in.`);
+  return prisma.user.update({ where: { id: legacy.id }, data: { email } });
+}
+
+/** Whether any admin can sign in today: a password, an address sign-in can match, not suspended. */
+async function someAdminCanSignIn() {
+  const admins = await prisma.user.findMany({
+    where: { role: "ADMIN", suspendedAt: null, credential: { isNot: null } },
+    select: { email: true },
+  });
+  return admins.some((a) => a.email === normaliseEmail(a.email));
+}
+
+/** "admin", or "admin_2", "admin_3"… when another account has it: usernames are unique. */
+async function freeUsername(base: string) {
+  for (let n = 1; n <= 1000; n++) {
+    const username = n === 1 ? base : `${base}_${n}`;
+    if (!(await prisma.profile.findUnique({ where: { username }, select: { userId: true } }))) return username;
+  }
+  throw new Error(`No free username left for the admin (tried ${base} to ${base}_1000).`);
 }
 
 async function main() {

@@ -24,4 +24,12 @@ export const prisma = globalForPrisma.prisma ?? build();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
+/**
+ * A client of its own for another database, such as the throwaway copies the
+ * seed and deploy tests build from nothing. The caller disconnects it.
+ */
+export function clientFor(connectionString: string): PrismaClient {
+  return new PrismaClient({ adapter: new PrismaPg({ connectionString }), log: ["warn", "error"] });
+}
+
 export * from "./generated/client";
