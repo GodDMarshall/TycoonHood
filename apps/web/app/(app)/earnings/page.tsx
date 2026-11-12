@@ -7,7 +7,7 @@
  */
 import type { Metadata } from "next";
 import Link from "next/link";
-import { affiliates, referrals } from "@tycoonhood/core";
+import { affiliates, formatDate, memberZone, referrals } from "@tycoonhood/core";
 import { AFFILIATE_HOLD_DAYS, AFFILIATE_RATE_BPS, MIN_PAYOUT_CENTS } from "@tycoonhood/config";
 import { Badge, EmptyState, Notice, Stat, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
@@ -15,7 +15,7 @@ import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/p
 import { AffiliateRegisterForm } from "../../../components/earn/register-form";
 import { CopyLink } from "../../../components/earn/copy-link";
 import { ActionButton } from "../../../components/earn/action-form";
-import { commissionLabel, commissionTone, dateFmt, inr, payoutLabel, payoutTone } from "../../../components/earn/format";
+import { commissionLabel, commissionTone, inr, payoutLabel, payoutTone } from "../../../components/earn/format";
 import { registerAffiliateAction, requestPayoutAction } from "./actions";
 
 export const metadata: Metadata = { title: "Earnings" };
@@ -27,6 +27,7 @@ const link = "text-gold underline decoration-gold-shadow underline-offset-4 hove
 
 export default async function EarningsPage() {
   const user = await requireUser();
+  const zone = memberZone(user.profile?.timezone);
   const [s, squad] = await Promise.all([
     affiliates.summary(user.id),
     referrals.summary(user.id).catch(() => null),
@@ -85,7 +86,7 @@ export default async function EarningsPage() {
         <EmptyState
           icon="clock"
           title="Your application is being reviewed."
-          body={`Sent ${dateFmt.format(profile.termsAcceptedAt)}. An admin reviews applications by hand; you will get a notification when it is decided. Your link is not active until then.`}
+          body={`Sent ${formatDate(profile.termsAcceptedAt, zone)}. An admin reviews applications by hand; you will get a notification when it is decided. Your link is not active until then.`}
         />
         {squad && <SquadCard squad={squad} />}
       </Page>
@@ -182,7 +183,7 @@ export default async function EarningsPage() {
               <tbody>
                 {commissions.map((c) => (
                   <tr key={c.id} className="border-b border-line align-top last:border-0">
-                    <td className="figures whitespace-nowrap px-4 py-3 text-ink-2">{dateFmt.format(c.createdAt)}</td>
+                    <td className="figures whitespace-nowrap px-4 py-3 text-ink-2">{formatDate(c.createdAt, zone)}</td>
                     <td className="figures px-4 py-3 text-ink-2">#{c.order.id.slice(-6).toUpperCase()}</td>
                     <td className="figures px-4 py-3 text-right text-ink-2">{inr(c.baseCents)}</td>
                     <td className="figures px-4 py-3 text-right text-ink-1">
@@ -191,7 +192,7 @@ export default async function EarningsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <Badge tone={commissionTone[c.status]}>{commissionLabel[c.status]}</Badge>
-                      <span className="mt-1 block max-w-[34ch] text-[12px] leading-snug text-ink-3">{commissionNote(c)}</span>
+                      <span className="mt-1 block max-w-[34ch] text-[12px] leading-snug text-ink-3">{commissionNote(c, zone)}</span>
                     </td>
                   </tr>
                 ))}
@@ -212,8 +213,8 @@ export default async function EarningsPage() {
                 <span className="min-w-0">
                   <span className="figures block text-[14px] text-ink-1">{inr(p.amountCents)}</span>
                   <span className="figures block text-[12px] text-ink-3">
-                    Requested {dateFmt.format(p.createdAt)} · {p._count.commissions} commission{p._count.commissions === 1 ? "" : "s"}
-                    {p.paidAt && ` · paid ${dateFmt.format(p.paidAt)}`}
+                    Requested {formatDate(p.createdAt, zone)} · {p._count.commissions} commission{p._count.commissions === 1 ? "" : "s"}
+                    {p.paidAt && ` · paid ${formatDate(p.paidAt, zone)}`}
                     {p.reference && ` · ref ${p.reference}`}
                   </span>
                   {p.reason && <span className="block text-[12px] text-ink-3">Reason: {p.reason}</span>}
@@ -230,13 +231,13 @@ export default async function EarningsPage() {
   );
 }
 
-function commissionNote(c: { status: keyof typeof commissionLabel; reason: string | null; holdUntil: Date; payoutId: string | null }): string {
+function commissionNote(c: { status: keyof typeof commissionLabel; reason: string | null; holdUntil: Date; payoutId: string | null }, zone: string): string {
   switch (c.status) {
     case "PENDING":
       // Fraud flags are for the reviewer, not a hint list for gaming them.
       return c.reason?.startsWith("flagged:")
-        ? `Under review. Reviewable from ${dateFmt.format(c.holdUntil)}.`
-        : `Held until ${dateFmt.format(c.holdUntil)} for refunds, then reviewed.`;
+        ? `Under review. Reviewable from ${formatDate(c.holdUntil, zone)}.`
+        : `Held until ${formatDate(c.holdUntil, zone)} for refunds, then reviewed.`;
     case "APPROVED":
       return c.payoutId ? "In your open payout request." : "Available to withdraw.";
     case "PAID":

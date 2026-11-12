@@ -1,12 +1,11 @@
 /** A list of discussion posts with page links. Server-rendered. */
 import Link from "next/link";
-import type { PostSummary } from "@tycoonhood/core";
+import { formatDay, type PostSummary } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, cn } from "@tycoonhood/ui";
 import { Panel } from "../../../../../components/app/page";
 
-const when = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
-
-export function PostList({ posts, showWhere = true }: { posts: PostSummary[]; showWhere?: boolean }) {
+/** `zone`: the reader's time zone (memberZone), for the dates. */
+export function PostList({ posts, zone, showWhere = true }: { posts: PostSummary[]; zone: string; showWhere?: boolean }) {
   return (
     <Panel as="ul" className="divide-y divide-line">
       {posts.map((p) => (
@@ -26,7 +25,7 @@ export function PostList({ posts, showWhere = true }: { posts: PostSummary[]; sh
                   {p.author.name}
                   {p.author.staff && <span className="text-gold-deep"> · staff</span>}
                 </span>
-                <span>{when.format(new Date(p.createdAt))}</span>
+                <span>{formatDay(p.createdAt, zone)}</span>
                 {showWhere && (p.group ? <span>{p.group.name}</span> : p.category ? <span>{p.category.name}</span> : null)}
                 <span className="tabular-nums">
                   {p.commentCount} {p.commentCount === 1 ? "comment" : "comments"}

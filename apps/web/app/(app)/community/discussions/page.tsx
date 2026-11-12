@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { discussions } from "@tycoonhood/core";
+import { discussions, memberZone } from "@tycoonhood/core";
 import { EmptyState, buttonStyles, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../../lib/guard";
 import { Page, PageHeader } from "../../../../components/app/page";
@@ -74,7 +74,7 @@ export default async function DiscussionsPage({ searchParams }: { searchParams: 
         />
       ) : (
         <>
-          <PostList posts={list.posts} showWhere={!active} />
+          <PostList posts={list.posts} zone={memberZone(user.profile?.timezone)} showWhere={!active} />
           <Pager page={list.page} pages={list.pages} href={qs} />
         </>
       )}

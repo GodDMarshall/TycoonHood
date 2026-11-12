@@ -10,6 +10,7 @@ import { XpService } from "./xp";
 import { LedgerService } from "../ledger/ledger";
 import { StreakService } from "./streaks";
 import { localDayKey } from "../time/day";
+import { sliceWhole } from "../text/clip";
 
 export interface Submission {
   id: string;
@@ -200,8 +201,8 @@ export class ChallengeService {
 
     submissions.push({
       id: `sub_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
-      text: text.slice(0, 4000),
-      url: evidence.url?.trim().slice(0, 500) || undefined,
+      text: sliceWhole(text, 0, 4000),
+      url: evidence.url ? sliceWhole(evidence.url.trim(), 0, 500) || undefined : undefined,
       submittedAt: new Date().toISOString(),
       status: "PENDING",
     });
@@ -239,7 +240,7 @@ export class ChallengeService {
     if (sub.status !== "PENDING") return { alreadyReviewed: true, completed: p.status === "COMPLETED" };
 
     sub.status = approve ? "APPROVED" : "REJECTED";
-    sub.feedback = feedback?.trim().slice(0, 1000) || undefined;
+    sub.feedback = feedback?.trim() ? sliceWhole(feedback.trim(), 0, 1000) : undefined;
     sub.reviewedAt = new Date().toISOString();
     sub.reviewedBy = reviewerId;
 

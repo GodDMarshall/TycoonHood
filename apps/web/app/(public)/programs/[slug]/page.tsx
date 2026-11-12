@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { jsonLdHtml, learner, renderMarkdown } from "@tycoonhood/core";
+import { jsonLdHtml, learner, renderMarkdown, sliceWhole } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, Notice, PillarBadge, buttonStyles } from "@tycoonhood/ui";
 import { objectivesOf } from "../../../../lib/learning";
 import { getCurrentUser } from "../../../../lib/auth";
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!course || course.status !== "PUBLISHED") return { title: "Program" };
   return {
     title: course.title,
-    description: course.subtitle ?? course.description.slice(0, 160),
+    description: course.subtitle ?? sliceWhole(course.description, 0, 160),
     alternates: { canonical: `/programs/${course.slug}` },
   };
 }

@@ -5,14 +5,19 @@
  * appears for its author immediately. Staff can pin and remove; members can
  * reply, remove their own and report anyone else's.
  *
- * Times render in the reader's own clock, so they are filled in after mount.
- * Messages are grouped into days the same way: by UTC day until then, which
- * is all the server can know, and by the reader's own day after.
+ * Times and day dividers are in the reader's zone, which the server passes
+ * in (their Profile.timezone, or India time), so the server and the browser
+ * write the same text. "Today" and "Yesterday" are measured from the
+ * server's clock until mount, then from the reader's: hydration matches even
+ * when a day turns over in between.
  */
 import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { MessageView } from "@tycoonhood/core";
 import { Avatar, Badge, Button, Icon, Notice, cn } from "@tycoonhood/ui";
+import { formatTime, formatWeekday } from "@tycoonhood/core/src/time/format";
+import { dayKeyToDate, localDayKey } from "@tycoonhood/core/src/time/day";
+import { sliceWhole } from "@tycoonhood/core/src/text/clip";
 import { linkify } from "../../lib/linkify";
 import { markReadAction, pinMessageAction, removeMessageAction, reportMessageAction, sendMessageAction } from "../../app/(app)/community/actions";
 
@@ -34,6 +39,10 @@ type Props = {
   initial: MessageView[];
   pinned: MessageView[];
   hasOlder: boolean;
+  /** The reader's time zone, already checked on the server (memberZone). */
+  zone: string;
+  /** The server's clock when it rendered, as ISO text. */
+  now: string;
 };
 
 const POLL_MS = 4000;
@@ -46,19 +55,19 @@ function useMounted() {
   return m;
 }
 
-function dayLabel(iso: string) {
-  const d = new Date(iso);
-  const today = new Date();
-  const y = new Date(today);
-  y.setDate(today.getDate() - 1);
-  const same = (a: Date, b: Date) => a.toDateString() === b.toDateString();
-  if (same(d, today)) return "Today";
-  if (same(d, y)) return "Yesterday";
-  return d.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
+/** The day a message falls on in the reader's zone, as YYYY-MM-DD. */
+const dayOf = (iso: string, zone: string) => localDayKey(new Date(iso), zone);
+
+/** "Today", "Yesterday" or "Thursday 12 November": the message's day, counted from `now`. */
+function dayLabel(iso: string, zone: string, now: number) {
+  const day = dayOf(iso, zone);
+  const today = localDayKey(new Date(now), zone);
+  if (day === today) return "Today";
+  const yesterday = dayKeyToDate(today);
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  if (day === yesterday.toISOString().slice(0, 10)) return "Yesterday";
+  return formatWeekday(iso, zone);
 }
-const timeOf = (iso: string) => new Date(iso).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
-/** The day a message falls on: the UTC day until mounted, then the reader's own. */
-const dayOf = (iso: string, local: boolean) => (local ? new Date(iso).toDateString() : new Date(iso).toISOString().slice(0, 10));
 
 function Body({ text }: { text: string }) {
   return (
@@ -76,8 +85,9 @@ function Body({ text }: { text: string }) {
   );
 }
 
-export function ChatView({ channel, me, blocked, initial, pinned: initialPinned, hasOlder }: Props) {
+export function ChatView({ channel, me, blocked, initial, pinned: initialPinned, hasOlder, zone, now: serverNow }: Props) {
   const mounted = useMounted();
+  const now = mounted ? Date.now() : Date.parse(serverNow);
   const [messages, setMessages] = useState<MessageView[]>(initial);
   const [pinned, setPinned] = useState<MessageView[]>(initialPinned);
   const [older, setOlder] = useState(hasOlder);
@@ -124,7 +134,7 @@ export function ChatView({ channel, me, blocked, initial, pinned: initialPinned,
   }, []);
 
   // Keep the reading position when older messages are prepended, and stay at
-  // the bottom when the day dividers move to the reader's own days on mount.
+  // the bottom when "Today" moves to the reader's clock on mount.
   useLayoutEffect(() => {
     const el = scroller.current;
     if (el && preserve.current !== null) {
@@ -333,17 +343,17 @@ export function ChatView({ channel, me, blocked, initial, pinned: initialPinned,
         <ol className="flex flex-col">
           {messages.map((m, i) => {
             const prev = messages[i - 1];
-            const newDay = !prev || dayOf(prev.createdAt, mounted) !== dayOf(m.createdAt, mounted);
+            const newDay = !prev || dayOf(prev.createdAt, zone) !== dayOf(m.createdAt, zone);
             const compact =
               !newDay && !!prev && prev.author.id === m.author.id && !m.replyTo && !prev.removed && +new Date(m.createdAt) - +new Date(prev.createdAt) < GROUP_MS;
             const canRemove = !m.removed && (m.mine || me.staff);
             return (
               <li key={m.id}>
                 {newDay && (
-                  <div className="my-4 flex items-center gap-3 px-2" aria-hidden={!mounted}>
+                  <div className="my-4 flex items-center gap-3 px-2">
                     <span className="h-px flex-1 bg-line" />
                     <span className="text-[12px] font-medium text-ink-3" suppressHydrationWarning>
-                      {mounted ? dayLabel(m.createdAt) : ""}
+                      {dayLabel(m.createdAt, zone, now)}
                     </span>
                     <span className="h-px flex-1 bg-line" />
                   </div>
@@ -372,7 +382,7 @@ export function ChatView({ channel, me, blocked, initial, pinned: initialPinned,
                         )}
                         {m.author.staff ? <Badge tone="gold">Staff</Badge> : m.author.rank ? <span className="text-[12.5px] text-ink-3">{m.author.rank.replace(/^Tycoon\s+/, "")}</span> : null}
                         <time dateTime={m.createdAt} className="text-[12px] text-ink-3" suppressHydrationWarning>
-                          {mounted ? timeOf(m.createdAt) : ""}
+                          {formatTime(m.createdAt, zone)}
                         </time>
                         {m.pinned && (
                           <span className="inline-flex items-center gap-1 text-[12px] text-gold">
@@ -537,7 +547,7 @@ export function ChatView({ channel, me, blocked, initial, pinned: initialPinned,
               ref={input}
               id="composer"
               value={body}
-              onChange={(e) => setBody(e.target.value.slice(0, MAX))}
+              onChange={(e) => setBody(sliceWhole(e.target.value, 0, MAX))}
               onKeyDown={onKey}
               rows={channel.kind === "WINS" ? 2 : 1}
               placeholder={

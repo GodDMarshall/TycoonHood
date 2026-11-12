@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Photo } from "../../../components/art/photo";
 import { CHALLENGE_PHOTO } from "../../../lib/photos";
 import { prisma } from "@tycoonhood/db";
-import { challenges as challengeService, ChallengeService, type Submission } from "@tycoonhood/core";
+import { challenges as challengeService, ChallengeService, formatDay, memberZone, type Submission } from "@tycoonhood/core";
 import { Badge, Button, EmptyState, Icon, PillarBadge, ThcAmount, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
 import { joinChallengeAction, withdrawChallengeAction, checkInChallengeAction, submitEvidenceAction } from "./actions";
@@ -14,7 +14,6 @@ import { Page, PageHeader } from "../../../components/app/page";
 
 export const metadata: Metadata = { title: "Challenges" };
 export const dynamic = "force-dynamic";
-const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
 const DAY = 86_400_000;
 
 /** The objective, in plain words, derived from the challenge's own criteria. */
@@ -41,6 +40,7 @@ function windowOf(start: Date | null, end: Date | null, lifecycle: string, now: 
 
 export default async function ChallengesPage() {
   const user = await requireUser();
+  const zone = memberZone(user.profile?.timezone);
   const now = new Date();
   await challengeService.sweepLifecycles();
   const list = await prisma.challenge.findMany({
@@ -143,8 +143,8 @@ export default async function ChallengesPage() {
                         <dt className="text-[12.5px] font-medium text-ink-3">Window</dt>
                         <dd className="mt-1.5 text-ink-1">{windowOf(c.startsAt, c.endsAt, c.lifecycle, now)}</dd>
                         <dd className="mt-0.5 text-[12.5px] tabular-nums text-ink-3">
-                          {c.startsAt ? dateFmt.format(c.startsAt) : "TBA"}
-                          {c.endsAt ? ` – ${dateFmt.format(c.endsAt)}` : ""}
+                          {c.startsAt ? formatDay(c.startsAt, zone) : "TBA"}
+                          {c.endsAt ? ` – ${formatDay(c.endsAt, zone)}` : ""}
                         </dd>
                       </div>
                       <div className="bg-bg-1 p-4">

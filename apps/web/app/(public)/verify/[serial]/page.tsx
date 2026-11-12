@@ -7,7 +7,7 @@ import { Card, CardContent, CoinMark, PillarBadge, SectionRule } from "@tycoonho
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Verify certificate" };
-const dt = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
+const dt = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", month: "long", day: "numeric", year: "numeric" });
 
 export default async function VerifyCertificate({ params }: { params: Promise<{ serial: string }> }) {
   const { serial } = await params;

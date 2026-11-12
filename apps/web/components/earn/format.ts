@@ -9,7 +9,7 @@ export function inr(cents: number): string {
   return inrFmt.format(cents / 100);
 }
 
-export const dateFmt = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" });
+export const dateFmt = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" });
 
 export const commissionTone = {
   PENDING: "neutral",

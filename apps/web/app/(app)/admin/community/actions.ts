@@ -2,7 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { can, community, CommunityError, discussions, DiscussionError, type ChannelSummary } from "@tycoonhood/core";
+import { can, community, CommunityError, discussions, DiscussionError, type ChannelSummary, formatIst } from "@tycoonhood/core";
 import { getCurrentUser } from "../../../../lib/auth";
 
 export interface AdminState {
@@ -61,7 +61,7 @@ export async function muteAction(_prev: AdminState, fd: FormData): Promise<Admin
     const hours = DURATIONS[key];
     const until = hours === null ? null : new Date(Date.now() + hours * 3600_000);
     await community.mute(v, profile.userId, until, String(fd.get("reason") ?? "").trim() || null);
-    return done(`${profile.displayName} can read but not post${until ? ` until ${until.toUTCString().slice(0, 22)} UTC` : " until you lift it"}.`);
+    return done(`${profile.displayName} can read but not post${until ? ` until ${formatIst(until)}` : " until you lift it"}.`);
   });
 }
 

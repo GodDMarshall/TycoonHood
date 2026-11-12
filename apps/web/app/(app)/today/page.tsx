@@ -9,7 +9,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { community, MAX_OWN_STANDARD_ITEMS, mining, standard } from "@tycoonhood/core";
+import { community, formatDay, formatWeekday, hourIn, MAX_OWN_STANDARD_ITEMS, memberZone, mining, standard } from "@tycoonhood/core";
 import { xpRequiredForLevel } from "@tycoonhood/config";
 import { Icon, buttonStyles, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
@@ -39,44 +39,18 @@ import {
 export const metadata: Metadata = { title: "Today" };
 export const dynamic = "force-dynamic";
 
-function localParts(tz: string | null) {
+/** The greeting, the date and the hour, in the member's zone (memberZone). */
+function localParts(zone: string) {
   const now = new Date();
-  const zone = tz ?? "UTC";
-  let hour = now.getUTCHours();
-  let date = now.toLocaleDateString("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    timeZone: "UTC",
-  });
-  try {
-    hour =
-      Number(
-        new Intl.DateTimeFormat("en-GB", {
-          hour: "numeric",
-          hour12: false,
-          timeZone: zone,
-        }).format(now),
-      ) % 24;
-    date = now.toLocaleDateString("en-GB", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      timeZone: zone,
-    });
-  } catch {
-    // An unknown zone falls back to UTC, as streaks do.
-  }
+  const hour = hourIn(now, zone);
   const greeting = hour < 5 ? "Working late" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  return { greeting, date, hour };
+  return { greeting, date: formatWeekday(now, zone), hour };
 }
-
-const short = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 
 export default async function TodayPage() {
   const user = await requireUser();
   const viewer = { id: user.id, role: user.role };
-  const tz = user.profile?.timezone ?? null;
+  const zone = memberZone(user.profile?.timezone);
 
   const [today, history, streak, next, ranks, steps, announcements, wins, challenges, rig, dash] = await Promise.all([
     standard.today(user.id),
@@ -106,7 +80,7 @@ export default async function TodayPage() {
     loadDashboard(user),
   ]);
 
-  const { greeting, date, hour } = localParts(tz);
+  const { greeting, date, hour } = localParts(zone);
   const first = (user.profile?.displayName ?? user.name ?? "").split(" ")[0];
 
   const [enrolled, lessonsDone, metDaysEver, introduced] = steps;
@@ -321,7 +295,7 @@ export default async function TodayPage() {
           </section>
           <MissionsCard missions={dash.missions} />
 
-          <CommunityActivityCard posts={dash.posts} groupCount={dash.groupCount} />
+          <CommunityActivityCard posts={dash.posts} groupCount={dash.groupCount} zone={zone} />
         </div>
 
         <aside className="flex flex-col gap-8" aria-label="Your record and the house">
@@ -334,13 +308,13 @@ export default async function TodayPage() {
             emblem={rank ? <RankEmblem tier={rankIdx} of={ranks.length} size={52} /> : undefined}
           />
 
-          <NotificationsCard notifications={dash.notifications} unread={dash.unread} />
+          <NotificationsCard notifications={dash.notifications} unread={dash.unread} zone={zone} />
 
           <EarningsCard earnings={dash.earnings} affiliateStatus={dash.affiliateStatus} />
 
           <ReferralsCard referrals={dash.referrals} />
 
-          <OrdersCard orders={dash.orders} />
+          <OrdersCard orders={dash.orders} zone={zone} />
 
           <section aria-labelledby="record">
             <SectionTitle
@@ -402,7 +376,7 @@ export default async function TodayPage() {
                     className="block rounded-lg border border-line bg-bg-1 p-4 hover:border-line-strong"
                   >
                     <p className="text-[12.5px] text-ink-3">
-                      {a.author.name} · {short(a.createdAt)}
+                      {a.author.name} · {formatDay(a.createdAt, zone)}
                     </p>
                     <p className="mt-1 line-clamp-4 whitespace-pre-line text-[14.5px] leading-relaxed text-ink-1">{a.body}</p>
                   </Link>
@@ -433,7 +407,7 @@ export default async function TodayPage() {
                       <span className="min-w-0">
                         <span className="line-clamp-2 text-[14px] text-ink-1">{w.body}</span>
                         <span className="text-[12.5px] text-ink-3">
-                          {w.author.name} · {short(w.createdAt)}
+                          {w.author.name} · {formatDay(w.createdAt, zone)}
                         </span>
                       </span>
                     </Link>

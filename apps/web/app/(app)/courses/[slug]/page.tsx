@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@tycoonhood/db";
-import { learner, lms } from "@tycoonhood/core";
+import { formatDate, learner, lms, memberZone } from "@tycoonhood/core";
 import { Avatar, Badge, Icon, Notice, PILLAR_LABEL, Progress, buttonStyles, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../../lib/guard";
 import { courseDetail, LESSON_TYPE } from "../../../../lib/learning";
@@ -40,7 +40,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
     learner.reviewEligibility(user.id, course.id),
     prisma.courseReview.findUnique({ where: { courseId_userId: { courseId: course.id, userId: user.id } } }),
   ]);
-  const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const zone = memberZone(user.profile?.timezone);
 
   return (
     <Page>
@@ -145,7 +145,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
               </p>
               {certificate ? (
                 <p className="text-[13.5px] text-ink-2">
-                  Issued {fmt.format(certificate.issuedAt)} ·{" "}
+                  Issued {formatDate(certificate.issuedAt, zone)} ·{" "}
                   <Link href={`/certificates/${certificate.serial}`} className="text-gold underline-offset-4 hover:underline">
                     {certificate.serial}
                   </Link>
@@ -302,7 +302,7 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
                         <Avatar name={r.user.profile?.displayName ?? "Member"} src={r.user.profile?.avatarUrl} size={28} />
                         <span className="text-[14px] text-ink-1">{r.user.profile?.displayName ?? "A member"}</span>
                         <Badge tone="gold">{r.rating} / 5</Badge>
-                        <span className="ml-auto text-[12.5px] text-ink-3">{fmt.format(r.updatedAt)}</span>
+                        <span className="ml-auto text-[12.5px] text-ink-3">{formatDate(r.updatedAt, zone)}</span>
                       </div>
                       {r.body && <p className="mt-2 whitespace-pre-line text-[14.5px] leading-relaxed text-ink-2">{r.body}</p>}
                     </Panel>

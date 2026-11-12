@@ -16,7 +16,7 @@ import { cancelPendingAction, refundOrderAction, shipAuditedAction } from "./act
 
 export const metadata: Metadata = { title: "Admin · Orders" };
 export const dynamic = "force-dynamic";
-const dt = new Intl.DateTimeFormat("en-IN", { month: "short", day: "numeric" });
+const dt = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", month: "short", day: "numeric" });
 const tone = { PENDING: "neutral", PAID: "gold", FULFILLED: "success", CANCELLED: "neutral", REFUNDED: "danger" } as const;
 const STATUSES = ["PENDING", "PAID", "FULFILLED", "CANCELLED", "REFUNDED"] as const;
 const PER_PAGE = 20;

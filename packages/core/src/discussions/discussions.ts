@@ -23,6 +23,7 @@ import { isStaff } from "../auth/permissions";
 import { clip } from "../text/clip";
 import { AuditService } from "../platform/audit";
 import { notify } from "../platform/notify";
+import { formatIst } from "../time/ist";
 
 // ─────────────────────────────── limits
 
@@ -492,7 +493,7 @@ export class DiscussionService {
     if (m && (!m.until || m.until > now)) {
       throw new DiscussionError(
         m.until
-          ? `You can read but not post until ${m.until.toUTCString().slice(0, 22)} UTC.`
+          ? `You can read but not post until ${formatIst(m.until)}.`
           : "You can read but not post. Contact staff if you think this is a mistake."
       );
     }

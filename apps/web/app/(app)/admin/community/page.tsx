@@ -21,7 +21,7 @@ export const metadata: Metadata = { title: "Admin · Community" };
 export const dynamic = "force-dynamic";
 
 const KIND = { CHAT: "Discussion", ANNOUNCEMENTS: "Announcements", WINS: "Wins", QUESTIONS: "Questions" } as const;
-const ago = (d: Date) => d.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const ago = (d: Date) => d.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 export default async function AdminCommunity() {
   const user = await requirePermission("community.moderate");

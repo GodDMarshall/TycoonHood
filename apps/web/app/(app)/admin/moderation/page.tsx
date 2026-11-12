@@ -15,7 +15,7 @@ const STATUSES = [
   ["DISMISSED", "Dismissed"],
 ] as const;
 type Status = (typeof STATUSES)[number][0];
-const at = (d: Date) => d.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const at = (d: Date) => d.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 export default async function ModerationPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const user = await requirePermission("community.moderate");

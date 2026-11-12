@@ -18,7 +18,7 @@ import {
 export const metadata: Metadata = { title: "Admin · Site & CMS" };
 export const dynamic = "force-dynamic";
 
-const dt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+const dt = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 const check = "accent-[var(--color-gold)]";
 

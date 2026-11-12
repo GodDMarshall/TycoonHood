@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Admin · Members" };
 export const dynamic = "force-dynamic";
 
 const PER_PAGE = 25;
-const dt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
+const dt = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" });
 
 export default async function AdminMembers({
   searchParams,

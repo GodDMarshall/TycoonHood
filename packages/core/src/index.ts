@@ -57,6 +57,20 @@ export type { DiscordInteraction, DiscordResponse } from "./integrations/discord
 // --- Phase 1: the spine (spec §14, §17, §19) ---
 export { localDayKey, localDayKeyOffset, isSameLocalDay, dayKeyToDate, localWeekStartKey } from "./time/day";
 export { IST_TIME_ZONE, parseIstDateTime, formatIst } from "./time/ist";
+export {
+  memberZone,
+  formatDay,
+  formatDate,
+  formatLongDate,
+  formatWeekday,
+  formatMonthYear,
+  formatTime,
+  formatDayTime,
+  formatDateTime,
+  formatRelative,
+  hourIn,
+} from "./time/format";
+export type { DateInput } from "./time/format";
 export { clip, sliceWhole } from "./text/clip";
 export { DOMAIN_EVENTS, isDomainEventType } from "./events/types";
 export type { DomainEvent, DomainEventType } from "./events/types";

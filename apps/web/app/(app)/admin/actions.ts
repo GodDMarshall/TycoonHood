@@ -12,6 +12,7 @@ import {
   commerce,
   manualSettlement,
   ManualSettlementError,
+  sliceWhole,
 } from "@tycoonhood/core";
 import { getCurrentUser } from "../../../lib/auth";
 import { actorWith } from "../../../lib/guard";
@@ -34,7 +35,7 @@ export interface AdminActionState {
 export async function grantThcAction(userId: string, _p: AdminActionState, fd: FormData): Promise<AdminActionState> {
   const admin = await requireAdmin();
   const amount = BigInt(String(fd.get("amount") ?? "0"));
-  const memo = String(fd.get("memo") ?? "").slice(0, 200) || "Admin grant";
+  const memo = sliceWhole(String(fd.get("memo") ?? ""), 0, 200) || "Admin grant";
   if (amount <= 0n) return { error: "Amount must be positive." };
   await ledger.reward({
     userId,
@@ -138,10 +139,7 @@ export async function savePostAction(postId: string | null, _p: AdminActionState
     slug,
     excerpt:
       excerpt ||
-      contentMd
-        .replace(/[#*_>`]/g, "")
-        .slice(0, 140)
-        .trim(),
+      sliceWhole(contentMd.replace(/[#*_>`]/g, ""), 0, 140).trim(),
     contentMd,
     publishedAt: publish ? new Date() : null,
     authorName: admin.profile?.displayName ?? admin.name ?? "Tycoonhood",

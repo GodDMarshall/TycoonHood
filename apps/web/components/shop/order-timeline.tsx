@@ -1,5 +1,5 @@
 import type { TimelineStep } from "@tycoonhood/core";
-import { dateTime } from "./format";
+import { formatDayTime } from "@tycoonhood/core/src/time/format";
 
 const dot: Record<TimelineStep["state"], string> = {
   done: "border-gold bg-gold",
@@ -8,8 +8,8 @@ const dot: Record<TimelineStep["state"], string> = {
   stopped: "border-danger bg-danger/30",
 };
 
-/** The order's history as recorded facts, oldest first. */
-export function OrderTimeline({ steps }: { steps: TimelineStep[] }) {
+/** The order's history as recorded facts, oldest first, in the member's zone (memberZone). */
+export function OrderTimeline({ steps, zone }: { steps: TimelineStep[]; zone: string }) {
   return (
     <ol className="flex flex-col" aria-label="Order status">
       {steps.map((s, i) => (
@@ -20,7 +20,7 @@ export function OrderTimeline({ steps }: { steps: TimelineStep[] }) {
             <p className={`text-[14px] ${s.state === "upcoming" ? "text-ink-3" : "text-ink-1"}`}>
               {s.label}
               <span className="sr-only"> — {s.state}</span>
-              {s.at && <span className="figures ml-2 text-[12px] text-ink-3">{dateTime.format(s.at)}</span>}
+              {s.at && <span className="figures ml-2 text-[12px] text-ink-3">{formatDayTime(s.at, zone)}</span>}
             </p>
             {s.detail && <p className="mt-0.5 text-[12.5px] text-ink-2">{s.detail}</p>}
           </div>

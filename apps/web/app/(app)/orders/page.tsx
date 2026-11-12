@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@tycoonhood/db";
-import { isTestOrder, opensLibrary } from "@tycoonhood/core";
+import { formatDate, isTestOrder, memberZone, opensLibrary } from "@tycoonhood/core";
 import { Badge, EmptyState, Icon, ThcAmount, buttonStyles } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
 import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/page";
-import { money, orderRef, shortDate } from "../../../components/shop/format";
+import { money, orderRef } from "../../../components/shop/format";
 
 export const metadata: Metadata = { title: "Orders" };
 export const dynamic = "force-dynamic";
@@ -14,6 +14,7 @@ const statusLabel = { PENDING: "Awaiting payment", PAID: "Paid", FULFILLED: "Ful
 
 export default async function OrdersPage() {
   const user = await requireUser();
+  const zone = memberZone(user.profile?.timezone);
   const orders = await prisma.order.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
@@ -67,7 +68,7 @@ export default async function OrdersPage() {
                       {o.items.map((i) => `${i.qty > 1 ? `${i.qty}× ` : ""}${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""}`).join(", ")}
                     </p>
                     <p className="figures text-[12px] text-ink-3">
-                      #{orderRef(o.id)} · {shortDate.format(o.createdAt)} · {o.ledgerTxId ? "THC" : o.paymentProvider ?? "THC"}
+                      #{orderRef(o.id)} · {formatDate(o.createdAt, zone)} · {o.ledgerTxId ? "THC" : o.paymentProvider ?? "THC"}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">

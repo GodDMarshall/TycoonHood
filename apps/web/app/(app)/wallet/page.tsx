@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Page, PageHeader } from "../../../components/app/page";
 import { requireUser } from "../../../lib/guard";
-import { LedgerService } from "@tycoonhood/core";
+import { LedgerService, formatDayTime, memberZone } from "@tycoonhood/core";
 import { prisma } from "@tycoonhood/db";
 import { Card, CardContent, Icon, SectionRule, Stat, ThcAmount } from "@tycoonhood/ui";
 import { getCurrentUser } from "../../../lib/auth";
@@ -9,7 +9,6 @@ import { getCurrentUser } from "../../../lib/auth";
 export const metadata: Metadata = { title: "Wallet" };
 export const dynamic = "force-dynamic";
 const ledger = new LedgerService(prisma);
-const dt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
 const reasonLabel: Record<string, string> = {
   REWARD_MISSION: "Mission reward",
@@ -26,6 +25,7 @@ const reasonLabel: Record<string, string> = {
 export default async function WalletPage() {
   await requireUser();
   const user = (await getCurrentUser())!;
+  const zone = memberZone(user.profile?.timezone);
   const { account, entries } = await ledger.history(user.id, 100);
   const audit = await ledger.auditAccount(account.id);
 
@@ -70,7 +70,7 @@ export default async function WalletPage() {
                     {reasonLabel[e.transaction.reason] ?? e.transaction.reason}
                     {e.transaction.memo ? ` — ${e.transaction.memo}` : ""}
                   </span>
-                  <span className="figures block text-[11px] text-ink-3">{dt.format(e.transaction.createdAt)}</span>
+                  <span className="figures block text-[11px] text-ink-3">{formatDayTime(e.transaction.createdAt, zone)}</span>
                 </span>
                 <ThcAmount amount={e.amount} signed={e.amount > 0n} size="sm" />
               </div>

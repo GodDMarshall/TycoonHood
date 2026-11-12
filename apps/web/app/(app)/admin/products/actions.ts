@@ -1,7 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@tycoonhood/db";
-import { audit, catalog, CatalogError, isShopCategory, reviewProduct, PRODUCT_KINDS, type ProductInput, type VariantInput } from "@tycoonhood/core";
+import { audit, catalog, CatalogError, isShopCategory, reviewProduct, PRODUCT_KINDS, type ProductInput, type VariantInput, sliceWhole } from "@tycoonhood/core";
 import { actorWith } from "../../../../lib/guard";
 
 export interface ProductFormState {
@@ -156,7 +156,7 @@ export async function restockAction(_prev: ProductFormState, fd: FormData): Prom
 export async function setShopFieldsAction(productId: string, _prev: { ok?: string; error?: string }, fd: FormData): Promise<{ ok?: string; error?: string }> {
   const admin = await actorWith("admin.commerce");
   const category = str(fd.get("category"));
-  const sellerName = str(fd.get("sellerName")).slice(0, 80);
+  const sellerName = sliceWhole(str(fd.get("sellerName")), 0, 80);
   if (category && !isShopCategory(category)) return { error: "Pick a category from the list." };
   const p = await prisma.product.update({
     where: { id: productId },

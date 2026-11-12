@@ -5,7 +5,7 @@
  */
 import type { Metadata } from "next";
 import { prisma } from "@tycoonhood/db";
-import { countEvidence, countsStandardDays, describeCriteria, localDayKey, repeatBucket, requiredFor, tryParseCriteria } from "@tycoonhood/core";
+import { countEvidence, countsStandardDays, describeCriteria, formatDate, formatDay, localDayKey, memberZone, repeatBucket, requiredFor, tryParseCriteria } from "@tycoonhood/core";
 import { xpRequiredForLevel } from "@tycoonhood/config";
 import { Badge, EmptyState, Icon, Progress, cn } from "@tycoonhood/ui";
 import { requireUser } from "../../../lib/guard";
@@ -14,8 +14,6 @@ import { Page, PageHeader, Panel, SectionTitle } from "../../../components/app/p
 export const metadata: Metadata = { title: "Achievements" };
 export const dynamic = "force-dynamic";
 
-const date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
-const short = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const SOURCE: Record<string, string> = {
@@ -36,6 +34,7 @@ export default async function AchievementsPage() {
   const user = await requireUser();
   const now = new Date();
   const tz = user.profile?.timezone ?? null;
+  const zone = memberZone(tz);
 
   const [all, unlocked, xpEvents, ranks, missions, me] = await Promise.all([
     prisma.achievement.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
@@ -159,7 +158,7 @@ export default async function AchievementsPage() {
                     <div className="min-w-0">
                       <p className="text-[14.5px] font-semibold text-ink-1">{a.name}</p>
                       <p className="text-[13px] leading-relaxed text-ink-2">{a.description}</p>
-                      <p className="mt-1 text-[12.5px] text-ink-3">Earned {date.format(got.get(a.id)!)}</p>
+                      <p className="mt-1 text-[12.5px] text-ink-3">Earned {formatDate(got.get(a.id)!, zone)}</p>
                     </div>
                   </li>
                 ))}
@@ -229,7 +228,7 @@ export default async function AchievementsPage() {
                   <li key={e.id} className="flex items-baseline justify-between gap-3 px-4 py-2.5">
                     <span className="min-w-0">
                       <span className="block truncate text-[13.5px] text-ink-1">{e.note ?? SOURCE[e.source] ?? e.source}</span>
-                      <span className="block text-[12px] text-ink-3">{short.format(e.createdAt)}</span>
+                      <span className="block text-[12px] text-ink-3">{formatDay(e.createdAt, zone)}</span>
                     </span>
                     <span className="shrink-0 text-[13.5px] tabular-nums text-gold">+{e.amount}</span>
                   </li>
