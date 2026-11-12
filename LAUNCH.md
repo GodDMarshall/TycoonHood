@@ -50,6 +50,9 @@ and nothing goes live. Never paste the password into a chat or a commit.
 Type the address in any case you like. It is stored the way sign-in reads it,
 trimmed and in lower case.
 
+`ADMIN_EMAIL` only makes the first admin. Changing it later creates no second
+admin while you can sign in: add admins in `/admin/members` instead.
+
 After launch you can delete `ADMIN_PASSWORD` from Vercel. The seed only sets
 the password when it creates the account, so a later deploy never resets it.
 

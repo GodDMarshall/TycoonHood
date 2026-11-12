@@ -5,8 +5,9 @@
  * Safe to re-run on a live database (DR-33): it adds what is missing and
  * refreshes what only the seed owns (levels, ranks, achievements). It never
  * rewrites what staff change in the admin: course details, missions, roles
- * and passwords. The genesis mint posts exactly once via its ledger
- * idempotency key.
+ * and passwords. ADMIN_EMAIL makes the first admin: once an admin can sign
+ * in, the seed makes no other. The genesis mint posts exactly once via its
+ * ledger idempotency key.
  */
 
 import { prisma, type Prisma } from "./client.js";
@@ -79,6 +80,27 @@ async function seedAdmin() {
     return existing;
   }
 
+  // No account has the address. ADMIN_EMAIL makes the first admin, and only
+  // that: while an admin can sign in, a new or mistyped address makes no
+  // other, or every seeding run would mint a full admin, with ADMIN_PASSWORD,
+  // for whoever holds that mailbox. Staff add admins in /admin/members.
+  if (await someAdminCanSignIn()) {
+    console.log(
+      `── No account has ${email}, and an admin can already sign in, so no admin was made. ` +
+        "ADMIN_EMAIL only makes the first admin. Add others in /admin/members."
+    );
+    return null;
+  }
+  // Nor at an address held for an account that changed away from it: that
+  // account's undo link puts the address back, and would then find it taken.
+  if (await isHeld(email)) {
+    throw new Error(
+      `Refusing to seed: ${email} is held for the account that changed away from it in the last 7 days, ` +
+        "so its owner can undo that change. No admin can sign in. Set ADMIN_EMAIL to the address of the " +
+        "account to make admin, or to a new address."
+    );
+  }
+
   const username = await freeUsername("admin");
   const admin = await prisma.user.create({
     data: {
@@ -106,7 +128,8 @@ async function seedAdmin() {
  * given, so " Owner@Example.com" made an admin no sign-in could match. Such a
  * row is found by its normalised address and repaired in place. Sign-up and
  * email changes always store addresses normalised, so a row like that can
- * only be one a seed made.
+ * only be one a seed made. It is not repaired onto an address held for
+ * another account: that would take the address the hold keeps for it.
  */
 async function findAdminAccount(email: string) {
   const exact = await prisma.user.findUnique({ where: { email } });
@@ -118,7 +141,7 @@ async function findAdminAccount(email: string) {
   const legacy = near
     .filter((u) => normaliseEmail(u.email) === email)
     .sort((a, b) => Number(b.role === "ADMIN") - Number(a.role === "ADMIN"))[0];
-  if (!legacy) return null;
+  if (!legacy || (await isHeld(email))) return null;
   console.log(`── Admin address "${legacy.email}" stored as "${email}", so it can sign in.`);
   return prisma.user.update({ where: { id: legacy.id }, data: { email } });
 }
@@ -130,6 +153,15 @@ async function someAdminCanSignIn() {
     select: { email: true },
   });
   return admins.some((a) => a.email === normaliseEmail(a.email));
+}
+
+/**
+ * Whether the address is held for an account that changed away from it in the
+ * last 7 days (packages/core/src/platform/email-hold.ts). Sign-up and email
+ * changes refuse a held address; so does the seed.
+ */
+async function isHeld(email: string) {
+  return (await prisma.emailHold.count({ where: { address: email, expires: { gt: new Date() } } })) > 0;
 }
 
 /** "admin", or "admin_2", "admin_3"… when another account has it: usernames are unique. */
