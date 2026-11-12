@@ -371,7 +371,7 @@ The other 15 new events, PROJECT_PUBLISHED among them, keep the workstreams plan
 
 **What is blocked on you or on someone else.** Section 8 lists 20 items. Among them: the Razorpay live keys, email sending, the domain, legal review of the new terms, real mentors, instructors and partners, photos, and a frequent scheduler for reminders. For each one, the plan says what ships meanwhile and how the affected requirements are reported.
 
-**How long it takes.** About 125 hours of continuous running, a little over five days. The work runs round the clock from 12 November 12:00 UTC, so the site is ready for the owner's check around Tuesday 17 November. The range is about 100 to 160 hours, 16 to 19 November (section 9). On 12 November the owner asked for more agents at the same quality; that brought the date in from about 145 hours (Wednesday 18 November).
+**How long it takes.** About 125 hours of continuous running, a little over five days. The work runs round the clock from 12 November 12:00 UTC, so the site is ready for the owner's check around Tuesday 17 November. The range is about 90 to 160 hours, 16 to 19 November (section 9). On 12 November the owner asked for more agents at the same quality; that brought the date in from about 145 hours (Wednesday 18 November).
 
 **What "done" means.** Every line of §21 has journeys that prove it on the final code (section 6.3). The end-of-build report in TYCOONHOOD_STATE.md classifies every feature and all 451 requirements honestly (section 10).
 
@@ -406,7 +406,7 @@ The rest of this section is the engineering plan:
   - 3 requirements are BLOCKED because no exact red or runtime WebGL lattice exists in the repo (DR-1, DR-24).
   - 7 belong to INT: four cross-section touchpoints whose screens other streams build, plus "no 3D world required", "journeys tested" and the report format.
 - **Machine.** 4 CPUs and 15 GB of RAM, one PostgreSQL 16.15 server (max_connections 300). One workflow per unit with two agents at a time, up to 8 units in flight, and the heavy commands (typecheck, lint, the full vitest suite, `next dev`, `build:web`) behind a 3-permit semaphore (section W1.3).
-- **Timeline:** about 100 to 160 wall-clock hours. Plan on about 125 hours of continuous running from 12 November 12:00 UTC: ready for the owner's check around Tuesday 17 November. Section 9 gives the assumptions, the schedule and the 12 November revision.
+- **Timeline:** about 90 to 160 wall-clock hours. Plan on about 125 hours of continuous running from 12 November 12:00 UTC: ready for the owner's check around Tuesday 17 November. Section 9 gives the assumptions, the schedule and the 12 November revision.
 
 ### W1. Phases, order and ownership rules
 
@@ -3531,7 +3531,7 @@ The critical path runs P0 → the P1 units → BOOK and LEARN → MONEY and the 
 
 **Effect of the slot count** (midpoint, before INT and the allowance): with 3 implementing slots the last unit merges at 132.5 hours (about 23 hours later); with 5 at 95.5; with 6 at 88.8. The table above is the 4-slot simulation the plan first used, which gave about 145 hours (Wednesday 18 November).
 
-**Revised 12 November, 15:20 UTC.** The owner asked for more agents at the same quality. From P0 wave 2 on, up to 8 units are in flight at once (W1.3). Memory does not stop this, because `next dev` runs only briefly, for design reviews, inside the 3-permit semaphore, rather than once per unit throughout. Dependencies, not slots, then limit the schedule, so the 6-slot result is the closest figure the simulation gives: the last unit merges at about 89 hours, INT ends at about 112, and with the allowance **plan on about 125 hours** of continuous running. The site is ready for the owner's check around **Tuesday 17 November**; the range is about 100 to 160 hours (16 to 19 November). Each unit's extra review steps (spec fidelity, design and the re-check) are expected to fit inside the per-unit review allowance of 9.1. Any time the work stops moves the date by the same amount.
+**Revised 12 November, 15:20 UTC.** The owner asked for more agents at the same quality. From P0 wave 2 on, up to 8 units are in flight at once (W1.3). Memory does not stop this, because `next dev` runs only briefly, for design reviews, inside the 3-permit semaphore, rather than once per unit throughout. Re-run with 8 slots, the simulation's midpoint has the last unit merging at 82.0 hours and INT ending at 105.0, about 116 hours with the allowance. But eight units share 4 CPUs and 3 heavy-command permits, so each runs slower than its estimate assumes, and the plan works to the 6-slot figures instead: the last unit merges at 88.8 hours, INT ends at 111.8, and with the allowance **plan on about 125 hours** of continuous running. The site is ready for the owner's check around **Tuesday 17 November**; the range is about 90 to 160 hours (16 to 19 November), from the 8-slot low case (89) to the 6-slot high case (153) plus contention. Each unit's extra review steps (spec fidelity, design and the re-check) are expected to fit inside the per-unit review allowance of 9.1. Any time the work stops moves the date by the same amount.
 
 ---
 
