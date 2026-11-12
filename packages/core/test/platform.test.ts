@@ -572,8 +572,19 @@ function beforeFirstTransaction(meanwhile: () => Promise<unknown>): Client {
   });
 }
 
+/**
+ * The request a test paused: the database backend its transaction runs on.
+ * untilBlockedOnLock looks only for a statement this backend blocks.
+ */
+type Paused = { pid: number };
+
+async function pausedAt(tx: Prisma.TransactionClient): Promise<Paused> {
+  const [{ pid }] = await tx.$queryRaw<{ pid: number }[]>`SELECT pg_backend_pid() AS pid`;
+  return { pid };
+}
+
 /** `meanwhile` runs inside the request's first transaction, just before it first writes the member's row. */
-function beforeFirstUserWrite(meanwhile: () => Promise<unknown>): Client {
+function beforeFirstUserWrite(meanwhile: (paused: Paused) => Promise<unknown>): Client {
   let armed = true;
   return new Proxy(prisma, {
     get(target, prop) {
@@ -586,7 +597,7 @@ function beforeFirstUserWrite(meanwhile: () => Promise<unknown>): Client {
               if (p !== "update" || !armed || typeof value !== "function") return bound(delegate, value);
               armed = false;
               return async (...args: unknown[]) => {
-                await meanwhile();
+                await meanwhile(await pausedAt(tx));
                 return Reflect.apply(value, delegate, args);
               };
             },
@@ -601,7 +612,12 @@ function beforeFirstUserWrite(meanwhile: () => Promise<unknown>): Client {
  * `meanwhile` runs inside the request's first transaction, at its first call of
  * `tx[model][method]`: just before it, or just after it returns.
  */
-function atFirstCall(model: string, method: string, when: "before" | "after", meanwhile: () => Promise<unknown>): Client {
+function atFirstCall(
+  model: string,
+  method: string,
+  when: "before" | "after",
+  meanwhile: (paused: Paused) => Promise<unknown>
+): Client {
   let armed = true;
   return new Proxy(prisma, {
     get(target, prop) {
@@ -614,9 +630,9 @@ function atFirstCall(model: string, method: string, when: "before" | "after", me
               if (p !== method || !armed || typeof value !== "function") return bound(d, value);
               armed = false;
               return async (...args: unknown[]) => {
-                if (when === "before") await meanwhile();
+                if (when === "before") await meanwhile(await pausedAt(tx));
                 const result: unknown = await Reflect.apply(value, d, args);
-                if (when === "after") await meanwhile();
+                if (when === "after") await meanwhile(await pausedAt(tx));
                 return result;
               };
             },
@@ -628,13 +644,16 @@ function atFirstCall(model: string, method: string, when: "before" | "after", me
 }
 
 /**
- * Wait until a statement in this database is blocked on a lock, or `finished()` says the other request is done.
+ * Wait until a statement is blocked on a lock the paused request holds, or `finished()` says the other request is done.
  * Returns what it waits for: "advisory" for an account's lock (lockEmailOf), "transactionid" or "tuple" for a row.
+ * Only a statement the paused request blocks counts: a lock wait anywhere else in the database (another test run,
+ * a dev server) is never taken for the request the test started.
  */
-async function untilBlockedOnLock(finished: () => boolean): Promise<string | null> {
+async function untilBlockedOnLock(paused: Paused, finished: () => boolean): Promise<string | null> {
   for (let i = 0; i < 150 && !finished(); i++) {
     const [waiting] = await prisma.$queryRaw<{ event: string }[]>`
-      SELECT wait_event AS event FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock' LIMIT 1`;
+      SELECT wait_event AS event FROM pg_stat_activity
+      WHERE wait_event_type = 'Lock' AND ${paused.pid}::int = ANY(pg_blocking_pids(pid)) LIMIT 1`;
     if (waiting) return waiting.event;
     await new Promise((r) => setTimeout(r, 20));
   }
@@ -652,6 +671,74 @@ function started<T>(work: Promise<T>): Started<T> {
   );
   return run;
 }
+
+/**
+ * A lock wait that has nothing to do with the test: two connections of their
+ * own, one holding a lock and the other waiting for it, as another test run, a
+ * dev server or someone using the database could make. Returns once the wait
+ * has begun; call what it returns to let them both go.
+ */
+async function lockWaitElsewhere(): Promise<() => Promise<void>> {
+  const key = `elsewhere:${uid()}`;
+  let release!: () => void;
+  const released = new Promise<void>((r) => (release = r));
+  let holding!: () => void;
+  const held = new Promise<void>((r) => (holding = r));
+  const holder = prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${key}))`;
+    holding();
+    await released;
+  });
+  await held;
+  const waiter = prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${key}))`;
+  });
+  for (let i = 0; i < 150; i++) {
+    const [{ n }] = await prisma.$queryRaw<{ n: number }[]>`
+      SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock'`;
+    if (n > 0) break;
+    await new Promise((r) => setTimeout(r, 10));
+  }
+  return async () => {
+    release();
+    await Promise.all([holder, waiter]);
+  };
+}
+
+describe("The race helpers", () => {
+  it("never take a lock wait elsewhere in the database for the request a test started", async () => {
+    const letGo = await lockWaitElsewhere();
+    try {
+      await prisma.$transaction(async (tx) => {
+        const paused = await pausedAt(tx);
+        // A request that takes a moment and waits on no lock at all.
+        const run = started(prisma.$executeRaw`SELECT pg_sleep(0.3)`);
+        expect(await untilBlockedOnLock(paused, () => run.finished)).toBeNull();
+        await run.promise;
+      });
+    } finally {
+      await letGo();
+    }
+  });
+
+  it("see the request a test started once it waits on a lock the paused request holds", async () => {
+    const key = `paused:${uid()}`;
+    const letGo = await lockWaitElsewhere();
+    let run: Started<unknown> | undefined;
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${key}))`;
+        const paused = await pausedAt(tx);
+        run = started(prisma.$transaction((t) => t.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${key}))`));
+        expect(await untilBlockedOnLock(paused, () => run!.finished)).toBe("advisory");
+        expect(run.finished).toBe(false);
+      });
+      await run!.promise;
+    } finally {
+      await letGo();
+    }
+  });
+});
 
 const NEW_PASSWORD = "owners new password";
 const newPasswordBy: [string, EmailChangeCancelReason, (userId: string, email: string) => Promise<unknown>][] = [
@@ -678,13 +765,13 @@ describe("Email change racing a new password", () => {
     let newPassword: Promise<unknown> | undefined;
     let finished = false;
     const racing = new AccountSettingsService(
-      beforeFirstUserWrite(async () => {
+      beforeFirstUserWrite(async (paused) => {
         newPassword = setNewPassword(user.id, email);
         newPassword.then(
           () => (finished = true),
           () => (finished = true)
         );
-        await untilBlockedOnLock(() => finished);
+        await untilBlockedOnLock(paused, () => finished);
         expect(finished).toBe(false); // it waits for the lock this request holds
       })
     );
@@ -713,9 +800,9 @@ describe("Resending a change link while the change moves", () => {
     let waitedOn: string | null = null;
     const racing = new EmailVerificationService(
       // The resend has read the waiting address and is about to replace the link.
-      atFirstCall("verificationToken", "deleteMany", "before", async () => {
+      atFirstCall("verificationToken", "deleteMany", "before", async (paused) => {
         requesting = started(accountSettings.changeEmail(user.id, second, PASSWORD));
-        waitedOn = await untilBlockedOnLock(() => requesting!.finished);
+        waitedOn = await untilBlockedOnLock(paused, () => requesting!.finished);
       })
     );
     const resent = await racing.resendEmailChange(user.id);
@@ -739,9 +826,9 @@ describe("Resending a change link while the change moves", () => {
     let waitedOn: string | null = null;
     const racing = new EmailVerificationService(
       // The change's link is spent and the account is about to be written.
-      beforeFirstUserWrite(async () => {
+      beforeFirstUserWrite(async (paused) => {
         resending = started(verification.resendEmailChange(user.id));
-        waitedOn = await untilBlockedOnLock(() => resending!.finished);
+        waitedOn = await untilBlockedOnLock(paused, () => resending!.finished);
       })
     );
     await end(racing, user.id, change!.rawToken);
@@ -1147,13 +1234,13 @@ describe("Undo racing another change", () => {
     let confirming: Promise<unknown> | undefined;
     let finished = false;
     const racing = new EmailUndoService(
-      beforeFirstUserWrite(async () => {
+      beforeFirstUserWrite(async (paused) => {
         confirming = verification.confirm(change!.rawToken);
         confirming.then(
           () => (finished = true),
           () => (finished = true)
         );
-        await untilBlockedOnLock(() => finished);
+        await untilBlockedOnLock(paused, () => finished);
         expect(finished).toBe(false); // it waits for the lock the undo holds
       })
     );
@@ -1172,13 +1259,13 @@ describe("Undo racing another change", () => {
     let undoing: Promise<unknown> | undefined;
     let finished = false;
     const racing = new EmailVerificationService(
-      beforeFirstUserWrite(async () => {
+      beforeFirstUserWrite(async (paused) => {
         undoing = undos.undo(undo.rawToken);
         undoing.then(
           () => (finished = true),
           () => (finished = true)
         );
-        await untilBlockedOnLock(() => finished);
+        await untilBlockedOnLock(paused, () => finished);
         expect(finished).toBe(false); // it waits for the lock the confirmation holds
       })
     );
@@ -1221,9 +1308,9 @@ describe("Reset requests", () => {
     let requesting: Started<ResetRequest> | undefined;
     const racing = new EmailUndoService(
       // The undo has deleted the account's links and has not committed yet.
-      atFirstCall("verificationToken", "deleteMany", "after", async () => {
+      atFirstCall("verificationToken", "deleteMany", "after", async (paused) => {
         requesting = started(resets.requestReset(newEmail));
-        await untilBlockedOnLock(() => requesting!.finished);
+        await untilBlockedOnLock(paused, () => requesting!.finished);
       })
     );
     const done = await racing.undo(undo.rawToken);
@@ -1239,9 +1326,9 @@ describe("Reset requests", () => {
     let requesting: Started<ResetRequest> | undefined;
     const racing = new EmailVerificationService(
       // The change has deleted the old address's links and has not committed yet.
-      atFirstCall("session", "deleteMany", "before", async () => {
+      atFirstCall("session", "deleteMany", "before", async (paused) => {
         requesting = started(resets.requestReset(email));
-        await untilBlockedOnLock(() => requesting!.finished);
+        await untilBlockedOnLock(paused, () => requesting!.finished);
       })
     );
     await racing.confirm(change!.rawToken);
@@ -1294,9 +1381,9 @@ describe("Account flows wait for each other instead of deadlocking", () => {
     let waitedOn: string | null = null;
     const racing = new PasswordResetService(
       // The reset has spent its link and is about to write the password.
-      atFirstCall("verificationToken", "deleteMany", "after", async () => {
+      atFirstCall("verificationToken", "deleteMany", "after", async (paused) => {
         undoing = started(undos.undo(undo.rawToken));
-        waitedOn = await untilBlockedOnLock(() => undoing!.finished);
+        waitedOn = await untilBlockedOnLock(paused, () => undoing!.finished);
         expect(undoing.finished).toBe(false);
       })
     );
@@ -1325,9 +1412,9 @@ describe("Account flows wait for each other instead of deadlocking", () => {
     const { issued } = await resets.requestReset(email);
     let confirming: Started<unknown> | undefined;
     let waitedOn: string | null = null;
-    const racing = atFirstCall("verificationToken", "deleteMany", "after", async () => {
+    const racing = atFirstCall("verificationToken", "deleteMany", "after", async (paused) => {
       confirming = started(verification.confirm(change!.rawToken));
-      waitedOn = await untilBlockedOnLock(() => confirming!.finished);
+      waitedOn = await untilBlockedOnLock(paused, () => confirming!.finished);
       expect(confirming.finished).toBe(false);
     });
     await setNewPassword(racing, user.id, issued!.rawToken);
@@ -1348,9 +1435,9 @@ describe("Account flows wait for each other instead of deadlocking", () => {
     let resetting: Started<unknown> | undefined;
     let waitedOn: string | null = null;
     const racing = new EmailVerificationService(
-      beforeFirstUserWrite(async () => {
+      beforeFirstUserWrite(async (paused) => {
         resetting = started(resets.resetPassword(issued!.rawToken, NEW_PASSWORD));
-        waitedOn = await untilBlockedOnLock(() => resetting!.finished);
+        waitedOn = await untilBlockedOnLock(paused, () => resetting!.finished);
         expect(resetting.finished).toBe(false);
       })
     );
@@ -1375,9 +1462,9 @@ describe("Races the locks decide", () => {
     let waitedOn: string | null = null;
     const racing = new EmailVerificationService(
       // The confirmation holds the account's lock and is about to move the account.
-      beforeFirstUserWrite(async () => {
+      beforeFirstUserWrite(async (paused) => {
         asking = started(accountSettings.changeEmail(user.id, address("second"), PASSWORD));
-        waitedOn = await untilBlockedOnLock(() => asking!.finished);
+        waitedOn = await untilBlockedOnLock(paused, () => asking!.finished);
       })
     );
     const done = await racing.confirm(first!.rawToken);
@@ -1397,9 +1484,9 @@ describe("Races the locks decide", () => {
     let waitedOn: string | null = null;
     const racing = new EmailVerificationService(
       // The account is off the old address, and the hold on it is not written yet.
-      atFirstCall("session", "deleteMany", "before", async () => {
+      atFirstCall("session", "deleteMany", "before", async (paused) => {
         registering = started(accounts.register({ email: oldEmail, ...SQUATTER }));
-        waitedOn = await untilBlockedOnLock(() => registering!.finished);
+        waitedOn = await untilBlockedOnLock(paused, () => registering!.finished);
       })
     );
     const done = await racing.confirm(change!.rawToken);
@@ -1481,9 +1568,9 @@ describe("Races the locks decide", () => {
     let waitedOn: string | null = null;
     const signingIn = new AccountService(
       // The sign-in has read the password (FOR SHARE) and is about to open its session.
-      atFirstCall("session", "create", "before", async () => {
+      atFirstCall("session", "create", "before", async (paused) => {
         securing = started(secure());
-        waitedOn = await untilBlockedOnLock(() => securing!.finished);
+        waitedOn = await untilBlockedOnLock(paused, () => securing!.finished);
       })
     );
     const { raw } = await signingIn.signIn({ email, password: PASSWORD });
