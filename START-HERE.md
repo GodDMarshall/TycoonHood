@@ -90,7 +90,10 @@ pnpm deploy:db
 ```
 
 Use Neon's direct connection string, the one without `-pooler` in its
-address: migrations hold a lock that a pooled connection cannot keep.
+address: migrations hold a lock that a pooled connection cannot keep. If
+`DATABASE_URL_UNPOOLED` is also set in that window, it must be the same
+database: `deploy:db` names the database it will use, and stops if the two
+differ.
 
 That prepares the production database and verifies it. The Vercel import is
 two clicks in their dashboard — see `docs/RUNBOOK.md`.

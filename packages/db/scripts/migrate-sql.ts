@@ -30,11 +30,19 @@
  * DATABASE_URL, and refuses Neon's pooled address. scripts/with-db-lock.mjs,
  * which holds the deploy lock around a build's whole migrate-and-seed step,
  * follows the same rules.
+ *
+ * It picks that address with ./db-target.mjs, as the deploy lock does, and
+ * says which variable it used. When DATABASE_URL and DATABASE_URL_UNPOOLED
+ * name different databases it refuses, rather than migrate one while the
+ * seeds, which read DATABASE_URL, fill the other. dotenv never replaces a
+ * variable already set, so a shell's DATABASE_URL beside a .env holding
+ * DATABASE_URL_UNPOOLED did exactly that (review finding 19, follow-up).
  */
 import { createHash, randomUUID } from "node:crypto";
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { Client } from "pg";
+import { databaseTarget, isPooled, redacted, type DatabaseTarget } from "./db-target.mjs";
 
 const statusOnly = process.argv.includes("--status");
 
@@ -53,15 +61,17 @@ if (!process.env.DATABASE_URL && !process.env.DATABASE_URL_UNPOOLED) {
     }
   }
 }
-const url: string = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL || "";
-if (!url) {
-  console.error("DATABASE_URL is not set.");
+let target: DatabaseTarget;
+try {
+  target = databaseTarget();
+} catch (e) {
+  console.error(`${(e as Error).message} Nothing was changed.`);
   process.exit(1);
 }
+const { url, from } = target;
 if (isPooled(url)) {
-  const name = process.env.DATABASE_URL_UNPOOLED ? "DATABASE_URL_UNPOOLED" : "DATABASE_URL";
   console.error(
-    `${name} is a pooled connection (its host name has "-pooler"). Migrations hold a lock for their whole run, ` +
+    `${from} is a pooled connection (its host name has "-pooler"). Migrations hold a lock for their whole run, ` +
       "and a lock taken through a pooler can outlive the run and stall the next deploy.\n" +
       'Set DATABASE_URL_UNPOOLED to the direct connection (the same address without "-pooler"), then run this again. ' +
       "Nothing was changed."
@@ -158,7 +168,7 @@ async function migrate(): Promise<number> {
   );
   const appliedMap = new Map(applied.map((r) => [r.migration_name, r.checksum]));
 
-  console.log(`\ndatabase: ${url.replace(/:[^:@]+@/, ":****@")}`);
+  console.log(`\ndatabase: ${redacted(url)} (${from})`);
   console.log(`migrations on disk: ${migrations.length} · already applied: ${appliedMap.size}\n`);
 
   let drift = false;
@@ -213,13 +223,4 @@ async function migrate(): Promise<number> {
 
   console.log(`\n  ${pending.length} migration(s) applied.\n`);
   return 0;
-}
-
-/** Neon's pooled address has "-pooler" in its host name. */
-function isPooled(connectionString: string): boolean {
-  try {
-    return /-pooler\./.test(new URL(connectionString).hostname);
-  } catch {
-    return false;
-  }
 }

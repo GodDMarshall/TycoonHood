@@ -25,6 +25,13 @@
  * database, and a build waits for it. The lock needs the direct connection:
  * use Neon's address without "-pooler", or set DATABASE_URL_UNPOOLED to it.
  *
+ * Every step works on one database: DATABASE_URL_UNPOOLED when it is set,
+ * else DATABASE_URL, picked by packages/db/scripts/db-target.mjs as the lock
+ * and the migrations pick it. The report names that address, and the
+ * variable it came from, before anything connects. If the two variables name
+ * different databases, nothing runs. Before, the migrations followed one and
+ * the seeds and this report the other (review finding 19, follow-up).
+ *
  * Vercel deployment itself stays manual on purpose: it needs your account,
  * and a script that "deploys" without credentials would be theatre.
  */
@@ -32,9 +39,9 @@ import { execSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
+import { databaseTarget, isPooled, redacted } from "../packages/db/scripts/db-target.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const url = process.env.DATABASE_URL;
 const bail = (msg) => {
   console.error(`\n✗ ${msg}\n`);
   process.exit(1);
@@ -42,8 +49,24 @@ const bail = (msg) => {
 
 console.log("\n═══════════ TYCOONHOOD — PRODUCTION DATABASE DEPLOY ═══════════\n");
 
-if (!url) bail("DATABASE_URL is not set.");
-const redacted = url.replace(/:[^:@]+@/, ":****@");
+let target;
+try {
+  target = databaseTarget();
+} catch (e) {
+  bail(`${e.message}\n  Nothing was touched.`);
+}
+const { url, from } = target;
+// Named before anything connects, so a wrong address is seen before it is used.
+console.log(`  target      : ${redacted(url)} (${from})`);
+if (isPooled(url)) {
+  bail(
+    `${from} is a pooled connection (its host name has "-pooler"). Migrations hold a lock for their whole run,\n` +
+      "  and a lock taken through a pooler can outlive the run and stall the next deploy.\n" +
+      '  Set DATABASE_URL_UNPOOLED to the direct connection (the same address without "-pooler"). Nothing was touched.'
+  );
+}
+// Every step gets the same address, as DATABASE_URL, which the seeds read.
+const stepEnv = { ...process.env, DATABASE_URL: url };
 const looksProd = /neon\.tech|supabase|rds\.amazonaws|railway|render\.com/i.test(url);
 
 if (looksProd && !process.env.ADMIN_PASSWORD) {
@@ -89,7 +112,6 @@ if (t[0].n > 0) {
 }
 await client.end();
 
-console.log(`  target      : ${redacted}`);
 console.log(`  tables      : ${t[0].n}`);
 console.log(`  users       : ${existingUsers}`);
 console.log(`  admin email : ${process.env.ADMIN_EMAIL ?? "(unset — seed default)"}`);
@@ -107,7 +129,7 @@ if (existingUsers > 1) {
 const step = (label, cmd) => {
   process.stdout.write(`  → ${label} … `);
   try {
-    execSync(cmd, { cwd: root, stdio: "pipe", env: process.env });
+    execSync(cmd, { cwd: root, stdio: "pipe", env: stepEnv });
     console.log("done");
   } catch (e) {
     console.log("FAILED");
@@ -126,7 +148,7 @@ try {
   execSync("pnpm --filter @tycoonhood/core exec tsx scripts/verify-platform.ts", {
     cwd: root,
     stdio: "inherit",
-    env: process.env,
+    env: stepEnv,
   });
 } catch {
   bail("Verification failed against the deployed database. Do not open registration until this is green.");

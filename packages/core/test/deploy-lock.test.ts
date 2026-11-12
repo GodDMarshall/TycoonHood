@@ -95,6 +95,15 @@ async function isFree(db: PrismaClient, key: bigint) {
 const wrapped = (t: Throwaway, args: string[], env: NodeJS.ProcessEnv = scriptEnv(t.url)) =>
   start(process.execPath, [WRAPPER, ...args], { cwd: DB_PACKAGE, env });
 
+/** How many tables the database has: none until something migrates it. */
+async function tables(db: PrismaClient) {
+  const [row] = await db.$queryRaw<{ n: number }[]>`SELECT count(*)::int AS n FROM information_schema.tables WHERE table_schema = 'public'`;
+  return row.n;
+}
+
+/** The same database's address written another way, as a pooled and a direct address differ. */
+const spelledAgain = (url: string, tag: string) => `${url}${url.includes("?") ? "&" : "?"}application_name=${tag}`;
+
 describe("overlapping deploys wait for each other", () => {
   let t: Throwaway;
   beforeEach(async () => {
@@ -187,11 +196,76 @@ describe("overlapping deploys wait for each other", () => {
     expect(refusedMigrate.code).toBe(1);
     expect(refusedMigrate.output).toMatch(/DATABASE_URL_UNPOOLED/);
 
-    // With the direct connection beside it, both use that one.
-    const direct = { ...scriptEnv(pooled), DATABASE_URL_UNPOOLED: t.url };
-    expect((await wrapped(t, ["true"], direct).done).code).toBe(0);
+    // With the direct address of the same database beside it, both use that one, and say so.
+    // (Here the "pooled" one is the same local database, spelled another way.)
+    const direct = { ...scriptEnv(spelledAgain(t.url, "pooled")), DATABASE_URL_UNPOOLED: t.url };
+    const lock = await wrapped(t, ["true"], direct).done;
+    expect(lock.code, lock.output).toBe(0);
+    expect(lock.output).toMatch(/\(DATABASE_URL_UNPOOLED\)/);
     const applied = await start(process.execPath, [TSX, "scripts/migrate-sql.ts"], { cwd: DB_PACKAGE, env: direct }).done;
     expect(applied.code, applied.output).toBe(0);
+    expect(applied.output).toMatch(/\(DATABASE_URL_UNPOOLED\)/);
     expect(await t.db.$queryRaw<{ n: number }[]>`SELECT count(*)::int AS n FROM "_prisma_migrations"`).toEqual([{ n: MIGRATIONS }]);
+  }, SLOW);
+});
+
+describe("one database for everything a deploy runs", () => {
+  let t: Throwaway;
+  let other: Throwaway;
+  beforeEach(async () => {
+    t = await createThrowawayDb("target");
+    other = await createThrowawayDb("other");
+  });
+  afterEach(async () => {
+    await t?.drop();
+    await other?.drop();
+  });
+
+  it("is refused when DATABASE_URL and DATABASE_URL_UNPOOLED name different databases, and neither is touched", async () => {
+    // As with `DATABASE_URL=<local> pnpm db:migrate:sql` and a .env holding Neon's DATABASE_URL_UNPOOLED:
+    // the migrations and the lock would go to one database, the seeds to the other.
+    const split = { ...scriptEnv(t.url), DATABASE_URL_UNPOOLED: other.url };
+    const runs = {
+      "migrate-sql": await start(process.execPath, [TSX, "scripts/migrate-sql.ts"], { cwd: DB_PACKAGE, env: split }).done,
+      "with-db-lock": await wrapped(t, ["true"], split).done,
+      "deploy-db": await start(process.execPath, ["scripts/deploy-db.mjs"], { cwd: REPO_ROOT, env: split }).done,
+    };
+    for (const [name, r] of Object.entries(runs)) {
+      expect(r.code, `${name}\n${r.output}`).toBe(1);
+      expect(r.output, name).toMatch(/DATABASE_URL and DATABASE_URL_UNPOOLED name different databases/);
+    }
+    for (const db of [t.db, other.db]) expect(await tables(db)).toBe(0);
+  }, SLOW);
+
+  it("stops the Vercel build too, before it touches either database", async () => {
+    // The build no longer copies DATABASE_URL_UNPOOLED over DATABASE_URL, which hid the mismatch.
+    // Nothing listens at this address, and its database has another name.
+    const elsewhere = "postgresql://tycoon:nothing@127.0.0.1:9/tycoonhood_elsewhere_test";
+    const r = await start("bash", ["scripts/vercel-build.sh"], {
+      cwd: REPO_ROOT,
+      env: { ...scriptEnv(t.url), DATABASE_URL_UNPOOLED: elsewhere, VERCEL_ENV: "production" },
+    }).done;
+    expect(r.code, r.output).toBe(1);
+    expect(r.output).toMatch(/DATABASE_URL and DATABASE_URL_UNPOOLED name different databases/);
+    expect(r.output).not.toMatch(/Cannot reach the database|Building the site/);
+    expect(await tables(t.db)).toBe(0);
+  }, SLOW);
+
+  it("hands the commands it runs the address it locked, so the seeds use that database too", async () => {
+    const direct = spelledAgain(t.url, "direct");
+    const env = { ...scriptEnv(t.url), DATABASE_URL_UNPOOLED: direct };
+    const seen = "console.log(['seen', process.env.DATABASE_URL, process.env.DATABASE_URL_UNPOOLED].join(' '))";
+    const r = await wrapped(t, [process.execPath, "-e", seen], env).done;
+    expect(r.code, r.output).toBe(0);
+    expect(r.output).toContain(`seen ${direct} ${direct}`);
+  }, SLOW);
+
+  it("deploy:db names the database it will migrate, and the variable it came from, before it connects", async () => {
+    const unreachable = "postgresql://tycoon:nothing@127.0.0.1:9/tycoonhood_never_test";
+    const env = { ...scriptEnv(unreachable), DATABASE_URL_UNPOOLED: spelledAgain(unreachable, "direct") };
+    const r = await start(process.execPath, ["scripts/deploy-db.mjs"], { cwd: REPO_ROOT, env }).done;
+    expect(r.code, r.output).toBe(1);
+    expect(r.output).toMatch(/target\s*: \S*application_name=direct \(DATABASE_URL_UNPOOLED\)/);
+    expect(r.output.indexOf("target")).toBeLessThan(r.output.indexOf("Cannot reach the database"));
   }, SLOW);
 });

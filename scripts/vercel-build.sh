@@ -19,7 +19,8 @@
 # 3. Migrating and seeding run under one deploy lock (scripts/with-db-lock.mjs,
 #    review finding 19). Two production builds can run at once, a redeploy
 #    while one is still building or two merges close together; the second
-#    waits for the first to finish, then finds the work done.
+#    waits for the first to finish, then finds the work done. The lock, the
+#    migrations and the seeds all work on the database the lock was taken on.
 # 4. Then it builds the site. Any failure stops the deploy, and the last good
 #    deployment stays live.
 set -euo pipefail
@@ -60,9 +61,11 @@ if [ "${VERCEL_ENV:-}" = "production" ]; then
     echo "Fix ADMIN_EMAIL in Vercel (Settings → Environment Variables, Production), then redeploy. The database was not touched." >&2
     exit 1
   fi
-  # The migrations, the seeds and the lock all use the direct connection.
-  DATABASE_URL="${DATABASE_URL_UNPOOLED:-$DATABASE_URL}" \
-    node scripts/with-db-lock.mjs bash "${BASH_SOURCE[0]}" --migrate-and-seed
+  # The lock, the migrations and the seeds all use the direct connection:
+  # with-db-lock.mjs takes DATABASE_URL_UNPOOLED when it is set and hands it to
+  # this step as DATABASE_URL. It also stops the build, before it connects, if
+  # DATABASE_URL and DATABASE_URL_UNPOOLED name different databases.
+  node scripts/with-db-lock.mjs bash "${BASH_SOURCE[0]}" --migrate-and-seed
 else
   echo "── ${VERCEL_ENV:-local} build: the database is not touched"
 fi

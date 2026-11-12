@@ -15,7 +15,7 @@ owner is [`TYCOONHOOD_BLOCKED_ON_YOU.md`](../TYCOONHOOD_BLOCKED_ON_YOU.md).
 | Variable | Required | Notes |
 |---|---|---|
 | `DATABASE_URL` | yes | Postgres connection string. On serverless hosts use the pooled one |
-| `DATABASE_URL_UNPOOLED` | on Vercel | The direct connection. `scripts/vercel-build.sh` migrates and seeds over it and holds the deploy lock on it; the Neon integration sets it. Migrations and the deploy lock refuse Neon's pooled address, so where this is not set, `DATABASE_URL` must be the direct connection when you migrate |
+| `DATABASE_URL_UNPOOLED` | on Vercel | The direct connection to the same database as `DATABASE_URL`. `scripts/vercel-build.sh` migrates and seeds over it and holds the deploy lock on it; the Neon integration sets it. Migrations and the deploy lock refuse Neon's pooled address, so where this is not set, `DATABASE_URL` must be the direct connection when you migrate. If the two name different databases, the build, `pnpm deploy:db` and `pnpm db:migrate:sql` stop before they connect. A value in `.env` never replaces one set in your shell, so check both there too |
 | `NEXT_PUBLIC_SITE_URL` | yes | e.g. `https://tycoonhood.com`; used in emails, certificates and affiliate links |
 | `RESEND_API_KEY`, `MAIL_FROM` | yes for launch | Without them, verification and reset emails are not sent in production |
 | `AFFILIATE_HASH_SECRET` | yes | A long random string; salts the click hashes |
@@ -40,9 +40,11 @@ commands, the function region and the daily cron. The build command runs
 
 1. On a **production** build (`VERCEL_ENV=production`) it takes the deploy
    lock (`scripts/with-db-lock.mjs`, see "Two builds at once"), then applies
-   pending migrations with `pnpm db:migrate:sql`. Both use
-   `DATABASE_URL_UNPOOLED` when it is set. It stops the build if
-   `DATABASE_URL` is missing, and, when `SEED_ON_DEPLOY=1`, if `ADMIN_EMAIL`
+   pending migrations with `pnpm db:migrate:sql`. The lock, the migrations and
+   the seeds all use `DATABASE_URL_UNPOOLED` when it is set, else
+   `DATABASE_URL`, and the build log names that database. It stops the build
+   if `DATABASE_URL` is missing, if `DATABASE_URL` and `DATABASE_URL_UNPOOLED`
+   name different databases, and, when `SEED_ON_DEPLOY=1`, if `ADMIN_EMAIL`
    or `ADMIN_PASSWORD` is missing or `ADMIN_EMAIL` is not an address sign-in
    accepts, before it touches the database.
 2. With `SEED_ON_DEPLOY=1` it then runs `db:seed`, `db:seed:academy`,
@@ -74,9 +76,9 @@ seeded the same database at the same time (review finding 19). Now:
 
 - The whole migrate-and-seed step runs under a Postgres advisory lock that
   `scripts/with-db-lock.mjs` holds on a connection of its own. The second
-  build prints "Another build is migrating or seeding this database. Waiting
-  for it to finish …", waits, then finds the migrations applied and nothing
-  left for the seeds to add.
+  build prints "Another build is migrating or seeding" with the database's
+  host and name, then "Waiting for it to finish …", waits, then finds the
+  migrations applied and nothing left for the seeds to add.
 - `migrate-sql` holds Prisma Migrate's own lock for its whole run, so it never
   overlaps another `migrate-sql` or a `pnpm db:deploy`
   (`prisma migrate deploy`).
@@ -89,6 +91,18 @@ seeded the same database at the same time (review finding 19). Now:
   server connection ran the query and can outlive the build. So both refuse
   Neon's pooled address (`-pooler` in the host name) and name
   `DATABASE_URL_UNPOOLED`.
+- Everything under the lock works on the database the lock was taken on. The
+  wrapper gives the migrate-and-seed step that address as `DATABASE_URL`, which
+  the seeds read, and `pnpm deploy:db` gives it to each of its steps. Before,
+  with `DATABASE_URL` and `DATABASE_URL_UNPOOLED` naming different databases,
+  the migrations and the lock went to one and the seeds to the other. Now the
+  build, `deploy:db` and `db:migrate:sql` refuse that pair before they
+  connect. They compare the addresses only: another database name, or another
+  Neon endpoint (the pooled host is the direct one with `-pooler` added), is
+  refused. A pooler with a host or port of its own, as Supabase's and RDS
+  Proxy have, is accepted beside its direct address, so for those, check the
+  two yourself. Each script prints the database it uses and the variable it
+  came from.
 
 ### Running the seeds again
 
@@ -154,13 +168,15 @@ Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are 
 If a build could be migrating or seeding the same database while you run these
 by hand, run them under the deploy lock, which waits its turn:
 `node scripts/with-db-lock.mjs <command>`. `pnpm deploy:db` already does.
-Migrations and the lock need the direct connection, not a pooled one.
+Migrations and the lock need the direct connection, not a pooled one. Set it
+as `DATABASE_URL_UNPOOLED` beside the pooled `DATABASE_URL`, for the same
+database, or set `DATABASE_URL` alone to it.
 
 ## A deploy waits for the database lock
 
 A production build that finds another build migrating or seeding the same
-database says "Another build is migrating or seeding this database. Waiting
-for it to finish …" and waits. That is normal. It lasts as long as the other
+database says "Another build is migrating or seeding", names the database, then
+"Waiting for it to finish …", and waits. That is normal. It lasts as long as the other
 build's migrate-and-seed step, usually under a minute. `pnpm db:migrate:sql`
 says "Another migration run is applying migrations to this database" when it
 waits for the migration lock in the same way.

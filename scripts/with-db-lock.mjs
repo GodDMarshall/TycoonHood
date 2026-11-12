@@ -27,11 +27,18 @@
  * DATABASE_URL, and refuses Neon's pooled address.
  * packages/db/scripts/migrate-sql.ts follows the same rules for the migration
  * lock it takes inside this one.
+ *
+ * Everything under the lock works on the database that was locked. The
+ * address is picked by packages/db/scripts/db-target.mjs, which refuses when
+ * DATABASE_URL and DATABASE_URL_UNPOOLED name different databases, and the
+ * command gets it as DATABASE_URL too: the seeds read only that variable.
+ * Before, they could seed one database while the lock and the migrations
+ * held another (review finding 19, follow-up).
  */
 import { spawn } from "node:child_process";
 import { constants } from "node:os";
-import { URL } from "node:url";
 import pg from "pg";
+import { databaseTarget, isPooled, where } from "../packages/db/scripts/db-target.mjs";
 
 /** "tyco" in ASCII. Any fixed number would do but Prisma Migrate's 72707369, which migrate-sql takes inside this lock. */
 const DEPLOY_LOCK = 0x7479636f;
@@ -49,12 +56,16 @@ if (command.length === 0) {
   process.exit(2);
 }
 
-const url = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
-if (!url) fail("DATABASE_URL is not set.");
+let target;
+try {
+  target = databaseTarget();
+} catch (e) {
+  fail(`${e.message} The database was not touched.`);
+}
+const { url, from } = target;
 if (isPooled(url)) {
-  const name = process.env.DATABASE_URL_UNPOOLED ? "DATABASE_URL_UNPOOLED" : "DATABASE_URL";
   fail(
-    `${name} is a pooled connection (its host name has "-pooler"). The deploy lock is held for the whole ` +
+    `${from} is a pooled connection (its host name has "-pooler"). The deploy lock is held for the whole ` +
       "migrate-and-seed step, and a lock taken through a pooler can outlive the build and stall the next one.\n" +
       'Set DATABASE_URL_UNPOOLED to the direct connection (the same address without "-pooler"), then deploy again. ' +
       "The database was not touched."
@@ -111,11 +122,12 @@ process.exit(lost ? 1 : code);
 /** Takes the lock, waiting and saying so while another build holds it. */
 async function takeLock() {
   const { rows } = await client.query("SELECT pg_try_advisory_lock($1::bigint) AS ok", [DEPLOY_LOCK]);
+  const db = `${where(url)} (${from})`;
   if (rows[0].ok) {
-    console.log("── Deploy lock taken. No other build is migrating or seeding this database.");
+    console.log(`── Deploy lock taken on ${db}. No other build is migrating or seeding this database.`);
     return;
   }
-  console.log("── Another build is migrating or seeding this database. Waiting for it to finish …");
+  console.log(`── Another build is migrating or seeding ${db}. Waiting for it to finish …`);
   const started = Date.now();
   await client.query(`SET lock_timeout = '${WAIT_MINUTES}min'`);
   try {
@@ -133,10 +145,13 @@ async function takeLock() {
   console.log(`── The other build finished after ${Math.round((Date.now() - started) / 1000)}s. Carrying on.`);
 }
 
-/** Runs the command with this process's terminal and environment; resolves with its exit code. */
+/**
+ * Runs the command with this process's terminal and environment, but with
+ * DATABASE_URL set to the locked address; resolves with its exit code.
+ */
 function run([cmd, ...args]) {
   return new Promise((resolve) => {
-    child = spawn(cmd, args, { stdio: "inherit" });
+    child = spawn(cmd, args, { stdio: "inherit", env: { ...process.env, DATABASE_URL: url } });
     child.on("error", (e) => {
       // Only a command that could not be started ends here. A failed kill leaves it running.
       if (child.pid === undefined) {
@@ -146,13 +161,4 @@ function run([cmd, ...args]) {
     });
     child.on("close", (exitCode, signal) => resolve(exitCode ?? 128 + (constants.signals[signal] ?? 0)));
   });
-}
-
-/** Neon's pooled address has "-pooler" in its host name. */
-function isPooled(connectionString) {
-  try {
-    return /-pooler\./.test(new URL(connectionString).hostname);
-  } catch {
-    return false;
-  }
 }
