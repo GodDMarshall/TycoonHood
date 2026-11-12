@@ -14,6 +14,9 @@
  * ADMIN_PASSWORD, for whoever holds that mailbox. And the seed never takes an
  * address held for an account that changed away from it in the last 7 days
  * (platform/email-hold), or that account's undo link would stop working.
+ * Only an address its account confirmed is held (DR-32). One never confirmed
+ * gets no hold and no undo link, and is free at once to anyone, so the seed
+ * treats it as any free address.
  *
  * Each case runs the real seed (packages/db/src/seed.ts) as a separate
  * process against a database built from nothing.
@@ -31,12 +34,24 @@ import { resolve } from "node:path";
 import {
   createThrowawayDb, migrate, runDbScript, mustRun, start, scriptEnv, SEED_ADMIN, REPO_ROOT, TSX, type Throwaway,
 } from "./throwaway-db";
+import { askedADayAgo } from "./helpers";
 
 const SLOW = 120_000;
 
 /** Signs in exactly as the login form does: the schema first, then the account service. */
 async function signIn(t: Throwaway, email: string, password: string) {
   return new AccountService(t.db).authenticate(loginSchema.parse({ email, password }));
+}
+
+/**
+ * Confirms the account's address with the link its owner is sent, as the
+ * owner would from the banner. Neither the seed nor sign-up confirms one, and
+ * only a confirmed address is held, with an undo link, when the account moves
+ * off it (DR-32).
+ */
+async function confirmAddress(t: Throwaway, userId: string) {
+  const verification = new EmailVerificationService(t.db);
+  await verification.verify((await verification.issue(userId)).rawToken);
 }
 
 const seed = (t: Throwaway, env: Record<string, string>) => mustRun("src/seed.ts", t.url, env);
@@ -263,10 +278,12 @@ describe("an ADMIN_EMAIL that an account changed away from in the last 7 days", 
   it("makes no admin there, so the undo link still puts the address back", async () => {
     await seed(t, { ADMIN_EMAIL: "owner@old.example.com" });
     const admin = await t.db.user.findUniqueOrThrow({ where: { email: "owner@old.example.com" } });
+    // The owner confirms the admin's address (LAUNCH.md, step 5). Only a confirmed address is held.
+    await confirmAddress(t, admin.id);
     // The admin's address moves (the owner's own change, or a takeover): the old one is held for 7 days.
     const change = await new AccountSettingsService(t.db).changeEmail(admin.id, "someone@new.example.com", SEED_ADMIN.ADMIN_PASSWORD);
     const moved = await new EmailVerificationService(t.db).confirm(change!.rawToken);
-    if (moved.kind !== "email-change") throw new Error("expected an email change");
+    if (moved.kind !== "email-change" || !moved.undo) throw new Error("expected an email change with an undo link");
 
     // A later build still has the old ADMIN_EMAIL.
     await seed(t, { ADMIN_EMAIL: "owner@old.example.com" });
@@ -290,11 +307,13 @@ describe("an ADMIN_EMAIL that an account changed away from in the last 7 days", 
         profile: { create: { username: "admin_9", displayName: "The House" } },
       },
     });
-    // A member moved away from held@example.com, so it is held for them.
+    // A member confirmed held@example.com, then moved away from it, so it is held for them.
     const accounts = new AccountService(t.db);
     const member = await accounts.register({ email: "held@example.com", password: "the-member-password", name: "Member" });
+    await confirmAddress(t, member.id);
     const change = await new AccountSettingsService(t.db).changeEmail(member.id, "member@moved.example.com", "the-member-password");
     await new EmailVerificationService(t.db).confirm(change!.rawToken);
+    expect(await t.db.emailHold.count({ where: { address: "held@example.com", userId: member.id } })).toBe(1);
 
     const users = await t.db.user.count();
     const r = await runDbScript("src/seed.ts", t.url, { ADMIN_EMAIL: "held@example.com" });
@@ -302,5 +321,43 @@ describe("an ADMIN_EMAIL that an account changed away from in the last 7 days", 
     expect(r.output).toMatch(/held@example\.com is held/);
     expect(await t.db.user.count()).toBe(users);
     expect((await t.db.user.findUniqueOrThrow({ where: { id: legacy.id } })).email).toBe(" Held@Example.com");
+  }, SLOW);
+});
+
+describe("an ADMIN_EMAIL never confirmed, that its account changed away from", () => {
+  // A change away from an address never confirmed holds nothing and makes no undo link (DR-32): the
+  // address may not be the account's, and it is free at once, to anyone who signs up with it.
+  let t: Throwaway;
+  beforeAll(async () => {
+    t = await createThrowawayDb("unheld");
+    await migrate(t);
+  }, SLOW);
+  afterAll(async () => {
+    await t?.drop();
+  });
+
+  it("is not held, so the seed makes an admin there only while no admin can sign in", async () => {
+    await seed(t, { ADMIN_EMAIL: "owner@typo.example.com" });
+    const admin = await t.db.user.findUniqueOrThrow({ where: { email: "owner@typo.example.com" } });
+    // The seed leaves the address unconfirmed: only its owner can confirm it (LAUNCH.md, step 5).
+    expect(admin.emailVerified).toBeNull();
+    const change = await new AccountSettingsService(t.db).changeEmail(admin.id, "owner@real.example.com", SEED_ADMIN.ADMIN_PASSWORD);
+    await askedADayAgo(admin.id, t.db); // a change away from an address never confirmed waits a day first
+    const moved = await new EmailVerificationService(t.db).confirm(change!.rawToken);
+    expect(moved).toMatchObject({ kind: "email-change", previousEmail: "owner@typo.example.com", undo: null });
+    expect(await t.db.emailHold.count()).toBe(0);
+
+    // A later build still has the old ADMIN_EMAIL. The admin signs in at its new address, so nothing is made.
+    const users = await t.db.user.count();
+    await seed(t, { ADMIN_EMAIL: "owner@typo.example.com" });
+    expect(await t.db.user.count()).toBe(users);
+    expect(await t.db.user.findUnique({ where: { email: "owner@typo.example.com" } })).toBeNull();
+
+    // With no admin who can sign in, the seed makes one there, as anyone could sign up with it.
+    await t.db.user.updateMany({ where: { role: "ADMIN" }, data: { role: "MEMBER" } });
+    await seed(t, { ADMIN_EMAIL: "owner@typo.example.com" });
+    const made = await t.db.user.findUniqueOrThrow({ where: { email: "owner@typo.example.com" } });
+    expect([made.role, made.id === admin.id]).toEqual(["ADMIN", false]);
+    expect((await signIn(t, "owner@typo.example.com", SEED_ADMIN.ADMIN_PASSWORD)).id).toBe(made.id);
   }, SLOW);
 });

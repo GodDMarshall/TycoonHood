@@ -1,4 +1,4 @@
-import { prisma } from "@tycoonhood/db";
+import { prisma, type PrismaClient } from "@tycoonhood/db";
 import { randomUUID } from "node:crypto";
 import { UNCONFIRMED_CHANGE_WAIT_MS } from "../src/platform/email-verification";
 
@@ -23,10 +23,11 @@ export const uid = () => randomUUID();
  * minute, as the link works from a whole minute). A change away from an
  * address never confirmed can be confirmed only from then
  * (UNCONFIRMED_CHANGE_WAIT_MS), so a test about something else that starts
- * from such a member moves its request back first.
+ * from such a member moves its request back first. `db` is the database the
+ * member is in: a throwaway one has a client of its own.
  */
-export async function askedADayAgo(userId: string) {
-  await prisma.user.update({
+export async function askedADayAgo(userId: string, db: PrismaClient = prisma) {
+  await db.user.update({
     where: { id: userId },
     data: { pendingEmailAt: new Date(Date.now() - UNCONFIRMED_CHANGE_WAIT_MS - 60_000) },
   });
