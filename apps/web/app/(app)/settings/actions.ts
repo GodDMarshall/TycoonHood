@@ -153,7 +153,9 @@ export async function changeEmailAction(_prev: FormState, fd: FormData): Promise
   // notice never throws, so a failure of either cannot stop the other.
   const [, outcome] = await Promise.all([sendEmailChangeRequestedNotice(issued), sendEmailChangeLink(issued)]);
   revalidatePath("/settings");
-  return emailChangeReply(outcome, issued.newEmail);
+  // A change away from an address never confirmed waits a day: when its link works, in the member's zone.
+  const opens = issued.opensAt ? formatDayTime(issued.opensAt, memberZone(user.profile?.timezone)) : undefined;
+  return emailChangeReply(outcome, issued.newEmail, opens);
 }
 
 /** Send the link for a waiting email change again, within the three-an-hour limit confirmation links share. */

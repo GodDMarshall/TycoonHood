@@ -61,17 +61,21 @@ async function notice(to: string, copy: MailCopy, what: string): Promise<void> {
   }
 }
 
-/** The link that confirms a new address, to that address. Revoked if it could not be sent. */
+/** The link that confirms a new address, to that address, saying from when it works if the change waits. Revoked if it could not be sent. */
 export async function sendEmailChangeLink(issued: IssuedEmailChange): Promise<MailOutcome> {
   const link = `${siteUrl()}/verify-email/${issued.rawToken}`;
-  const outcome = await deliver(issued.newEmail, emailChangeLinkMail(link), `email-change link for ${issued.userId}`);
+  const outcome = await deliver(issued.newEmail, emailChangeLinkMail(link, issued.opensAt), `email-change link for ${issued.userId}`);
   if (!mailWentOut(outcome)) await emailVerification.revokeEmailChangeLink(issued);
   return outcome;
 }
 
-/** To the current address: a change was asked for, and what to do if it wasn't them. */
+/** To the current address: a change was asked for, when it can happen if it waits, and what to do if it wasn't them. */
 export function sendEmailChangeRequestedNotice(issued: IssuedEmailChange): Promise<void> {
-  return notice(issued.currentEmail, emailChangeRequestedMail(issued.newEmail, siteUrl()), `email-change notice for ${issued.userId}`);
+  return notice(
+    issued.currentEmail,
+    emailChangeRequestedMail(issued.newEmail, siteUrl(), issued.opensAt),
+    `email-change notice for ${issued.userId}`
+  );
 }
 
 /** To the old address, once the change has happened, with the link that undoes it. The caller reads the outcome. */

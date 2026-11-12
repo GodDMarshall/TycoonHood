@@ -20,6 +20,7 @@ import {
   emailVerification,
   emailUndo,
   EmailChangeEndedError,
+  EmailChangeNotYetError,
   getSetting,
   InvalidUndoLinkError,
   InvalidVerificationTokenError,
@@ -276,6 +277,8 @@ export async function verifyEmailAction(token: string, _prev: VerifyState, _fd: 
     result = await emailVerification.confirm(token, { keepSessionId: session?.id });
   } catch (e) {
     if (e instanceof EmailChangeEndedError) return { error: e.message, retry: false };
+    // Too early: this same link works once the change's day is over, and a new one would wait as long.
+    if (e instanceof EmailChangeNotYetError) return { error: e.message, retry: false };
     if (e instanceof InvalidVerificationTokenError) return { error: e.message };
     throw e;
   }

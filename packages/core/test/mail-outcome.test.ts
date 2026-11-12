@@ -85,6 +85,15 @@ describe("emailChangeReply — nothing changes until the new address is confirme
   it("dev mode says nothing was emailed", () => {
     expect(emailChangeReply("logged", "new@b.test").ok).toMatch(/^Dev mode: nothing was emailed/);
   });
+
+  it("when the change waits a day, says from when the link works and why", () => {
+    expect(emailChangeReply("sent", "new@b.test", "13 Nov, 15:05").ok).toBe(
+      "We sent a confirmation link to new@b.test. It works from 13 Nov, 15:05, because your current email was never confirmed. Your email changes when you use it."
+    );
+    expect(emailChangeReply("logged", "new@b.test", "13 Nov, 15:05").ok).toMatch(/^Dev mode: .* It works from 13 Nov, 15:05, because/);
+    // Nothing went out, so there is no link to speak of.
+    expect(emailChangeReply("failed", "new@b.test", "13 Nov, 15:05").error).not.toMatch(/works from/);
+  });
 });
 
 describe("passwordResetReply — never reveals whether an account exists", () => {

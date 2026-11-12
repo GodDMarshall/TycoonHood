@@ -3,7 +3,9 @@
  * the notice with the undo link when a change is confirmed
  * (verifyEmailAction), what happens when it cannot be sent, or when the
  * request dies while sending it, and how a refused request words its time
- * (changeEmailAction). Also a reset request whose email cannot be sent
+ * (changeEmailAction). A change away from an address never confirmed waits
+ * a day: the link used early is refused, and the request says when it
+ * works. Also a reset request whose email cannot be sent
  * (forgotPasswordAction), and the cron route that puts back changes whose
  * notice never went out. Stand-ins: the mail provider, which records what it
  * is given and accepts it, refuses it or never answers; Next's after(),
@@ -17,10 +19,11 @@ import { AccountService } from "../src/auth/account";
 import { SessionService } from "../src/auth/session";
 import { PasswordResetService } from "../src/auth/password-reset";
 import { AccountSettingsService } from "../src/platform/account-settings";
-import { EmailVerificationService } from "../src/platform/email-verification";
+import { EmailVerificationService, UNCONFIRMED_CHANGE_WAIT_MS } from "../src/platform/email-verification";
 import { emailUndo } from "../src/platform/email-undo";
 import { formatDayTime } from "../src/time/format";
-import { uid } from "./helpers";
+import { formatIst } from "../src/time/ist";
+import { askedADayAgo, uid } from "./helpers";
 
 const request = vi.hoisted(() => ({ session: null as unknown }));
 const mail = vi.hoisted(() => ({
@@ -97,6 +100,12 @@ async function memberAsking(confirmed: boolean) {
   return { user, oldEmail, newEmail, link: change!.rawToken };
 }
 
+/** The first whole minute the link for the member's waiting change works, when their address was never confirmed. */
+async function opensAtOf(userId: string) {
+  const { pendingEmailAt } = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
+  return new Date(Math.ceil((pendingEmailAt!.getTime() + UNCONFIRMED_CHANGE_WAIT_MS) / 60_000) * 60_000);
+}
+
 /** Run what after() was given, as Next does once the response has gone. */
 async function responseSent() {
   while (mail.afterResponse.length) await mail.afterResponse.shift()!();
@@ -166,12 +175,26 @@ describe("Confirming an email change in the web app", () => {
   it("an old address never confirmed gets a notice with no undo link, after the response, and the change stands", async () => {
     const { verifyEmailAction } = await actions();
     const { user, oldEmail, newEmail, link } = await memberAsking(false);
+    await askedADayAgo(user.id); // such a change waits a day first
     expect(await verifyEmailAction(link, {}, new FormData())).toMatchObject({ done: "email-changed", email: newEmail });
     expect(mail.outbox).toEqual([]);
     await responseSent();
     expect(mail.outbox).toEqual([expect.objectContaining({ to: oldEmail, subject: "A Tycoonhood account changed its email" })]);
     expect(mail.outbox[0]!.text).not.toMatch(/undo-email/);
     expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(newEmail);
+  });
+
+  it("a change away from an address never confirmed, used before its day is over, is refused with when it works, and changes nothing", async () => {
+    const { verifyEmailAction } = await actions();
+    const { user, oldEmail, link } = await memberAsking(false);
+    const state = await verifyEmailAction(link, {}, new FormData());
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+    expect(state.done).toBeUndefined();
+    // A public page: India time, labelled, as emails and the other public pages show it.
+    expect(state.error).toContain(`from ${formatIst(await opensAtOf(user.id))}.`);
+    expect(state.retry).toBe(false); // a new link would wait just as long; this one works then
+    await responseSent();
+    expect(mail.outbox).toEqual([]);
   });
 
   it("when the notice went out, the hold records it and the change stands", async () => {
@@ -272,6 +295,29 @@ describe("Asking for an email change in the web app", () => {
     const opens = new Date(Math.ceil(hold.expires.getTime() / 60_000) * 60_000);
     expect(state.error).toContain(`from ${formatDayTime(opens, zone)}.`);
     expect(state.error).not.toContain("IST");
+  });
+});
+
+describe("Asking for an email change from an address never confirmed", () => {
+  it("says when the link starts to work: in the member's own zone in the reply, in India time in both emails", async () => {
+    const { changeEmailAction } = await settingsActions();
+    const oldEmail = address("old");
+    const user = await accounts.register({ email: oldEmail, password: PASSWORD, name: "Wait Case" });
+    const zone = "Australia/Sydney";
+    await prisma.profile.create({ data: { userId: user.id, username: `wait${uid().slice(0, 8)}`, displayName: "Wait Case", timezone: zone } });
+    request.session = await sessions.resolve((await sessions.create(user.id)).raw);
+    const newEmail = address("new");
+    const form = new FormData();
+    form.set("email", newEmail);
+    form.set("password", PASSWORD);
+    const state = await changeEmailAction({}, form);
+    expect(state.ok).toMatch(/It works from .+, because your current email was never confirmed\./);
+    const opens = await opensAtOf(user.id);
+    expect(state.ok).toContain(`It works from ${formatDayTime(opens, zone)}, because`);
+    const linkMail = mail.outbox.find((m) => m.to === newEmail);
+    const notice = mail.outbox.find((m) => m.to === oldEmail);
+    expect(linkMail?.text).toContain(`from ${formatIst(opens)}`);
+    expect(notice?.text).toContain(`before ${formatIst(opens)}`);
   });
 });
 

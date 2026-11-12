@@ -24,7 +24,10 @@
  * If the member had confirmed the address the change replaced, it is then
  * held for the account for 7 days, and the notice to it carries a link that
  * undoes the change (see platform/email-hold and platform/email-undo). An
- * address never confirmed is only told.
+ * address never confirmed is only told, so nothing could put a change away
+ * from it back. Such a change waits a day before its link works
+ * (UNCONFIRMED_CHANGE_WAIT_MS): the address was told of the request, and its
+ * owner can stop it with a new password.
  *
  * Verification never gates learning. Other modules read User.emailVerified
  * where it matters (the affiliate programme requires it).
@@ -33,12 +36,44 @@ import { createHash, randomBytes } from "node:crypto";
 import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { PrismaClient, User, VerificationToken } from "@tycoonhood/db";
 import { withDeadlockRetry } from "../db/retry";
+import { formatIst } from "../time/ist";
 import { AuditService } from "./audit";
 import { addressHeldFor, holdReplacedAddress, lockEmailOf, type IssuedUndo } from "./email-hold";
 
 export const VERIFY_TTL_MS = 24 * 60 * 60 * 1000;
 export const VERIFY_RESEND_LIMIT = 3;
 export const VERIFY_RESEND_WINDOW_MS = 60 * 60 * 1000;
+
+/**
+ * How long a change away from an address never confirmed waits before its
+ * link works. That address gets no undo link, as it may not be the
+ * member's, so once such a change happens nothing puts it back. Someone who
+ * has only the password could otherwise use the link seconds after asking,
+ * before the owner can act on the notice. A day gives them time: a new
+ * password cancels the change. A stranger at a typo address gains nothing
+ * from the wait, as they can already reset the account's password.
+ */
+export const UNCONFIRMED_CHANGE_WAIT_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * When the link for a waiting change starts to work, if not at once: the
+ * first whole minute a day after the change was asked for, when the address
+ * it moves off was never confirmed. Read again when the link is used, so an
+ * owner who confirms the address meanwhile need not wait (the change then
+ * holds it, with an undo link).
+ */
+export function emailChangeOpensAt(user: { emailVerified: Date | null; pendingEmailAt: Date | null }): Date | null {
+  if (user.emailVerified || !user.pendingEmailAt) return null;
+  return new Date(Math.ceil((user.pendingEmailAt.getTime() + UNCONFIRMED_CHANGE_WAIT_MS) / 60_000) * 60_000);
+}
+
+/** The refusal of a change link used while its change waits. Shown on a public page, so in India time, labelled. */
+export function emailChangeNotYetMessage(opensAt: Date): string {
+  return (
+    `This link works from ${formatIst(opensAt)}. ` +
+    "The account's current email was never confirmed, so a change away from it waits a day. Your email has not changed."
+  );
+}
 
 /** Other tokens that share VerificationToken, under a prefixed identifier. */
 export const RESET_TOKEN_PREFIX = "pwreset:";
@@ -55,6 +90,12 @@ export class EmailChangeEndedError extends InvalidVerificationTokenError {}
 export class EmailChangeTakenError extends EmailChangeEndedError {
   constructor() {
     super("That address now belongs to another account, so we couldn't move yours to it. Your email has not changed.");
+  }
+}
+/** A change link used before its change may happen (see UNCONFIRMED_CHANGE_WAIT_MS). It is not spent: it works from `opensAt`. */
+export class EmailChangeNotYetError extends Error {
+  constructor(readonly opensAt: Date) {
+    super(emailChangeNotYetMessage(opensAt));
   }
 }
 export class AlreadyVerifiedError extends Error {}
@@ -84,6 +125,9 @@ export interface IssuedEmailChange {
   /** The address asked for. The link goes here. */
   newEmail: string;
   rawToken: string;
+  /** When the link starts to work, if later than now (see emailChangeOpensAt). Null: at once. */
+  opensAt: Date | null;
+  /** 24 hours after it starts to work. */
   expires: Date;
 }
 
@@ -191,18 +235,22 @@ export class EmailVerificationService {
   /**
    * A new link for the member's waiting email change, replacing any earlier
    * one. Runs inside the caller's transaction: the request that set
-   * pendingEmail, or a resend. Writes no audit row; the caller does.
+   * pendingEmail, or a resend. A change that waits (emailChangeOpensAt)
+   * gets its 24 hours from when it opens. Writes no audit row; the caller
+   * does.
    */
   async issueEmailChangeIn(
     tx: Prisma.TransactionClient,
-    user: { id: string; email: string; pendingEmail: string }
+    user: { id: string; email: string; emailVerified: Date | null; pendingEmail: string; pendingEmailAt: Date | null }
   ): Promise<IssuedEmailChange> {
     const rawToken = randomBytes(32).toString("base64url");
-    const expires = new Date(Date.now() + VERIFY_TTL_MS);
+    const opens = emailChangeOpensAt(user);
+    const opensAt = opens && opens.getTime() > Date.now() ? opens : null;
+    const expires = new Date((opensAt ?? new Date()).getTime() + VERIFY_TTL_MS);
     const identifier = emailChangeTokenId(user.id);
     await tx.verificationToken.deleteMany({ where: { identifier } });
     await tx.verificationToken.create({ data: { identifier, token: sha256(rawToken), expires } });
-    return { userId: user.id, currentEmail: user.email, newEmail: user.pendingEmail, rawToken, expires };
+    return { userId: user.id, currentEmail: user.email, newEmail: user.pendingEmail, rawToken, opensAt, expires };
   }
 
   /**
@@ -219,7 +267,8 @@ export class EmailVerificationService {
       await this.claimResend(tx, userId);
       const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
       if (!user.pendingEmail) throw new NoEmailChangeError();
-      const issued = await this.issueEmailChangeIn(tx, { id: user.id, email: user.email, pendingEmail: user.pendingEmail });
+      // The change keeps the time it was asked for, so a resend never shortens (or restarts) its wait.
+      const issued = await this.issueEmailChangeIn(tx, { ...user, pendingEmail: user.pendingEmail });
       await this.audit.log(
         { actorId: userId, action: "auth.verify.resend", targetType: "User", targetId: userId, meta: { reason: "email-change" } },
         tx
@@ -246,7 +295,7 @@ export class EmailVerificationService {
       await t.verificationToken.deleteMany({ where: { identifier: emailChangeTokenId(userId) } });
       const user = await t.user.findUnique({ where: { id: userId }, select: { pendingEmail: true } });
       if (!user?.pendingEmail) return null;
-      await t.user.update({ where: { id: userId }, data: { pendingEmail: null } });
+      await t.user.update({ where: { id: userId }, data: { pendingEmail: null, pendingEmailAt: null } });
       await this.audit.log(
         { actorId, action: "account.email.change.cancel", targetType: "User", targetId: userId, meta: { to: user.pendingEmail, reason } },
         t
@@ -350,6 +399,8 @@ export class EmailVerificationService {
    *  · The link is spent next, so a second (or parallel) use finds nothing.
    *  · The address must still be waiting, still free, and not held for
    *    another account.
+   *  · A change away from an address never confirmed must have waited its
+   *    day (EmailChangeNotYetError, and the link stays good for then).
    *  · The account moves to it, verified: the click proves the mailbox.
    *  · Every link for the old address, every reset link and the change link
    *    die, and every other session is signed out. `keepSessionId` survives
@@ -378,10 +429,15 @@ export class EmailVerificationService {
         if (holder && holder.id !== user.id) throw new EmailChangeTakenError();
         const heldFor = await addressHeldFor(tx, wanted);
         if (heldFor && heldFor !== user.id) throw new EmailChangeTakenError();
+        // Not before its day is over, if the address it moves off was never confirmed: its owner, told
+        // of the request, may still stop it. Refused here, the transaction rolls back and the link stays
+        // good for then. An owner who confirmed the address meanwhile need not wait.
+        const opensAt = emailChangeOpensAt(user);
+        if (opensAt && opensAt.getTime() > Date.now()) throw new EmailChangeNotYetError(opensAt);
 
         const updated = await tx.user.update({
           where: { id: user.id },
-          data: { email: wanted, emailVerified: new Date(), pendingEmail: null },
+          data: { email: wanted, emailVerified: new Date(), pendingEmail: null, pendingEmailAt: null },
         });
         await tx.verificationToken.deleteMany({
           where: { identifier: { in: [user.email, resetTokenId(user.id), emailChangeTokenId(user.id)] } },
@@ -414,7 +470,10 @@ export class EmailVerificationService {
   private async dropTakenChange(userId: string, address: string, spentToken: string) {
     await this.db.$transaction(async (tx) => {
       await lockEmailOf(tx, userId);
-      const cleared = await tx.user.updateMany({ where: { id: userId, pendingEmail: address }, data: { pendingEmail: null } });
+      const cleared = await tx.user.updateMany({
+        where: { id: userId, pendingEmail: address },
+        data: { pendingEmail: null, pendingEmailAt: null },
+      });
       await tx.verificationToken.deleteMany({
         where: cleared.count ? { identifier: emailChangeTokenId(userId) } : { token: spentToken },
       });

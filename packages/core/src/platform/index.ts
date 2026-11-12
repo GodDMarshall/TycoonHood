@@ -8,6 +8,7 @@ export {
   EmailVerificationService, emailVerification,
   InvalidVerificationTokenError, AlreadyVerifiedError, VerificationRateLimitError,
   EmailChangeEndedError, EmailChangeTakenError, NoEmailChangeError,
+  EmailChangeNotYetError, emailChangeNotYetMessage, emailChangeOpensAt, UNCONFIRMED_CHANGE_WAIT_MS,
   VERIFY_TTL_MS, VERIFY_RESEND_LIMIT, VERIFY_RESEND_WINDOW_MS,
 } from "./email-verification";
 export type { IssuedVerification, IssuedEmailChange, Confirmation } from "./email-verification";

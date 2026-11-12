@@ -3,7 +3,17 @@ import Link from "next/link";
 import { Page, PageHeader } from "../../../components/app/page";
 import { requireUser } from "../../../lib/guard";
 import { prisma } from "@tycoonhood/db";
-import { accountSettings, activeDiscordTransport, discord, formatDayTime, memberZone, privacyShows, profileCompletion, sessions } from "@tycoonhood/core";
+import {
+  accountSettings,
+  activeDiscordTransport,
+  discord,
+  emailChangeOpensAt,
+  formatDayTime,
+  memberZone,
+  privacyShows,
+  profileCompletion,
+  sessions,
+} from "@tycoonhood/core";
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Field, Input, Notice, SectionRule, Select, Textarea } from "@tycoonhood/ui";
 import { getCurrentSession } from "../../../lib/auth";
 import { mailMode } from "../../../lib/mail";
@@ -56,6 +66,9 @@ export default async function SettingsPage() {
   const zones = timeZones();
   const zone = memberZone(profile.timezone);
   const otherDevices = deviceSessions.filter((s) => s.id !== session.id).length;
+  // A change away from an address never confirmed waits a day before its link works.
+  const changeOpens = user.pendingEmail ? emailChangeOpensAt(user) : null;
+  const changeWaits = changeOpens !== null && changeOpens.getTime() > Date.now();
 
   return (
     <Page width="narrow">
@@ -135,6 +148,11 @@ export default async function SettingsPage() {
               <p className="text-[14px] text-ink-1">
                 Waiting for you to confirm <span className="font-medium">{user.pendingEmail}</span> — until then you sign in with {user.email}.
               </p>
+              {changeWaits && (
+                <p className="text-[13px] text-ink-2">
+                  {user.email} was never confirmed, so the change waits a day: the link works from {formatDayTime(changeOpens, zone)}.
+                </p>
+              )}
               {changeLink === "off" && (
                 <p className="text-[13px] text-ink-2">
                   We can&rsquo;t send the confirmation link: email isn&rsquo;t available right now. Try again later, or {contact}.
@@ -176,6 +194,7 @@ export default async function SettingsPage() {
                   {mail === "dev" && <>Dev mode: the confirmation link goes to the server log, not by email. </>}
                   Your email changes only when the link is used, and that signs out every device except the one you use it on.
                   {mail === "live" && user.emailVerified && <> {user.email} then gets a link that can undo the change for 7 days.</>}
+                  {!user.emailVerified && <> {user.email} was never confirmed, so the link works only from a day after you ask.</>}
                 </p>
               </ActionForm>
             )}

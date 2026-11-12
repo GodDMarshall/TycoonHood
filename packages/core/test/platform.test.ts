@@ -11,9 +11,14 @@ import {
   VerificationRateLimitError,
   AlreadyVerifiedError,
   EmailChangeEndedError,
+  EmailChangeNotYetError,
   EmailChangeTakenError,
+  emailChangeNotYetMessage,
+  emailChangeOpensAt,
   NoEmailChangeError,
+  UNCONFIRMED_CHANGE_WAIT_MS,
   VERIFY_RESEND_LIMIT,
+  VERIFY_TTL_MS,
   type Confirmation,
   type EmailChangeCancelReason,
   type IssuedEmailChange,
@@ -29,7 +34,7 @@ import { EMAIL_HOLD_MS, EmailChangeTooSoonError, emailChangeTooSoonMessage } fro
 import { formatIst } from "../src/time/ist";
 import { formatDayTime } from "../src/time/format";
 import { EmailUndoService, InvalidUndoLinkError, type UndoneEmailChange } from "../src/platform/email-undo";
-import { createTestUser, uid } from "./helpers";
+import { askedADayAgo, createTestUser, uid } from "./helpers";
 
 const verification = new EmailVerificationService(prisma);
 const accounts = new AccountService(prisma);
@@ -119,6 +124,7 @@ describe("Email verification — token lifecycle", () => {
     const change = await accountSettings.changeEmail(user.id, address("new"), PASSWORD);
     // Asking is not changing: the current address's link still works until then.
     expect(await verification.hasLiveLink(user.email)).toBe(true);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     await verification.confirm(change!.rawToken);
     // Deleted by the change itself, not only refused later because no account has that address now.
     expect(await verification.hasLiveLink(user.email)).toBe(false);
@@ -337,6 +343,7 @@ describe("Reset links die when the account is secured", () => {
     const { user, email } = await memberWithPassword();
     const { issued } = await resets.requestReset(email);
     const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     await verification.confirm(change!.rawToken);
     await expect(resets.resetPassword(issued!.rawToken, "attacker password 1")).rejects.toBeInstanceOf(InvalidResetTokenError);
     await expect(accounts.authenticate({ email: change!.newEmail, password: PASSWORD })).resolves.toBeTruthy();
@@ -393,6 +400,7 @@ describe("Email change — waits for the new address", () => {
     const elsewhere = await sessions.create(user.id);
     const next = address("moved");
     const change = await accountSettings.changeEmail(user.id, next, PASSWORD);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
 
     const done = await verification.confirm(change!.rawToken, { keepSessionId: here.session.id });
     expect(done.kind).toBe("email-change");
@@ -417,6 +425,7 @@ describe("Email change — waits for the new address", () => {
     const mine = await sessions.create(user.id);
     const theirs = await sessions.create(stranger.user.id);
     const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     await verification.confirm(change!.rawToken, { keepSessionId: theirs.session.id });
     expect(await sessions.resolve(mine.raw)).toBeNull();
     expect(await sessions.resolve(theirs.raw)).not.toBeNull();
@@ -434,6 +443,7 @@ describe("Email change — waits for the new address", () => {
     expect(now.email).toBe(email);
     expect(now.pendingEmail).toBe(second!.newEmail); // still waiting: a new link can be sent
 
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     const third = await verification.resendEmailChange(user.id);
     await verification.confirm(third.rawToken);
     await expect(verification.confirm(third.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
@@ -466,6 +476,9 @@ describe("Email change — waits for the new address", () => {
     const wanted = address("shared");
     const ca = await accountSettings.changeEmail(a.user.id, wanted, PASSWORD);
     const cb = await accountSettings.changeEmail(b.user.id, wanted, PASSWORD);
+    // Neither address was ever confirmed, so each change waits a day first.
+    await askedADayAgo(a.user.id);
+    await askedADayAgo(b.user.id);
     await verification.confirm(cb!.rawToken);
     await expect(verification.confirm(ca!.rawToken)).rejects.toBeInstanceOf(EmailChangeTakenError);
     expect((await prisma.user.findUniqueOrThrow({ where: { id: b.user.id } })).email).toBe(wanted);
@@ -478,6 +491,9 @@ describe("Email change — waits for the new address", () => {
     const wanted = address("race");
     const ca = await accountSettings.changeEmail(a.user.id, wanted, PASSWORD);
     const cb = await accountSettings.changeEmail(b.user.id, wanted, PASSWORD);
+    // Neither address was ever confirmed, so each change waits a day first.
+    await askedADayAgo(a.user.id);
+    await askedADayAgo(b.user.id);
     const results = await Promise.allSettled([verification.confirm(ca!.rawToken), verification.confirm(cb!.rawToken)]);
     expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
     const lost = results.find((r): r is PromiseRejectedResult => r.status === "rejected");
@@ -809,6 +825,7 @@ describe("Resending a change link while the change moves", () => {
     const request = (await requesting!.promise)!;
     expect(resent.newEmail).toBe(first);
     await expect(verification.confirm(resent.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     const done = await verification.confirm(request.rawToken);
     expect(done.user.email).toBe(second);
     expect(waitedOn).toBe("advisory"); // the request waited for the resend to commit
@@ -822,6 +839,7 @@ describe("Resending a change link while the change moves", () => {
   it.each(endChange)("a resend that meets the change being %s waits for it, then refuses", async (_how, end) => {
     const { user } = await memberWithPassword();
     const change = await accountSettings.changeEmail(user.id, address("moving"), PASSWORD);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     let resending: Started<IssuedEmailChange> | undefined;
     let waitedOn: string | null = null;
     const racing = new EmailVerificationService(
@@ -877,8 +895,8 @@ async function moveTo(userId: string, to: string) {
  */
 async function waitingChangeAnyway(userId: string, to: string) {
   return prisma.$transaction(async (tx) => {
-    const user = await tx.user.update({ where: { id: userId }, data: { pendingEmail: to } });
-    return verification.issueEmailChangeIn(tx, { id: userId, email: user.email, pendingEmail: to });
+    const user = await tx.user.update({ where: { id: userId }, data: { pendingEmail: to, pendingEmailAt: new Date() } });
+    return verification.issueEmailChangeIn(tx, { ...user, pendingEmail: to });
   });
 }
 
@@ -1153,6 +1171,7 @@ describe("Deletion requests follow the account, not its address", () => {
     const { user, email: oldEmail } = await memberWithPassword();
     const filed = await accountSettings.requestDeletion(user.id, "moving on");
     const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     await verification.confirm(change!.rawToken);
     expect((await accountSettings.pendingDeletion(user.id))?.id).toBe(filed.id);
     expect((await accountSettings.requestDeletion(user.id)).id).toBe(filed.id); // still one request
@@ -1194,6 +1213,7 @@ describe("Email change away from an address never confirmed", () => {
     const { user, email: oldEmail } = await memberWithPassword(); // registration leaves the address unconfirmed
     const newEmail = address("fixed");
     const change = await accountSettings.changeEmail(user.id, newEmail, PASSWORD);
+    await askedADayAgo(user.id); // it waits a day first (see the next block)
     const done = await verification.confirm(change!.rawToken);
     expect(done).toMatchObject({ kind: "email-change", previousEmail: oldEmail, undo: null });
     expect(done.user).toMatchObject({ email: newEmail, emailVerified: expect.any(Date) });
@@ -1210,12 +1230,105 @@ describe("Email change away from an address never confirmed", () => {
     const back = await waitingChangeAnyway(user.id, oldEmail);
     // The address it leaves is unconfirmed again, as the undo test above makes one.
     await prisma.user.update({ where: { id: user.id }, data: { emailVerified: null } });
+    await askedADayAgo(user.id); // so the change waits a day first (see the next block)
     const done = await verification.confirm(back.rawToken);
     expect(done).toMatchObject({ kind: "email-change", previousEmail: newEmail, undo: null });
     expect(await prisma.emailHold.count({ where: { userId: user.id } })).toBe(0);
     await expect(undos.undo(undo.rawToken)).rejects.toBeInstanceOf(InvalidUndoLinkError);
     await expect(accounts.register({ email: newEmail, ...SQUATTER })).resolves.toMatchObject({ email: newEmail });
     expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+  });
+});
+
+// ── So nothing can undo a change away from such an address once it happens.
+// It waits a day instead: the owner of the address was told of the request,
+// and a new password cancels it. A stranger at a typo address gains nothing
+// from the wait, as they can already reset the account's password.
+
+describe("A change away from an address never confirmed waits a day", () => {
+  it("its link is refused until a day after the request, and is not spent: it works from then", async () => {
+    const { user, email } = await memberWithPassword(); // registration leaves the address unconfirmed
+    const newEmail = address("later");
+    const asked = Date.now();
+    const change = await accountSettings.changeEmail(user.id, newEmail, PASSWORD);
+    // Used at once, as anyone with the password and the new mailbox could: refused, and nothing changes.
+    const early = await verification.confirm(change!.rawToken).then(() => null, (e: unknown) => e);
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(email);
+    expect(early).toBeInstanceOf(EmailChangeNotYetError);
+    // The refusal and the request agree on when the link starts to work: a day after the request, at the next whole minute.
+    const { opensAt } = early as EmailChangeNotYetError;
+    expect(change!.opensAt).toEqual(opensAt);
+    expect(opensAt.getTime()).toBeGreaterThanOrEqual(asked + UNCONFIRMED_CHANGE_WAIT_MS);
+    expect(opensAt.getTime()).toBeLessThanOrEqual(Date.now() + UNCONFIRMED_CHANGE_WAIT_MS + 60_000);
+    expect(opensAt.getTime() % 60_000).toBe(0);
+    expect((early as Error).message).toBe(emailChangeNotYetMessage(opensAt));
+    // It works for the usual 24 hours from then, and the refusal did not spend it.
+    expect(change!.expires.getTime()).toBe(opensAt.getTime() + VERIFY_TTL_MS);
+    expect(await verification.hasLiveEmailChangeLink(user.id)).toBe(true);
+
+    await askedADayAgo(user.id);
+    const done = await verification.confirm(change!.rawToken);
+    expect(done).toMatchObject({ kind: "email-change", previousEmail: email, undo: null });
+    expect(done.user).toMatchObject({ email: newEmail, pendingEmail: null, pendingEmailAt: null });
+  });
+
+  it("its owner, told of the request, stops it with a new password before then, and the link never works", async () => {
+    const { user, email } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("taker"), PASSWORD);
+    await expect(verification.confirm(change!.rawToken)).rejects.toBeInstanceOf(EmailChangeNotYetError);
+    // The notice to the owner's address says to reset the password before then. The reset cancels the change.
+    const { issued } = await resets.requestReset(email);
+    await resets.resetPassword(issued!.rawToken, "owners new password");
+    await expect(verification.confirm(change!.rawToken)).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    expect(await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).toMatchObject({ email, pendingEmail: null, pendingEmailAt: null });
+  });
+
+  it("does not hold up an owner who confirms the address meanwhile: the change goes ahead, and the address is held with an undo link", async () => {
+    const { user, email } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("mine"), PASSWORD);
+    await verification.verify((await verification.issue(user.id)).rawToken);
+    const done = await verification.confirm(change!.rawToken);
+    expect(done).toMatchObject({ kind: "email-change", previousEmail: email, undo: { rawToken: expect.any(String) } });
+    expect(await prisma.emailHold.findFirst({ where: { userId: user.id } })).toMatchObject({ address: email });
+  });
+
+  it("does not apply to a confirmed address: its link works at once, for 24 hours", async () => {
+    const { user } = await confirmedMember();
+    const before = Date.now();
+    const change = await accountSettings.changeEmail(user.id, address("now"), PASSWORD);
+    expect(change!.opensAt).toBeNull();
+    expect(change!.expires.getTime()).toBeGreaterThanOrEqual(before + VERIFY_TTL_MS);
+    expect(change!.expires.getTime()).toBeLessThanOrEqual(Date.now() + VERIFY_TTL_MS);
+    await expect(verification.confirm(change!.rawToken)).resolves.toMatchObject({ kind: "email-change" });
+  });
+
+  it("a resend keeps the wait, and a new request starts it again", async () => {
+    const { user } = await memberWithPassword();
+    const first = await accountSettings.changeEmail(user.id, address("first"), PASSWORD);
+    const resent = await verification.resendEmailChange(user.id);
+    expect(resent.opensAt).toEqual(first!.opensAt);
+    expect(resent.expires.getTime()).toBe(first!.opensAt!.getTime() + VERIFY_TTL_MS);
+    // Once the day is over, a resent link works at once, for 24 hours from the resend.
+    await askedADayAgo(user.id);
+    const later = Date.now();
+    const again = await verification.resendEmailChange(user.id);
+    expect(again.opensAt).toBeNull();
+    expect(again.expires.getTime()).toBeGreaterThanOrEqual(later + VERIFY_TTL_MS);
+    // A new request, by whoever has the password, waits a day again: its notice tells the owner anew.
+    const second = await accountSettings.changeEmail(user.id, address("second"), PASSWORD);
+    expect(second!.opensAt!.getTime()).toBeGreaterThan(Date.now() + UNCONFIRMED_CHANGE_WAIT_MS - 60_000);
+    await expect(verification.confirm(second!.rawToken)).rejects.toBeInstanceOf(EmailChangeNotYetError);
+  });
+
+  it("opens at the first whole minute a day after the request, and the refusal names it in India time, as public pages do", () => {
+    const asked = new Date("2026-11-12T09:34:20Z"); // 15:04:20 in India
+    const opensAt = emailChangeOpensAt({ emailVerified: null, pendingEmailAt: asked });
+    expect(opensAt).toEqual(new Date("2026-11-13T09:35:00Z"));
+    expect(emailChangeOpensAt({ emailVerified: new Date(), pendingEmailAt: asked })).toBeNull();
+    const message = emailChangeNotYetMessage(opensAt!);
+    expect(message).toContain("from 13 Nov 2026, 15:05 IST.");
+    expect(message).toMatch(/never confirmed/);
+    expect(message).toMatch(/has not changed/);
   });
 });
 
@@ -1326,6 +1439,7 @@ describe("Reset requests", () => {
   it("a request that straddles a confirmed change issues nothing for the address the change replaced", async () => {
     const { user, email } = await memberWithPassword();
     const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     let requesting: Started<ResetRequest> | undefined;
     const racing = new EmailVerificationService(
       // The change has deleted the old address's links and has not committed yet.
@@ -1446,6 +1560,7 @@ describe("Account flows wait for each other instead of deadlocking", () => {
   it("a reset submitted while a change is being confirmed waits for it, then fails cleanly", async () => {
     const { user, email } = await memberWithPassword();
     const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    await askedADayAgo(user.id); // the address was never confirmed, so the change waits a day first
     const { issued } = await resets.requestReset(email);
     let resetting: Started<unknown> | undefined;
     let waitedOn: string | null = null;
@@ -1466,11 +1581,15 @@ describe("Account flows wait for each other instead of deadlocking", () => {
 });
 
 describe("Confirmation links take the account's lock", () => {
-  /** A member who never confirmed their address, with a confirmation link for it out and a change to another address waiting. */
+  /**
+   * A member who never confirmed their address, with a confirmation link for it out and a change to
+   * another address waiting, asked for a day ago: such a change waits that long before it can happen.
+   */
   async function unconfirmedWithChange() {
     const { user, email } = await memberWithPassword();
     const link = await verification.issue(user.id);
     const change = (await accountSettings.changeEmail(user.id, address("moving"), PASSWORD))!;
+    await askedADayAgo(user.id);
     return { user, email, link, change };
   }
 

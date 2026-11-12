@@ -146,6 +146,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   pendingEmail: 'pendingEmail',
+  pendingEmailAt: 'pendingEmailAt',
   name: 'name',
   image: 'image',
   role: 'role',

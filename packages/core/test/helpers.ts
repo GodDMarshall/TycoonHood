@@ -1,5 +1,6 @@
 import { prisma } from "@tycoonhood/db";
 import { randomUUID } from "node:crypto";
+import { UNCONFIRMED_CHANGE_WAIT_MS } from "../src/platform/email-verification";
 
 /** Each test creates its own throwaway member — tests never share state. */
 export async function createTestUser() {
@@ -16,3 +17,17 @@ export async function createTestUser() {
 }
 
 export const uid = () => randomUUID();
+
+/**
+ * As if the member's waiting email change was asked for a day ago (and a
+ * minute, as the link works from a whole minute). A change away from an
+ * address never confirmed can be confirmed only from then
+ * (UNCONFIRMED_CHANGE_WAIT_MS), so a test about something else that starts
+ * from such a member moves its request back first.
+ */
+export async function askedADayAgo(userId: string) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { pendingEmailAt: new Date(Date.now() - UNCONFIRMED_CHANGE_WAIT_MS - 60_000) },
+  });
+}

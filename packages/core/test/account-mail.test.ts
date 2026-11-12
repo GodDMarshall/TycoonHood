@@ -42,6 +42,28 @@ describe("Account security email", () => {
     expect(m.text).toContain(`${SITE}/forgot-password`);
   });
 
+  it("a change away from an address never confirmed: both say when the link starts to work, in India time, and the notice says to act before then", () => {
+    const opensAt = new Date("2026-11-13T09:35:00Z"); // 15:05 in India: a link opens at a whole minute
+    const link = emailChangeLinkMail(`${SITE}/verify-email/abc`, opensAt);
+    expect(link.text).toContain(`${SITE}/verify-email/abc`);
+    expect(link.text).toMatch(/never confirmed, so the change waits a day/);
+    expect(link.text).toContain("from 13 Nov 2026, 15:05 IST");
+    expect(link.text).toMatch(/changes only when the link is used/);
+
+    const notice = emailChangeRequestedMail("newperson@example.com", SITE, opensAt);
+    expect(notice.text).toContain("ne***@ex***.com");
+    expect(notice.text).toMatch(/This address was never confirmed, so the change can't happen before 13 Nov 2026, 15:05 IST/);
+    expect(notice.text).toMatch(/it can't be undone/);
+    expect(notice.text).toMatch(/If this wasn't you, someone knows your password\. Before 13 Nov 2026, 15:05 IST, change it/);
+    expect(notice.text).toContain(`${SITE}/forgot-password`);
+    expect(notice.text).toMatch(/A new password cancels the change/);
+
+    // With no wait, neither speaks of one.
+    for (const m of [emailChangeLinkMail(`${SITE}/verify-email/abc`, null), emailChangeRequestedMail("newperson@example.com", SITE, null)]) {
+      expect(m.text).not.toMatch(/never confirmed|IST/);
+    }
+  });
+
   it("the notice to the old address, once changed, masks the new one and carries the undo link", () => {
     const m = emailChangedMail("newperson@example.com", `${SITE}/undo-email/xyz`);
     expect(m.text).toContain("ne***@ex***.com");

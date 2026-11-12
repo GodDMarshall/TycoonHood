@@ -96,7 +96,7 @@ export class EmailUndoService {
         await tx.emailHold.delete({ where: { id: hold.id } });
         await tx.user.update({
           where: { id: userId },
-          data: { email: hold.address, emailVerified: new Date(), pendingEmail: null },
+          data: { email: hold.address, emailVerified: new Date(), pendingEmail: null, pendingEmailAt: null },
         });
         await tx.passwordCredential.updateMany({ where: { userId }, data: { hash: unknownPasswordHash } });
         await tx.session.deleteMany({ where: { userId } });

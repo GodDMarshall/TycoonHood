@@ -87,7 +87,7 @@ export async function putBackChange(db: PrismaClient, where: { undoToken: string
       await tx.emailHold.delete({ where: { id: hold.id } });
       await tx.user.update({
         where: { id: userId },
-        data: { email: hold.address, emailVerified: new Date(), pendingEmail: null },
+        data: { email: hold.address, emailVerified: new Date(), pendingEmail: null, pendingEmailAt: null },
       });
       await tx.verificationToken.deleteMany({
         where: { identifier: { in: [hold.changedTo, resetTokenId(userId), emailChangeTokenId(userId)] } },

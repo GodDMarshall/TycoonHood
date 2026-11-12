@@ -3,9 +3,12 @@
  *
  *  · change email: needs the current password, and waits for the new
  *    address to be confirmed. The address asked for is kept in
- *    User.pendingEmail and gets a link; the current address gets a notice
- *    and stays the sign-in and reset address until the link is used (see
- *    EmailVerificationService.confirm, which makes the switch).
+ *    User.pendingEmail, with when it was asked for, and gets a link; the
+ *    current address gets a notice and stays the sign-in and reset address
+ *    until the link is used (see EmailVerificationService.confirm, which
+ *    makes the switch). If the current address was never confirmed, the
+ *    link works only a day after the request (UNCONFIRMED_CHANGE_WAIT_MS):
+ *    nothing could undo the change, so its owner gets that day to stop it.
  *  · change password: needs the current password; every OTHER session is
  *    signed out, the one making the change stays. Reset links and a waiting
  *    email change die with the old password, even a change asked for at the
@@ -114,8 +117,16 @@ export class AccountSettingsService {
       // Not while the last change can still be undone: a second change would end its link.
       const until = await undoableUntil(tx, userId);
       if (until) throw new EmailChangeTooSoonError(until);
-      await tx.user.update({ where: { id: userId }, data: { pendingEmail: newEmail } });
-      const issued = await this.verification.issueEmailChangeIn(tx, { id: userId, email: user.email, pendingEmail: newEmail });
+      // A new request starts its own wait, if it has one: its notice tells the owner of the address anew.
+      const askedAt = new Date();
+      await tx.user.update({ where: { id: userId }, data: { pendingEmail: newEmail, pendingEmailAt: askedAt } });
+      const issued = await this.verification.issueEmailChangeIn(tx, {
+        id: userId,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        pendingEmail: newEmail,
+        pendingEmailAt: askedAt,
+      });
       await this.audit.log(
         {
           actorId: userId,

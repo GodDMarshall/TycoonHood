@@ -41,6 +41,7 @@ export type UserMinAggregateOutputType = {
   email: string | null
   emailVerified: Date | null
   pendingEmail: string | null
+  pendingEmailAt: Date | null
   name: string | null
   image: string | null
   role: $Enums.UserRole | null
@@ -57,6 +58,7 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   emailVerified: Date | null
   pendingEmail: string | null
+  pendingEmailAt: Date | null
   name: string | null
   image: string | null
   role: $Enums.UserRole | null
@@ -73,6 +75,7 @@ export type UserCountAggregateOutputType = {
   email: number
   emailVerified: number
   pendingEmail: number
+  pendingEmailAt: number
   name: number
   image: number
   role: number
@@ -101,6 +104,7 @@ export type UserMinAggregateInputType = {
   email?: true
   emailVerified?: true
   pendingEmail?: true
+  pendingEmailAt?: true
   name?: true
   image?: true
   role?: true
@@ -117,6 +121,7 @@ export type UserMaxAggregateInputType = {
   email?: true
   emailVerified?: true
   pendingEmail?: true
+  pendingEmailAt?: true
   name?: true
   image?: true
   role?: true
@@ -133,6 +138,7 @@ export type UserCountAggregateInputType = {
   email?: true
   emailVerified?: true
   pendingEmail?: true
+  pendingEmailAt?: true
   name?: true
   image?: true
   role?: true
@@ -236,6 +242,7 @@ export type UserGroupByOutputType = {
   email: string
   emailVerified: Date | null
   pendingEmail: string | null
+  pendingEmailAt: Date | null
   name: string | null
   image: string | null
   role: $Enums.UserRole
@@ -275,6 +282,7 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   pendingEmail?: Prisma.StringNullableFilter<"User"> | string | null
+  pendingEmailAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   name?: Prisma.StringNullableFilter<"User"> | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -336,6 +344,7 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   pendingEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -400,6 +409,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   pendingEmail?: Prisma.StringNullableFilter<"User"> | string | null
+  pendingEmailAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   name?: Prisma.StringNullableFilter<"User"> | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -461,6 +471,7 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   pendingEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -485,6 +496,7 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   emailVerified?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   pendingEmail?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  pendingEmailAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
@@ -501,6 +513,7 @@ export type UserCreateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -561,6 +574,7 @@ export type UserUncheckedCreateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -621,6 +635,7 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -681,6 +696,7 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -741,6 +757,7 @@ export type UserCreateManyInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -757,6 +774,7 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -772,6 +790,7 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -788,6 +807,7 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   pendingEmail?: Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -809,6 +829,7 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   pendingEmail?: Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -825,6 +846,7 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   pendingEmail?: Prisma.SortOrder
+  pendingEmailAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -1562,6 +1584,7 @@ export type UserCreateWithoutCredentialInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -1621,6 +1644,7 @@ export type UserUncheckedCreateWithoutCredentialInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -1696,6 +1720,7 @@ export type UserUpdateWithoutCredentialInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -1755,6 +1780,7 @@ export type UserUncheckedUpdateWithoutCredentialInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -1814,6 +1840,7 @@ export type UserCreateWithoutAccountsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -1873,6 +1900,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -1948,6 +1976,7 @@ export type UserUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2007,6 +2036,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2066,6 +2096,7 @@ export type UserCreateWithoutSessionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2125,6 +2156,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2200,6 +2232,7 @@ export type UserUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2259,6 +2292,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2318,6 +2352,7 @@ export type UserCreateWithoutEmailHoldsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2377,6 +2412,7 @@ export type UserUncheckedCreateWithoutEmailHoldsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2452,6 +2488,7 @@ export type UserUpdateWithoutEmailHoldsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2511,6 +2548,7 @@ export type UserUncheckedUpdateWithoutEmailHoldsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2570,6 +2608,7 @@ export type UserCreateWithoutProfileInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2629,6 +2668,7 @@ export type UserUncheckedCreateWithoutProfileInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2704,6 +2744,7 @@ export type UserUpdateWithoutProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2763,6 +2804,7 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -2822,6 +2864,7 @@ export type UserCreateWithoutQuizAttemptsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2881,6 +2924,7 @@ export type UserUncheckedCreateWithoutQuizAttemptsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -2956,6 +3000,7 @@ export type UserUpdateWithoutQuizAttemptsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3015,6 +3060,7 @@ export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3074,6 +3120,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3133,6 +3180,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3208,6 +3256,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3267,6 +3316,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3326,6 +3376,7 @@ export type UserCreateWithoutLessonProgressInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3385,6 +3436,7 @@ export type UserUncheckedCreateWithoutLessonProgressInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3460,6 +3512,7 @@ export type UserUpdateWithoutLessonProgressInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3519,6 +3572,7 @@ export type UserUncheckedUpdateWithoutLessonProgressInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3578,6 +3632,7 @@ export type UserCreateWithoutCertificatesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3637,6 +3692,7 @@ export type UserUncheckedCreateWithoutCertificatesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3712,6 +3768,7 @@ export type UserUpdateWithoutCertificatesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3771,6 +3828,7 @@ export type UserUncheckedUpdateWithoutCertificatesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -3830,6 +3888,7 @@ export type UserCreateWithoutXpEventsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3889,6 +3948,7 @@ export type UserUncheckedCreateWithoutXpEventsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -3964,6 +4024,7 @@ export type UserUpdateWithoutXpEventsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4023,6 +4084,7 @@ export type UserUncheckedUpdateWithoutXpEventsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4082,6 +4144,7 @@ export type UserCreateWithoutRankInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4141,6 +4204,7 @@ export type UserUncheckedCreateWithoutRankInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4229,6 +4293,7 @@ export type UserScalarWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   pendingEmail?: Prisma.StringNullableFilter<"User"> | string | null
+  pendingEmailAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   name?: Prisma.StringNullableFilter<"User"> | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -4245,6 +4310,7 @@ export type UserCreateWithoutAchievementsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4304,6 +4370,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4379,6 +4446,7 @@ export type UserUpdateWithoutAchievementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4438,6 +4506,7 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4497,6 +4566,7 @@ export type UserCreateWithoutParticipationsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4556,6 +4626,7 @@ export type UserUncheckedCreateWithoutParticipationsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4631,6 +4702,7 @@ export type UserUpdateWithoutParticipationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4690,6 +4762,7 @@ export type UserUncheckedUpdateWithoutParticipationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4749,6 +4822,7 @@ export type UserCreateWithoutMissionCompletionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4808,6 +4882,7 @@ export type UserUncheckedCreateWithoutMissionCompletionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -4883,6 +4958,7 @@ export type UserUpdateWithoutMissionCompletionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -4942,6 +5018,7 @@ export type UserUncheckedUpdateWithoutMissionCompletionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5001,6 +5078,7 @@ export type UserCreateWithoutStreakInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5060,6 +5138,7 @@ export type UserUncheckedCreateWithoutStreakInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5135,6 +5214,7 @@ export type UserUpdateWithoutStreakInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5194,6 +5274,7 @@ export type UserUncheckedUpdateWithoutStreakInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5253,6 +5334,7 @@ export type UserCreateWithoutNotificationsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5312,6 +5394,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5387,6 +5470,7 @@ export type UserUpdateWithoutNotificationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5446,6 +5530,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5505,6 +5590,7 @@ export type UserCreateWithoutLedgerAccountInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5564,6 +5650,7 @@ export type UserUncheckedCreateWithoutLedgerAccountInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5639,6 +5726,7 @@ export type UserUpdateWithoutLedgerAccountInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5698,6 +5786,7 @@ export type UserUncheckedUpdateWithoutLedgerAccountInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5757,6 +5846,7 @@ export type UserCreateWithoutOrdersInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5816,6 +5906,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -5891,6 +5982,7 @@ export type UserUpdateWithoutOrdersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -5950,6 +6042,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6009,6 +6102,7 @@ export type UserCreateWithoutDiscordLinkInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6068,6 +6162,7 @@ export type UserUncheckedCreateWithoutDiscordLinkInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6143,6 +6238,7 @@ export type UserUpdateWithoutDiscordLinkInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6202,6 +6298,7 @@ export type UserUncheckedUpdateWithoutDiscordLinkInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6261,6 +6358,7 @@ export type UserCreateWithoutTelegramLinkInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6320,6 +6418,7 @@ export type UserUncheckedCreateWithoutTelegramLinkInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6395,6 +6494,7 @@ export type UserUpdateWithoutTelegramLinkInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6454,6 +6554,7 @@ export type UserUncheckedUpdateWithoutTelegramLinkInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6513,6 +6614,7 @@ export type UserCreateWithoutMinerStateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6572,6 +6674,7 @@ export type UserUncheckedCreateWithoutMinerStateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6647,6 +6750,7 @@ export type UserUpdateWithoutMinerStateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6706,6 +6810,7 @@ export type UserUncheckedUpdateWithoutMinerStateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -6765,6 +6870,7 @@ export type UserCreateWithoutReferralsMadeInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6824,6 +6930,7 @@ export type UserUncheckedCreateWithoutReferralsMadeInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6888,6 +6995,7 @@ export type UserCreateWithoutReferralReceivedInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -6947,6 +7055,7 @@ export type UserUncheckedCreateWithoutReferralReceivedInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7022,6 +7131,7 @@ export type UserUpdateWithoutReferralsMadeInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7081,6 +7191,7 @@ export type UserUncheckedUpdateWithoutReferralsMadeInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7151,6 +7262,7 @@ export type UserUpdateWithoutReferralReceivedInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7210,6 +7322,7 @@ export type UserUncheckedUpdateWithoutReferralReceivedInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7269,6 +7382,7 @@ export type UserCreateWithoutWatchCompletionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7328,6 +7442,7 @@ export type UserUncheckedCreateWithoutWatchCompletionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7403,6 +7518,7 @@ export type UserUpdateWithoutWatchCompletionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7462,6 +7578,7 @@ export type UserUncheckedUpdateWithoutWatchCompletionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7521,6 +7638,7 @@ export type UserCreateWithoutMessagesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7580,6 +7698,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7655,6 +7774,7 @@ export type UserUpdateWithoutMessagesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7714,6 +7834,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7773,6 +7894,7 @@ export type UserCreateWithoutChannelReadsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7832,6 +7954,7 @@ export type UserUncheckedCreateWithoutChannelReadsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -7907,6 +8030,7 @@ export type UserUpdateWithoutChannelReadsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -7966,6 +8090,7 @@ export type UserUncheckedUpdateWithoutChannelReadsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8025,6 +8150,7 @@ export type UserCreateWithoutMessageReportsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8084,6 +8210,7 @@ export type UserUncheckedCreateWithoutMessageReportsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8159,6 +8286,7 @@ export type UserUpdateWithoutMessageReportsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8218,6 +8346,7 @@ export type UserUncheckedUpdateWithoutMessageReportsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8277,6 +8406,7 @@ export type UserCreateWithoutCommunityMuteInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8336,6 +8466,7 @@ export type UserUncheckedCreateWithoutCommunityMuteInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8411,6 +8542,7 @@ export type UserUpdateWithoutCommunityMuteInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8470,6 +8602,7 @@ export type UserUncheckedUpdateWithoutCommunityMuteInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8529,6 +8662,7 @@ export type UserCreateWithoutStandardItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8588,6 +8722,7 @@ export type UserUncheckedCreateWithoutStandardItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8663,6 +8798,7 @@ export type UserUpdateWithoutStandardItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8722,6 +8858,7 @@ export type UserUncheckedUpdateWithoutStandardItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8781,6 +8918,7 @@ export type UserCreateWithoutStandardTicksInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8840,6 +8978,7 @@ export type UserUncheckedCreateWithoutStandardTicksInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -8915,6 +9054,7 @@ export type UserUpdateWithoutStandardTicksInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -8974,6 +9114,7 @@ export type UserUncheckedUpdateWithoutStandardTicksInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9033,6 +9174,7 @@ export type UserCreateWithoutStandardDaysInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9092,6 +9234,7 @@ export type UserUncheckedCreateWithoutStandardDaysInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9167,6 +9310,7 @@ export type UserUpdateWithoutStandardDaysInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9226,6 +9370,7 @@ export type UserUncheckedUpdateWithoutStandardDaysInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9285,6 +9430,7 @@ export type UserCreateWithoutInstructorProfileInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9344,6 +9490,7 @@ export type UserUncheckedCreateWithoutInstructorProfileInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9419,6 +9566,7 @@ export type UserUpdateWithoutInstructorProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9478,6 +9626,7 @@ export type UserUncheckedUpdateWithoutInstructorProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9537,6 +9686,7 @@ export type UserCreateWithoutCourseReviewsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9596,6 +9746,7 @@ export type UserUncheckedCreateWithoutCourseReviewsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9671,6 +9822,7 @@ export type UserUpdateWithoutCourseReviewsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9730,6 +9882,7 @@ export type UserUncheckedUpdateWithoutCourseReviewsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9789,6 +9942,7 @@ export type UserCreateWithoutAffiliateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9848,6 +10002,7 @@ export type UserUncheckedCreateWithoutAffiliateInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -9923,6 +10078,7 @@ export type UserUpdateWithoutAffiliateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -9982,6 +10138,7 @@ export type UserUncheckedUpdateWithoutAffiliateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10041,6 +10198,7 @@ export type UserCreateWithoutCartItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10100,6 +10258,7 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10175,6 +10334,7 @@ export type UserUpdateWithoutCartItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10234,6 +10394,7 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10293,6 +10454,7 @@ export type UserCreateWithoutWishlistItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10352,6 +10514,7 @@ export type UserUncheckedCreateWithoutWishlistItemsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10427,6 +10590,7 @@ export type UserUpdateWithoutWishlistItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10486,6 +10650,7 @@ export type UserUncheckedUpdateWithoutWishlistItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10545,6 +10710,7 @@ export type UserCreateWithoutCouponRedemptionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10604,6 +10770,7 @@ export type UserUncheckedCreateWithoutCouponRedemptionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10679,6 +10846,7 @@ export type UserUpdateWithoutCouponRedemptionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10738,6 +10906,7 @@ export type UserUncheckedUpdateWithoutCouponRedemptionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10797,6 +10966,7 @@ export type UserCreateWithoutRefundRequestsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10856,6 +11026,7 @@ export type UserUncheckedCreateWithoutRefundRequestsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -10931,6 +11102,7 @@ export type UserUpdateWithoutRefundRequestsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -10990,6 +11162,7 @@ export type UserUncheckedUpdateWithoutRefundRequestsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11049,6 +11222,7 @@ export type UserCreateWithoutGroupMembershipsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11108,6 +11282,7 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11183,6 +11358,7 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11242,6 +11418,7 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11301,6 +11478,7 @@ export type UserCreateWithoutCommunityPostsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11360,6 +11538,7 @@ export type UserUncheckedCreateWithoutCommunityPostsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11435,6 +11614,7 @@ export type UserUpdateWithoutCommunityPostsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11494,6 +11674,7 @@ export type UserUncheckedUpdateWithoutCommunityPostsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11553,6 +11734,7 @@ export type UserCreateWithoutCommunityCommentsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11612,6 +11794,7 @@ export type UserUncheckedCreateWithoutCommunityCommentsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11687,6 +11870,7 @@ export type UserUpdateWithoutCommunityCommentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11746,6 +11930,7 @@ export type UserUncheckedUpdateWithoutCommunityCommentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11805,6 +11990,7 @@ export type UserCreateWithoutReactionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11864,6 +12050,7 @@ export type UserUncheckedCreateWithoutReactionsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -11939,6 +12126,7 @@ export type UserUpdateWithoutReactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -11998,6 +12186,7 @@ export type UserUncheckedUpdateWithoutReactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12057,6 +12246,7 @@ export type UserCreateWithoutReportsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12116,6 +12306,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12191,6 +12382,7 @@ export type UserUpdateWithoutReportsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12250,6 +12442,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12309,6 +12502,7 @@ export type UserCreateWithoutAuditLogsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12368,6 +12562,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12443,6 +12638,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12502,6 +12698,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12561,6 +12758,7 @@ export type UserCreateWithoutContactMessagesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12620,6 +12818,7 @@ export type UserUncheckedCreateWithoutContactMessagesInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12695,6 +12894,7 @@ export type UserUpdateWithoutContactMessagesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12754,6 +12954,7 @@ export type UserUncheckedUpdateWithoutContactMessagesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12813,6 +13014,7 @@ export type UserCreateManyRankInput = {
   email: string
   emailVerified?: Date | string | null
   pendingEmail?: string | null
+  pendingEmailAt?: Date | string | null
   name?: string | null
   image?: string | null
   role?: $Enums.UserRole
@@ -12828,6 +13030,7 @@ export type UserUpdateWithoutRankInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12887,6 +13090,7 @@ export type UserUncheckedUpdateWithoutRankInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -12946,6 +13150,7 @@ export type UserUncheckedUpdateManyWithoutRankInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pendingEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingEmailAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -13280,6 +13485,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   emailVerified?: boolean
   pendingEmail?: boolean
+  pendingEmailAt?: boolean
   name?: boolean
   image?: boolean
   role?: boolean
@@ -13342,6 +13548,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   emailVerified?: boolean
   pendingEmail?: boolean
+  pendingEmailAt?: boolean
   name?: boolean
   image?: boolean
   role?: boolean
@@ -13359,6 +13566,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   emailVerified?: boolean
   pendingEmail?: boolean
+  pendingEmailAt?: boolean
   name?: boolean
   image?: boolean
   role?: boolean
@@ -13376,6 +13584,7 @@ export type UserSelectScalar = {
   email?: boolean
   emailVerified?: boolean
   pendingEmail?: boolean
+  pendingEmailAt?: boolean
   name?: boolean
   image?: boolean
   role?: boolean
@@ -13387,7 +13596,7 @@ export type UserSelectScalar = {
   suspendedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "emailVerified" | "pendingEmail" | "name" | "image" | "role" | "xp" | "level" | "rankId" | "createdAt" | "updatedAt" | "suspendedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "emailVerified" | "pendingEmail" | "pendingEmailAt" | "name" | "image" | "role" | "xp" | "level" | "rankId" | "createdAt" | "updatedAt" | "suspendedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rank?: boolean | Prisma.User$rankArgs<ExtArgs>
   credential?: boolean | Prisma.User$credentialArgs<ExtArgs>
@@ -13502,6 +13711,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
      * decides who gets an address when a change is confirmed.
      */
     pendingEmail: string | null
+    /**
+     * When that change was asked for; set and cleared with `pendingEmail`. A
+     * change away from an address never confirmed waits a day from then.
+     */
+    pendingEmailAt: Date | null
     name: string | null
     image: string | null
     role: $Enums.UserRole
@@ -13986,6 +14200,7 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly emailVerified: Prisma.FieldRef<"User", 'DateTime'>
   readonly pendingEmail: Prisma.FieldRef<"User", 'String'>
+  readonly pendingEmailAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly image: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'UserRole'>
