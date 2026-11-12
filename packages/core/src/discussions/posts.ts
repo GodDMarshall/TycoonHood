@@ -16,7 +16,7 @@
  * GROUPS, OPPS, SKILLS and BOOK build on. SOCIAL owns the file; other units ask
  * SOCIAL, through the lead, for an addition instead of editing it.
  */
-import { Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
+import { CommunityPostKind, Prisma, prisma as defaultPrisma } from "@tycoonhood/db";
 import type { ModerationState, PrismaClient } from "@tycoonhood/db";
 import { isStaff } from "../auth/permissions";
 import { clip } from "../text/clip";
@@ -60,8 +60,18 @@ export const REACTION_LABEL: Record<ReactionKind, string> = { respect: "Respect"
 
 const HOUR = 3_600_000;
 
+const POST_KINDS: ReadonlySet<string> = new Set(Object.values(CommunityPostKind));
+
+/** A kind from a caller, checked against the schema's enum. */
+function postKind(kind: unknown): CommunityPostKind {
+  if (typeof kind !== "string" || !POST_KINDS.has(kind)) throw new DiscussionError("Unknown post kind.");
+  return kind as CommunityPostKind;
+}
+
 export interface PostSummary {
   id: string;
+  /** DISCUSSION unless the post was created with another kind. */
+  kind: CommunityPostKind;
   title: string;
   excerpt: string;
   state: ModerationState;
@@ -168,11 +178,13 @@ export class PostService {
 
   // ─────────────────────────────── reading
 
-  // TODO(lead, after P0a's schema lands): add `kind?: CommunityPostKind` to these options,
-  // default DISCUSSION, and filter on it in `where`: listPosts({ kind }) is frozen API (W1.4).
+  /**
+   * Frozen API (W1.4): `kind` narrows the list to one post kind. Without it the
+   * list holds every kind, as it did before kinds existed.
+   */
   async listPosts(
     viewer: DiscussionViewer,
-    opts: { categorySlug?: string | null; groupId?: string | null; page?: number; pageSize?: number } = {}
+    opts: { categorySlug?: string | null; groupId?: string | null; kind?: CommunityPostKind; page?: number; pageSize?: number } = {}
   ) {
     const pageSize = Math.min(Math.max(opts.pageSize ?? POSTS_PAGE_SIZE, 1), 50);
     const page = Math.max(1, Math.floor(opts.page ?? 1));
@@ -184,6 +196,7 @@ export class PostService {
         visibleWhere(viewer),
         opts.groupId ? { groupId: opts.groupId } : { groupId: null },
         opts.categorySlug ? { category: { slug: opts.categorySlug } } : {},
+        opts.kind ? { kind: postKind(opts.kind) } : {},
         // Archived categories drop out of the main feed for members.
         !opts.groupId && arch.categories.length && !isStaff(viewer)
           ? { OR: [{ categoryId: null }, { categoryId: { notIn: arch.categories } }] }
@@ -206,6 +219,7 @@ export class PostService {
     ]);
     const posts: PostSummary[] = rows.map((p) => ({
       id: p.id,
+      kind: p.kind,
       title: p.title,
       excerpt: excerpt(p.body),
       state: p.state,
@@ -272,6 +286,7 @@ export class PostService {
     const editDeadline = p.createdAt.getTime() + EDIT_WINDOW_MIN * 60_000;
     return {
       id: p.id,
+      kind: p.kind,
       title: p.title,
       body: p.body,
       state: p.state,
@@ -332,13 +347,20 @@ export class PostService {
     return body;
   }
 
-  // TODO(lead, after P0a's schema lands): add `kind?: CommunityPostKind` to `input`, default
-  // DISCUSSION, and write it in `data`: createPost({ kind }) is frozen API (W1.4).
+  /**
+   * Frozen API (W1.4): `kind` defaults to DISCUSSION. The caller decides who may
+   * use a kind (GROUPS checks groupCan(…, "announce") before an ANNOUNCEMENT);
+   * here only staff may post an ANNOUNCEMENT outside a group.
+   */
   async createPost(
     viewer: DiscussionViewer,
-    input: { title: string; body: string; categoryId?: string | null; groupId?: string | null },
+    input: { title: string; body: string; categoryId?: string | null; groupId?: string | null; kind?: CommunityPostKind },
     now = new Date()
   ) {
+    const kind = postKind(input.kind ?? CommunityPostKind.DISCUSSION);
+    if (kind === CommunityPostKind.ANNOUNCEMENT && !input.groupId && !isStaff(viewer)) {
+      throw new DiscussionError("Only staff post announcements in the main feed.");
+    }
     await this.assertCanWrite(viewer, now);
     const title = this.cleanTitle(input.title ?? "");
     const body = this.cleanBody(input.body ?? "", POST_BODY_MAX);
@@ -368,7 +390,7 @@ export class PostService {
     }
 
     const post = await this.db.communityPost.create({
-      data: { authorId: viewer.id, title, body, categoryId, groupId, createdAt: now },
+      data: { authorId: viewer.id, kind, title, body, categoryId, groupId, createdAt: now },
     });
     const { events } = await import("../events/bus");
     await events.emit({ type: "DISCUSSION_POSTED", userId: viewer.id, postId: post.id, at: now });
