@@ -211,7 +211,7 @@ export function describeCriteria(c: Criteria): string {
     ONBOARDED: "complete onboarding",
     LESSON_COMPLETED: n === 1 ? "complete a lesson" : `complete ${n} lessons`,
     COURSE_COMPLETED: n === 1 ? "finish a program" : `finish ${n} programs`,
-    // Each quiz counts once, in the window it was first passed (counters.ts).
+    // Each quiz counts once, in the window it was first passed (counters/quiz-passed.ts).
     QUIZ_PASSED: `${n === 1 ? "pass a quiz" : `pass ${n} quizzes`}${c.within ? " for the first time" : ""}`,
     CHALLENGE_COMPLETED: n === 1 ? "complete a challenge" : `complete ${n} challenges`,
     DAILY_ACTIVE: "check in today",
