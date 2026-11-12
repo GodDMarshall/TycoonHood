@@ -99,7 +99,7 @@ Any script that compares the migrations with the schema (for example with `--exi
 - `--with-pending` also applies `docs/ecosystem/pending-migrations` and checks the challenge evidence move.
 - `--from <database>` copies a local database (`CREATE DATABASE ... TEMPLATE`, which needs no other session connected to it), migrates the copy with `pnpm db:migrate:sql`, and checks rules every row must meet rather than fixture rows.
 
-Every check prints what it expected and what it found; the command exits 1 when any check fails.
+Every check prints what it expected and what it found; the command exits 1 when any check fails. A rule over a table with no rows proves nothing, so it is reported NOT EXERCISED, never PASS, and so is a group of checks that cannot run (a copy that already had these migrations). The summary lists them, and the command exits 1 unless `--allow-empty` is passed. A copy of a database that holds seed data only has no orders, sessions, referrals, enrolments or mission completions, so it leaves those backfills unexercised: before a release, rehearse from a copy of a populated database from before these migrations (the local development database with nothing connected to it, or a sanitized production snapshot).
 
 A schema change after these migrations is a new migration file, named after the last one. Never edit a file that has been applied anywhere: `migrate-sql.ts` checksums each file, comments included, and refuses a database where an applied file has changed.
 

@@ -6,6 +6,7 @@
  *   pnpm db:rehearse --with-pending     the same, then the migrations in docs/ecosystem/pending-migrations
  *   pnpm db:rehearse --from <database>  a copy of <database>, migrated by the real runner, then the checks
  *                                       that hold on any populated database (add --with-pending as above)
+ *   --allow-empty                       accept checks that had no rows to run over (NOT EXERCISED, below)
  *
  * What it proves. The living-ecosystem migrations (20261113000000 onwards)
  * apply in order, each in one transaction, on top of this repository's base
@@ -30,6 +31,13 @@
  * to the copy). Its checks are rules every row must meet, never counts of
  * fixture rows. Postgres copies a database only while no other session is
  * connected to it, so stop the app and tests that use the source first.
+ *
+ * A rule every row must meet proves nothing over a table with no rows, and a
+ * copy may have none: a database with seed data only has no orders, sessions
+ * or mission completions. Such a check is reported NOT EXERCISED, never PASS,
+ * and so is a group of checks that could not run at all (a copy that had the
+ * migrations already). The summary lists them, and the rehearsal fails
+ * unless --allow-empty accepts them. A wrong answer over no rows still fails.
  *
  * The drift check (both modes) runs prisma migrate diff from the throwaway
  * database to schema.prisma. It removes comment and blank lines and exactly
@@ -79,12 +87,14 @@ const PROGRAMME_GROUPS = [
   ["mindfulness-wellness-program", "mindfulness-wellness"],
 ];
 
-const USAGE = `Usage: pnpm db:rehearse [--with-pending] [--from <database>]
+const USAGE = `Usage: pnpm db:rehearse [--with-pending] [--from <database>] [--allow-empty]
 
   (no options)        rehearse on an empty throwaway database with the fixture rows
   --with-pending      also apply docs/ecosystem/pending-migrations and check them
   --from <database>   rehearse on a copy of <database> (CREATE DATABASE ... TEMPLATE),
-                      migrated by pnpm db:migrate:sql`;
+                      migrated by pnpm db:migrate:sql
+  --allow-empty       do not fail for checks that had no rows to run over; they are
+                      still listed as NOT EXERCISED`;
 
 class Refusal extends Error {}
 
@@ -103,7 +113,8 @@ let creating = null;
 /** Set by a signal: no new command starts after it. */
 let stopping = false;
 
-const results = { pass: 0, fail: 0, stopped: false };
+/** `idle`: the checks that had no rows to run over (NOT EXERCISED), by label. */
+const results = { pass: 0, fail: 0, idle: [], stopped: false };
 
 for (const [signal, code] of [["SIGINT", 130], ["SIGTERM", 143], ["SIGHUP", 129]]) {
   process.on(signal, () => {
@@ -143,17 +154,36 @@ async function main() {
   } finally {
     await cleanup();
   }
-  const counts = `${results.pass + results.fail} checks, ${results.pass} passed, ${results.fail} failed`;
+  const idle = results.idle.length;
+  const accepted = idle > 0 && opts.allowEmpty;
+  if (idle) {
+    console.log(
+      `\nNOT EXERCISED${accepted ? " (accepted with --allow-empty)" : ""}: ${idle === 1 ? "1 check" : `${idle} checks`} ` +
+        `had no rows to run over or could not run, so ${idle === 1 ? "it proves" : "they prove"} nothing about real data:`
+    );
+    for (const label of results.idle) console.log(`  - ${label}`);
+    if (!accepted) {
+      console.log(
+        "Rehearse from a copy of a database from before these migrations that holds such rows " +
+          "(pnpm db:rehearse --from <database>), or pass --allow-empty to accept them as not exercised."
+      );
+    }
+  }
+  const counts =
+    `${results.pass + results.fail + idle} checks, ${results.pass} passed, ${results.fail} failed` +
+    (idle ? `, ${idle} not exercised${accepted ? " (--allow-empty)" : ""}` : "");
+  const failed = results.fail > 0 || (idle > 0 && !accepted);
   if (results.stopped) console.log(`\nFAILED: the rehearsal did not run to the end (${counts} before it stopped).`);
-  else console.log(`\n${results.fail ? "FAILED" : "PASSED"}: ${counts}.`);
-  return results.fail || results.stopped ? 1 : 0;
+  else console.log(`\n${failed ? "FAILED" : "PASSED"}: ${counts}.`);
+  return failed || results.stopped ? 1 : 0;
 }
 
 function parseArgs(argv) {
-  const opts = { withPending: false, from: null, help: false };
+  const opts = { withPending: false, from: null, allowEmpty: false, help: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--with-pending") opts.withPending = true;
+    else if (a === "--allow-empty") opts.allowEmpty = true;
     else if (a === "--from") opts.from = argv[++i] ?? "";
     else if (a.startsWith("--from=")) opts.from = a.slice("--from=".length);
     else if (a === "--help" || a === "-h") opts.help = true;
@@ -451,9 +481,9 @@ async function rehearseCopy(name, opts) {
   const already = [...applied].filter((f) => f >= FIRST_NEW).sort();
   if (already.length) {
     heading("Backfills: rules every row meets");
-    console.log(
-      `      Not checked: the copy already had ${already.length} of the living-ecosystem migrations ` +
-        `(${already[0]} … ${already[already.length - 1]}), so its rows may have been written since by the app.`
+    notRun(
+      `the copy already had ${already.length} of the living-ecosystem migrations ` +
+        `(${already[0]} … ${already[already.length - 1]}), so its rows may have been written since by the app`
     );
   } else {
     await invariantChecks(before);
@@ -493,7 +523,8 @@ async function snapshot(name) {
         CROSS JOIN LATERAL jsonb_array_elements(
           CASE WHEN jsonb_typeof(p.progress->'submissions') = 'array' THEN p.progress->'submissions' ELSE '[]'::jsonb END) AS s`)
     ).rows;
-    return { applied, cooldowns, submissions };
+    const withSubmissionsKey = (await client.query(`SELECT count(*)::int AS n FROM "ChallengeParticipation" WHERE progress ? 'submissions'`)).rows[0].n;
+    return { applied, cooldowns, submissions, withSubmissionsKey };
   } finally {
     await client.end().catch(() => {});
   }
@@ -520,6 +551,28 @@ function report(where_, name, expected, actual) {
 }
 
 const check = (name, expected, actual) => report(section, name, expected, actual);
+
+/**
+ * Records a check over rows, `basis` saying how many it ran over ({ "Order rows": 4 },
+ * named in the label). When it finds nothing wrong but one of those counts is 0, it
+ * proved nothing about real data: NOT EXERCISED, never PASS. A wrong answer fails.
+ */
+function checkRows(name, basis, expected, actual, legend = "") {
+  const over = Object.entries(basis);
+  const label = `${name} (${over.map(([what, n]) => `${n} ${what}`).join(" and ")} checked)${legend ? ` ${legend}` : ""}`;
+  const empty = over.filter(([, n]) => n === 0).map(([what]) => what);
+  if (!empty.length || !same(expected, actual)) return check(label, expected, actual);
+  results.idle.push(`${section}: ${label}`);
+  console.log(`NOT EXERCISED  ${label}`);
+  console.log(`      there were no ${empty.join(" and no ")} to check, so this proves nothing about real data`);
+  return true;
+}
+
+/** Records a group of checks that could not run at all, as NOT EXERCISED. */
+function notRun(why) {
+  results.idle.push(`${section}: not run: ${why}`);
+  console.log(`NOT EXERCISED  not run: ${why}`);
+}
 
 function canonical(v) {
   if (typeof v === "bigint") return v.toString();
@@ -632,9 +685,9 @@ async function schemaChecks(fresh) {
 async function invariantChecks(before) {
   heading("Backfills: rules every row meets");
   const count = (table) => value(`SELECT count(*)::int FROM "${table}"`);
-  /** A rule every row of `table` meets: `badSql` counts the rows that break it. The name says how many rows there were. */
+  /** A rule every row of `table` meets: `badSql` counts the rows that break it. Over no rows it is NOT EXERCISED. */
   const rule = async (name, table, badSql, params) =>
-    check(`${name} (${await count(table)} ${table} rows checked)`, 0, await value(badSql, params));
+    checkRows(name, { [`${table} rows`]: await count(table) }, 0, await value(badSql, params));
 
   check(
     "the four academies, one per pillar (000100)",
@@ -704,9 +757,9 @@ async function invariantChecks(before) {
       LEFT JOIN "Challenge" ch ON x.source = 'CHALLENGE_COMPLETED' AND ch.id = x."sourceId"
       WHERE x."academyId" IS DISTINCT FROM COALESCE(lc."academyId", c."academyId", ch."academyId")`
   );
-  check(
-    "academy memberships are exactly the members' non-dropped enrolments: BACKFILL, earliest enrolment, notify off " +
-      `(${await count("Enrollment")} Enrollment rows checked) [missing, extra]`,
+  checkRows(
+    "academy memberships are exactly the members' non-dropped enrolments: BACKFILL, earliest enrolment, notify off",
+    { "Enrollment rows": await count("Enrollment") },
     [0, 0],
     (
       await rows(`
@@ -721,7 +774,8 @@ async function invariantChecks(before) {
               AND am.source = 'BACKFILL' AND am."joinedAt" = w.joined AND am.notify = false AND am."leftAt" IS NULL)),
           (SELECT count(*)::int FROM "AcademyMembership" am WHERE NOT EXISTS (
             SELECT 1 FROM want w WHERE w."userId" = am."userId" AND w."academyId" = am."academyId"))`)
-    )[0]
+    )[0],
+    "[missing, extra]"
   );
   await rule(
     "mission cadence: weekly repeatable WEEKLY, other repeatable DAILY, the rest ONCE; all published; missions that are not",
@@ -732,8 +786,9 @@ async function invariantChecks(before) {
          OR "publishedAt" IS NULL`
   );
   const after = Object.fromEntries((await rows('SELECT id, "cooldownHours" FROM "Mission"')).map((r) => [r[0], r[1]]));
-  check(
-    `every mission keeps its cooldown (${Object.keys(before.cooldowns).length} missions checked); missions whose cooldown changed`,
+  checkRows(
+    "every mission keeps its cooldown; missions whose cooldown changed",
+    { missions: Object.keys(before.cooldowns).length },
     [],
     Object.keys(before.cooldowns).filter((id) => before.cooldowns[id] !== after[id])
   );
@@ -766,9 +821,9 @@ async function invariantChecks(before) {
                  WHERE "targetType" = 'order' AND action IN ('order.paid', 'order.settle_manual') GROUP BY 1) a ON a."targetId" = o.id
       WHERE o."paidAt" IS DISTINCT FROM COALESCE(t."createdAt", a.first)`
   );
-  check(
-    "every member with a rank has one GRANDFATHERED award recording their level, and there are no others " +
-      `(${await value('SELECT count(*)::int FROM "User" WHERE "rankId" IS NOT NULL')} ranked members checked) [missing, total awards − ranked members]`,
+  checkRows(
+    "every member with a rank has one GRANDFATHERED award recording their level, and there are no others",
+    { "ranked members": await value('SELECT count(*)::int FROM "User" WHERE "rankId" IS NOT NULL') },
     [0, 0],
     (
       await rows(`
@@ -777,7 +832,8 @@ async function invariantChecks(before) {
             SELECT 1 FROM "RankAward" r WHERE r.id = 'ra' || md5(u.id || ':' || u."rankId") AND r."userId" = u.id AND r."rankId" = u."rankId"
               AND r.reason = 'GRANDFATHERED' AND r.evidence = jsonb_build_object('level', u.level))),
           (SELECT count(*)::int FROM "RankAward") - (SELECT count(*)::int FROM "User" WHERE "rankId" IS NOT NULL)`)
-    )[0]
+    )[0],
+    "[missing, total awards − ranked members]"
   );
   await rule(
     "every existing instructor is ACTIVE with the contributor kind INSTRUCTOR, and only harsha is the founder; instructors that are not",
@@ -794,15 +850,16 @@ async function invariantChecks(before) {
       WHERE status::text <> CASE WHEN "publishedAt" IS NULL THEN 'DRAFT' WHEN "publishedAt" <= now() THEN 'PUBLISHED' ELSE 'SCHEDULED' END
          OR "searchVector" IS NULL`
   );
-  check(
-    "no referral keeps a signup IP and no session an unkeyed IP hash " +
-      `(${await count("Referral")} Referral and ${await count("Session")} Session rows checked) [signupIp, ipHash]`,
+  checkRows(
+    "no referral keeps a signup IP and no session an unkeyed IP hash",
+    { "Referral rows": await count("Referral"), "Session rows": await count("Session") },
     [0, 0],
     (
       await rows(
         'SELECT (SELECT count(*)::int FROM "Referral" WHERE "signupIp" IS NOT NULL), (SELECT count(*)::int FROM "Session" WHERE "ipHash" IS NOT NULL)'
       )
-    )[0]
+    )[0],
+    "[signupIp, ipHash]"
   );
   await rule(
     "programme groups are topic PROGRAMME with their course, every other group OTHER with none; groups that are not",
@@ -820,9 +877,9 @@ async function invariantChecks(before) {
     "CommunityGroup",
     'SELECT count(*)::int FROM "CommunityGroup" g WHERE g."memberCount" <> (SELECT count(*) FROM "GroupMembership" m WHERE m."groupId" = g.id)'
   );
-  check(
-    "the community.archived list became archivedAt (and ARCHIVED for groups), and nothing else did " +
-      `(${await count("CommunityCategory")} CommunityCategory and ${await count("CommunityGroup")} CommunityGroup rows checked) [categories, groups wrong]`,
+  checkRows(
+    "the community.archived list became archivedAt (and ARCHIVED for groups), and nothing else did",
+    { "CommunityCategory rows": await count("CommunityCategory"), "CommunityGroup rows": await count("CommunityGroup") },
     [0, 0],
     (
       await rows(`
@@ -833,7 +890,8 @@ async function invariantChecks(before) {
           (SELECT count(*)::int FROM "CommunityGroup" g
             WHERE ((g."archivedAt" IS NOT NULL AND g.status = 'ARCHIVED') OR (g."archivedAt" IS NULL AND g.status = 'ACTIVE')) IS NOT TRUE
                OR (g."archivedAt" IS NOT NULL) <> COALESCE((SELECT jsonb_typeof(value->'groups') = 'array' AND (value->'groups') ? g.id FROM s), false))`)
-    )[0]
+    )[0],
+    "[categories, groups wrong]"
   );
 
 }
@@ -846,12 +904,14 @@ async function invariantChecks(before) {
 async function evidenceChecks(before, opts) {
   heading("Challenge evidence (20261113000900)");
   if (before.applied.has(EVIDENCE_MOVE)) {
-    console.log("      Not checked: the copy had 000900 already, so there is no move to compare.");
+    notRun("the copy had 000900 already, so there is no move to compare");
     return;
   }
+  const submissions = { "JSON submissions": before.submissions.length };
   if (!evidenceMoved(opts)) {
-    check(
-      "until 000900 lands, submissions stay in ChallengeParticipation.progress and none is moved [JSON submissions, rows with a legacyId]",
+    checkRows(
+      "until 000900 lands, submissions stay in ChallengeParticipation.progress and none is moved",
+      submissions,
       [before.submissions.length, 0],
       (
         await rows(`
@@ -859,21 +919,24 @@ async function evidenceChecks(before, opts) {
             (SELECT count(*)::int FROM "ChallengeParticipation" p
               CROSS JOIN LATERAL jsonb_array_elements(CASE WHEN jsonb_typeof(p.progress->'submissions') = 'array' THEN p.progress->'submissions' ELSE '[]'::jsonb END)),
             (SELECT count(*)::int FROM "EvidenceSubmission" WHERE "legacyId" IS NOT NULL)`)
-      )[0]
+      )[0],
+      "[JSON submissions, rows with a legacyId]"
     );
     return;
   }
   const md5 = (s) => createHash("md5").update(s).digest("hex");
   const status = (s) => (s === "APPROVED" || s === "REJECTED" ? s : "PENDING");
-  check(
-    `every JSON submission became one EvidenceSubmission row (${before.submissions.length} submissions checked): id, participation, legacy id, status, surviving reviewer, URL`,
+  checkRows(
+    "every JSON submission became one EvidenceSubmission row: id, participation, legacy id, status, surviving reviewer, URL",
+    submissions,
     before.submissions
       .map((s) => [`ev${md5(`${s.pid}:${s.sid}`)}`, s.pid, s.sid, status(s.status), s.reviewer, s.url])
       .sort((a, b) => (a[0] < b[0] ? -1 : 1)),
     await rows('SELECT id, "participationId", "legacyId", status::text, "reviewedById", url FROM "EvidenceSubmission" WHERE "legacyId" IS NOT NULL ORDER BY id')
   );
-  check(
+  checkRows(
     "no participation keeps a submissions key",
+    { "participations with a submissions key": before.withSubmissionsKey },
     0,
     await value(`SELECT count(*)::int FROM "ChallengeParticipation" WHERE progress ? 'submissions'`)
   );
