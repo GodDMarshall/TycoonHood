@@ -223,6 +223,8 @@ export class EmailVerificationService {
     actorId: string = userId
   ): Promise<string | null> {
     const run = async (t: Prisma.TransactionClient) => {
+      // The account's lock first (a caller that passes `tx` holds it already; taking it again is free).
+      await lockEmailOf(t, userId);
       await t.verificationToken.deleteMany({ where: { identifier: emailChangeTokenId(userId) } });
       const user = await t.user.findUnique({ where: { id: userId }, select: { pendingEmail: true } });
       if (!user?.pendingEmail) return null;
@@ -370,6 +372,7 @@ export class EmailVerificationService {
   /** The waiting address went to another account: it can never be confirmed, so drop it (unless the member already asked for another). */
   private async dropTakenChange(userId: string, address: string, spentToken: string) {
     await this.db.$transaction(async (tx) => {
+      await lockEmailOf(tx, userId);
       const cleared = await tx.user.updateMany({ where: { id: userId, pendingEmail: address }, data: { pendingEmail: null } });
       await tx.verificationToken.deleteMany({
         where: cleared.count ? { identifier: emailChangeTokenId(userId) } : { token: spentToken },

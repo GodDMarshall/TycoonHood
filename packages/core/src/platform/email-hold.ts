@@ -21,9 +21,15 @@
  * in an order that makes that enough under Read Committed: registration
  * inserts the account first and then looks for a hold (the insert waits for
  * a change of that address still in flight), and a confirmation looks for
- * an account with the address first and then for a hold. A confirmation and
- * an undo of the same account both take lockEmailOf first, so they never
- * interleave.
+ * an account with the address first and then for a hold.
+ *
+ * One lock order. Every flow that changes an account's password, address
+ * or links takes lockEmailOf(userId) first, before any row: a change
+ * request, its confirmation or cancellation, an undo, a reset and a
+ * password change. Two of them for one account run
+ * one after the other, and the second sees what the first did. They used
+ * to lock the same rows in opposite orders (spend a link, then need the
+ * credential row, or delete a link the other still held) and deadlock.
  */
 import { createHash, randomBytes } from "node:crypto";
 import type { Prisma } from "@tycoonhood/db";
@@ -72,9 +78,10 @@ export async function addressHeldFor(db: Prisma.TransactionClient, address: stri
 }
 
 /**
- * Take the lock on one account's address for the rest of `tx`. A
- * confirmation and an undo take it first, so one of them waits for the
- * other to commit and then sees what it did.
+ * Take one account's lock for the rest of `tx`. Every flow that changes the
+ * account's password, address or links takes it first, so one of them
+ * waits for the other to commit and then sees what it did. Taking it again
+ * in the same transaction returns at once.
  */
 export async function lockEmailOf(tx: Prisma.TransactionClient, userId: string) {
   await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`account-email:${userId}`}))`;

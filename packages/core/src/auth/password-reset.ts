@@ -23,6 +23,7 @@ import type { PrismaClient } from "@tycoonhood/db";
 import { hashPassword } from "./password";
 import { SessionService } from "./session";
 import { AuditService } from "../platform/audit";
+import { lockEmailOf } from "../platform/email-hold";
 import { EmailVerificationService, RESET_TOKEN_PREFIX, resetTokenId } from "../platform/email-verification";
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
@@ -72,7 +73,8 @@ export class PasswordResetService {
   /**
    * Complete a reset. The new password is validated BEFORE the token is
    * consumed, so a typo never burns the link. Success rewrites the
-   * credential and signs the account out everywhere.
+   * credential and signs the account out everywhere. The link names the
+   * account, so its lock is taken before the link is spent.
    */
   async resetPassword(rawToken: string, newPassword: string) {
     const parsed = newPasswordSchema.safeParse(newPassword);
@@ -91,7 +93,10 @@ export class PasswordResetService {
 
     const passwordHash = await hashPassword(parsed.data);
     await this.db.$transaction(async (tx) => {
-      // Spend this link first: a second use of it, even a parallel one, finds nothing.
+      // The account's lock first, as every flow that changes its password, address or links takes it:
+      // an email change or an undo at the same moment runs before or after this one, never halfway.
+      await lockEmailOf(tx, userId);
+      // Then spend this link: a second use of it, even a parallel one, finds nothing.
       const spent = await tx.verificationToken.deleteMany({ where: { token: token.token } });
       if (spent.count === 0) throw new InvalidResetTokenError(INVALID);
       await tx.passwordCredential.upsert({

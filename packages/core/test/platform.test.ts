@@ -24,7 +24,7 @@ import { MemberAdminService, MemberAdminError } from "../src/platform/members";
 import { AccountSettingsService, WrongPasswordError } from "../src/platform/account-settings";
 import { CmsService } from "../src/platform/cms";
 import { EMAIL_HOLD_MS, EmailChangeTooSoonError } from "../src/platform/email-hold";
-import { EmailUndoService, InvalidUndoLinkError } from "../src/platform/email-undo";
+import { EmailUndoService, InvalidUndoLinkError, type UndoneEmailChange } from "../src/platform/email-undo";
 import { createTestUser, uid } from "./helpers";
 
 const verification = new EmailVerificationService(prisma);
@@ -593,14 +593,60 @@ function beforeFirstUserWrite(meanwhile: () => Promise<unknown>): Client {
   });
 }
 
-/** Wait until a statement in this database is blocked on a lock, or `finished()` says the other request is done. */
-async function untilBlockedOnLock(finished: () => boolean) {
+/**
+ * `meanwhile` runs inside the request's first transaction, at its first call of
+ * `tx[model][method]`: just before it, or just after it returns.
+ */
+function atFirstCall(model: string, method: string, when: "before" | "after", meanwhile: () => Promise<unknown>): Client {
+  let armed = true;
+  return new Proxy(prisma, {
+    get(target, prop) {
+      if (prop !== "$transaction") return bound(target, Reflect.get(target, prop));
+      return (fn: (tx: Prisma.TransactionClient) => Promise<unknown>) =>
+        target.$transaction((tx) => {
+          const delegate = new Proxy(Reflect.get(tx, model) as object, {
+            get(d, p) {
+              const value: unknown = Reflect.get(d, p);
+              if (p !== method || !armed || typeof value !== "function") return bound(d, value);
+              armed = false;
+              return async (...args: unknown[]) => {
+                if (when === "before") await meanwhile();
+                const result: unknown = await Reflect.apply(value, d, args);
+                if (when === "after") await meanwhile();
+                return result;
+              };
+            },
+          });
+          return fn(new Proxy(tx, { get: (t, p) => (p === model ? delegate : bound(t, Reflect.get(t, p))) }));
+        });
+    },
+  });
+}
+
+/**
+ * Wait until a statement in this database is blocked on a lock, or `finished()` says the other request is done.
+ * Returns what it waits for: "advisory" for an account's lock (lockEmailOf), "transactionid" or "tuple" for a row.
+ */
+async function untilBlockedOnLock(finished: () => boolean): Promise<string | null> {
   for (let i = 0; i < 150 && !finished(); i++) {
-    const [{ n }] = await prisma.$queryRaw<{ n: number }[]>`
-      SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock'`;
-    if (n > 0) return;
+    const [waiting] = await prisma.$queryRaw<{ event: string }[]>`
+      SELECT wait_event AS event FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock' LIMIT 1`;
+    if (waiting) return waiting.event;
     await new Promise((r) => setTimeout(r, 20));
   }
+  return null;
+}
+
+/** A request started in `meanwhile`, and whether it has settled yet, either way. */
+type Started<T> = { promise: Promise<T>; finished: boolean };
+
+function started<T>(work: Promise<T>): Started<T> {
+  const run = { promise: work, finished: false };
+  work.then(
+    () => (run.finished = true),
+    () => (run.finished = true)
+  );
+  return run;
 }
 
 const NEW_PASSWORD = "owners new password";
@@ -966,6 +1012,90 @@ describe("Undo racing another change", () => {
     await expect(accounts.authenticate({ email: oldEmail, password: "attackers new password" })).rejects.toBeInstanceOf(
       InvalidCredentialsError
     );
+  });
+});
+
+// ── Every flow that changes an account's password, address or links takes the
+// account's lock (lockEmailOf) first. Two of them at the same moment then run one
+// after the other: the second waits on that lock, and never on a row the first
+// holds, which is how they used to deadlock (spend a link, then need the
+// credential; or delete a link the other flow still needs).
+
+describe("Account flows wait for each other instead of deadlocking", () => {
+  it("an undo used while a reset is being written waits for it, then undoes the change", async () => {
+    const { user, oldEmail, newEmail, undo } = await changedMember();
+    // Whoever made the change resets the password through the new address.
+    const { issued } = await resets.requestReset(newEmail);
+    let undoing: Started<UndoneEmailChange> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new PasswordResetService(
+      // The reset has spent its link and is about to write the password.
+      atFirstCall("verificationToken", "deleteMany", "after", async () => {
+        undoing = started(undos.undo(undo.rawToken));
+        waitedOn = await untilBlockedOnLock(() => undoing!.finished);
+        expect(undoing.finished).toBe(false);
+      })
+    );
+    await racing.resetPassword(issued!.rawToken, "attackers new password");
+    const done = await undoing!.promise;
+    expect(waitedOn).toBe("advisory");
+
+    // The undo landed second, so it wins: the old address is back and the password the reset set is gone.
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(oldEmail);
+    for (const email of [oldEmail, newEmail]) {
+      await expect(accounts.authenticate({ email, password: "attackers new password" })).rejects.toBeInstanceOf(InvalidCredentialsError);
+    }
+    await resets.resetPassword(done.reset.rawToken, NEW_PASSWORD);
+    await expect(accounts.authenticate({ email: oldEmail, password: NEW_PASSWORD })).resolves.toBeTruthy();
+  });
+
+  const setNewPasswordThrough: [string, (db: Client, userId: string, resetLink: string) => Promise<unknown>][] = [
+    ["a reset", (db, _userId, resetLink) => new PasswordResetService(db).resetPassword(resetLink, NEW_PASSWORD)],
+    ["a password change in Settings", (db, userId) => new AccountSettingsService(db).changePassword(userId, PASSWORD, NEW_PASSWORD)],
+  ];
+
+  it.each(setNewPasswordThrough)("a change confirmed while %s is being written waits for it, then fails cleanly", async (_how, setNewPassword) => {
+    const { user, email } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("hijack"), PASSWORD);
+    // A reset link is out, as the notice about the change request suggests.
+    const { issued } = await resets.requestReset(email);
+    let confirming: Started<unknown> | undefined;
+    let waitedOn: string | null = null;
+    const racing = atFirstCall("verificationToken", "deleteMany", "after", async () => {
+      confirming = started(verification.confirm(change!.rawToken));
+      waitedOn = await untilBlockedOnLock(() => confirming!.finished);
+      expect(confirming.finished).toBe(false);
+    });
+    await setNewPassword(racing, user.id, issued!.rawToken);
+    // The new password cancelled the change, so the link no longer works: a clean refusal, not a driver error.
+    await expect(confirming!.promise).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    expect(waitedOn).toBe("advisory");
+
+    const now = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(now.email).toBe(email);
+    expect(now.pendingEmail).toBeNull();
+    await expect(accounts.authenticate({ email, password: NEW_PASSWORD })).resolves.toBeTruthy();
+  });
+
+  it("a reset submitted while a change is being confirmed waits for it, then fails cleanly", async () => {
+    const { user, email } = await memberWithPassword();
+    const change = await accountSettings.changeEmail(user.id, address("moved"), PASSWORD);
+    const { issued } = await resets.requestReset(email);
+    let resetting: Started<unknown> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      beforeFirstUserWrite(async () => {
+        resetting = started(resets.resetPassword(issued!.rawToken, NEW_PASSWORD));
+        waitedOn = await untilBlockedOnLock(() => resetting!.finished);
+        expect(resetting.finished).toBe(false);
+      })
+    );
+    await racing.confirm(change!.rawToken);
+    // The change took effect first and ended every reset link for the old address.
+    await expect(resetting!.promise).rejects.toBeInstanceOf(InvalidResetTokenError);
+    expect(waitedOn).toBe("advisory");
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(change!.newEmail);
+    await expect(accounts.authenticate({ email: change!.newEmail, password: PASSWORD })).resolves.toBeTruthy();
   });
 });
 

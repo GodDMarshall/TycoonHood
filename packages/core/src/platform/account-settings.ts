@@ -13,6 +13,9 @@
  *    credential row, so the two run one after the other. changePassword
  *    checks it again the same way, so it cannot land after an undone email
  *    change (platform/email-undo) replaced the password it checked.
+ *  · both take the account's lock first (lockEmailOf, platform/email-hold),
+ *    as every flow that changes the account's password, address or links
+ *    does, so they never deadlock with a confirmation, an undo or a reset.
  *  · an address held for another account (platform/email-hold) is refused
  *    like a taken one; one held for this account is the member moving back.
  *  · no new change while the last one can still be undone (7 days, or
@@ -136,6 +139,8 @@ export class AccountSettingsService {
     const checkedHash = await this.checkPassword(userId, currentPassword);
     const hash = await hashPassword(parsed);
     const cancelledEmailChange = await this.db.$transaction(async (tx) => {
+      // The account's lock first, as an email change, its confirmation, an undo and a reset take it.
+      await lockEmailOf(tx, userId);
       await this.passwordUnchanged(tx, userId, checkedHash);
       await tx.passwordCredential.update({ where: { userId }, data: { hash } });
       await tx.verificationToken.deleteMany({ where: { identifier: resetTokenId(userId) } });
