@@ -108,7 +108,8 @@ export class EmailVerificationService {
   /**
    * Issue a fresh token for the member's current email, invalidating older
    * ones. The token and its audit row are written together: inside `tx` when
-   * the caller passes one, otherwise in a transaction of their own.
+   * the caller passes one (and holds the account's lock), otherwise in a
+   * transaction of their own, under the account's lock (see email-hold).
    */
   async issue(
     userId: string,
@@ -116,7 +117,10 @@ export class EmailVerificationService {
   ): Promise<IssuedVerification> {
     const reason = opts.reason ?? "register";
     if (opts.tx) return this.issueIn(opts.tx, userId, reason);
-    return this.db.$transaction((tx) => this.issueIn(tx, userId, reason));
+    return this.db.$transaction(async (tx) => {
+      await lockEmailOf(tx, userId);
+      return this.issueIn(tx, userId, reason);
+    });
   }
 
   private async issueIn(
@@ -172,6 +176,11 @@ export class EmailVerificationService {
   /** A member-initiated resend: rate limited to 3 per rolling hour. Send the email after this returns. */
   async resend(userId: string): Promise<IssuedVerification> {
     return this.db.$transaction(async (tx) => {
+      // The account's lock first, then the resend lock, as resendEmailChange takes them. The address
+      // read below is then the account's own: a change being confirmed finishes first, and nothing is
+      // left waiting on its rows (they deadlocked: this deleted the old address's link, then its audit
+      // row waited for the account row the change was writing).
+      await lockEmailOf(tx, userId);
       await this.claimResend(tx, userId);
       return this.issueIn(tx, userId, "resend");
     });
@@ -295,21 +304,42 @@ export class EmailVerificationService {
     return (await this.confirm(rawToken, opts)).user;
   }
 
-  /** A confirmation link: marks the address it was sent to verified. */
+  /**
+   * A confirmation link: marks the address it was sent to verified. Under the
+   * account's lock, as every flow that changes its address or links (see
+   * email-hold), so it never interleaves with an email change. It used to
+   * run outside it: it could deadlock with a change being confirmed, or land
+   * between the change's read and its write, so that an address confirmed
+   * at that moment was moved off as one never confirmed, with no hold and no
+   * undo link. Now whichever comes second sees what the first did: a change
+   * after it holds the confirmed address, and a link used after the account
+   * left its address confirms nothing.
+   */
   private async verifyAddress(token: VerificationToken): Promise<User> {
-    const user = await this.db.user.findUnique({ where: { email: token.identifier } });
-    if (!user) {
+    const owner = await this.db.user.findUnique({ where: { email: token.identifier }, select: { id: true } });
+    const updated = owner
+      ? await withDeadlockRetry(() =>
+          this.db.$transaction(async (tx) => {
+            await lockEmailOf(tx, owner.id);
+            // Spent first, so a second (or parallel) use finds nothing.
+            const spent = await tx.verificationToken.deleteMany({ where: { token: token.token } });
+            const user = await tx.user.findUnique({ where: { id: owner.id } });
+            // Used already, or the account has left the address since: the link confirms nothing.
+            if (spent.count === 0 || !user || user.email !== token.identifier) return null;
+            await tx.verificationToken.deleteMany({ where: { identifier: token.identifier } });
+            const verified = await tx.user.update({
+              where: { id: user.id },
+              data: { emailVerified: user.emailVerified ?? new Date() },
+            });
+            await this.audit.log({ actorId: user.id, action: "auth.verify.complete", targetType: "User", targetId: user.id }, tx);
+            return verified;
+          })
+        )
+      : null;
+    if (!updated) {
       await this.db.verificationToken.deleteMany({ where: { token: token.token } });
       throw new InvalidVerificationTokenError("That link is not valid, or it has already been used.");
     }
-    const [, updated] = await this.db.$transaction([
-      this.db.verificationToken.deleteMany({ where: { identifier: token.identifier } }),
-      this.db.user.update({
-        where: { id: user.id },
-        data: { emailVerified: user.emailVerified ?? new Date() },
-      }),
-    ]);
-    await this.audit.log({ actorId: user.id, action: "auth.verify.complete", targetType: "User", targetId: user.id });
     return updated;
   }
 

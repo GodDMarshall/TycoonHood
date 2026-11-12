@@ -1450,6 +1450,91 @@ describe("Account flows wait for each other instead of deadlocking", () => {
   });
 });
 
+describe("Confirmation links take the account's lock", () => {
+  /** A member who never confirmed their address, with a confirmation link for it out and a change to another address waiting. */
+  async function unconfirmedWithChange() {
+    const { user, email } = await memberWithPassword();
+    const link = await verification.issue(user.id);
+    const change = (await accountSettings.changeEmail(user.id, address("moving"), PASSWORD))!;
+    return { user, email, link, change };
+  }
+
+  it("a confirmation link used while a change is about to move the account waits for it, then fails cleanly", async () => {
+    const { user, email, link, change } = await unconfirmedWithChange();
+    let verifying: Started<Confirmation> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      // The change has read the account, its address not confirmed, and is about to move it.
+      beforeFirstUserWrite(async (paused) => {
+        verifying = started(verification.confirm(link.rawToken));
+        waitedOn = await untilBlockedOnLock(paused, () => verifying!.finished);
+      })
+    );
+    const done = await racing.confirm(change.rawToken);
+    // The account has left the address, so the link confirms nothing. It never says "confirmed"
+    // for an address the change went on to treat as never confirmed.
+    await expect(verifying!.promise).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    expect(waitedOn).toBe("advisory");
+    expect(done.kind === "email-change" && done.undo).toBeNull();
+    expect(await prisma.emailHold.findUnique({ where: { address: email } })).toBeNull();
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(change.newEmail);
+  });
+
+  it("a confirmation link used while a change is ending the old address's links waits for it instead of deadlocking", async () => {
+    const { user, link, change } = await unconfirmedWithChange();
+    let verifying: Started<Confirmation> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      // The change has moved the account and is about to delete the old address's links.
+      atFirstCall("user", "update", "after", async (paused) => {
+        verifying = started(verification.confirm(link.rawToken));
+        waitedOn = await untilBlockedOnLock(paused, () => verifying!.finished);
+      })
+    );
+    await racing.confirm(change.rawToken);
+    await expect(verifying!.promise).rejects.toBeInstanceOf(InvalidVerificationTokenError);
+    expect(waitedOn).toBe("advisory");
+    expect((await prisma.user.findUniqueOrThrow({ where: { id: user.id } })).email).toBe(change.newEmail);
+  });
+
+  it("a change confirmed while the address is being confirmed waits for it, then holds the address with an undo link", async () => {
+    const { user, email, link, change } = await unconfirmedWithChange();
+    let confirming: Started<Confirmation> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      // The confirmation link is spent and the address is about to be marked confirmed.
+      beforeFirstUserWrite(async (paused) => {
+        confirming = started(verification.confirm(change.rawToken));
+        waitedOn = await untilBlockedOnLock(paused, () => confirming!.finished);
+      })
+    );
+    expect((await racing.confirm(link.rawToken)).kind).toBe("verify");
+    const done = await confirming!.promise;
+    expect(waitedOn).toBe("advisory");
+    // The change came second and saw the address confirmed: it is held, and its notice carries an undo link.
+    if (done.kind !== "email-change") throw new Error("expected an email change");
+    expect(done.undo).not.toBeNull();
+    expect((await prisma.emailHold.findUnique({ where: { address: email } }))?.userId).toBe(user.id);
+  });
+
+  it("a confirmation-link resend while a change is ending the old address's links waits for it, then finds the new address confirmed", async () => {
+    const { user, email, change } = await unconfirmedWithChange();
+    let resending: Started<unknown> | undefined;
+    let waitedOn: string | null = null;
+    const racing = new EmailVerificationService(
+      atFirstCall("user", "update", "after", async (paused) => {
+        resending = started(verification.resend(user.id));
+        waitedOn = await untilBlockedOnLock(paused, () => resending!.finished);
+      })
+    );
+    await racing.confirm(change.rawToken);
+    // The change confirmed the new address: nothing to resend, and no link is out for the old one.
+    await expect(resending!.promise).rejects.toBeInstanceOf(AlreadyVerifiedError);
+    expect(waitedOn).toBe("advisory");
+    expect(await verification.hasLiveLink(email)).toBe(false);
+  });
+});
+
 // ── The races the account's locks and the order of their checks decide, run
 // for real: each pauses one flow at the step that matters, and starts the
 // other there.
