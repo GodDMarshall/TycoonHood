@@ -66,6 +66,7 @@ Migrations are hand-written SQL under `packages/db/prisma/migrations/`. They are
 - `CommunityCategory` and `CommunityGroup` have no `archivedAt`. Archiving is held in the SiteSetting `community.archived` for now.
 - `CommunityPost` has no `editedAt`.
 - `Order` has no `paidAt`. Paid time is read from the captured `Payment.createdAt`.
+- System ledger accounts (TREASURY, REWARDS_POOL, …) are singletons by type, but the schema does not enforce it. `db:seed` creates them one seed at a time, under a lock (DR-33). A partial unique index on `LedgerAccount(type) WHERE "userId" IS NULL` would make it a rule.
 
 ## Seeds (run in this order on a fresh database)
 
@@ -79,4 +80,4 @@ pnpm --filter @tycoonhood/db seed:shop        # categories, INR placeholder pric
 pnpm --filter @tycoonhood/db seed:community   # forum categories, programme groups, weekly missions
 ```
 
-`seed:academy` refuses to overwrite a curriculum that members have already progressed through unless you set `SEED_ACADEMY_FORCE=1`.
+Every seed is safe to run again on a live database: a re-run adds what is missing and never rewrites what staff edit in the admin (`docs/DEPLOYMENT.md`, "Running the seeds again"). `seed:academy` builds each programme once and records it in the SiteSetting `seed.academy.built`; after that the curriculum is staff's, in Admin → Courses. `SEED_ACADEMY_FORCE=1` rebuilds it from the curriculum files, which undoes every edit and erases members' progress in it. The other seeds record the missions, sizes, essays, community categories and groups they made in the SiteSettings `seed.created.<kind>` (`{ keys: [...] }`, `packages/db/src/seed-record.ts`) and never make a recorded one again, even after staff change its slug or SKU. Deleting one of those settings makes the next run count what is in the database as made.

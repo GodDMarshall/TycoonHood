@@ -1,27 +1,30 @@
 /**
- * SHOP SEED — categories, rupee prices and one example coupon.
+ * SHOP SEED — rupee prices and categories for the seeded products, and one
+ * example coupon.
  *
- *  1. Categories. Every existing product gets a storefront category (slugs
- *     match SHOP_CATEGORIES in packages/core/src/shop/categories.ts):
+ *  1. Rupee prices and categories. The card rail is INR only (prices in
+ *     paise), but seed:content creates its products in the column's old USD
+ *     default. This seed moves each of those to its placeholder rupee price
+ *     from PLACEHOLDER_INR (placeholder-prices.ts, shared with seed-merch.ts)
+ *     and gives it a storefront category, in one write. Category slugs match
+ *     SHOP_CATEGORIES in packages/core/src/shop/categories.ts:
  *       PHYSICAL → merchandise · COURSE/MEMBERSHIP → learning · DIGITAL → digital
  *     "books" and "partner" are left empty on purpose. No partner products are
  *     seeded — the store says "No approved partners yet".
- *     A category an admin already set is never overwritten.
+ *     The prices are PLACEHOLDERS — sensible round numbers, not decisions. The
+ *     owner sets real prices in Admin → Products.
+ *     When a product moves from USD to INR its size-level card prices are
+ *     cleared (they were dollars), and costCents is reported, because it is
+ *     still a dollar figure until someone re-enters it.
  *
- *  2. Rupee prices. The card rail is INR only (prices in paise). A product
- *     with no INR price gets one from PLACEHOLDER_INR (placeholder-prices.ts,
- *     shared with seed-merch.ts). These are PLACEHOLDERS — sensible round
- *     numbers, not decisions. The owner sets real prices in Admin → Products.
- *     A product already priced in INR is left alone (needsPlaceholderInr, the
- *     same rule seed-merch follows). When a product moves from USD to INR,
- *     its size-level fiat overrides are cleared (they were dollars) and
- *     costCents is reported, because it is still a dollar figure until
- *     someone re-enters it.
- *
- *  3. Coupon WELCOME10 — 10% off, one per member, INACTIVE. Admins activate
+ *  2. Coupon WELCOME10 — 10% off, one per member, INACTIVE. Admins activate
  *     it in Admin → Coupons. An existing WELCOME10 is not touched.
  *
- * Idempotent. `--dry` prints what would change and writes nothing.
+ * Safe to re-run on a live database (DR-33): a product already in rupees is
+ * never touched. Every save in Admin → Products writes INR, so a rupee row is
+ * staff's: a price, a removed price or a category they set stays as they left
+ * it. Only a row still in another currency, which only a seed has written,
+ * is changed. `--dry` prints what would change and writes nothing.
  * Run: pnpm --filter @tycoonhood/db seed:shop
  */
 import { prisma } from "./client";
@@ -47,31 +50,27 @@ async function main() {
   for (const p of products) {
     // Throwaway rows created by the test suites are not catalogue items.
     if (/^(scarce-|shoptest-|test-)/.test(p.slug)) continue;
-    const data: { category?: string; priceFiatCents?: number; fiatCurrency?: string } = {};
+    // Already in rupees: staff's, or moved here on an earlier run. Left alone.
+    if (!needsPlaceholderInr(p)) continue;
 
-    if (!p.category && CATEGORY_BY_KIND[p.kind]) data.category = CATEGORY_BY_KIND[p.kind];
-
-    let clearVariantFiat = false;
-    if (needsPlaceholderInr(p)) {
-      const placeholder = PLACEHOLDER_INR[p.slug];
-      if (placeholder != null) {
-        data.priceFiatCents = placeholder;
-        data.fiatCurrency = "INR";
-        clearVariantFiat = p.fiatCurrency !== "INR" && p.variants.some((v) => v.priceFiatCents != null);
-        report.push(
-          `  ${p.slug}: ${rupees(placeholder)} (PLACEHOLDER)` +
-            (p.priceFiatCents != null && p.fiatCurrency !== "INR" ? ` — was ${p.fiatCurrency} ${(p.priceFiatCents / 100).toFixed(2)}` : "")
-        );
-        if (p.costCents != null && p.fiatCurrency !== "INR") {
-          warnings.push(`  ${p.slug}: costCents ${p.costCents} is still in ${p.fiatCurrency}; re-enter the landed cost in paise.`);
-        }
-      } else if (p.priceFiatCents != null && p.fiatCurrency !== "INR") {
+    const placeholder = PLACEHOLDER_INR[p.slug];
+    if (placeholder == null) {
+      if (p.priceFiatCents != null) {
         warnings.push(`  ${p.slug}: priced in ${p.fiatCurrency} only — not payable on the rupee rail until an INR price is set.`);
       }
+      continue;
     }
-
-    if (Object.keys(data).length === 0) continue;
-    if (data.category) report.push(`  ${p.slug}: category → ${data.category}`);
+    const data: { category?: string; priceFiatCents: number; fiatCurrency: "INR" } = { priceFiatCents: placeholder, fiatCurrency: "INR" };
+    if (!p.category && CATEGORY_BY_KIND[p.kind]) data.category = CATEGORY_BY_KIND[p.kind];
+    const clearVariantFiat = p.variants.some((v) => v.priceFiatCents != null);
+    report.push(
+      `  ${p.slug}: ${rupees(placeholder)} (PLACEHOLDER)` +
+        (p.priceFiatCents != null ? ` — was ${p.fiatCurrency} ${(p.priceFiatCents / 100).toFixed(2)}` : "") +
+        (data.category ? `, category → ${data.category}` : "")
+    );
+    if (p.costCents != null) {
+      warnings.push(`  ${p.slug}: costCents ${p.costCents} is still in ${p.fiatCurrency}; re-enter the landed cost in paise.`);
+    }
     if (!DRY) {
       await prisma.product.update({ where: { id: p.id }, data });
       if (clearVariantFiat) {

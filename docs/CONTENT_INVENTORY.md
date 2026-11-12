@@ -90,7 +90,7 @@ Every module includes a practical assignment lesson. Lesson video is supported (
 - **Merch (`seed:merch`):**
   - Warrior Hoodie and Operator Tee, each in 5 sizes.
   - Nano Chalk, Lifting Straps and the Ledger Notebook.
-- **Pricing:** `seed:shop` gives every product a category and a **placeholder** INR price. Every landed cost is a placeholder too. Set real prices in Admin → Products before selling.
+- **Pricing:** every seeded product starts with a category and a **placeholder** INR price. `seed:shop` moves the content seed's products to rupees, and `seed:merch` creates its products in rupees. Every landed cost is a placeholder too. Set real prices in Admin → Products before selling. No seed changes a rupee price after that.
 - **Coupons:** `WELCOME10` gives 10% off, once per member. It is seeded **inactive**.
 
 ## Site content

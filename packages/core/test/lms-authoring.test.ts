@@ -346,13 +346,31 @@ describe("Instructors", () => {
 });
 
 describe("Academy seed safety guard", () => {
-  it("rebuilds an untouched course, refuses one with progress, unless forced", () => {
-    expect(academyRebuildDecision({ slug: "warrior", progressRows: 0, force: undefined })).toEqual({ rebuild: true });
-    const refused = academyRebuildDecision({ slug: "warrior", progressRows: 3, force: undefined });
-    expect(refused.rebuild).toBe(false);
-    if (!refused.rebuild) expect(refused.reason).toMatch(/SEED_ACADEMY_FORCE=1/);
-    expect(academyRebuildDecision({ slug: "warrior", progressRows: 3, force: "true" }).rebuild).toBe(false);
-    expect(academyRebuildDecision({ slug: "warrior", progressRows: 3, force: "1" })).toEqual({ rebuild: true });
+  // A programme the seed built is staff's from then on. Rebuilding one with no
+  // member progress used to be allowed, and it wiped every edit staff had made
+  // in /admin/courses (review finding 17).
+  const fresh = { slug: "warrior", built: false, modules: 0, progressRows: 0, force: undefined };
+
+  it("builds a programme that was never built", () => {
+    expect(academyRebuildDecision(fresh)).toEqual({ rebuild: true });
+  });
+
+  it("never rebuilds one already built, with or without progress, unless forced", () => {
+    const built = [
+      { ...fresh, built: true, modules: 9 },
+      { ...fresh, built: true, modules: 0 }, // staff removed every module
+      { ...fresh, modules: 9 }, // built by a seed from before the record existed
+      { ...fresh, built: true, modules: 9, progressRows: 3 },
+    ];
+    for (const b of built) {
+      const d = academyRebuildDecision(b);
+      expect(d.rebuild).toBe(false);
+      if (!d.rebuild) expect(d.reason).toMatch(/SEED_ACADEMY_FORCE=1/);
+    }
+    const withProgress = academyRebuildDecision({ ...fresh, built: true, modules: 9, progressRows: 3 });
+    if (!withProgress.rebuild) expect(withProgress.reason).toMatch(/erases 3 lesson-progress row/);
+    expect(academyRebuildDecision({ ...fresh, built: true, modules: 9, progressRows: 3, force: "true" }).rebuild).toBe(false);
+    expect(academyRebuildDecision({ ...fresh, built: true, modules: 9, progressRows: 3, force: "1" })).toEqual({ rebuild: true });
   });
 });
 

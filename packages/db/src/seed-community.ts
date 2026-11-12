@@ -2,15 +2,19 @@
  * COMMUNITY SEED — discussion categories, the four programme groups, and the
  * weekly missions. Structure only: no posts, no members, nothing invented.
  *
- * Idempotent — upserts by slug. Re-running restores the seeded wording; edits
- * made in Admin → Community to seeded rows are overwritten, new rows are not
- * touched. Run: pnpm --filter @tycoonhood/db seed:community
+ * Safe to re-run on a live database (DR-33): a category, group or mission the
+ * seeds never made is created, and one they made is left as staff keep it in
+ * Admin → Community and Admin → Missions, wording, order and whether it is
+ * live included. That holds under a new slug too: the seeds record what they
+ * made (seed-record.ts), so a renamed row is not made again under its old one.
+ * Run: pnpm --filter @tycoonhood/db seed:community
  *
  * Missions follow the house conventions (seed.ts): criteria as data, modest
  * rewards. Weekly missions use the calendar "week" window (Monday 00:00 UTC)
  * and are repeatable, so they pay at most once per week.
  */
 import { prisma } from "./client";
+import { SeedRecord } from "./seed-record";
 
 const CATEGORIES = [
   { slug: "introductions", name: "Introductions", description: "Who you are, what you are building, and what you want from the next 90 days.", sortOrder: 10 },
@@ -61,16 +65,24 @@ const WEEKLY_MISSIONS = [
 ];
 
 async function main() {
+  const categories = await SeedRecord.load("categories", [CATEGORIES.map((c) => c.slug)], async (slugs) =>
+    (await prisma.communityCategory.findMany({ where: { slug: { in: slugs } }, select: { slug: true } })).map((r) => r.slug)
+  );
   for (const c of CATEGORIES) {
-    await prisma.communityCategory.upsert({ where: { slug: c.slug }, update: c, create: c });
+    await categories.once(c.slug, () => prisma.communityCategory.upsert({ where: { slug: c.slug }, update: {}, create: c }));
   }
+  const groups = await SeedRecord.load("groups", [GROUPS.map((g) => g.slug)], async (slugs) =>
+    (await prisma.communityGroup.findMany({ where: { slug: { in: slugs } }, select: { slug: true } })).map((r) => r.slug)
+  );
   for (const g of GROUPS) {
-    await prisma.communityGroup.upsert({ where: { slug: g.slug }, update: g, create: g });
+    await groups.once(g.slug, () => prisma.communityGroup.upsert({ where: { slug: g.slug }, update: {}, create: g }));
   }
+  const missions = await SeedRecord.load("weekly-missions", [WEEKLY_MISSIONS.map((m) => m.slug)], async (slugs) =>
+    (await prisma.mission.findMany({ where: { slug: { in: slugs } }, select: { slug: true } })).map((r) => r.slug)
+  );
   for (const m of WEEKLY_MISSIONS) {
-    // cooldownHours stays null: the weekly bucket is the cap. `active` is set on
-    // create only, so a mission staff switched off stays off on a re-run.
-    await prisma.mission.upsert({ where: { slug: m.slug }, update: m, create: { ...m, active: true } });
+    // cooldownHours stays null: the weekly bucket is the cap.
+    await missions.once(m.slug, () => prisma.mission.upsert({ where: { slug: m.slug }, update: {}, create: { ...m, active: true } }));
   }
 
   console.log("── Community seed complete ──────────────────────────");

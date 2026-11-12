@@ -15,15 +15,15 @@ owner is [`TYCOONHOOD_BLOCKED_ON_YOU.md`](../TYCOONHOOD_BLOCKED_ON_YOU.md).
 | Variable | Required | Notes |
 |---|---|---|
 | `DATABASE_URL` | yes | Postgres connection string. On serverless hosts use the pooled one |
-| `DATABASE_URL_UNPOOLED` | on Vercel | The direct connection. `scripts/vercel-build.sh` migrates and seeds over it; the Neon integration sets it |
+| `DATABASE_URL_UNPOOLED` | on Vercel | The direct connection to the same database as `DATABASE_URL`. `scripts/vercel-build.sh` migrates and seeds over it and holds the deploy lock on it; the Neon integration sets it. Migrations and the deploy lock refuse Neon's pooled address, so where this is not set, `DATABASE_URL` must be the direct connection when you migrate. If the two name different databases, the build, `pnpm deploy:db` and `pnpm db:migrate:sql` stop before they connect. A value in `.env` never replaces one set in your shell, so check both there too |
 | `NEXT_PUBLIC_SITE_URL` | yes | e.g. `https://tycoonhood.com`; used in emails, certificates and affiliate links |
 | `RESEND_API_KEY`, `MAIL_FROM` | yes for launch | Without them, verification and reset emails are not sent in production |
 | `AFFILIATE_HASH_SECRET` | yes | A long random string; salts the click hashes |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | for card payments | `rzp_test_…` gives test mode; `rzp_live_…` gives real money. In production, test keys offer card checkout to admins only |
 | `RAZORPAY_WEBHOOK_SECRET` | strongly recommended | Lets the webhook confirm payments if the browser closes |
 | `CRON_SECRET` | yes | A long random string. Vercel Cron sends it to `/api/cron/expire-orders` and `/api/cron/email-holds`, which refuse calls without it. See "Scheduled jobs" |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin. The password is set only when the account is created |
-| `SEED_ON_DEPLOY` | first Vercel deploy only | `1` makes a production build run the seeds. Remove it after the first successful deploy |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | first run only | Used by `db:seed` to create the first admin. The address is stored trimmed and in lower case, the way sign-in reads it, so any capitalisation finds the same account. It must be an address sign-in accepts, entered without quote marks: otherwise the deploy stops before it touches the database. The password is set only when the account is created. Once an admin can sign in, the seed makes no other: an address no account has creates nothing (add admins in `/admin/members`), and a re-run leaves roles alone. Only when no admin can sign in at all does it create the account, or make it admin. It never takes an address held after an email change (7 days, so the undo link keeps working) |
+| `SEED_ON_DEPLOY` | first Vercel deploy only | `1` makes a production build run the seeds. Re-runs are safe, but remove it after the first successful deploy: every seeding run slows the deploy, and a re-run puts back a programme staff renamed, as an empty draft under its old address (see "Running the seeds again") |
 | `ENABLE_EXPERIMENTAL_COREPACK` | on Vercel | `1` makes Vercel use the pnpm version pinned in `package.json` |
 | `COOKIE_DOMAIN` | optional | Only if you serve several subdomains |
 | `TRUSTED_PROXY_HOPS` | optional | How many proxies in front of the app add to `X-Forwarded-For`; per-IP limits read the address that many entries from the right. 1 to 5, default 1 (one proxy such as nginx, or Vercel). If the app is exposed directly with no proxy in front, visitors can set that header themselves, so IP-based limits can be spoofed |
@@ -38,14 +38,19 @@ included) and Node 22.x. `apps/web/vercel.json` sets the install and build
 commands, the function region and the daily cron. The build command runs
 `scripts/vercel-build.sh` from the repository root:
 
-1. On a **production** build (`VERCEL_ENV=production`) it applies pending
-   migrations with `pnpm db:migrate:sql`, over `DATABASE_URL_UNPOOLED` when it
-   is set. It stops the build if `DATABASE_URL` is missing, and, when
-   `SEED_ON_DEPLOY=1`, if `ADMIN_EMAIL` or `ADMIN_PASSWORD` is missing, before
-   it touches the database.
+1. On a **production** build (`VERCEL_ENV=production`) it takes the deploy
+   lock (`scripts/with-db-lock.mjs`, see "Two builds at once"), then applies
+   pending migrations with `pnpm db:migrate:sql`. The lock, the migrations and
+   the seeds all use `DATABASE_URL_UNPOOLED` when it is set, else
+   `DATABASE_URL`, and the build log names that database. It stops the build
+   if `DATABASE_URL` is missing, if `DATABASE_URL` and `DATABASE_URL_UNPOOLED`
+   name different databases, and, when `SEED_ON_DEPLOY=1`, if `ADMIN_EMAIL`
+   or `ADMIN_PASSWORD` is missing or `ADMIN_EMAIL` is not an address sign-in
+   accepts, before it touches the database.
 2. With `SEED_ON_DEPLOY=1` it then runs `db:seed`, `db:seed:academy`,
-   `db:seed:content`, `seed:shop` and `seed:community`, in that order.
-3. It builds the site.
+   `db:seed:content`, `seed:shop` and `seed:community`, in that order, still
+   under the lock.
+3. It lets go of the lock and builds the site.
 
 **Preview builds never touch the database.** They are built from branches that
 are not merged yet, and on this project they receive the same `DATABASE_URL`
@@ -63,10 +68,107 @@ deployment then runs against it. So write each migration to be safe for the
 code that is live before it: add tables and columns, and drop them only in a
 later release.
 
+### Two builds at once
+
+Vercel can run two production builds together: a redeploy while one is still
+building, or two merges close together. Before the locks, both migrated and
+seeded the same database at the same time (review finding 19). Now:
+
+- The whole migrate-and-seed step runs under a Postgres advisory lock that
+  `scripts/with-db-lock.mjs` holds on a connection of its own. The second
+  build prints "Another build is migrating or seeding" with the database's
+  host and name, then "Waiting for it to finish …", waits, then finds the
+  migrations applied and nothing left for the seeds to add.
+- `migrate-sql` holds Prisma Migrate's own lock for its whole run. Another
+  `migrate-sql` waits for it. A `pnpm db:deploy` (`prisma migrate deploy`)
+  waits only 10 seconds, then fails with P1002 and applies nothing, so it
+  never runs alongside either; see "A deploy waits for the database lock".
+- `db:seed` makes the system ledger accounts and the genesis mint one seed at
+  a time, so two seeds run by hand cannot make two treasuries.
+- The locks go when the step ends, whether it worked or failed, and Postgres
+  drops them if the build is killed. A build gives up after 15 minutes of
+  waiting rather than hang; see "A deploy waits for the database lock".
+- If the deploy lock's connection is lost, or the build is told to stop,
+  `with-db-lock.mjs` stops the whole step, not just its first process: the
+  step runs in a process group of its own, which gets the signal, and
+  whatever still runs 10 seconds later is killed. Only then does the build
+  fail, so no migration or seed carries on without the lock. (On Windows,
+  which has no process groups, only the first process is stopped.)
+- The lock connections send TCP keepalive probes after 10 seconds of
+  silence, not Linux's default two hours, so a NAT or firewall that drops
+  idle connections does not cut them while a step runs or a build waits.
+- They need a direct connection: through a pooler, a lock belongs to whichever
+  server connection ran the query and can outlive the build. So both refuse
+  Neon's pooled address (`-pooler` in the host name) and name
+  `DATABASE_URL_UNPOOLED`.
+- Everything under the lock works on the database the lock was taken on. The
+  wrapper gives the migrate-and-seed step that address as `DATABASE_URL`, which
+  the seeds read, and `pnpm deploy:db` gives it to each of its steps. Before,
+  with `DATABASE_URL` and `DATABASE_URL_UNPOOLED` naming different databases,
+  the migrations and the lock went to one and the seeds to the other. Now the
+  build, `deploy:db` and `db:migrate:sql` refuse that pair before they
+  connect. They compare the addresses only: another database name, or another
+  Neon endpoint (the pooled host is the direct one with `-pooler` added), is
+  refused. A pooler with a host or port of its own, as Supabase's and RDS
+  Proxy have, is accepted beside its direct address, so for those, check the
+  two yourself. Each script prints the database it uses and the variable it
+  came from.
+
+### Running the seeds again
+
+Every seed is safe to run again on a live database (DR-33). A re-run adds what
+is missing and refreshes only what no admin screen edits. It never rewrites
+what staff change in the admin.
+
+| Left as staff keep it | Refreshed from the seed files |
+|---|---|
+| Products: prices, landed costs, stock, sizes, category, wording, whether on sale | Levels, ranks and achievements |
+| Programmes: details, status, instructor, modules, lessons, quizzes; instructors | A challenge's name, description, pillar, criteria and rewards |
+| Essays, missions, community categories, groups and channels, coupons, videos | |
+| A challenge's dates and status | |
+| The admin's password and role (unless no admin can sign in) | |
+
+Limits worth knowing:
+
+- Missions, sizes, essays, community categories and groups are made once,
+  whatever staff do to them later. The seeds record the slugs and SKUs they
+  made (the SiteSettings `seed.created.*`) and never make one again. So a
+  mission staff gave a new slug does not come back live under its old one to
+  pay its reward twice, and a size given a new SKU does not come back on sale
+  with stock that is not there. An item a later release adds to the seed
+  files is still made. The first run after an upgrade counts everything an
+  older seed made as made, even a row staff renamed before the upgrade.
+- Other seeded rows are found by their slug alone. A programme staff gave a
+  new slug comes back under its old one as an empty draft (the academy seed
+  does not build it again). Products, challenges, coupons, achievements and
+  ranks cannot be renamed or deleted in the admin; one removed in the
+  database comes back on the next run, as the seed first wrote it.
+- `seed:academy` builds each programme once and records it (the SiteSetting
+  `seed.academy.built`). `SEED_ACADEMY_FORCE=1` rebuilds a programme from the
+  curriculum files: that undoes every edit made to it since, and erases
+  members' lesson progress in it, with a warning. Never set it in Vercel:
+  every deploy that seeds would rebuild.
+- `seed:shop` only touches a product still priced in a currency other than
+  rupees, which only a seed writes. `seed:merch` does the same, and also
+  replaces a landed cost that is still exactly the old dollar placeholder.
+
+`packages/core/test/seed-rerun.test.ts` proves this row by row: it seeds an
+empty database, makes staff edits through the real admin services, runs the
+five deploy seeds again, and finds nothing changed.
+
+### Rehearsals
+
 The whole sequence was rehearsed on 12 November 2026 against an empty
 PostgreSQL 16 database from a fresh clone with no `.env`: 12 migrations, the
-five seeds and the build in 81 seconds, then a second run that changed
-nothing, then `next start` serving the pages and the cron endpoint.
+five seeds and the build in 81 seconds, then a second run, then `next start`
+serving the pages and the cron endpoint. That second run exited cleanly but
+did change rows: it repriced products and rebuilt the programmes (review
+finding 17, since fixed and covered by the test above).
+
+Later that day, two production builds were started at once against one empty
+database with `SEED_ON_DEPLOY=1`. The second waited 10 seconds for the first,
+then found the migrations applied and the seeds' work done. The database held
+one admin, one of each system ledger account and one genesis mint.
 
 ## First deploy on another host
 
@@ -81,6 +183,44 @@ pnpm --filter @tycoonhood/web start
 ```
 
 Skip `db:seed:merch` unless you want the sample merch. Its prices and costs are placeholders.
+
+If a build could be migrating or seeding the same database while you run these
+by hand, run them under the deploy lock, which waits its turn:
+`node scripts/with-db-lock.mjs <command>`. `pnpm deploy:db` already does.
+Migrations and the lock need the direct connection, not a pooled one. Set it
+as `DATABASE_URL_UNPOOLED` beside the pooled `DATABASE_URL`, for the same
+database, or set `DATABASE_URL` alone to it.
+
+## A deploy waits for the database lock
+
+A production build that finds another build migrating or seeding the same
+database says "Another build is migrating or seeding", names the database, then
+"Waiting for it to finish …", and waits. That is normal. It lasts as long as the other
+build's migrate-and-seed step, usually under a minute. `pnpm db:migrate:sql`
+says "Another migration run is applying migrations to this database" when it
+waits for the migration lock in the same way.
+
+`pnpm db:deploy` (`prisma migrate deploy`) takes the same migration lock but
+waits only 10 seconds. Then it stops with P1002, "Timed out trying to acquire
+a postgres advisory lock", having applied nothing. Run it again when the other
+run has finished.
+
+If it gives up after 15 minutes, something still holds the lock: a build or a
+`pnpm deploy:db` that is still running, or one whose machine vanished without
+closing its connection (Postgres holds the lock until it notices). To see who
+holds it, run this against the database:
+
+```sql
+SELECT a.pid, a.application_name, a.backend_start, a.state
+FROM pg_locks l JOIN pg_stat_activity a ON a.pid = l.pid
+WHERE l.locktype = 'advisory' AND l.granted AND l.objsubid = 1
+  AND l.objid IN (1954112367, 72707369);
+```
+
+`1954112367` is the deploy lock (`tycoonhood deploy lock`). `72707369` is the
+migration lock (`tycoonhood migrate-sql`, or `prisma migrate deploy`). If no
+build or deploy is running any more, end that session with
+`SELECT pg_terminate_backend(<pid>);` and deploy again.
 
 ## Upgrading a database that ran an earlier build
 

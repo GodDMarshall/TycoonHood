@@ -3,8 +3,9 @@
  *
  * Every amount is paise (₹1 = 100 paise). These are PLACEHOLDERS: sensible
  * round numbers, not decisions and not supplier quotes. The owner sets real
- * prices and real landed costs in Admin → Products, and neither seed ever
- * overwrites a rupee price that is already set.
+ * prices and real landed costs in Admin → Products. Once a product is in
+ * rupees its price is staff's: neither seed sets, changes or puts back a
+ * rupee price, including one staff removed to sell for THC only.
  *
  * The Warrior Hoodie's ₹2,499 is also the anchor that THC price advice is
  * judged against (MERCH_ANCHOR in packages/config/src/mining-time.ts). If one
@@ -46,11 +47,14 @@ export const rupees = (paise: number) =>
 
 /**
  * The rule both seeds follow: a product gets its placeholder rupee price only
- * when it has no card price, or its card price is not in rupees. A price an
- * admin has already set in INR is never overwritten.
+ * while its card price is not in rupees. Every save in Admin → Products
+ * writes INR (catalog.save), so a row in another currency is one only a seed
+ * has written. A rupee row is staff's, with or without a card price: an
+ * empty one means they sell it for THC only, and a re-run must not put a
+ * price back (review finding 17).
  */
-export function needsPlaceholderInr(p: { priceFiatCents: number | null; fiatCurrency: string }): boolean {
-  return p.fiatCurrency !== "INR" || p.priceFiatCents == null;
+export function needsPlaceholderInr(p: { fiatCurrency: string }): boolean {
+  return p.fiatCurrency !== "INR";
 }
 
 /**
@@ -84,11 +88,12 @@ export interface PlaceholderMoney {
 /**
  * What the merch seed writes for one product's money, given the row as it
  * stands (null when the product is new).
- *  - Price: the placeholder, only when needsPlaceholderInr says so.
- *  - Cost: the placeholder, only when there is none, when the price is moving
+ *  - Price: the placeholder, only for a new product or when needsPlaceholderInr
+ *    says so.
+ *  - Cost: the placeholder, only for a new product, when the price is moving
  *    to rupees from another currency (the old cost was in that currency too),
- *    or when it is still the old dollar placeholder. A cost an admin entered
- *    is left alone.
+ *    or when the cost is still exactly the old dollar placeholder the merch
+ *    seed itself once wrote. A cost an admin entered, or cleared, is left alone.
  */
 export function placeholderMoney(slug: string, existing: MoneyRow | null): PlaceholderMoney {
   const data: PlaceholderMoney["data"] = {};
@@ -106,12 +111,14 @@ export function placeholderMoney(slug: string, existing: MoneyRow | null): Place
     notes.push(`${rupees(price)} (PLACEHOLDER)${was}`);
   } else if (existing?.priceFiatCents != null && existing.fiatCurrency === "INR") {
     notes.push(`${rupees(existing.priceFiatCents)} already set in INR, kept`);
+  } else if (existing?.fiatCurrency === "INR") {
+    notes.push("no card price (THC only), kept");
   }
 
   const cost = PLACEHOLDER_COST_INR[slug];
   const old = existing?.costCents ?? null;
   const staleDollar = old != null && old === OLD_DOLLAR_COST_CENTS[slug];
-  const setCost = cost != null && (old == null || fromOtherCurrency || staleDollar);
+  const setCost = cost != null && (existing == null || fromOtherCurrency || staleDollar);
   if (setCost) {
     data.costCents = cost;
     const was =
@@ -121,6 +128,8 @@ export function placeholderMoney(slug: string, existing: MoneyRow | null): Place
     notes.push(`cost ${rupees(cost)} (PLACEHOLDER)${was}`);
   } else if (old != null) {
     notes.push(`cost ${rupees(old)} kept`);
+  } else if (existing != null && cost != null) {
+    notes.push("no landed cost, kept");
   }
 
   return { data, clearSizeFiat: fromOtherCurrency, notes };
