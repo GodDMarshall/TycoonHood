@@ -8,6 +8,7 @@ import {
   accountSettings,
   AlreadyVerifiedError,
   discord,
+  EmailChangeTooSoonError,
   EmailTakenError,
   emailChangeReply,
   emailVerification,
@@ -140,7 +141,9 @@ export async function changeEmailAction(_prev: FormState, fd: FormData): Promise
     issued = await accountSettings.changeEmail(user.id, String(fd.get("email") ?? ""), String(fd.get("password") ?? ""));
   } catch (e) {
     if (isZodError(e)) return { error: zodMessage(e) };
-    if (e instanceof WrongPasswordError || e instanceof EmailTakenError) return { error: e.message };
+    if (e instanceof WrongPasswordError || e instanceof EmailTakenError || e instanceof EmailChangeTooSoonError) {
+      return { error: e.message };
+    }
     throw e;
   }
   if (!issued) return { ok: "That is already your email." };

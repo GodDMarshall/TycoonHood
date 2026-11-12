@@ -11,6 +11,10 @@
  *    undone; the earlier hold itself stays until it runs out.
  *  · A hold ends early when its undo is used (the address is back on the
  *    account) or the member moves back to the address with a normal change.
+ *  · While a change can still be undone, the account cannot ask for another
+ *    one (EmailChangeTooSoonError). Otherwise whoever made the change could
+ *    make a second one at once, which ends the first change's link, and the
+ *    owner of the old address would have no way back.
  *
  * Races. A change releases the old address and holds it in one
  * transaction, so the address is never free in between. The readers check
@@ -32,6 +36,30 @@ const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 export interface IssuedUndo {
   rawToken: string;
   expires: Date;
+}
+
+/**
+ * Asked for an email change while the last one can still be undone. Only an
+ * undo (or the 7 days running out) opens the way to another change.
+ */
+export class EmailChangeTooSoonError extends Error {
+  constructor(readonly until: Date) {
+    const day = until.toLocaleDateString("en-IN", { day: "numeric", month: "long", timeZone: "Asia/Kolkata" });
+    super(
+      `Your email changed less than 7 days ago, so to keep your account safe it can change again from ${day}. ` +
+        "If you didn't make that change, use the undo link we sent to your old address."
+    );
+  }
+}
+
+/** When the account's last email change stops being undoable, or null when it cannot be undone now. */
+export async function undoableUntil(db: Prisma.TransactionClient, userId: string): Promise<Date | null> {
+  const live = await db.emailHold.findFirst({
+    where: { userId, undoToken: { not: null }, expires: { gt: new Date() } },
+    orderBy: { expires: "desc" },
+    select: { expires: true },
+  });
+  return live?.expires ?? null;
 }
 
 /** The account an address is held for right now, or null. */

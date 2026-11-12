@@ -127,8 +127,7 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
   // Back to the page that sent them here, when it is a safe path on this site.
   let destination = safeNextPath(formData.get("next")) ?? "/today";
   try {
-    const user = await accounts.authenticate(parsed.data);
-    const { raw } = await sessions.create(user.id, await deviceInfo());
+    const { user, raw } = await accounts.signIn(parsed.data, await deviceInfo());
     await setSessionCookie(raw);
     const { prisma } = await import("@tycoonhood/db");
     const profile = await prisma.profile.findUnique({ where: { userId: user.id } });

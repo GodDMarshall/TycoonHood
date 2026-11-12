@@ -9,8 +9,10 @@ import type { PrismaClient, User } from "@tycoonhood/db";
 import { hashPassword, verifyPassword } from "./password";
 import type { OnboardingInput } from "./schemas";
 import { addressHeldFor } from "../platform/email-hold";
+import { SessionService, type DeviceInfo } from "./session";
 
 const EMAIL_TAKEN = "An account with this email already exists.";
+const WRONG_CREDENTIALS = "Email or password is incorrect.";
 
 export class EmailTakenError extends Error {}
 export class UsernameTakenError extends Error {}
@@ -23,8 +25,9 @@ export class AccountSuspendedError extends Error {
 }
 
 export class AccountService {
-
+  private sessions: SessionService;
   constructor(private readonly db: PrismaClient = defaultPrisma) {
+    this.sessions = new SessionService(db);
   }
 
   /**
@@ -57,6 +60,22 @@ export class AccountService {
 
   /** Verifies email+password. Always the same error for both failure modes. */
   async authenticate(input: { email: string; password: string }): Promise<User> {
+    return (await this.verify(input)).user;
+  }
+
+  /**
+   * Sign in: verify email+password, then open a session, only while the
+   * password is still the one that matched (SessionService.createForPassword).
+   * If it changed in between, the sign-in fails like a wrong password.
+   */
+  async signIn(input: { email: string; password: string }, device: DeviceInfo = {}) {
+    const { user, hash } = await this.verify(input);
+    const created = await this.sessions.createForPassword(user.id, hash, device);
+    if (!created) throw new InvalidCredentialsError(WRONG_CREDENTIALS);
+    return { user, raw: created.raw };
+  }
+
+  private async verify(input: { email: string; password: string }): Promise<{ user: User; hash: string }> {
     const user = await this.db.user.findUnique({
       where: { email: input.email },
       include: { credential: true },
@@ -67,9 +86,10 @@ export class AccountService {
       user?.credential?.hash ??
       "$argon2id$v=19$m=19456,t=2,p=1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
     const ok = await verifyPassword(hash, input.password);
-    if (!ok || !user) throw new InvalidCredentialsError("Email or password is incorrect.");
+    if (!ok || !user?.credential) throw new InvalidCredentialsError(WRONG_CREDENTIALS);
     if (user.suspendedAt) throw new AccountSuspendedError();
-    return user;
+    const { credential, ...plain } = user;
+    return { user: plain, hash: credential.hash };
   }
 
   /**

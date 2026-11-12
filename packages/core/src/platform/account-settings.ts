@@ -15,6 +15,8 @@
  *    change (platform/email-undo) replaced the password it checked.
  *  · an address held for another account (platform/email-hold) is refused
  *    like a taken one; one held for this account is the member moving back.
+ *  · no new change while the last one can still be undone (7 days, or
+ *    until its undo is used): see EmailChangeTooSoonError.
  *  · delete account: a request for staff, recorded as a ContactMessage.
  *    Accounts are never hard-deleted from here — ledger rows reference the
  *    user with ON DELETE RESTRICT, and the books must still balance.
@@ -28,7 +30,7 @@ import { EmailTakenError } from "../auth/account";
 import { SessionService } from "../auth/session";
 import { AuditService } from "./audit";
 import { EmailVerificationService, resetTokenId, type IssuedEmailChange } from "./email-verification";
-import { addressHeldFor } from "./email-hold";
+import { addressHeldFor, EmailChangeTooSoonError, lockEmailOf, undoableUntil } from "./email-hold";
 
 export const DELETION_TOPIC = "account-deletion";
 
@@ -86,6 +88,9 @@ export class AccountSettingsService {
     const heldFor = taken ? null : await addressHeldFor(this.db, newEmail);
     if (taken || (heldFor && heldFor !== userId)) throw new EmailTakenError("An account with this email already exists.");
     return this.db.$transaction(async (tx) => {
+      // The account's address lock first, as a confirmation and an undo take
+      // it: a change that takes effect meanwhile is seen by the check below.
+      await lockEmailOf(tx, userId);
       // A new password cancels a waiting change, so this request must not
       // land behind one set since the check above. Lock the credential row,
       // which changePassword and resetPassword also lock when they write it,
@@ -93,6 +98,9 @@ export class AccountSettingsService {
       // and this request is refused, or this lands first and the new password
       // then cancels it.
       await this.passwordUnchanged(tx, userId, checkedHash);
+      // Not while the last change can still be undone: a second change would end its link.
+      const until = await undoableUntil(tx, userId);
+      if (until) throw new EmailChangeTooSoonError(until);
       await tx.user.update({ where: { id: userId }, data: { pendingEmail: newEmail } });
       const issued = await this.verification.issueEmailChangeIn(tx, { id: userId, email: user.email, pendingEmail: newEmail });
       await this.audit.log(
