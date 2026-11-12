@@ -30,9 +30,10 @@ every `*.vercel.app` address is protected.
 Verify your domain in Resend, then add `RESEND_API_KEY` and `MAIL_FROM`.
 
 **If you leave it:** sign-up, learning, certificates, community and THC all
-work. Email confirmation, password reset and the email-change undo link do
-not, and members cannot join the affiliate programme without a confirmed
-email. Pages say this honestly.
+work. Email confirmation, password reset and email changes do not (with no
+email, Settings refuses a change, because its link could never arrive), and
+members cannot join the affiliate programme without a confirmed email. Pages
+say this honestly.
 
 ## Needed before taking money
 

@@ -62,7 +62,7 @@ Results of the last full run: [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md).
 | Sign-in | `/register` `/login` `/onboarding` `/forgot-password` `/reset-password/[token]` `/verify-email/[token]` `/undo-email/[token]` |
 | Member | `/today` `/courses[/slug[/lesson/id]]` `/courses/history` `/certificates[/serial]` `/library/[slug]` `/community[/channel]` `/community/discussions/**` `/community/groups[/slug]` `/leaderboard` `/achievements` `/mining` `/mining/{tasks,squad,ranks}` `/wallet` `/store[/slug]` `/cart` `/wishlist` `/checkout/**` `/orders[/id]` `/earnings` `/profile` `/notifications` `/settings` `/world` |
 | Admin | `/admin` and `/admin/{members,courses,content,community,moderation,challenges,missions,standard,economy,earn,products,orders,coupons,refunds,videos,site,analytics,audit}` |
-| API | `/api/webhooks/razorpay` `/api/cron/expire-orders` `/api/community/[channel]` `/api/integrations/discord/interactions` `/r/[code]` (affiliate links) |
+| API | `/api/webhooks/razorpay` `/api/webhooks/stripe` `/api/cron/expire-orders` `/api/cron/email-holds` `/api/community/[channel]` `/api/integrations/discord/interactions` `/r/[code]` (affiliate links) |
 
 `/world` is the optional 3D campus. Phones, tablets, reduced motion and
 software GPUs get its 2D page. `apps/miner` only redirects old Miner links to

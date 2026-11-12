@@ -65,8 +65,10 @@ the password when it creates the account, so a later deploy never resets it.
 
 Without email, members can still sign up, learn, earn certificates, use the
 community and THC. What does not work: confirming an email address (needed to
-join the affiliate programme), password reset, and the email-change undo link.
-The site says so plainly instead of pretending an email was sent.
+join the affiliate programme), password reset, and changing an account's
+email address at all: the link to the new address could never arrive, so
+Settings refuses the change. The site says so plainly instead of pretending
+an email was sent.
 
 1. In Resend (resend.com), add your domain and create the DNS records it shows
    you at your domain registrar.
@@ -177,7 +179,9 @@ Merch stays in draft until it has real rupee prices and landed costs
   traffic can use up the hours; upgrade to a paid Neon plan before a marketing
   push.
 - **Vercel plan:** Hobby is for non-commercial use only. A business site
-  needs Pro. Hobby also allows the order sweep to run once a day, not more.
+  needs Pro. Hobby also allows each of the two daily sweeps (unpaid orders,
+  and email changes whose undo notice never went out) to run once a day, not
+  more.
 - **Region:** the database and the functions are in Washington (`iad1`), so
   pages reach India in roughly a quarter of a second more than they would
   from Mumbai. Moving both to Mumbai (`bom1`, Neon `aws-ap-south-1`) is a
