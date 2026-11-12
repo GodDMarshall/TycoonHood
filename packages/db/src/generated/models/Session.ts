@@ -563,6 +563,10 @@ export type $SessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     userId: string
     expires: Date
     userAgent: string | null
+    /**
+     * ipKey(ip): a keyed HMAC prefix (platform/ip-key.ts). Rows written before 20261113000100 were
+     * unkeyed SHA-256 and are nulled by that migration. Never the IP itself.
+     */
     ipHash: string | null
     createdAt: Date
   }, ExtArgs["result"]["session"]>

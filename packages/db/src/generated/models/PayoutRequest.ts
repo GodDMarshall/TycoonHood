@@ -45,6 +45,7 @@ export type PayoutRequestMinAggregateOutputType = {
   reviewedAt: Date | null
   paidAt: Date | null
   createdAt: Date | null
+  contributorId: string | null
 }
 
 export type PayoutRequestMaxAggregateOutputType = {
@@ -58,6 +59,7 @@ export type PayoutRequestMaxAggregateOutputType = {
   reviewedAt: Date | null
   paidAt: Date | null
   createdAt: Date | null
+  contributorId: string | null
 }
 
 export type PayoutRequestCountAggregateOutputType = {
@@ -72,6 +74,7 @@ export type PayoutRequestCountAggregateOutputType = {
   reviewedAt: number
   paidAt: number
   createdAt: number
+  contributorId: number
   _all: number
 }
 
@@ -95,6 +98,7 @@ export type PayoutRequestMinAggregateInputType = {
   reviewedAt?: true
   paidAt?: true
   createdAt?: true
+  contributorId?: true
 }
 
 export type PayoutRequestMaxAggregateInputType = {
@@ -108,6 +112,7 @@ export type PayoutRequestMaxAggregateInputType = {
   reviewedAt?: true
   paidAt?: true
   createdAt?: true
+  contributorId?: true
 }
 
 export type PayoutRequestCountAggregateInputType = {
@@ -122,6 +127,7 @@ export type PayoutRequestCountAggregateInputType = {
   reviewedAt?: true
   paidAt?: true
   createdAt?: true
+  contributorId?: true
   _all?: true
 }
 
@@ -213,7 +219,7 @@ export type PayoutRequestGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 
 export type PayoutRequestGroupByOutputType = {
   id: string
-  affiliateId: string
+  affiliateId: string | null
   amountCents: number
   currency: string
   status: $Enums.PayoutStatus
@@ -223,6 +229,7 @@ export type PayoutRequestGroupByOutputType = {
   reviewedAt: Date | null
   paidAt: Date | null
   createdAt: Date
+  contributorId: string | null
   _count: PayoutRequestCountAggregateOutputType | null
   _avg: PayoutRequestAvgAggregateOutputType | null
   _sum: PayoutRequestSumAggregateOutputType | null
@@ -250,7 +257,7 @@ export type PayoutRequestWhereInput = {
   OR?: Prisma.PayoutRequestWhereInput[]
   NOT?: Prisma.PayoutRequestWhereInput | Prisma.PayoutRequestWhereInput[]
   id?: Prisma.StringFilter<"PayoutRequest"> | string
-  affiliateId?: Prisma.StringFilter<"PayoutRequest"> | string
+  affiliateId?: Prisma.StringNullableFilter<"PayoutRequest"> | string | null
   amountCents?: Prisma.IntFilter<"PayoutRequest"> | number
   currency?: Prisma.StringFilter<"PayoutRequest"> | string
   status?: Prisma.EnumPayoutStatusFilter<"PayoutRequest"> | $Enums.PayoutStatus
@@ -260,13 +267,16 @@ export type PayoutRequestWhereInput = {
   reviewedAt?: Prisma.DateTimeNullableFilter<"PayoutRequest"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"PayoutRequest"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PayoutRequest"> | Date | string
-  affiliate?: Prisma.XOR<Prisma.AffiliateProfileScalarRelationFilter, Prisma.AffiliateProfileWhereInput>
+  contributorId?: Prisma.StringNullableFilter<"PayoutRequest"> | string | null
+  affiliate?: Prisma.XOR<Prisma.AffiliateProfileNullableScalarRelationFilter, Prisma.AffiliateProfileWhereInput> | null
   commissions?: Prisma.CommissionListRelationFilter
+  contributor?: Prisma.XOR<Prisma.ContributorAccountNullableScalarRelationFilter, Prisma.ContributorAccountWhereInput> | null
+  earnings?: Prisma.ContributorEarningListRelationFilter
 }
 
 export type PayoutRequestOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  affiliateId?: Prisma.SortOrder
+  affiliateId?: Prisma.SortOrderInput | Prisma.SortOrder
   amountCents?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -276,8 +286,11 @@ export type PayoutRequestOrderByWithRelationInput = {
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  contributorId?: Prisma.SortOrderInput | Prisma.SortOrder
   affiliate?: Prisma.AffiliateProfileOrderByWithRelationInput
   commissions?: Prisma.CommissionOrderByRelationAggregateInput
+  contributor?: Prisma.ContributorAccountOrderByWithRelationInput
+  earnings?: Prisma.ContributorEarningOrderByRelationAggregateInput
 }
 
 export type PayoutRequestWhereUniqueInput = Prisma.AtLeast<{
@@ -285,7 +298,7 @@ export type PayoutRequestWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PayoutRequestWhereInput | Prisma.PayoutRequestWhereInput[]
   OR?: Prisma.PayoutRequestWhereInput[]
   NOT?: Prisma.PayoutRequestWhereInput | Prisma.PayoutRequestWhereInput[]
-  affiliateId?: Prisma.StringFilter<"PayoutRequest"> | string
+  affiliateId?: Prisma.StringNullableFilter<"PayoutRequest"> | string | null
   amountCents?: Prisma.IntFilter<"PayoutRequest"> | number
   currency?: Prisma.StringFilter<"PayoutRequest"> | string
   status?: Prisma.EnumPayoutStatusFilter<"PayoutRequest"> | $Enums.PayoutStatus
@@ -295,13 +308,16 @@ export type PayoutRequestWhereUniqueInput = Prisma.AtLeast<{
   reviewedAt?: Prisma.DateTimeNullableFilter<"PayoutRequest"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"PayoutRequest"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PayoutRequest"> | Date | string
-  affiliate?: Prisma.XOR<Prisma.AffiliateProfileScalarRelationFilter, Prisma.AffiliateProfileWhereInput>
+  contributorId?: Prisma.StringNullableFilter<"PayoutRequest"> | string | null
+  affiliate?: Prisma.XOR<Prisma.AffiliateProfileNullableScalarRelationFilter, Prisma.AffiliateProfileWhereInput> | null
   commissions?: Prisma.CommissionListRelationFilter
+  contributor?: Prisma.XOR<Prisma.ContributorAccountNullableScalarRelationFilter, Prisma.ContributorAccountWhereInput> | null
+  earnings?: Prisma.ContributorEarningListRelationFilter
 }, "id">
 
 export type PayoutRequestOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  affiliateId?: Prisma.SortOrder
+  affiliateId?: Prisma.SortOrderInput | Prisma.SortOrder
   amountCents?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -311,6 +327,7 @@ export type PayoutRequestOrderByWithAggregationInput = {
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  contributorId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PayoutRequestCountOrderByAggregateInput
   _avg?: Prisma.PayoutRequestAvgOrderByAggregateInput
   _max?: Prisma.PayoutRequestMaxOrderByAggregateInput
@@ -323,7 +340,7 @@ export type PayoutRequestScalarWhereWithAggregatesInput = {
   OR?: Prisma.PayoutRequestScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PayoutRequestScalarWhereWithAggregatesInput | Prisma.PayoutRequestScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"PayoutRequest"> | string
-  affiliateId?: Prisma.StringWithAggregatesFilter<"PayoutRequest"> | string
+  affiliateId?: Prisma.StringNullableWithAggregatesFilter<"PayoutRequest"> | string | null
   amountCents?: Prisma.IntWithAggregatesFilter<"PayoutRequest"> | number
   currency?: Prisma.StringWithAggregatesFilter<"PayoutRequest"> | string
   status?: Prisma.EnumPayoutStatusWithAggregatesFilter<"PayoutRequest"> | $Enums.PayoutStatus
@@ -333,6 +350,7 @@ export type PayoutRequestScalarWhereWithAggregatesInput = {
   reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PayoutRequest"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PayoutRequest"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PayoutRequest"> | Date | string
+  contributorId?: Prisma.StringNullableWithAggregatesFilter<"PayoutRequest"> | string | null
 }
 
 export type PayoutRequestCreateInput = {
@@ -346,13 +364,15 @@ export type PayoutRequestCreateInput = {
   reviewedAt?: Date | string | null
   paidAt?: Date | string | null
   createdAt?: Date | string
-  affiliate: Prisma.AffiliateProfileCreateNestedOneWithoutPayoutsInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutPayoutsInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutPayoutInput
+  contributor?: Prisma.ContributorAccountCreateNestedOneWithoutPayoutsInput
+  earnings?: Prisma.ContributorEarningCreateNestedManyWithoutPayoutInput
 }
 
 export type PayoutRequestUncheckedCreateInput = {
   id?: string
-  affiliateId: string
+  affiliateId?: string | null
   amountCents: number
   currency?: string
   status?: $Enums.PayoutStatus
@@ -362,7 +382,9 @@ export type PayoutRequestUncheckedCreateInput = {
   reviewedAt?: Date | string | null
   paidAt?: Date | string | null
   createdAt?: Date | string
+  contributorId?: string | null
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutPayoutInput
+  earnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutPayoutInput
 }
 
 export type PayoutRequestUpdateInput = {
@@ -376,13 +398,15 @@ export type PayoutRequestUpdateInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  affiliate?: Prisma.AffiliateProfileUpdateOneRequiredWithoutPayoutsNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutPayoutsNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutPayoutNestedInput
+  contributor?: Prisma.ContributorAccountUpdateOneWithoutPayoutsNestedInput
+  earnings?: Prisma.ContributorEarningUpdateManyWithoutPayoutNestedInput
 }
 
 export type PayoutRequestUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  affiliateId?: Prisma.StringFieldUpdateOperationsInput | string
+  affiliateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
@@ -392,12 +416,14 @@ export type PayoutRequestUncheckedUpdateInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contributorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutPayoutNestedInput
+  earnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutPayoutNestedInput
 }
 
 export type PayoutRequestCreateManyInput = {
   id?: string
-  affiliateId: string
+  affiliateId?: string | null
   amountCents: number
   currency?: string
   status?: $Enums.PayoutStatus
@@ -407,6 +433,7 @@ export type PayoutRequestCreateManyInput = {
   reviewedAt?: Date | string | null
   paidAt?: Date | string | null
   createdAt?: Date | string
+  contributorId?: string | null
 }
 
 export type PayoutRequestUpdateManyMutationInput = {
@@ -424,7 +451,7 @@ export type PayoutRequestUpdateManyMutationInput = {
 
 export type PayoutRequestUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  affiliateId?: Prisma.StringFieldUpdateOperationsInput | string
+  affiliateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
@@ -434,6 +461,7 @@ export type PayoutRequestUncheckedUpdateManyInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contributorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PayoutRequestListRelationFilter = {
@@ -463,6 +491,7 @@ export type PayoutRequestCountOrderByAggregateInput = {
   reviewedAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  contributorId?: Prisma.SortOrder
 }
 
 export type PayoutRequestAvgOrderByAggregateInput = {
@@ -480,6 +509,7 @@ export type PayoutRequestMaxOrderByAggregateInput = {
   reviewedAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  contributorId?: Prisma.SortOrder
 }
 
 export type PayoutRequestMinOrderByAggregateInput = {
@@ -493,6 +523,7 @@ export type PayoutRequestMinOrderByAggregateInput = {
   reviewedAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  contributorId?: Prisma.SortOrder
 }
 
 export type PayoutRequestSumOrderByAggregateInput = {
@@ -561,6 +592,64 @@ export type EnumPayoutStatusFieldUpdateOperationsInput = {
   set?: $Enums.PayoutStatus
 }
 
+export type PayoutRequestCreateNestedManyWithoutContributorInput = {
+  create?: Prisma.XOR<Prisma.PayoutRequestCreateWithoutContributorInput, Prisma.PayoutRequestUncheckedCreateWithoutContributorInput> | Prisma.PayoutRequestCreateWithoutContributorInput[] | Prisma.PayoutRequestUncheckedCreateWithoutContributorInput[]
+  connectOrCreate?: Prisma.PayoutRequestCreateOrConnectWithoutContributorInput | Prisma.PayoutRequestCreateOrConnectWithoutContributorInput[]
+  createMany?: Prisma.PayoutRequestCreateManyContributorInputEnvelope
+  connect?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+}
+
+export type PayoutRequestUncheckedCreateNestedManyWithoutContributorInput = {
+  create?: Prisma.XOR<Prisma.PayoutRequestCreateWithoutContributorInput, Prisma.PayoutRequestUncheckedCreateWithoutContributorInput> | Prisma.PayoutRequestCreateWithoutContributorInput[] | Prisma.PayoutRequestUncheckedCreateWithoutContributorInput[]
+  connectOrCreate?: Prisma.PayoutRequestCreateOrConnectWithoutContributorInput | Prisma.PayoutRequestCreateOrConnectWithoutContributorInput[]
+  createMany?: Prisma.PayoutRequestCreateManyContributorInputEnvelope
+  connect?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+}
+
+export type PayoutRequestUpdateManyWithoutContributorNestedInput = {
+  create?: Prisma.XOR<Prisma.PayoutRequestCreateWithoutContributorInput, Prisma.PayoutRequestUncheckedCreateWithoutContributorInput> | Prisma.PayoutRequestCreateWithoutContributorInput[] | Prisma.PayoutRequestUncheckedCreateWithoutContributorInput[]
+  connectOrCreate?: Prisma.PayoutRequestCreateOrConnectWithoutContributorInput | Prisma.PayoutRequestCreateOrConnectWithoutContributorInput[]
+  upsert?: Prisma.PayoutRequestUpsertWithWhereUniqueWithoutContributorInput | Prisma.PayoutRequestUpsertWithWhereUniqueWithoutContributorInput[]
+  createMany?: Prisma.PayoutRequestCreateManyContributorInputEnvelope
+  set?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+  disconnect?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+  delete?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+  connect?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+  update?: Prisma.PayoutRequestUpdateWithWhereUniqueWithoutContributorInput | Prisma.PayoutRequestUpdateWithWhereUniqueWithoutContributorInput[]
+  updateMany?: Prisma.PayoutRequestUpdateManyWithWhereWithoutContributorInput | Prisma.PayoutRequestUpdateManyWithWhereWithoutContributorInput[]
+  deleteMany?: Prisma.PayoutRequestScalarWhereInput | Prisma.PayoutRequestScalarWhereInput[]
+}
+
+export type PayoutRequestUncheckedUpdateManyWithoutContributorNestedInput = {
+  create?: Prisma.XOR<Prisma.PayoutRequestCreateWithoutContributorInput, Prisma.PayoutRequestUncheckedCreateWithoutContributorInput> | Prisma.PayoutRequestCreateWithoutContributorInput[] | Prisma.PayoutRequestUncheckedCreateWithoutContributorInput[]
+  connectOrCreate?: Prisma.PayoutRequestCreateOrConnectWithoutContributorInput | Prisma.PayoutRequestCreateOrConnectWithoutContributorInput[]
+  upsert?: Prisma.PayoutRequestUpsertWithWhereUniqueWithoutContributorInput | Prisma.PayoutRequestUpsertWithWhereUniqueWithoutContributorInput[]
+  createMany?: Prisma.PayoutRequestCreateManyContributorInputEnvelope
+  set?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+  disconnect?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+  delete?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+  connect?: Prisma.PayoutRequestWhereUniqueInput | Prisma.PayoutRequestWhereUniqueInput[]
+  update?: Prisma.PayoutRequestUpdateWithWhereUniqueWithoutContributorInput | Prisma.PayoutRequestUpdateWithWhereUniqueWithoutContributorInput[]
+  updateMany?: Prisma.PayoutRequestUpdateManyWithWhereWithoutContributorInput | Prisma.PayoutRequestUpdateManyWithWhereWithoutContributorInput[]
+  deleteMany?: Prisma.PayoutRequestScalarWhereInput | Prisma.PayoutRequestScalarWhereInput[]
+}
+
+export type PayoutRequestCreateNestedOneWithoutEarningsInput = {
+  create?: Prisma.XOR<Prisma.PayoutRequestCreateWithoutEarningsInput, Prisma.PayoutRequestUncheckedCreateWithoutEarningsInput>
+  connectOrCreate?: Prisma.PayoutRequestCreateOrConnectWithoutEarningsInput
+  connect?: Prisma.PayoutRequestWhereUniqueInput
+}
+
+export type PayoutRequestUpdateOneWithoutEarningsNestedInput = {
+  create?: Prisma.XOR<Prisma.PayoutRequestCreateWithoutEarningsInput, Prisma.PayoutRequestUncheckedCreateWithoutEarningsInput>
+  connectOrCreate?: Prisma.PayoutRequestCreateOrConnectWithoutEarningsInput
+  upsert?: Prisma.PayoutRequestUpsertWithoutEarningsInput
+  disconnect?: Prisma.PayoutRequestWhereInput | boolean
+  delete?: Prisma.PayoutRequestWhereInput | boolean
+  connect?: Prisma.PayoutRequestWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PayoutRequestUpdateToOneWithWhereWithoutEarningsInput, Prisma.PayoutRequestUpdateWithoutEarningsInput>, Prisma.PayoutRequestUncheckedUpdateWithoutEarningsInput>
+}
+
 export type PayoutRequestCreateWithoutAffiliateInput = {
   id?: string
   amountCents: number
@@ -573,6 +662,8 @@ export type PayoutRequestCreateWithoutAffiliateInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   commissions?: Prisma.CommissionCreateNestedManyWithoutPayoutInput
+  contributor?: Prisma.ContributorAccountCreateNestedOneWithoutPayoutsInput
+  earnings?: Prisma.ContributorEarningCreateNestedManyWithoutPayoutInput
 }
 
 export type PayoutRequestUncheckedCreateWithoutAffiliateInput = {
@@ -586,7 +677,9 @@ export type PayoutRequestUncheckedCreateWithoutAffiliateInput = {
   reviewedAt?: Date | string | null
   paidAt?: Date | string | null
   createdAt?: Date | string
+  contributorId?: string | null
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutPayoutInput
+  earnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutPayoutInput
 }
 
 export type PayoutRequestCreateOrConnectWithoutAffiliateInput = {
@@ -620,7 +713,7 @@ export type PayoutRequestScalarWhereInput = {
   OR?: Prisma.PayoutRequestScalarWhereInput[]
   NOT?: Prisma.PayoutRequestScalarWhereInput | Prisma.PayoutRequestScalarWhereInput[]
   id?: Prisma.StringFilter<"PayoutRequest"> | string
-  affiliateId?: Prisma.StringFilter<"PayoutRequest"> | string
+  affiliateId?: Prisma.StringNullableFilter<"PayoutRequest"> | string | null
   amountCents?: Prisma.IntFilter<"PayoutRequest"> | number
   currency?: Prisma.StringFilter<"PayoutRequest"> | string
   status?: Prisma.EnumPayoutStatusFilter<"PayoutRequest"> | $Enums.PayoutStatus
@@ -630,6 +723,7 @@ export type PayoutRequestScalarWhereInput = {
   reviewedAt?: Prisma.DateTimeNullableFilter<"PayoutRequest"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"PayoutRequest"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PayoutRequest"> | Date | string
+  contributorId?: Prisma.StringNullableFilter<"PayoutRequest"> | string | null
 }
 
 export type PayoutRequestCreateWithoutCommissionsInput = {
@@ -643,12 +737,14 @@ export type PayoutRequestCreateWithoutCommissionsInput = {
   reviewedAt?: Date | string | null
   paidAt?: Date | string | null
   createdAt?: Date | string
-  affiliate: Prisma.AffiliateProfileCreateNestedOneWithoutPayoutsInput
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutPayoutsInput
+  contributor?: Prisma.ContributorAccountCreateNestedOneWithoutPayoutsInput
+  earnings?: Prisma.ContributorEarningCreateNestedManyWithoutPayoutInput
 }
 
 export type PayoutRequestUncheckedCreateWithoutCommissionsInput = {
   id?: string
-  affiliateId: string
+  affiliateId?: string | null
   amountCents: number
   currency?: string
   status?: $Enums.PayoutStatus
@@ -658,6 +754,8 @@ export type PayoutRequestUncheckedCreateWithoutCommissionsInput = {
   reviewedAt?: Date | string | null
   paidAt?: Date | string | null
   createdAt?: Date | string
+  contributorId?: string | null
+  earnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutPayoutInput
 }
 
 export type PayoutRequestCreateOrConnectWithoutCommissionsInput = {
@@ -687,12 +785,14 @@ export type PayoutRequestUpdateWithoutCommissionsInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  affiliate?: Prisma.AffiliateProfileUpdateOneRequiredWithoutPayoutsNestedInput
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutPayoutsNestedInput
+  contributor?: Prisma.ContributorAccountUpdateOneWithoutPayoutsNestedInput
+  earnings?: Prisma.ContributorEarningUpdateManyWithoutPayoutNestedInput
 }
 
 export type PayoutRequestUncheckedUpdateWithoutCommissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  affiliateId?: Prisma.StringFieldUpdateOperationsInput | string
+  affiliateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
@@ -702,6 +802,146 @@ export type PayoutRequestUncheckedUpdateWithoutCommissionsInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contributorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  earnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutPayoutNestedInput
+}
+
+export type PayoutRequestCreateWithoutContributorInput = {
+  id?: string
+  amountCents: number
+  currency?: string
+  status?: $Enums.PayoutStatus
+  method: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: string | null
+  reason?: string | null
+  reviewedAt?: Date | string | null
+  paidAt?: Date | string | null
+  createdAt?: Date | string
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutPayoutsInput
+  commissions?: Prisma.CommissionCreateNestedManyWithoutPayoutInput
+  earnings?: Prisma.ContributorEarningCreateNestedManyWithoutPayoutInput
+}
+
+export type PayoutRequestUncheckedCreateWithoutContributorInput = {
+  id?: string
+  affiliateId?: string | null
+  amountCents: number
+  currency?: string
+  status?: $Enums.PayoutStatus
+  method: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: string | null
+  reason?: string | null
+  reviewedAt?: Date | string | null
+  paidAt?: Date | string | null
+  createdAt?: Date | string
+  commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutPayoutInput
+  earnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutPayoutInput
+}
+
+export type PayoutRequestCreateOrConnectWithoutContributorInput = {
+  where: Prisma.PayoutRequestWhereUniqueInput
+  create: Prisma.XOR<Prisma.PayoutRequestCreateWithoutContributorInput, Prisma.PayoutRequestUncheckedCreateWithoutContributorInput>
+}
+
+export type PayoutRequestCreateManyContributorInputEnvelope = {
+  data: Prisma.PayoutRequestCreateManyContributorInput | Prisma.PayoutRequestCreateManyContributorInput[]
+  skipDuplicates?: boolean
+}
+
+export type PayoutRequestUpsertWithWhereUniqueWithoutContributorInput = {
+  where: Prisma.PayoutRequestWhereUniqueInput
+  update: Prisma.XOR<Prisma.PayoutRequestUpdateWithoutContributorInput, Prisma.PayoutRequestUncheckedUpdateWithoutContributorInput>
+  create: Prisma.XOR<Prisma.PayoutRequestCreateWithoutContributorInput, Prisma.PayoutRequestUncheckedCreateWithoutContributorInput>
+}
+
+export type PayoutRequestUpdateWithWhereUniqueWithoutContributorInput = {
+  where: Prisma.PayoutRequestWhereUniqueInput
+  data: Prisma.XOR<Prisma.PayoutRequestUpdateWithoutContributorInput, Prisma.PayoutRequestUncheckedUpdateWithoutContributorInput>
+}
+
+export type PayoutRequestUpdateManyWithWhereWithoutContributorInput = {
+  where: Prisma.PayoutRequestScalarWhereInput
+  data: Prisma.XOR<Prisma.PayoutRequestUpdateManyMutationInput, Prisma.PayoutRequestUncheckedUpdateManyWithoutContributorInput>
+}
+
+export type PayoutRequestCreateWithoutEarningsInput = {
+  id?: string
+  amountCents: number
+  currency?: string
+  status?: $Enums.PayoutStatus
+  method: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: string | null
+  reason?: string | null
+  reviewedAt?: Date | string | null
+  paidAt?: Date | string | null
+  createdAt?: Date | string
+  affiliate?: Prisma.AffiliateProfileCreateNestedOneWithoutPayoutsInput
+  commissions?: Prisma.CommissionCreateNestedManyWithoutPayoutInput
+  contributor?: Prisma.ContributorAccountCreateNestedOneWithoutPayoutsInput
+}
+
+export type PayoutRequestUncheckedCreateWithoutEarningsInput = {
+  id?: string
+  affiliateId?: string | null
+  amountCents: number
+  currency?: string
+  status?: $Enums.PayoutStatus
+  method: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: string | null
+  reason?: string | null
+  reviewedAt?: Date | string | null
+  paidAt?: Date | string | null
+  createdAt?: Date | string
+  contributorId?: string | null
+  commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutPayoutInput
+}
+
+export type PayoutRequestCreateOrConnectWithoutEarningsInput = {
+  where: Prisma.PayoutRequestWhereUniqueInput
+  create: Prisma.XOR<Prisma.PayoutRequestCreateWithoutEarningsInput, Prisma.PayoutRequestUncheckedCreateWithoutEarningsInput>
+}
+
+export type PayoutRequestUpsertWithoutEarningsInput = {
+  update: Prisma.XOR<Prisma.PayoutRequestUpdateWithoutEarningsInput, Prisma.PayoutRequestUncheckedUpdateWithoutEarningsInput>
+  create: Prisma.XOR<Prisma.PayoutRequestCreateWithoutEarningsInput, Prisma.PayoutRequestUncheckedCreateWithoutEarningsInput>
+  where?: Prisma.PayoutRequestWhereInput
+}
+
+export type PayoutRequestUpdateToOneWithWhereWithoutEarningsInput = {
+  where?: Prisma.PayoutRequestWhereInput
+  data: Prisma.XOR<Prisma.PayoutRequestUpdateWithoutEarningsInput, Prisma.PayoutRequestUncheckedUpdateWithoutEarningsInput>
+}
+
+export type PayoutRequestUpdateWithoutEarningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
+  method?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutPayoutsNestedInput
+  commissions?: Prisma.CommissionUpdateManyWithoutPayoutNestedInput
+  contributor?: Prisma.ContributorAccountUpdateOneWithoutPayoutsNestedInput
+}
+
+export type PayoutRequestUncheckedUpdateWithoutEarningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  affiliateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
+  method?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contributorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commissions?: Prisma.CommissionUncheckedUpdateManyWithoutPayoutNestedInput
 }
 
 export type PayoutRequestCreateManyAffiliateInput = {
@@ -715,6 +955,7 @@ export type PayoutRequestCreateManyAffiliateInput = {
   reviewedAt?: Date | string | null
   paidAt?: Date | string | null
   createdAt?: Date | string
+  contributorId?: string | null
 }
 
 export type PayoutRequestUpdateWithoutAffiliateInput = {
@@ -729,6 +970,8 @@ export type PayoutRequestUpdateWithoutAffiliateInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commissions?: Prisma.CommissionUpdateManyWithoutPayoutNestedInput
+  contributor?: Prisma.ContributorAccountUpdateOneWithoutPayoutsNestedInput
+  earnings?: Prisma.ContributorEarningUpdateManyWithoutPayoutNestedInput
 }
 
 export type PayoutRequestUncheckedUpdateWithoutAffiliateInput = {
@@ -742,11 +985,74 @@ export type PayoutRequestUncheckedUpdateWithoutAffiliateInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contributorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutPayoutNestedInput
+  earnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutPayoutNestedInput
 }
 
 export type PayoutRequestUncheckedUpdateManyWithoutAffiliateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
+  method?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contributorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type PayoutRequestCreateManyContributorInput = {
+  id?: string
+  affiliateId?: string | null
+  amountCents: number
+  currency?: string
+  status?: $Enums.PayoutStatus
+  method: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: string | null
+  reason?: string | null
+  reviewedAt?: Date | string | null
+  paidAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type PayoutRequestUpdateWithoutContributorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
+  method?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  affiliate?: Prisma.AffiliateProfileUpdateOneWithoutPayoutsNestedInput
+  commissions?: Prisma.CommissionUpdateManyWithoutPayoutNestedInput
+  earnings?: Prisma.ContributorEarningUpdateManyWithoutPayoutNestedInput
+}
+
+export type PayoutRequestUncheckedUpdateWithoutContributorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  affiliateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
+  method?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  commissions?: Prisma.CommissionUncheckedUpdateManyWithoutPayoutNestedInput
+  earnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutPayoutNestedInput
+}
+
+export type PayoutRequestUncheckedUpdateManyWithoutContributorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  affiliateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPayoutStatusFieldUpdateOperationsInput | $Enums.PayoutStatus
@@ -765,10 +1071,12 @@ export type PayoutRequestUncheckedUpdateManyWithoutAffiliateInput = {
 
 export type PayoutRequestCountOutputType = {
   commissions: number
+  earnings: number
 }
 
 export type PayoutRequestCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   commissions?: boolean | PayoutRequestCountOutputTypeCountCommissionsArgs
+  earnings?: boolean | PayoutRequestCountOutputTypeCountEarningsArgs
 }
 
 /**
@@ -788,6 +1096,13 @@ export type PayoutRequestCountOutputTypeCountCommissionsArgs<ExtArgs extends run
   where?: Prisma.CommissionWhereInput
 }
 
+/**
+ * PayoutRequestCountOutputType without action
+ */
+export type PayoutRequestCountOutputTypeCountEarningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContributorEarningWhereInput
+}
+
 
 export type PayoutRequestSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -801,8 +1116,11 @@ export type PayoutRequestSelect<ExtArgs extends runtime.Types.Extensions.Interna
   reviewedAt?: boolean
   paidAt?: boolean
   createdAt?: boolean
-  affiliate?: boolean | Prisma.AffiliateProfileDefaultArgs<ExtArgs>
+  contributorId?: boolean
+  affiliate?: boolean | Prisma.PayoutRequest$affiliateArgs<ExtArgs>
   commissions?: boolean | Prisma.PayoutRequest$commissionsArgs<ExtArgs>
+  contributor?: boolean | Prisma.PayoutRequest$contributorArgs<ExtArgs>
+  earnings?: boolean | Prisma.PayoutRequest$earningsArgs<ExtArgs>
   _count?: boolean | Prisma.PayoutRequestCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payoutRequest"]>
 
@@ -818,7 +1136,9 @@ export type PayoutRequestSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   reviewedAt?: boolean
   paidAt?: boolean
   createdAt?: boolean
-  affiliate?: boolean | Prisma.AffiliateProfileDefaultArgs<ExtArgs>
+  contributorId?: boolean
+  affiliate?: boolean | Prisma.PayoutRequest$affiliateArgs<ExtArgs>
+  contributor?: boolean | Prisma.PayoutRequest$contributorArgs<ExtArgs>
 }, ExtArgs["result"]["payoutRequest"]>
 
 export type PayoutRequestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -833,7 +1153,9 @@ export type PayoutRequestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   reviewedAt?: boolean
   paidAt?: boolean
   createdAt?: boolean
-  affiliate?: boolean | Prisma.AffiliateProfileDefaultArgs<ExtArgs>
+  contributorId?: boolean
+  affiliate?: boolean | Prisma.PayoutRequest$affiliateArgs<ExtArgs>
+  contributor?: boolean | Prisma.PayoutRequest$contributorArgs<ExtArgs>
 }, ExtArgs["result"]["payoutRequest"]>
 
 export type PayoutRequestSelectScalar = {
@@ -848,30 +1170,40 @@ export type PayoutRequestSelectScalar = {
   reviewedAt?: boolean
   paidAt?: boolean
   createdAt?: boolean
+  contributorId?: boolean
 }
 
-export type PayoutRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "affiliateId" | "amountCents" | "currency" | "status" | "method" | "reference" | "reason" | "reviewedAt" | "paidAt" | "createdAt", ExtArgs["result"]["payoutRequest"]>
+export type PayoutRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "affiliateId" | "amountCents" | "currency" | "status" | "method" | "reference" | "reason" | "reviewedAt" | "paidAt" | "createdAt" | "contributorId", ExtArgs["result"]["payoutRequest"]>
 export type PayoutRequestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  affiliate?: boolean | Prisma.AffiliateProfileDefaultArgs<ExtArgs>
+  affiliate?: boolean | Prisma.PayoutRequest$affiliateArgs<ExtArgs>
   commissions?: boolean | Prisma.PayoutRequest$commissionsArgs<ExtArgs>
+  contributor?: boolean | Prisma.PayoutRequest$contributorArgs<ExtArgs>
+  earnings?: boolean | Prisma.PayoutRequest$earningsArgs<ExtArgs>
   _count?: boolean | Prisma.PayoutRequestCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PayoutRequestIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  affiliate?: boolean | Prisma.AffiliateProfileDefaultArgs<ExtArgs>
+  affiliate?: boolean | Prisma.PayoutRequest$affiliateArgs<ExtArgs>
+  contributor?: boolean | Prisma.PayoutRequest$contributorArgs<ExtArgs>
 }
 export type PayoutRequestIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  affiliate?: boolean | Prisma.AffiliateProfileDefaultArgs<ExtArgs>
+  affiliate?: boolean | Prisma.PayoutRequest$affiliateArgs<ExtArgs>
+  contributor?: boolean | Prisma.PayoutRequest$contributorArgs<ExtArgs>
 }
 
 export type $PayoutRequestPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PayoutRequest"
   objects: {
-    affiliate: Prisma.$AffiliateProfilePayload<ExtArgs>
+    affiliate: Prisma.$AffiliateProfilePayload<ExtArgs> | null
     commissions: Prisma.$CommissionPayload<ExtArgs>[]
+    contributor: Prisma.$ContributorAccountPayload<ExtArgs> | null
+    earnings: Prisma.$ContributorEarningPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    affiliateId: string
+    /**
+     * Exactly one of affiliateId and contributorId is set (CHECK).
+     */
+    affiliateId: string | null
     amountCents: number
     currency: string
     status: $Enums.PayoutStatus
@@ -881,6 +1213,10 @@ export type $PayoutRequestPayload<ExtArgs extends runtime.Types.Extensions.Inter
     reviewedAt: Date | null
     paidAt: Date | null
     createdAt: Date
+    /**
+     * A contributor payout (mentor, instructor or creator earnings).
+     */
+    contributorId: string | null
   }, ExtArgs["result"]["payoutRequest"]>
   composites: {}
 }
@@ -1275,8 +1611,10 @@ readonly fields: PayoutRequestFieldRefs;
  */
 export interface Prisma__PayoutRequestClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  affiliate<T extends Prisma.AffiliateProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AffiliateProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__AffiliateProfileClient<runtime.Types.Result.GetResult<Prisma.$AffiliateProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  affiliate<T extends Prisma.PayoutRequest$affiliateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayoutRequest$affiliateArgs<ExtArgs>>): Prisma.Prisma__AffiliateProfileClient<runtime.Types.Result.GetResult<Prisma.$AffiliateProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   commissions<T extends Prisma.PayoutRequest$commissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayoutRequest$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contributor<T extends Prisma.PayoutRequest$contributorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayoutRequest$contributorArgs<ExtArgs>>): Prisma.Prisma__ContributorAccountClient<runtime.Types.Result.GetResult<Prisma.$ContributorAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  earnings<T extends Prisma.PayoutRequest$earningsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PayoutRequest$earningsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContributorEarningPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1317,6 +1655,7 @@ export interface PayoutRequestFieldRefs {
   readonly reviewedAt: Prisma.FieldRef<"PayoutRequest", 'DateTime'>
   readonly paidAt: Prisma.FieldRef<"PayoutRequest", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"PayoutRequest", 'DateTime'>
+  readonly contributorId: Prisma.FieldRef<"PayoutRequest", 'String'>
 }
     
 
@@ -1713,6 +2052,25 @@ export type PayoutRequestDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
+ * PayoutRequest.affiliate
+ */
+export type PayoutRequest$affiliateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AffiliateProfile
+   */
+  select?: Prisma.AffiliateProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AffiliateProfile
+   */
+  omit?: Prisma.AffiliateProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AffiliateProfileInclude<ExtArgs> | null
+  where?: Prisma.AffiliateProfileWhereInput
+}
+
+/**
  * PayoutRequest.commissions
  */
 export type PayoutRequest$commissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1734,6 +2092,49 @@ export type PayoutRequest$commissionsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.CommissionScalarFieldEnum | Prisma.CommissionScalarFieldEnum[]
+}
+
+/**
+ * PayoutRequest.contributor
+ */
+export type PayoutRequest$contributorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContributorAccount
+   */
+  select?: Prisma.ContributorAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContributorAccount
+   */
+  omit?: Prisma.ContributorAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContributorAccountInclude<ExtArgs> | null
+  where?: Prisma.ContributorAccountWhereInput
+}
+
+/**
+ * PayoutRequest.earnings
+ */
+export type PayoutRequest$earningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContributorEarning
+   */
+  select?: Prisma.ContributorEarningSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContributorEarning
+   */
+  omit?: Prisma.ContributorEarningOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContributorEarningInclude<ExtArgs> | null
+  where?: Prisma.ContributorEarningWhereInput
+  orderBy?: Prisma.ContributorEarningOrderByWithRelationInput | Prisma.ContributorEarningOrderByWithRelationInput[]
+  cursor?: Prisma.ContributorEarningWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContributorEarningScalarFieldEnum | Prisma.ContributorEarningScalarFieldEnum[]
 }
 
 /**

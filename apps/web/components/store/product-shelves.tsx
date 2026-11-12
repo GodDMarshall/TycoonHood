@@ -12,7 +12,7 @@ import { buyWithThcAction, buyWithCardAction } from "../../app/(public)/marketpl
 import { BuyPanel } from "../buy-panel";
 import { money } from "../shop/format";
 
-const kindLabel = { DIGITAL: "Digital", PHYSICAL: "Gear", COURSE: "Program access", MEMBERSHIP: "Membership" } as const;
+const kindLabel = { DIGITAL: "Digital", PHYSICAL: "Gear", COURSE: "Program access", MEMBERSHIP: "Membership", LIVE_EVENT: "Live event" } as const;
 
 export async function ProductShelves({ user }: { user: { id: string } | null }) {
   const fiatProvider = activeFiatProvider();

@@ -67,11 +67,11 @@ model User {
   lessonProgress     LessonProgress[]
   certificates       Certificate[]
   xpEvents           XpEvent[]
-  achievements       UserAchievement[]
+  achievements       UserAchievement[]        @relation("UserAchievementOwner")
   participations     ChallengeParticipation[]
   missionCompletions MissionCompletion[]
   streak             Streak?
-  notifications      Notification[]
+  notifications      Notification[]           @relation("NotificationRecipient")
   orders             Order[]
   discordLink        DiscordLink?
   telegramLink       TelegramLink?
@@ -98,16 +98,134 @@ model User {
   cartItems         CartItem[]
   wishlistItems     WishlistItem[]
   refundRequests    RefundRequest[]
-  communityPosts    CommunityPost[]
+  communityPosts    CommunityPost[]    @relation("CommunityPostAuthor")
   communityComments CommunityComment[]
   reactions         Reaction[]
-  groupMemberships  GroupMembership[]
+  groupMemberships  GroupMembership[]  @relation("GroupMembershipUser")
   reports           ContentReport[]    @relation("ReportReporter")
   auditLogs         AuditLog[]
   couponRedemptions CouponRedemption[]
-  instructorProfile Instructor?
+  instructorProfile Instructor?        @relation("InstructorUser")
   emailHolds        EmailHold[]
   contactMessages   ContactMessage[]
+
+  // ---- Living ecosystem (directive §1, §17, §19; LEAD #8) ----
+  /// Created by the dev-only demo seed (packages/db/src/seed-demo/). Never true in production.
+  isDemo             Boolean @default(false)
+  /// Staff test or internal account, left out of analytics (countableMemberWhere). Audited.
+  excludeFromMetrics Boolean @default(false)
+
+  // §3 academies
+  academyMemberships AcademyMembership[]
+
+  // §13 notifications
+  notificationPreferences  NotificationPreference[]
+  notificationSettings     NotificationSettings?
+  pushSubscriptions        PushSubscription[]
+  scheduledNotifications   ScheduledNotification[]
+  notificationsActed       Notification[]           @relation("NotificationActor")
+  notificationTopicsEdited NotificationTopic[]      @relation("NotificationTopicEditor")
+  announcementsCreated     Announcement[]           @relation("AnnouncementCreator")
+  announcementsRetracted   Announcement[]           @relation("AnnouncementRetractor")
+
+  // §4 §19 activity and analytics
+  activity       ActivityEvent[]     @relation("ActivityActor")
+  activityHidden ActivityEvent[]     @relation("ActivityHider")
+  activityDays   MemberActivityDay[]
+
+  // §8 progression
+  skills                MemberSkill[]         @relation("MemberSkillOwner")
+  skillsVerified        MemberSkill[]         @relation("MemberSkillVerifier")
+  projects              Project[]             @relation("ProjectOwner")
+  projectCollaborations ProjectCollaborator[] @relation("ProjectCollaborations")
+  collaboratorInvites   ProjectCollaborator[] @relation("ProjectCollaboratorInviter")
+  groupInvitesSent      GroupMembership[]     @relation("GroupMembershipInviter")
+  projectsVerified      Project[]             @relation("ProjectVerifier")
+  projectsFeatured      Project[]             @relation("ProjectFeaturer")
+  rankAwards            RankAward[]           @relation("RankAwardMember")
+  rankAwardsGiven       RankAward[]           @relation("RankAwardGiver")
+  achievementsAwarded   UserAchievement[]     @relation("UserAchievementAwarder")
+  learningPathsAuthored LearningPath[]        @relation("LearningPathAuthor")
+  pathFollows           LearningPathFollow[]
+
+  // §2 §12 mentors and contributors
+  contributorApplications         ContributorApplication[] @relation("ContributorApplicant")
+  contributorApplicationsReviewed ContributorApplication[] @relation("ContributorReviewer")
+  contributorAccount              ContributorAccount?
+  agreementsAuthored              RevenueShareAgreement[]  @relation("AgreementAuthor")
+  agreementsAccepted              RevenueShareAgreement[]  @relation("AgreementAcceptor")
+  mentorsApproved                 MentorProfile[]          @relation("MentorApprover")
+  credentialsVerified             ExpertCredential[]       @relation("CredentialVerifier")
+  instructorsIdentityVerified     Instructor[]             @relation("InstructorIdentityVerifier")
+  instructorsPhotoVerified        Instructor[]             @relation("InstructorPhotoVerifier")
+  contentSubmissions              ContentSubmission[]      @relation("ContentSubmitter")
+  contentReviews                  ContentSubmission[]      @relation("ContentReviewer")
+  resourcesSubmitted              Resource[]               @relation("ResourceSubmitter")
+  calendarFeedTokens              CalendarFeedToken[]
+
+  // §6 live events
+  eventHostings               LiveEventHost[]     @relation("LiveEventHostUser")
+  eventHostsConfirmed         LiveEventHost[]     @relation("LiveEventHostConfirmer")
+  eventRegistrations          EventRegistration[] @relation("EventRegistrant")
+  eventRegistrationsCancelled EventRegistration[] @relation("EventRegistrationCanceller")
+  attendanceMarked            EventRegistration[] @relation("EventAttendanceMarker")
+  eventFeedback               EventFeedback[]     @relation("EventFeedbackAuthor")
+  eventFeedbackHidden         EventFeedback[]     @relation("EventFeedbackHider")
+  liveEventsCreated           LiveEvent[]         @relation("LiveEventCreator")
+  liveEventsReviewed          LiveEvent[]         @relation("LiveEventReviewer")
+  eventSeriesCreated          LiveEventSeries[]   @relation("LiveEventSeriesCreator")
+  eventInterests              EventInterest[]
+  attendanceDisputes          EventRegistration[] @relation("EventAttendanceDisputer")
+  attendanceDisputesResolved  EventRegistration[] @relation("EventAttendanceDisputeResolver")
+
+  // §5 daily engine
+  dailyPlans          DailyPlan[]
+  goals               Goal[]
+  goalCheckIns        GoalCheckIn[]
+  evidenceSubmissions EvidenceSubmission[] @relation("EvidenceAuthor")
+  evidenceReviewed    EvidenceSubmission[] @relation("EvidenceReviewer")
+  challengesAuthored  Challenge[]          @relation("ChallengeAuthor")
+  missionsAuthored    Mission[]            @relation("MissionAuthor")
+
+  // §4 community
+  following                Follow[]          @relation("Following")
+  followers                Follow[]          @relation("Followers")
+  blocking                 MemberBlock[]     @relation("Blocker")
+  blockedBy                MemberBlock[]     @relation("Blocked")
+  savedPosts               SavedPost[]
+  communityPostsFeatured   CommunityPost[]   @relation("CommunityPostFeaturer")
+  groupsCreated            CommunityGroup[]  @relation("GroupCreator")
+  groupsReviewed           CommunityGroup[]  @relation("GroupReviewer")
+  groupMembershipsApproved GroupMembership[] @relation("GroupMembershipApprover")
+  groupMembershipsBanned   GroupMembership[] @relation("GroupMembershipBanner")
+  reportsResolved          ContentReport[]   @relation("ReportResolver")
+
+  // §7 opportunities
+  partnerMemberships           PartnerMember[]               @relation("PartnerMemberUser")
+  partnerInvites               PartnerMember[]               @relation("PartnerMemberInviter")
+  partnersReviewed             Partner[]                     @relation("PartnerReviewer")
+  partnersCreated              Partner[]                     @relation("PartnerCreator")
+  opportunitiesCreated         Opportunity[]                 @relation("OpportunityCreator")
+  opportunitiesReviewed        Opportunity[]                 @relation("OpportunityReviewer")
+  opportunityApplications      OpportunityApplication[]      @relation("OpportunityApplicant")
+  opportunityApplicationEvents OpportunityApplicationEvent[] @relation("OpportunityApplicationActor")
+  savedOpportunities           SavedOpportunity[]
+
+  // §17 shop honesty
+  stockConfirmations Product[] @relation("ProductStockConfirmer")
+
+  // §14 §9 editorial and guide
+  postsAuthored         Post[]              @relation("PostAuthorUser")
+  postsCreated          Post[]              @relation("PostCreator")
+  postsUpdated          Post[]              @relation("PostUpdater")
+  postsReviewed         Post[]              @relation("PostReviewer")
+  postRevisions         PostRevision[]      @relation("PostRevisionEditor")
+  helpArticlesEdited    HelpArticle[]       @relation("HelpArticleEditor")
+  testimonials          Testimonial[]       @relation("TestimonialMember")
+  testimonialsVerified  Testimonial[]       @relation("TestimonialVerifier")
+  guideConversations    GuideConversation[]
+  guideMessagesReviewed GuideMessage[]      @relation("GuideMessageReviewer")
+  guideUsage            GuideUsage[]
 
   @@index([rankId])
 }
@@ -148,6 +266,8 @@ model Session {
   expires      DateTime
   // Device management (spec §8): populated at login, Phase 3
   userAgent    String?
+  /// ipKey(ip): a keyed HMAC prefix (platform/ip-key.ts). Rows written before 20261113000100 were
+  /// unkeyed SHA-256 and are nulled by that migration. Never the IP itself.
   ipHash       String?
   createdAt    DateTime @default(now())
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -215,6 +335,27 @@ model Profile {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // ---- Living ecosystem (directive §10, §8, §9, §11) ----
+  /// One line under the name on the profile.
+  headline            String?
+  /// Location is opt-in: shown only when privacy.location is true. City and region only.
+  city                String?
+  region              String?
+  /// ISO 3166-1 alpha-2.
+  country             String?
+  /// At most 5 {label, url}, https only (cleanUrl).
+  links               Json?
+  /// Dashboard layout: hidden and ordered cards. Shape checked in core (dashboard.ts).
+  dashboard           Json      @default("{}")
+  /// At most 6 {kind: ACHIEVEMENT|CERTIFICATE|PROJECT|SKILL, refId}, each checked against the member's own rows.
+  pinnedItems         Json      @default("[]")
+  /// The member agreed that the Guide's optional AI mode may send their questions to the model provider.
+  aiGuideConsentAt    DateTime?
+  /// The zone in force before the last time-zone change. It stays in force until timezoneEffectiveAt
+  /// (the start of the next member day in the new zone), so no member day is counted twice or skipped.
+  previousTimezone    String?
+  timezoneEffectiveAt DateTime?
 }
 
 // ============================================================
@@ -277,7 +418,31 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // ---- Living ecosystem (directive §3, §2, §12) ----
+  /// The owning academy and the source of truth: the authoring service sets pillar from academy.pillar in
+  /// the same write, and no other write path sets either. Backfilled from pillar by migration 000100.
+  academyId    String?
+  academy      Academy?       @relation("AcademyCourses", fields: [academyId], references: [id], onDelete: SetNull)
+  /// Set when this course is an academy's flagship programme.
+  flagshipOf   Academy?       @relation("AcademyFlagship")
+  deliveryMode CourseDelivery @default(SELF_PACED)
+
+  cohorts                CourseCohort[]
+  liveEvents             LiveEvent[]
+  announcements          Announcement[]
+  activity               ActivityEvent[]
+  projects               Project[]
+  pathSteps              LearningPathStep[]
+  missions               Mission[]
+  challenges             Challenge[]
+  goals                  Goal[]
+  groups                 CommunityGroup[]
+  posts                  Post[]
+  submissions            ContentSubmission[]
+  opportunitiesRequiring Opportunity[]
+
   @@index([pillar, status])
+  @@index([academyId, status])
 }
 
 model CourseModule {
@@ -293,6 +458,10 @@ model CourseModule {
   completion  String?
 
   lessons Lesson[]
+
+  // §8 §3
+  skills    ModuleSkill[]
+  pathSteps LearningPathStep[]
 
   @@index([courseId, sortOrder])
 }
@@ -318,21 +487,46 @@ model Lesson {
   progress  LessonProgress[]
   messages  Message[]
 
+  // ---- Living ecosystem (directive §9, §12) ----
+  /// GENERATED ALWAYS AS (title weight A, contentMd weight C) STORED (raw SQL in 20261113000700). Never written.
+  searchVector Unsupported("tsvector")?
+  submissions  ContentSubmission[]
+
   @@index([moduleId, sortOrder])
+  @@index([searchVector], type: Gin)
 }
 
 model Resource {
   id       String  @id @default(cuid())
   title    String
   url      String
-  kind     String  @default("link") /// link | file | template
+  kind     String  @default("link") /// link | file | template | recording | slides
   courseId String?
   course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessonId String?
   lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
+  // ---- Living ecosystem (directive §6, §12) ----
+  /// Event resource (recording, slides, worksheet). Exactly one of courseId, lessonId, eventId, instructorId is set (CHECK).
+  eventId       String?
+  event         LiveEvent?        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  /// Expert-profile resource.
+  instructorId  String?
+  instructor    Instructor?       @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  /// Contributor resources stay DRAFT until their ContentSubmission is approved.
+  status        ContentStatus     @default(PUBLISHED)
+  submittedById String?
+  submittedBy   User?             @relation("ResourceSubmitter", fields: [submittedById], references: [id], onDelete: SetNull)
+  /// Required for event and expert resources (CHECK). Course and lesson resources follow course access.
+  audience      ResourceAudience?
+  createdAt     DateTime          @default(now())
+
+  submissions ContentSubmission[]
+
   @@index([courseId])
   @@index([lessonId])
+  @@index([eventId])
+  @@index([instructorId, status])
 }
 
 model Quiz {
@@ -389,8 +583,16 @@ model Enrollment {
   enrolledAt  DateTime         @default(now())
   completedAt DateTime?
 
+  // ---- Living ecosystem (directive §2, §12) ----
+  /// The learner let this course's instructor or cohort mentor see their named progress. Null = aggregates only.
+  progressSharedAt DateTime?
+  /// Mentor-led run the learner joined.
+  cohortId         String?
+  cohort           CourseCohort? @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+
   @@unique([userId, courseId])
   @@index([courseId])
+  @@index([cohortId])
 }
 
 model LessonProgress {
@@ -450,7 +652,14 @@ model XpEvent {
   idempotencyKey String   @unique
   createdAt      DateTime @default(now())
 
+  // ---- Living ecosystem (directive §3, §8, §19) ----
+  /// The academy the XP was earned in. Backfilled from lesson, course or challenge; null for house-wide XP.
+  academyId String?
+  academy   Academy? @relation(fields: [academyId], references: [id], onDelete: SetNull)
+
   @@index([userId, createdAt])
+  @@index([academyId, createdAt])
+  @@index([source, createdAt])
 }
 
 /// Cumulative XP thresholds. Seeded from config curve; editable in admin later.
@@ -471,6 +680,14 @@ model RankDefinition {
   discordRoleId String? /// wired in Phase 9
 
   users User[]
+
+  // ---- Living ecosystem (directive §8) ----
+  /// Conditions beyond minLevel, e.g. {"verifiedSkills": 2, "verifiedProjects": 1}. Null = level only.
+  criteria Json?
+  /// One plain sentence on what the rank means, shown on the rank ladder.
+  summary  String?
+
+  awards RankAward[]
 }
 
 model Achievement {
@@ -488,15 +705,36 @@ model Achievement {
   active      Boolean @default(true)
 
   unlocks UserAchievement[]
+
+  // ---- Living ecosystem (directive §8, §3) ----
+  kind       AchievementKind @default(ACHIEVEMENT)
+  academyId  String?
+  academy    Academy?        @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  /// Awarded by staff only (RECOGNITION); the rules engine skips it.
+  manualOnly Boolean         @default(false)
+  sortOrder  Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @default(now()) @updatedAt
 }
 
 model UserAchievement {
   id            String      @id @default(cuid())
   userId        String
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User        @relation("UserAchievementOwner", fields: [userId], references: [id], onDelete: Cascade)
   achievementId String
   achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
   unlockedAt    DateTime    @default(now())
+
+  // ---- Living ecosystem (directive §8) ----
+  /// Staff member who awarded a manual achievement. Null = earned by rule.
+  awardedById String?
+  awardedBy   User?     @relation("UserAchievementAwarder", fields: [awardedById], references: [id], onDelete: SetNull)
+  /// Shown to the member with a manual award.
+  note        String?
+  /// What earned it, e.g. "course:<id>" or "project:<id>".
+  sourceRef   String?
+  /// A revoked award stays for the record and is hidden everywhere.
+  revokedAt   DateTime?
 
   @@unique([userId, achievementId])
 }
@@ -527,7 +765,53 @@ model Challenge {
 
   participations ChallengeParticipation[]
 
+  // ---- Living ecosystem (directive §5, §3, §4) ----
+  /// Backfilled from criteria.event: DAILY_CHECKIN, SUBMISSION and GATED_SUBMISSIONS keep their name; anything else is RULE.
+  kind            ChallengeKind    @default(RULE)
+  scope           ChallengeScope   @default(HOUSE)
+  /// Backfilled from pillar.
+  academyId       String?
+  academy         Academy?         @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  /// GROUP scope: the group that runs it. Groups are archived, never deleted.
+  groupId         String?
+  group           CommunityGroup?  @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  /// A programme challenge.
+  courseId        String?
+  course          Course?          @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  cadence         ChallengeCadence @default(ONE_OFF)
+  /// A dated instance of a recurring challenge points at its template.
+  templateId      String?
+  template        Challenge?       @relation("ChallengeTemplate", fields: [templateId], references: [id], onDelete: SetNull)
+  instances       Challenge[]      @relation("ChallengeTemplate")
+  /// The period an instance covers, e.g. "2026-12" or "2026-W49". Unique per template.
+  instanceKey     String?
+  instructions    String?          @db.Text
+  coverImage      String?
+  /// A real limit, checked in the joining transaction. Null = no limit.
+  maxParticipants Int?
+  /// Staff opt-in for the challenge leaderboard. Off by default, and stays off for Wellness.
+  showBoard       Boolean          @default(false)
+  /// Null = never published. Backfilled for UPCOMING, ACTIVE and ENDED rows.
+  publishedAt     DateTime?
+  createdById     String?
+  createdBy       User?            @relation("ChallengeAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+  isDemo          Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
+
+  skills        ChallengeSkill[]
+  submissions   EvidenceSubmission[]
+  projects      Project[]
+  pathSteps     LearningPathStep[]
+  goals         Goal[]
+  liveEvents    LiveEvent[]
+  opportunities Opportunity[]
+
+  @@unique([templateId, instanceKey])
   @@index([lifecycle, startsAt])
+  @@index([scope, lifecycle])
+  @@index([academyId, lifecycle])
+  @@index([groupId])
 }
 
 enum ParticipationStatus {
@@ -544,9 +828,13 @@ model ChallengeParticipation {
   challengeId String
   challenge   Challenge           @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   status      ParticipationStatus @default(JOINED)
+  /// Rule progress and the "checkins" day list. Submissions move to EvidenceSubmission (20261113000900, with DAILY-B).
   progress    Json?
   joinedAt    DateTime            @default(now())
   completedAt DateTime?
+
+  // §5 evidence (was progress.submissions)
+  submissions EvidenceSubmission[]
 
   @@unique([userId, challengeId])
   @@index([challengeId, status])
@@ -565,6 +853,44 @@ model Mission {
   active        Boolean @default(true)
 
   completions MissionCompletion[]
+
+  // ---- Living ecosystem (directive §5, §3, §9) ----
+  /// Backfilled: repeatable with criteria.within = "week" -> WEEKLY; other repeatable -> DAILY; else ONCE.
+  cadence          MissionCadence      @default(ONCE)
+  verification     MissionVerification @default(AUTO)
+  kind             MissionKind?
+  /// Markdown. Required before publishing.
+  instructions     String?             @db.Text
+  ctaLabel         String?             @db.VarChar(40)
+  /// An internal path only (safeSitePath).
+  ctaHref          String?
+  estimatedMinutes Int?
+  academyId        String?
+  academy          Academy?            @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  /// Onboarding interest and goal values the mission suits. Empty = everyone.
+  interestTags     String[]            @default([])
+  minLevel         Int?
+  maxLevel         Int?
+  courseId         String?
+  course           Course?             @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  /// Null = draft. Backfilled to the migration time for existing rows.
+  publishedAt      DateTime?
+  startsAt         DateTime?
+  endsAt           DateTime?
+  archivedAt       DateTime?
+  /// Relative weight when the daily plan chooses between eligible missions.
+  weight           Int                 @default(1)
+  sortOrder        Int                 @default(0)
+  createdById      String?
+  createdBy        User?               @relation("MissionAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @default(now()) @updatedAt
+
+  planItems   DailyPlanItem[]
+  submissions EvidenceSubmission[]
+
+  @@index([active, cadence])
+  @@index([academyId])
 }
 
 model MissionCompletion {
@@ -576,7 +902,20 @@ model MissionCompletion {
   idempotencyKey String   @unique
   completedAt    DateTime @default(now())
 
+  // ---- Living ecosystem (directive §5) ----
+  /// The period this completion fills: "once", a memberDayKey, "week:YYYY-MM-DD" or "month:YYYY-MM".
+  /// Backfilled from idempotencyKey ("mission:<missionId>:<userId>:<occurrence>").
+  occurrence   String
+  verification MissionVerification @default(AUTO)
+  /// SELF_REPORT: the member's short note.
+  note         String?             @db.VarChar(500)
+  /// REVIEW: the approved evidence.
+  submissionId String?             @unique
+  submission   EvidenceSubmission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+
+  @@unique([missionId, userId, occurrence])
   @@index([userId, missionId, completedAt])
+  @@index([userId, completedAt])
 }
 
 model Streak {
@@ -600,12 +939,21 @@ enum NotificationType {
   ORDER
   COMMUNITY
   EARNINGS
+  // ---- Living ecosystem (directive §13, §6; added by 20261113000000) ----
+  LEARNING
+  MENTORSHIP
+  EVENT
+  OPPORTUNITY
+  CONTRIBUTOR
+  PROJECT
+  GOAL
+  ANNOUNCEMENT
 }
 
 model Notification {
   id        String           @id @default(cuid())
   userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User             @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
   type      NotificationType
   title     String
   body      String?
@@ -613,7 +961,32 @@ model Notification {
   readAt    DateTime?
   createdAt DateTime         @default(now())
 
+  // ---- Living ecosystem (directive §13; LEAD #10) ----
+  /// Catalogue key (platform/notification-topics.ts). Null on older rows; read derives it from type.
+  topic          String?
+  /// Writing the same key twice is a no-op, e.g. "follow:<followerId>:<userId>".
+  dedupeKey      String?              @unique
+  /// Unread notices with the same key coalesce into one row ("3 people replied").
+  groupKey       String?
+  groupCount     Int                  @default(1)
+  /// The member whose action caused the notice, when there is one.
+  actorId        String?
+  actor          User?                @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+  priority       NotificationPriority @default(NORMAL)
+  /// The notice was on screen in the centre; readAt is set when it is opened.
+  seenAt         DateTime?
+  archivedAt     DateTime?
+  /// Time-bound notices leave the centre after this.
+  expiresAt      DateTime?
+  /// Retracting an announcement deletes its notices.
+  announcementId String?
+  announcement   Announcement?        @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  deliveries ScheduledNotification[]
+
   @@index([userId, readAt, createdAt])
+  @@index([userId, archivedAt, createdAt])
+  @@index([announcementId])
 }
 
 // ============================================================
@@ -713,6 +1086,8 @@ enum ProductKind {
   PHYSICAL
   COURSE
   MEMBERSHIP
+  // ---- Living ecosystem (directive §13, §6; added by 20261113000000) ----
+  LIVE_EVENT
 }
 
 model Product {
@@ -746,6 +1121,19 @@ model Product {
   category      String?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
+
+  // ---- Living ecosystem (directive §17, §2, §6; LEAD #15) ----
+  /// Staff confirmed the stock count is real. Scarcity copy ("Only N left") needs it (scarcityAllowed).
+  stockConfirmedAt   DateTime?
+  stockConfirmedById String?
+  stockConfirmedBy   User?           @relation("ProductStockConfirmer", fields: [stockConfirmedById], references: [id], onDelete: SetNull)
+  /// Optional academy link: academy and programme pages list active, priced products of their academy.
+  academyId          String?
+  academy            Academy?        @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  /// LIVE_EVENT product behind a paid mentor offering (system-managed).
+  mentorOffering     MentorOffering?
+  /// LIVE_EVENT product behind paid group events (system-managed).
+  liveEvents         LiveEvent[]
 
   @@index([kind, active])
 }
@@ -815,7 +1203,15 @@ model Order {
   refundRequests RefundRequest[]
   commissions    Commission[]
 
+  // ---- Living ecosystem (directive §2, §6, §19) ----
+  /// BOOKING orders carry one LIVE_EVENT line and never touch the cart.
+  source              OrderSource          @default(CART)
+  /// When the order became PAID. Backfilled only where the time is exact.
+  paidAt              DateTime?
+  contributorEarnings ContributorEarning[]
+
   @@index([userId, createdAt])
+  @@index([source, status])
 }
 
 model OrderItem {
@@ -833,8 +1229,17 @@ model OrderItem {
   unitPriceThc   BigInt?
   unitPriceFiatC Int?
 
+  // ---- Living ecosystem (directive §6, §2) ----
+  /// The seat or 1:1 booking this LIVE_EVENT line pays for.
+  /// Not unique: a retry after an expired hold adds a new line. Checkout keeps one PENDING or PAID order
+  /// per registration under the registration's row lock.
+  registrationId String?
+  registration   EventRegistration?  @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+  earning        ContributorEarning?
+
   @@index([orderId])
   @@index([variantId])
+  @@index([registrationId])
 }
 
 /// Snapshotted per order rather than read from the profile, so changing
@@ -890,7 +1295,69 @@ model Post {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  // ---- Living ecosystem (directive §14, §15, §17; LEAD #11) ----
+  kind                PostKind                 @default(ARTICLE)
+  /// Live when SCHEDULED or PUBLISHED and publishedAt <= now(). Backfilled from publishedAt.
+  status              PostStatus               @default(DRAFT)
+  /// Byline: an expert profile or a staff member. authorName stays the display fallback.
+  authorInstructorId  String?
+  authorInstructor    Instructor?              @relation(fields: [authorInstructorId], references: [id], onDelete: SetNull)
+  authorUserId        String?
+  authorUser          User?                    @relation("PostAuthorUser", fields: [authorUserId], references: [id], onDelete: SetNull)
+  categoryId          String?
+  category            PostCategory?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  academyId           String?
+  academy             Academy?                 @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  courseId            String?
+  course              Course?                  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  /// EVENT_RECAP posts.
+  eventId             String?
+  event               LiveEvent?               @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  /// SUCCESS_STORY posts need a consented Testimonial (CHECK while SCHEDULED or PUBLISHED).
+  testimonialId       String?                  @unique
+  testimonial         Testimonial?             @relation(fields: [testimonialId], references: [id], onDelete: SetNull)
+  /// INTERVIEW posts: when and how the subject agreed.
+  subjectConsentAt    DateTime?
+  subjectConsentNote  String?
+  featuredAt          DateTime?
+  featuredRank        Int?
+  /// Required when there is a cover image.
+  coverAlt            String?
+  seoTitle            String?
+  seoDescription      String?
+  readingMinutes      Int?
+  submittedAt         DateTime?
+  reviewedAt          DateTime?
+  reviewedById        String?
+  reviewedBy          User?                    @relation("PostReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  /// Shown to the author.
+  reviewNote          String?
+  /// FOUNDER_NOTE posts, and announcements signed by the founder, need the founder's recorded approval.
+  founderApprovedAt   DateTime?
+  founderApprovalNote String?
+  createdById         String?
+  createdBy           User?                    @relation("PostCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById         String?
+  updatedBy           User?                    @relation("PostUpdater", fields: [updatedById], references: [id], onDelete: SetNull)
+  /// Members subscribed to editorial.post hear once, when it goes live.
+  notifyOnPublish     Boolean                  @default(false)
+  notifiedAt          DateTime?
+  /// Created by the dev-only demo seed. Never true in production; publicWhere.post() leaves it out.
+  isDemo              Boolean                  @default(false)
+  /// GENERATED ALWAYS AS (title A, excerpt B, contentMd C) STORED (raw SQL in 20261113000700). Never written.
+  searchVector        Unsupported("tsvector")?
+
+  revisions PostRevision[]
+  tags      PostTag[]
+
   @@index([publishedAt])
+  @@index([status, publishedAt])
+  @@index([kind, status, publishedAt])
+  @@index([featuredAt])
+  @@index([authorInstructorId])
+  @@index([categoryId])
+  @@index([academyId, status, publishedAt])
+  @@index([searchVector], type: Gin)
 }
 
 // ============================================================
@@ -936,6 +1403,8 @@ model Referral {
   /// real work, which is what this timestamp records.
   qualifiedAt DateTime?
   rewardTxId  String?
+  /// Deprecated (house rule: no raw IPs). Nulled by 20261113000100 and never written again;
+  /// dropped by a later migration once no deployed build writes it.
   signupIp    String?
   createdAt   DateTime       @default(now())
 
@@ -1020,6 +1489,11 @@ model Channel {
 
   messages Message[]
   reads    ChannelRead[]
+
+  // ---- Living ecosystem (directive §2) ----
+  /// The members-only chat of a mentor-led cohort.
+  cohortId String?       @unique
+  cohort   CourseCohort? @relation(fields: [cohortId], references: [id], onDelete: Cascade)
 
   @@index([courseId, sortOrder])
 }
@@ -1154,10 +1628,63 @@ model Instructor {
   bio       String   @db.Text
   avatar    String?
   userId    String?  @unique
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      User?    @relation("InstructorUser", fields: [userId], references: [id], onDelete: SetNull)
   courses   Course[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // ---- Living ecosystem (directive §2, §12, §15, §17; LEAD #2) ----
+  /// The one public expert profile for mentors, instructors and creators.
+  status               ExpertStatus             @default(ACTIVE)
+  /// Shown to the expert when paused or suspended.
+  statusReason         String?
+  /// What this expert does here. Backfilled to {INSTRUCTOR}. Grants in can() come from it.
+  contributorKinds     ContributorKind[]        @default([])
+  /// Areas of expertise, plain labels (at most 8).
+  expertise            String[]                 @default([])
+  experienceMd         String?                  @db.Text
+  yearsExperience      Int?
+  /// ISO 639-1 codes from a fixed list.
+  languages            String[]                 @default([])
+  /// IANA zone, checked with isValidTimeZone.
+  timezone             String?
+  /// At most 5 {label, url}, https only.
+  links                Json?
+  /// Staff confirmed the person is who the profile says. No ID images are stored; the method goes in identityNote.
+  identityVerifiedAt   DateTime?
+  identityVerifiedById String?
+  identityVerifiedBy   User?                    @relation("InstructorIdentityVerifier", fields: [identityVerifiedById], references: [id], onDelete: SetNull)
+  /// Private to staff.
+  identityNote         String?
+  /// Staff confirmed the photo shows this person (verified mentor photos, §17). Changing photoUrl clears
+  /// it and photoSha256; a daily sweep re-fetches the image and clears both when the hash changes.
+  photoVerifiedAt      DateTime?
+  /// sha256 of the image bytes fetched when staff verified the photo.
+  photoSha256          String?
+  photoVerifiedById    String?
+  photoVerifiedBy      User?                    @relation("InstructorPhotoVerifier", fields: [photoVerifiedById], references: [id], onDelete: SetNull)
+  /// The founder's own profile (§15). Backfilled for slug "harsha".
+  isFounder            Boolean                  @default(false)
+  /// Owner option (BLOCKED_ON_YOU item 12): once reviewed course revisions exist, this author's
+  /// revisions skip review. Unused while DR-34's strict rule stands.
+  trustedAuthor        Boolean                  @default(false)
+  isDemo               Boolean                  @default(false)
+  /// GENERATED ALWAYS AS (name A, headline B, bio C) STORED (raw SQL in 20261113000300). Never written.
+  searchVector         Unsupported("tsvector")?
+
+  mentorProfile      MentorProfile?
+  credentials        ExpertCredential[]
+  contributorAccount ContributorAccount?
+  cohorts            CourseCohort[]
+  hostedGroups       CommunityGroup[]
+  resources          Resource[]
+  submissions        ContentSubmission[]
+  eventHosts         LiveEventHost[]
+  feedback           EventFeedback[]
+  posts              Post[]
+
+  @@index([status, isDemo])
+  @@index([searchVector], type: Gin)
 }
 
 model CourseReview {
@@ -1265,22 +1792,30 @@ enum PayoutStatus {
 }
 
 model PayoutRequest {
-  id          String           @id @default(cuid())
-  affiliateId String
-  affiliate   AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  id          String            @id @default(cuid())
+  /// Exactly one of affiliateId and contributorId is set (CHECK).
+  affiliateId String?
+  affiliate   AffiliateProfile? @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
   amountCents Int
-  currency    String           @default("INR")
-  status      PayoutStatus     @default(REQUESTED)
+  currency    String            @default("INR")
+  status      PayoutStatus      @default(REQUESTED)
   method      Json
   reference   String?
   reason      String?
   reviewedAt  DateTime?
   paidAt      DateTime?
-  createdAt   DateTime         @default(now())
+  createdAt   DateTime          @default(now())
 
   commissions Commission[]
 
+  // ---- Living ecosystem (directive §2, §12) ----
+  /// A contributor payout (mentor, instructor or creator earnings).
+  contributorId String?
+  contributor   ContributorAccount?  @relation(fields: [contributorId], references: [id], onDelete: Cascade)
+  earnings      ContributorEarning[]
+
   @@index([affiliateId, status])
+  @@index([contributorId, status])
 }
 
 // ============================================================
@@ -1410,6 +1945,15 @@ model CommunityCategory {
   description String?
   sortOrder   Int             @default(0)
   posts       CommunityPost[]
+
+  // ---- Living ecosystem (directive §3, §4) ----
+  /// Backfilled: warrior -> warrior, business -> business, money -> wealth, mind -> wellness.
+  academyId  String?
+  academy    Academy?  @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  /// Moved from the "community.archived" SiteSetting.
+  archivedAt DateTime?
+
+  @@index([academyId])
 }
 
 model CommunityGroup {
@@ -1421,6 +1965,48 @@ model CommunityGroup {
   createdAt   DateTime          @default(now())
   members     GroupMembership[]
   posts       CommunityPost[]
+
+  // ---- Living ecosystem (directive §4, §3, §2) ----
+  /// Backfilled to PROGRAMME for the four "-program" groups.
+  topic            GroupTopic      @default(OTHER)
+  /// Member-created groups start PENDING_REVIEW. ARCHIVED is moved from the "community.archived" SiteSetting.
+  status           GroupStatus     @default(ACTIVE)
+  joinPolicy       GroupJoinPolicy @default(OPEN)
+  visibility       GroupVisibility @default(MEMBERS)
+  academyId        String?
+  academy          Academy?        @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  /// A programme group belongs to its course (backfilled for the four "-program" groups).
+  courseId         String?
+  course           Course?         @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  /// A mentor-hosted group.
+  hostInstructorId String?
+  hostInstructor   Instructor?     @relation(fields: [hostInstructorId], references: [id], onDelete: SetNull)
+  createdById      String?
+  createdBy        User?           @relation("GroupCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  reviewedById     String?
+  reviewedBy       User?           @relation("GroupReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt       DateTime?
+  /// Shown to the member who proposed the group.
+  rejectionReason  String?
+  archivedAt       DateTime?
+  /// LOCAL groups: city and region only, never an address.
+  city             String?
+  region           String?
+  country          String?
+  coverImageUrl    String?
+  rules            String?         @db.Text
+  /// ACTIVE memberships, kept in the joining transaction. Backfilled.
+  memberCount      Int             @default(0)
+  isDemo           Boolean         @default(false)
+  updatedAt        DateTime        @default(now()) @updatedAt
+
+  challenges    Challenge[]
+  liveEvents    LiveEvent[]
+  activity      ActivityEvent[]
+  announcements Announcement[]
+
+  @@index([status, topic])
+  @@index([academyId, status])
 }
 
 model GroupMembership {
@@ -1428,10 +2014,28 @@ model GroupMembership {
   groupId   String
   group     CommunityGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
   userId    String
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User           @relation("GroupMembershipUser", fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime       @default(now())
 
+  // ---- Living ecosystem (directive §4) ----
+  role         GroupRole         @default(MEMBER)
+  /// APPROVAL groups: PENDING until an owner or moderator approves.
+  status       GroupMemberStatus @default(ACTIVE)
+  notifyLevel  GroupNotifyLevel  @default(ANNOUNCEMENTS)
+  approvedById String?
+  approvedBy   User?             @relation("GroupMembershipApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt   DateTime?
+  bannedById   String?
+  bannedBy     User?             @relation("GroupMembershipBanner", fields: [bannedById], references: [id], onDelete: SetNull)
+  bannedAt     DateTime?
+  banReason    String?
+  /// Set for an INVITED membership: who invited the member.
+  invitedById  String?
+  invitedBy    User?             @relation("GroupMembershipInviter", fields: [invitedById], references: [id], onDelete: SetNull)
+
   @@unique([groupId, userId])
+  @@index([groupId, status, role])
+  @@index([userId, status])
 }
 
 enum ModerationState {
@@ -1443,11 +2047,12 @@ enum ModerationState {
 model CommunityPost {
   id            String             @id @default(cuid())
   authorId      String
-  author        User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author        User               @relation("CommunityPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   categoryId    String?
   category      CommunityCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   groupId       String?
-  group         CommunityGroup?    @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  /// Restrict (was SetNull): deleting a group must never move its posts into the main feed.
+  group         CommunityGroup?    @relation(fields: [groupId], references: [id], onDelete: Restrict)
   title         String
   body          String             @db.Text
   state         ModerationState    @default(VISIBLE)
@@ -1458,19 +2063,45 @@ model CommunityPost {
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
 
-  comments  CommunityComment[]
+  comments  CommunityComment[] @relation("PostComments")
   reactions Reaction[]
+
+  // ---- Living ecosystem (directive §4, §3, §8, §10) ----
+  kind                   CommunityPostKind @default(DISCUSSION)
+  /// Set when the author edits after posting (the "edited" marker).
+  editedAt               DateTime?
+  /// Creation or the latest visible comment: the "active" sort. Backfilled from comments.
+  lastActivityAt         DateTime          @default(now())
+  /// Staff highlight. Cleared when the post is hidden, removed or its group archived.
+  featuredAt             DateTime?
+  featuredById           String?
+  featuredBy             User?             @relation("CommunityPostFeaturer", fields: [featuredById], references: [id], onDelete: SetNull)
+  /// The author agreed that a featured post's title and a short excerpt may show on the public homepage.
+  publicPreviewConsentAt DateTime?
+  /// QUESTION posts: the reply the author accepted.
+  acceptedCommentId      String?           @unique
+  acceptedComment        CommunityComment? @relation("AcceptedAnswer", fields: [acceptedCommentId], references: [id], onDelete: SetNull)
+  academyId              String?
+  academy                Academy?          @relation(fields: [academyId], references: [id], onDelete: SetNull)
+
+  saves   SavedPost[]
+  /// The project this post is the discussion thread of.
+  project Project?
 
   @@index([state, createdAt])
   @@index([categoryId, state, createdAt])
   @@index([groupId, state, createdAt])
   @@index([authorId])
+  @@index([kind, createdAt])
+  @@index([featuredAt])
+  @@index([state, lastActivityAt])
+  @@index([academyId, state, createdAt])
 }
 
 model CommunityComment {
   id        String          @id @default(cuid())
   postId    String
-  post      CommunityPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      CommunityPost   @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
   authorId  String
   author    User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
   body      String          @db.Text
@@ -1480,7 +2111,16 @@ model CommunityComment {
 
   reactions Reaction[]
 
+  // ---- Living ecosystem (directive §4) ----
+  /// One level of replies.
+  parentId    String?
+  parent      CommunityComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     CommunityComment[] @relation("CommentReplies")
+  editedAt    DateTime?
+  acceptedFor CommunityPost?     @relation("AcceptedAnswer")
+
   @@index([postId, createdAt])
+  @@index([parentId])
 }
 
 model Reaction {
@@ -1512,7 +2152,7 @@ model ContentReport {
   id         String       @id @default(cuid())
   reporterId String
   reporter   User         @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
-  /// "post" | "comment" | "user"
+  /// "post" | "comment" | "user" | "group" | "project" | "event" | "event_feedback" | "opportunity" | "partner"
   targetType String
   targetId   String
   reason     String       @db.Text
@@ -1521,8 +2161,13 @@ model ContentReport {
   resolvedAt DateTime?
   createdAt  DateTime     @default(now())
 
+  // ---- Living ecosystem (directive §4, §18) ----
+  resolvedById String?
+  resolvedBy   User?   @relation("ReportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
   @@unique([reporterId, targetType, targetId])
   @@index([status, createdAt])
+  @@index([targetType, targetId])
 }
 
 // ============================================================
@@ -1563,6 +2208,9 @@ model ContactMessage {
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
 
+  // §17 consent carried by a contact-form message
+  testimonials Testimonial[]
+
   @@index([handled, createdAt])
   @@index([userId])
 }
@@ -1577,4 +2225,2533 @@ model Testimonial {
   published Boolean  @default(false)
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
+
+  // ---- Living ecosystem (directive §14, §17) ----
+  /// The member the story is about, when they have an account.
+  userId             String?
+  user               User?           @relation("TestimonialMember", fields: [userId], references: [id], onDelete: SetNull)
+  /// How consent was given. Null on rows written before this column.
+  consentSource      ConsentSource?
+  /// CONTACT_FORM consent: the message that carried it.
+  contactMessageId   String?
+  contactMessage     ContactMessage? @relation(fields: [contactMessageId], references: [id], onDelete: SetNull)
+  consentNote        String?
+  /// Withdrawal unpublishes the testimonial and any story built on it.
+  consentWithdrawnAt DateTime?
+  publishedAt        DateTime?
+  /// Staff checked the story against the member's real record.
+  verifiedAt         DateTime?
+  verifiedById       String?
+  verifiedBy         User?           @relation("TestimonialVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  updatedAt          DateTime        @default(now()) @updatedAt
+
+  story Post?
+}
+
+// ============================================================
+// 17. LIVING ECOSYSTEM — ACADEMIES  (directive §3, §1, §21)
+// One Academy row per Pillar, inserted by migration. Names are
+// editable data; the pillar is the stable key older rows map
+// through. Never "campus" in code or URLs (that is the 3D world).
+// ============================================================
+
+/// §3 How a member came to belong to an academy.
+enum AcademyJoinSource {
+  SELF
+  ENROLMENT
+  ONBOARDING
+  BACKFILL
+}
+
+/// §3 A learning academy (Warrior, Business, Wealth, Wellness).
+model Academy {
+  id               String        @id @default(cuid())
+  /// warrior | business | wealth | wellness
+  slug             String        @unique
+  pillar           Pillar        @unique
+  name             String
+  shortName        String
+  /// The directive's focus line.
+  tagline          String
+  description      String        @db.Text
+  focusAreas       String[]      @default([])
+  /// Design token key (warrior | builder | tycoon | mind), never a hex value.
+  accent           String
+  /// A PhotoName from apps/web/lib/photos.ts.
+  heroPhoto        String?
+  /// Wealth: education, not advice. Wellness: not medical treatment.
+  disclaimer       String?       @db.Text
+  welcomeMd        String?       @db.Text
+  flagshipCourseId String?       @unique
+  flagshipCourse   Course?       @relation("AcademyFlagship", fields: [flagshipCourseId], references: [id], onDelete: SetNull)
+  status           ContentStatus @default(PUBLISHED)
+  sortOrder        Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  courses          Course[]            @relation("AcademyCourses")
+  memberships      AcademyMembership[]
+  challenges       Challenge[]
+  groups           CommunityGroup[]
+  categories       CommunityCategory[]
+  communityPosts   CommunityPost[]
+  xpEvents         XpEvent[]
+  achievements     Achievement[]
+  missions         Mission[]
+  skills           Skill[]
+  learningPaths    LearningPath[]
+  projects         Project[]
+  goals            Goal[]
+  mentorCategories MentorCategory[]
+  eventKinds       EventKind[]
+  liveEvents       LiveEvent[]
+  eventSeries      LiveEventSeries[]
+  eventInterests   EventInterest[]
+  activity         ActivityEvent[]
+  announcements    Announcement[]
+  opportunities    Opportunity[]
+  posts            Post[]
+  /// Shop products staff link to this academy (academy and programme pages list them when active).
+  products         Product[]
+}
+
+/// §3/§21 Members join any number of academies. Leaving is soft.
+model AcademyMembership {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  academyId String
+  academy   Academy           @relation(fields: [academyId], references: [id], onDelete: Cascade)
+  source    AcademyJoinSource @default(SELF)
+  joinedAt  DateTime          @default(now())
+  /// Soft leave keeps history; rejoining clears it; automatic joins never override it.
+  leftAt    DateTime?
+  /// Academy updates and announcements reach this member. Opt-in: SELF and ONBOARDING joins set it
+  /// true; BACKFILL and ENROLMENT joins leave it false, because enrolling is not a request for notices.
+  notify    Boolean           @default(false)
+
+  @@unique([userId, academyId])
+  @@index([academyId, leftAt])
+}
+
+// ============================================================
+// 18. NOTIFICATION CENTRE  (directive §13; LEAD #5, #10)
+// In-app rows are written at once; email and push copies and
+// every timed notice go through the one outbox,
+// ScheduledNotification. Push is inert until VAPID keys exist.
+// ============================================================
+
+/// §13 Delivery channels.
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+}
+
+/// §13
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+/// §13
+enum DigestFrequency {
+  OFF
+  DAILY
+  WEEKLY
+}
+
+/// §13
+enum ScheduledNotificationStatus {
+  PENDING
+  SENT
+  /// Dev mail mode: written to the server log, not emailed.
+  LOGGED
+  /// Not sent on purpose: preference off at dispatch, no mail provider, push not configured, subject gone.
+  SKIPPED
+  CANCELLED
+  FAILED
+}
+
+/// §13/§18
+enum AnnouncementPriority {
+  NORMAL
+  IMPORTANT
+}
+
+/// §13/§18
+enum AnnouncementAudience {
+  ALL
+  ROLE
+  ACADEMY
+  GROUP
+  COURSE
+}
+
+/// §13/§18
+enum AnnouncementStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+  RETRACTED
+}
+
+/// §13 Staff-editable label and default channels for one topic of the code catalogue
+/// (packages/core/src/platform/notification-topics.ts). The catalogue decides which
+/// topics exist and which are locked; a missing row falls back to catalogue defaults.
+model NotificationTopic {
+  key          String   @id
+  label        String
+  description  String?
+  defaultInApp Boolean  @default(true)
+  defaultEmail Boolean  @default(false)
+  defaultPush  Boolean  @default(false)
+  /// Staff can silence a noisy topic. Ignored for locked topics.
+  active       Boolean  @default(true)
+  updatedById  String?
+  updatedBy    User?    @relation("NotificationTopicEditor", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+/// §13 A member's override for one topic on one channel. No row = the topic default.
+model NotificationPreference {
+  userId    String
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     String
+  channel   NotificationChannel
+  enabled   Boolean
+  updatedAt DateTime            @updatedAt
+
+  @@id([userId, topic, channel])
+}
+
+/// §13 Digest, quiet hours, pause and one-click unsubscribe. Created on first change or first email.
+model NotificationSettings {
+  userId               String          @id
+  user                 User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailDigest          DigestFrequency @default(OFF)
+  /// Hour of the member's own day (memberZone), 0-23.
+  digestHour           Int             @default(8)
+  /// Minutes of the member's local day, 0-1439. Both null = no quiet hours.
+  quietStartMin        Int?
+  quietEndMin          Int?
+  pausedUntil          DateTime?
+  /// Opted out of all non-essential email.
+  emailOptOutAt        DateTime?
+  /// sha256 of the member's unsubscribe token, HMAC(privacySecret(), "unsub|" + userId); the token is never stored.
+  /// Links carry the token plus one topic key: they turn off that topic's email, and the page also offers
+  /// "all non-essential email" (emailOptOutAt). Essential topics cannot be unsubscribed.
+  unsubscribeTokenHash String          @unique
+  updatedAt            DateTime        @updatedAt
+}
+
+/// §13 A web push endpoint. Built but inert until VAPID keys exist (OQ-K).
+model PushSubscription {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint     String    @unique
+  p256dh       String
+  auth         String
+  /// e.g. "Chrome on Android". No raw user agent, no IP.
+  label        String?
+  failureCount Int       @default(0)
+  lastUsedAt   DateTime?
+  revokedAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId])
+}
+
+/// §13/§18 A stored, scheduled, audience-targeted, retractable announcement.
+/// Replaces fire-and-forget cms.announce.
+model Announcement {
+  id            String               @id @default(cuid())
+  title         String
+  body          String               @db.Text
+  /// A site path, checked by safeSitePath.
+  href          String?
+  priority      AnnouncementPriority @default(NORMAL)
+  audience      AnnouncementAudience
+  role          UserRole?
+  academyId     String?
+  academy       Academy?             @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  groupId       String?
+  group         CommunityGroup?      @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  courseId      String?
+  course        Course?              @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  /// Allows email copies; each member's preference for the topic still decides.
+  sendEmail     Boolean              @default(false)
+  status        AnnouncementStatus   @default(DRAFT)
+  scheduledFor  DateTime?
+  sentAt        DateTime?
+  /// Members it was delivered to, counted at send time.
+  recipients    Int                  @default(0)
+  retractedAt   DateTime?
+  retractedById String?
+  retractedBy   User?                @relation("AnnouncementRetractor", fields: [retractedById], references: [id], onDelete: SetNull)
+  createdById   String?
+  createdBy     User?                @relation("AnnouncementCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  notifications Notification[]
+
+  @@index([status, scheduledFor])
+}
+
+/// §13 The one outbox for timed and out-of-band delivery (LEAD #5). A row is either a
+/// scheduled notice (channel null: at runAt the gateway delivers it on every channel the
+/// member's preferences then allow) or one EMAIL/PUSH copy of a notice (channel set).
+/// Used by event and mentoring reminders, challenge deadlines, goal nudges, digests and
+/// the email/push copies of immediate notices.
+model ScheduledNotification {
+  id                String                      @id @default(cuid())
+  userId            String
+  user              User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Catalogue key, e.g. "event.reminder".
+  topic             String
+  /// Null = a scheduled notice; EMAIL or PUSH = one delivery copy. Never IN_APP (CHECK).
+  channel           NotificationChannel?
+  /// The in-app notice an EMAIL/PUSH copy belongs to (null when in-app is off for the topic).
+  notificationId    String?
+  notification      Notification?               @relation(fields: [notificationId], references: [id], onDelete: SetNull)
+  /// e.g. "live_event", "event_registration", "challenge", "goal", "digest".
+  subjectType       String
+  subjectId         String
+  runAt             DateTime
+  /// Past this moment the row is stale: dispatchDue marks it SKIPPED with lastError "stale". Set to the
+  /// event start, the challenge end or the goal week's end. Quiet hours never defer a row past it.
+  notAfter          DateTime?
+  /// Render inputs only (offset, snapshot). Text is rendered at dispatch from topic + subject.
+  payload           Json?
+  /// e.g. "event:<eventId>:user:<userId>:s<icsSequence>:T-60". Scheduling the same key twice is a no-op.
+  /// Rows are cancelled by subject (cancelForSubject on subjectType + subjectId), never by a LIKE prefix.
+  dedupeKey         String                      @unique
+  status            ScheduledNotificationStatus @default(PENDING)
+  attempts          Int                         @default(0)
+  /// Claimed by a dispatcher until then (FOR UPDATE SKIP LOCKED; sending happens outside the transaction).
+  lockedUntil       DateTime?
+  /// A short code with no personal data: no_mailer, push_unconfigured, pref_off, subject_gone, stale.
+  lastError         String?
+  provider          String?
+  providerMessageId String?
+  processedAt       DateTime?
+  createdAt         DateTime                    @default(now())
+
+  @@index([status, runAt])
+  @@index([subjectType, subjectId])
+  @@index([userId, status])
+}
+
+// ============================================================
+// 19. ACTIVITY FEED AND ANALYTICS  (directive §4, §10, §11, §19; LEAD #9)
+// ActivityEvent is the member-facing feed. Analytics uses its own
+// private aggregate tables. They are never merged.
+// ============================================================
+
+/// §4 Kinds of genuine activity shown in the feed.
+enum ActivityEventKind {
+  ACADEMY_JOINED
+  COURSE_COMPLETED
+  PATH_COMPLETED
+  ACHIEVEMENT_UNLOCKED
+  RANK_REACHED
+  CHALLENGE_JOINED
+  CHALLENGE_COMPLETED
+  PROJECT_PUBLISHED
+  PROJECT_VERIFIED
+  SKILL_VERIFIED
+  INTRODUCTION_POSTED
+  UPDATE_POSTED
+  DISCUSSION_FEATURED
+  GROUP_CREATED
+  GROUP_ANNOUNCEMENT
+  EVENT_PUBLISHED
+  MENTOR_JOINED
+  ARTICLE_PUBLISHED
+  OPPORTUNITY_PUBLISHED
+  COMMUNITY_MILESTONE
+}
+
+/// §4 Who may see a feed item, before the actor's privacy facet is applied on read.
+enum ActivityAudience {
+  MEMBERS
+  ACADEMY
+  GROUP
+  COURSE
+  STAFF
+}
+
+/// §4/§10/§11 One item of the member-facing feed. Privacy is applied on read, so
+/// turning a facet off hides past items too.
+model ActivityEvent {
+  id           String            @id @default(cuid())
+  kind         ActivityEventKind
+  /// Null for milestones and staff items.
+  actorId      String?
+  actor        User?             @relation("ActivityActor", fields: [actorId], references: [id], onDelete: Cascade)
+  audience     ActivityAudience  @default(MEMBERS)
+  academyId    String?
+  academy      Academy?          @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  groupId      String?
+  group        CommunityGroup?   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  courseId     String?
+  course       Course?           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  subjectType  String
+  subjectId    String
+  /// The actor's privacy facet checked on read, e.g. "achievements", "courses", "projects".
+  facet        String?
+  /// Render snapshot: title, safe href, counts. No email, no other member's free text.
+  data         Json
+  dedupeKey    String            @unique
+  /// When the source event really happened.
+  occurredAt   DateTime
+  hiddenAt     DateTime?
+  hiddenById   String?
+  hiddenBy     User?             @relation("ActivityHider", fields: [hiddenById], references: [id], onDelete: SetNull)
+  hiddenReason String?
+  isDemo       Boolean           @default(false)
+  createdAt    DateTime          @default(now())
+
+  @@index([occurredAt(sort: Desc), id])
+  @@index([actorId, occurredAt])
+  @@index([groupId, occurredAt])
+  @@index([academyId, occurredAt])
+  @@index([subjectType, subjectId])
+  @@index([courseId, occurredAt])
+}
+
+/// §19 One row per member per platform day (IST) on which they used the signed-in app.
+/// The source for DAU, WAU, MAU and retention. No IP, user agent, URL or device.
+model MemberActivityDay {
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Platform day (IST) from analyticsDayKey().
+  day         DateTime @db.Date
+  firstSeenAt DateTime
+  lastSeenAt  DateTime
+  /// Coarse areas only: learn, grow, connect, shop, earn, mentor, event, opportunity.
+  surfaces    String[] @default([])
+
+  @@id([userId, day])
+  @@index([day])
+}
+
+/// §19 Immutable daily rollup. Counts use countableMemberWhere (no staff, suspended,
+/// excluded or demo accounts); money counts LIVE payments only.
+model AnalyticsDaily {
+  day                     DateTime @id @db.Date
+  dau                     Int
+  wau                     Int
+  mau                     Int
+  newMembers              Int
+  returningMembers        Int
+  enrolments              Int
+  lessonsCompleted        Int
+  courseCompletions       Int
+  quizAttempts            Int
+  quizPassed              Int
+  certificates            Int
+  missionCompletions      Int
+  challengeCompletions    Int
+  achievementsUnlocked    Int
+  communityParticipants   Int
+  posts                   Int
+  comments                Int
+  chatMessages            Int
+  groupJoins              Int
+  mentorBookings          Int
+  mentorSessionsCompleted Int
+  eventRegistrations      Int
+  eventAttendances        Int
+  opportunityApplications Int
+  productViews            Int
+  cartAdds                Int
+  checkoutsStarted        Int
+  ordersPaidLive          Int
+  formulaVersion          Int
+  computedAt              DateTime
+}
+
+/// §19 Anonymous daily counters that give funnels a denominator. No user id.
+model EngagementCounterDay {
+  day       DateTime @db.Date
+  /// e.g. "product.view", "cart.add", "checkout.start", "event.view", "opportunity.view".
+  metric    String
+  /// Loose reference (no FK) to a Product, LiveEvent or Opportunity; "" when not applicable.
+  subjectId String   @default("")
+  count     Int      @default(0)
+
+  @@id([day, metric, subjectId])
+}
+
+// ============================================================
+// 20. PROGRESSION AND IDENTITY  (directive §8, §3; LEAD #6, #8)
+// ============================================================
+
+/// §8
+enum SkillLevel {
+  /// Self-declared by the member; always labelled "self-declared".
+  DECLARED
+  STARTED
+  PRACTISED
+  PROFICIENT
+  VERIFIED
+}
+
+/// §8
+enum SkillVerifiedVia {
+  PROJECT_REVIEW
+  STAFF_CHECK
+  MENTOR_ASSESSMENT
+}
+
+/// §8/§12
+enum ProjectKind {
+  PROJECT
+  ARTICLE
+  VIDEO
+  TEMPLATE
+  TOOL
+  OTHER
+}
+
+/// §8
+enum ProjectVisibility {
+  PRIVATE
+  MEMBERS
+  PUBLIC
+}
+
+/// §8
+enum ProjectVerificationStatus {
+  NOT_SUBMITTED
+  SUBMITTED
+  CHANGES_REQUESTED
+  VERIFIED
+  NOT_VERIFIED
+}
+
+/// §12 A collaborator invitation. Only ACCEPTED collaborators are ever shown.
+enum ProjectCollaboratorStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+  REMOVED
+}
+
+/// §8
+enum RankAwardReason {
+  EARNED
+  GRANDFATHERED
+  ADMIN
+}
+
+/// §8
+enum AchievementKind {
+  ACHIEVEMENT
+  MILESTONE
+  BADGE
+  RECOGNITION
+}
+
+/// §3
+enum PathStepKind {
+  COURSE
+  MODULE
+  CHALLENGE
+  PROJECT_BRIEF
+  RESOURCE
+}
+
+/// §8/§7 A skill. academyId null = cross-academy.
+model Skill {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  academyId   String?
+  academy     Academy? @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules       ModuleSkill[]
+  challenges    ChallengeSkill[]
+  projects      ProjectSkill[]
+  opportunities OpportunitySkill[]
+  members       MemberSkill[]
+
+  @@index([academyId, active])
+}
+
+/// §8 Curriculum modules teach skills. A course's skills are its modules' skills.
+/// seed-academy recreates these rows whenever it rebuilds modules.
+model ModuleSkill {
+  moduleId String
+  module   CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  skillId  String
+  skill    Skill        @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([moduleId, skillId])
+  @@index([skillId])
+}
+
+/// §8/§5
+model ChallengeSkill {
+  challengeId String
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  skillId     String
+  skill       Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([challengeId, skillId])
+  @@index([skillId])
+}
+
+/// §8/§7 A member's standing in one skill. DECLARED comes from the member; higher
+/// levels are recomputed from evidence; VERIFIED needs someone other than the member.
+model MemberSkill {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation("MemberSkillOwner", fields: [userId], references: [id], onDelete: Cascade)
+  skillId          String
+  skill            Skill             @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  level            SkillLevel
+  /// When the member declared it (kept after evidence raises the level).
+  declaredAt       DateTime?
+  /// Ids of the modules, certificate, challenges and projects behind the level.
+  evidence         Json              @default("{}")
+  /// When the evidence-derived level was reached.
+  reachedAt        DateTime?
+  verifiedAt       DateTime?
+  verifiedById     String?
+  verifiedBy       User?             @relation("MemberSkillVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  verifiedVia      SkillVerifiedVia?
+  verificationNote String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@unique([userId, skillId])
+  @@index([skillId, level])
+}
+
+/// §8/§4/§12 A member's project or portfolio piece (also a contributor's showcased work).
+/// The showcase is a view over published, VISIBLE, PUBLIC/MEMBERS projects.
+model Project {
+  id                 String                    @id @default(cuid())
+  userId             String
+  user               User                      @relation("ProjectOwner", fields: [userId], references: [id], onDelete: Cascade)
+  slug               String
+  kind               ProjectKind               @default(PROJECT)
+  title              String
+  summary            String
+  bodyMd             String?                   @db.Text
+  url                String?
+  /// At most 5 {label, url}, https only.
+  links              Json?
+  coverImageUrl      String?
+  academyId          String?
+  academy            Academy?                  @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  /// A capstone for this course.
+  courseId           String?
+  course             Course?                   @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  challengeId        String?
+  challenge          Challenge?                @relation(fields: [challengeId], references: [id], onDelete: SetNull)
+  visibility         ProjectVisibility         @default(PRIVATE)
+  /// Null = draft.
+  publishedAt        DateTime?
+  verificationStatus ProjectVerificationStatus @default(NOT_SUBMITTED)
+  submittedAt        DateTime?
+  verifiedAt         DateTime?
+  /// Never the owner (CHECK).
+  verifiedById       String?
+  verifiedBy         User?                     @relation("ProjectVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  reviewNote         String?
+  state              ModerationState           @default(VISIBLE)
+  featuredAt         DateTime?
+  featuredById       String?
+  featuredBy         User?                     @relation("ProjectFeaturer", fields: [featuredById], references: [id], onDelete: SetNull)
+  /// The community thread that carries comments, reactions and reports.
+  postId             String?                   @unique
+  post               CommunityPost?            @relation(fields: [postId], references: [id], onDelete: SetNull)
+  isDemo             Boolean                   @default(false)
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+
+  skills        ProjectSkill[]
+  collaborators ProjectCollaborator[]
+
+  @@unique([userId, slug])
+  @@index([verificationStatus, submittedAt])
+  @@index([academyId, verificationStatus])
+  @@index([visibility, state, publishedAt])
+  @@index([featuredAt])
+}
+
+/// §12/§4 A member the project owner invited. Shown only after they accept, and only where
+/// their own `projects` facet allows it. Declining or removal hides them again.
+model ProjectCollaborator {
+  id          String                    @id @default(cuid())
+  projectId   String
+  project     Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User                      @relation("ProjectCollaborations", fields: [userId], references: [id], onDelete: Cascade)
+  /// What they did, in their own words; at most 60 characters.
+  role        String?                   @db.VarChar(60)
+  status      ProjectCollaboratorStatus @default(INVITED)
+  invitedById String?
+  invitedBy   User?                     @relation("ProjectCollaboratorInviter", fields: [invitedById], references: [id], onDelete: SetNull)
+  invitedAt   DateTime                  @default(now())
+  /// Set when status becomes ACCEPTED.
+  acceptedAt  DateTime?
+  /// When they accepted or declined, or the owner removed them.
+  respondedAt DateTime?
+
+  @@unique([projectId, userId])
+  @@index([userId, status])
+}
+
+/// §8 Skills a project claims; they count only once the project is VERIFIED.
+model ProjectSkill {
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skillId   String
+  skill     Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, skillId])
+  @@index([skillId])
+}
+
+/// §8 Why a member holds a rank. User.rankId stays the cache; ranks never demote.
+model RankAward {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation("RankAwardMember", fields: [userId], references: [id], onDelete: Cascade)
+  rankId      String
+  rank        RankDefinition  @relation(fields: [rankId], references: [id], onDelete: Restrict)
+  reason      RankAwardReason
+  /// The counts that met the criteria.
+  evidence    Json            @default("{}")
+  awardedById String?
+  awardedBy   User?           @relation("RankAwardGiver", fields: [awardedById], references: [id], onDelete: SetNull)
+  note        String?
+  awardedAt   DateTime        @default(now())
+
+  @@index([userId, awardedAt])
+}
+
+/// §3 An ordered route through an academy's material. Duration is computed from the steps.
+model LearningPath {
+  id            String        @id @default(cuid())
+  academyId     String
+  academy       Academy       @relation(fields: [academyId], references: [id], onDelete: Restrict)
+  slug          String        @unique
+  title         String
+  summary       String
+  descriptionMd String?       @db.Text
+  /// Plain "who it is for".
+  audience      String?
+  status        ContentStatus @default(DRAFT)
+  sortOrder     Int           @default(0)
+  createdById   String?
+  createdBy     User?         @relation("LearningPathAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  steps   LearningPathStep[]
+  follows LearningPathFollow[]
+
+  @@index([academyId, status, sortOrder])
+}
+
+/// §3 One step of a path pointing at real content. A target that is deleted becomes
+/// null (SetNull) and the admin flags the step.
+model LearningPathStep {
+  id          String        @id @default(cuid())
+  pathId      String
+  path        LearningPath  @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  sortOrder   Int
+  kind        PathStepKind
+  courseId    String?
+  course      Course?       @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  moduleId    String?
+  module      CourseModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  challengeId String?
+  challenge   Challenge?    @relation(fields: [challengeId], references: [id], onDelete: SetNull)
+  /// PROJECT_BRIEF and RESOURCE steps.
+  title       String?
+  bodyMd      String?       @db.Text
+  /// https only.
+  url         String?
+  required    Boolean       @default(true)
+
+  @@unique([pathId, sortOrder])
+}
+
+/// §3 A member following a path. Progress is derived, never stored.
+model LearningPathFollow {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pathId      String
+  path        LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  startedAt   DateTime     @default(now())
+  /// Stamped once, when every required step is done.
+  completedAt DateTime?
+
+  @@unique([userId, pathId])
+  @@index([pathId])
+}
+
+// ============================================================
+// 21. MENTORS AND CONTRIBUTORS  (directive §2, §12; LEAD #2, #3, #15)
+// Instructor is the one public expert profile. Mentor data lives in
+// MentorProfile. Applications, payee records, revenue terms and
+// earnings are private and staff-reviewed. No revenue share is seeded.
+// ============================================================
+
+/// §2/§12
+enum ExpertStatus {
+  PENDING
+  ACTIVE
+  PAUSED
+  SUSPENDED
+  ARCHIVED
+}
+
+/// §2/§12
+enum ContributorKind {
+  MENTOR
+  INSTRUCTOR
+  CREATOR
+}
+
+/// §2/§12
+enum ContributorApplicationStatus {
+  SUBMITTED
+  IN_REVIEW
+  NEEDS_INFO
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+/// §2/§12
+enum ContributorAccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+/// §2
+enum MentorStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  SUSPENDED
+}
+
+/// §2
+enum BookingMode {
+  INSTANT
+  REQUEST
+}
+
+/// §2
+enum CredentialKind {
+  DEGREE
+  CERTIFICATION
+  LICENCE
+  EMPLOYMENT
+  AWARD
+  OTHER
+}
+
+/// §2
+enum CredentialStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+/// §2
+enum AvailabilityExceptionKind {
+  BLOCKED
+  EXTRA
+}
+
+/// §2/§12 What a revenue share applies to.
+enum RevenueScope {
+  MENTORING
+  EVENT
+  COURSE
+}
+
+/// §2
+enum CourseDelivery {
+  SELF_PACED
+  MENTOR_LED
+}
+
+/// §2
+enum CohortStatus {
+  DRAFT
+  OPEN
+  RUNNING
+  COMPLETED
+  CANCELLED
+}
+
+/// §12
+enum ContentSubmissionType {
+  COURSE
+  COURSE_UPDATE
+  RESOURCE
+}
+
+/// §12
+enum ContentSubmissionStatus {
+  SUBMITTED
+  IN_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+/// §6/§12 Who may open an event or expert-profile resource.
+enum ResourceAudience {
+  PUBLIC
+  MEMBERS
+  REGISTERED
+  ATTENDED
+}
+
+/// §2/§6 Keeps booking orders apart from cart orders.
+enum OrderSource {
+  CART
+  BOOKING
+}
+
+/// §2 Mentor-specific settings and standing, 1:1 with the expert profile.
+model MentorProfile {
+  id                String       @id @default(cuid())
+  instructorId      String       @unique
+  instructor        Instructor   @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  status            MentorStatus @default(DRAFT)
+  statusReason      String?
+  acceptingBookings Boolean      @default(false)
+  /// INSTANT books a published slot at once. REQUEST holds the slot until the mentor accepts or the
+  /// hold expires (min(slot start - minNoticeHours, now + 48h)); a member has at most 3 open requests.
+  bookingMode       BookingMode  @default(INSTANT)
+  /// 0-720.
+  minNoticeHours    Int          @default(24)
+  /// 1-120.
+  horizonDays       Int          @default(30)
+  /// 0-120.
+  bufferMinutes     Int          @default(15)
+  maxSessionsPerDay Int?
+  /// Notice a member must give for a cancellation not to count as late. Null = until the start (no
+  /// invented policy). Refunds follow the agreement's refundWindowHours, never this field.
+  cancellationHours Int?
+  /// Self-reported; labelled so on the profile.
+  priorHistoryMd    String?      @db.Text
+  approvedAt        DateTime?
+  approvedById      String?
+  approvedBy        User?        @relation("MentorApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  categories             MentorCategoryLink[]
+  offerings              MentorOffering[]
+  availabilityRules      MentorAvailabilityRule[]
+  availabilityExceptions MentorAvailabilityException[]
+  events                 LiveEvent[]
+  interests              EventInterest[]
+
+  @@index([status, acceptingBookings])
+}
+
+/// §2 The directive's ten mentor categories, as data (seed-taxonomy.ts).
+model MentorCategory {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  academyId   String?
+  academy     Academy? @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  /// Shown on every offering in this category, on the booking form and in the confirmation; the
+  /// member's acknowledgement is stored (EventRegistration.disclaimerAckAt). Seeded for categories 5-8.
+  disclaimer  String?  @db.Text
+  /// False = offerings in this category are free only. Seeded false for financial-literacy until the owner
+  /// confirms the regulatory position (B7); staff change it in /admin/mentors/categories, audited.
+  paidAllowed Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  mentors   MentorCategoryLink[]
+  offerings MentorOffering[]
+}
+
+/// §2 One primary category per mentor (partial unique index).
+model MentorCategoryLink {
+  mentorId   String
+  mentor     MentorProfile  @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   MentorCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  isPrimary  Boolean        @default(false)
+
+  @@id([mentorId, categoryId])
+  @@index([categoryId])
+}
+
+/// §2 A qualification. Public only when VERIFIED ("qualifications where verified").
+model ExpertCredential {
+  id              String                  @id @default(cuid())
+  instructorId    String
+  instructor      Instructor              @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  kind            CredentialKind
+  title           String
+  issuer          String
+  year            Int?
+  /// The issuer's own verification link, if any.
+  publicUrl       String?
+  /// Private: how staff verified it. Never selected by public queries. No ID images are stored.
+  evidenceNote    String?                 @db.Text
+  status          CredentialStatus        @default(PENDING)
+  verifiedById    String?
+  verifiedBy      User?                   @relation("CredentialVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  verifiedAt      DateTime?
+  rejectionReason String?
+  expiresAt       DateTime?
+  applicationId   String?
+  application     ContributorApplication? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  @@index([instructorId, status])
+}
+
+/// §2/§12 One application flow for mentors, instructors and creators.
+model ContributorApplication {
+  id              String                       @id @default(cuid())
+  userId          String
+  user            User                         @relation("ContributorApplicant", fields: [userId], references: [id], onDelete: Cascade)
+  kind            ContributorKind
+  status          ContributorApplicationStatus @default(SUBMITTED)
+  /// A zod schema per kind: display name, headline, bio, expertise, experience, languages,
+  /// time zone, sample links, proposed offerings or outline, policy acknowledgements.
+  answers         Json
+  /// Checked against MentorCategory.slug.
+  categorySlugs   String[]                     @default([])
+  termsVersion    String
+  termsAcceptedAt DateTime
+  /// Shown to the applicant.
+  statusReason    String?
+  reviewerId      String?
+  reviewer        User?                        @relation("ContributorReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewedAt      DateTime?
+  submittedAt     DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
+
+  credentials ExpertCredential[]
+
+  @@index([status, kind, submittedAt])
+  @@index([userId])
+}
+
+/// §2/§12 The private payee record of an approved contributor, kept apart from the public
+/// profile so payout data never leaks through profile queries.
+model ContributorAccount {
+  id                    String                   @id @default(cuid())
+  /// RESTRICT: an account with contributor money is anonymised, never deleted, as the privacy policy
+  /// already says for orders and commissions (O36).
+  userId                String                   @unique
+  user                  User                     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  instructorId          String?                  @unique
+  instructor            Instructor?              @relation(fields: [instructorId], references: [id], onDelete: SetNull)
+  status                ContributorAccountStatus @default(ACTIVE)
+  statusReason          String?
+  /// normalisePayoutMethod shape, with fingerprint. Shown only to admin.earn at payout.
+  payoutMethod          Json?
+  payoutMethodUpdatedAt DateTime?
+  termsVersion          String
+  termsAcceptedAt       DateTime
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  agreements RevenueShareAgreement[]
+  earnings   ContributorEarning[]
+  payouts    PayoutRequest[]
+}
+
+/// §2/§12 The contributor's share for a scope. contributorId null = platform default.
+/// No row is seeded: paid offerings stay unpublishable until staff set terms (LEAD #15).
+model RevenueShareAgreement {
+  id                  String              @id @default(cuid())
+  contributorId       String?
+  contributor         ContributorAccount? @relation(fields: [contributorId], references: [id], onDelete: Cascade)
+  scope               RevenueScope
+  /// Basis points, 0-10000, of the line's net paid amount. The platform keeps the rest: that remainder is the
+  /// platform fee, so there is no second fee field that could disagree with it.
+  contributorShareBps Int
+  /// Days an earning is held after the later of payment and the event's end. Null until staff set it.
+  holdDays            Int?
+  /// Smallest payout a contributor may request, in paise. Null until staff set it.
+  minPayoutCents      Int?
+  /// A member who cancels at least this many hours before the start is refunded in full. Null until set.
+  /// A paid offering or event in this scope cannot be published while any term on its agreement is null.
+  refundWindowHours   Int?
+  version             Int
+  /// The text shown when the contributor accepts.
+  termsMd             String              @db.Text
+  effectiveFrom       DateTime
+  effectiveUntil      DateTime?
+  createdById         String?
+  createdBy           User?               @relation("AgreementAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+  acceptedAt          DateTime?
+  acceptedById        String?
+  acceptedBy          User?               @relation("AgreementAcceptor", fields: [acceptedById], references: [id], onDelete: SetNull)
+  createdAt           DateTime            @default(now())
+
+  earnings ContributorEarning[]
+
+  @@unique([contributorId, scope, version])
+  @@index([contributorId, scope, effectiveFrom])
+}
+
+/// §2/§12 Money a contributor earns from one paid order line, in INR paise. Held, then
+/// approved by staff, like Commission. Lines paid in TEST mode are never payable.
+model ContributorEarning {
+  id             String                @id @default(cuid())
+  contributorId  String
+  contributor    ContributorAccount    @relation(fields: [contributorId], references: [id], onDelete: Cascade)
+  scope          RevenueScope
+  orderId        String
+  order          Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  /// One earning per paid line.
+  orderItemId    String                @unique
+  orderItem      OrderItem             @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  registrationId String?
+  registration   EventRegistration?    @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+  /// Net paise paid for the line after any coupon.
+  baseCents      Int
+  /// Snapshot of the agreement's share.
+  shareBps       Int
+  /// floor(baseCents * shareBps / 10000).
+  amountCents    Int
+  currency       String                @default("INR")
+  status         CommissionStatus      @default(PENDING)
+  agreementId    String
+  agreement      RevenueShareAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  /// The later of payment and the event's end, plus the contributor hold days.
+  holdUntil      DateTime
+  reason         String?
+  reviewedAt     DateTime?
+  payoutId       String?
+  payout         PayoutRequest?        @relation(fields: [payoutId], references: [id], onDelete: SetNull)
+  createdAt      DateTime              @default(now())
+
+  @@index([contributorId, status])
+  @@index([payoutId])
+}
+
+/// §2 What a member can book or join: format, length, seats and an honest price.
+model MentorOffering {
+  id            String          @id @default(cuid())
+  mentorId      String
+  mentor        MentorProfile   @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  eventKindId   String
+  eventKind     EventKind       @relation(fields: [eventKindId], references: [id], onDelete: Restrict)
+  /// One of the mentor's own categories; decides the disclaimer and whether the offering may be paid.
+  categoryId    String?
+  category      MentorCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  title         String
+  /// At most 200 characters.
+  summary       String
+  descriptionMd String          @db.Text
+  /// 15-240 minutes.
+  durationMin   Int
+  /// Exactly 1 for the one-to-one kind (core rule).
+  capacity      Int             @default(1)
+  /// Paise; null = free. A paid offering cannot be activated until revenue terms exist.
+  priceCents    Int?
+  currency      String          @default("INR")
+  /// System-managed LIVE_EVENT product behind a paid offering.
+  productId     String?         @unique
+  product       Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  active        Boolean         @default(false)
+  isDemo        Boolean         @default(false)
+  sortOrder     Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  availabilityRules MentorAvailabilityRule[]
+  events            LiveEvent[]
+
+  @@index([mentorId, active])
+}
+
+/// §2 A mentor's recurring weekly availability in their own zone: the only source of
+/// bookable slots, so availability is never invented.
+model MentorAvailabilityRule {
+  id          String          @id @default(cuid())
+  mentorId    String
+  mentor      MentorProfile   @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  /// 0 = Sunday … 6 = Saturday, in `timezone`.
+  weekday     Int
+  /// Minutes of local wall time; 0 <= startMinute < endMinute <= 1440.
+  startMinute Int
+  endMinute   Int
+  /// IANA zone the rule is written in.
+  timezone    String
+  /// Null = every offering.
+  offeringId  String?
+  offering    MentorOffering? @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  /// Local dates in `timezone`.
+  validFrom   DateTime?       @db.Date
+  validUntil  DateTime?       @db.Date
+  createdAt   DateTime        @default(now())
+
+  @@index([mentorId])
+}
+
+/// §2 Dated changes to the weekly rules: time off, or extra one-off availability (UTC instants).
+model MentorAvailabilityException {
+  id        String                    @id @default(cuid())
+  mentorId  String
+  mentor    MentorProfile             @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  kind      AvailabilityExceptionKind
+  startsAt  DateTime
+  endsAt    DateTime
+  note      String?
+  createdAt DateTime                  @default(now())
+
+  @@index([mentorId, startsAt])
+}
+
+/// §2 A dated, mentor-led run of a course with its own members, sessions and channel.
+model CourseCohort {
+  id                 String       @id @default(cuid())
+  courseId           String
+  course             Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  mentorInstructorId String
+  mentor             Instructor   @relation(fields: [mentorInstructorId], references: [id], onDelete: Restrict)
+  title              String
+  startsOn           DateTime     @db.Date
+  endsOn             DateTime?    @db.Date
+  capacity           Int?
+  status             CohortStatus @default(DRAFT)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  enrollments Enrollment[]
+  channel     Channel?
+  events      LiveEvent[]
+
+  @@index([courseId, status])
+}
+
+/// §12 One review queue: contributor course submissions, edits to published courses by
+/// authors without trustedAuthor, and contributor resources. Events, posts, projects,
+/// opportunities, applications and partners keep their own status and join the admin
+/// review inbox as a read model.
+model ContentSubmission {
+  id           String                  @id @default(cuid())
+  type         ContentSubmissionType
+  status       ContentSubmissionStatus @default(SUBMITTED)
+  submitterId  String
+  submitter    User                    @relation("ContentSubmitter", fields: [submitterId], references: [id], onDelete: Cascade)
+  instructorId String
+  instructor   Instructor              @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  courseId     String?
+  course       Course?                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonId     String?
+  lesson       Lesson?                 @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  resourceId   String?
+  resource     Resource?               @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  /// "course:<id>" | "lesson:<id>" | "resource:<id>": one open submission per target.
+  targetKey    String
+  /// The proposed change for COURSE_UPDATE.
+  payload      Json?
+  /// Author confirmations: rights, no guaranteed income, no investment advice, health disclaimer.
+  checklist    Json
+  /// publishProblems output at submission.
+  autoChecks   Json?
+  reviewerId   String?
+  reviewer     User?                   @relation("ContentReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  /// Shown to the submitter.
+  reviewNote   String?
+  submittedAt  DateTime                @default(now())
+  decidedAt    DateTime?
+  updatedAt    DateTime                @updatedAt
+
+  @@index([status, type, submittedAt])
+  @@index([instructorId, status])
+}
+
+/// §2/§6 A private ICS feed of a member's registrations and a host's events. Only the hash is stored.
+model CalendarFeedToken {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  label      String?
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ============================================================
+// 22. LIVE EVENTS  (directive §6, §2; LEAD #4)
+// One family for everything scheduled and live. A mentor 1:1 is a
+// LiveEvent of the one-to-one kind with one registration.
+// Feedback is accepted only from an ATTENDED registration.
+// ============================================================
+
+/// §6
+enum EventMode {
+  ONE_TO_ONE
+  GROUP
+}
+
+/// §6
+enum LiveEventFormat {
+  ONLINE
+  IN_PERSON
+  HYBRID
+}
+
+/// §6 "Live" and "ended" are derived from startsAt/endsAt, never stored.
+enum LiveEventStatus {
+  DRAFT
+  /// Awaiting a decision: staff review of a public event, or the mentor's acceptance of a 1:1 request.
+  SUBMITTED
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+}
+
+/// §6
+enum LiveEventVisibility {
+  PUBLIC
+  MEMBERS
+  COURSE
+  GROUP
+  /// Mentor 1:1s: host, registrant and staff only. No slug.
+  PRIVATE
+}
+
+/// §6
+enum LiveEventHostRole {
+  HOST
+  CO_HOST
+  GUEST_SPEAKER
+}
+
+/// §6/§2
+enum EventRegistrationStatus {
+  REQUESTED
+  PENDING_PAYMENT
+  REGISTERED
+  WAITLISTED
+  DECLINED
+  CANCELLED
+  ATTENDED
+  NO_SHOW
+  REFUNDED
+}
+
+/// §6
+enum AttendanceSource {
+  /// The member entered the event's check-in code.
+  CODE
+  /// The host or staff marked it.
+  HOST
+  /// The member opened the platform join link inside the join window.
+  JOIN_LINK
+  /// The member confirmed attendance after the event and the host did not dispute it within 7 days.
+  MEMBER_CONFIRMED
+  INTEGRATION
+}
+
+/// §6 Event kinds as data. Exactly one row has mode ONE_TO_ONE (slug "one-to-one",
+/// inserted by migration); the others are seeded by seed-taxonomy.ts.
+model EventKind {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  /// Set at creation and never changed; LiveEvent.mode copies it.
+  mode        EventMode @default(GROUP)
+  academyId   String?
+  academy     Academy?  @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  sortOrder   Int       @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  events    LiveEvent[]
+  offerings MentorOffering[]
+  series    LiveEventSeries[]
+  interests EventInterest[]
+}
+
+/// §6/§2 Every scheduled live thing: mentor 1:1s, group mentoring, workshops, masterclasses,
+/// AMAs, live classes, meetups, founder sessions. Named LiveEvent because `events` is the
+/// EventBus. Times are UTC; `timezone` is the host's zone for display.
+model LiveEvent {
+  id                      String              @id @default(cuid())
+  /// Null for PRIVATE (1:1) events; required otherwise (CHECK).
+  slug                    String?             @unique
+  kindId                  String
+  kind                    EventKind           @relation(fields: [kindId], references: [id], onDelete: Restrict)
+  /// Copied from the kind at creation.
+  mode                    EventMode
+  title                   String
+  summary                 String?
+  descriptionMd           String              @db.Text
+  format                  LiveEventFormat     @default(ONLINE)
+  status                  LiveEventStatus     @default(DRAFT)
+  visibility              LiveEventVisibility @default(MEMBERS)
+  academyId               String?
+  academy                 Academy?            @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  offeringId              String?
+  offering                MentorOffering?     @relation(fields: [offeringId], references: [id], onDelete: SetNull)
+  /// The mentor whose calendar this occupies (1:1s and mentor-hosted group events).
+  mentorId                String?
+  mentor                  MentorProfile?      @relation(fields: [mentorId], references: [id], onDelete: SetNull)
+  courseId                String?
+  course                  Course?             @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  cohortId                String?
+  cohort                  CourseCohort?       @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  groupId                 String?
+  group                   CommunityGroup?     @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  challengeId             String?
+  challenge               Challenge?          @relation(fields: [challengeId], references: [id], onDelete: SetNull)
+  seriesId                String?
+  series                  LiveEventSeries?    @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  startsAt                DateTime
+  endsAt                  DateTime
+  /// IANA zone of the host, checked by isValidTimeZone.
+  timezone                String
+  registrationOpensAt     DateTime?
+  registrationClosesAt    DateTime?
+  /// Null = no limit.
+  capacity                Int?
+  /// Seats taken (REGISTERED, unexpired PENDING_PAYMENT, ATTENDED, NO_SHOW), kept in the registering transaction.
+  registeredCount         Int                 @default(0)
+  waitlistEnabled         Boolean             @default(true)
+  /// Paise; null = free.
+  priceCents              Int?
+  currency                String              @default("INR")
+  /// LIVE_EVENT product: one per paid group event; a 1:1 uses its offering's product.
+  productId               String?
+  product                 Product?            @relation(fields: [productId], references: [id], onDelete: SetNull)
+  /// Derived label: zoom, meet, teams, youtube, jitsi, other.
+  meetingProvider         String?
+  /// Private: shown to confirmed registrants from linkRevealMinutes before the start.
+  meetingUrl              String?
+  /// Private, e.g. a passcode.
+  meetingNote             String?
+  linkRevealMinutes       Int                 @default(30)
+  venueName               String?
+  /// Registrants only.
+  venueAddress            String?
+  city                    String?
+  country                 String?
+  /// Short, rotatable check-in code.
+  attendanceCode          String?
+  attendanceCodeRotatedAt DateTime?
+  coverImage              String?
+  /// Shown to the host: why it was sent back or cancelled.
+  statusReason            String?
+  submittedAt             DateTime?
+  reviewedAt              DateTime?
+  reviewedById            String?
+  reviewedBy              User?               @relation("LiveEventReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  publishedAt             DateTime?
+  cancelledAt             DateTime?
+  cancelReason            String?
+  completedAt             DateTime?
+  rescheduledAt           DateTime?
+  /// ICS SEQUENCE, bumped on every time or status change.
+  icsSequence             Int                 @default(0)
+  isDemo                  Boolean             @default(false)
+  createdById             String?
+  createdBy               User?               @relation("LiveEventCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  hosts         LiveEventHost[]
+  registrations EventRegistration[]
+  feedback      EventFeedback[]
+  resources     Resource[]
+  posts         Post[]
+
+  @@index([status, startsAt])
+  @@index([academyId, startsAt])
+  @@index([kindId, startsAt])
+  @@index([mentorId, startsAt])
+  @@index([groupId, startsAt])
+  @@index([productId])
+}
+
+/// §6 Who runs an event. Publishing needs at least one confirmed host; a guest speaker
+/// without an account is named only after staff confirm them.
+model LiveEventHost {
+  id            String            @id @default(cuid())
+  eventId       String
+  event         LiveEvent         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  role          LiveEventHostRole @default(HOST)
+  userId        String?
+  user          User?             @relation("LiveEventHostUser", fields: [userId], references: [id], onDelete: SetNull)
+  instructorId  String?
+  instructor    Instructor?       @relation(fields: [instructorId], references: [id], onDelete: SetNull)
+  /// Snapshot shown on the event.
+  displayName   String
+  headline      String?
+  avatarUrl     String?
+  /// Set by staff, or by the host accepting in-app.
+  confirmedAt   DateTime?
+  confirmedById String?
+  confirmedBy   User?             @relation("LiveEventHostConfirmer", fields: [confirmedById], references: [id], onDelete: SetNull)
+  sortOrder     Int               @default(0)
+
+  @@unique([eventId, userId])
+  @@unique([eventId, instructorId])
+  @@index([userId])
+  @@index([instructorId])
+}
+
+/// §6/§2 A seat, a waitlist place or a 1:1 booking, and its attendance.
+model EventRegistration {
+  id                            String                  @id @default(cuid())
+  eventId                       String
+  event                         LiveEvent               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId                        String
+  user                          User                    @relation("EventRegistrant", fields: [userId], references: [id], onDelete: Cascade)
+  status                        EventRegistrationStatus @default(REGISTERED)
+  /// REQUESTED and PENDING_PAYMENT holds stop blocking the seat or slot once expired.
+  holdExpiresAt                 DateTime?
+  /// The member's private note to the host (1:1 agenda).
+  agendaMd                      String?                 @db.Text
+  /// The member ticked the category disclaimer on the booking form (categories with a disclaimer only).
+  disclaimerAckAt               DateTime?
+  registeredAt                  DateTime                @default(now())
+  waitlistedAt                  DateTime?
+  promotedAt                    DateTime?
+  /// When a request was accepted or declined.
+  decidedAt                     DateTime?
+  cancelledAt                   DateTime?
+  cancelledById                 String?
+  cancelledBy                   User?                   @relation("EventRegistrationCanceller", fields: [cancelledById], references: [id], onDelete: SetNull)
+  cancelReason                  String?
+  /// First use of the join link.
+  joinedAt                      DateTime?
+  attendedAt                    DateTime?
+  attendanceSource              AttendanceSource?
+  markedById                    String?
+  markedBy                      User?                   @relation("EventAttendanceMarker", fields: [markedById], references: [id], onDelete: SetNull)
+  /// The member says they attended. Counts as attended (MEMBER_CONFIRMED) unless the host disputes within 7 days.
+  memberConfirmedAt             DateTime?
+  /// A member disputing a host NO_SHOW, or a host disputing a member's confirmation. Staff decide in
+  /// /admin/mentors; feedback stays off public pages while a dispute is open.
+  attendanceDisputedAt          DateTime?
+  attendanceDisputedById        String?
+  attendanceDisputedBy          User?                   @relation("EventAttendanceDisputer", fields: [attendanceDisputedById], references: [id], onDelete: SetNull)
+  attendanceDisputeNote         String?
+  attendanceDisputeResolvedAt   DateTime?
+  attendanceDisputeResolvedById String?
+  attendanceDisputeResolvedBy   User?                   @relation("EventAttendanceDisputeResolver", fields: [attendanceDisputeResolvedById], references: [id], onDelete: SetNull)
+  updatedAt                     DateTime                @updatedAt
+
+  feedback   EventFeedback?
+  /// One PENDING or PAID order per registration, enforced under this row's lock in checkout; an expired
+  /// hold's order stays for the record and a new attempt adds a new item.
+  orderItems OrderItem[]
+  earnings   ContributorEarning[]
+
+  @@unique([eventId, userId])
+  @@index([eventId, status, waitlistedAt])
+  @@index([userId, status])
+  @@index([attendanceDisputedAt])
+}
+
+/// §6/§2 Feedback from a verified attendee only (registration ATTENDED). Also the mentor review. Public only
+/// when the host or check-in marked attendance, or memberConfirmedAt is over 7 days old with no dispute.
+model EventFeedback {
+  id             String            @id @default(cuid())
+  registrationId String            @unique
+  registration   EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  eventId        String
+  event          LiveEvent         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User              @relation("EventFeedbackAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  /// The host being reviewed (the mentor for a 1:1); feeds the expert profile's ratings.
+  instructorId   String?
+  instructor     Instructor?       @relation(fields: [instructorId], references: [id], onDelete: SetNull)
+  /// 1-5.
+  rating         Int
+  body           String?           @db.Text
+  /// Host and staff only.
+  privateNote    String?           @db.Text
+  /// May be quoted publicly only with this consent.
+  publicConsent  Boolean           @default(false)
+  hostReply      String?           @db.Text
+  hostRepliedAt  DateTime?
+  hidden         Boolean           @default(false)
+  hiddenById     String?
+  hiddenBy       User?             @relation("EventFeedbackHider", fields: [hiddenById], references: [id], onDelete: SetNull)
+  hiddenReason   String?
+  isDemo         Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([eventId, hidden])
+  @@index([instructorId, hidden])
+}
+
+/// §6 A recurring programme on the open schedule. It never invents dates: each dated
+/// session is its own LiveEvent, and cadenceNote is the owner's own wording.
+model LiveEventSeries {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  description String    @db.Text
+  academyId   String?
+  academy     Academy?  @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  kindId      String
+  kind        EventKind @relation(fields: [kindId], references: [id], onDelete: Restrict)
+  /// e.g. "Fortnightly; dates announced once the host confirms".
+  cadenceNote String?
+  active      Boolean   @default(true)
+  isDemo      Boolean   @default(false)
+  createdById String?
+  createdBy   User?     @relation("LiveEventSeriesCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  events    LiveEvent[]
+  interests EventInterest[]
+}
+
+/// §6/§2 "Tell me when": a member asks to hear when a matching real event or mentor slot is published.
+model EventInterest {
+  id         String           @id @default(cuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  academyId  String?
+  academy    Academy?         @relation(fields: [academyId], references: [id], onDelete: Cascade)
+  kindId     String?
+  kind       EventKind?       @relation(fields: [kindId], references: [id], onDelete: Cascade)
+  seriesId   String?
+  series     LiveEventSeries? @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  mentorId   String?
+  mentor     MentorProfile?   @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  /// "a:<academyId|*>|k:<kindId|*>|s:<seriesId|*>|m:<mentorId|*>", so uniqueness needs no NULLS NOT DISTINCT.
+  scopeKey   String
+  notifiedAt DateTime?
+  createdAt  DateTime         @default(now())
+
+  @@unique([userId, scopeKey])
+  @@index([academyId])
+  @@index([mentorId])
+}
+
+// ============================================================
+// 23. DAILY ACTIVITY ENGINE  (directive §5, §11; LEAD #7, #16)
+// Day keys come from memberDayKey (time/zoned.ts).
+// ============================================================
+
+/// §5
+enum MissionCadence {
+  ONCE
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+/// §5
+enum MissionVerification {
+  AUTO
+  SELF_REPORT
+  REVIEW
+}
+
+/// §5 The kind of practice a mission is.
+enum MissionKind {
+  LEARNING
+  DISCIPLINE
+  BUSINESS_EXERCISE
+  FINANCIAL_LITERACY
+  FITNESS
+  MINDFULNESS
+  COMMUNITY
+  MENTOR
+  EVENT
+  OPPORTUNITY
+}
+
+/// §5
+enum PlanSlot {
+  LEARN
+  PRACTICE
+  COMMUNITY
+  WEEKLY
+  EXPLORE
+}
+
+/// §5
+enum PlanItemKind {
+  MISSION
+  LESSON
+  CHALLENGE
+  DISCUSSION
+  GOAL_CHECKIN
+  STANDARD
+  EVENT
+  OPPORTUNITY
+}
+
+/// §5/§11
+enum GoalMetric {
+  /// Reported by the member, and labelled so.
+  MANUAL
+  LESSONS_COMPLETED
+  COURSE_COMPLETED
+  STANDARD_DAYS
+  MISSIONS_COMPLETED
+  CHALLENGES_COMPLETED
+}
+
+/// §5
+enum GoalCadence {
+  DAILY
+  WEEKLY
+}
+
+/// §5/§11
+enum GoalStatus {
+  ACTIVE
+  ACHIEVED
+  PAUSED
+  ABANDONED
+}
+
+/// §5/§9
+enum GoalSource {
+  MEMBER
+  GUIDE_SUGGESTION
+  ONBOARDING
+}
+
+/// §5
+enum ChallengeKind {
+  RULE
+  DAILY_CHECKIN
+  SUBMISSION
+  GATED_SUBMISSIONS
+}
+
+/// §5/§3/§4
+enum ChallengeScope {
+  HOUSE
+  ACADEMY
+  GROUP
+}
+
+/// §5
+enum ChallengeCadence {
+  ONE_OFF
+  WEEKLY
+  MONTHLY
+}
+
+/// §5
+enum EvidenceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+/// §5/§11 The member's activities for one local day, generated once on first view.
+model DailyPlan {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// memberDayKey: YYYY-MM-DD in the member's zone.
+  dayKey    String   @db.VarChar(10)
+  /// The zone used to compute dayKey.
+  timezone  String
+  /// e.g. "v1".
+  algorithm String   @db.VarChar(20)
+  createdAt DateTime @default(now())
+
+  items DailyPlanItem[]
+
+  @@unique([userId, dayKey])
+  @@index([dayKey])
+}
+
+/// §5 One chosen activity with an honest reason. Done-state is derived from real rows.
+model DailyPlanItem {
+  id          String       @id @default(cuid())
+  planId      String
+  plan        DailyPlan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  slot        PlanSlot
+  kind        PlanItemKind
+  /// Lesson, Challenge, CommunityPost, Goal, StandardItem, LiveEvent or Opportunity id; checked in core, no FK.
+  refId       String
+  missionId   String?
+  mission     Mission?     @relation(fields: [missionId], references: [id], onDelete: SetNull)
+  /// e.g. "Because you chose Marketing & sales".
+  reason      String       @db.VarChar(160)
+  position    Int
+  swappedAt   DateTime?
+  dismissedAt DateTime?
+
+  @@unique([planId, slot, position])
+  @@index([kind, refId])
+}
+
+/// §5/§9/§11 A personal goal, private by default; progress is derived from real rows.
+model Goal {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String       @db.VarChar(120)
+  why         String?      @db.VarChar(500)
+  academyId   String?
+  academy     Academy?     @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  metric      GoalMetric
+  courseId    String?
+  course      Course?      @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  challengeId String?
+  challenge   Challenge?   @relation(fields: [challengeId], references: [id], onDelete: SetNull)
+  targetCount Int?
+  /// For habits.
+  cadence     GoalCadence?
+  source      GoalSource   @default(MEMBER)
+  startsOn    DateTime     @db.Date
+  targetDate  DateTime?    @db.Date
+  status      GoalStatus   @default(ACTIVE)
+  achievedAt  DateTime?
+  /// Shown on the profile only with this opt-in and when Profile.privacy allows "goals".
+  isPublic    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  checkIns GoalCheckIn[]
+
+  @@index([userId, status])
+}
+
+/// §5 A manual check-in on the member's day.
+model GoalCheckIn {
+  id        String   @id @default(cuid())
+  goalId    String
+  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// memberDayKey of the check-in.
+  dayKey    String   @db.VarChar(10)
+  value     Int      @default(1)
+  note      String?  @db.VarChar(500)
+  createdAt DateTime @default(now())
+
+  @@unique([goalId, dayKey])
+  @@index([userId, dayKey])
+}
+
+/// §5 One piece of evidence for a REVIEW mission or a SUBMISSION / GATED_SUBMISSIONS
+/// challenge. Replaces ChallengeParticipation.progress.submissions (moved by migration).
+model EvidenceSubmission {
+  id              String                  @id @default(cuid())
+  userId          String
+  user            User                    @relation("EvidenceAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  missionId       String?
+  mission         Mission?                @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  challengeId     String?
+  challenge       Challenge?              @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  participationId String?
+  participation   ChallengeParticipation? @relation(fields: [participationId], references: [id], onDelete: Cascade)
+  /// Mission occurrence ("once", day key or "week:YYYY-MM-DD").
+  occurrence      String?
+  text            String                  @db.Text
+  /// https only.
+  url             String?
+  status          EvidenceStatus          @default(PENDING)
+  feedback        String?                 @db.Text
+  reviewedById    String?
+  reviewedBy      User?                   @relation("EvidenceReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt      DateTime?
+  /// The JSON submission id a migrated row came from.
+  legacyId        String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  completion MissionCompletion?
+
+  @@index([status, createdAt])
+  @@index([challengeId, userId])
+  @@index([missionId, userId])
+}
+
+// ============================================================
+// 24. LIVE COMMUNITY  (directive §4)
+// ============================================================
+
+/// §4
+enum CommunityPostKind {
+  DISCUSSION
+  QUESTION
+  UPDATE
+  INTRODUCTION
+  PROJECT
+  ANNOUNCEMENT
+}
+
+/// §4
+enum GroupTopic {
+  PROGRAMME
+  BUSINESS
+  FITNESS
+  ENTREPRENEURSHIP
+  PERSONAL_DEVELOPMENT
+  TECHNOLOGY
+  LOCAL
+  OTHER
+}
+
+/// §4
+enum GroupStatus {
+  PENDING_REVIEW
+  ACTIVE
+  REJECTED
+  ARCHIVED
+}
+
+/// §4
+enum GroupJoinPolicy {
+  OPEN
+  APPROVAL
+}
+
+/// §4
+enum GroupVisibility {
+  /// Every signed-in member can read the group's posts (today's behaviour).
+  MEMBERS
+  GROUP_ONLY
+}
+
+/// §4
+enum GroupRole {
+  OWNER
+  MODERATOR
+  MEMBER
+}
+
+/// §4
+enum GroupMemberStatus {
+  PENDING
+  /// Invited by an owner or moderator; ACTIVE only when the member accepts.
+  INVITED
+  ACTIVE
+  BANNED
+}
+
+/// §4/§13
+enum GroupNotifyLevel {
+  ALL_POSTS
+  ANNOUNCEMENTS
+  NONE
+}
+
+/// §4 Following a member (mentors are members too). CHECK: no self-follow.
+model Follow {
+  followerId  String
+  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@id([followerId, followingId])
+  @@index([followingId, createdAt])
+}
+
+/// §4/§17 A block removes follows both ways, prevents re-following, and hides the
+/// blocked member's activity and notices from the blocker. CHECK: no self-block.
+model MemberBlock {
+  blockerId String
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedId String
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+/// §4 Saved posts (a project is saved through its discussion post).
+model SavedPost {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+
+  @@unique([userId, postId])
+  @@index([userId, createdAt])
+}
+
+// ============================================================
+// 25. OPPORTUNITY MARKETPLACE  (directive §7; LEAD #3, #6)
+// Organisations are Partners with their own review. Never promises
+// income or employment.
+// ============================================================
+
+/// §7
+enum PartnerKind {
+  /// Tycoonhood itself (house opportunities, THC rewards). Created on first use, never seeded.
+  HOUSE
+  BUSINESS
+  INDIVIDUAL
+  NONPROFIT
+  EDUCATION
+}
+
+/// §7
+enum PartnerStatus {
+  PENDING
+  VERIFIED
+  SUSPENDED
+  REJECTED
+}
+
+/// §7
+enum PartnerVerificationMethod {
+  HOUSE
+  DOMAIN_EMAIL
+  BUSINESS_REGISTRATION
+  GSTIN
+  MANUAL
+}
+
+/// §7
+enum PartnerMemberRole {
+  OWNER
+  EDITOR
+}
+
+/// §7 The directive's ten opportunity categories.
+enum OpportunityKind {
+  FREELANCE_PROJECT
+  REMOTE_WORK
+  INTERNSHIP
+  CREATOR_COLLABORATION
+  AFFILIATE_PROGRAMME
+  BUSINESS_PARTNERSHIP
+  DIGITAL_PRODUCT
+  MARKETPLACE_SELLER
+  SKILL_PROJECT
+  COMMUNITY_COMPETITION
+}
+
+/// §7
+enum WorkMode {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+/// §7
+enum CompensationType {
+  FIXED_FEE
+  HOURLY
+  STIPEND_MONTHLY
+  SALARY_ANNUAL
+  COMMISSION
+  REVENUE_SHARE
+  PRIZE
+  THC_REWARD
+  UNPAID
+  TO_BE_DISCUSSED
+}
+
+/// §7
+enum OpportunityApplyMode {
+  IN_APP
+  EXTERNAL_URL
+  AFFILIATE_PROGRAMME
+  CHALLENGE
+}
+
+/// §7
+enum OpportunityStatus {
+  DRAFT
+  SUBMITTED
+  OPEN
+  PAUSED
+  CLOSED
+  FILLED
+  REJECTED
+  REMOVED
+}
+
+/// §7
+enum OpportunityApplicationStatus {
+  SUBMITTED
+  VIEWED
+  SHORTLISTED
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+  COMPLETED
+}
+
+/// §7 Contact details an applicant may share with a partner, one tick each.
+enum ApplicantContactField {
+  EMAIL
+  PHONE
+  PORTFOLIO
+}
+
+/// §7 An organisation or person that posts opportunities, with its own PENDING -> VERIFIED review.
+model Partner {
+  id                 String                     @id @default(cuid())
+  slug               String                     @unique
+  name               String
+  kind               PartnerKind
+  status             PartnerStatus              @default(PENDING)
+  /// Shown to the partner.
+  statusReason       String?
+  reviewedAt         DateTime?
+  reviewedById       String?
+  reviewedBy         User?                      @relation("PartnerReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  verifiedAt         DateTime?
+  verificationMethod PartnerVerificationMethod?
+  /// Staff only.
+  verificationNote   String?
+  about              String                     @db.Text
+  websiteUrl         String?
+  logoUrl            String?
+  city               String?
+  country            String                     @default("IN")
+  /// Private: staff only.
+  contactEmail       String
+  /// Private: staff only.
+  registrationNumber String?
+  termsVersion       String
+  termsAcceptedAt    DateTime
+  isDemo             Boolean                    @default(false)
+  createdById        String?
+  createdBy          User?                      @relation("PartnerCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  members       PartnerMember[]
+  opportunities Opportunity[]
+
+  @@index([status, kind])
+}
+
+/// §7 Rights scoped to one partner (the partner dashboard). Partners are not a UserRole.
+model PartnerMember {
+  id          String            @id @default(cuid())
+  partnerId   String
+  partner     Partner           @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User              @relation("PartnerMemberUser", fields: [userId], references: [id], onDelete: Cascade)
+  role        PartnerMemberRole @default(EDITOR)
+  invitedById String?
+  invitedBy   User?             @relation("PartnerMemberInviter", fields: [invitedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime          @default(now())
+
+  @@unique([partnerId, userId])
+  @@index([userId])
+}
+
+/// §7 One listing in the opportunity marketplace.
+model Opportunity {
+  id                 String                   @id @default(cuid())
+  slug               String                   @unique
+  partnerId          String
+  partner            Partner                  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  createdById        String?
+  createdBy          User?                    @relation("OpportunityCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  kind               OpportunityKind
+  title              String
+  summary            String
+  descriptionMd      String                   @db.Text
+  academyId          String?
+  academy            Academy?                 @relation(fields: [academyId], references: [id], onDelete: SetNull)
+  workMode           WorkMode?
+  location           String?
+  /// e.g. "10 hours a week for 6 weeks".
+  commitment         String?
+  startsOn           DateTime?                @db.Date
+  endsOn             DateTime?                @db.Date
+  eligibilityMd      String                   @db.Text
+  minLevel           Int?
+  /// 18 by default for paid work.
+  minAge             Int?
+  /// A certificate in this course is required to apply.
+  requiredCourseId   String?
+  requiredCourse     Course?                  @relation(fields: [requiredCourseId], references: [id], onDelete: SetNull)
+  compensationType   CompensationType
+  /// Integer paise.
+  compMinCents       Int?
+  compMaxCents       Int?
+  compCurrency       String                   @default("INR")
+  commissionBps      Int?
+  /// HOUSE partner only; never shown as money.
+  thcReward          BigInt?
+  /// Required, in plain words.
+  compensationTerms  String                   @db.Text
+  /// Null = rolling.
+  applyBy            DateTime?
+  openings           Int?
+  applyMode          OpportunityApplyMode     @default(IN_APP)
+  externalApplyUrl   String?
+  applicationStepsMd String?                  @db.Text
+  /// At most 5 {id, label, required}.
+  questions          Json                     @default("[]")
+  requiresPortfolio  Boolean                  @default(false)
+  challengeId        String?
+  challenge          Challenge?               @relation(fields: [challengeId], references: [id], onDelete: SetNull)
+  status             OpportunityStatus        @default(DRAFT)
+  statusReason       String?
+  /// Fraud and income-promise checks that fired.
+  riskFlags          String[]                 @default([])
+  submittedAt        DateTime?
+  reviewedAt         DateTime?
+  reviewedById       String?
+  reviewedBy         User?                    @relation("OpportunityReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  publishedAt        DateTime?
+  closedAt           DateTime?
+  featuredAt         DateTime?
+  isDemo             Boolean                  @default(false)
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  /// GENERATED ALWAYS AS (title A, summary B, descriptionMd C) STORED (raw SQL in 20261113000600). Never written.
+  searchVector       Unsupported("tsvector")?
+
+  skills       OpportunitySkill[]
+  applications OpportunityApplication[]
+  saves        SavedOpportunity[]
+
+  @@index([status, kind, applyBy])
+  @@index([partnerId, status])
+  @@index([academyId, status])
+  @@index([searchVector], type: Gin)
+}
+
+/// §7 Required and nice-to-have skills of a listing.
+model OpportunitySkill {
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  skillId       String
+  skill         Skill       @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  required      Boolean     @default(true)
+
+  @@id([opportunityId, skillId])
+  @@index([skillId])
+}
+
+/// §7 A member's application, and its status.
+model OpportunityApplication {
+  id              String                       @id @default(cuid())
+  opportunityId   String
+  opportunity     Opportunity                  @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  applicantId     String
+  applicant       User                         @relation("OpportunityApplicant", fields: [applicantId], references: [id], onDelete: Cascade)
+  status          OpportunityApplicationStatus @default(SUBMITTED)
+  coverNote       String                       @db.Text
+  answers         Json                         @default("{}")
+  portfolioUrl    String?
+  /// The contact fields the applicant ticked on this application; partners see only these.
+  sharedFields    ApplicantContactField[]      @default([])
+  /// When sharedFields was last set to a non-empty list.
+  contactSharedAt DateTime?
+  attestedAdultAt DateTime?
+  /// Shown to the applicant.
+  statusNote      String?
+  /// Private to the partner and staff.
+  partnerNote     String?
+  /// Verified skills, certificates and verified projects at apply time.
+  skillSnapshot   Json                         @default("{}")
+  riskFlags       String[]                     @default([])
+  decidedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
+
+  events OpportunityApplicationEvent[]
+
+  @@unique([opportunityId, applicantId])
+  @@index([applicantId, status])
+  @@index([opportunityId, status])
+}
+
+/// §7 The status timeline an applicant sees, and the trail of partner decisions.
+model OpportunityApplicationEvent {
+  id            String                        @id @default(cuid())
+  applicationId String
+  application   OpportunityApplication        @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  fromStatus    OpportunityApplicationStatus?
+  toStatus      OpportunityApplicationStatus
+  actorId       String?
+  actor         User?                         @relation("OpportunityApplicationActor", fields: [actorId], references: [id], onDelete: SetNull)
+  note          String?
+  createdAt     DateTime                      @default(now())
+
+  @@index([applicationId, createdAt])
+}
+
+/// §7 Saved opportunities (like WishlistItem).
+model SavedOpportunity {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, opportunityId])
+  @@index([userId, createdAt])
+}
+
+// ============================================================
+// 26. EDITORIAL ENGINE AND GUIDE  (directive §14, §15, §9; LEAD #11, #12)
+// Post is the one editorial record. The Guide works without an LLM.
+// ============================================================
+
+/// §14
+enum PostKind {
+  ARTICLE
+  LEARNING_INSIGHT
+  FOUNDER_NOTE
+  EXPERT_CONTRIBUTION
+  ACADEMY_UPDATE
+  SUCCESS_STORY
+  BUSINESS_GUIDE
+  WELLNESS_RESOURCE
+  INTERVIEW
+  EVENT_RECAP
+  ANNOUNCEMENT
+  PLATFORM_UPDATE
+}
+
+/// §14 A post is live when status is SCHEDULED or PUBLISHED and publishedAt <= now().
+enum PostStatus {
+  DRAFT
+  IN_REVIEW
+  CHANGES_REQUESTED
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+/// §14/§17
+enum ConsentSource {
+  CONTACT_FORM
+  WRITTEN
+  IN_APP
+}
+
+/// §9/§14
+enum HelpTopic {
+  GETTING_STARTED
+  LEARNING
+  ACADEMIES
+  MENTORS
+  EVENTS
+  OPPORTUNITIES
+  THC
+  EARN
+  SHOP
+  COMMUNITY
+  ACCOUNT
+  PRIVACY
+}
+
+/// §9/§14
+enum HelpAudience {
+  PUBLIC
+  MEMBER
+}
+
+/// §9
+enum GuideMode {
+  /// Deterministic guide over real data; needs no LLM.
+  GUIDED
+  /// Optional LLM mode; only with an owner-supplied key and the member's consent.
+  AI
+}
+
+/// §9
+enum GuideRole {
+  MEMBER
+  /// The automated guide. Always labelled automated, never presented as a person.
+  GUIDE
+}
+
+/// §9
+enum GuideMessageKind {
+  ANSWER
+  NO_SOURCE
+  REFUSAL
+  INTENT_RESULT
+  ERROR
+}
+
+/// §9
+enum GuideFeedback {
+  HELPFUL
+  NOT_HELPFUL
+  WRONG
+}
+
+/// §14 Edit history, written on every save of a draft and before publishing.
+model PostRevision {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  title     String
+  excerpt   String
+  contentMd String   @db.Text
+  editorId  String?
+  editor    User?    @relation("PostRevisionEditor", fields: [editorId], references: [id], onDelete: SetNull)
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([postId, createdAt])
+}
+
+/// §14 Editorial categories (seed-taxonomy.ts).
+model PostCategory {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  sortOrder   Int       @default(0)
+  archivedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  posts Post[]
+}
+
+/// §14 Free-form tags.
+model Tag {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  posts PostTag[]
+}
+
+/// §14
+model PostTag {
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tagId  String
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([tagId])
+}
+
+/// §9/§14 FAQ and feature explanations as data: one source for /faq, the Guide and search.
+model HelpArticle {
+  id           String                   @id @default(cuid())
+  slug         String                   @unique
+  question     String
+  answerMd     String                   @db.Text
+  topic        HelpTopic
+  audience     HelpAudience             @default(PUBLIC)
+  sortOrder    Int                      @default(0)
+  published    Boolean                  @default(true)
+  /// GENERATED ALWAYS AS (question A, answerMd B) STORED (raw SQL in 20261113000700). Never written.
+  searchVector Unsupported("tsvector")?
+  updatedById  String?
+  updatedBy    User?                    @relation("HelpArticleEditor", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  @@index([topic, published, sortOrder])
+  @@index([searchVector], type: Gin)
+}
+
+/// §9 A member's own Guide thread. Only the member sees it; deletable.
+model GuideConversation {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// The first question, clipped.
+  title     String
+  mode      GuideMode @default(GUIDED)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  messages GuideMessage[]
+
+  @@index([userId, updatedAt])
+}
+
+/// §9 Questions and answers with sources, labelling, usage and feedback.
+model GuideMessage {
+  id              String            @id @default(cuid())
+  conversationId  String
+  conversation    GuideConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role            GuideRole
+  body            String            @db.Text
+  kind            GuideMessageKind  @default(ANSWER)
+  intent          String?
+  /// [{type, id, title, href, quote?}]; type: lesson|course|post|help|mission|challenge|goal|event|mentor|opportunity.
+  sources         Json              @default("[]")
+  /// True only for LLM-written text.
+  aiGenerated     Boolean           @default(false)
+  model           String?
+  inputTokens     Int?
+  outputTokens    Int?
+  cacheReadTokens Int?
+  stopReason      String?
+  feedback        GuideFeedback?
+  feedbackNote    String?
+  flaggedAt       DateTime?
+  reviewedAt      DateTime?
+  reviewedById    String?
+  reviewedBy      User?             @relation("GuideMessageReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  createdAt       DateTime          @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([feedback, createdAt])
+}
+
+/// §9 The daily question quota per member day (memberDayKey), in the database because the
+/// in-memory limiter counts per instance.
+model GuideUsage {
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dayKey       String   @db.VarChar(10)
+  questions    Int      @default(0)
+  inputTokens  Int      @default(0)
+  outputTokens Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  @@id([userId, dayKey])
 }

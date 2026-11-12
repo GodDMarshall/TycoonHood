@@ -19,6 +19,7 @@ const PLAYBOOK_MD = '# The Founder\'s Playbook\n### The first ten customers, don
 
 import { prisma } from "./client";
 import { SeedRecord } from "./seed-record";
+import { holdsCopy } from "./seed-copy";
 
 const days = (n: number) => new Date(Date.now() + n * 24 * 60 * 60 * 1000);
 
@@ -109,8 +110,13 @@ Start where you are weakest. That is where the XP is.`,
   const essays = await SeedRecord.load("essays", [posts.map((p) => p.slug)], async (slugs) =>
     (await prisma.post.findMany({ where: { slug: { in: slugs } }, select: { slug: true } })).map((r) => r.slug)
   );
+  // The status the essay's time gives it, as migration 20261113000700 backfilled
+  // posts; on a fresh database the migrations run before this seed, so the
+  // backfill never sees these essays. Every essay here is dated in the past.
+  const now = new Date();
   for (const p of posts) {
-    await essays.once(p.slug, () => prisma.post.upsert({ where: { slug: p.slug }, update: {}, create: p }));
+    const status = p.publishedAt > now ? ("SCHEDULED" as const) : ("PUBLISHED" as const);
+    await essays.once(p.slug, () => prisma.post.upsert({ where: { slug: p.slug }, update: {}, create: { ...p, status } }));
   }
 
   // ---------------- Public challenges ----------------
@@ -159,6 +165,9 @@ Start where you are weakest. That is where the XP is.`,
     // a live challenge's dates or put an ended one back to UPCOMING (review
     // finding 17), so lifecycle, startsAt and endsAt are written on create only.
     const copy = { name: c.name, description: c.description, pillar: c.pillar, criteria: c.criteria, xpReward: c.xpReward, thcReward: c.thcReward };
+    // Written only when the copy changed: any update moves updatedAt (seed-copy.ts).
+    const row = await prisma.challenge.findUnique({ where: { slug: c.slug } });
+    if (row && holdsCopy(row, copy)) continue;
     await prisma.challenge.upsert({ where: { slug: c.slug }, update: copy, create: c });
   }
 

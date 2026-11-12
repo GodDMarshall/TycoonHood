@@ -13,6 +13,7 @@
 import { prisma, type Prisma } from "./client.js";
 import { adminEmailFrom, canSignInAs } from "./admin-email.js";
 import { SeedRecord } from "./seed-record.js";
+import { holdsCopy } from "./seed-copy.js";
 import { hash } from "@node-rs/argon2";
 import {
   THC_TOTAL_SUPPLY,
@@ -359,6 +360,9 @@ async function main() {
     { slug: "community-contributor", name: "Community Contributor", description: "Make your presence felt in the community.", criteria: { event: "COMMUNITY_CONTRIBUTION", count: 10 }, xpReward: 150, thcReward: 500n },
   ];
   for (const a of achievements) {
+    // Written only when the copy changed: any update moves updatedAt (seed-copy.ts).
+    const row = await prisma.achievement.findUnique({ where: { slug: a.slug } });
+    if (row && holdsCopy(row, a)) continue;
     await prisma.achievement.upsert({ where: { slug: a.slug }, update: a, create: a });
   }
 

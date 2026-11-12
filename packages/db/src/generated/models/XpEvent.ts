@@ -43,6 +43,7 @@ export type XpEventMinAggregateOutputType = {
   note: string | null
   idempotencyKey: string | null
   createdAt: Date | null
+  academyId: string | null
 }
 
 export type XpEventMaxAggregateOutputType = {
@@ -54,6 +55,7 @@ export type XpEventMaxAggregateOutputType = {
   note: string | null
   idempotencyKey: string | null
   createdAt: Date | null
+  academyId: string | null
 }
 
 export type XpEventCountAggregateOutputType = {
@@ -65,6 +67,7 @@ export type XpEventCountAggregateOutputType = {
   note: number
   idempotencyKey: number
   createdAt: number
+  academyId: number
   _all: number
 }
 
@@ -86,6 +89,7 @@ export type XpEventMinAggregateInputType = {
   note?: true
   idempotencyKey?: true
   createdAt?: true
+  academyId?: true
 }
 
 export type XpEventMaxAggregateInputType = {
@@ -97,6 +101,7 @@ export type XpEventMaxAggregateInputType = {
   note?: true
   idempotencyKey?: true
   createdAt?: true
+  academyId?: true
 }
 
 export type XpEventCountAggregateInputType = {
@@ -108,6 +113,7 @@ export type XpEventCountAggregateInputType = {
   note?: true
   idempotencyKey?: true
   createdAt?: true
+  academyId?: true
   _all?: true
 }
 
@@ -206,6 +212,7 @@ export type XpEventGroupByOutputType = {
   note: string | null
   idempotencyKey: string
   createdAt: Date
+  academyId: string | null
   _count: XpEventCountAggregateOutputType | null
   _avg: XpEventAvgAggregateOutputType | null
   _sum: XpEventSumAggregateOutputType | null
@@ -240,7 +247,9 @@ export type XpEventWhereInput = {
   note?: Prisma.StringNullableFilter<"XpEvent"> | string | null
   idempotencyKey?: Prisma.StringFilter<"XpEvent"> | string
   createdAt?: Prisma.DateTimeFilter<"XpEvent"> | Date | string
+  academyId?: Prisma.StringNullableFilter<"XpEvent"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
 }
 
 export type XpEventOrderByWithRelationInput = {
@@ -252,7 +261,9 @@ export type XpEventOrderByWithRelationInput = {
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  academy?: Prisma.AcademyOrderByWithRelationInput
 }
 
 export type XpEventWhereUniqueInput = Prisma.AtLeast<{
@@ -267,7 +278,9 @@ export type XpEventWhereUniqueInput = Prisma.AtLeast<{
   sourceId?: Prisma.StringNullableFilter<"XpEvent"> | string | null
   note?: Prisma.StringNullableFilter<"XpEvent"> | string | null
   createdAt?: Prisma.DateTimeFilter<"XpEvent"> | Date | string
+  academyId?: Prisma.StringNullableFilter<"XpEvent"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
 }, "id" | "idempotencyKey">
 
 export type XpEventOrderByWithAggregationInput = {
@@ -279,6 +292,7 @@ export type XpEventOrderByWithAggregationInput = {
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.XpEventCountOrderByAggregateInput
   _avg?: Prisma.XpEventAvgOrderByAggregateInput
   _max?: Prisma.XpEventMaxOrderByAggregateInput
@@ -298,6 +312,7 @@ export type XpEventScalarWhereWithAggregatesInput = {
   note?: Prisma.StringNullableWithAggregatesFilter<"XpEvent"> | string | null
   idempotencyKey?: Prisma.StringWithAggregatesFilter<"XpEvent"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"XpEvent"> | Date | string
+  academyId?: Prisma.StringNullableWithAggregatesFilter<"XpEvent"> | string | null
 }
 
 export type XpEventCreateInput = {
@@ -309,6 +324,7 @@ export type XpEventCreateInput = {
   idempotencyKey: string
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutXpEventsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutXpEventsInput
 }
 
 export type XpEventUncheckedCreateInput = {
@@ -320,6 +336,7 @@ export type XpEventUncheckedCreateInput = {
   note?: string | null
   idempotencyKey: string
   createdAt?: Date | string
+  academyId?: string | null
 }
 
 export type XpEventUpdateInput = {
@@ -331,6 +348,7 @@ export type XpEventUpdateInput = {
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutXpEventsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutXpEventsNestedInput
 }
 
 export type XpEventUncheckedUpdateInput = {
@@ -342,6 +360,7 @@ export type XpEventUncheckedUpdateInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type XpEventCreateManyInput = {
@@ -353,6 +372,7 @@ export type XpEventCreateManyInput = {
   note?: string | null
   idempotencyKey: string
   createdAt?: Date | string
+  academyId?: string | null
 }
 
 export type XpEventUpdateManyMutationInput = {
@@ -374,6 +394,7 @@ export type XpEventUncheckedUpdateManyInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type XpEventListRelationFilter = {
@@ -395,6 +416,7 @@ export type XpEventCountOrderByAggregateInput = {
   note?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
 }
 
 export type XpEventAvgOrderByAggregateInput = {
@@ -410,6 +432,7 @@ export type XpEventMaxOrderByAggregateInput = {
   note?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
 }
 
 export type XpEventMinOrderByAggregateInput = {
@@ -421,6 +444,7 @@ export type XpEventMinOrderByAggregateInput = {
   note?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
 }
 
 export type XpEventSumOrderByAggregateInput = {
@@ -473,6 +497,48 @@ export type EnumXpSourceFieldUpdateOperationsInput = {
   set?: $Enums.XpSource
 }
 
+export type XpEventCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.XpEventCreateWithoutAcademyInput, Prisma.XpEventUncheckedCreateWithoutAcademyInput> | Prisma.XpEventCreateWithoutAcademyInput[] | Prisma.XpEventUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.XpEventCreateOrConnectWithoutAcademyInput | Prisma.XpEventCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.XpEventCreateManyAcademyInputEnvelope
+  connect?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+}
+
+export type XpEventUncheckedCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.XpEventCreateWithoutAcademyInput, Prisma.XpEventUncheckedCreateWithoutAcademyInput> | Prisma.XpEventCreateWithoutAcademyInput[] | Prisma.XpEventUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.XpEventCreateOrConnectWithoutAcademyInput | Prisma.XpEventCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.XpEventCreateManyAcademyInputEnvelope
+  connect?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+}
+
+export type XpEventUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.XpEventCreateWithoutAcademyInput, Prisma.XpEventUncheckedCreateWithoutAcademyInput> | Prisma.XpEventCreateWithoutAcademyInput[] | Prisma.XpEventUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.XpEventCreateOrConnectWithoutAcademyInput | Prisma.XpEventCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.XpEventUpsertWithWhereUniqueWithoutAcademyInput | Prisma.XpEventUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.XpEventCreateManyAcademyInputEnvelope
+  set?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+  disconnect?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+  delete?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+  connect?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+  update?: Prisma.XpEventUpdateWithWhereUniqueWithoutAcademyInput | Prisma.XpEventUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.XpEventUpdateManyWithWhereWithoutAcademyInput | Prisma.XpEventUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.XpEventScalarWhereInput | Prisma.XpEventScalarWhereInput[]
+}
+
+export type XpEventUncheckedUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.XpEventCreateWithoutAcademyInput, Prisma.XpEventUncheckedCreateWithoutAcademyInput> | Prisma.XpEventCreateWithoutAcademyInput[] | Prisma.XpEventUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.XpEventCreateOrConnectWithoutAcademyInput | Prisma.XpEventCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.XpEventUpsertWithWhereUniqueWithoutAcademyInput | Prisma.XpEventUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.XpEventCreateManyAcademyInputEnvelope
+  set?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+  disconnect?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+  delete?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+  connect?: Prisma.XpEventWhereUniqueInput | Prisma.XpEventWhereUniqueInput[]
+  update?: Prisma.XpEventUpdateWithWhereUniqueWithoutAcademyInput | Prisma.XpEventUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.XpEventUpdateManyWithWhereWithoutAcademyInput | Prisma.XpEventUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.XpEventScalarWhereInput | Prisma.XpEventScalarWhereInput[]
+}
+
 export type XpEventCreateWithoutUserInput = {
   id?: string
   amount: number
@@ -481,6 +547,7 @@ export type XpEventCreateWithoutUserInput = {
   note?: string | null
   idempotencyKey: string
   createdAt?: Date | string
+  academy?: Prisma.AcademyCreateNestedOneWithoutXpEventsInput
 }
 
 export type XpEventUncheckedCreateWithoutUserInput = {
@@ -491,6 +558,7 @@ export type XpEventUncheckedCreateWithoutUserInput = {
   note?: string | null
   idempotencyKey: string
   createdAt?: Date | string
+  academyId?: string | null
 }
 
 export type XpEventCreateOrConnectWithoutUserInput = {
@@ -531,6 +599,55 @@ export type XpEventScalarWhereInput = {
   note?: Prisma.StringNullableFilter<"XpEvent"> | string | null
   idempotencyKey?: Prisma.StringFilter<"XpEvent"> | string
   createdAt?: Prisma.DateTimeFilter<"XpEvent"> | Date | string
+  academyId?: Prisma.StringNullableFilter<"XpEvent"> | string | null
+}
+
+export type XpEventCreateWithoutAcademyInput = {
+  id?: string
+  amount: number
+  source: $Enums.XpSource
+  sourceId?: string | null
+  note?: string | null
+  idempotencyKey: string
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutXpEventsInput
+}
+
+export type XpEventUncheckedCreateWithoutAcademyInput = {
+  id?: string
+  userId: string
+  amount: number
+  source: $Enums.XpSource
+  sourceId?: string | null
+  note?: string | null
+  idempotencyKey: string
+  createdAt?: Date | string
+}
+
+export type XpEventCreateOrConnectWithoutAcademyInput = {
+  where: Prisma.XpEventWhereUniqueInput
+  create: Prisma.XOR<Prisma.XpEventCreateWithoutAcademyInput, Prisma.XpEventUncheckedCreateWithoutAcademyInput>
+}
+
+export type XpEventCreateManyAcademyInputEnvelope = {
+  data: Prisma.XpEventCreateManyAcademyInput | Prisma.XpEventCreateManyAcademyInput[]
+  skipDuplicates?: boolean
+}
+
+export type XpEventUpsertWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.XpEventWhereUniqueInput
+  update: Prisma.XOR<Prisma.XpEventUpdateWithoutAcademyInput, Prisma.XpEventUncheckedUpdateWithoutAcademyInput>
+  create: Prisma.XOR<Prisma.XpEventCreateWithoutAcademyInput, Prisma.XpEventUncheckedCreateWithoutAcademyInput>
+}
+
+export type XpEventUpdateWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.XpEventWhereUniqueInput
+  data: Prisma.XOR<Prisma.XpEventUpdateWithoutAcademyInput, Prisma.XpEventUncheckedUpdateWithoutAcademyInput>
+}
+
+export type XpEventUpdateManyWithWhereWithoutAcademyInput = {
+  where: Prisma.XpEventScalarWhereInput
+  data: Prisma.XOR<Prisma.XpEventUpdateManyMutationInput, Prisma.XpEventUncheckedUpdateManyWithoutAcademyInput>
 }
 
 export type XpEventCreateManyUserInput = {
@@ -541,6 +658,7 @@ export type XpEventCreateManyUserInput = {
   note?: string | null
   idempotencyKey: string
   createdAt?: Date | string
+  academyId?: string | null
 }
 
 export type XpEventUpdateWithoutUserInput = {
@@ -551,6 +669,7 @@ export type XpEventUpdateWithoutUserInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academy?: Prisma.AcademyUpdateOneWithoutXpEventsNestedInput
 }
 
 export type XpEventUncheckedUpdateWithoutUserInput = {
@@ -561,10 +680,56 @@ export type XpEventUncheckedUpdateWithoutUserInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type XpEventUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  source?: Prisma.EnumXpSourceFieldUpdateOperationsInput | $Enums.XpSource
+  sourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type XpEventCreateManyAcademyInput = {
+  id?: string
+  userId: string
+  amount: number
+  source: $Enums.XpSource
+  sourceId?: string | null
+  note?: string | null
+  idempotencyKey: string
+  createdAt?: Date | string
+}
+
+export type XpEventUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  source?: Prisma.EnumXpSourceFieldUpdateOperationsInput | $Enums.XpSource
+  sourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutXpEventsNestedInput
+}
+
+export type XpEventUncheckedUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  source?: Prisma.EnumXpSourceFieldUpdateOperationsInput | $Enums.XpSource
+  sourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type XpEventUncheckedUpdateManyWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   source?: Prisma.EnumXpSourceFieldUpdateOperationsInput | $Enums.XpSource
   sourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -584,7 +749,9 @@ export type XpEventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   note?: boolean
   idempotencyKey?: boolean
   createdAt?: boolean
+  academyId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  academy?: boolean | Prisma.XpEvent$academyArgs<ExtArgs>
 }, ExtArgs["result"]["xpEvent"]>
 
 export type XpEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -596,7 +763,9 @@ export type XpEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   note?: boolean
   idempotencyKey?: boolean
   createdAt?: boolean
+  academyId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  academy?: boolean | Prisma.XpEvent$academyArgs<ExtArgs>
 }, ExtArgs["result"]["xpEvent"]>
 
 export type XpEventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -608,7 +777,9 @@ export type XpEventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   note?: boolean
   idempotencyKey?: boolean
   createdAt?: boolean
+  academyId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  academy?: boolean | Prisma.XpEvent$academyArgs<ExtArgs>
 }, ExtArgs["result"]["xpEvent"]>
 
 export type XpEventSelectScalar = {
@@ -620,23 +791,28 @@ export type XpEventSelectScalar = {
   note?: boolean
   idempotencyKey?: boolean
   createdAt?: boolean
+  academyId?: boolean
 }
 
-export type XpEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "amount" | "source" | "sourceId" | "note" | "idempotencyKey" | "createdAt", ExtArgs["result"]["xpEvent"]>
+export type XpEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "amount" | "source" | "sourceId" | "note" | "idempotencyKey" | "createdAt" | "academyId", ExtArgs["result"]["xpEvent"]>
 export type XpEventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  academy?: boolean | Prisma.XpEvent$academyArgs<ExtArgs>
 }
 export type XpEventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  academy?: boolean | Prisma.XpEvent$academyArgs<ExtArgs>
 }
 export type XpEventIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  academy?: boolean | Prisma.XpEvent$academyArgs<ExtArgs>
 }
 
 export type $XpEventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "XpEvent"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    academy: Prisma.$AcademyPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -650,6 +826,10 @@ export type $XpEventPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     note: string | null
     idempotencyKey: string
     createdAt: Date
+    /**
+     * The academy the XP was earned in. Backfilled from lesson, course or challenge; null for house-wide XP.
+     */
+    academyId: string | null
   }, ExtArgs["result"]["xpEvent"]>
   composites: {}
 }
@@ -1045,6 +1225,7 @@ readonly fields: XpEventFieldRefs;
 export interface Prisma__XpEventClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  academy<T extends Prisma.XpEvent$academyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.XpEvent$academyArgs<ExtArgs>>): Prisma.Prisma__AcademyClient<runtime.Types.Result.GetResult<Prisma.$AcademyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1082,6 +1263,7 @@ export interface XpEventFieldRefs {
   readonly note: Prisma.FieldRef<"XpEvent", 'String'>
   readonly idempotencyKey: Prisma.FieldRef<"XpEvent", 'String'>
   readonly createdAt: Prisma.FieldRef<"XpEvent", 'DateTime'>
+  readonly academyId: Prisma.FieldRef<"XpEvent", 'String'>
 }
     
 
@@ -1475,6 +1657,25 @@ export type XpEventDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many XpEvents to delete.
    */
   limit?: number
+}
+
+/**
+ * XpEvent.academy
+ */
+export type XpEvent$academyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Academy
+   */
+  select?: Prisma.AcademySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Academy
+   */
+  omit?: Prisma.AcademyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademyInclude<ExtArgs> | null
+  where?: Prisma.AcademyWhereInput
 }
 
 /**

@@ -251,7 +251,7 @@ export class CommerceService {
 
     await this.db.order.update({
       where: { id: order.id },
-      data: { status: "PAID", ledgerTxId: tx.id },
+      data: { status: "PAID", paidAt: new Date(), ledgerTxId: tx.id },
     });
 
     await this.fulfill(order.id);
@@ -320,7 +320,7 @@ export class CommerceService {
    */
   async settleFiatOrder(orderId: string, paymentRef: string) {
     const settled = await this.db.$transaction(async (tx) => {
-      const won = await tx.order.updateMany({ where: { id: orderId, status: "PENDING" }, data: { status: "PAID", paymentRef } });
+      const won = await tx.order.updateMany({ where: { id: orderId, status: "PENDING" }, data: { status: "PAID", paidAt: new Date(), paymentRef } });
       if (won.count === 0) return false;
       await this.fulfillIn(tx, orderId);
       return true;

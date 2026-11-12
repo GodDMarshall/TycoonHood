@@ -19,6 +19,7 @@
     "db:deploy": "pnpm --filter @tycoonhood/db migrate:deploy",
     "db:migrate:sql": "pnpm --filter @tycoonhood/db migrate:sql",
     "db:migrate:status": "pnpm --filter @tycoonhood/db migrate:status",
+    "db:rehearse": "node scripts/db/rehearse-migrations.mjs",
     "deploy:db": "node scripts/with-db-lock.mjs node scripts/deploy-db.mjs",
     "db:seed:merch": "pnpm --filter @tycoonhood/db seed:merch",
     "e2e": "node scripts/e2e/full-loop.mjs",

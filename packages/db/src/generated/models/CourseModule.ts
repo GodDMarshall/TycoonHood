@@ -230,6 +230,8 @@ export type CourseModuleWhereInput = {
   completion?: Prisma.StringNullableFilter<"CourseModule"> | string | null
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
   lessons?: Prisma.LessonListRelationFilter
+  skills?: Prisma.ModuleSkillListRelationFilter
+  pathSteps?: Prisma.LearningPathStepListRelationFilter
 }
 
 export type CourseModuleOrderByWithRelationInput = {
@@ -242,6 +244,8 @@ export type CourseModuleOrderByWithRelationInput = {
   completion?: Prisma.SortOrderInput | Prisma.SortOrder
   course?: Prisma.CourseOrderByWithRelationInput
   lessons?: Prisma.LessonOrderByRelationAggregateInput
+  skills?: Prisma.ModuleSkillOrderByRelationAggregateInput
+  pathSteps?: Prisma.LearningPathStepOrderByRelationAggregateInput
 }
 
 export type CourseModuleWhereUniqueInput = Prisma.AtLeast<{
@@ -257,6 +261,8 @@ export type CourseModuleWhereUniqueInput = Prisma.AtLeast<{
   completion?: Prisma.StringNullableFilter<"CourseModule"> | string | null
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
   lessons?: Prisma.LessonListRelationFilter
+  skills?: Prisma.ModuleSkillListRelationFilter
+  pathSteps?: Prisma.LearningPathStepListRelationFilter
 }, "id">
 
 export type CourseModuleOrderByWithAggregationInput = {
@@ -296,6 +302,8 @@ export type CourseModuleCreateInput = {
   completion?: string | null
   course: Prisma.CourseCreateNestedOneWithoutModulesInput
   lessons?: Prisma.LessonCreateNestedManyWithoutModuleInput
+  skills?: Prisma.ModuleSkillCreateNestedManyWithoutModuleInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutModuleInput
 }
 
 export type CourseModuleUncheckedCreateInput = {
@@ -307,6 +315,8 @@ export type CourseModuleUncheckedCreateInput = {
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: string | null
   lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutModuleInput
+  skills?: Prisma.ModuleSkillUncheckedCreateNestedManyWithoutModuleInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutModuleInput
 }
 
 export type CourseModuleUpdateInput = {
@@ -318,6 +328,8 @@ export type CourseModuleUpdateInput = {
   completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   course?: Prisma.CourseUpdateOneRequiredWithoutModulesNestedInput
   lessons?: Prisma.LessonUpdateManyWithoutModuleNestedInput
+  skills?: Prisma.ModuleSkillUpdateManyWithoutModuleNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutModuleNestedInput
 }
 
 export type CourseModuleUncheckedUpdateInput = {
@@ -329,6 +341,8 @@ export type CourseModuleUncheckedUpdateInput = {
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lessons?: Prisma.LessonUncheckedUpdateManyWithoutModuleNestedInput
+  skills?: Prisma.ModuleSkillUncheckedUpdateManyWithoutModuleNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutModuleNestedInput
 }
 
 export type CourseModuleCreateManyInput = {
@@ -411,6 +425,11 @@ export type CourseModuleScalarRelationFilter = {
   isNot?: Prisma.CourseModuleWhereInput
 }
 
+export type CourseModuleNullableScalarRelationFilter = {
+  is?: Prisma.CourseModuleWhereInput | null
+  isNot?: Prisma.CourseModuleWhereInput | null
+}
+
 export type CourseModuleCreateNestedManyWithoutCourseInput = {
   create?: Prisma.XOR<Prisma.CourseModuleCreateWithoutCourseInput, Prisma.CourseModuleUncheckedCreateWithoutCourseInput> | Prisma.CourseModuleCreateWithoutCourseInput[] | Prisma.CourseModuleUncheckedCreateWithoutCourseInput[]
   connectOrCreate?: Prisma.CourseModuleCreateOrConnectWithoutCourseInput | Prisma.CourseModuleCreateOrConnectWithoutCourseInput[]
@@ -467,6 +486,36 @@ export type CourseModuleUpdateOneRequiredWithoutLessonsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CourseModuleUpdateToOneWithWhereWithoutLessonsInput, Prisma.CourseModuleUpdateWithoutLessonsInput>, Prisma.CourseModuleUncheckedUpdateWithoutLessonsInput>
 }
 
+export type CourseModuleCreateNestedOneWithoutSkillsInput = {
+  create?: Prisma.XOR<Prisma.CourseModuleCreateWithoutSkillsInput, Prisma.CourseModuleUncheckedCreateWithoutSkillsInput>
+  connectOrCreate?: Prisma.CourseModuleCreateOrConnectWithoutSkillsInput
+  connect?: Prisma.CourseModuleWhereUniqueInput
+}
+
+export type CourseModuleUpdateOneRequiredWithoutSkillsNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseModuleCreateWithoutSkillsInput, Prisma.CourseModuleUncheckedCreateWithoutSkillsInput>
+  connectOrCreate?: Prisma.CourseModuleCreateOrConnectWithoutSkillsInput
+  upsert?: Prisma.CourseModuleUpsertWithoutSkillsInput
+  connect?: Prisma.CourseModuleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CourseModuleUpdateToOneWithWhereWithoutSkillsInput, Prisma.CourseModuleUpdateWithoutSkillsInput>, Prisma.CourseModuleUncheckedUpdateWithoutSkillsInput>
+}
+
+export type CourseModuleCreateNestedOneWithoutPathStepsInput = {
+  create?: Prisma.XOR<Prisma.CourseModuleCreateWithoutPathStepsInput, Prisma.CourseModuleUncheckedCreateWithoutPathStepsInput>
+  connectOrCreate?: Prisma.CourseModuleCreateOrConnectWithoutPathStepsInput
+  connect?: Prisma.CourseModuleWhereUniqueInput
+}
+
+export type CourseModuleUpdateOneWithoutPathStepsNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseModuleCreateWithoutPathStepsInput, Prisma.CourseModuleUncheckedCreateWithoutPathStepsInput>
+  connectOrCreate?: Prisma.CourseModuleCreateOrConnectWithoutPathStepsInput
+  upsert?: Prisma.CourseModuleUpsertWithoutPathStepsInput
+  disconnect?: Prisma.CourseModuleWhereInput | boolean
+  delete?: Prisma.CourseModuleWhereInput | boolean
+  connect?: Prisma.CourseModuleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CourseModuleUpdateToOneWithWhereWithoutPathStepsInput, Prisma.CourseModuleUpdateWithoutPathStepsInput>, Prisma.CourseModuleUncheckedUpdateWithoutPathStepsInput>
+}
+
 export type CourseModuleCreateWithoutCourseInput = {
   id?: string
   title: string
@@ -475,6 +524,8 @@ export type CourseModuleCreateWithoutCourseInput = {
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: string | null
   lessons?: Prisma.LessonCreateNestedManyWithoutModuleInput
+  skills?: Prisma.ModuleSkillCreateNestedManyWithoutModuleInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutModuleInput
 }
 
 export type CourseModuleUncheckedCreateWithoutCourseInput = {
@@ -485,6 +536,8 @@ export type CourseModuleUncheckedCreateWithoutCourseInput = {
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: string | null
   lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutModuleInput
+  skills?: Prisma.ModuleSkillUncheckedCreateNestedManyWithoutModuleInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutModuleInput
 }
 
 export type CourseModuleCreateOrConnectWithoutCourseInput = {
@@ -534,6 +587,8 @@ export type CourseModuleCreateWithoutLessonsInput = {
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: string | null
   course: Prisma.CourseCreateNestedOneWithoutModulesInput
+  skills?: Prisma.ModuleSkillCreateNestedManyWithoutModuleInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutModuleInput
 }
 
 export type CourseModuleUncheckedCreateWithoutLessonsInput = {
@@ -544,6 +599,8 @@ export type CourseModuleUncheckedCreateWithoutLessonsInput = {
   sortOrder?: number
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: string | null
+  skills?: Prisma.ModuleSkillUncheckedCreateNestedManyWithoutModuleInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutModuleInput
 }
 
 export type CourseModuleCreateOrConnectWithoutLessonsInput = {
@@ -570,6 +627,8 @@ export type CourseModuleUpdateWithoutLessonsInput = {
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   course?: Prisma.CourseUpdateOneRequiredWithoutModulesNestedInput
+  skills?: Prisma.ModuleSkillUpdateManyWithoutModuleNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutModuleNestedInput
 }
 
 export type CourseModuleUncheckedUpdateWithoutLessonsInput = {
@@ -580,6 +639,136 @@ export type CourseModuleUncheckedUpdateWithoutLessonsInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.ModuleSkillUncheckedUpdateManyWithoutModuleNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutModuleNestedInput
+}
+
+export type CourseModuleCreateWithoutSkillsInput = {
+  id?: string
+  title: string
+  description?: string | null
+  sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
+  course: Prisma.CourseCreateNestedOneWithoutModulesInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutModuleInput
+  pathSteps?: Prisma.LearningPathStepCreateNestedManyWithoutModuleInput
+}
+
+export type CourseModuleUncheckedCreateWithoutSkillsInput = {
+  id?: string
+  courseId: string
+  title: string
+  description?: string | null
+  sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutModuleInput
+  pathSteps?: Prisma.LearningPathStepUncheckedCreateNestedManyWithoutModuleInput
+}
+
+export type CourseModuleCreateOrConnectWithoutSkillsInput = {
+  where: Prisma.CourseModuleWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseModuleCreateWithoutSkillsInput, Prisma.CourseModuleUncheckedCreateWithoutSkillsInput>
+}
+
+export type CourseModuleUpsertWithoutSkillsInput = {
+  update: Prisma.XOR<Prisma.CourseModuleUpdateWithoutSkillsInput, Prisma.CourseModuleUncheckedUpdateWithoutSkillsInput>
+  create: Prisma.XOR<Prisma.CourseModuleCreateWithoutSkillsInput, Prisma.CourseModuleUncheckedCreateWithoutSkillsInput>
+  where?: Prisma.CourseModuleWhereInput
+}
+
+export type CourseModuleUpdateToOneWithWhereWithoutSkillsInput = {
+  where?: Prisma.CourseModuleWhereInput
+  data: Prisma.XOR<Prisma.CourseModuleUpdateWithoutSkillsInput, Prisma.CourseModuleUncheckedUpdateWithoutSkillsInput>
+}
+
+export type CourseModuleUpdateWithoutSkillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  course?: Prisma.CourseUpdateOneRequiredWithoutModulesNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutModuleNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutModuleNestedInput
+}
+
+export type CourseModuleUncheckedUpdateWithoutSkillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutModuleNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutModuleNestedInput
+}
+
+export type CourseModuleCreateWithoutPathStepsInput = {
+  id?: string
+  title: string
+  description?: string | null
+  sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
+  course: Prisma.CourseCreateNestedOneWithoutModulesInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutModuleInput
+  skills?: Prisma.ModuleSkillCreateNestedManyWithoutModuleInput
+}
+
+export type CourseModuleUncheckedCreateWithoutPathStepsInput = {
+  id?: string
+  courseId: string
+  title: string
+  description?: string | null
+  sortOrder?: number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: string | null
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutModuleInput
+  skills?: Prisma.ModuleSkillUncheckedCreateNestedManyWithoutModuleInput
+}
+
+export type CourseModuleCreateOrConnectWithoutPathStepsInput = {
+  where: Prisma.CourseModuleWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseModuleCreateWithoutPathStepsInput, Prisma.CourseModuleUncheckedCreateWithoutPathStepsInput>
+}
+
+export type CourseModuleUpsertWithoutPathStepsInput = {
+  update: Prisma.XOR<Prisma.CourseModuleUpdateWithoutPathStepsInput, Prisma.CourseModuleUncheckedUpdateWithoutPathStepsInput>
+  create: Prisma.XOR<Prisma.CourseModuleCreateWithoutPathStepsInput, Prisma.CourseModuleUncheckedCreateWithoutPathStepsInput>
+  where?: Prisma.CourseModuleWhereInput
+}
+
+export type CourseModuleUpdateToOneWithWhereWithoutPathStepsInput = {
+  where?: Prisma.CourseModuleWhereInput
+  data: Prisma.XOR<Prisma.CourseModuleUpdateWithoutPathStepsInput, Prisma.CourseModuleUncheckedUpdateWithoutPathStepsInput>
+}
+
+export type CourseModuleUpdateWithoutPathStepsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  course?: Prisma.CourseUpdateOneRequiredWithoutModulesNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutModuleNestedInput
+  skills?: Prisma.ModuleSkillUpdateManyWithoutModuleNestedInput
+}
+
+export type CourseModuleUncheckedUpdateWithoutPathStepsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutModuleNestedInput
+  skills?: Prisma.ModuleSkillUncheckedUpdateManyWithoutModuleNestedInput
 }
 
 export type CourseModuleCreateManyCourseInput = {
@@ -599,6 +788,8 @@ export type CourseModuleUpdateWithoutCourseInput = {
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lessons?: Prisma.LessonUpdateManyWithoutModuleNestedInput
+  skills?: Prisma.ModuleSkillUpdateManyWithoutModuleNestedInput
+  pathSteps?: Prisma.LearningPathStepUpdateManyWithoutModuleNestedInput
 }
 
 export type CourseModuleUncheckedUpdateWithoutCourseInput = {
@@ -609,6 +800,8 @@ export type CourseModuleUncheckedUpdateWithoutCourseInput = {
   objectives?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   completion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lessons?: Prisma.LessonUncheckedUpdateManyWithoutModuleNestedInput
+  skills?: Prisma.ModuleSkillUncheckedUpdateManyWithoutModuleNestedInput
+  pathSteps?: Prisma.LearningPathStepUncheckedUpdateManyWithoutModuleNestedInput
 }
 
 export type CourseModuleUncheckedUpdateManyWithoutCourseInput = {
@@ -627,10 +820,14 @@ export type CourseModuleUncheckedUpdateManyWithoutCourseInput = {
 
 export type CourseModuleCountOutputType = {
   lessons: number
+  skills: number
+  pathSteps: number
 }
 
 export type CourseModuleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lessons?: boolean | CourseModuleCountOutputTypeCountLessonsArgs
+  skills?: boolean | CourseModuleCountOutputTypeCountSkillsArgs
+  pathSteps?: boolean | CourseModuleCountOutputTypeCountPathStepsArgs
 }
 
 /**
@@ -650,6 +847,20 @@ export type CourseModuleCountOutputTypeCountLessonsArgs<ExtArgs extends runtime.
   where?: Prisma.LessonWhereInput
 }
 
+/**
+ * CourseModuleCountOutputType without action
+ */
+export type CourseModuleCountOutputTypeCountSkillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ModuleSkillWhereInput
+}
+
+/**
+ * CourseModuleCountOutputType without action
+ */
+export type CourseModuleCountOutputTypeCountPathStepsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LearningPathStepWhereInput
+}
+
 
 export type CourseModuleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -661,6 +872,8 @@ export type CourseModuleSelect<ExtArgs extends runtime.Types.Extensions.Internal
   completion?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   lessons?: boolean | Prisma.CourseModule$lessonsArgs<ExtArgs>
+  skills?: boolean | Prisma.CourseModule$skillsArgs<ExtArgs>
+  pathSteps?: boolean | Prisma.CourseModule$pathStepsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseModuleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseModule"]>
 
@@ -700,6 +913,8 @@ export type CourseModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type CourseModuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   lessons?: boolean | Prisma.CourseModule$lessonsArgs<ExtArgs>
+  skills?: boolean | Prisma.CourseModule$skillsArgs<ExtArgs>
+  pathSteps?: boolean | Prisma.CourseModule$pathStepsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseModuleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CourseModuleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -714,6 +929,8 @@ export type $CourseModulePayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     course: Prisma.$CoursePayload<ExtArgs>
     lessons: Prisma.$LessonPayload<ExtArgs>[]
+    skills: Prisma.$ModuleSkillPayload<ExtArgs>[]
+    pathSteps: Prisma.$LearningPathStepPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1125,6 +1342,8 @@ export interface Prisma__CourseModuleClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   course<T extends Prisma.CourseDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseDefaultArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   lessons<T extends Prisma.CourseModule$lessonsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseModule$lessonsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  skills<T extends Prisma.CourseModule$skillsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseModule$skillsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ModuleSkillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pathSteps<T extends Prisma.CourseModule$pathStepsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseModule$pathStepsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LearningPathStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1578,6 +1797,54 @@ export type CourseModule$lessonsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.LessonScalarFieldEnum | Prisma.LessonScalarFieldEnum[]
+}
+
+/**
+ * CourseModule.skills
+ */
+export type CourseModule$skillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ModuleSkill
+   */
+  select?: Prisma.ModuleSkillSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ModuleSkill
+   */
+  omit?: Prisma.ModuleSkillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ModuleSkillInclude<ExtArgs> | null
+  where?: Prisma.ModuleSkillWhereInput
+  orderBy?: Prisma.ModuleSkillOrderByWithRelationInput | Prisma.ModuleSkillOrderByWithRelationInput[]
+  cursor?: Prisma.ModuleSkillWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ModuleSkillScalarFieldEnum | Prisma.ModuleSkillScalarFieldEnum[]
+}
+
+/**
+ * CourseModule.pathSteps
+ */
+export type CourseModule$pathStepsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LearningPathStep
+   */
+  select?: Prisma.LearningPathStepSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LearningPathStep
+   */
+  omit?: Prisma.LearningPathStepOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LearningPathStepInclude<ExtArgs> | null
+  where?: Prisma.LearningPathStepWhereInput
+  orderBy?: Prisma.LearningPathStepOrderByWithRelationInput | Prisma.LearningPathStepOrderByWithRelationInput[]
+  cursor?: Prisma.LearningPathStepWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LearningPathStepScalarFieldEnum | Prisma.LearningPathStepScalarFieldEnum[]
 }
 
 /**

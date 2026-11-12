@@ -71,7 +71,7 @@ export class RewardsService {
     let firstCompletion = true;
     try {
       await this.db.missionCompletion.create({
-        data: { userId: opts.userId, missionId: mission.id, idempotencyKey: key },
+        data: { userId: opts.userId, missionId: mission.id, occurrence, idempotencyKey: key },
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {

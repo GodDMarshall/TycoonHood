@@ -20,8 +20,20 @@ export type PostModel = runtime.Types.Result.DefaultSelection<Prisma.$PostPayloa
 
 export type AggregatePost = {
   _count: PostCountAggregateOutputType | null
+  _avg: PostAvgAggregateOutputType | null
+  _sum: PostSumAggregateOutputType | null
   _min: PostMinAggregateOutputType | null
   _max: PostMaxAggregateOutputType | null
+}
+
+export type PostAvgAggregateOutputType = {
+  featuredRank: number | null
+  readingMinutes: number | null
+}
+
+export type PostSumAggregateOutputType = {
+  featuredRank: number | null
+  readingMinutes: number | null
 }
 
 export type PostMinAggregateOutputType = {
@@ -35,6 +47,34 @@ export type PostMinAggregateOutputType = {
   publishedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  kind: $Enums.PostKind | null
+  status: $Enums.PostStatus | null
+  authorInstructorId: string | null
+  authorUserId: string | null
+  categoryId: string | null
+  academyId: string | null
+  courseId: string | null
+  eventId: string | null
+  testimonialId: string | null
+  subjectConsentAt: Date | null
+  subjectConsentNote: string | null
+  featuredAt: Date | null
+  featuredRank: number | null
+  coverAlt: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  readingMinutes: number | null
+  submittedAt: Date | null
+  reviewedAt: Date | null
+  reviewedById: string | null
+  reviewNote: string | null
+  founderApprovedAt: Date | null
+  founderApprovalNote: string | null
+  createdById: string | null
+  updatedById: string | null
+  notifyOnPublish: boolean | null
+  notifiedAt: Date | null
+  isDemo: boolean | null
 }
 
 export type PostMaxAggregateOutputType = {
@@ -48,6 +88,34 @@ export type PostMaxAggregateOutputType = {
   publishedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  kind: $Enums.PostKind | null
+  status: $Enums.PostStatus | null
+  authorInstructorId: string | null
+  authorUserId: string | null
+  categoryId: string | null
+  academyId: string | null
+  courseId: string | null
+  eventId: string | null
+  testimonialId: string | null
+  subjectConsentAt: Date | null
+  subjectConsentNote: string | null
+  featuredAt: Date | null
+  featuredRank: number | null
+  coverAlt: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  readingMinutes: number | null
+  submittedAt: Date | null
+  reviewedAt: Date | null
+  reviewedById: string | null
+  reviewNote: string | null
+  founderApprovedAt: Date | null
+  founderApprovalNote: string | null
+  createdById: string | null
+  updatedById: string | null
+  notifyOnPublish: boolean | null
+  notifiedAt: Date | null
+  isDemo: boolean | null
 }
 
 export type PostCountAggregateOutputType = {
@@ -61,9 +129,47 @@ export type PostCountAggregateOutputType = {
   publishedAt: number
   createdAt: number
   updatedAt: number
+  kind: number
+  status: number
+  authorInstructorId: number
+  authorUserId: number
+  categoryId: number
+  academyId: number
+  courseId: number
+  eventId: number
+  testimonialId: number
+  subjectConsentAt: number
+  subjectConsentNote: number
+  featuredAt: number
+  featuredRank: number
+  coverAlt: number
+  seoTitle: number
+  seoDescription: number
+  readingMinutes: number
+  submittedAt: number
+  reviewedAt: number
+  reviewedById: number
+  reviewNote: number
+  founderApprovedAt: number
+  founderApprovalNote: number
+  createdById: number
+  updatedById: number
+  notifyOnPublish: number
+  notifiedAt: number
+  isDemo: number
   _all: number
 }
 
+
+export type PostAvgAggregateInputType = {
+  featuredRank?: true
+  readingMinutes?: true
+}
+
+export type PostSumAggregateInputType = {
+  featuredRank?: true
+  readingMinutes?: true
+}
 
 export type PostMinAggregateInputType = {
   id?: true
@@ -76,6 +182,34 @@ export type PostMinAggregateInputType = {
   publishedAt?: true
   createdAt?: true
   updatedAt?: true
+  kind?: true
+  status?: true
+  authorInstructorId?: true
+  authorUserId?: true
+  categoryId?: true
+  academyId?: true
+  courseId?: true
+  eventId?: true
+  testimonialId?: true
+  subjectConsentAt?: true
+  subjectConsentNote?: true
+  featuredAt?: true
+  featuredRank?: true
+  coverAlt?: true
+  seoTitle?: true
+  seoDescription?: true
+  readingMinutes?: true
+  submittedAt?: true
+  reviewedAt?: true
+  reviewedById?: true
+  reviewNote?: true
+  founderApprovedAt?: true
+  founderApprovalNote?: true
+  createdById?: true
+  updatedById?: true
+  notifyOnPublish?: true
+  notifiedAt?: true
+  isDemo?: true
 }
 
 export type PostMaxAggregateInputType = {
@@ -89,6 +223,34 @@ export type PostMaxAggregateInputType = {
   publishedAt?: true
   createdAt?: true
   updatedAt?: true
+  kind?: true
+  status?: true
+  authorInstructorId?: true
+  authorUserId?: true
+  categoryId?: true
+  academyId?: true
+  courseId?: true
+  eventId?: true
+  testimonialId?: true
+  subjectConsentAt?: true
+  subjectConsentNote?: true
+  featuredAt?: true
+  featuredRank?: true
+  coverAlt?: true
+  seoTitle?: true
+  seoDescription?: true
+  readingMinutes?: true
+  submittedAt?: true
+  reviewedAt?: true
+  reviewedById?: true
+  reviewNote?: true
+  founderApprovedAt?: true
+  founderApprovalNote?: true
+  createdById?: true
+  updatedById?: true
+  notifyOnPublish?: true
+  notifiedAt?: true
+  isDemo?: true
 }
 
 export type PostCountAggregateInputType = {
@@ -102,6 +264,34 @@ export type PostCountAggregateInputType = {
   publishedAt?: true
   createdAt?: true
   updatedAt?: true
+  kind?: true
+  status?: true
+  authorInstructorId?: true
+  authorUserId?: true
+  categoryId?: true
+  academyId?: true
+  courseId?: true
+  eventId?: true
+  testimonialId?: true
+  subjectConsentAt?: true
+  subjectConsentNote?: true
+  featuredAt?: true
+  featuredRank?: true
+  coverAlt?: true
+  seoTitle?: true
+  seoDescription?: true
+  readingMinutes?: true
+  submittedAt?: true
+  reviewedAt?: true
+  reviewedById?: true
+  reviewNote?: true
+  founderApprovedAt?: true
+  founderApprovalNote?: true
+  createdById?: true
+  updatedById?: true
+  notifyOnPublish?: true
+  notifiedAt?: true
+  isDemo?: true
   _all?: true
 }
 
@@ -143,6 +333,18 @@ export type PostAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: PostAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: PostSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: PostMinAggregateInputType
@@ -173,6 +375,8 @@ export type PostGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: PostCountAggregateInputType | true
+  _avg?: PostAvgAggregateInputType
+  _sum?: PostSumAggregateInputType
   _min?: PostMinAggregateInputType
   _max?: PostMaxAggregateInputType
 }
@@ -188,7 +392,37 @@ export type PostGroupByOutputType = {
   publishedAt: Date | null
   createdAt: Date
   updatedAt: Date
+  kind: $Enums.PostKind
+  status: $Enums.PostStatus
+  authorInstructorId: string | null
+  authorUserId: string | null
+  categoryId: string | null
+  academyId: string | null
+  courseId: string | null
+  eventId: string | null
+  testimonialId: string | null
+  subjectConsentAt: Date | null
+  subjectConsentNote: string | null
+  featuredAt: Date | null
+  featuredRank: number | null
+  coverAlt: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  readingMinutes: number | null
+  submittedAt: Date | null
+  reviewedAt: Date | null
+  reviewedById: string | null
+  reviewNote: string | null
+  founderApprovedAt: Date | null
+  founderApprovalNote: string | null
+  createdById: string | null
+  updatedById: string | null
+  notifyOnPublish: boolean
+  notifiedAt: Date | null
+  isDemo: boolean
   _count: PostCountAggregateOutputType | null
+  _avg: PostAvgAggregateOutputType | null
+  _sum: PostSumAggregateOutputType | null
   _min: PostMinAggregateOutputType | null
   _max: PostMaxAggregateOutputType | null
 }
@@ -222,6 +456,46 @@ export type PostWhereInput = {
   publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  kind?: Prisma.EnumPostKindFilter<"Post"> | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
+  authorInstructorId?: Prisma.StringNullableFilter<"Post"> | string | null
+  authorUserId?: Prisma.StringNullableFilter<"Post"> | string | null
+  categoryId?: Prisma.StringNullableFilter<"Post"> | string | null
+  academyId?: Prisma.StringNullableFilter<"Post"> | string | null
+  courseId?: Prisma.StringNullableFilter<"Post"> | string | null
+  eventId?: Prisma.StringNullableFilter<"Post"> | string | null
+  testimonialId?: Prisma.StringNullableFilter<"Post"> | string | null
+  subjectConsentAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  subjectConsentNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  featuredAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  featuredRank?: Prisma.IntNullableFilter<"Post"> | number | null
+  coverAlt?: Prisma.StringNullableFilter<"Post"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"Post"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Post"> | string | null
+  readingMinutes?: Prisma.IntNullableFilter<"Post"> | number | null
+  submittedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewedById?: Prisma.StringNullableFilter<"Post"> | string | null
+  reviewNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  founderApprovedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  founderApprovalNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  createdById?: Prisma.StringNullableFilter<"Post"> | string | null
+  updatedById?: Prisma.StringNullableFilter<"Post"> | string | null
+  notifyOnPublish?: Prisma.BoolFilter<"Post"> | boolean
+  notifiedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  isDemo?: Prisma.BoolFilter<"Post"> | boolean
+  authorInstructor?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
+  authorUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  category?: Prisma.XOR<Prisma.PostCategoryNullableScalarRelationFilter, Prisma.PostCategoryWhereInput> | null
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
+  event?: Prisma.XOR<Prisma.LiveEventNullableScalarRelationFilter, Prisma.LiveEventWhereInput> | null
+  testimonial?: Prisma.XOR<Prisma.TestimonialNullableScalarRelationFilter, Prisma.TestimonialWhereInput> | null
+  reviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  revisions?: Prisma.PostRevisionListRelationFilter
+  tags?: Prisma.PostTagListRelationFilter
 }
 
 export type PostOrderByWithRelationInput = {
@@ -235,11 +509,52 @@ export type PostOrderByWithRelationInput = {
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  authorInstructorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  authorUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  testimonialId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subjectConsentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  subjectConsentNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  featuredAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  featuredRank?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverAlt?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  submittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  founderApprovedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  founderApprovalNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifyOnPublish?: Prisma.SortOrder
+  notifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  authorInstructor?: Prisma.InstructorOrderByWithRelationInput
+  authorUser?: Prisma.UserOrderByWithRelationInput
+  category?: Prisma.PostCategoryOrderByWithRelationInput
+  academy?: Prisma.AcademyOrderByWithRelationInput
+  course?: Prisma.CourseOrderByWithRelationInput
+  event?: Prisma.LiveEventOrderByWithRelationInput
+  testimonial?: Prisma.TestimonialOrderByWithRelationInput
+  reviewedBy?: Prisma.UserOrderByWithRelationInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
+  updatedBy?: Prisma.UserOrderByWithRelationInput
+  revisions?: Prisma.PostRevisionOrderByRelationAggregateInput
+  tags?: Prisma.PostTagOrderByRelationAggregateInput
 }
 
 export type PostWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  testimonialId?: string
   AND?: Prisma.PostWhereInput | Prisma.PostWhereInput[]
   OR?: Prisma.PostWhereInput[]
   NOT?: Prisma.PostWhereInput | Prisma.PostWhereInput[]
@@ -251,7 +566,46 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
-}, "id" | "slug">
+  kind?: Prisma.EnumPostKindFilter<"Post"> | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
+  authorInstructorId?: Prisma.StringNullableFilter<"Post"> | string | null
+  authorUserId?: Prisma.StringNullableFilter<"Post"> | string | null
+  categoryId?: Prisma.StringNullableFilter<"Post"> | string | null
+  academyId?: Prisma.StringNullableFilter<"Post"> | string | null
+  courseId?: Prisma.StringNullableFilter<"Post"> | string | null
+  eventId?: Prisma.StringNullableFilter<"Post"> | string | null
+  subjectConsentAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  subjectConsentNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  featuredAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  featuredRank?: Prisma.IntNullableFilter<"Post"> | number | null
+  coverAlt?: Prisma.StringNullableFilter<"Post"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"Post"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Post"> | string | null
+  readingMinutes?: Prisma.IntNullableFilter<"Post"> | number | null
+  submittedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewedById?: Prisma.StringNullableFilter<"Post"> | string | null
+  reviewNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  founderApprovedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  founderApprovalNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  createdById?: Prisma.StringNullableFilter<"Post"> | string | null
+  updatedById?: Prisma.StringNullableFilter<"Post"> | string | null
+  notifyOnPublish?: Prisma.BoolFilter<"Post"> | boolean
+  notifiedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  isDemo?: Prisma.BoolFilter<"Post"> | boolean
+  authorInstructor?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
+  authorUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  category?: Prisma.XOR<Prisma.PostCategoryNullableScalarRelationFilter, Prisma.PostCategoryWhereInput> | null
+  academy?: Prisma.XOR<Prisma.AcademyNullableScalarRelationFilter, Prisma.AcademyWhereInput> | null
+  course?: Prisma.XOR<Prisma.CourseNullableScalarRelationFilter, Prisma.CourseWhereInput> | null
+  event?: Prisma.XOR<Prisma.LiveEventNullableScalarRelationFilter, Prisma.LiveEventWhereInput> | null
+  testimonial?: Prisma.XOR<Prisma.TestimonialNullableScalarRelationFilter, Prisma.TestimonialWhereInput> | null
+  reviewedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  revisions?: Prisma.PostRevisionListRelationFilter
+  tags?: Prisma.PostTagListRelationFilter
+}, "id" | "slug" | "testimonialId">
 
 export type PostOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -264,9 +618,39 @@ export type PostOrderByWithAggregationInput = {
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  authorInstructorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  authorUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  testimonialId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subjectConsentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  subjectConsentNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  featuredAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  featuredRank?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverAlt?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  submittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  founderApprovedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  founderApprovalNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifyOnPublish?: Prisma.SortOrder
+  notifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
   _count?: Prisma.PostCountOrderByAggregateInput
+  _avg?: Prisma.PostAvgOrderByAggregateInput
   _max?: Prisma.PostMaxOrderByAggregateInput
   _min?: Prisma.PostMinOrderByAggregateInput
+  _sum?: Prisma.PostSumOrderByAggregateInput
 }
 
 export type PostScalarWhereWithAggregatesInput = {
@@ -283,6 +667,34 @@ export type PostScalarWhereWithAggregatesInput = {
   publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
+  kind?: Prisma.EnumPostKindWithAggregatesFilter<"Post"> | $Enums.PostKind
+  status?: Prisma.EnumPostStatusWithAggregatesFilter<"Post"> | $Enums.PostStatus
+  authorInstructorId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  authorUserId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  categoryId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  academyId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  courseId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  eventId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  testimonialId?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  subjectConsentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  subjectConsentNote?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  featuredAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  featuredRank?: Prisma.IntNullableWithAggregatesFilter<"Post"> | number | null
+  coverAlt?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  seoTitle?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  seoDescription?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  readingMinutes?: Prisma.IntNullableWithAggregatesFilter<"Post"> | number | null
+  submittedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  reviewedById?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  reviewNote?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  founderApprovedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  founderApprovalNote?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  updatedById?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  notifyOnPublish?: Prisma.BoolWithAggregatesFilter<"Post"> | boolean
+  notifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  isDemo?: Prisma.BoolWithAggregatesFilter<"Post"> | boolean
 }
 
 export type PostCreateInput = {
@@ -296,6 +708,36 @@ export type PostCreateInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
 }
 
 export type PostUncheckedCreateInput = {
@@ -309,6 +751,36 @@ export type PostUncheckedCreateInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type PostUpdateInput = {
@@ -322,6 +794,36 @@ export type PostUpdateInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
 }
 
 export type PostUncheckedUpdateInput = {
@@ -335,6 +837,36 @@ export type PostUncheckedUpdateInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostCreateManyInput = {
@@ -348,6 +880,34 @@ export type PostCreateManyInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
 }
 
 export type PostUpdateManyMutationInput = {
@@ -361,6 +921,24 @@ export type PostUpdateManyMutationInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type PostUncheckedUpdateManyInput = {
@@ -374,6 +952,44 @@ export type PostUncheckedUpdateManyInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostListRelationFilter = {
+  every?: Prisma.PostWhereInput
+  some?: Prisma.PostWhereInput
+  none?: Prisma.PostWhereInput
+}
+
+export type PostOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type PostCountOrderByAggregateInput = {
@@ -387,6 +1003,39 @@ export type PostCountOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  authorInstructorId?: Prisma.SortOrder
+  authorUserId?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  testimonialId?: Prisma.SortOrder
+  subjectConsentAt?: Prisma.SortOrder
+  subjectConsentNote?: Prisma.SortOrder
+  featuredAt?: Prisma.SortOrder
+  featuredRank?: Prisma.SortOrder
+  coverAlt?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+  submittedAt?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewNote?: Prisma.SortOrder
+  founderApprovedAt?: Prisma.SortOrder
+  founderApprovalNote?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
+  notifyOnPublish?: Prisma.SortOrder
+  notifiedAt?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+}
+
+export type PostAvgOrderByAggregateInput = {
+  featuredRank?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
 }
 
 export type PostMaxOrderByAggregateInput = {
@@ -400,6 +1049,34 @@ export type PostMaxOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  authorInstructorId?: Prisma.SortOrder
+  authorUserId?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  testimonialId?: Prisma.SortOrder
+  subjectConsentAt?: Prisma.SortOrder
+  subjectConsentNote?: Prisma.SortOrder
+  featuredAt?: Prisma.SortOrder
+  featuredRank?: Prisma.SortOrder
+  coverAlt?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+  submittedAt?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewNote?: Prisma.SortOrder
+  founderApprovedAt?: Prisma.SortOrder
+  founderApprovalNote?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
+  notifyOnPublish?: Prisma.SortOrder
+  notifiedAt?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
 }
 
 export type PostMinOrderByAggregateInput = {
@@ -413,8 +1090,3597 @@ export type PostMinOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  authorInstructorId?: Prisma.SortOrder
+  authorUserId?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
+  academyId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
+  testimonialId?: Prisma.SortOrder
+  subjectConsentAt?: Prisma.SortOrder
+  subjectConsentNote?: Prisma.SortOrder
+  featuredAt?: Prisma.SortOrder
+  featuredRank?: Prisma.SortOrder
+  coverAlt?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+  submittedAt?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  reviewedById?: Prisma.SortOrder
+  reviewNote?: Prisma.SortOrder
+  founderApprovedAt?: Prisma.SortOrder
+  founderApprovalNote?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
+  notifyOnPublish?: Prisma.SortOrder
+  notifiedAt?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
 }
 
+export type PostSumOrderByAggregateInput = {
+  featuredRank?: Prisma.SortOrder
+  readingMinutes?: Prisma.SortOrder
+}
+
+export type PostNullableScalarRelationFilter = {
+  is?: Prisma.PostWhereInput | null
+  isNot?: Prisma.PostWhereInput | null
+}
+
+export type PostScalarRelationFilter = {
+  is?: Prisma.PostWhereInput
+  isNot?: Prisma.PostWhereInput
+}
+
+export type PostCreateNestedManyWithoutAuthorUserInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAuthorUserInput, Prisma.PostUncheckedCreateWithoutAuthorUserInput> | Prisma.PostCreateWithoutAuthorUserInput[] | Prisma.PostUncheckedCreateWithoutAuthorUserInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAuthorUserInput | Prisma.PostCreateOrConnectWithoutAuthorUserInput[]
+  createMany?: Prisma.PostCreateManyAuthorUserInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCreatedByInput, Prisma.PostUncheckedCreateWithoutCreatedByInput> | Prisma.PostCreateWithoutCreatedByInput[] | Prisma.PostUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCreatedByInput | Prisma.PostCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.PostCreateManyCreatedByInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostCreateNestedManyWithoutUpdatedByInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutUpdatedByInput, Prisma.PostUncheckedCreateWithoutUpdatedByInput> | Prisma.PostCreateWithoutUpdatedByInput[] | Prisma.PostUncheckedCreateWithoutUpdatedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutUpdatedByInput | Prisma.PostCreateOrConnectWithoutUpdatedByInput[]
+  createMany?: Prisma.PostCreateManyUpdatedByInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostCreateNestedManyWithoutReviewedByInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutReviewedByInput, Prisma.PostUncheckedCreateWithoutReviewedByInput> | Prisma.PostCreateWithoutReviewedByInput[] | Prisma.PostUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutReviewedByInput | Prisma.PostCreateOrConnectWithoutReviewedByInput[]
+  createMany?: Prisma.PostCreateManyReviewedByInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutAuthorUserInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAuthorUserInput, Prisma.PostUncheckedCreateWithoutAuthorUserInput> | Prisma.PostCreateWithoutAuthorUserInput[] | Prisma.PostUncheckedCreateWithoutAuthorUserInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAuthorUserInput | Prisma.PostCreateOrConnectWithoutAuthorUserInput[]
+  createMany?: Prisma.PostCreateManyAuthorUserInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCreatedByInput, Prisma.PostUncheckedCreateWithoutCreatedByInput> | Prisma.PostCreateWithoutCreatedByInput[] | Prisma.PostUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCreatedByInput | Prisma.PostCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.PostCreateManyCreatedByInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutUpdatedByInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutUpdatedByInput, Prisma.PostUncheckedCreateWithoutUpdatedByInput> | Prisma.PostCreateWithoutUpdatedByInput[] | Prisma.PostUncheckedCreateWithoutUpdatedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutUpdatedByInput | Prisma.PostCreateOrConnectWithoutUpdatedByInput[]
+  createMany?: Prisma.PostCreateManyUpdatedByInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutReviewedByInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutReviewedByInput, Prisma.PostUncheckedCreateWithoutReviewedByInput> | Prisma.PostCreateWithoutReviewedByInput[] | Prisma.PostUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutReviewedByInput | Prisma.PostCreateOrConnectWithoutReviewedByInput[]
+  createMany?: Prisma.PostCreateManyReviewedByInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUpdateManyWithoutAuthorUserNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAuthorUserInput, Prisma.PostUncheckedCreateWithoutAuthorUserInput> | Prisma.PostCreateWithoutAuthorUserInput[] | Prisma.PostUncheckedCreateWithoutAuthorUserInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAuthorUserInput | Prisma.PostCreateOrConnectWithoutAuthorUserInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutAuthorUserInput | Prisma.PostUpsertWithWhereUniqueWithoutAuthorUserInput[]
+  createMany?: Prisma.PostCreateManyAuthorUserInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutAuthorUserInput | Prisma.PostUpdateWithWhereUniqueWithoutAuthorUserInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutAuthorUserInput | Prisma.PostUpdateManyWithWhereWithoutAuthorUserInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCreatedByInput, Prisma.PostUncheckedCreateWithoutCreatedByInput> | Prisma.PostCreateWithoutCreatedByInput[] | Prisma.PostUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCreatedByInput | Prisma.PostCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.PostUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.PostCreateManyCreatedByInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.PostUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutCreatedByInput | Prisma.PostUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUpdateManyWithoutUpdatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutUpdatedByInput, Prisma.PostUncheckedCreateWithoutUpdatedByInput> | Prisma.PostCreateWithoutUpdatedByInput[] | Prisma.PostUncheckedCreateWithoutUpdatedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutUpdatedByInput | Prisma.PostCreateOrConnectWithoutUpdatedByInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutUpdatedByInput | Prisma.PostUpsertWithWhereUniqueWithoutUpdatedByInput[]
+  createMany?: Prisma.PostCreateManyUpdatedByInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutUpdatedByInput | Prisma.PostUpdateWithWhereUniqueWithoutUpdatedByInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutUpdatedByInput | Prisma.PostUpdateManyWithWhereWithoutUpdatedByInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUpdateManyWithoutReviewedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutReviewedByInput, Prisma.PostUncheckedCreateWithoutReviewedByInput> | Prisma.PostCreateWithoutReviewedByInput[] | Prisma.PostUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutReviewedByInput | Prisma.PostCreateOrConnectWithoutReviewedByInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutReviewedByInput | Prisma.PostUpsertWithWhereUniqueWithoutReviewedByInput[]
+  createMany?: Prisma.PostCreateManyReviewedByInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutReviewedByInput | Prisma.PostUpdateWithWhereUniqueWithoutReviewedByInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutReviewedByInput | Prisma.PostUpdateManyWithWhereWithoutReviewedByInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutAuthorUserNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAuthorUserInput, Prisma.PostUncheckedCreateWithoutAuthorUserInput> | Prisma.PostCreateWithoutAuthorUserInput[] | Prisma.PostUncheckedCreateWithoutAuthorUserInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAuthorUserInput | Prisma.PostCreateOrConnectWithoutAuthorUserInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutAuthorUserInput | Prisma.PostUpsertWithWhereUniqueWithoutAuthorUserInput[]
+  createMany?: Prisma.PostCreateManyAuthorUserInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutAuthorUserInput | Prisma.PostUpdateWithWhereUniqueWithoutAuthorUserInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutAuthorUserInput | Prisma.PostUpdateManyWithWhereWithoutAuthorUserInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCreatedByInput, Prisma.PostUncheckedCreateWithoutCreatedByInput> | Prisma.PostCreateWithoutCreatedByInput[] | Prisma.PostUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCreatedByInput | Prisma.PostCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.PostUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.PostCreateManyCreatedByInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.PostUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutCreatedByInput | Prisma.PostUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutUpdatedByInput, Prisma.PostUncheckedCreateWithoutUpdatedByInput> | Prisma.PostCreateWithoutUpdatedByInput[] | Prisma.PostUncheckedCreateWithoutUpdatedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutUpdatedByInput | Prisma.PostCreateOrConnectWithoutUpdatedByInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutUpdatedByInput | Prisma.PostUpsertWithWhereUniqueWithoutUpdatedByInput[]
+  createMany?: Prisma.PostCreateManyUpdatedByInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutUpdatedByInput | Prisma.PostUpdateWithWhereUniqueWithoutUpdatedByInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutUpdatedByInput | Prisma.PostUpdateManyWithWhereWithoutUpdatedByInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutReviewedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutReviewedByInput, Prisma.PostUncheckedCreateWithoutReviewedByInput> | Prisma.PostCreateWithoutReviewedByInput[] | Prisma.PostUncheckedCreateWithoutReviewedByInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutReviewedByInput | Prisma.PostCreateOrConnectWithoutReviewedByInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutReviewedByInput | Prisma.PostUpsertWithWhereUniqueWithoutReviewedByInput[]
+  createMany?: Prisma.PostCreateManyReviewedByInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutReviewedByInput | Prisma.PostUpdateWithWhereUniqueWithoutReviewedByInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutReviewedByInput | Prisma.PostUpdateManyWithWhereWithoutReviewedByInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostCreateNestedManyWithoutCourseInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCourseInput, Prisma.PostUncheckedCreateWithoutCourseInput> | Prisma.PostCreateWithoutCourseInput[] | Prisma.PostUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCourseInput | Prisma.PostCreateOrConnectWithoutCourseInput[]
+  createMany?: Prisma.PostCreateManyCourseInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutCourseInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCourseInput, Prisma.PostUncheckedCreateWithoutCourseInput> | Prisma.PostCreateWithoutCourseInput[] | Prisma.PostUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCourseInput | Prisma.PostCreateOrConnectWithoutCourseInput[]
+  createMany?: Prisma.PostCreateManyCourseInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUpdateManyWithoutCourseNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCourseInput, Prisma.PostUncheckedCreateWithoutCourseInput> | Prisma.PostCreateWithoutCourseInput[] | Prisma.PostUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCourseInput | Prisma.PostCreateOrConnectWithoutCourseInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutCourseInput | Prisma.PostUpsertWithWhereUniqueWithoutCourseInput[]
+  createMany?: Prisma.PostCreateManyCourseInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutCourseInput | Prisma.PostUpdateWithWhereUniqueWithoutCourseInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutCourseInput | Prisma.PostUpdateManyWithWhereWithoutCourseInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutCourseNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCourseInput, Prisma.PostUncheckedCreateWithoutCourseInput> | Prisma.PostCreateWithoutCourseInput[] | Prisma.PostUncheckedCreateWithoutCourseInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCourseInput | Prisma.PostCreateOrConnectWithoutCourseInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutCourseInput | Prisma.PostUpsertWithWhereUniqueWithoutCourseInput[]
+  createMany?: Prisma.PostCreateManyCourseInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutCourseInput | Prisma.PostUpdateWithWhereUniqueWithoutCourseInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutCourseInput | Prisma.PostUpdateManyWithWhereWithoutCourseInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type EnumPostKindFieldUpdateOperationsInput = {
+  set?: $Enums.PostKind
+}
+
+export type EnumPostStatusFieldUpdateOperationsInput = {
+  set?: $Enums.PostStatus
+}
+
+export type PostCreateNestedManyWithoutAuthorInstructorInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAuthorInstructorInput, Prisma.PostUncheckedCreateWithoutAuthorInstructorInput> | Prisma.PostCreateWithoutAuthorInstructorInput[] | Prisma.PostUncheckedCreateWithoutAuthorInstructorInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAuthorInstructorInput | Prisma.PostCreateOrConnectWithoutAuthorInstructorInput[]
+  createMany?: Prisma.PostCreateManyAuthorInstructorInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutAuthorInstructorInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAuthorInstructorInput, Prisma.PostUncheckedCreateWithoutAuthorInstructorInput> | Prisma.PostCreateWithoutAuthorInstructorInput[] | Prisma.PostUncheckedCreateWithoutAuthorInstructorInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAuthorInstructorInput | Prisma.PostCreateOrConnectWithoutAuthorInstructorInput[]
+  createMany?: Prisma.PostCreateManyAuthorInstructorInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUpdateManyWithoutAuthorInstructorNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAuthorInstructorInput, Prisma.PostUncheckedCreateWithoutAuthorInstructorInput> | Prisma.PostCreateWithoutAuthorInstructorInput[] | Prisma.PostUncheckedCreateWithoutAuthorInstructorInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAuthorInstructorInput | Prisma.PostCreateOrConnectWithoutAuthorInstructorInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutAuthorInstructorInput | Prisma.PostUpsertWithWhereUniqueWithoutAuthorInstructorInput[]
+  createMany?: Prisma.PostCreateManyAuthorInstructorInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutAuthorInstructorInput | Prisma.PostUpdateWithWhereUniqueWithoutAuthorInstructorInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutAuthorInstructorInput | Prisma.PostUpdateManyWithWhereWithoutAuthorInstructorInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAuthorInstructorInput, Prisma.PostUncheckedCreateWithoutAuthorInstructorInput> | Prisma.PostCreateWithoutAuthorInstructorInput[] | Prisma.PostUncheckedCreateWithoutAuthorInstructorInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAuthorInstructorInput | Prisma.PostCreateOrConnectWithoutAuthorInstructorInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutAuthorInstructorInput | Prisma.PostUpsertWithWhereUniqueWithoutAuthorInstructorInput[]
+  createMany?: Prisma.PostCreateManyAuthorInstructorInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutAuthorInstructorInput | Prisma.PostUpdateWithWhereUniqueWithoutAuthorInstructorInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutAuthorInstructorInput | Prisma.PostUpdateManyWithWhereWithoutAuthorInstructorInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostCreateNestedOneWithoutTestimonialInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutTestimonialInput, Prisma.PostUncheckedCreateWithoutTestimonialInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutTestimonialInput
+  connect?: Prisma.PostWhereUniqueInput
+}
+
+export type PostUncheckedCreateNestedOneWithoutTestimonialInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutTestimonialInput, Prisma.PostUncheckedCreateWithoutTestimonialInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutTestimonialInput
+  connect?: Prisma.PostWhereUniqueInput
+}
+
+export type PostUpdateOneWithoutTestimonialNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutTestimonialInput, Prisma.PostUncheckedCreateWithoutTestimonialInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutTestimonialInput
+  upsert?: Prisma.PostUpsertWithoutTestimonialInput
+  disconnect?: Prisma.PostWhereInput | boolean
+  delete?: Prisma.PostWhereInput | boolean
+  connect?: Prisma.PostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PostUpdateToOneWithWhereWithoutTestimonialInput, Prisma.PostUpdateWithoutTestimonialInput>, Prisma.PostUncheckedUpdateWithoutTestimonialInput>
+}
+
+export type PostUncheckedUpdateOneWithoutTestimonialNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutTestimonialInput, Prisma.PostUncheckedCreateWithoutTestimonialInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutTestimonialInput
+  upsert?: Prisma.PostUpsertWithoutTestimonialInput
+  disconnect?: Prisma.PostWhereInput | boolean
+  delete?: Prisma.PostWhereInput | boolean
+  connect?: Prisma.PostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PostUpdateToOneWithWhereWithoutTestimonialInput, Prisma.PostUpdateWithoutTestimonialInput>, Prisma.PostUncheckedUpdateWithoutTestimonialInput>
+}
+
+export type PostCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAcademyInput, Prisma.PostUncheckedCreateWithoutAcademyInput> | Prisma.PostCreateWithoutAcademyInput[] | Prisma.PostUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAcademyInput | Prisma.PostCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.PostCreateManyAcademyInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutAcademyInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAcademyInput, Prisma.PostUncheckedCreateWithoutAcademyInput> | Prisma.PostCreateWithoutAcademyInput[] | Prisma.PostUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAcademyInput | Prisma.PostCreateOrConnectWithoutAcademyInput[]
+  createMany?: Prisma.PostCreateManyAcademyInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAcademyInput, Prisma.PostUncheckedCreateWithoutAcademyInput> | Prisma.PostCreateWithoutAcademyInput[] | Prisma.PostUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAcademyInput | Prisma.PostCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutAcademyInput | Prisma.PostUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.PostCreateManyAcademyInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutAcademyInput | Prisma.PostUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutAcademyInput | Prisma.PostUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutAcademyNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutAcademyInput, Prisma.PostUncheckedCreateWithoutAcademyInput> | Prisma.PostCreateWithoutAcademyInput[] | Prisma.PostUncheckedCreateWithoutAcademyInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutAcademyInput | Prisma.PostCreateOrConnectWithoutAcademyInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutAcademyInput | Prisma.PostUpsertWithWhereUniqueWithoutAcademyInput[]
+  createMany?: Prisma.PostCreateManyAcademyInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutAcademyInput | Prisma.PostUpdateWithWhereUniqueWithoutAcademyInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutAcademyInput | Prisma.PostUpdateManyWithWhereWithoutAcademyInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostCreateNestedManyWithoutEventInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutEventInput, Prisma.PostUncheckedCreateWithoutEventInput> | Prisma.PostCreateWithoutEventInput[] | Prisma.PostUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutEventInput | Prisma.PostCreateOrConnectWithoutEventInput[]
+  createMany?: Prisma.PostCreateManyEventInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutEventInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutEventInput, Prisma.PostUncheckedCreateWithoutEventInput> | Prisma.PostCreateWithoutEventInput[] | Prisma.PostUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutEventInput | Prisma.PostCreateOrConnectWithoutEventInput[]
+  createMany?: Prisma.PostCreateManyEventInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUpdateManyWithoutEventNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutEventInput, Prisma.PostUncheckedCreateWithoutEventInput> | Prisma.PostCreateWithoutEventInput[] | Prisma.PostUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutEventInput | Prisma.PostCreateOrConnectWithoutEventInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutEventInput | Prisma.PostUpsertWithWhereUniqueWithoutEventInput[]
+  createMany?: Prisma.PostCreateManyEventInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutEventInput | Prisma.PostUpdateWithWhereUniqueWithoutEventInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutEventInput | Prisma.PostUpdateManyWithWhereWithoutEventInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutEventNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutEventInput, Prisma.PostUncheckedCreateWithoutEventInput> | Prisma.PostCreateWithoutEventInput[] | Prisma.PostUncheckedCreateWithoutEventInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutEventInput | Prisma.PostCreateOrConnectWithoutEventInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutEventInput | Prisma.PostUpsertWithWhereUniqueWithoutEventInput[]
+  createMany?: Prisma.PostCreateManyEventInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutEventInput | Prisma.PostUpdateWithWhereUniqueWithoutEventInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutEventInput | Prisma.PostUpdateManyWithWhereWithoutEventInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostCreateNestedOneWithoutRevisionsInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutRevisionsInput, Prisma.PostUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutRevisionsInput
+  connect?: Prisma.PostWhereUniqueInput
+}
+
+export type PostUpdateOneRequiredWithoutRevisionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutRevisionsInput, Prisma.PostUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutRevisionsInput
+  upsert?: Prisma.PostUpsertWithoutRevisionsInput
+  connect?: Prisma.PostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PostUpdateToOneWithWhereWithoutRevisionsInput, Prisma.PostUpdateWithoutRevisionsInput>, Prisma.PostUncheckedUpdateWithoutRevisionsInput>
+}
+
+export type PostCreateNestedManyWithoutCategoryInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCategoryInput, Prisma.PostUncheckedCreateWithoutCategoryInput> | Prisma.PostCreateWithoutCategoryInput[] | Prisma.PostUncheckedCreateWithoutCategoryInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCategoryInput | Prisma.PostCreateOrConnectWithoutCategoryInput[]
+  createMany?: Prisma.PostCreateManyCategoryInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUncheckedCreateNestedManyWithoutCategoryInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCategoryInput, Prisma.PostUncheckedCreateWithoutCategoryInput> | Prisma.PostCreateWithoutCategoryInput[] | Prisma.PostUncheckedCreateWithoutCategoryInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCategoryInput | Prisma.PostCreateOrConnectWithoutCategoryInput[]
+  createMany?: Prisma.PostCreateManyCategoryInputEnvelope
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+}
+
+export type PostUpdateManyWithoutCategoryNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCategoryInput, Prisma.PostUncheckedCreateWithoutCategoryInput> | Prisma.PostCreateWithoutCategoryInput[] | Prisma.PostUncheckedCreateWithoutCategoryInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCategoryInput | Prisma.PostCreateOrConnectWithoutCategoryInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutCategoryInput | Prisma.PostUpsertWithWhereUniqueWithoutCategoryInput[]
+  createMany?: Prisma.PostCreateManyCategoryInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutCategoryInput | Prisma.PostUpdateWithWhereUniqueWithoutCategoryInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutCategoryInput | Prisma.PostUpdateManyWithWhereWithoutCategoryInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostUncheckedUpdateManyWithoutCategoryNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutCategoryInput, Prisma.PostUncheckedCreateWithoutCategoryInput> | Prisma.PostCreateWithoutCategoryInput[] | Prisma.PostUncheckedCreateWithoutCategoryInput[]
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutCategoryInput | Prisma.PostCreateOrConnectWithoutCategoryInput[]
+  upsert?: Prisma.PostUpsertWithWhereUniqueWithoutCategoryInput | Prisma.PostUpsertWithWhereUniqueWithoutCategoryInput[]
+  createMany?: Prisma.PostCreateManyCategoryInputEnvelope
+  set?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  disconnect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  delete?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  connect?: Prisma.PostWhereUniqueInput | Prisma.PostWhereUniqueInput[]
+  update?: Prisma.PostUpdateWithWhereUniqueWithoutCategoryInput | Prisma.PostUpdateWithWhereUniqueWithoutCategoryInput[]
+  updateMany?: Prisma.PostUpdateManyWithWhereWithoutCategoryInput | Prisma.PostUpdateManyWithWhereWithoutCategoryInput[]
+  deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+}
+
+export type PostCreateNestedOneWithoutTagsInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutTagsInput, Prisma.PostUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutTagsInput
+  connect?: Prisma.PostWhereUniqueInput
+}
+
+export type PostUpdateOneRequiredWithoutTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutTagsInput, Prisma.PostUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutTagsInput
+  upsert?: Prisma.PostUpsertWithoutTagsInput
+  connect?: Prisma.PostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PostUpdateToOneWithWhereWithoutTagsInput, Prisma.PostUpdateWithoutTagsInput>, Prisma.PostUncheckedUpdateWithoutTagsInput>
+}
+
+export type PostCreateWithoutAuthorUserInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutAuthorUserInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutAuthorUserInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutAuthorUserInput, Prisma.PostUncheckedCreateWithoutAuthorUserInput>
+}
+
+export type PostCreateManyAuthorUserInputEnvelope = {
+  data: Prisma.PostCreateManyAuthorUserInput | Prisma.PostCreateManyAuthorUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostCreateWithoutCreatedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutCreatedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutCreatedByInput, Prisma.PostUncheckedCreateWithoutCreatedByInput>
+}
+
+export type PostCreateManyCreatedByInputEnvelope = {
+  data: Prisma.PostCreateManyCreatedByInput | Prisma.PostCreateManyCreatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostCreateWithoutUpdatedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutUpdatedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutUpdatedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutUpdatedByInput, Prisma.PostUncheckedCreateWithoutUpdatedByInput>
+}
+
+export type PostCreateManyUpdatedByInputEnvelope = {
+  data: Prisma.PostCreateManyUpdatedByInput | Prisma.PostCreateManyUpdatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostCreateWithoutReviewedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutReviewedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutReviewedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutReviewedByInput, Prisma.PostUncheckedCreateWithoutReviewedByInput>
+}
+
+export type PostCreateManyReviewedByInputEnvelope = {
+  data: Prisma.PostCreateManyReviewedByInput | Prisma.PostCreateManyReviewedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostUpsertWithWhereUniqueWithoutAuthorUserInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutAuthorUserInput, Prisma.PostUncheckedUpdateWithoutAuthorUserInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutAuthorUserInput, Prisma.PostUncheckedCreateWithoutAuthorUserInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutAuthorUserInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutAuthorUserInput, Prisma.PostUncheckedUpdateWithoutAuthorUserInput>
+}
+
+export type PostUpdateManyWithWhereWithoutAuthorUserInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutAuthorUserInput>
+}
+
+export type PostScalarWhereInput = {
+  AND?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+  OR?: Prisma.PostScalarWhereInput[]
+  NOT?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
+  id?: Prisma.StringFilter<"Post"> | string
+  slug?: Prisma.StringFilter<"Post"> | string
+  title?: Prisma.StringFilter<"Post"> | string
+  excerpt?: Prisma.StringFilter<"Post"> | string
+  contentMd?: Prisma.StringFilter<"Post"> | string
+  coverImage?: Prisma.StringNullableFilter<"Post"> | string | null
+  authorName?: Prisma.StringFilter<"Post"> | string
+  publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  kind?: Prisma.EnumPostKindFilter<"Post"> | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
+  authorInstructorId?: Prisma.StringNullableFilter<"Post"> | string | null
+  authorUserId?: Prisma.StringNullableFilter<"Post"> | string | null
+  categoryId?: Prisma.StringNullableFilter<"Post"> | string | null
+  academyId?: Prisma.StringNullableFilter<"Post"> | string | null
+  courseId?: Prisma.StringNullableFilter<"Post"> | string | null
+  eventId?: Prisma.StringNullableFilter<"Post"> | string | null
+  testimonialId?: Prisma.StringNullableFilter<"Post"> | string | null
+  subjectConsentAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  subjectConsentNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  featuredAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  featuredRank?: Prisma.IntNullableFilter<"Post"> | number | null
+  coverAlt?: Prisma.StringNullableFilter<"Post"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"Post"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Post"> | string | null
+  readingMinutes?: Prisma.IntNullableFilter<"Post"> | number | null
+  submittedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewedById?: Prisma.StringNullableFilter<"Post"> | string | null
+  reviewNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  founderApprovedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  founderApprovalNote?: Prisma.StringNullableFilter<"Post"> | string | null
+  createdById?: Prisma.StringNullableFilter<"Post"> | string | null
+  updatedById?: Prisma.StringNullableFilter<"Post"> | string | null
+  notifyOnPublish?: Prisma.BoolFilter<"Post"> | boolean
+  notifiedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  isDemo?: Prisma.BoolFilter<"Post"> | boolean
+}
+
+export type PostUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutCreatedByInput, Prisma.PostUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutCreatedByInput, Prisma.PostUncheckedCreateWithoutCreatedByInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutCreatedByInput, Prisma.PostUncheckedUpdateWithoutCreatedByInput>
+}
+
+export type PostUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutCreatedByInput>
+}
+
+export type PostUpsertWithWhereUniqueWithoutUpdatedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutUpdatedByInput, Prisma.PostUncheckedUpdateWithoutUpdatedByInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutUpdatedByInput, Prisma.PostUncheckedCreateWithoutUpdatedByInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutUpdatedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutUpdatedByInput, Prisma.PostUncheckedUpdateWithoutUpdatedByInput>
+}
+
+export type PostUpdateManyWithWhereWithoutUpdatedByInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutUpdatedByInput>
+}
+
+export type PostUpsertWithWhereUniqueWithoutReviewedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutReviewedByInput, Prisma.PostUncheckedUpdateWithoutReviewedByInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutReviewedByInput, Prisma.PostUncheckedCreateWithoutReviewedByInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutReviewedByInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutReviewedByInput, Prisma.PostUncheckedUpdateWithoutReviewedByInput>
+}
+
+export type PostUpdateManyWithWhereWithoutReviewedByInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutReviewedByInput>
+}
+
+export type PostCreateWithoutCourseInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutCourseInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutCourseInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutCourseInput, Prisma.PostUncheckedCreateWithoutCourseInput>
+}
+
+export type PostCreateManyCourseInputEnvelope = {
+  data: Prisma.PostCreateManyCourseInput | Prisma.PostCreateManyCourseInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostUpsertWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutCourseInput, Prisma.PostUncheckedUpdateWithoutCourseInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutCourseInput, Prisma.PostUncheckedCreateWithoutCourseInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutCourseInput, Prisma.PostUncheckedUpdateWithoutCourseInput>
+}
+
+export type PostUpdateManyWithWhereWithoutCourseInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutCourseInput>
+}
+
+export type PostCreateWithoutAuthorInstructorInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutAuthorInstructorInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutAuthorInstructorInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutAuthorInstructorInput, Prisma.PostUncheckedCreateWithoutAuthorInstructorInput>
+}
+
+export type PostCreateManyAuthorInstructorInputEnvelope = {
+  data: Prisma.PostCreateManyAuthorInstructorInput | Prisma.PostCreateManyAuthorInstructorInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostUpsertWithWhereUniqueWithoutAuthorInstructorInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutAuthorInstructorInput, Prisma.PostUncheckedUpdateWithoutAuthorInstructorInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutAuthorInstructorInput, Prisma.PostUncheckedCreateWithoutAuthorInstructorInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutAuthorInstructorInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutAuthorInstructorInput, Prisma.PostUncheckedUpdateWithoutAuthorInstructorInput>
+}
+
+export type PostUpdateManyWithWhereWithoutAuthorInstructorInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorInput>
+}
+
+export type PostCreateWithoutTestimonialInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutTestimonialInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutTestimonialInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutTestimonialInput, Prisma.PostUncheckedCreateWithoutTestimonialInput>
+}
+
+export type PostUpsertWithoutTestimonialInput = {
+  update: Prisma.XOR<Prisma.PostUpdateWithoutTestimonialInput, Prisma.PostUncheckedUpdateWithoutTestimonialInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutTestimonialInput, Prisma.PostUncheckedCreateWithoutTestimonialInput>
+  where?: Prisma.PostWhereInput
+}
+
+export type PostUpdateToOneWithWhereWithoutTestimonialInput = {
+  where?: Prisma.PostWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutTestimonialInput, Prisma.PostUncheckedUpdateWithoutTestimonialInput>
+}
+
+export type PostUpdateWithoutTestimonialInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutTestimonialInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutAcademyInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutAcademyInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutAcademyInput, Prisma.PostUncheckedCreateWithoutAcademyInput>
+}
+
+export type PostCreateManyAcademyInputEnvelope = {
+  data: Prisma.PostCreateManyAcademyInput | Prisma.PostCreateManyAcademyInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostUpsertWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutAcademyInput, Prisma.PostUncheckedUpdateWithoutAcademyInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutAcademyInput, Prisma.PostUncheckedCreateWithoutAcademyInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutAcademyInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutAcademyInput, Prisma.PostUncheckedUpdateWithoutAcademyInput>
+}
+
+export type PostUpdateManyWithWhereWithoutAcademyInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutAcademyInput>
+}
+
+export type PostCreateWithoutEventInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutEventInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutEventInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutEventInput, Prisma.PostUncheckedCreateWithoutEventInput>
+}
+
+export type PostCreateManyEventInputEnvelope = {
+  data: Prisma.PostCreateManyEventInput | Prisma.PostCreateManyEventInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostUpsertWithWhereUniqueWithoutEventInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutEventInput, Prisma.PostUncheckedUpdateWithoutEventInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutEventInput, Prisma.PostUncheckedCreateWithoutEventInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutEventInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutEventInput, Prisma.PostUncheckedUpdateWithoutEventInput>
+}
+
+export type PostUpdateManyWithWhereWithoutEventInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutEventInput>
+}
+
+export type PostCreateWithoutRevisionsInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutRevisionsInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutRevisionsInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutRevisionsInput, Prisma.PostUncheckedCreateWithoutRevisionsInput>
+}
+
+export type PostUpsertWithoutRevisionsInput = {
+  update: Prisma.XOR<Prisma.PostUpdateWithoutRevisionsInput, Prisma.PostUncheckedUpdateWithoutRevisionsInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutRevisionsInput, Prisma.PostUncheckedCreateWithoutRevisionsInput>
+  where?: Prisma.PostWhereInput
+}
+
+export type PostUpdateToOneWithWhereWithoutRevisionsInput = {
+  where?: Prisma.PostWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutRevisionsInput, Prisma.PostUncheckedUpdateWithoutRevisionsInput>
+}
+
+export type PostUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostCreateWithoutCategoryInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutCategoryInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+  tags?: Prisma.PostTagUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutCategoryInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutCategoryInput, Prisma.PostUncheckedCreateWithoutCategoryInput>
+}
+
+export type PostCreateManyCategoryInputEnvelope = {
+  data: Prisma.PostCreateManyCategoryInput | Prisma.PostCreateManyCategoryInput[]
+  skipDuplicates?: boolean
+}
+
+export type PostUpsertWithWhereUniqueWithoutCategoryInput = {
+  where: Prisma.PostWhereUniqueInput
+  update: Prisma.XOR<Prisma.PostUpdateWithoutCategoryInput, Prisma.PostUncheckedUpdateWithoutCategoryInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutCategoryInput, Prisma.PostUncheckedCreateWithoutCategoryInput>
+}
+
+export type PostUpdateWithWhereUniqueWithoutCategoryInput = {
+  where: Prisma.PostWhereUniqueInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutCategoryInput, Prisma.PostUncheckedUpdateWithoutCategoryInput>
+}
+
+export type PostUpdateManyWithWhereWithoutCategoryInput = {
+  where: Prisma.PostScalarWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateManyMutationInput, Prisma.PostUncheckedUpdateManyWithoutCategoryInput>
+}
+
+export type PostCreateWithoutTagsInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  authorInstructor?: Prisma.InstructorCreateNestedOneWithoutPostsInput
+  authorUser?: Prisma.UserCreateNestedOneWithoutPostsAuthoredInput
+  category?: Prisma.PostCategoryCreateNestedOneWithoutPostsInput
+  academy?: Prisma.AcademyCreateNestedOneWithoutPostsInput
+  course?: Prisma.CourseCreateNestedOneWithoutPostsInput
+  event?: Prisma.LiveEventCreateNestedOneWithoutPostsInput
+  testimonial?: Prisma.TestimonialCreateNestedOneWithoutStoryInput
+  reviewedBy?: Prisma.UserCreateNestedOneWithoutPostsReviewedInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutPostsCreatedInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutPostsUpdatedInput
+  revisions?: Prisma.PostRevisionCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutTagsInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+  revisions?: Prisma.PostRevisionUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutTagsInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutTagsInput, Prisma.PostUncheckedCreateWithoutTagsInput>
+}
+
+export type PostUpsertWithoutTagsInput = {
+  update: Prisma.XOR<Prisma.PostUpdateWithoutTagsInput, Prisma.PostUncheckedUpdateWithoutTagsInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutTagsInput, Prisma.PostUncheckedCreateWithoutTagsInput>
+  where?: Prisma.PostWhereInput
+}
+
+export type PostUpdateToOneWithWhereWithoutTagsInput = {
+  where?: Prisma.PostWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutTagsInput, Prisma.PostUncheckedUpdateWithoutTagsInput>
+}
+
+export type PostUpdateWithoutTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostCreateManyAuthorUserInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostCreateManyCreatedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostCreateManyUpdatedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostCreateManyReviewedByInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostUpdateWithoutAuthorUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutAuthorUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutAuthorUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostUpdateWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostUpdateWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutReviewedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostCreateManyCourseInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostUpdateWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutCourseInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostCreateManyAuthorInstructorInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostUpdateWithoutAuthorInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutAuthorInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutAuthorInstructorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostCreateManyAcademyInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutAcademyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostCreateManyEventInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  categoryId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostUpdateWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  category?: Prisma.PostCategoryUpdateOneWithoutPostsNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutEventInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PostCreateManyCategoryInput = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  contentMd: string
+  coverImage?: string | null
+  authorName?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  kind?: $Enums.PostKind
+  status?: $Enums.PostStatus
+  authorInstructorId?: string | null
+  authorUserId?: string | null
+  academyId?: string | null
+  courseId?: string | null
+  eventId?: string | null
+  testimonialId?: string | null
+  subjectConsentAt?: Date | string | null
+  subjectConsentNote?: string | null
+  featuredAt?: Date | string | null
+  featuredRank?: number | null
+  coverAlt?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  readingMinutes?: number | null
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  reviewedById?: string | null
+  reviewNote?: string | null
+  founderApprovedAt?: Date | string | null
+  founderApprovalNote?: string | null
+  createdById?: string | null
+  updatedById?: string | null
+  notifyOnPublish?: boolean
+  notifiedAt?: Date | string | null
+  isDemo?: boolean
+}
+
+export type PostUpdateWithoutCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  authorInstructor?: Prisma.InstructorUpdateOneWithoutPostsNestedInput
+  authorUser?: Prisma.UserUpdateOneWithoutPostsAuthoredNestedInput
+  academy?: Prisma.AcademyUpdateOneWithoutPostsNestedInput
+  course?: Prisma.CourseUpdateOneWithoutPostsNestedInput
+  event?: Prisma.LiveEventUpdateOneWithoutPostsNestedInput
+  testimonial?: Prisma.TestimonialUpdateOneWithoutStoryNestedInput
+  reviewedBy?: Prisma.UserUpdateOneWithoutPostsReviewedNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutPostsCreatedNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutPostsUpdatedNestedInput
+  revisions?: Prisma.PostRevisionUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  revisions?: Prisma.PostRevisionUncheckedUpdateManyWithoutPostNestedInput
+  tags?: Prisma.PostTagUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateManyWithoutCategoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorName?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  kind?: Prisma.EnumPostKindFieldUpdateOperationsInput | $Enums.PostKind
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  authorInstructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  testimonialId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectConsentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjectConsentNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  featuredRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  founderApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  founderApprovalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifyOnPublish?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+
+/**
+ * Count Type PostCountOutputType
+ */
+
+export type PostCountOutputType = {
+  revisions: number
+  tags: number
+}
+
+export type PostCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  revisions?: boolean | PostCountOutputTypeCountRevisionsArgs
+  tags?: boolean | PostCountOutputTypeCountTagsArgs
+}
+
+/**
+ * PostCountOutputType without action
+ */
+export type PostCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostCountOutputType
+   */
+  select?: Prisma.PostCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PostCountOutputType without action
+ */
+export type PostCountOutputTypeCountRevisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostRevisionWhereInput
+}
+
+/**
+ * PostCountOutputType without action
+ */
+export type PostCountOutputTypeCountTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostTagWhereInput
+}
 
 
 export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -428,6 +4694,47 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   publishedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  kind?: boolean
+  status?: boolean
+  authorInstructorId?: boolean
+  authorUserId?: boolean
+  categoryId?: boolean
+  academyId?: boolean
+  courseId?: boolean
+  eventId?: boolean
+  testimonialId?: boolean
+  subjectConsentAt?: boolean
+  subjectConsentNote?: boolean
+  featuredAt?: boolean
+  featuredRank?: boolean
+  coverAlt?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  readingMinutes?: boolean
+  submittedAt?: boolean
+  reviewedAt?: boolean
+  reviewedById?: boolean
+  reviewNote?: boolean
+  founderApprovedAt?: boolean
+  founderApprovalNote?: boolean
+  createdById?: boolean
+  updatedById?: boolean
+  notifyOnPublish?: boolean
+  notifiedAt?: boolean
+  isDemo?: boolean
+  authorInstructor?: boolean | Prisma.Post$authorInstructorArgs<ExtArgs>
+  authorUser?: boolean | Prisma.Post$authorUserArgs<ExtArgs>
+  category?: boolean | Prisma.Post$categoryArgs<ExtArgs>
+  academy?: boolean | Prisma.Post$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Post$courseArgs<ExtArgs>
+  event?: boolean | Prisma.Post$eventArgs<ExtArgs>
+  testimonial?: boolean | Prisma.Post$testimonialArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Post$reviewedByArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Post$createdByArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Post$updatedByArgs<ExtArgs>
+  revisions?: boolean | Prisma.Post$revisionsArgs<ExtArgs>
+  tags?: boolean | Prisma.Post$tagsArgs<ExtArgs>
+  _count?: boolean | Prisma.PostCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
 export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -441,6 +4748,44 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   publishedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  kind?: boolean
+  status?: boolean
+  authorInstructorId?: boolean
+  authorUserId?: boolean
+  categoryId?: boolean
+  academyId?: boolean
+  courseId?: boolean
+  eventId?: boolean
+  testimonialId?: boolean
+  subjectConsentAt?: boolean
+  subjectConsentNote?: boolean
+  featuredAt?: boolean
+  featuredRank?: boolean
+  coverAlt?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  readingMinutes?: boolean
+  submittedAt?: boolean
+  reviewedAt?: boolean
+  reviewedById?: boolean
+  reviewNote?: boolean
+  founderApprovedAt?: boolean
+  founderApprovalNote?: boolean
+  createdById?: boolean
+  updatedById?: boolean
+  notifyOnPublish?: boolean
+  notifiedAt?: boolean
+  isDemo?: boolean
+  authorInstructor?: boolean | Prisma.Post$authorInstructorArgs<ExtArgs>
+  authorUser?: boolean | Prisma.Post$authorUserArgs<ExtArgs>
+  category?: boolean | Prisma.Post$categoryArgs<ExtArgs>
+  academy?: boolean | Prisma.Post$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Post$courseArgs<ExtArgs>
+  event?: boolean | Prisma.Post$eventArgs<ExtArgs>
+  testimonial?: boolean | Prisma.Post$testimonialArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Post$reviewedByArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Post$createdByArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Post$updatedByArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
 export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -454,6 +4799,44 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   publishedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  kind?: boolean
+  status?: boolean
+  authorInstructorId?: boolean
+  authorUserId?: boolean
+  categoryId?: boolean
+  academyId?: boolean
+  courseId?: boolean
+  eventId?: boolean
+  testimonialId?: boolean
+  subjectConsentAt?: boolean
+  subjectConsentNote?: boolean
+  featuredAt?: boolean
+  featuredRank?: boolean
+  coverAlt?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  readingMinutes?: boolean
+  submittedAt?: boolean
+  reviewedAt?: boolean
+  reviewedById?: boolean
+  reviewNote?: boolean
+  founderApprovedAt?: boolean
+  founderApprovalNote?: boolean
+  createdById?: boolean
+  updatedById?: boolean
+  notifyOnPublish?: boolean
+  notifiedAt?: boolean
+  isDemo?: boolean
+  authorInstructor?: boolean | Prisma.Post$authorInstructorArgs<ExtArgs>
+  authorUser?: boolean | Prisma.Post$authorUserArgs<ExtArgs>
+  category?: boolean | Prisma.Post$categoryArgs<ExtArgs>
+  academy?: boolean | Prisma.Post$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Post$courseArgs<ExtArgs>
+  event?: boolean | Prisma.Post$eventArgs<ExtArgs>
+  testimonial?: boolean | Prisma.Post$testimonialArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Post$reviewedByArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Post$createdByArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Post$updatedByArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
 export type PostSelectScalar = {
@@ -467,13 +4850,93 @@ export type PostSelectScalar = {
   publishedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  kind?: boolean
+  status?: boolean
+  authorInstructorId?: boolean
+  authorUserId?: boolean
+  categoryId?: boolean
+  academyId?: boolean
+  courseId?: boolean
+  eventId?: boolean
+  testimonialId?: boolean
+  subjectConsentAt?: boolean
+  subjectConsentNote?: boolean
+  featuredAt?: boolean
+  featuredRank?: boolean
+  coverAlt?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  readingMinutes?: boolean
+  submittedAt?: boolean
+  reviewedAt?: boolean
+  reviewedById?: boolean
+  reviewNote?: boolean
+  founderApprovedAt?: boolean
+  founderApprovalNote?: boolean
+  createdById?: boolean
+  updatedById?: boolean
+  notifyOnPublish?: boolean
+  notifiedAt?: boolean
+  isDemo?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "excerpt" | "contentMd" | "coverImage" | "authorName" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "excerpt" | "contentMd" | "coverImage" | "authorName" | "publishedAt" | "createdAt" | "updatedAt" | "kind" | "status" | "authorInstructorId" | "authorUserId" | "categoryId" | "academyId" | "courseId" | "eventId" | "testimonialId" | "subjectConsentAt" | "subjectConsentNote" | "featuredAt" | "featuredRank" | "coverAlt" | "seoTitle" | "seoDescription" | "readingMinutes" | "submittedAt" | "reviewedAt" | "reviewedById" | "reviewNote" | "founderApprovedAt" | "founderApprovalNote" | "createdById" | "updatedById" | "notifyOnPublish" | "notifiedAt" | "isDemo", ExtArgs["result"]["post"]>
+export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  authorInstructor?: boolean | Prisma.Post$authorInstructorArgs<ExtArgs>
+  authorUser?: boolean | Prisma.Post$authorUserArgs<ExtArgs>
+  category?: boolean | Prisma.Post$categoryArgs<ExtArgs>
+  academy?: boolean | Prisma.Post$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Post$courseArgs<ExtArgs>
+  event?: boolean | Prisma.Post$eventArgs<ExtArgs>
+  testimonial?: boolean | Prisma.Post$testimonialArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Post$reviewedByArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Post$createdByArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Post$updatedByArgs<ExtArgs>
+  revisions?: boolean | Prisma.Post$revisionsArgs<ExtArgs>
+  tags?: boolean | Prisma.Post$tagsArgs<ExtArgs>
+  _count?: boolean | Prisma.PostCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type PostIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  authorInstructor?: boolean | Prisma.Post$authorInstructorArgs<ExtArgs>
+  authorUser?: boolean | Prisma.Post$authorUserArgs<ExtArgs>
+  category?: boolean | Prisma.Post$categoryArgs<ExtArgs>
+  academy?: boolean | Prisma.Post$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Post$courseArgs<ExtArgs>
+  event?: boolean | Prisma.Post$eventArgs<ExtArgs>
+  testimonial?: boolean | Prisma.Post$testimonialArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Post$reviewedByArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Post$createdByArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Post$updatedByArgs<ExtArgs>
+}
+export type PostIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  authorInstructor?: boolean | Prisma.Post$authorInstructorArgs<ExtArgs>
+  authorUser?: boolean | Prisma.Post$authorUserArgs<ExtArgs>
+  category?: boolean | Prisma.Post$categoryArgs<ExtArgs>
+  academy?: boolean | Prisma.Post$academyArgs<ExtArgs>
+  course?: boolean | Prisma.Post$courseArgs<ExtArgs>
+  event?: boolean | Prisma.Post$eventArgs<ExtArgs>
+  testimonial?: boolean | Prisma.Post$testimonialArgs<ExtArgs>
+  reviewedBy?: boolean | Prisma.Post$reviewedByArgs<ExtArgs>
+  createdBy?: boolean | Prisma.Post$createdByArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Post$updatedByArgs<ExtArgs>
+}
 
 export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Post"
-  objects: {}
+  objects: {
+    authorInstructor: Prisma.$InstructorPayload<ExtArgs> | null
+    authorUser: Prisma.$UserPayload<ExtArgs> | null
+    category: Prisma.$PostCategoryPayload<ExtArgs> | null
+    academy: Prisma.$AcademyPayload<ExtArgs> | null
+    course: Prisma.$CoursePayload<ExtArgs> | null
+    event: Prisma.$LiveEventPayload<ExtArgs> | null
+    testimonial: Prisma.$TestimonialPayload<ExtArgs> | null
+    reviewedBy: Prisma.$UserPayload<ExtArgs> | null
+    createdBy: Prisma.$UserPayload<ExtArgs> | null
+    updatedBy: Prisma.$UserPayload<ExtArgs> | null
+    revisions: Prisma.$PostRevisionPayload<ExtArgs>[]
+    tags: Prisma.$PostTagPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     slug: string
@@ -485,6 +4948,64 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     publishedAt: Date | null
     createdAt: Date
     updatedAt: Date
+    kind: $Enums.PostKind
+    /**
+     * Live when SCHEDULED or PUBLISHED and publishedAt <= now(). Backfilled from publishedAt.
+     */
+    status: $Enums.PostStatus
+    /**
+     * Byline: an expert profile or a staff member. authorName stays the display fallback.
+     */
+    authorInstructorId: string | null
+    authorUserId: string | null
+    categoryId: string | null
+    academyId: string | null
+    courseId: string | null
+    /**
+     * EVENT_RECAP posts.
+     */
+    eventId: string | null
+    /**
+     * SUCCESS_STORY posts need a consented Testimonial (CHECK while SCHEDULED or PUBLISHED).
+     */
+    testimonialId: string | null
+    /**
+     * INTERVIEW posts: when and how the subject agreed.
+     */
+    subjectConsentAt: Date | null
+    subjectConsentNote: string | null
+    featuredAt: Date | null
+    featuredRank: number | null
+    /**
+     * Required when there is a cover image.
+     */
+    coverAlt: string | null
+    seoTitle: string | null
+    seoDescription: string | null
+    readingMinutes: number | null
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    reviewedById: string | null
+    /**
+     * Shown to the author.
+     */
+    reviewNote: string | null
+    /**
+     * FOUNDER_NOTE posts, and announcements signed by the founder, need the founder's recorded approval.
+     */
+    founderApprovedAt: Date | null
+    founderApprovalNote: string | null
+    createdById: string | null
+    updatedById: string | null
+    /**
+     * Members subscribed to editorial.post hear once, when it goes live.
+     */
+    notifyOnPublish: boolean
+    notifiedAt: Date | null
+    /**
+     * Created by the dev-only demo seed. Never true in production; publicWhere.post() leaves it out.
+     */
+    isDemo: boolean
   }, ExtArgs["result"]["post"]>
   composites: {}
 }
@@ -879,6 +5400,18 @@ readonly fields: PostFieldRefs;
  */
 export interface Prisma__PostClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  authorInstructor<T extends Prisma.Post$authorInstructorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$authorInstructorArgs<ExtArgs>>): Prisma.Prisma__InstructorClient<runtime.Types.Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  authorUser<T extends Prisma.Post$authorUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$authorUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  category<T extends Prisma.Post$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$categoryArgs<ExtArgs>>): Prisma.Prisma__PostCategoryClient<runtime.Types.Result.GetResult<Prisma.$PostCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  academy<T extends Prisma.Post$academyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$academyArgs<ExtArgs>>): Prisma.Prisma__AcademyClient<runtime.Types.Result.GetResult<Prisma.$AcademyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  course<T extends Prisma.Post$courseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$courseArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  event<T extends Prisma.Post$eventArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$eventArgs<ExtArgs>>): Prisma.Prisma__LiveEventClient<runtime.Types.Result.GetResult<Prisma.$LiveEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  testimonial<T extends Prisma.Post$testimonialArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$testimonialArgs<ExtArgs>>): Prisma.Prisma__TestimonialClient<runtime.Types.Result.GetResult<Prisma.$TestimonialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  reviewedBy<T extends Prisma.Post$reviewedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$reviewedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  createdBy<T extends Prisma.Post$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  updatedBy<T extends Prisma.Post$updatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$updatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  revisions<T extends Prisma.Post$revisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$revisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostRevisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tags<T extends Prisma.Post$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -918,6 +5451,34 @@ export interface PostFieldRefs {
   readonly publishedAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly kind: Prisma.FieldRef<"Post", 'PostKind'>
+  readonly status: Prisma.FieldRef<"Post", 'PostStatus'>
+  readonly authorInstructorId: Prisma.FieldRef<"Post", 'String'>
+  readonly authorUserId: Prisma.FieldRef<"Post", 'String'>
+  readonly categoryId: Prisma.FieldRef<"Post", 'String'>
+  readonly academyId: Prisma.FieldRef<"Post", 'String'>
+  readonly courseId: Prisma.FieldRef<"Post", 'String'>
+  readonly eventId: Prisma.FieldRef<"Post", 'String'>
+  readonly testimonialId: Prisma.FieldRef<"Post", 'String'>
+  readonly subjectConsentAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly subjectConsentNote: Prisma.FieldRef<"Post", 'String'>
+  readonly featuredAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly featuredRank: Prisma.FieldRef<"Post", 'Int'>
+  readonly coverAlt: Prisma.FieldRef<"Post", 'String'>
+  readonly seoTitle: Prisma.FieldRef<"Post", 'String'>
+  readonly seoDescription: Prisma.FieldRef<"Post", 'String'>
+  readonly readingMinutes: Prisma.FieldRef<"Post", 'Int'>
+  readonly submittedAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly reviewedAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly reviewedById: Prisma.FieldRef<"Post", 'String'>
+  readonly reviewNote: Prisma.FieldRef<"Post", 'String'>
+  readonly founderApprovedAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly founderApprovalNote: Prisma.FieldRef<"Post", 'String'>
+  readonly createdById: Prisma.FieldRef<"Post", 'String'>
+  readonly updatedById: Prisma.FieldRef<"Post", 'String'>
+  readonly notifyOnPublish: Prisma.FieldRef<"Post", 'Boolean'>
+  readonly notifiedAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly isDemo: Prisma.FieldRef<"Post", 'Boolean'>
 }
     
 
@@ -934,6 +5495,10 @@ export type PostFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Post
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
   /**
    * Filter, which Post to fetch.
    */
@@ -953,6 +5518,10 @@ export type PostFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  /**
    * Filter, which Post to fetch.
    */
   where: Prisma.PostWhereUniqueInput
@@ -970,6 +5539,10 @@ export type PostFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Post
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
   /**
    * Filter, which Post to fetch.
    */
@@ -1019,6 +5592,10 @@ export type PostFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  /**
    * Filter, which Post to fetch.
    */
   where?: Prisma.PostWhereInput
@@ -1067,6 +5644,10 @@ export type PostFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  /**
    * Filter, which Posts to fetch.
    */
   where?: Prisma.PostWhereInput
@@ -1110,6 +5691,10 @@ export type PostCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  /**
    * The data needed to create a Post.
    */
   data: Prisma.XOR<Prisma.PostCreateInput, Prisma.PostUncheckedCreateInput>
@@ -1143,6 +5728,10 @@ export type PostCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.PostCreateManyInput | Prisma.PostCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1157,6 +5746,10 @@ export type PostUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the Post
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
   /**
    * The data needed to update a Post.
    */
@@ -1209,6 +5802,10 @@ export type PostUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Posts to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1223,6 +5820,10 @@ export type PostUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the Post
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
   /**
    * The filter to search for the Post to update in case it exists.
    */
@@ -1250,6 +5851,10 @@ export type PostDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  /**
    * Filter which Post to delete.
    */
   where: Prisma.PostWhereUniqueInput
@@ -1270,6 +5875,244 @@ export type PostDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * Post.authorInstructor
+ */
+export type Post$authorInstructorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Instructor
+   */
+  select?: Prisma.InstructorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Instructor
+   */
+  omit?: Prisma.InstructorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstructorInclude<ExtArgs> | null
+  where?: Prisma.InstructorWhereInput
+}
+
+/**
+ * Post.authorUser
+ */
+export type Post$authorUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Post.category
+ */
+export type Post$categoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostCategory
+   */
+  select?: Prisma.PostCategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PostCategory
+   */
+  omit?: Prisma.PostCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostCategoryInclude<ExtArgs> | null
+  where?: Prisma.PostCategoryWhereInput
+}
+
+/**
+ * Post.academy
+ */
+export type Post$academyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Academy
+   */
+  select?: Prisma.AcademySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Academy
+   */
+  omit?: Prisma.AcademyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademyInclude<ExtArgs> | null
+  where?: Prisma.AcademyWhereInput
+}
+
+/**
+ * Post.course
+ */
+export type Post$courseArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Course
+   */
+  select?: Prisma.CourseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Course
+   */
+  omit?: Prisma.CourseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseInclude<ExtArgs> | null
+  where?: Prisma.CourseWhereInput
+}
+
+/**
+ * Post.event
+ */
+export type Post$eventArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LiveEvent
+   */
+  select?: Prisma.LiveEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LiveEvent
+   */
+  omit?: Prisma.LiveEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LiveEventInclude<ExtArgs> | null
+  where?: Prisma.LiveEventWhereInput
+}
+
+/**
+ * Post.testimonial
+ */
+export type Post$testimonialArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Testimonial
+   */
+  select?: Prisma.TestimonialSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Testimonial
+   */
+  omit?: Prisma.TestimonialOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TestimonialInclude<ExtArgs> | null
+  where?: Prisma.TestimonialWhereInput
+}
+
+/**
+ * Post.reviewedBy
+ */
+export type Post$reviewedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Post.createdBy
+ */
+export type Post$createdByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Post.updatedBy
+ */
+export type Post$updatedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Post.revisions
+ */
+export type Post$revisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostRevision
+   */
+  select?: Prisma.PostRevisionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PostRevision
+   */
+  omit?: Prisma.PostRevisionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostRevisionInclude<ExtArgs> | null
+  where?: Prisma.PostRevisionWhereInput
+  orderBy?: Prisma.PostRevisionOrderByWithRelationInput | Prisma.PostRevisionOrderByWithRelationInput[]
+  cursor?: Prisma.PostRevisionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostRevisionScalarFieldEnum | Prisma.PostRevisionScalarFieldEnum[]
+}
+
+/**
+ * Post.tags
+ */
+export type Post$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostTag
+   */
+  select?: Prisma.PostTagSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PostTag
+   */
+  omit?: Prisma.PostTagOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostTagInclude<ExtArgs> | null
+  where?: Prisma.PostTagWhereInput
+  orderBy?: Prisma.PostTagOrderByWithRelationInput | Prisma.PostTagOrderByWithRelationInput[]
+  cursor?: Prisma.PostTagWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostTagScalarFieldEnum | Prisma.PostTagScalarFieldEnum[]
+}
+
+/**
  * Post without action
  */
 export type PostDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1281,4 +6124,8 @@ export type PostDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the Post
    */
   omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
 }

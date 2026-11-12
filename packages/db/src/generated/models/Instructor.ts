@@ -20,8 +20,18 @@ export type InstructorModel = runtime.Types.Result.DefaultSelection<Prisma.$Inst
 
 export type AggregateInstructor = {
   _count: InstructorCountAggregateOutputType | null
+  _avg: InstructorAvgAggregateOutputType | null
+  _sum: InstructorSumAggregateOutputType | null
   _min: InstructorMinAggregateOutputType | null
   _max: InstructorMaxAggregateOutputType | null
+}
+
+export type InstructorAvgAggregateOutputType = {
+  yearsExperience: number | null
+}
+
+export type InstructorSumAggregateOutputType = {
+  yearsExperience: number | null
 }
 
 export type InstructorMinAggregateOutputType = {
@@ -34,6 +44,20 @@ export type InstructorMinAggregateOutputType = {
   userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  status: $Enums.ExpertStatus | null
+  statusReason: string | null
+  experienceMd: string | null
+  yearsExperience: number | null
+  timezone: string | null
+  identityVerifiedAt: Date | null
+  identityVerifiedById: string | null
+  identityNote: string | null
+  photoVerifiedAt: Date | null
+  photoSha256: string | null
+  photoVerifiedById: string | null
+  isFounder: boolean | null
+  trustedAuthor: boolean | null
+  isDemo: boolean | null
 }
 
 export type InstructorMaxAggregateOutputType = {
@@ -46,6 +70,20 @@ export type InstructorMaxAggregateOutputType = {
   userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  status: $Enums.ExpertStatus | null
+  statusReason: string | null
+  experienceMd: string | null
+  yearsExperience: number | null
+  timezone: string | null
+  identityVerifiedAt: Date | null
+  identityVerifiedById: string | null
+  identityNote: string | null
+  photoVerifiedAt: Date | null
+  photoSha256: string | null
+  photoVerifiedById: string | null
+  isFounder: boolean | null
+  trustedAuthor: boolean | null
+  isDemo: boolean | null
 }
 
 export type InstructorCountAggregateOutputType = {
@@ -58,9 +96,35 @@ export type InstructorCountAggregateOutputType = {
   userId: number
   createdAt: number
   updatedAt: number
+  status: number
+  statusReason: number
+  contributorKinds: number
+  expertise: number
+  experienceMd: number
+  yearsExperience: number
+  languages: number
+  timezone: number
+  links: number
+  identityVerifiedAt: number
+  identityVerifiedById: number
+  identityNote: number
+  photoVerifiedAt: number
+  photoSha256: number
+  photoVerifiedById: number
+  isFounder: number
+  trustedAuthor: number
+  isDemo: number
   _all: number
 }
 
+
+export type InstructorAvgAggregateInputType = {
+  yearsExperience?: true
+}
+
+export type InstructorSumAggregateInputType = {
+  yearsExperience?: true
+}
 
 export type InstructorMinAggregateInputType = {
   id?: true
@@ -72,6 +136,20 @@ export type InstructorMinAggregateInputType = {
   userId?: true
   createdAt?: true
   updatedAt?: true
+  status?: true
+  statusReason?: true
+  experienceMd?: true
+  yearsExperience?: true
+  timezone?: true
+  identityVerifiedAt?: true
+  identityVerifiedById?: true
+  identityNote?: true
+  photoVerifiedAt?: true
+  photoSha256?: true
+  photoVerifiedById?: true
+  isFounder?: true
+  trustedAuthor?: true
+  isDemo?: true
 }
 
 export type InstructorMaxAggregateInputType = {
@@ -84,6 +162,20 @@ export type InstructorMaxAggregateInputType = {
   userId?: true
   createdAt?: true
   updatedAt?: true
+  status?: true
+  statusReason?: true
+  experienceMd?: true
+  yearsExperience?: true
+  timezone?: true
+  identityVerifiedAt?: true
+  identityVerifiedById?: true
+  identityNote?: true
+  photoVerifiedAt?: true
+  photoSha256?: true
+  photoVerifiedById?: true
+  isFounder?: true
+  trustedAuthor?: true
+  isDemo?: true
 }
 
 export type InstructorCountAggregateInputType = {
@@ -96,6 +188,24 @@ export type InstructorCountAggregateInputType = {
   userId?: true
   createdAt?: true
   updatedAt?: true
+  status?: true
+  statusReason?: true
+  contributorKinds?: true
+  expertise?: true
+  experienceMd?: true
+  yearsExperience?: true
+  languages?: true
+  timezone?: true
+  links?: true
+  identityVerifiedAt?: true
+  identityVerifiedById?: true
+  identityNote?: true
+  photoVerifiedAt?: true
+  photoSha256?: true
+  photoVerifiedById?: true
+  isFounder?: true
+  trustedAuthor?: true
+  isDemo?: true
   _all?: true
 }
 
@@ -137,6 +247,18 @@ export type InstructorAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: InstructorAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: InstructorSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: InstructorMinAggregateInputType
@@ -167,6 +289,8 @@ export type InstructorGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   _count?: InstructorCountAggregateInputType | true
+  _avg?: InstructorAvgAggregateInputType
+  _sum?: InstructorSumAggregateInputType
   _min?: InstructorMinAggregateInputType
   _max?: InstructorMaxAggregateInputType
 }
@@ -181,7 +305,27 @@ export type InstructorGroupByOutputType = {
   userId: string | null
   createdAt: Date
   updatedAt: Date
+  status: $Enums.ExpertStatus
+  statusReason: string | null
+  contributorKinds: $Enums.ContributorKind[]
+  expertise: string[]
+  experienceMd: string | null
+  yearsExperience: number | null
+  languages: string[]
+  timezone: string | null
+  links: runtime.JsonValue | null
+  identityVerifiedAt: Date | null
+  identityVerifiedById: string | null
+  identityNote: string | null
+  photoVerifiedAt: Date | null
+  photoSha256: string | null
+  photoVerifiedById: string | null
+  isFounder: boolean
+  trustedAuthor: boolean
+  isDemo: boolean
   _count: InstructorCountAggregateOutputType | null
+  _avg: InstructorAvgAggregateOutputType | null
+  _sum: InstructorSumAggregateOutputType | null
   _min: InstructorMinAggregateOutputType | null
   _max: InstructorMaxAggregateOutputType | null
 }
@@ -214,8 +358,38 @@ export type InstructorWhereInput = {
   userId?: Prisma.StringNullableFilter<"Instructor"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Instructor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Instructor"> | Date | string
+  status?: Prisma.EnumExpertStatusFilter<"Instructor"> | $Enums.ExpertStatus
+  statusReason?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  contributorKinds?: Prisma.EnumContributorKindNullableListFilter<"Instructor">
+  expertise?: Prisma.StringNullableListFilter<"Instructor">
+  experienceMd?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  yearsExperience?: Prisma.IntNullableFilter<"Instructor"> | number | null
+  languages?: Prisma.StringNullableListFilter<"Instructor">
+  timezone?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  links?: Prisma.JsonNullableFilter<"Instructor">
+  identityVerifiedAt?: Prisma.DateTimeNullableFilter<"Instructor"> | Date | string | null
+  identityVerifiedById?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  identityNote?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  photoVerifiedAt?: Prisma.DateTimeNullableFilter<"Instructor"> | Date | string | null
+  photoSha256?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  photoVerifiedById?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  isFounder?: Prisma.BoolFilter<"Instructor"> | boolean
+  trustedAuthor?: Prisma.BoolFilter<"Instructor"> | boolean
+  isDemo?: Prisma.BoolFilter<"Instructor"> | boolean
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   courses?: Prisma.CourseListRelationFilter
+  identityVerifiedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  photoVerifiedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  mentorProfile?: Prisma.XOR<Prisma.MentorProfileNullableScalarRelationFilter, Prisma.MentorProfileWhereInput> | null
+  credentials?: Prisma.ExpertCredentialListRelationFilter
+  contributorAccount?: Prisma.XOR<Prisma.ContributorAccountNullableScalarRelationFilter, Prisma.ContributorAccountWhereInput> | null
+  cohorts?: Prisma.CourseCohortListRelationFilter
+  hostedGroups?: Prisma.CommunityGroupListRelationFilter
+  resources?: Prisma.ResourceListRelationFilter
+  submissions?: Prisma.ContentSubmissionListRelationFilter
+  eventHosts?: Prisma.LiveEventHostListRelationFilter
+  feedback?: Prisma.EventFeedbackListRelationFilter
+  posts?: Prisma.PostListRelationFilter
 }
 
 export type InstructorOrderByWithRelationInput = {
@@ -228,8 +402,38 @@ export type InstructorOrderByWithRelationInput = {
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  contributorKinds?: Prisma.SortOrder
+  expertise?: Prisma.SortOrder
+  experienceMd?: Prisma.SortOrderInput | Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrderInput | Prisma.SortOrder
+  languages?: Prisma.SortOrder
+  timezone?: Prisma.SortOrderInput | Prisma.SortOrder
+  links?: Prisma.SortOrderInput | Prisma.SortOrder
+  identityVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  identityVerifiedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  identityNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  photoVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  photoSha256?: Prisma.SortOrderInput | Prisma.SortOrder
+  photoVerifiedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  isFounder?: Prisma.SortOrder
+  trustedAuthor?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   courses?: Prisma.CourseOrderByRelationAggregateInput
+  identityVerifiedBy?: Prisma.UserOrderByWithRelationInput
+  photoVerifiedBy?: Prisma.UserOrderByWithRelationInput
+  mentorProfile?: Prisma.MentorProfileOrderByWithRelationInput
+  credentials?: Prisma.ExpertCredentialOrderByRelationAggregateInput
+  contributorAccount?: Prisma.ContributorAccountOrderByWithRelationInput
+  cohorts?: Prisma.CourseCohortOrderByRelationAggregateInput
+  hostedGroups?: Prisma.CommunityGroupOrderByRelationAggregateInput
+  resources?: Prisma.ResourceOrderByRelationAggregateInput
+  submissions?: Prisma.ContentSubmissionOrderByRelationAggregateInput
+  eventHosts?: Prisma.LiveEventHostOrderByRelationAggregateInput
+  feedback?: Prisma.EventFeedbackOrderByRelationAggregateInput
+  posts?: Prisma.PostOrderByRelationAggregateInput
 }
 
 export type InstructorWhereUniqueInput = Prisma.AtLeast<{
@@ -245,8 +449,38 @@ export type InstructorWhereUniqueInput = Prisma.AtLeast<{
   avatar?: Prisma.StringNullableFilter<"Instructor"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Instructor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Instructor"> | Date | string
+  status?: Prisma.EnumExpertStatusFilter<"Instructor"> | $Enums.ExpertStatus
+  statusReason?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  contributorKinds?: Prisma.EnumContributorKindNullableListFilter<"Instructor">
+  expertise?: Prisma.StringNullableListFilter<"Instructor">
+  experienceMd?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  yearsExperience?: Prisma.IntNullableFilter<"Instructor"> | number | null
+  languages?: Prisma.StringNullableListFilter<"Instructor">
+  timezone?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  links?: Prisma.JsonNullableFilter<"Instructor">
+  identityVerifiedAt?: Prisma.DateTimeNullableFilter<"Instructor"> | Date | string | null
+  identityVerifiedById?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  identityNote?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  photoVerifiedAt?: Prisma.DateTimeNullableFilter<"Instructor"> | Date | string | null
+  photoSha256?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  photoVerifiedById?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  isFounder?: Prisma.BoolFilter<"Instructor"> | boolean
+  trustedAuthor?: Prisma.BoolFilter<"Instructor"> | boolean
+  isDemo?: Prisma.BoolFilter<"Instructor"> | boolean
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   courses?: Prisma.CourseListRelationFilter
+  identityVerifiedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  photoVerifiedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  mentorProfile?: Prisma.XOR<Prisma.MentorProfileNullableScalarRelationFilter, Prisma.MentorProfileWhereInput> | null
+  credentials?: Prisma.ExpertCredentialListRelationFilter
+  contributorAccount?: Prisma.XOR<Prisma.ContributorAccountNullableScalarRelationFilter, Prisma.ContributorAccountWhereInput> | null
+  cohorts?: Prisma.CourseCohortListRelationFilter
+  hostedGroups?: Prisma.CommunityGroupListRelationFilter
+  resources?: Prisma.ResourceListRelationFilter
+  submissions?: Prisma.ContentSubmissionListRelationFilter
+  eventHosts?: Prisma.LiveEventHostListRelationFilter
+  feedback?: Prisma.EventFeedbackListRelationFilter
+  posts?: Prisma.PostListRelationFilter
 }, "id" | "slug" | "userId">
 
 export type InstructorOrderByWithAggregationInput = {
@@ -259,9 +493,29 @@ export type InstructorOrderByWithAggregationInput = {
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  contributorKinds?: Prisma.SortOrder
+  expertise?: Prisma.SortOrder
+  experienceMd?: Prisma.SortOrderInput | Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrderInput | Prisma.SortOrder
+  languages?: Prisma.SortOrder
+  timezone?: Prisma.SortOrderInput | Prisma.SortOrder
+  links?: Prisma.SortOrderInput | Prisma.SortOrder
+  identityVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  identityVerifiedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  identityNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  photoVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  photoSha256?: Prisma.SortOrderInput | Prisma.SortOrder
+  photoVerifiedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  isFounder?: Prisma.SortOrder
+  trustedAuthor?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
   _count?: Prisma.InstructorCountOrderByAggregateInput
+  _avg?: Prisma.InstructorAvgOrderByAggregateInput
   _max?: Prisma.InstructorMaxOrderByAggregateInput
   _min?: Prisma.InstructorMinOrderByAggregateInput
+  _sum?: Prisma.InstructorSumOrderByAggregateInput
 }
 
 export type InstructorScalarWhereWithAggregatesInput = {
@@ -277,6 +531,24 @@ export type InstructorScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringNullableWithAggregatesFilter<"Instructor"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Instructor"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Instructor"> | Date | string
+  status?: Prisma.EnumExpertStatusWithAggregatesFilter<"Instructor"> | $Enums.ExpertStatus
+  statusReason?: Prisma.StringNullableWithAggregatesFilter<"Instructor"> | string | null
+  contributorKinds?: Prisma.EnumContributorKindNullableListFilter<"Instructor">
+  expertise?: Prisma.StringNullableListFilter<"Instructor">
+  experienceMd?: Prisma.StringNullableWithAggregatesFilter<"Instructor"> | string | null
+  yearsExperience?: Prisma.IntNullableWithAggregatesFilter<"Instructor"> | number | null
+  languages?: Prisma.StringNullableListFilter<"Instructor">
+  timezone?: Prisma.StringNullableWithAggregatesFilter<"Instructor"> | string | null
+  links?: Prisma.JsonNullableWithAggregatesFilter<"Instructor">
+  identityVerifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Instructor"> | Date | string | null
+  identityVerifiedById?: Prisma.StringNullableWithAggregatesFilter<"Instructor"> | string | null
+  identityNote?: Prisma.StringNullableWithAggregatesFilter<"Instructor"> | string | null
+  photoVerifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Instructor"> | Date | string | null
+  photoSha256?: Prisma.StringNullableWithAggregatesFilter<"Instructor"> | string | null
+  photoVerifiedById?: Prisma.StringNullableWithAggregatesFilter<"Instructor"> | string | null
+  isFounder?: Prisma.BoolWithAggregatesFilter<"Instructor"> | boolean
+  trustedAuthor?: Prisma.BoolWithAggregatesFilter<"Instructor"> | boolean
+  isDemo?: Prisma.BoolWithAggregatesFilter<"Instructor"> | boolean
 }
 
 export type InstructorCreateInput = {
@@ -288,8 +560,36 @@ export type InstructorCreateInput = {
   avatar?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
   user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
   courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
 }
 
 export type InstructorUncheckedCreateInput = {
@@ -302,7 +602,35 @@ export type InstructorUncheckedCreateInput = {
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
   courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
 }
 
 export type InstructorUpdateInput = {
@@ -314,8 +642,36 @@ export type InstructorUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
   courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
 }
 
 export type InstructorUncheckedUpdateInput = {
@@ -328,7 +684,35 @@ export type InstructorUncheckedUpdateInput = {
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
 }
 
 export type InstructorCreateManyInput = {
@@ -341,6 +725,24 @@ export type InstructorCreateManyInput = {
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
 }
 
 export type InstructorUpdateManyMutationInput = {
@@ -352,6 +754,22 @@ export type InstructorUpdateManyMutationInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type InstructorUncheckedUpdateManyInput = {
@@ -364,11 +782,47 @@ export type InstructorUncheckedUpdateManyInput = {
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type InstructorNullableScalarRelationFilter = {
   is?: Prisma.InstructorWhereInput | null
   isNot?: Prisma.InstructorWhereInput | null
+}
+
+export type InstructorListRelationFilter = {
+  every?: Prisma.InstructorWhereInput
+  some?: Prisma.InstructorWhereInput
+  none?: Prisma.InstructorWhereInput
+}
+
+export type InstructorOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type EnumContributorKindNullableListFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContributorKind[] | Prisma.ListEnumContributorKindFieldRefInput<$PrismaModel> | null
+  has?: $Enums.ContributorKind | Prisma.EnumContributorKindFieldRefInput<$PrismaModel> | null
+  hasEvery?: $Enums.ContributorKind[] | Prisma.ListEnumContributorKindFieldRefInput<$PrismaModel>
+  hasSome?: $Enums.ContributorKind[] | Prisma.ListEnumContributorKindFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
 }
 
 export type InstructorCountOrderByAggregateInput = {
@@ -381,6 +835,28 @@ export type InstructorCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusReason?: Prisma.SortOrder
+  contributorKinds?: Prisma.SortOrder
+  expertise?: Prisma.SortOrder
+  experienceMd?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
+  languages?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
+  links?: Prisma.SortOrder
+  identityVerifiedAt?: Prisma.SortOrder
+  identityVerifiedById?: Prisma.SortOrder
+  identityNote?: Prisma.SortOrder
+  photoVerifiedAt?: Prisma.SortOrder
+  photoSha256?: Prisma.SortOrder
+  photoVerifiedById?: Prisma.SortOrder
+  isFounder?: Prisma.SortOrder
+  trustedAuthor?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+}
+
+export type InstructorAvgOrderByAggregateInput = {
+  yearsExperience?: Prisma.SortOrder
 }
 
 export type InstructorMaxOrderByAggregateInput = {
@@ -393,6 +869,20 @@ export type InstructorMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusReason?: Prisma.SortOrder
+  experienceMd?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
+  identityVerifiedAt?: Prisma.SortOrder
+  identityVerifiedById?: Prisma.SortOrder
+  identityNote?: Prisma.SortOrder
+  photoVerifiedAt?: Prisma.SortOrder
+  photoSha256?: Prisma.SortOrder
+  photoVerifiedById?: Prisma.SortOrder
+  isFounder?: Prisma.SortOrder
+  trustedAuthor?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
 }
 
 export type InstructorMinOrderByAggregateInput = {
@@ -405,6 +895,29 @@ export type InstructorMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusReason?: Prisma.SortOrder
+  experienceMd?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
+  identityVerifiedAt?: Prisma.SortOrder
+  identityVerifiedById?: Prisma.SortOrder
+  identityNote?: Prisma.SortOrder
+  photoVerifiedAt?: Prisma.SortOrder
+  photoSha256?: Prisma.SortOrder
+  photoVerifiedById?: Prisma.SortOrder
+  isFounder?: Prisma.SortOrder
+  trustedAuthor?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+}
+
+export type InstructorSumOrderByAggregateInput = {
+  yearsExperience?: Prisma.SortOrder
+}
+
+export type InstructorScalarRelationFilter = {
+  is?: Prisma.InstructorWhereInput
+  isNot?: Prisma.InstructorWhereInput
 }
 
 export type InstructorCreateNestedOneWithoutUserInput = {
@@ -413,10 +926,38 @@ export type InstructorCreateNestedOneWithoutUserInput = {
   connect?: Prisma.InstructorWhereUniqueInput
 }
 
+export type InstructorCreateNestedManyWithoutIdentityVerifiedByInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutIdentityVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput> | Prisma.InstructorCreateWithoutIdentityVerifiedByInput[] | Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput[]
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutIdentityVerifiedByInput | Prisma.InstructorCreateOrConnectWithoutIdentityVerifiedByInput[]
+  createMany?: Prisma.InstructorCreateManyIdentityVerifiedByInputEnvelope
+  connect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+}
+
+export type InstructorCreateNestedManyWithoutPhotoVerifiedByInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutPhotoVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput> | Prisma.InstructorCreateWithoutPhotoVerifiedByInput[] | Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput[]
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutPhotoVerifiedByInput | Prisma.InstructorCreateOrConnectWithoutPhotoVerifiedByInput[]
+  createMany?: Prisma.InstructorCreateManyPhotoVerifiedByInputEnvelope
+  connect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+}
+
 export type InstructorUncheckedCreateNestedOneWithoutUserInput = {
   create?: Prisma.XOR<Prisma.InstructorCreateWithoutUserInput, Prisma.InstructorUncheckedCreateWithoutUserInput>
   connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutUserInput
   connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUncheckedCreateNestedManyWithoutIdentityVerifiedByInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutIdentityVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput> | Prisma.InstructorCreateWithoutIdentityVerifiedByInput[] | Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput[]
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutIdentityVerifiedByInput | Prisma.InstructorCreateOrConnectWithoutIdentityVerifiedByInput[]
+  createMany?: Prisma.InstructorCreateManyIdentityVerifiedByInputEnvelope
+  connect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+}
+
+export type InstructorUncheckedCreateNestedManyWithoutPhotoVerifiedByInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutPhotoVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput> | Prisma.InstructorCreateWithoutPhotoVerifiedByInput[] | Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput[]
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutPhotoVerifiedByInput | Prisma.InstructorCreateOrConnectWithoutPhotoVerifiedByInput[]
+  createMany?: Prisma.InstructorCreateManyPhotoVerifiedByInputEnvelope
+  connect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
 }
 
 export type InstructorUpdateOneWithoutUserNestedInput = {
@@ -429,6 +970,34 @@ export type InstructorUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutUserInput, Prisma.InstructorUpdateWithoutUserInput>, Prisma.InstructorUncheckedUpdateWithoutUserInput>
 }
 
+export type InstructorUpdateManyWithoutIdentityVerifiedByNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutIdentityVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput> | Prisma.InstructorCreateWithoutIdentityVerifiedByInput[] | Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput[]
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutIdentityVerifiedByInput | Prisma.InstructorCreateOrConnectWithoutIdentityVerifiedByInput[]
+  upsert?: Prisma.InstructorUpsertWithWhereUniqueWithoutIdentityVerifiedByInput | Prisma.InstructorUpsertWithWhereUniqueWithoutIdentityVerifiedByInput[]
+  createMany?: Prisma.InstructorCreateManyIdentityVerifiedByInputEnvelope
+  set?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  disconnect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  delete?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  connect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  update?: Prisma.InstructorUpdateWithWhereUniqueWithoutIdentityVerifiedByInput | Prisma.InstructorUpdateWithWhereUniqueWithoutIdentityVerifiedByInput[]
+  updateMany?: Prisma.InstructorUpdateManyWithWhereWithoutIdentityVerifiedByInput | Prisma.InstructorUpdateManyWithWhereWithoutIdentityVerifiedByInput[]
+  deleteMany?: Prisma.InstructorScalarWhereInput | Prisma.InstructorScalarWhereInput[]
+}
+
+export type InstructorUpdateManyWithoutPhotoVerifiedByNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutPhotoVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput> | Prisma.InstructorCreateWithoutPhotoVerifiedByInput[] | Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput[]
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutPhotoVerifiedByInput | Prisma.InstructorCreateOrConnectWithoutPhotoVerifiedByInput[]
+  upsert?: Prisma.InstructorUpsertWithWhereUniqueWithoutPhotoVerifiedByInput | Prisma.InstructorUpsertWithWhereUniqueWithoutPhotoVerifiedByInput[]
+  createMany?: Prisma.InstructorCreateManyPhotoVerifiedByInputEnvelope
+  set?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  disconnect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  delete?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  connect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  update?: Prisma.InstructorUpdateWithWhereUniqueWithoutPhotoVerifiedByInput | Prisma.InstructorUpdateWithWhereUniqueWithoutPhotoVerifiedByInput[]
+  updateMany?: Prisma.InstructorUpdateManyWithWhereWithoutPhotoVerifiedByInput | Prisma.InstructorUpdateManyWithWhereWithoutPhotoVerifiedByInput[]
+  deleteMany?: Prisma.InstructorScalarWhereInput | Prisma.InstructorScalarWhereInput[]
+}
+
 export type InstructorUncheckedUpdateOneWithoutUserNestedInput = {
   create?: Prisma.XOR<Prisma.InstructorCreateWithoutUserInput, Prisma.InstructorUncheckedCreateWithoutUserInput>
   connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutUserInput
@@ -437,6 +1006,34 @@ export type InstructorUncheckedUpdateOneWithoutUserNestedInput = {
   delete?: Prisma.InstructorWhereInput | boolean
   connect?: Prisma.InstructorWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutUserInput, Prisma.InstructorUpdateWithoutUserInput>, Prisma.InstructorUncheckedUpdateWithoutUserInput>
+}
+
+export type InstructorUncheckedUpdateManyWithoutIdentityVerifiedByNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutIdentityVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput> | Prisma.InstructorCreateWithoutIdentityVerifiedByInput[] | Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput[]
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutIdentityVerifiedByInput | Prisma.InstructorCreateOrConnectWithoutIdentityVerifiedByInput[]
+  upsert?: Prisma.InstructorUpsertWithWhereUniqueWithoutIdentityVerifiedByInput | Prisma.InstructorUpsertWithWhereUniqueWithoutIdentityVerifiedByInput[]
+  createMany?: Prisma.InstructorCreateManyIdentityVerifiedByInputEnvelope
+  set?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  disconnect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  delete?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  connect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  update?: Prisma.InstructorUpdateWithWhereUniqueWithoutIdentityVerifiedByInput | Prisma.InstructorUpdateWithWhereUniqueWithoutIdentityVerifiedByInput[]
+  updateMany?: Prisma.InstructorUpdateManyWithWhereWithoutIdentityVerifiedByInput | Prisma.InstructorUpdateManyWithWhereWithoutIdentityVerifiedByInput[]
+  deleteMany?: Prisma.InstructorScalarWhereInput | Prisma.InstructorScalarWhereInput[]
+}
+
+export type InstructorUncheckedUpdateManyWithoutPhotoVerifiedByNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutPhotoVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput> | Prisma.InstructorCreateWithoutPhotoVerifiedByInput[] | Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput[]
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutPhotoVerifiedByInput | Prisma.InstructorCreateOrConnectWithoutPhotoVerifiedByInput[]
+  upsert?: Prisma.InstructorUpsertWithWhereUniqueWithoutPhotoVerifiedByInput | Prisma.InstructorUpsertWithWhereUniqueWithoutPhotoVerifiedByInput[]
+  createMany?: Prisma.InstructorCreateManyPhotoVerifiedByInputEnvelope
+  set?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  disconnect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  delete?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  connect?: Prisma.InstructorWhereUniqueInput | Prisma.InstructorWhereUniqueInput[]
+  update?: Prisma.InstructorUpdateWithWhereUniqueWithoutPhotoVerifiedByInput | Prisma.InstructorUpdateWithWhereUniqueWithoutPhotoVerifiedByInput[]
+  updateMany?: Prisma.InstructorUpdateManyWithWhereWithoutPhotoVerifiedByInput | Prisma.InstructorUpdateManyWithWhereWithoutPhotoVerifiedByInput[]
+  deleteMany?: Prisma.InstructorScalarWhereInput | Prisma.InstructorScalarWhereInput[]
 }
 
 export type InstructorCreateNestedOneWithoutCoursesInput = {
@@ -455,6 +1052,189 @@ export type InstructorUpdateOneWithoutCoursesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutCoursesInput, Prisma.InstructorUpdateWithoutCoursesInput>, Prisma.InstructorUncheckedUpdateWithoutCoursesInput>
 }
 
+export type InstructorCreateNestedOneWithoutResourcesInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutResourcesInput, Prisma.InstructorUncheckedCreateWithoutResourcesInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutResourcesInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneWithoutResourcesNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutResourcesInput, Prisma.InstructorUncheckedCreateWithoutResourcesInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutResourcesInput
+  upsert?: Prisma.InstructorUpsertWithoutResourcesInput
+  disconnect?: Prisma.InstructorWhereInput | boolean
+  delete?: Prisma.InstructorWhereInput | boolean
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutResourcesInput, Prisma.InstructorUpdateWithoutResourcesInput>, Prisma.InstructorUncheckedUpdateWithoutResourcesInput>
+}
+
+export type InstructorCreateNestedOneWithoutPostsInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutPostsInput, Prisma.InstructorUncheckedCreateWithoutPostsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutPostsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneWithoutPostsNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutPostsInput, Prisma.InstructorUncheckedCreateWithoutPostsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutPostsInput
+  upsert?: Prisma.InstructorUpsertWithoutPostsInput
+  disconnect?: Prisma.InstructorWhereInput | boolean
+  delete?: Prisma.InstructorWhereInput | boolean
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutPostsInput, Prisma.InstructorUpdateWithoutPostsInput>, Prisma.InstructorUncheckedUpdateWithoutPostsInput>
+}
+
+export type InstructorCreatecontributorKindsInput = {
+  set: $Enums.ContributorKind[]
+}
+
+export type InstructorCreateexpertiseInput = {
+  set: string[]
+}
+
+export type InstructorCreatelanguagesInput = {
+  set: string[]
+}
+
+export type EnumExpertStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ExpertStatus
+}
+
+export type InstructorUpdatecontributorKindsInput = {
+  set?: $Enums.ContributorKind[]
+  push?: $Enums.ContributorKind | $Enums.ContributorKind[]
+}
+
+export type InstructorUpdateexpertiseInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type InstructorUpdatelanguagesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type InstructorCreateNestedOneWithoutHostedGroupsInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutHostedGroupsInput, Prisma.InstructorUncheckedCreateWithoutHostedGroupsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutHostedGroupsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneWithoutHostedGroupsNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutHostedGroupsInput, Prisma.InstructorUncheckedCreateWithoutHostedGroupsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutHostedGroupsInput
+  upsert?: Prisma.InstructorUpsertWithoutHostedGroupsInput
+  disconnect?: Prisma.InstructorWhereInput | boolean
+  delete?: Prisma.InstructorWhereInput | boolean
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutHostedGroupsInput, Prisma.InstructorUpdateWithoutHostedGroupsInput>, Prisma.InstructorUncheckedUpdateWithoutHostedGroupsInput>
+}
+
+export type InstructorCreateNestedOneWithoutMentorProfileInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutMentorProfileInput, Prisma.InstructorUncheckedCreateWithoutMentorProfileInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutMentorProfileInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneRequiredWithoutMentorProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutMentorProfileInput, Prisma.InstructorUncheckedCreateWithoutMentorProfileInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutMentorProfileInput
+  upsert?: Prisma.InstructorUpsertWithoutMentorProfileInput
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutMentorProfileInput, Prisma.InstructorUpdateWithoutMentorProfileInput>, Prisma.InstructorUncheckedUpdateWithoutMentorProfileInput>
+}
+
+export type InstructorCreateNestedOneWithoutCredentialsInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutCredentialsInput, Prisma.InstructorUncheckedCreateWithoutCredentialsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutCredentialsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneRequiredWithoutCredentialsNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutCredentialsInput, Prisma.InstructorUncheckedCreateWithoutCredentialsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutCredentialsInput
+  upsert?: Prisma.InstructorUpsertWithoutCredentialsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutCredentialsInput, Prisma.InstructorUpdateWithoutCredentialsInput>, Prisma.InstructorUncheckedUpdateWithoutCredentialsInput>
+}
+
+export type InstructorCreateNestedOneWithoutContributorAccountInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutContributorAccountInput, Prisma.InstructorUncheckedCreateWithoutContributorAccountInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutContributorAccountInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneWithoutContributorAccountNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutContributorAccountInput, Prisma.InstructorUncheckedCreateWithoutContributorAccountInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutContributorAccountInput
+  upsert?: Prisma.InstructorUpsertWithoutContributorAccountInput
+  disconnect?: Prisma.InstructorWhereInput | boolean
+  delete?: Prisma.InstructorWhereInput | boolean
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutContributorAccountInput, Prisma.InstructorUpdateWithoutContributorAccountInput>, Prisma.InstructorUncheckedUpdateWithoutContributorAccountInput>
+}
+
+export type InstructorCreateNestedOneWithoutCohortsInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutCohortsInput, Prisma.InstructorUncheckedCreateWithoutCohortsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutCohortsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneRequiredWithoutCohortsNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutCohortsInput, Prisma.InstructorUncheckedCreateWithoutCohortsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutCohortsInput
+  upsert?: Prisma.InstructorUpsertWithoutCohortsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutCohortsInput, Prisma.InstructorUpdateWithoutCohortsInput>, Prisma.InstructorUncheckedUpdateWithoutCohortsInput>
+}
+
+export type InstructorCreateNestedOneWithoutSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutSubmissionsInput, Prisma.InstructorUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutSubmissionsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneRequiredWithoutSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutSubmissionsInput, Prisma.InstructorUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutSubmissionsInput
+  upsert?: Prisma.InstructorUpsertWithoutSubmissionsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.InstructorUpdateWithoutSubmissionsInput>, Prisma.InstructorUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type InstructorCreateNestedOneWithoutEventHostsInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutEventHostsInput, Prisma.InstructorUncheckedCreateWithoutEventHostsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutEventHostsInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneWithoutEventHostsNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutEventHostsInput, Prisma.InstructorUncheckedCreateWithoutEventHostsInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutEventHostsInput
+  upsert?: Prisma.InstructorUpsertWithoutEventHostsInput
+  disconnect?: Prisma.InstructorWhereInput | boolean
+  delete?: Prisma.InstructorWhereInput | boolean
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutEventHostsInput, Prisma.InstructorUpdateWithoutEventHostsInput>, Prisma.InstructorUncheckedUpdateWithoutEventHostsInput>
+}
+
+export type InstructorCreateNestedOneWithoutFeedbackInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutFeedbackInput, Prisma.InstructorUncheckedCreateWithoutFeedbackInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutFeedbackInput
+  connect?: Prisma.InstructorWhereUniqueInput
+}
+
+export type InstructorUpdateOneWithoutFeedbackNestedInput = {
+  create?: Prisma.XOR<Prisma.InstructorCreateWithoutFeedbackInput, Prisma.InstructorUncheckedCreateWithoutFeedbackInput>
+  connectOrCreate?: Prisma.InstructorCreateOrConnectWithoutFeedbackInput
+  upsert?: Prisma.InstructorUpsertWithoutFeedbackInput
+  disconnect?: Prisma.InstructorWhereInput | boolean
+  delete?: Prisma.InstructorWhereInput | boolean
+  connect?: Prisma.InstructorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstructorUpdateToOneWithWhereWithoutFeedbackInput, Prisma.InstructorUpdateWithoutFeedbackInput>, Prisma.InstructorUncheckedUpdateWithoutFeedbackInput>
+}
+
 export type InstructorCreateWithoutUserInput = {
   id?: string
   slug: string
@@ -464,7 +1244,35 @@ export type InstructorCreateWithoutUserInput = {
   avatar?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
   courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
 }
 
 export type InstructorUncheckedCreateWithoutUserInput = {
@@ -476,12 +1284,220 @@ export type InstructorUncheckedCreateWithoutUserInput = {
   avatar?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
   courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
 }
 
 export type InstructorCreateOrConnectWithoutUserInput = {
   where: Prisma.InstructorWhereUniqueInput
   create: Prisma.XOR<Prisma.InstructorCreateWithoutUserInput, Prisma.InstructorUncheckedCreateWithoutUserInput>
+}
+
+export type InstructorCreateWithoutIdentityVerifiedByInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutIdentityVerifiedByInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutIdentityVerifiedByInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutIdentityVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput>
+}
+
+export type InstructorCreateManyIdentityVerifiedByInputEnvelope = {
+  data: Prisma.InstructorCreateManyIdentityVerifiedByInput | Prisma.InstructorCreateManyIdentityVerifiedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type InstructorCreateWithoutPhotoVerifiedByInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutPhotoVerifiedByInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutPhotoVerifiedByInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutPhotoVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput>
+}
+
+export type InstructorCreateManyPhotoVerifiedByInputEnvelope = {
+  data: Prisma.InstructorCreateManyPhotoVerifiedByInput | Prisma.InstructorCreateManyPhotoVerifiedByInput[]
+  skipDuplicates?: boolean
 }
 
 export type InstructorUpsertWithoutUserInput = {
@@ -504,7 +1520,35 @@ export type InstructorUpdateWithoutUserInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
 }
 
 export type InstructorUncheckedUpdateWithoutUserInput = {
@@ -516,7 +1560,100 @@ export type InstructorUncheckedUpdateWithoutUserInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUpsertWithWhereUniqueWithoutIdentityVerifiedByInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutIdentityVerifiedByInput, Prisma.InstructorUncheckedUpdateWithoutIdentityVerifiedByInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutIdentityVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutIdentityVerifiedByInput>
+}
+
+export type InstructorUpdateWithWhereUniqueWithoutIdentityVerifiedByInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutIdentityVerifiedByInput, Prisma.InstructorUncheckedUpdateWithoutIdentityVerifiedByInput>
+}
+
+export type InstructorUpdateManyWithWhereWithoutIdentityVerifiedByInput = {
+  where: Prisma.InstructorScalarWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateManyMutationInput, Prisma.InstructorUncheckedUpdateManyWithoutIdentityVerifiedByInput>
+}
+
+export type InstructorScalarWhereInput = {
+  AND?: Prisma.InstructorScalarWhereInput | Prisma.InstructorScalarWhereInput[]
+  OR?: Prisma.InstructorScalarWhereInput[]
+  NOT?: Prisma.InstructorScalarWhereInput | Prisma.InstructorScalarWhereInput[]
+  id?: Prisma.StringFilter<"Instructor"> | string
+  slug?: Prisma.StringFilter<"Instructor"> | string
+  name?: Prisma.StringFilter<"Instructor"> | string
+  headline?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  bio?: Prisma.StringFilter<"Instructor"> | string
+  avatar?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  userId?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Instructor"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Instructor"> | Date | string
+  status?: Prisma.EnumExpertStatusFilter<"Instructor"> | $Enums.ExpertStatus
+  statusReason?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  contributorKinds?: Prisma.EnumContributorKindNullableListFilter<"Instructor">
+  expertise?: Prisma.StringNullableListFilter<"Instructor">
+  experienceMd?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  yearsExperience?: Prisma.IntNullableFilter<"Instructor"> | number | null
+  languages?: Prisma.StringNullableListFilter<"Instructor">
+  timezone?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  links?: Prisma.JsonNullableFilter<"Instructor">
+  identityVerifiedAt?: Prisma.DateTimeNullableFilter<"Instructor"> | Date | string | null
+  identityVerifiedById?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  identityNote?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  photoVerifiedAt?: Prisma.DateTimeNullableFilter<"Instructor"> | Date | string | null
+  photoSha256?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  photoVerifiedById?: Prisma.StringNullableFilter<"Instructor"> | string | null
+  isFounder?: Prisma.BoolFilter<"Instructor"> | boolean
+  trustedAuthor?: Prisma.BoolFilter<"Instructor"> | boolean
+  isDemo?: Prisma.BoolFilter<"Instructor"> | boolean
+}
+
+export type InstructorUpsertWithWhereUniqueWithoutPhotoVerifiedByInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutPhotoVerifiedByInput, Prisma.InstructorUncheckedUpdateWithoutPhotoVerifiedByInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutPhotoVerifiedByInput, Prisma.InstructorUncheckedCreateWithoutPhotoVerifiedByInput>
+}
+
+export type InstructorUpdateWithWhereUniqueWithoutPhotoVerifiedByInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutPhotoVerifiedByInput, Prisma.InstructorUncheckedUpdateWithoutPhotoVerifiedByInput>
+}
+
+export type InstructorUpdateManyWithWhereWithoutPhotoVerifiedByInput = {
+  where: Prisma.InstructorScalarWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateManyMutationInput, Prisma.InstructorUncheckedUpdateManyWithoutPhotoVerifiedByInput>
 }
 
 export type InstructorCreateWithoutCoursesInput = {
@@ -528,7 +1665,35 @@ export type InstructorCreateWithoutCoursesInput = {
   avatar?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
   user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
 }
 
 export type InstructorUncheckedCreateWithoutCoursesInput = {
@@ -541,6 +1706,34 @@ export type InstructorUncheckedCreateWithoutCoursesInput = {
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
 }
 
 export type InstructorCreateOrConnectWithoutCoursesInput = {
@@ -568,7 +1761,35 @@ export type InstructorUpdateWithoutCoursesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
 }
 
 export type InstructorUncheckedUpdateWithoutCoursesInput = {
@@ -581,6 +1802,2070 @@ export type InstructorUncheckedUpdateWithoutCoursesInput = {
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutResourcesInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutResourcesInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutResourcesInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutResourcesInput, Prisma.InstructorUncheckedCreateWithoutResourcesInput>
+}
+
+export type InstructorUpsertWithoutResourcesInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutResourcesInput, Prisma.InstructorUncheckedUpdateWithoutResourcesInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutResourcesInput, Prisma.InstructorUncheckedCreateWithoutResourcesInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutResourcesInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutResourcesInput, Prisma.InstructorUncheckedUpdateWithoutResourcesInput>
+}
+
+export type InstructorUpdateWithoutResourcesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutResourcesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutPostsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutPostsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutPostsInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutPostsInput, Prisma.InstructorUncheckedCreateWithoutPostsInput>
+}
+
+export type InstructorUpsertWithoutPostsInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutPostsInput, Prisma.InstructorUncheckedUpdateWithoutPostsInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutPostsInput, Prisma.InstructorUncheckedCreateWithoutPostsInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutPostsInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutPostsInput, Prisma.InstructorUncheckedUpdateWithoutPostsInput>
+}
+
+export type InstructorUpdateWithoutPostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutPostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+}
+
+export type InstructorCreateWithoutHostedGroupsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutHostedGroupsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutHostedGroupsInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutHostedGroupsInput, Prisma.InstructorUncheckedCreateWithoutHostedGroupsInput>
+}
+
+export type InstructorUpsertWithoutHostedGroupsInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutHostedGroupsInput, Prisma.InstructorUncheckedUpdateWithoutHostedGroupsInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutHostedGroupsInput, Prisma.InstructorUncheckedCreateWithoutHostedGroupsInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutHostedGroupsInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutHostedGroupsInput, Prisma.InstructorUncheckedUpdateWithoutHostedGroupsInput>
+}
+
+export type InstructorUpdateWithoutHostedGroupsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutHostedGroupsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutMentorProfileInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutMentorProfileInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutMentorProfileInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutMentorProfileInput, Prisma.InstructorUncheckedCreateWithoutMentorProfileInput>
+}
+
+export type InstructorUpsertWithoutMentorProfileInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutMentorProfileInput, Prisma.InstructorUncheckedUpdateWithoutMentorProfileInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutMentorProfileInput, Prisma.InstructorUncheckedCreateWithoutMentorProfileInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutMentorProfileInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutMentorProfileInput, Prisma.InstructorUncheckedUpdateWithoutMentorProfileInput>
+}
+
+export type InstructorUpdateWithoutMentorProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutMentorProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutCredentialsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutCredentialsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutCredentialsInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutCredentialsInput, Prisma.InstructorUncheckedCreateWithoutCredentialsInput>
+}
+
+export type InstructorUpsertWithoutCredentialsInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutCredentialsInput, Prisma.InstructorUncheckedUpdateWithoutCredentialsInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutCredentialsInput, Prisma.InstructorUncheckedCreateWithoutCredentialsInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutCredentialsInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutCredentialsInput, Prisma.InstructorUncheckedUpdateWithoutCredentialsInput>
+}
+
+export type InstructorUpdateWithoutCredentialsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutCredentialsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutContributorAccountInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutContributorAccountInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutContributorAccountInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutContributorAccountInput, Prisma.InstructorUncheckedCreateWithoutContributorAccountInput>
+}
+
+export type InstructorUpsertWithoutContributorAccountInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutContributorAccountInput, Prisma.InstructorUncheckedUpdateWithoutContributorAccountInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutContributorAccountInput, Prisma.InstructorUncheckedCreateWithoutContributorAccountInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutContributorAccountInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutContributorAccountInput, Prisma.InstructorUncheckedUpdateWithoutContributorAccountInput>
+}
+
+export type InstructorUpdateWithoutContributorAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutContributorAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutCohortsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutCohortsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutCohortsInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutCohortsInput, Prisma.InstructorUncheckedCreateWithoutCohortsInput>
+}
+
+export type InstructorUpsertWithoutCohortsInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutCohortsInput, Prisma.InstructorUncheckedUpdateWithoutCohortsInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutCohortsInput, Prisma.InstructorUncheckedCreateWithoutCohortsInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutCohortsInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutCohortsInput, Prisma.InstructorUncheckedUpdateWithoutCohortsInput>
+}
+
+export type InstructorUpdateWithoutCohortsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutCohortsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutSubmissionsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutSubmissionsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutSubmissionsInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutSubmissionsInput, Prisma.InstructorUncheckedCreateWithoutSubmissionsInput>
+}
+
+export type InstructorUpsertWithoutSubmissionsInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutSubmissionsInput, Prisma.InstructorUncheckedUpdateWithoutSubmissionsInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutSubmissionsInput, Prisma.InstructorUncheckedCreateWithoutSubmissionsInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutSubmissionsInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutSubmissionsInput, Prisma.InstructorUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type InstructorUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutEventHostsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutEventHostsInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  feedback?: Prisma.EventFeedbackUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutEventHostsInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutEventHostsInput, Prisma.InstructorUncheckedCreateWithoutEventHostsInput>
+}
+
+export type InstructorUpsertWithoutEventHostsInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutEventHostsInput, Prisma.InstructorUncheckedUpdateWithoutEventHostsInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutEventHostsInput, Prisma.InstructorUncheckedCreateWithoutEventHostsInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutEventHostsInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutEventHostsInput, Prisma.InstructorUncheckedUpdateWithoutEventHostsInput>
+}
+
+export type InstructorUpdateWithoutEventHostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutEventHostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateWithoutFeedbackInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  user?: Prisma.UserCreateNestedOneWithoutInstructorProfileInput
+  courses?: Prisma.CourseCreateNestedManyWithoutInstructorInput
+  identityVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsIdentityVerifiedInput
+  photoVerifiedBy?: Prisma.UserCreateNestedOneWithoutInstructorsPhotoVerifiedInput
+  mentorProfile?: Prisma.MentorProfileCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorUncheckedCreateWithoutFeedbackInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutInstructorInput
+  mentorProfile?: Prisma.MentorProfileUncheckedCreateNestedOneWithoutInstructorInput
+  credentials?: Prisma.ExpertCredentialUncheckedCreateNestedManyWithoutInstructorInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedCreateNestedOneWithoutInstructorInput
+  cohorts?: Prisma.CourseCohortUncheckedCreateNestedManyWithoutMentorInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedCreateNestedManyWithoutHostInstructorInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutInstructorInput
+  submissions?: Prisma.ContentSubmissionUncheckedCreateNestedManyWithoutInstructorInput
+  eventHosts?: Prisma.LiveEventHostUncheckedCreateNestedManyWithoutInstructorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInstructorInput
+}
+
+export type InstructorCreateOrConnectWithoutFeedbackInput = {
+  where: Prisma.InstructorWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutFeedbackInput, Prisma.InstructorUncheckedCreateWithoutFeedbackInput>
+}
+
+export type InstructorUpsertWithoutFeedbackInput = {
+  update: Prisma.XOR<Prisma.InstructorUpdateWithoutFeedbackInput, Prisma.InstructorUncheckedUpdateWithoutFeedbackInput>
+  create: Prisma.XOR<Prisma.InstructorCreateWithoutFeedbackInput, Prisma.InstructorUncheckedCreateWithoutFeedbackInput>
+  where?: Prisma.InstructorWhereInput
+}
+
+export type InstructorUpdateToOneWithWhereWithoutFeedbackInput = {
+  where?: Prisma.InstructorWhereInput
+  data: Prisma.XOR<Prisma.InstructorUpdateWithoutFeedbackInput, Prisma.InstructorUncheckedUpdateWithoutFeedbackInput>
+}
+
+export type InstructorUpdateWithoutFeedbackInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutFeedbackInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorCreateManyIdentityVerifiedByInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  photoVerifiedById?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+}
+
+export type InstructorCreateManyPhotoVerifiedByInput = {
+  id?: string
+  slug: string
+  name: string
+  headline?: string | null
+  bio: string
+  avatar?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  status?: $Enums.ExpertStatus
+  statusReason?: string | null
+  contributorKinds?: Prisma.InstructorCreatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorCreateexpertiseInput | string[]
+  experienceMd?: string | null
+  yearsExperience?: number | null
+  languages?: Prisma.InstructorCreatelanguagesInput | string[]
+  timezone?: string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Date | string | null
+  identityVerifiedById?: string | null
+  identityNote?: string | null
+  photoVerifiedAt?: Date | string | null
+  photoSha256?: string | null
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
+}
+
+export type InstructorUpdateWithoutIdentityVerifiedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  photoVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsPhotoVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutIdentityVerifiedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateManyWithoutIdentityVerifiedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type InstructorUpdateWithoutPhotoVerifiedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneWithoutInstructorProfileNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutInstructorNestedInput
+  identityVerifiedBy?: Prisma.UserUpdateOneWithoutInstructorsIdentityVerifiedNestedInput
+  mentorProfile?: Prisma.MentorProfileUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateWithoutPhotoVerifiedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutInstructorNestedInput
+  mentorProfile?: Prisma.MentorProfileUncheckedUpdateOneWithoutInstructorNestedInput
+  credentials?: Prisma.ExpertCredentialUncheckedUpdateManyWithoutInstructorNestedInput
+  contributorAccount?: Prisma.ContributorAccountUncheckedUpdateOneWithoutInstructorNestedInput
+  cohorts?: Prisma.CourseCohortUncheckedUpdateManyWithoutMentorNestedInput
+  hostedGroups?: Prisma.CommunityGroupUncheckedUpdateManyWithoutHostInstructorNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutInstructorNestedInput
+  submissions?: Prisma.ContentSubmissionUncheckedUpdateManyWithoutInstructorNestedInput
+  eventHosts?: Prisma.LiveEventHostUncheckedUpdateManyWithoutInstructorNestedInput
+  feedback?: Prisma.EventFeedbackUncheckedUpdateManyWithoutInstructorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorInstructorNestedInput
+}
+
+export type InstructorUncheckedUpdateManyWithoutPhotoVerifiedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumExpertStatusFieldUpdateOperationsInput | $Enums.ExpertStatus
+  statusReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contributorKinds?: Prisma.InstructorUpdatecontributorKindsInput | $Enums.ContributorKind[]
+  expertise?: Prisma.InstructorUpdateexpertiseInput | string[]
+  experienceMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yearsExperience?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  languages?: Prisma.InstructorUpdatelanguagesInput | string[]
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  identityVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  identityVerifiedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identityNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photoSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFounder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trustedAuthor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -590,10 +3875,26 @@ export type InstructorUncheckedUpdateWithoutCoursesInput = {
 
 export type InstructorCountOutputType = {
   courses: number
+  credentials: number
+  cohorts: number
+  hostedGroups: number
+  resources: number
+  submissions: number
+  eventHosts: number
+  feedback: number
+  posts: number
 }
 
 export type InstructorCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   courses?: boolean | InstructorCountOutputTypeCountCoursesArgs
+  credentials?: boolean | InstructorCountOutputTypeCountCredentialsArgs
+  cohorts?: boolean | InstructorCountOutputTypeCountCohortsArgs
+  hostedGroups?: boolean | InstructorCountOutputTypeCountHostedGroupsArgs
+  resources?: boolean | InstructorCountOutputTypeCountResourcesArgs
+  submissions?: boolean | InstructorCountOutputTypeCountSubmissionsArgs
+  eventHosts?: boolean | InstructorCountOutputTypeCountEventHostsArgs
+  feedback?: boolean | InstructorCountOutputTypeCountFeedbackArgs
+  posts?: boolean | InstructorCountOutputTypeCountPostsArgs
 }
 
 /**
@@ -613,6 +3914,62 @@ export type InstructorCountOutputTypeCountCoursesArgs<ExtArgs extends runtime.Ty
   where?: Prisma.CourseWhereInput
 }
 
+/**
+ * InstructorCountOutputType without action
+ */
+export type InstructorCountOutputTypeCountCredentialsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExpertCredentialWhereInput
+}
+
+/**
+ * InstructorCountOutputType without action
+ */
+export type InstructorCountOutputTypeCountCohortsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CourseCohortWhereInput
+}
+
+/**
+ * InstructorCountOutputType without action
+ */
+export type InstructorCountOutputTypeCountHostedGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommunityGroupWhereInput
+}
+
+/**
+ * InstructorCountOutputType without action
+ */
+export type InstructorCountOutputTypeCountResourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ResourceWhereInput
+}
+
+/**
+ * InstructorCountOutputType without action
+ */
+export type InstructorCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentSubmissionWhereInput
+}
+
+/**
+ * InstructorCountOutputType without action
+ */
+export type InstructorCountOutputTypeCountEventHostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LiveEventHostWhereInput
+}
+
+/**
+ * InstructorCountOutputType without action
+ */
+export type InstructorCountOutputTypeCountFeedbackArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EventFeedbackWhereInput
+}
+
+/**
+ * InstructorCountOutputType without action
+ */
+export type InstructorCountOutputTypeCountPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostWhereInput
+}
+
 
 export type InstructorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -624,8 +3981,38 @@ export type InstructorSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  status?: boolean
+  statusReason?: boolean
+  contributorKinds?: boolean
+  expertise?: boolean
+  experienceMd?: boolean
+  yearsExperience?: boolean
+  languages?: boolean
+  timezone?: boolean
+  links?: boolean
+  identityVerifiedAt?: boolean
+  identityVerifiedById?: boolean
+  identityNote?: boolean
+  photoVerifiedAt?: boolean
+  photoSha256?: boolean
+  photoVerifiedById?: boolean
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
   user?: boolean | Prisma.Instructor$userArgs<ExtArgs>
   courses?: boolean | Prisma.Instructor$coursesArgs<ExtArgs>
+  identityVerifiedBy?: boolean | Prisma.Instructor$identityVerifiedByArgs<ExtArgs>
+  photoVerifiedBy?: boolean | Prisma.Instructor$photoVerifiedByArgs<ExtArgs>
+  mentorProfile?: boolean | Prisma.Instructor$mentorProfileArgs<ExtArgs>
+  credentials?: boolean | Prisma.Instructor$credentialsArgs<ExtArgs>
+  contributorAccount?: boolean | Prisma.Instructor$contributorAccountArgs<ExtArgs>
+  cohorts?: boolean | Prisma.Instructor$cohortsArgs<ExtArgs>
+  hostedGroups?: boolean | Prisma.Instructor$hostedGroupsArgs<ExtArgs>
+  resources?: boolean | Prisma.Instructor$resourcesArgs<ExtArgs>
+  submissions?: boolean | Prisma.Instructor$submissionsArgs<ExtArgs>
+  eventHosts?: boolean | Prisma.Instructor$eventHostsArgs<ExtArgs>
+  feedback?: boolean | Prisma.Instructor$feedbackArgs<ExtArgs>
+  posts?: boolean | Prisma.Instructor$postsArgs<ExtArgs>
   _count?: boolean | Prisma.InstructorCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["instructor"]>
 
@@ -639,7 +4026,27 @@ export type InstructorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  status?: boolean
+  statusReason?: boolean
+  contributorKinds?: boolean
+  expertise?: boolean
+  experienceMd?: boolean
+  yearsExperience?: boolean
+  languages?: boolean
+  timezone?: boolean
+  links?: boolean
+  identityVerifiedAt?: boolean
+  identityVerifiedById?: boolean
+  identityNote?: boolean
+  photoVerifiedAt?: boolean
+  photoSha256?: boolean
+  photoVerifiedById?: boolean
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
   user?: boolean | Prisma.Instructor$userArgs<ExtArgs>
+  identityVerifiedBy?: boolean | Prisma.Instructor$identityVerifiedByArgs<ExtArgs>
+  photoVerifiedBy?: boolean | Prisma.Instructor$photoVerifiedByArgs<ExtArgs>
 }, ExtArgs["result"]["instructor"]>
 
 export type InstructorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -652,7 +4059,27 @@ export type InstructorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  status?: boolean
+  statusReason?: boolean
+  contributorKinds?: boolean
+  expertise?: boolean
+  experienceMd?: boolean
+  yearsExperience?: boolean
+  languages?: boolean
+  timezone?: boolean
+  links?: boolean
+  identityVerifiedAt?: boolean
+  identityVerifiedById?: boolean
+  identityNote?: boolean
+  photoVerifiedAt?: boolean
+  photoSha256?: boolean
+  photoVerifiedById?: boolean
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
   user?: boolean | Prisma.Instructor$userArgs<ExtArgs>
+  identityVerifiedBy?: boolean | Prisma.Instructor$identityVerifiedByArgs<ExtArgs>
+  photoVerifiedBy?: boolean | Prisma.Instructor$photoVerifiedByArgs<ExtArgs>
 }, ExtArgs["result"]["instructor"]>
 
 export type InstructorSelectScalar = {
@@ -665,19 +4092,53 @@ export type InstructorSelectScalar = {
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  status?: boolean
+  statusReason?: boolean
+  contributorKinds?: boolean
+  expertise?: boolean
+  experienceMd?: boolean
+  yearsExperience?: boolean
+  languages?: boolean
+  timezone?: boolean
+  links?: boolean
+  identityVerifiedAt?: boolean
+  identityVerifiedById?: boolean
+  identityNote?: boolean
+  photoVerifiedAt?: boolean
+  photoSha256?: boolean
+  photoVerifiedById?: boolean
+  isFounder?: boolean
+  trustedAuthor?: boolean
+  isDemo?: boolean
 }
 
-export type InstructorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "headline" | "bio" | "avatar" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["instructor"]>
+export type InstructorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "headline" | "bio" | "avatar" | "userId" | "createdAt" | "updatedAt" | "status" | "statusReason" | "contributorKinds" | "expertise" | "experienceMd" | "yearsExperience" | "languages" | "timezone" | "links" | "identityVerifiedAt" | "identityVerifiedById" | "identityNote" | "photoVerifiedAt" | "photoSha256" | "photoVerifiedById" | "isFounder" | "trustedAuthor" | "isDemo", ExtArgs["result"]["instructor"]>
 export type InstructorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Instructor$userArgs<ExtArgs>
   courses?: boolean | Prisma.Instructor$coursesArgs<ExtArgs>
+  identityVerifiedBy?: boolean | Prisma.Instructor$identityVerifiedByArgs<ExtArgs>
+  photoVerifiedBy?: boolean | Prisma.Instructor$photoVerifiedByArgs<ExtArgs>
+  mentorProfile?: boolean | Prisma.Instructor$mentorProfileArgs<ExtArgs>
+  credentials?: boolean | Prisma.Instructor$credentialsArgs<ExtArgs>
+  contributorAccount?: boolean | Prisma.Instructor$contributorAccountArgs<ExtArgs>
+  cohorts?: boolean | Prisma.Instructor$cohortsArgs<ExtArgs>
+  hostedGroups?: boolean | Prisma.Instructor$hostedGroupsArgs<ExtArgs>
+  resources?: boolean | Prisma.Instructor$resourcesArgs<ExtArgs>
+  submissions?: boolean | Prisma.Instructor$submissionsArgs<ExtArgs>
+  eventHosts?: boolean | Prisma.Instructor$eventHostsArgs<ExtArgs>
+  feedback?: boolean | Prisma.Instructor$feedbackArgs<ExtArgs>
+  posts?: boolean | Prisma.Instructor$postsArgs<ExtArgs>
   _count?: boolean | Prisma.InstructorCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InstructorIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Instructor$userArgs<ExtArgs>
+  identityVerifiedBy?: boolean | Prisma.Instructor$identityVerifiedByArgs<ExtArgs>
+  photoVerifiedBy?: boolean | Prisma.Instructor$photoVerifiedByArgs<ExtArgs>
 }
 export type InstructorIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Instructor$userArgs<ExtArgs>
+  identityVerifiedBy?: boolean | Prisma.Instructor$identityVerifiedByArgs<ExtArgs>
+  photoVerifiedBy?: boolean | Prisma.Instructor$photoVerifiedByArgs<ExtArgs>
 }
 
 export type $InstructorPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -685,6 +4146,18 @@ export type $InstructorPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     user: Prisma.$UserPayload<ExtArgs> | null
     courses: Prisma.$CoursePayload<ExtArgs>[]
+    identityVerifiedBy: Prisma.$UserPayload<ExtArgs> | null
+    photoVerifiedBy: Prisma.$UserPayload<ExtArgs> | null
+    mentorProfile: Prisma.$MentorProfilePayload<ExtArgs> | null
+    credentials: Prisma.$ExpertCredentialPayload<ExtArgs>[]
+    contributorAccount: Prisma.$ContributorAccountPayload<ExtArgs> | null
+    cohorts: Prisma.$CourseCohortPayload<ExtArgs>[]
+    hostedGroups: Prisma.$CommunityGroupPayload<ExtArgs>[]
+    resources: Prisma.$ResourcePayload<ExtArgs>[]
+    submissions: Prisma.$ContentSubmissionPayload<ExtArgs>[]
+    eventHosts: Prisma.$LiveEventHostPayload<ExtArgs>[]
+    feedback: Prisma.$EventFeedbackPayload<ExtArgs>[]
+    posts: Prisma.$PostPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -696,6 +4169,65 @@ export type $InstructorPayload<ExtArgs extends runtime.Types.Extensions.Internal
     userId: string | null
     createdAt: Date
     updatedAt: Date
+    /**
+     * The one public expert profile for mentors, instructors and creators.
+     */
+    status: $Enums.ExpertStatus
+    /**
+     * Shown to the expert when paused or suspended.
+     */
+    statusReason: string | null
+    /**
+     * What this expert does here. Backfilled to {INSTRUCTOR}. Grants in can() come from it.
+     */
+    contributorKinds: $Enums.ContributorKind[]
+    /**
+     * Areas of expertise, plain labels (at most 8).
+     */
+    expertise: string[]
+    experienceMd: string | null
+    yearsExperience: number | null
+    /**
+     * ISO 639-1 codes from a fixed list.
+     */
+    languages: string[]
+    /**
+     * IANA zone, checked with isValidTimeZone.
+     */
+    timezone: string | null
+    /**
+     * At most 5 {label, url}, https only.
+     */
+    links: runtime.JsonValue | null
+    /**
+     * Staff confirmed the person is who the profile says. No ID images are stored; the method goes in identityNote.
+     */
+    identityVerifiedAt: Date | null
+    identityVerifiedById: string | null
+    /**
+     * Private to staff.
+     */
+    identityNote: string | null
+    /**
+     * Staff confirmed the photo shows this person (verified mentor photos, §17). Changing photoUrl clears
+     * it and photoSha256; a daily sweep re-fetches the image and clears both when the hash changes.
+     */
+    photoVerifiedAt: Date | null
+    /**
+     * sha256 of the image bytes fetched when staff verified the photo.
+     */
+    photoSha256: string | null
+    photoVerifiedById: string | null
+    /**
+     * The founder's own profile (§15). Backfilled for slug "harsha".
+     */
+    isFounder: boolean
+    /**
+     * Owner option (BLOCKED_ON_YOU item 12): once reviewed course revisions exist, this author's
+     * revisions skip review. Unused while DR-34's strict rule stands.
+     */
+    trustedAuthor: boolean
+    isDemo: boolean
   }, ExtArgs["result"]["instructor"]>
   composites: {}
 }
@@ -1092,6 +4624,18 @@ export interface Prisma__InstructorClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.Instructor$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   courses<T extends Prisma.Instructor$coursesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$coursesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  identityVerifiedBy<T extends Prisma.Instructor$identityVerifiedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$identityVerifiedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  photoVerifiedBy<T extends Prisma.Instructor$photoVerifiedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$photoVerifiedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  mentorProfile<T extends Prisma.Instructor$mentorProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$mentorProfileArgs<ExtArgs>>): Prisma.Prisma__MentorProfileClient<runtime.Types.Result.GetResult<Prisma.$MentorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  credentials<T extends Prisma.Instructor$credentialsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$credentialsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpertCredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contributorAccount<T extends Prisma.Instructor$contributorAccountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$contributorAccountArgs<ExtArgs>>): Prisma.Prisma__ContributorAccountClient<runtime.Types.Result.GetResult<Prisma.$ContributorAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  cohorts<T extends Prisma.Instructor$cohortsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$cohortsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CourseCohortPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  hostedGroups<T extends Prisma.Instructor$hostedGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$hostedGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommunityGroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  resources<T extends Prisma.Instructor$resourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$resourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  submissions<T extends Prisma.Instructor$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  eventHosts<T extends Prisma.Instructor$eventHostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$eventHostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LiveEventHostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  feedback<T extends Prisma.Instructor$feedbackArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$feedbackArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventFeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  posts<T extends Prisma.Instructor$postsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instructor$postsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1130,6 +4674,24 @@ export interface InstructorFieldRefs {
   readonly userId: Prisma.FieldRef<"Instructor", 'String'>
   readonly createdAt: Prisma.FieldRef<"Instructor", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Instructor", 'DateTime'>
+  readonly status: Prisma.FieldRef<"Instructor", 'ExpertStatus'>
+  readonly statusReason: Prisma.FieldRef<"Instructor", 'String'>
+  readonly contributorKinds: Prisma.FieldRef<"Instructor", 'ContributorKind[]'>
+  readonly expertise: Prisma.FieldRef<"Instructor", 'String[]'>
+  readonly experienceMd: Prisma.FieldRef<"Instructor", 'String'>
+  readonly yearsExperience: Prisma.FieldRef<"Instructor", 'Int'>
+  readonly languages: Prisma.FieldRef<"Instructor", 'String[]'>
+  readonly timezone: Prisma.FieldRef<"Instructor", 'String'>
+  readonly links: Prisma.FieldRef<"Instructor", 'Json'>
+  readonly identityVerifiedAt: Prisma.FieldRef<"Instructor", 'DateTime'>
+  readonly identityVerifiedById: Prisma.FieldRef<"Instructor", 'String'>
+  readonly identityNote: Prisma.FieldRef<"Instructor", 'String'>
+  readonly photoVerifiedAt: Prisma.FieldRef<"Instructor", 'DateTime'>
+  readonly photoSha256: Prisma.FieldRef<"Instructor", 'String'>
+  readonly photoVerifiedById: Prisma.FieldRef<"Instructor", 'String'>
+  readonly isFounder: Prisma.FieldRef<"Instructor", 'Boolean'>
+  readonly trustedAuthor: Prisma.FieldRef<"Instructor", 'Boolean'>
+  readonly isDemo: Prisma.FieldRef<"Instructor", 'Boolean'>
 }
     
 
@@ -1566,6 +5128,274 @@ export type Instructor$coursesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.CourseScalarFieldEnum | Prisma.CourseScalarFieldEnum[]
+}
+
+/**
+ * Instructor.identityVerifiedBy
+ */
+export type Instructor$identityVerifiedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Instructor.photoVerifiedBy
+ */
+export type Instructor$photoVerifiedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Instructor.mentorProfile
+ */
+export type Instructor$mentorProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MentorProfile
+   */
+  select?: Prisma.MentorProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MentorProfile
+   */
+  omit?: Prisma.MentorProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MentorProfileInclude<ExtArgs> | null
+  where?: Prisma.MentorProfileWhereInput
+}
+
+/**
+ * Instructor.credentials
+ */
+export type Instructor$credentialsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExpertCredential
+   */
+  select?: Prisma.ExpertCredentialSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExpertCredential
+   */
+  omit?: Prisma.ExpertCredentialOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExpertCredentialInclude<ExtArgs> | null
+  where?: Prisma.ExpertCredentialWhereInput
+  orderBy?: Prisma.ExpertCredentialOrderByWithRelationInput | Prisma.ExpertCredentialOrderByWithRelationInput[]
+  cursor?: Prisma.ExpertCredentialWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExpertCredentialScalarFieldEnum | Prisma.ExpertCredentialScalarFieldEnum[]
+}
+
+/**
+ * Instructor.contributorAccount
+ */
+export type Instructor$contributorAccountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContributorAccount
+   */
+  select?: Prisma.ContributorAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContributorAccount
+   */
+  omit?: Prisma.ContributorAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContributorAccountInclude<ExtArgs> | null
+  where?: Prisma.ContributorAccountWhereInput
+}
+
+/**
+ * Instructor.cohorts
+ */
+export type Instructor$cohortsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CourseCohort
+   */
+  select?: Prisma.CourseCohortSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CourseCohort
+   */
+  omit?: Prisma.CourseCohortOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseCohortInclude<ExtArgs> | null
+  where?: Prisma.CourseCohortWhereInput
+  orderBy?: Prisma.CourseCohortOrderByWithRelationInput | Prisma.CourseCohortOrderByWithRelationInput[]
+  cursor?: Prisma.CourseCohortWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CourseCohortScalarFieldEnum | Prisma.CourseCohortScalarFieldEnum[]
+}
+
+/**
+ * Instructor.hostedGroups
+ */
+export type Instructor$hostedGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CommunityGroup
+   */
+  select?: Prisma.CommunityGroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CommunityGroup
+   */
+  omit?: Prisma.CommunityGroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommunityGroupInclude<ExtArgs> | null
+  where?: Prisma.CommunityGroupWhereInput
+  orderBy?: Prisma.CommunityGroupOrderByWithRelationInput | Prisma.CommunityGroupOrderByWithRelationInput[]
+  cursor?: Prisma.CommunityGroupWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommunityGroupScalarFieldEnum | Prisma.CommunityGroupScalarFieldEnum[]
+}
+
+/**
+ * Instructor.resources
+ */
+export type Instructor$resourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Resource
+   */
+  select?: Prisma.ResourceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Resource
+   */
+  omit?: Prisma.ResourceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ResourceInclude<ExtArgs> | null
+  where?: Prisma.ResourceWhereInput
+  orderBy?: Prisma.ResourceOrderByWithRelationInput | Prisma.ResourceOrderByWithRelationInput[]
+  cursor?: Prisma.ResourceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ResourceScalarFieldEnum | Prisma.ResourceScalarFieldEnum[]
+}
+
+/**
+ * Instructor.submissions
+ */
+export type Instructor$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentSubmission
+   */
+  select?: Prisma.ContentSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentSubmission
+   */
+  omit?: Prisma.ContentSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentSubmissionInclude<ExtArgs> | null
+  where?: Prisma.ContentSubmissionWhereInput
+  orderBy?: Prisma.ContentSubmissionOrderByWithRelationInput | Prisma.ContentSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.ContentSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentSubmissionScalarFieldEnum | Prisma.ContentSubmissionScalarFieldEnum[]
+}
+
+/**
+ * Instructor.eventHosts
+ */
+export type Instructor$eventHostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LiveEventHost
+   */
+  select?: Prisma.LiveEventHostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LiveEventHost
+   */
+  omit?: Prisma.LiveEventHostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LiveEventHostInclude<ExtArgs> | null
+  where?: Prisma.LiveEventHostWhereInput
+  orderBy?: Prisma.LiveEventHostOrderByWithRelationInput | Prisma.LiveEventHostOrderByWithRelationInput[]
+  cursor?: Prisma.LiveEventHostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LiveEventHostScalarFieldEnum | Prisma.LiveEventHostScalarFieldEnum[]
+}
+
+/**
+ * Instructor.feedback
+ */
+export type Instructor$feedbackArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EventFeedback
+   */
+  select?: Prisma.EventFeedbackSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EventFeedback
+   */
+  omit?: Prisma.EventFeedbackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EventFeedbackInclude<ExtArgs> | null
+  where?: Prisma.EventFeedbackWhereInput
+  orderBy?: Prisma.EventFeedbackOrderByWithRelationInput | Prisma.EventFeedbackOrderByWithRelationInput[]
+  cursor?: Prisma.EventFeedbackWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EventFeedbackScalarFieldEnum | Prisma.EventFeedbackScalarFieldEnum[]
+}
+
+/**
+ * Instructor.posts
+ */
+export type Instructor$postsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Post
+   */
+  select?: Prisma.PostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Post
+   */
+  omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  where?: Prisma.PostWhereInput
+  orderBy?: Prisma.PostOrderByWithRelationInput | Prisma.PostOrderByWithRelationInput[]
+  cursor?: Prisma.PostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostScalarFieldEnum | Prisma.PostScalarFieldEnum[]
 }
 
 /**

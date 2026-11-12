@@ -747,6 +747,10 @@ export type $ReferralPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
      */
     qualifiedAt: Date | null
     rewardTxId: string | null
+    /**
+     * Deprecated (house rule: no raw IPs). Nulled by 20261113000100 and never written again;
+     * dropped by a later migration once no deployed build writes it.
+     */
     signupIp: string | null
     createdAt: Date
   }, ExtArgs["result"]["referral"]>

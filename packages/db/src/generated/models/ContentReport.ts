@@ -34,6 +34,7 @@ export type ContentReportMinAggregateOutputType = {
   resolution: string | null
   resolvedAt: Date | null
   createdAt: Date | null
+  resolvedById: string | null
 }
 
 export type ContentReportMaxAggregateOutputType = {
@@ -46,6 +47,7 @@ export type ContentReportMaxAggregateOutputType = {
   resolution: string | null
   resolvedAt: Date | null
   createdAt: Date | null
+  resolvedById: string | null
 }
 
 export type ContentReportCountAggregateOutputType = {
@@ -58,6 +60,7 @@ export type ContentReportCountAggregateOutputType = {
   resolution: number
   resolvedAt: number
   createdAt: number
+  resolvedById: number
   _all: number
 }
 
@@ -72,6 +75,7 @@ export type ContentReportMinAggregateInputType = {
   resolution?: true
   resolvedAt?: true
   createdAt?: true
+  resolvedById?: true
 }
 
 export type ContentReportMaxAggregateInputType = {
@@ -84,6 +88,7 @@ export type ContentReportMaxAggregateInputType = {
   resolution?: true
   resolvedAt?: true
   createdAt?: true
+  resolvedById?: true
 }
 
 export type ContentReportCountAggregateInputType = {
@@ -96,6 +101,7 @@ export type ContentReportCountAggregateInputType = {
   resolution?: true
   resolvedAt?: true
   createdAt?: true
+  resolvedById?: true
   _all?: true
 }
 
@@ -181,6 +187,7 @@ export type ContentReportGroupByOutputType = {
   resolution: string | null
   resolvedAt: Date | null
   createdAt: Date
+  resolvedById: string | null
   _count: ContentReportCountAggregateOutputType | null
   _min: ContentReportMinAggregateOutputType | null
   _max: ContentReportMaxAggregateOutputType | null
@@ -214,7 +221,9 @@ export type ContentReportWhereInput = {
   resolution?: Prisma.StringNullableFilter<"ContentReport"> | string | null
   resolvedAt?: Prisma.DateTimeNullableFilter<"ContentReport"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ContentReport"> | Date | string
+  resolvedById?: Prisma.StringNullableFilter<"ContentReport"> | string | null
   reporter?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  resolvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ContentReportOrderByWithRelationInput = {
@@ -227,7 +236,9 @@ export type ContentReportOrderByWithRelationInput = {
   resolution?: Prisma.SortOrderInput | Prisma.SortOrder
   resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrderInput | Prisma.SortOrder
   reporter?: Prisma.UserOrderByWithRelationInput
+  resolvedBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ContentReportWhereUniqueInput = Prisma.AtLeast<{
@@ -244,7 +255,9 @@ export type ContentReportWhereUniqueInput = Prisma.AtLeast<{
   resolution?: Prisma.StringNullableFilter<"ContentReport"> | string | null
   resolvedAt?: Prisma.DateTimeNullableFilter<"ContentReport"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ContentReport"> | Date | string
+  resolvedById?: Prisma.StringNullableFilter<"ContentReport"> | string | null
   reporter?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  resolvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id" | "reporterId_targetType_targetId">
 
 export type ContentReportOrderByWithAggregationInput = {
@@ -257,6 +270,7 @@ export type ContentReportOrderByWithAggregationInput = {
   resolution?: Prisma.SortOrderInput | Prisma.SortOrder
   resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ContentReportCountOrderByAggregateInput
   _max?: Prisma.ContentReportMaxOrderByAggregateInput
   _min?: Prisma.ContentReportMinOrderByAggregateInput
@@ -275,6 +289,7 @@ export type ContentReportScalarWhereWithAggregatesInput = {
   resolution?: Prisma.StringNullableWithAggregatesFilter<"ContentReport"> | string | null
   resolvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ContentReport"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ContentReport"> | Date | string
+  resolvedById?: Prisma.StringNullableWithAggregatesFilter<"ContentReport"> | string | null
 }
 
 export type ContentReportCreateInput = {
@@ -287,6 +302,7 @@ export type ContentReportCreateInput = {
   resolvedAt?: Date | string | null
   createdAt?: Date | string
   reporter: Prisma.UserCreateNestedOneWithoutReportsInput
+  resolvedBy?: Prisma.UserCreateNestedOneWithoutReportsResolvedInput
 }
 
 export type ContentReportUncheckedCreateInput = {
@@ -299,6 +315,7 @@ export type ContentReportUncheckedCreateInput = {
   resolution?: string | null
   resolvedAt?: Date | string | null
   createdAt?: Date | string
+  resolvedById?: string | null
 }
 
 export type ContentReportUpdateInput = {
@@ -311,6 +328,7 @@ export type ContentReportUpdateInput = {
   resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reporter?: Prisma.UserUpdateOneRequiredWithoutReportsNestedInput
+  resolvedBy?: Prisma.UserUpdateOneWithoutReportsResolvedNestedInput
 }
 
 export type ContentReportUncheckedUpdateInput = {
@@ -323,6 +341,7 @@ export type ContentReportUncheckedUpdateInput = {
   resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ContentReportCreateManyInput = {
@@ -335,6 +354,7 @@ export type ContentReportCreateManyInput = {
   resolution?: string | null
   resolvedAt?: Date | string | null
   createdAt?: Date | string
+  resolvedById?: string | null
 }
 
 export type ContentReportUpdateManyMutationInput = {
@@ -358,6 +378,7 @@ export type ContentReportUncheckedUpdateManyInput = {
   resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ContentReportListRelationFilter = {
@@ -386,6 +407,7 @@ export type ContentReportCountOrderByAggregateInput = {
   resolution?: Prisma.SortOrder
   resolvedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrder
 }
 
 export type ContentReportMaxOrderByAggregateInput = {
@@ -398,6 +420,7 @@ export type ContentReportMaxOrderByAggregateInput = {
   resolution?: Prisma.SortOrder
   resolvedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrder
 }
 
 export type ContentReportMinOrderByAggregateInput = {
@@ -410,6 +433,7 @@ export type ContentReportMinOrderByAggregateInput = {
   resolution?: Prisma.SortOrder
   resolvedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrder
 }
 
 export type ContentReportCreateNestedManyWithoutReporterInput = {
@@ -419,10 +443,24 @@ export type ContentReportCreateNestedManyWithoutReporterInput = {
   connect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
 }
 
+export type ContentReportCreateNestedManyWithoutResolvedByInput = {
+  create?: Prisma.XOR<Prisma.ContentReportCreateWithoutResolvedByInput, Prisma.ContentReportUncheckedCreateWithoutResolvedByInput> | Prisma.ContentReportCreateWithoutResolvedByInput[] | Prisma.ContentReportUncheckedCreateWithoutResolvedByInput[]
+  connectOrCreate?: Prisma.ContentReportCreateOrConnectWithoutResolvedByInput | Prisma.ContentReportCreateOrConnectWithoutResolvedByInput[]
+  createMany?: Prisma.ContentReportCreateManyResolvedByInputEnvelope
+  connect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+}
+
 export type ContentReportUncheckedCreateNestedManyWithoutReporterInput = {
   create?: Prisma.XOR<Prisma.ContentReportCreateWithoutReporterInput, Prisma.ContentReportUncheckedCreateWithoutReporterInput> | Prisma.ContentReportCreateWithoutReporterInput[] | Prisma.ContentReportUncheckedCreateWithoutReporterInput[]
   connectOrCreate?: Prisma.ContentReportCreateOrConnectWithoutReporterInput | Prisma.ContentReportCreateOrConnectWithoutReporterInput[]
   createMany?: Prisma.ContentReportCreateManyReporterInputEnvelope
+  connect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+}
+
+export type ContentReportUncheckedCreateNestedManyWithoutResolvedByInput = {
+  create?: Prisma.XOR<Prisma.ContentReportCreateWithoutResolvedByInput, Prisma.ContentReportUncheckedCreateWithoutResolvedByInput> | Prisma.ContentReportCreateWithoutResolvedByInput[] | Prisma.ContentReportUncheckedCreateWithoutResolvedByInput[]
+  connectOrCreate?: Prisma.ContentReportCreateOrConnectWithoutResolvedByInput | Prisma.ContentReportCreateOrConnectWithoutResolvedByInput[]
+  createMany?: Prisma.ContentReportCreateManyResolvedByInputEnvelope
   connect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
 }
 
@@ -440,6 +478,20 @@ export type ContentReportUpdateManyWithoutReporterNestedInput = {
   deleteMany?: Prisma.ContentReportScalarWhereInput | Prisma.ContentReportScalarWhereInput[]
 }
 
+export type ContentReportUpdateManyWithoutResolvedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentReportCreateWithoutResolvedByInput, Prisma.ContentReportUncheckedCreateWithoutResolvedByInput> | Prisma.ContentReportCreateWithoutResolvedByInput[] | Prisma.ContentReportUncheckedCreateWithoutResolvedByInput[]
+  connectOrCreate?: Prisma.ContentReportCreateOrConnectWithoutResolvedByInput | Prisma.ContentReportCreateOrConnectWithoutResolvedByInput[]
+  upsert?: Prisma.ContentReportUpsertWithWhereUniqueWithoutResolvedByInput | Prisma.ContentReportUpsertWithWhereUniqueWithoutResolvedByInput[]
+  createMany?: Prisma.ContentReportCreateManyResolvedByInputEnvelope
+  set?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+  disconnect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+  delete?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+  connect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+  update?: Prisma.ContentReportUpdateWithWhereUniqueWithoutResolvedByInput | Prisma.ContentReportUpdateWithWhereUniqueWithoutResolvedByInput[]
+  updateMany?: Prisma.ContentReportUpdateManyWithWhereWithoutResolvedByInput | Prisma.ContentReportUpdateManyWithWhereWithoutResolvedByInput[]
+  deleteMany?: Prisma.ContentReportScalarWhereInput | Prisma.ContentReportScalarWhereInput[]
+}
+
 export type ContentReportUncheckedUpdateManyWithoutReporterNestedInput = {
   create?: Prisma.XOR<Prisma.ContentReportCreateWithoutReporterInput, Prisma.ContentReportUncheckedCreateWithoutReporterInput> | Prisma.ContentReportCreateWithoutReporterInput[] | Prisma.ContentReportUncheckedCreateWithoutReporterInput[]
   connectOrCreate?: Prisma.ContentReportCreateOrConnectWithoutReporterInput | Prisma.ContentReportCreateOrConnectWithoutReporterInput[]
@@ -451,6 +503,20 @@ export type ContentReportUncheckedUpdateManyWithoutReporterNestedInput = {
   connect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
   update?: Prisma.ContentReportUpdateWithWhereUniqueWithoutReporterInput | Prisma.ContentReportUpdateWithWhereUniqueWithoutReporterInput[]
   updateMany?: Prisma.ContentReportUpdateManyWithWhereWithoutReporterInput | Prisma.ContentReportUpdateManyWithWhereWithoutReporterInput[]
+  deleteMany?: Prisma.ContentReportScalarWhereInput | Prisma.ContentReportScalarWhereInput[]
+}
+
+export type ContentReportUncheckedUpdateManyWithoutResolvedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentReportCreateWithoutResolvedByInput, Prisma.ContentReportUncheckedCreateWithoutResolvedByInput> | Prisma.ContentReportCreateWithoutResolvedByInput[] | Prisma.ContentReportUncheckedCreateWithoutResolvedByInput[]
+  connectOrCreate?: Prisma.ContentReportCreateOrConnectWithoutResolvedByInput | Prisma.ContentReportCreateOrConnectWithoutResolvedByInput[]
+  upsert?: Prisma.ContentReportUpsertWithWhereUniqueWithoutResolvedByInput | Prisma.ContentReportUpsertWithWhereUniqueWithoutResolvedByInput[]
+  createMany?: Prisma.ContentReportCreateManyResolvedByInputEnvelope
+  set?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+  disconnect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+  delete?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+  connect?: Prisma.ContentReportWhereUniqueInput | Prisma.ContentReportWhereUniqueInput[]
+  update?: Prisma.ContentReportUpdateWithWhereUniqueWithoutResolvedByInput | Prisma.ContentReportUpdateWithWhereUniqueWithoutResolvedByInput[]
+  updateMany?: Prisma.ContentReportUpdateManyWithWhereWithoutResolvedByInput | Prisma.ContentReportUpdateManyWithWhereWithoutResolvedByInput[]
   deleteMany?: Prisma.ContentReportScalarWhereInput | Prisma.ContentReportScalarWhereInput[]
 }
 
@@ -467,6 +533,7 @@ export type ContentReportCreateWithoutReporterInput = {
   resolution?: string | null
   resolvedAt?: Date | string | null
   createdAt?: Date | string
+  resolvedBy?: Prisma.UserCreateNestedOneWithoutReportsResolvedInput
 }
 
 export type ContentReportUncheckedCreateWithoutReporterInput = {
@@ -478,6 +545,7 @@ export type ContentReportUncheckedCreateWithoutReporterInput = {
   resolution?: string | null
   resolvedAt?: Date | string | null
   createdAt?: Date | string
+  resolvedById?: string | null
 }
 
 export type ContentReportCreateOrConnectWithoutReporterInput = {
@@ -487,6 +555,40 @@ export type ContentReportCreateOrConnectWithoutReporterInput = {
 
 export type ContentReportCreateManyReporterInputEnvelope = {
   data: Prisma.ContentReportCreateManyReporterInput | Prisma.ContentReportCreateManyReporterInput[]
+  skipDuplicates?: boolean
+}
+
+export type ContentReportCreateWithoutResolvedByInput = {
+  id?: string
+  targetType: string
+  targetId: string
+  reason: string
+  status?: $Enums.ReportStatus
+  resolution?: string | null
+  resolvedAt?: Date | string | null
+  createdAt?: Date | string
+  reporter: Prisma.UserCreateNestedOneWithoutReportsInput
+}
+
+export type ContentReportUncheckedCreateWithoutResolvedByInput = {
+  id?: string
+  reporterId: string
+  targetType: string
+  targetId: string
+  reason: string
+  status?: $Enums.ReportStatus
+  resolution?: string | null
+  resolvedAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type ContentReportCreateOrConnectWithoutResolvedByInput = {
+  where: Prisma.ContentReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentReportCreateWithoutResolvedByInput, Prisma.ContentReportUncheckedCreateWithoutResolvedByInput>
+}
+
+export type ContentReportCreateManyResolvedByInputEnvelope = {
+  data: Prisma.ContentReportCreateManyResolvedByInput | Prisma.ContentReportCreateManyResolvedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -519,10 +621,40 @@ export type ContentReportScalarWhereInput = {
   resolution?: Prisma.StringNullableFilter<"ContentReport"> | string | null
   resolvedAt?: Prisma.DateTimeNullableFilter<"ContentReport"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ContentReport"> | Date | string
+  resolvedById?: Prisma.StringNullableFilter<"ContentReport"> | string | null
+}
+
+export type ContentReportUpsertWithWhereUniqueWithoutResolvedByInput = {
+  where: Prisma.ContentReportWhereUniqueInput
+  update: Prisma.XOR<Prisma.ContentReportUpdateWithoutResolvedByInput, Prisma.ContentReportUncheckedUpdateWithoutResolvedByInput>
+  create: Prisma.XOR<Prisma.ContentReportCreateWithoutResolvedByInput, Prisma.ContentReportUncheckedCreateWithoutResolvedByInput>
+}
+
+export type ContentReportUpdateWithWhereUniqueWithoutResolvedByInput = {
+  where: Prisma.ContentReportWhereUniqueInput
+  data: Prisma.XOR<Prisma.ContentReportUpdateWithoutResolvedByInput, Prisma.ContentReportUncheckedUpdateWithoutResolvedByInput>
+}
+
+export type ContentReportUpdateManyWithWhereWithoutResolvedByInput = {
+  where: Prisma.ContentReportScalarWhereInput
+  data: Prisma.XOR<Prisma.ContentReportUpdateManyMutationInput, Prisma.ContentReportUncheckedUpdateManyWithoutResolvedByInput>
 }
 
 export type ContentReportCreateManyReporterInput = {
   id?: string
+  targetType: string
+  targetId: string
+  reason: string
+  status?: $Enums.ReportStatus
+  resolution?: string | null
+  resolvedAt?: Date | string | null
+  createdAt?: Date | string
+  resolvedById?: string | null
+}
+
+export type ContentReportCreateManyResolvedByInput = {
+  id?: string
+  reporterId: string
   targetType: string
   targetId: string
   reason: string
@@ -541,6 +673,7 @@ export type ContentReportUpdateWithoutReporterInput = {
   resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resolvedBy?: Prisma.UserUpdateOneWithoutReportsResolvedNestedInput
 }
 
 export type ContentReportUncheckedUpdateWithoutReporterInput = {
@@ -552,10 +685,48 @@ export type ContentReportUncheckedUpdateWithoutReporterInput = {
   resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ContentReportUncheckedUpdateManyWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  targetType?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.StringFieldUpdateOperationsInput | string
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type ContentReportUpdateWithoutResolvedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  targetType?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.StringFieldUpdateOperationsInput | string
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reporter?: Prisma.UserUpdateOneRequiredWithoutReportsNestedInput
+}
+
+export type ContentReportUncheckedUpdateWithoutResolvedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetType?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.StringFieldUpdateOperationsInput | string
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ContentReportUncheckedUpdateManyWithoutResolvedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reporterId?: Prisma.StringFieldUpdateOperationsInput | string
   targetType?: Prisma.StringFieldUpdateOperationsInput | string
   targetId?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
@@ -577,7 +748,9 @@ export type ContentReportSelect<ExtArgs extends runtime.Types.Extensions.Interna
   resolution?: boolean
   resolvedAt?: boolean
   createdAt?: boolean
+  resolvedById?: boolean
   reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.ContentReport$resolvedByArgs<ExtArgs>
 }, ExtArgs["result"]["contentReport"]>
 
 export type ContentReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -590,7 +763,9 @@ export type ContentReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   resolution?: boolean
   resolvedAt?: boolean
   createdAt?: boolean
+  resolvedById?: boolean
   reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.ContentReport$resolvedByArgs<ExtArgs>
 }, ExtArgs["result"]["contentReport"]>
 
 export type ContentReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -603,7 +778,9 @@ export type ContentReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   resolution?: boolean
   resolvedAt?: boolean
   createdAt?: boolean
+  resolvedById?: boolean
   reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.ContentReport$resolvedByArgs<ExtArgs>
 }, ExtArgs["result"]["contentReport"]>
 
 export type ContentReportSelectScalar = {
@@ -616,29 +793,34 @@ export type ContentReportSelectScalar = {
   resolution?: boolean
   resolvedAt?: boolean
   createdAt?: boolean
+  resolvedById?: boolean
 }
 
-export type ContentReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reporterId" | "targetType" | "targetId" | "reason" | "status" | "resolution" | "resolvedAt" | "createdAt", ExtArgs["result"]["contentReport"]>
+export type ContentReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reporterId" | "targetType" | "targetId" | "reason" | "status" | "resolution" | "resolvedAt" | "createdAt" | "resolvedById", ExtArgs["result"]["contentReport"]>
 export type ContentReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.ContentReport$resolvedByArgs<ExtArgs>
 }
 export type ContentReportIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.ContentReport$resolvedByArgs<ExtArgs>
 }
 export type ContentReportIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.ContentReport$resolvedByArgs<ExtArgs>
 }
 
 export type $ContentReportPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ContentReport"
   objects: {
     reporter: Prisma.$UserPayload<ExtArgs>
+    resolvedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     reporterId: string
     /**
-     * "post" | "comment" | "user"
+     * "post" | "comment" | "user" | "group" | "project" | "event" | "event_feedback" | "opportunity" | "partner"
      */
     targetType: string
     targetId: string
@@ -647,6 +829,7 @@ export type $ContentReportPayload<ExtArgs extends runtime.Types.Extensions.Inter
     resolution: string | null
     resolvedAt: Date | null
     createdAt: Date
+    resolvedById: string | null
   }, ExtArgs["result"]["contentReport"]>
   composites: {}
 }
@@ -1042,6 +1225,7 @@ readonly fields: ContentReportFieldRefs;
 export interface Prisma__ContentReportClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   reporter<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  resolvedBy<T extends Prisma.ContentReport$resolvedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentReport$resolvedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1080,6 +1264,7 @@ export interface ContentReportFieldRefs {
   readonly resolution: Prisma.FieldRef<"ContentReport", 'String'>
   readonly resolvedAt: Prisma.FieldRef<"ContentReport", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ContentReport", 'DateTime'>
+  readonly resolvedById: Prisma.FieldRef<"ContentReport", 'String'>
 }
     
 
@@ -1473,6 +1658,25 @@ export type ContentReportDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many ContentReports to delete.
    */
   limit?: number
+}
+
+/**
+ * ContentReport.resolvedBy
+ */
+export type ContentReport$resolvedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

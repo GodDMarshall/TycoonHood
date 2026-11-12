@@ -1,7 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { prisma } from "@tycoonhood/db";
+import { prisma, type PostStatus } from "@tycoonhood/db";
 import {
   AuthoringError,
   ForbiddenError,
@@ -122,6 +122,17 @@ export async function setCourseCoverAction(courseId: string, _p: { ok?: string; 
   return { ok: raw ? "Cover saved." : "Cover cleared — the house photo shows." };
 }
 
+/**
+ * The status an essay's time gives it, as migration 20261113000700
+ * backfilled every post: no time is a draft, a past time is live, a future
+ * time is queued. Written with publishedAt in the same update, because the
+ * CHECK Post_live_has_time refuses a live or queued post with no time.
+ */
+function postStatusFor(publishedAt: Date | null, now: Date): PostStatus {
+  if (!publishedAt) return "DRAFT";
+  return publishedAt > now ? "SCHEDULED" : "PUBLISHED";
+}
+
 export async function savePostAction(postId: string | null, _p: AdminActionState, fd: FormData): Promise<AdminActionState> {
   const admin = await requireAdmin();
   const title = String(fd.get("title") ?? "").trim();
@@ -134,6 +145,7 @@ export async function savePostAction(postId: string | null, _p: AdminActionState
   const contentMd = String(fd.get("contentMd") ?? "");
   const publish = fd.get("publish") === "on";
   if (!title || !slug || !contentMd) return { error: "Title, slug, and content are required." };
+  const now = new Date();
   const data = {
     title,
     slug,
@@ -141,17 +153,18 @@ export async function savePostAction(postId: string | null, _p: AdminActionState
       excerpt ||
       sliceWhole(contentMd.replace(/[#*_>`]/g, ""), 0, 140).trim(),
     contentMd,
-    publishedAt: publish ? new Date() : null,
     authorName: admin.profile?.displayName ?? admin.name ?? "Tycoonhood",
   };
   if (postId) {
     const existing = await prisma.post.findUniqueOrThrow({ where: { id: postId } });
+    const publishedAt = publish ? (existing.publishedAt ?? now) : null;
     await prisma.post.update({
       where: { id: postId },
-      data: { ...data, publishedAt: publish ? (existing.publishedAt ?? new Date()) : null },
+      data: { ...data, publishedAt, status: postStatusFor(publishedAt, now) },
     });
   } else {
-    await prisma.post.create({ data });
+    const publishedAt = publish ? now : null;
+    await prisma.post.create({ data: { ...data, publishedAt, status: postStatusFor(publishedAt, now) } });
   }
   revalidatePath("/admin/content");
   revalidatePath("/blog");

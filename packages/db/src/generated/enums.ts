@@ -108,7 +108,15 @@ export const NotificationType = {
   SYSTEM: 'SYSTEM',
   ORDER: 'ORDER',
   COMMUNITY: 'COMMUNITY',
-  EARNINGS: 'EARNINGS'
+  EARNINGS: 'EARNINGS',
+  LEARNING: 'LEARNING',
+  MENTORSHIP: 'MENTORSHIP',
+  EVENT: 'EVENT',
+  OPPORTUNITY: 'OPPORTUNITY',
+  CONTRIBUTOR: 'CONTRIBUTOR',
+  PROJECT: 'PROJECT',
+  GOAL: 'GOAL',
+  ANNOUNCEMENT: 'ANNOUNCEMENT'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -156,7 +164,8 @@ export const ProductKind = {
   DIGITAL: 'DIGITAL',
   PHYSICAL: 'PHYSICAL',
   COURSE: 'COURSE',
-  MEMBERSHIP: 'MEMBERSHIP'
+  MEMBERSHIP: 'MEMBERSHIP',
+  LIVE_EVENT: 'LIVE_EVENT'
 } as const
 
 export type ProductKind = (typeof ProductKind)[keyof typeof ProductKind]
@@ -259,3 +268,885 @@ export const ReportStatus = {
 } as const
 
 export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]
+
+
+export const AcademyJoinSource = {
+  SELF: 'SELF',
+  ENROLMENT: 'ENROLMENT',
+  ONBOARDING: 'ONBOARDING',
+  BACKFILL: 'BACKFILL'
+} as const
+
+export type AcademyJoinSource = (typeof AcademyJoinSource)[keyof typeof AcademyJoinSource]
+
+
+export const NotificationChannel = {
+  IN_APP: 'IN_APP',
+  EMAIL: 'EMAIL',
+  PUSH: 'PUSH'
+} as const
+
+export type NotificationChannel = (typeof NotificationChannel)[keyof typeof NotificationChannel]
+
+
+export const NotificationPriority = {
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH'
+} as const
+
+export type NotificationPriority = (typeof NotificationPriority)[keyof typeof NotificationPriority]
+
+
+export const DigestFrequency = {
+  OFF: 'OFF',
+  DAILY: 'DAILY',
+  WEEKLY: 'WEEKLY'
+} as const
+
+export type DigestFrequency = (typeof DigestFrequency)[keyof typeof DigestFrequency]
+
+
+export const ScheduledNotificationStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  LOGGED: 'LOGGED',
+  SKIPPED: 'SKIPPED',
+  CANCELLED: 'CANCELLED',
+  FAILED: 'FAILED'
+} as const
+
+export type ScheduledNotificationStatus = (typeof ScheduledNotificationStatus)[keyof typeof ScheduledNotificationStatus]
+
+
+export const AnnouncementPriority = {
+  NORMAL: 'NORMAL',
+  IMPORTANT: 'IMPORTANT'
+} as const
+
+export type AnnouncementPriority = (typeof AnnouncementPriority)[keyof typeof AnnouncementPriority]
+
+
+export const AnnouncementAudience = {
+  ALL: 'ALL',
+  ROLE: 'ROLE',
+  ACADEMY: 'ACADEMY',
+  GROUP: 'GROUP',
+  COURSE: 'COURSE'
+} as const
+
+export type AnnouncementAudience = (typeof AnnouncementAudience)[keyof typeof AnnouncementAudience]
+
+
+export const AnnouncementStatus = {
+  DRAFT: 'DRAFT',
+  SCHEDULED: 'SCHEDULED',
+  SENT: 'SENT',
+  RETRACTED: 'RETRACTED'
+} as const
+
+export type AnnouncementStatus = (typeof AnnouncementStatus)[keyof typeof AnnouncementStatus]
+
+
+export const ActivityEventKind = {
+  ACADEMY_JOINED: 'ACADEMY_JOINED',
+  COURSE_COMPLETED: 'COURSE_COMPLETED',
+  PATH_COMPLETED: 'PATH_COMPLETED',
+  ACHIEVEMENT_UNLOCKED: 'ACHIEVEMENT_UNLOCKED',
+  RANK_REACHED: 'RANK_REACHED',
+  CHALLENGE_JOINED: 'CHALLENGE_JOINED',
+  CHALLENGE_COMPLETED: 'CHALLENGE_COMPLETED',
+  PROJECT_PUBLISHED: 'PROJECT_PUBLISHED',
+  PROJECT_VERIFIED: 'PROJECT_VERIFIED',
+  SKILL_VERIFIED: 'SKILL_VERIFIED',
+  INTRODUCTION_POSTED: 'INTRODUCTION_POSTED',
+  UPDATE_POSTED: 'UPDATE_POSTED',
+  DISCUSSION_FEATURED: 'DISCUSSION_FEATURED',
+  GROUP_CREATED: 'GROUP_CREATED',
+  GROUP_ANNOUNCEMENT: 'GROUP_ANNOUNCEMENT',
+  EVENT_PUBLISHED: 'EVENT_PUBLISHED',
+  MENTOR_JOINED: 'MENTOR_JOINED',
+  ARTICLE_PUBLISHED: 'ARTICLE_PUBLISHED',
+  OPPORTUNITY_PUBLISHED: 'OPPORTUNITY_PUBLISHED',
+  COMMUNITY_MILESTONE: 'COMMUNITY_MILESTONE'
+} as const
+
+export type ActivityEventKind = (typeof ActivityEventKind)[keyof typeof ActivityEventKind]
+
+
+export const ActivityAudience = {
+  MEMBERS: 'MEMBERS',
+  ACADEMY: 'ACADEMY',
+  GROUP: 'GROUP',
+  COURSE: 'COURSE',
+  STAFF: 'STAFF'
+} as const
+
+export type ActivityAudience = (typeof ActivityAudience)[keyof typeof ActivityAudience]
+
+
+export const SkillLevel = {
+  DECLARED: 'DECLARED',
+  STARTED: 'STARTED',
+  PRACTISED: 'PRACTISED',
+  PROFICIENT: 'PROFICIENT',
+  VERIFIED: 'VERIFIED'
+} as const
+
+export type SkillLevel = (typeof SkillLevel)[keyof typeof SkillLevel]
+
+
+export const SkillVerifiedVia = {
+  PROJECT_REVIEW: 'PROJECT_REVIEW',
+  STAFF_CHECK: 'STAFF_CHECK',
+  MENTOR_ASSESSMENT: 'MENTOR_ASSESSMENT'
+} as const
+
+export type SkillVerifiedVia = (typeof SkillVerifiedVia)[keyof typeof SkillVerifiedVia]
+
+
+export const ProjectKind = {
+  PROJECT: 'PROJECT',
+  ARTICLE: 'ARTICLE',
+  VIDEO: 'VIDEO',
+  TEMPLATE: 'TEMPLATE',
+  TOOL: 'TOOL',
+  OTHER: 'OTHER'
+} as const
+
+export type ProjectKind = (typeof ProjectKind)[keyof typeof ProjectKind]
+
+
+export const ProjectVisibility = {
+  PRIVATE: 'PRIVATE',
+  MEMBERS: 'MEMBERS',
+  PUBLIC: 'PUBLIC'
+} as const
+
+export type ProjectVisibility = (typeof ProjectVisibility)[keyof typeof ProjectVisibility]
+
+
+export const ProjectVerificationStatus = {
+  NOT_SUBMITTED: 'NOT_SUBMITTED',
+  SUBMITTED: 'SUBMITTED',
+  CHANGES_REQUESTED: 'CHANGES_REQUESTED',
+  VERIFIED: 'VERIFIED',
+  NOT_VERIFIED: 'NOT_VERIFIED'
+} as const
+
+export type ProjectVerificationStatus = (typeof ProjectVerificationStatus)[keyof typeof ProjectVerificationStatus]
+
+
+export const ProjectCollaboratorStatus = {
+  INVITED: 'INVITED',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED',
+  REMOVED: 'REMOVED'
+} as const
+
+export type ProjectCollaboratorStatus = (typeof ProjectCollaboratorStatus)[keyof typeof ProjectCollaboratorStatus]
+
+
+export const RankAwardReason = {
+  EARNED: 'EARNED',
+  GRANDFATHERED: 'GRANDFATHERED',
+  ADMIN: 'ADMIN'
+} as const
+
+export type RankAwardReason = (typeof RankAwardReason)[keyof typeof RankAwardReason]
+
+
+export const AchievementKind = {
+  ACHIEVEMENT: 'ACHIEVEMENT',
+  MILESTONE: 'MILESTONE',
+  BADGE: 'BADGE',
+  RECOGNITION: 'RECOGNITION'
+} as const
+
+export type AchievementKind = (typeof AchievementKind)[keyof typeof AchievementKind]
+
+
+export const PathStepKind = {
+  COURSE: 'COURSE',
+  MODULE: 'MODULE',
+  CHALLENGE: 'CHALLENGE',
+  PROJECT_BRIEF: 'PROJECT_BRIEF',
+  RESOURCE: 'RESOURCE'
+} as const
+
+export type PathStepKind = (typeof PathStepKind)[keyof typeof PathStepKind]
+
+
+export const ExpertStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  SUSPENDED: 'SUSPENDED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type ExpertStatus = (typeof ExpertStatus)[keyof typeof ExpertStatus]
+
+
+export const ContributorKind = {
+  MENTOR: 'MENTOR',
+  INSTRUCTOR: 'INSTRUCTOR',
+  CREATOR: 'CREATOR'
+} as const
+
+export type ContributorKind = (typeof ContributorKind)[keyof typeof ContributorKind]
+
+
+export const ContributorApplicationStatus = {
+  SUBMITTED: 'SUBMITTED',
+  IN_REVIEW: 'IN_REVIEW',
+  NEEDS_INFO: 'NEEDS_INFO',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  WITHDRAWN: 'WITHDRAWN'
+} as const
+
+export type ContributorApplicationStatus = (typeof ContributorApplicationStatus)[keyof typeof ContributorApplicationStatus]
+
+
+export const ContributorAccountStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type ContributorAccountStatus = (typeof ContributorAccountStatus)[keyof typeof ContributorAccountStatus]
+
+
+export const MentorStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type MentorStatus = (typeof MentorStatus)[keyof typeof MentorStatus]
+
+
+export const BookingMode = {
+  INSTANT: 'INSTANT',
+  REQUEST: 'REQUEST'
+} as const
+
+export type BookingMode = (typeof BookingMode)[keyof typeof BookingMode]
+
+
+export const CredentialKind = {
+  DEGREE: 'DEGREE',
+  CERTIFICATION: 'CERTIFICATION',
+  LICENCE: 'LICENCE',
+  EMPLOYMENT: 'EMPLOYMENT',
+  AWARD: 'AWARD',
+  OTHER: 'OTHER'
+} as const
+
+export type CredentialKind = (typeof CredentialKind)[keyof typeof CredentialKind]
+
+
+export const CredentialStatus = {
+  PENDING: 'PENDING',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type CredentialStatus = (typeof CredentialStatus)[keyof typeof CredentialStatus]
+
+
+export const AvailabilityExceptionKind = {
+  BLOCKED: 'BLOCKED',
+  EXTRA: 'EXTRA'
+} as const
+
+export type AvailabilityExceptionKind = (typeof AvailabilityExceptionKind)[keyof typeof AvailabilityExceptionKind]
+
+
+export const RevenueScope = {
+  MENTORING: 'MENTORING',
+  EVENT: 'EVENT',
+  COURSE: 'COURSE'
+} as const
+
+export type RevenueScope = (typeof RevenueScope)[keyof typeof RevenueScope]
+
+
+export const CourseDelivery = {
+  SELF_PACED: 'SELF_PACED',
+  MENTOR_LED: 'MENTOR_LED'
+} as const
+
+export type CourseDelivery = (typeof CourseDelivery)[keyof typeof CourseDelivery]
+
+
+export const CohortStatus = {
+  DRAFT: 'DRAFT',
+  OPEN: 'OPEN',
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type CohortStatus = (typeof CohortStatus)[keyof typeof CohortStatus]
+
+
+export const ContentSubmissionType = {
+  COURSE: 'COURSE',
+  COURSE_UPDATE: 'COURSE_UPDATE',
+  RESOURCE: 'RESOURCE'
+} as const
+
+export type ContentSubmissionType = (typeof ContentSubmissionType)[keyof typeof ContentSubmissionType]
+
+
+export const ContentSubmissionStatus = {
+  SUBMITTED: 'SUBMITTED',
+  IN_REVIEW: 'IN_REVIEW',
+  CHANGES_REQUESTED: 'CHANGES_REQUESTED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  WITHDRAWN: 'WITHDRAWN'
+} as const
+
+export type ContentSubmissionStatus = (typeof ContentSubmissionStatus)[keyof typeof ContentSubmissionStatus]
+
+
+export const ResourceAudience = {
+  PUBLIC: 'PUBLIC',
+  MEMBERS: 'MEMBERS',
+  REGISTERED: 'REGISTERED',
+  ATTENDED: 'ATTENDED'
+} as const
+
+export type ResourceAudience = (typeof ResourceAudience)[keyof typeof ResourceAudience]
+
+
+export const OrderSource = {
+  CART: 'CART',
+  BOOKING: 'BOOKING'
+} as const
+
+export type OrderSource = (typeof OrderSource)[keyof typeof OrderSource]
+
+
+export const EventMode = {
+  ONE_TO_ONE: 'ONE_TO_ONE',
+  GROUP: 'GROUP'
+} as const
+
+export type EventMode = (typeof EventMode)[keyof typeof EventMode]
+
+
+export const LiveEventFormat = {
+  ONLINE: 'ONLINE',
+  IN_PERSON: 'IN_PERSON',
+  HYBRID: 'HYBRID'
+} as const
+
+export type LiveEventFormat = (typeof LiveEventFormat)[keyof typeof LiveEventFormat]
+
+
+export const LiveEventStatus = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  SCHEDULED: 'SCHEDULED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type LiveEventStatus = (typeof LiveEventStatus)[keyof typeof LiveEventStatus]
+
+
+export const LiveEventVisibility = {
+  PUBLIC: 'PUBLIC',
+  MEMBERS: 'MEMBERS',
+  COURSE: 'COURSE',
+  GROUP: 'GROUP',
+  PRIVATE: 'PRIVATE'
+} as const
+
+export type LiveEventVisibility = (typeof LiveEventVisibility)[keyof typeof LiveEventVisibility]
+
+
+export const LiveEventHostRole = {
+  HOST: 'HOST',
+  CO_HOST: 'CO_HOST',
+  GUEST_SPEAKER: 'GUEST_SPEAKER'
+} as const
+
+export type LiveEventHostRole = (typeof LiveEventHostRole)[keyof typeof LiveEventHostRole]
+
+
+export const EventRegistrationStatus = {
+  REQUESTED: 'REQUESTED',
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  REGISTERED: 'REGISTERED',
+  WAITLISTED: 'WAITLISTED',
+  DECLINED: 'DECLINED',
+  CANCELLED: 'CANCELLED',
+  ATTENDED: 'ATTENDED',
+  NO_SHOW: 'NO_SHOW',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type EventRegistrationStatus = (typeof EventRegistrationStatus)[keyof typeof EventRegistrationStatus]
+
+
+export const AttendanceSource = {
+  CODE: 'CODE',
+  HOST: 'HOST',
+  JOIN_LINK: 'JOIN_LINK',
+  MEMBER_CONFIRMED: 'MEMBER_CONFIRMED',
+  INTEGRATION: 'INTEGRATION'
+} as const
+
+export type AttendanceSource = (typeof AttendanceSource)[keyof typeof AttendanceSource]
+
+
+export const MissionCadence = {
+  ONCE: 'ONCE',
+  DAILY: 'DAILY',
+  WEEKLY: 'WEEKLY',
+  MONTHLY: 'MONTHLY'
+} as const
+
+export type MissionCadence = (typeof MissionCadence)[keyof typeof MissionCadence]
+
+
+export const MissionVerification = {
+  AUTO: 'AUTO',
+  SELF_REPORT: 'SELF_REPORT',
+  REVIEW: 'REVIEW'
+} as const
+
+export type MissionVerification = (typeof MissionVerification)[keyof typeof MissionVerification]
+
+
+export const MissionKind = {
+  LEARNING: 'LEARNING',
+  DISCIPLINE: 'DISCIPLINE',
+  BUSINESS_EXERCISE: 'BUSINESS_EXERCISE',
+  FINANCIAL_LITERACY: 'FINANCIAL_LITERACY',
+  FITNESS: 'FITNESS',
+  MINDFULNESS: 'MINDFULNESS',
+  COMMUNITY: 'COMMUNITY',
+  MENTOR: 'MENTOR',
+  EVENT: 'EVENT',
+  OPPORTUNITY: 'OPPORTUNITY'
+} as const
+
+export type MissionKind = (typeof MissionKind)[keyof typeof MissionKind]
+
+
+export const PlanSlot = {
+  LEARN: 'LEARN',
+  PRACTICE: 'PRACTICE',
+  COMMUNITY: 'COMMUNITY',
+  WEEKLY: 'WEEKLY',
+  EXPLORE: 'EXPLORE'
+} as const
+
+export type PlanSlot = (typeof PlanSlot)[keyof typeof PlanSlot]
+
+
+export const PlanItemKind = {
+  MISSION: 'MISSION',
+  LESSON: 'LESSON',
+  CHALLENGE: 'CHALLENGE',
+  DISCUSSION: 'DISCUSSION',
+  GOAL_CHECKIN: 'GOAL_CHECKIN',
+  STANDARD: 'STANDARD',
+  EVENT: 'EVENT',
+  OPPORTUNITY: 'OPPORTUNITY'
+} as const
+
+export type PlanItemKind = (typeof PlanItemKind)[keyof typeof PlanItemKind]
+
+
+export const GoalMetric = {
+  MANUAL: 'MANUAL',
+  LESSONS_COMPLETED: 'LESSONS_COMPLETED',
+  COURSE_COMPLETED: 'COURSE_COMPLETED',
+  STANDARD_DAYS: 'STANDARD_DAYS',
+  MISSIONS_COMPLETED: 'MISSIONS_COMPLETED',
+  CHALLENGES_COMPLETED: 'CHALLENGES_COMPLETED'
+} as const
+
+export type GoalMetric = (typeof GoalMetric)[keyof typeof GoalMetric]
+
+
+export const GoalCadence = {
+  DAILY: 'DAILY',
+  WEEKLY: 'WEEKLY'
+} as const
+
+export type GoalCadence = (typeof GoalCadence)[keyof typeof GoalCadence]
+
+
+export const GoalStatus = {
+  ACTIVE: 'ACTIVE',
+  ACHIEVED: 'ACHIEVED',
+  PAUSED: 'PAUSED',
+  ABANDONED: 'ABANDONED'
+} as const
+
+export type GoalStatus = (typeof GoalStatus)[keyof typeof GoalStatus]
+
+
+export const GoalSource = {
+  MEMBER: 'MEMBER',
+  GUIDE_SUGGESTION: 'GUIDE_SUGGESTION',
+  ONBOARDING: 'ONBOARDING'
+} as const
+
+export type GoalSource = (typeof GoalSource)[keyof typeof GoalSource]
+
+
+export const ChallengeKind = {
+  RULE: 'RULE',
+  DAILY_CHECKIN: 'DAILY_CHECKIN',
+  SUBMISSION: 'SUBMISSION',
+  GATED_SUBMISSIONS: 'GATED_SUBMISSIONS'
+} as const
+
+export type ChallengeKind = (typeof ChallengeKind)[keyof typeof ChallengeKind]
+
+
+export const ChallengeScope = {
+  HOUSE: 'HOUSE',
+  ACADEMY: 'ACADEMY',
+  GROUP: 'GROUP'
+} as const
+
+export type ChallengeScope = (typeof ChallengeScope)[keyof typeof ChallengeScope]
+
+
+export const ChallengeCadence = {
+  ONE_OFF: 'ONE_OFF',
+  WEEKLY: 'WEEKLY',
+  MONTHLY: 'MONTHLY'
+} as const
+
+export type ChallengeCadence = (typeof ChallengeCadence)[keyof typeof ChallengeCadence]
+
+
+export const EvidenceStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  WITHDRAWN: 'WITHDRAWN'
+} as const
+
+export type EvidenceStatus = (typeof EvidenceStatus)[keyof typeof EvidenceStatus]
+
+
+export const CommunityPostKind = {
+  DISCUSSION: 'DISCUSSION',
+  QUESTION: 'QUESTION',
+  UPDATE: 'UPDATE',
+  INTRODUCTION: 'INTRODUCTION',
+  PROJECT: 'PROJECT',
+  ANNOUNCEMENT: 'ANNOUNCEMENT'
+} as const
+
+export type CommunityPostKind = (typeof CommunityPostKind)[keyof typeof CommunityPostKind]
+
+
+export const GroupTopic = {
+  PROGRAMME: 'PROGRAMME',
+  BUSINESS: 'BUSINESS',
+  FITNESS: 'FITNESS',
+  ENTREPRENEURSHIP: 'ENTREPRENEURSHIP',
+  PERSONAL_DEVELOPMENT: 'PERSONAL_DEVELOPMENT',
+  TECHNOLOGY: 'TECHNOLOGY',
+  LOCAL: 'LOCAL',
+  OTHER: 'OTHER'
+} as const
+
+export type GroupTopic = (typeof GroupTopic)[keyof typeof GroupTopic]
+
+
+export const GroupStatus = {
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  ACTIVE: 'ACTIVE',
+  REJECTED: 'REJECTED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type GroupStatus = (typeof GroupStatus)[keyof typeof GroupStatus]
+
+
+export const GroupJoinPolicy = {
+  OPEN: 'OPEN',
+  APPROVAL: 'APPROVAL'
+} as const
+
+export type GroupJoinPolicy = (typeof GroupJoinPolicy)[keyof typeof GroupJoinPolicy]
+
+
+export const GroupVisibility = {
+  MEMBERS: 'MEMBERS',
+  GROUP_ONLY: 'GROUP_ONLY'
+} as const
+
+export type GroupVisibility = (typeof GroupVisibility)[keyof typeof GroupVisibility]
+
+
+export const GroupRole = {
+  OWNER: 'OWNER',
+  MODERATOR: 'MODERATOR',
+  MEMBER: 'MEMBER'
+} as const
+
+export type GroupRole = (typeof GroupRole)[keyof typeof GroupRole]
+
+
+export const GroupMemberStatus = {
+  PENDING: 'PENDING',
+  INVITED: 'INVITED',
+  ACTIVE: 'ACTIVE',
+  BANNED: 'BANNED'
+} as const
+
+export type GroupMemberStatus = (typeof GroupMemberStatus)[keyof typeof GroupMemberStatus]
+
+
+export const GroupNotifyLevel = {
+  ALL_POSTS: 'ALL_POSTS',
+  ANNOUNCEMENTS: 'ANNOUNCEMENTS',
+  NONE: 'NONE'
+} as const
+
+export type GroupNotifyLevel = (typeof GroupNotifyLevel)[keyof typeof GroupNotifyLevel]
+
+
+export const PartnerKind = {
+  HOUSE: 'HOUSE',
+  BUSINESS: 'BUSINESS',
+  INDIVIDUAL: 'INDIVIDUAL',
+  NONPROFIT: 'NONPROFIT',
+  EDUCATION: 'EDUCATION'
+} as const
+
+export type PartnerKind = (typeof PartnerKind)[keyof typeof PartnerKind]
+
+
+export const PartnerStatus = {
+  PENDING: 'PENDING',
+  VERIFIED: 'VERIFIED',
+  SUSPENDED: 'SUSPENDED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type PartnerStatus = (typeof PartnerStatus)[keyof typeof PartnerStatus]
+
+
+export const PartnerVerificationMethod = {
+  HOUSE: 'HOUSE',
+  DOMAIN_EMAIL: 'DOMAIN_EMAIL',
+  BUSINESS_REGISTRATION: 'BUSINESS_REGISTRATION',
+  GSTIN: 'GSTIN',
+  MANUAL: 'MANUAL'
+} as const
+
+export type PartnerVerificationMethod = (typeof PartnerVerificationMethod)[keyof typeof PartnerVerificationMethod]
+
+
+export const PartnerMemberRole = {
+  OWNER: 'OWNER',
+  EDITOR: 'EDITOR'
+} as const
+
+export type PartnerMemberRole = (typeof PartnerMemberRole)[keyof typeof PartnerMemberRole]
+
+
+export const OpportunityKind = {
+  FREELANCE_PROJECT: 'FREELANCE_PROJECT',
+  REMOTE_WORK: 'REMOTE_WORK',
+  INTERNSHIP: 'INTERNSHIP',
+  CREATOR_COLLABORATION: 'CREATOR_COLLABORATION',
+  AFFILIATE_PROGRAMME: 'AFFILIATE_PROGRAMME',
+  BUSINESS_PARTNERSHIP: 'BUSINESS_PARTNERSHIP',
+  DIGITAL_PRODUCT: 'DIGITAL_PRODUCT',
+  MARKETPLACE_SELLER: 'MARKETPLACE_SELLER',
+  SKILL_PROJECT: 'SKILL_PROJECT',
+  COMMUNITY_COMPETITION: 'COMMUNITY_COMPETITION'
+} as const
+
+export type OpportunityKind = (typeof OpportunityKind)[keyof typeof OpportunityKind]
+
+
+export const WorkMode = {
+  REMOTE: 'REMOTE',
+  ONSITE: 'ONSITE',
+  HYBRID: 'HYBRID'
+} as const
+
+export type WorkMode = (typeof WorkMode)[keyof typeof WorkMode]
+
+
+export const CompensationType = {
+  FIXED_FEE: 'FIXED_FEE',
+  HOURLY: 'HOURLY',
+  STIPEND_MONTHLY: 'STIPEND_MONTHLY',
+  SALARY_ANNUAL: 'SALARY_ANNUAL',
+  COMMISSION: 'COMMISSION',
+  REVENUE_SHARE: 'REVENUE_SHARE',
+  PRIZE: 'PRIZE',
+  THC_REWARD: 'THC_REWARD',
+  UNPAID: 'UNPAID',
+  TO_BE_DISCUSSED: 'TO_BE_DISCUSSED'
+} as const
+
+export type CompensationType = (typeof CompensationType)[keyof typeof CompensationType]
+
+
+export const OpportunityApplyMode = {
+  IN_APP: 'IN_APP',
+  EXTERNAL_URL: 'EXTERNAL_URL',
+  AFFILIATE_PROGRAMME: 'AFFILIATE_PROGRAMME',
+  CHALLENGE: 'CHALLENGE'
+} as const
+
+export type OpportunityApplyMode = (typeof OpportunityApplyMode)[keyof typeof OpportunityApplyMode]
+
+
+export const OpportunityStatus = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  OPEN: 'OPEN',
+  PAUSED: 'PAUSED',
+  CLOSED: 'CLOSED',
+  FILLED: 'FILLED',
+  REJECTED: 'REJECTED',
+  REMOVED: 'REMOVED'
+} as const
+
+export type OpportunityStatus = (typeof OpportunityStatus)[keyof typeof OpportunityStatus]
+
+
+export const OpportunityApplicationStatus = {
+  SUBMITTED: 'SUBMITTED',
+  VIEWED: 'VIEWED',
+  SHORTLISTED: 'SHORTLISTED',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED',
+  WITHDRAWN: 'WITHDRAWN',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type OpportunityApplicationStatus = (typeof OpportunityApplicationStatus)[keyof typeof OpportunityApplicationStatus]
+
+
+export const ApplicantContactField = {
+  EMAIL: 'EMAIL',
+  PHONE: 'PHONE',
+  PORTFOLIO: 'PORTFOLIO'
+} as const
+
+export type ApplicantContactField = (typeof ApplicantContactField)[keyof typeof ApplicantContactField]
+
+
+export const PostKind = {
+  ARTICLE: 'ARTICLE',
+  LEARNING_INSIGHT: 'LEARNING_INSIGHT',
+  FOUNDER_NOTE: 'FOUNDER_NOTE',
+  EXPERT_CONTRIBUTION: 'EXPERT_CONTRIBUTION',
+  ACADEMY_UPDATE: 'ACADEMY_UPDATE',
+  SUCCESS_STORY: 'SUCCESS_STORY',
+  BUSINESS_GUIDE: 'BUSINESS_GUIDE',
+  WELLNESS_RESOURCE: 'WELLNESS_RESOURCE',
+  INTERVIEW: 'INTERVIEW',
+  EVENT_RECAP: 'EVENT_RECAP',
+  ANNOUNCEMENT: 'ANNOUNCEMENT',
+  PLATFORM_UPDATE: 'PLATFORM_UPDATE'
+} as const
+
+export type PostKind = (typeof PostKind)[keyof typeof PostKind]
+
+
+export const PostStatus = {
+  DRAFT: 'DRAFT',
+  IN_REVIEW: 'IN_REVIEW',
+  CHANGES_REQUESTED: 'CHANGES_REQUESTED',
+  SCHEDULED: 'SCHEDULED',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type PostStatus = (typeof PostStatus)[keyof typeof PostStatus]
+
+
+export const ConsentSource = {
+  CONTACT_FORM: 'CONTACT_FORM',
+  WRITTEN: 'WRITTEN',
+  IN_APP: 'IN_APP'
+} as const
+
+export type ConsentSource = (typeof ConsentSource)[keyof typeof ConsentSource]
+
+
+export const HelpTopic = {
+  GETTING_STARTED: 'GETTING_STARTED',
+  LEARNING: 'LEARNING',
+  ACADEMIES: 'ACADEMIES',
+  MENTORS: 'MENTORS',
+  EVENTS: 'EVENTS',
+  OPPORTUNITIES: 'OPPORTUNITIES',
+  THC: 'THC',
+  EARN: 'EARN',
+  SHOP: 'SHOP',
+  COMMUNITY: 'COMMUNITY',
+  ACCOUNT: 'ACCOUNT',
+  PRIVACY: 'PRIVACY'
+} as const
+
+export type HelpTopic = (typeof HelpTopic)[keyof typeof HelpTopic]
+
+
+export const HelpAudience = {
+  PUBLIC: 'PUBLIC',
+  MEMBER: 'MEMBER'
+} as const
+
+export type HelpAudience = (typeof HelpAudience)[keyof typeof HelpAudience]
+
+
+export const GuideMode = {
+  GUIDED: 'GUIDED',
+  AI: 'AI'
+} as const
+
+export type GuideMode = (typeof GuideMode)[keyof typeof GuideMode]
+
+
+export const GuideRole = {
+  MEMBER: 'MEMBER',
+  GUIDE: 'GUIDE'
+} as const
+
+export type GuideRole = (typeof GuideRole)[keyof typeof GuideRole]
+
+
+export const GuideMessageKind = {
+  ANSWER: 'ANSWER',
+  NO_SOURCE: 'NO_SOURCE',
+  REFUSAL: 'REFUSAL',
+  INTENT_RESULT: 'INTENT_RESULT',
+  ERROR: 'ERROR'
+} as const
+
+export type GuideMessageKind = (typeof GuideMessageKind)[keyof typeof GuideMessageKind]
+
+
+export const GuideFeedback = {
+  HELPFUL: 'HELPFUL',
+  NOT_HELPFUL: 'NOT_HELPFUL',
+  WRONG: 'WRONG'
+} as const
+
+export type GuideFeedback = (typeof GuideFeedback)[keyof typeof GuideFeedback]

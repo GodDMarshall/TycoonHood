@@ -56,6 +56,8 @@ export type OrderMinAggregateOutputType = {
   affiliateCode: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  source: $Enums.OrderSource | null
+  paidAt: Date | null
 }
 
 export type OrderMaxAggregateOutputType = {
@@ -76,6 +78,8 @@ export type OrderMaxAggregateOutputType = {
   affiliateCode: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  source: $Enums.OrderSource | null
+  paidAt: Date | null
 }
 
 export type OrderCountAggregateOutputType = {
@@ -96,6 +100,8 @@ export type OrderCountAggregateOutputType = {
   affiliateCode: number
   createdAt: number
   updatedAt: number
+  source: number
+  paidAt: number
   _all: number
 }
 
@@ -130,6 +136,8 @@ export type OrderMinAggregateInputType = {
   affiliateCode?: true
   createdAt?: true
   updatedAt?: true
+  source?: true
+  paidAt?: true
 }
 
 export type OrderMaxAggregateInputType = {
@@ -150,6 +158,8 @@ export type OrderMaxAggregateInputType = {
   affiliateCode?: true
   createdAt?: true
   updatedAt?: true
+  source?: true
+  paidAt?: true
 }
 
 export type OrderCountAggregateInputType = {
@@ -170,6 +180,8 @@ export type OrderCountAggregateInputType = {
   affiliateCode?: true
   createdAt?: true
   updatedAt?: true
+  source?: true
+  paidAt?: true
   _all?: true
 }
 
@@ -277,6 +289,8 @@ export type OrderGroupByOutputType = {
   affiliateCode: string | null
   createdAt: Date
   updatedAt: Date
+  source: $Enums.OrderSource
+  paidAt: Date | null
   _count: OrderCountAggregateOutputType | null
   _avg: OrderAvgAggregateOutputType | null
   _sum: OrderSumAggregateOutputType | null
@@ -320,12 +334,15 @@ export type OrderWhereInput = {
   affiliateCode?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  source?: Prisma.EnumOrderSourceFilter<"Order"> | $Enums.OrderSource
+  paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.OrderItemListRelationFilter
   address?: Prisma.XOR<Prisma.ShippingAddressNullableScalarRelationFilter, Prisma.ShippingAddressWhereInput> | null
   payments?: Prisma.PaymentListRelationFilter
   refundRequests?: Prisma.RefundRequestListRelationFilter
   commissions?: Prisma.CommissionListRelationFilter
+  contributorEarnings?: Prisma.ContributorEarningListRelationFilter
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -346,12 +363,15 @@ export type OrderOrderByWithRelationInput = {
   affiliateCode?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   items?: Prisma.OrderItemOrderByRelationAggregateInput
   address?: Prisma.ShippingAddressOrderByWithRelationInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
   refundRequests?: Prisma.RefundRequestOrderByRelationAggregateInput
   commissions?: Prisma.CommissionOrderByRelationAggregateInput
+  contributorEarnings?: Prisma.ContributorEarningOrderByRelationAggregateInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -375,12 +395,15 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   affiliateCode?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  source?: Prisma.EnumOrderSourceFilter<"Order"> | $Enums.OrderSource
+  paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.OrderItemListRelationFilter
   address?: Prisma.XOR<Prisma.ShippingAddressNullableScalarRelationFilter, Prisma.ShippingAddressWhereInput> | null
   payments?: Prisma.PaymentListRelationFilter
   refundRequests?: Prisma.RefundRequestListRelationFilter
   commissions?: Prisma.CommissionListRelationFilter
+  contributorEarnings?: Prisma.ContributorEarningListRelationFilter
 }, "id" | "ledgerTxId">
 
 export type OrderOrderByWithAggregationInput = {
@@ -401,6 +424,8 @@ export type OrderOrderByWithAggregationInput = {
   affiliateCode?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.OrderCountOrderByAggregateInput
   _avg?: Prisma.OrderAvgOrderByAggregateInput
   _max?: Prisma.OrderMaxOrderByAggregateInput
@@ -429,6 +454,8 @@ export type OrderScalarWhereWithAggregatesInput = {
   affiliateCode?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
+  source?: Prisma.EnumOrderSourceWithAggregatesFilter<"Order"> | $Enums.OrderSource
+  paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
 }
 
 export type OrderCreateInput = {
@@ -448,12 +475,15 @@ export type OrderCreateInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -474,11 +504,14 @@ export type OrderUncheckedCreateInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressUncheckedCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
@@ -498,12 +531,15 @@ export type OrderUpdateInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -524,11 +560,14 @@ export type OrderUncheckedUpdateInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUncheckedUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -549,6 +588,8 @@ export type OrderCreateManyInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
 }
 
 export type OrderUpdateManyMutationInput = {
@@ -568,6 +609,8 @@ export type OrderUpdateManyMutationInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OrderUncheckedUpdateManyInput = {
@@ -588,6 +631,8 @@ export type OrderUncheckedUpdateManyInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OrderListRelationFilter = {
@@ -618,6 +663,8 @@ export type OrderCountOrderByAggregateInput = {
   affiliateCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type OrderAvgOrderByAggregateInput = {
@@ -644,6 +691,8 @@ export type OrderMaxOrderByAggregateInput = {
   affiliateCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type OrderMinOrderByAggregateInput = {
@@ -664,6 +713,8 @@ export type OrderMinOrderByAggregateInput = {
   affiliateCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type OrderSumOrderByAggregateInput = {
@@ -721,6 +772,10 @@ export type OrderUncheckedUpdateManyWithoutUserNestedInput = {
 
 export type EnumOrderStatusFieldUpdateOperationsInput = {
   set?: $Enums.OrderStatus
+}
+
+export type EnumOrderSourceFieldUpdateOperationsInput = {
+  set?: $Enums.OrderSource
 }
 
 export type OrderCreateNestedOneWithoutItemsInput = {
@@ -793,6 +848,20 @@ export type OrderUpdateOneRequiredWithoutRefundRequestsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutRefundRequestsInput, Prisma.OrderUpdateWithoutRefundRequestsInput>, Prisma.OrderUncheckedUpdateWithoutRefundRequestsInput>
 }
 
+export type OrderCreateNestedOneWithoutContributorEarningsInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutContributorEarningsInput, Prisma.OrderUncheckedCreateWithoutContributorEarningsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutContributorEarningsInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneRequiredWithoutContributorEarningsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutContributorEarningsInput, Prisma.OrderUncheckedCreateWithoutContributorEarningsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutContributorEarningsInput
+  upsert?: Prisma.OrderUpsertWithoutContributorEarningsInput
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutContributorEarningsInput, Prisma.OrderUpdateWithoutContributorEarningsInput>, Prisma.OrderUncheckedUpdateWithoutContributorEarningsInput>
+}
+
 export type OrderCreateWithoutUserInput = {
   id?: string
   status?: $Enums.OrderStatus
@@ -810,11 +879,14 @@ export type OrderCreateWithoutUserInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutUserInput = {
@@ -834,11 +906,14 @@ export type OrderUncheckedCreateWithoutUserInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressUncheckedCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutUserInput = {
@@ -888,6 +963,8 @@ export type OrderScalarWhereInput = {
   affiliateCode?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  source?: Prisma.EnumOrderSourceFilter<"Order"> | $Enums.OrderSource
+  paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
 }
 
 export type OrderCreateWithoutItemsInput = {
@@ -907,11 +984,14 @@ export type OrderCreateWithoutItemsInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   address?: Prisma.ShippingAddressCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutItemsInput = {
@@ -932,10 +1012,13 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   address?: Prisma.ShippingAddressUncheckedCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutItemsInput = {
@@ -971,11 +1054,14 @@ export type OrderUpdateWithoutItemsInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   address?: Prisma.ShippingAddressUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutItemsInput = {
@@ -996,10 +1082,13 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.ShippingAddressUncheckedUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutAddressInput = {
@@ -1019,11 +1108,14 @@ export type OrderCreateWithoutAddressInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutAddressInput = {
@@ -1044,10 +1136,13 @@ export type OrderUncheckedCreateWithoutAddressInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutAddressInput = {
@@ -1083,11 +1178,14 @@ export type OrderUpdateWithoutAddressInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutAddressInput = {
@@ -1108,10 +1206,13 @@ export type OrderUncheckedUpdateWithoutAddressInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutCommissionsInput = {
@@ -1131,11 +1232,14 @@ export type OrderCreateWithoutCommissionsInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCommissionsInput = {
@@ -1156,10 +1260,13 @@ export type OrderUncheckedCreateWithoutCommissionsInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressUncheckedCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
   refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCommissionsInput = {
@@ -1195,11 +1302,14 @@ export type OrderUpdateWithoutCommissionsInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCommissionsInput = {
@@ -1220,10 +1330,13 @@ export type OrderUncheckedUpdateWithoutCommissionsInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUncheckedUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutPaymentsInput = {
@@ -1243,11 +1356,14 @@ export type OrderCreateWithoutPaymentsInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressCreateNestedOneWithoutOrderInput
   refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutPaymentsInput = {
@@ -1268,10 +1384,13 @@ export type OrderUncheckedCreateWithoutPaymentsInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressUncheckedCreateNestedOneWithoutOrderInput
   refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutPaymentsInput = {
@@ -1307,11 +1426,14 @@ export type OrderUpdateWithoutPaymentsInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUpdateOneWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutPaymentsInput = {
@@ -1332,10 +1454,13 @@ export type OrderUncheckedUpdateWithoutPaymentsInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUncheckedUpdateOneWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutRefundRequestsInput = {
@@ -1355,11 +1480,14 @@ export type OrderCreateWithoutRefundRequestsInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutRefundRequestsInput = {
@@ -1380,10 +1508,13 @@ export type OrderUncheckedCreateWithoutRefundRequestsInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   address?: Prisma.ShippingAddressUncheckedCreateNestedOneWithoutOrderInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutOrderInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutRefundRequestsInput = {
@@ -1419,11 +1550,14 @@ export type OrderUpdateWithoutRefundRequestsInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutRefundRequestsInput = {
@@ -1444,9 +1578,136 @@ export type OrderUncheckedUpdateWithoutRefundRequestsInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUncheckedUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
+  commissions?: Prisma.CommissionUncheckedUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderCreateWithoutContributorEarningsInput = {
+  id?: string
+  status?: $Enums.OrderStatus
+  totalThc?: bigint | number
+  totalFiatCents?: number
+  fiatCurrency?: string
+  ledgerTxId?: string | null
+  paymentProvider?: string | null
+  paymentRef?: string | null
+  shippedAt?: Date | string | null
+  trackingCarrier?: string | null
+  trackingNumber?: string | null
+  couponCode?: string | null
+  discountCents?: number
+  affiliateCode?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutOrdersInput
+  items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
+  address?: Prisma.ShippingAddressCreateNestedOneWithoutOrderInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrderInput
+  refundRequests?: Prisma.RefundRequestCreateNestedManyWithoutOrderInput
+  commissions?: Prisma.CommissionCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutContributorEarningsInput = {
+  id?: string
+  userId: string
+  status?: $Enums.OrderStatus
+  totalThc?: bigint | number
+  totalFiatCents?: number
+  fiatCurrency?: string
+  ledgerTxId?: string | null
+  paymentProvider?: string | null
+  paymentRef?: string | null
+  shippedAt?: Date | string | null
+  trackingCarrier?: string | null
+  trackingNumber?: string | null
+  couponCode?: string | null
+  discountCents?: number
+  affiliateCode?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
+  items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
+  address?: Prisma.ShippingAddressUncheckedCreateNestedOneWithoutOrderInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
+  refundRequests?: Prisma.RefundRequestUncheckedCreateNestedManyWithoutOrderInput
+  commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutContributorEarningsInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutContributorEarningsInput, Prisma.OrderUncheckedCreateWithoutContributorEarningsInput>
+}
+
+export type OrderUpsertWithoutContributorEarningsInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutContributorEarningsInput, Prisma.OrderUncheckedUpdateWithoutContributorEarningsInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutContributorEarningsInput, Prisma.OrderUncheckedCreateWithoutContributorEarningsInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutContributorEarningsInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutContributorEarningsInput, Prisma.OrderUncheckedUpdateWithoutContributorEarningsInput>
+}
+
+export type OrderUpdateWithoutContributorEarningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  totalThc?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  totalFiatCents?: Prisma.IntFieldUpdateOperationsInput | number
+  fiatCurrency?: Prisma.StringFieldUpdateOperationsInput | string
+  ledgerTxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shippedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trackingCarrier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discountCents?: Prisma.IntFieldUpdateOperationsInput | number
+  affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
+  items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
+  address?: Prisma.ShippingAddressUpdateOneWithoutOrderNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrderNestedInput
+  refundRequests?: Prisma.RefundRequestUpdateManyWithoutOrderNestedInput
+  commissions?: Prisma.CommissionUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutContributorEarningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  totalThc?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  totalFiatCents?: Prisma.IntFieldUpdateOperationsInput | number
+  fiatCurrency?: Prisma.StringFieldUpdateOperationsInput | string
+  ledgerTxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shippedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trackingCarrier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discountCents?: Prisma.IntFieldUpdateOperationsInput | number
+  affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  address?: Prisma.ShippingAddressUncheckedUpdateOneWithoutOrderNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
+  refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -1467,6 +1728,8 @@ export type OrderCreateManyUserInput = {
   affiliateCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OrderSource
+  paidAt?: Date | string | null
 }
 
 export type OrderUpdateWithoutUserInput = {
@@ -1486,11 +1749,14 @@ export type OrderUpdateWithoutUserInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutUserInput = {
@@ -1510,11 +1776,14 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   address?: Prisma.ShippingAddressUncheckedUpdateOneWithoutOrderNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
   refundRequests?: Prisma.RefundRequestUncheckedUpdateManyWithoutOrderNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutOrderNestedInput
+  contributorEarnings?: Prisma.ContributorEarningUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutUserInput = {
@@ -1534,6 +1803,8 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   affiliateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOrderSourceFieldUpdateOperationsInput | $Enums.OrderSource
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -1546,6 +1817,7 @@ export type OrderCountOutputType = {
   payments: number
   refundRequests: number
   commissions: number
+  contributorEarnings: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1553,6 +1825,7 @@ export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   payments?: boolean | OrderCountOutputTypeCountPaymentsArgs
   refundRequests?: boolean | OrderCountOutputTypeCountRefundRequestsArgs
   commissions?: boolean | OrderCountOutputTypeCountCommissionsArgs
+  contributorEarnings?: boolean | OrderCountOutputTypeCountContributorEarningsArgs
 }
 
 /**
@@ -1593,6 +1866,13 @@ export type OrderCountOutputTypeCountCommissionsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.CommissionWhereInput
 }
 
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountContributorEarningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContributorEarningWhereInput
+}
+
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1612,12 +1892,15 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   affiliateCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  source?: boolean
+  paidAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
   address?: boolean | Prisma.Order$addressArgs<ExtArgs>
   payments?: boolean | Prisma.Order$paymentsArgs<ExtArgs>
   refundRequests?: boolean | Prisma.Order$refundRequestsArgs<ExtArgs>
   commissions?: boolean | Prisma.Order$commissionsArgs<ExtArgs>
+  contributorEarnings?: boolean | Prisma.Order$contributorEarningsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -1639,6 +1922,8 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   affiliateCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  source?: boolean
+  paidAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -1660,6 +1945,8 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   affiliateCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  source?: boolean
+  paidAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -1681,9 +1968,11 @@ export type OrderSelectScalar = {
   affiliateCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  source?: boolean
+  paidAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "totalThc" | "totalFiatCents" | "fiatCurrency" | "ledgerTxId" | "paymentProvider" | "paymentRef" | "shippedAt" | "trackingCarrier" | "trackingNumber" | "couponCode" | "discountCents" | "affiliateCode" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "totalThc" | "totalFiatCents" | "fiatCurrency" | "ledgerTxId" | "paymentProvider" | "paymentRef" | "shippedAt" | "trackingCarrier" | "trackingNumber" | "couponCode" | "discountCents" | "affiliateCode" | "createdAt" | "updatedAt" | "source" | "paidAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
@@ -1691,6 +1980,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   payments?: boolean | Prisma.Order$paymentsArgs<ExtArgs>
   refundRequests?: boolean | Prisma.Order$refundRequestsArgs<ExtArgs>
   commissions?: boolean | Prisma.Order$commissionsArgs<ExtArgs>
+  contributorEarnings?: boolean | Prisma.Order$contributorEarningsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1709,6 +1999,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     payments: Prisma.$PaymentPayload<ExtArgs>[]
     refundRequests: Prisma.$RefundRequestPayload<ExtArgs>[]
     commissions: Prisma.$CommissionPayload<ExtArgs>[]
+    contributorEarnings: Prisma.$ContributorEarningPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1743,6 +2034,14 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     affiliateCode: string | null
     createdAt: Date
     updatedAt: Date
+    /**
+     * BOOKING orders carry one LIVE_EVENT line and never touch the cart.
+     */
+    source: $Enums.OrderSource
+    /**
+     * When the order became PAID. Backfilled only where the time is exact.
+     */
+    paidAt: Date | null
   }, ExtArgs["result"]["order"]>
   composites: {}
 }
@@ -2143,6 +2442,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   payments<T extends Prisma.Order$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refundRequests<T extends Prisma.Order$refundRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$refundRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefundRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   commissions<T extends Prisma.Order$commissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contributorEarnings<T extends Prisma.Order$contributorEarningsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$contributorEarningsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContributorEarningPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2189,6 +2489,8 @@ export interface OrderFieldRefs {
   readonly affiliateCode: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly source: Prisma.FieldRef<"Order", 'OrderSource'>
+  readonly paidAt: Prisma.FieldRef<"Order", 'DateTime'>
 }
     
 
@@ -2697,6 +2999,30 @@ export type Order$commissionsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.CommissionScalarFieldEnum | Prisma.CommissionScalarFieldEnum[]
+}
+
+/**
+ * Order.contributorEarnings
+ */
+export type Order$contributorEarningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContributorEarning
+   */
+  select?: Prisma.ContributorEarningSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContributorEarning
+   */
+  omit?: Prisma.ContributorEarningOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContributorEarningInclude<ExtArgs> | null
+  where?: Prisma.ContributorEarningWhereInput
+  orderBy?: Prisma.ContributorEarningOrderByWithRelationInput | Prisma.ContributorEarningOrderByWithRelationInput[]
+  cursor?: Prisma.ContributorEarningWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContributorEarningScalarFieldEnum | Prisma.ContributorEarningScalarFieldEnum[]
 }
 
 /**

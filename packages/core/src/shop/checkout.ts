@@ -195,7 +195,7 @@ export class ShopCheckoutService {
       throw e;
     }
 
-    await this.db.order.update({ where: { id: order.id }, data: { status: "PAID", ledgerTxId: tx.id } });
+    await this.db.order.update({ where: { id: order.id }, data: { status: "PAID", paidAt: new Date(), ledgerTxId: tx.id } });
     await this.cart.clear(userId, lines.map((l) => l.lineKey));
     await this.commerce.fulfillOrder(order.id);
     await this.audit.log({ actorId: userId, action: "order.paid", targetType: "order", targetId: order.id, meta: { rail: "THC", total: total.toString() } });
@@ -359,7 +359,7 @@ export class ShopCheckoutService {
       ? { count: 0 }
       : await this.db.order.updateMany({
           where: { id: order.id, status: "PENDING" },
-          data: { status: "PAID", paymentRef: args.providerPaymentId },
+          data: { status: "PAID", paidAt: new Date(), paymentRef: args.providerPaymentId },
         });
 
     if (paid.count === 0) {
